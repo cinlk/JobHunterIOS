@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   type = "0"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "internals/ForgetPasswordController.swift"
+            timestampString = "525500775.737252"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "32"
+            endingLineNumber = "32"
+            landmarkName = "ForgetPasswordController"
+            landmarkType = "3">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "internals/ForgetPasswordController.swift"
+            timestampString = "525500775.737252"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "32"
+            endingLineNumber = "32"
+            landmarkName = "ForgetPasswordController"
+            landmarkType = "3">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "internals/ViewController.swift"
+            timestampString = "525511713.825875"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "65"
+            endingLineNumber = "65"
+            landmarkName = "login(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "internals/ViewController.swift"
+            timestampString = "525511934.889773"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "68"
+            endingLineNumber = "68"
+            landmarkName = "login(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "internals/demo.swift"
+            timestampString = "525534306.211607"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "11"
+            endingLineNumber = "11"
+            landmarkName = "demo"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "internals.demo.__deallocating_deinit"
+                  moduleName = "internals"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lk/Desktop/IOS/IOS%20%E9%A1%B9%E7%9B%AE/internals/internals/demo.swift"
+                  timestampString = "525534307.100201"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "4">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "internals.demo.init (style : __C.UITableViewStyle) -&gt; internals.demo"
+                  moduleName = "internals"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lk/Desktop/IOS/IOS%20%E9%A1%B9%E7%9B%AE/internals/internals/demo.swift"
+                  timestampString = "525534307.102456"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "14"
+                  endingLineNumber = "14"
+                  offsetFromSymbolStart = "23">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "internals.demo.__allocating_init (style : __C.UITableViewStyle) -&gt; internals.demo"
+                  moduleName = "internals"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lk/Desktop/IOS/IOS%20%E9%A1%B9%E7%9B%AE/internals/internals/demo.swift"
+                  timestampString = "525534307.104179"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "4">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "internals.demo.init (nibName : Swift.Optional&lt;Swift.String&gt;, bundle : Swift.Optional&lt;__ObjC.Bundle&gt;) -&gt; internals.demo"
+                  moduleName = "internals"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lk/Desktop/IOS/IOS%20%E9%A1%B9%E7%9B%AE/internals/internals/demo.swift"
+                  timestampString = "525534307.105756"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "14"
+                  endingLineNumber = "14"
+                  offsetFromSymbolStart = "65">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "internals.demo.__allocating_init (nibName : Swift.Optional&lt;Swift.String&gt;, bundle : Swift.Optional&lt;__ObjC.Bundle&gt;) -&gt; internals.demo"
+                  moduleName = "internals"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lk/Desktop/IOS/IOS%20%E9%A1%B9%E7%9B%AE/internals/internals/demo.swift"
+                  timestampString = "525534307.107404"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "23">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "internals.demo.__allocating_init (coder : __ObjC.NSCoder) -&gt; Swift.Optional&lt;internals.demo&gt;"
+                  moduleName = "internals"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lk/Desktop/IOS/IOS%20%E9%A1%B9%E7%9B%AE/internals/internals/demo.swift"
+                  timestampString = "525534307.109265"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "4">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "internals.demo.init (coder : __ObjC.NSCoder) -&gt; Swift.Optional&lt;internals.demo&gt;"
+                  moduleName = "internals"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lk/Desktop/IOS/IOS%20%E9%A1%B9%E7%9B%AE/internals/internals/demo.swift"
+                  timestampString = "525534307.111126"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "14"
+                  endingLineNumber = "14"
+                  offsetFromSymbolStart = "26">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../Downloads/CFCityPickerVC-master/CFCityPickerVC/CFCityPickerVC/Controller/CitySearchResultVC.swift"
+            timestampString = "525801815.317287"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "14"
+            endingLineNumber = "14"
+            landmarkName = "CitySearchResultVC"
+            landmarkType = "3">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "internals/CitysView.swift"
+            timestampString = "525803129.236376"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "11"
+            endingLineNumber = "11"
+            landmarkName = "CitysView"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "internals.CitysView.__deallocating_deinit"
+                  moduleName = "internals"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lk/Desktop/IOS/IOS%20%E9%A1%B9%E7%9B%AE/internals/internals/CitysView.swift"
+                  timestampString = "525803129.903568"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "4">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "internals.CitysView.init (nibName : Swift.Optional&lt;Swift.String&gt;, bundle : Swift.Optional&lt;__ObjC.Bundle&gt;) -&gt; internals.CitysView"
+                  moduleName = "internals"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lk/Desktop/IOS/IOS%20%E9%A1%B9%E7%9B%AE/internals/internals/CitysView.swift"
+                  timestampString = "525803129.905016"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "14"
+                  endingLineNumber = "14"
+                  offsetFromSymbolStart = "106">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "internals.CitysView.__allocating_init (nibName : Swift.Optional&lt;Swift.String&gt;, bundle : Swift.Optional&lt;__ObjC.Bundle&gt;) -&gt; internals.CitysView"
+                  moduleName = "internals"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lk/Desktop/IOS/IOS%20%E9%A1%B9%E7%9B%AE/internals/internals/CitysView.swift"
+                  timestampString = "525803129.906246"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "23">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "internals.CitysView.__allocating_init (coder : __ObjC.NSCoder) -&gt; Swift.Optional&lt;internals.CitysView&gt;"
+                  moduleName = "internals"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lk/Desktop/IOS/IOS%20%E9%A1%B9%E7%9B%AE/internals/internals/CitysView.swift"
+                  timestampString = "525803129.907745"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "4">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "internals.CitysView.init (coder : __ObjC.NSCoder) -&gt; Swift.Optional&lt;internals.CitysView&gt;"
+                  moduleName = "internals"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lk/Desktop/IOS/IOS%20%E9%A1%B9%E7%9B%AE/internals/internals/CitysView.swift"
+                  timestampString = "525803129.909399"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "14"
+                  endingLineNumber = "14"
+                  offsetFromSymbolStart = "60">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "internals/DashboardViewController.swift"
+            timestampString = "526021050.574261"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "11"
+            endingLineNumber = "11"
+            landmarkName = "DashboardViewController"
+            landmarkType = "3">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "internals/ScrollerCell.swift"
+            timestampString = "526050688.205035"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "21"
+            endingLineNumber = "21"
+            landmarkName = "init(style:reuseIdentifier:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
