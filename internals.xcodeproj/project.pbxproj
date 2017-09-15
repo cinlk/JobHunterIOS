@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4A2A2D041F65672B00F42123 /* JobTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2A2D031F65672B00F42123 /* JobTag.swift */; };
+		4A2A2D071F6578D800F42123 /* joblist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2A2D051F6578D800F42123 /* joblist.swift */; };
+		4A2A2D081F6578D800F42123 /* joblist.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A2A2D061F6578D800F42123 /* joblist.xib */; };
 		4A3224031F5160E50065A33F /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224021F5160E50065A33F /* Alamofire.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		4A3224051F5160EA0065A33F /* SDAutoLayout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224041F5160EA0065A33F /* SDAutoLayout.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		4A3224071F5160ED0065A33F /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224061F5160ED0065A33F /* SwiftyJSON.framework */; settings = {ATTRIBUTES = (Required, ); }; };
@@ -29,6 +32,22 @@
 		4AF6C8031F571D1F0059496B /* CitysView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C8021F571D1F0059496B /* CitysView.swift */; };
 		4AF6C8051F5A98940059496B /* ScrollerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C8041F5A98940059496B /* ScrollerCell.swift */; };
 		4AF6C80B1F5AEB880059496B /* ScrollerCell2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C80A1F5AEB880059496B /* ScrollerCell2.swift */; };
+		4AFF91A71F5C238400FE189F /* HeaderFoot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91A61F5C238400FE189F /* HeaderFoot.swift */; };
+		4AFF91A91F5C338800FE189F /* JobDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91A81F5C338800FE189F /* JobDetailViewController.swift */; };
+		4AFF91B91F5DB8A900FE189F /* company.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91B71F5DB8A900FE189F /* company.swift */; };
+		4AFF91BA1F5DB8A900FE189F /* company.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4AFF91B81F5DB8A900FE189F /* company.xib */; };
+		4AFF91BD1F5DBD8D00FE189F /* JobDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91BB1F5DBD8D00FE189F /* JobDescription.swift */; };
+		4AFF91BE1F5DBD8D00FE189F /* JobDescription.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4AFF91BC1F5DBD8D00FE189F /* JobDescription.xib */; };
+		4AFF91C11F5DC18000FE189F /* worklocate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91BF1F5DC18000FE189F /* worklocate.swift */; };
+		4AFF91C21F5DC18000FE189F /* worklocate.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4AFF91C01F5DC18000FE189F /* worklocate.xib */; };
+		4AFF91C41F5EF40000FE189F /* mapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91C31F5EF40000FE189F /* mapApp.swift */; };
+		4AFF91D51F60586600FE189F /* cdetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91D41F60586600FE189F /* cdetails.swift */; };
+		4AFF91D91F641A6200FE189F /* tagsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91D71F641A6200FE189F /* tagsTableViewCell.swift */; };
+		4AFF91DA1F641A6200FE189F /* tagsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4AFF91D81F641A6200FE189F /* tagsTableViewCell.xib */; };
+		4AFF91DD1F641A8000FE189F /* introduction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91DB1F641A8000FE189F /* introduction.swift */; };
+		4AFF91DE1F641A8000FE189F /* introduction.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4AFF91DC1F641A8000FE189F /* introduction.xib */; };
+		4AFF91E11F641AA900FE189F /* others.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91DF1F641AA900FE189F /* others.swift */; };
+		4AFF91E21F641AA900FE189F /* others.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4AFF91E01F641AA900FE189F /* others.xib */; };
 		D1EC4964AE33F5F8C9864AAB /* Pods_internals.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E63353C953561B2E076FD4C /* Pods_internals.framework */; };
 /* End PBXBuildFile section */
 
@@ -50,6 +69,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4A2A2D031F65672B00F42123 /* JobTag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobTag.swift; sourceTree = "<group>"; };
+		4A2A2D051F6578D800F42123 /* joblist.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = joblist.swift; sourceTree = "<group>"; };
+		4A2A2D061F6578D800F42123 /* joblist.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = joblist.xib; sourceTree = "<group>"; };
 		4A3224021F5160E50065A33F /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = "../../../../Library/Developer/Xcode/DerivedData/internals-fvfjoslaltdhlmclwrenlrxzczpm/Build/Products/Debug-iphonesimulator/Alamofire/Alamofire.framework"; sourceTree = "<group>"; };
 		4A3224041F5160EA0065A33F /* SDAutoLayout.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDAutoLayout.framework; path = "Pods/../build/Debug-iphoneos/SDAutoLayout/SDAutoLayout.framework"; sourceTree = "<group>"; };
 		4A3224061F5160ED0065A33F /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = "../../../../Library/Developer/Xcode/DerivedData/internals-fvfjoslaltdhlmclwrenlrxzczpm/Build/Products/Debug-iphonesimulator/SwiftyJSON/SwiftyJSON.framework"; sourceTree = "<group>"; };
@@ -79,6 +101,23 @@
 		4AF6C8021F571D1F0059496B /* CitysView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CitysView.swift; sourceTree = "<group>"; };
 		4AF6C8041F5A98940059496B /* ScrollerCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollerCell.swift; sourceTree = "<group>"; };
 		4AF6C80A1F5AEB880059496B /* ScrollerCell2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollerCell2.swift; sourceTree = "<group>"; };
+		4AFF91A61F5C238400FE189F /* HeaderFoot.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeaderFoot.swift; sourceTree = "<group>"; };
+		4AFF91A81F5C338800FE189F /* JobDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobDetailViewController.swift; sourceTree = "<group>"; };
+		4AFF91B71F5DB8A900FE189F /* company.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = company.swift; sourceTree = "<group>"; };
+		4AFF91B81F5DB8A900FE189F /* company.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = company.xib; sourceTree = "<group>"; };
+		4AFF91BB1F5DBD8D00FE189F /* JobDescription.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobDescription.swift; sourceTree = "<group>"; };
+		4AFF91BC1F5DBD8D00FE189F /* JobDescription.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = JobDescription.xib; sourceTree = "<group>"; };
+		4AFF91BF1F5DC18000FE189F /* worklocate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = worklocate.swift; sourceTree = "<group>"; };
+		4AFF91C01F5DC18000FE189F /* worklocate.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = worklocate.xib; sourceTree = "<group>"; };
+		4AFF91C31F5EF40000FE189F /* mapApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = mapApp.swift; sourceTree = "<group>"; };
+		4AFF91C51F5F0E9300FE189F /* internals.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = internals.entitlements; sourceTree = "<group>"; };
+		4AFF91D41F60586600FE189F /* cdetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = cdetails.swift; sourceTree = "<group>"; };
+		4AFF91D71F641A6200FE189F /* tagsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = tagsTableViewCell.swift; sourceTree = "<group>"; };
+		4AFF91D81F641A6200FE189F /* tagsTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = tagsTableViewCell.xib; sourceTree = "<group>"; };
+		4AFF91DB1F641A8000FE189F /* introduction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = introduction.swift; sourceTree = "<group>"; };
+		4AFF91DC1F641A8000FE189F /* introduction.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = introduction.xib; sourceTree = "<group>"; };
+		4AFF91DF1F641AA900FE189F /* others.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = others.swift; sourceTree = "<group>"; };
+		4AFF91E01F641AA900FE189F /* others.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = others.xib; sourceTree = "<group>"; };
 		6E63353C953561B2E076FD4C /* Pods_internals.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_internals.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA9E8A53CA89B7891A8B0201 /* Pods-internals.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-internals.release.xcconfig"; path = "Pods/Target Support Files/Pods-internals/Pods-internals.release.xcconfig"; sourceTree = "<group>"; };
 		DB5827C0AD300F2CEAAB654F /* Pods-internals.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-internals.debug.xcconfig"; path = "Pods/Target Support Files/Pods-internals/Pods-internals.debug.xcconfig"; sourceTree = "<group>"; };
@@ -121,6 +160,8 @@
 				4AF6C80A1F5AEB880059496B /* ScrollerCell2.swift */,
 				4A4523F11F5BABE1009D6B62 /* jobdetailCell.swift */,
 				4AE84EA31F5C108600649404 /* imageScroll.swift */,
+				4AFF91A61F5C238400FE189F /* HeaderFoot.swift */,
+				4AFF91C31F5EF40000FE189F /* mapApp.swift */,
 			);
 			name = common;
 			sourceTree = "<group>";
@@ -140,9 +181,12 @@
 		4A5304DD1F52A4180000F1E9 /* dashboard */ = {
 			isa = PBXGroup;
 			children = (
+				4AFF91D61F641A1600FE189F /* companyCell */,
 				4A5304E71F52A7720000F1E9 /* DashboardViewController.swift */,
 				4A5304E91F52FAD20000F1E9 /* demo.swift */,
 				4AF6C8021F571D1F0059496B /* CitysView.swift */,
+				4AFF91A81F5C338800FE189F /* JobDetailViewController.swift */,
+				4AFF91D41F60586600FE189F /* cdetails.swift */,
 			);
 			name = dashboard;
 			sourceTree = "<group>";
@@ -193,6 +237,7 @@
 		4ADCC74E1F511DD3001A4E9F /* internals */ = {
 			isa = PBXGroup;
 			children = (
+				4AFF91C51F5F0E9300FE189F /* internals.entitlements */,
 				4A5304DC1F52A3E10000F1E9 /* index */,
 				4A5304D91F527CF10000F1E9 /* common */,
 				4ADCC77F1F512529001A4E9F /* 登录 */,
@@ -203,6 +248,7 @@
 				4ADCC7581F511DD3001A4E9F /* LaunchScreen.storyboard */,
 				4ADCC75B1F511DD3001A4E9F /* Info.plist */,
 				4AE4AFC21F515E7500B5F509 /* bridge.h */,
+				4AFF91AC1F5DAB8600FE189F /* nibs */,
 			);
 			path = internals;
 			sourceTree = "<group>";
@@ -233,6 +279,35 @@
 				4AE4AFC01F5131AE00B5F509 /* ForgetPasswordController.swift */,
 			);
 			name = "登录";
+			sourceTree = "<group>";
+		};
+		4AFF91AC1F5DAB8600FE189F /* nibs */ = {
+			isa = PBXGroup;
+			children = (
+				4AFF91B71F5DB8A900FE189F /* company.swift */,
+				4AFF91B81F5DB8A900FE189F /* company.xib */,
+				4AFF91BB1F5DBD8D00FE189F /* JobDescription.swift */,
+				4AFF91BC1F5DBD8D00FE189F /* JobDescription.xib */,
+				4AFF91BF1F5DC18000FE189F /* worklocate.swift */,
+				4AFF91C01F5DC18000FE189F /* worklocate.xib */,
+			);
+			name = nibs;
+			sourceTree = "<group>";
+		};
+		4AFF91D61F641A1600FE189F /* companyCell */ = {
+			isa = PBXGroup;
+			children = (
+				4AFF91D71F641A6200FE189F /* tagsTableViewCell.swift */,
+				4AFF91D81F641A6200FE189F /* tagsTableViewCell.xib */,
+				4AFF91DB1F641A8000FE189F /* introduction.swift */,
+				4AFF91DC1F641A8000FE189F /* introduction.xib */,
+				4AFF91DF1F641AA900FE189F /* others.swift */,
+				4AFF91E01F641AA900FE189F /* others.xib */,
+				4A2A2D031F65672B00F42123 /* JobTag.swift */,
+				4A2A2D051F6578D800F42123 /* joblist.swift */,
+				4A2A2D061F6578D800F42123 /* joblist.xib */,
+			);
+			name = companyCell;
 			sourceTree = "<group>";
 		};
 		AA98FC2D7A11ED39791D94FD /* Frameworks */ = {
@@ -328,6 +403,11 @@
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = C2S64LJ4ZF;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
 					};
 					4ADCC75F1F511DD3001A4E9F = {
 						CreatedOnToolsVersion = 8.3.3;
@@ -369,8 +449,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				4ADCC75A1F511DD3001A4E9F /* LaunchScreen.storyboard in Resources */,
+				4A2A2D081F6578D800F42123 /* joblist.xib in Resources */,
+				4AFF91BE1F5DBD8D00FE189F /* JobDescription.xib in Resources */,
 				4ADCC7571F511DD3001A4E9F /* Assets.xcassets in Resources */,
+				4AFF91DE1F641A8000FE189F /* introduction.xib in Resources */,
 				4ADCC7551F511DD3001A4E9F /* Main.storyboard in Resources */,
+				4AFF91C21F5DC18000FE189F /* worklocate.xib in Resources */,
+				4AFF91E21F641AA900FE189F /* others.xib in Resources */,
+				4AFF91DA1F641A6200FE189F /* tagsTableViewCell.xib in Resources */,
+				4AFF91BA1F5DB8A900FE189F /* company.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -447,13 +534,25 @@
 				4AE4AFC11F5131AE00B5F509 /* ForgetPasswordController.swift in Sources */,
 				4A4523F21F5BABE1009D6B62 /* jobdetailCell.swift in Sources */,
 				4ADCC7521F511DD3001A4E9F /* ViewController.swift in Sources */,
+				4AFF91DD1F641A8000FE189F /* introduction.swift in Sources */,
+				4AFF91D91F641A6200FE189F /* tagsTableViewCell.swift in Sources */,
 				4AF6C80B1F5AEB880059496B /* ScrollerCell2.swift in Sources */,
+				4AFF91B91F5DB8A900FE189F /* company.swift in Sources */,
+				4AFF91A91F5C338800FE189F /* JobDetailViewController.swift in Sources */,
+				4AFF91A71F5C238400FE189F /* HeaderFoot.swift in Sources */,
 				4A5304EA1F52FAD20000F1E9 /* demo.swift in Sources */,
+				4AFF91C11F5DC18000FE189F /* worklocate.swift in Sources */,
+				4AFF91E11F641AA900FE189F /* others.swift in Sources */,
+				4AFF91C41F5EF40000FE189F /* mapApp.swift in Sources */,
+				4A2A2D041F65672B00F42123 /* JobTag.swift in Sources */,
 				4ADCC77E1F51251D001A4E9F /* LoginNavigationController.swift in Sources */,
 				4A5304E41F52A6ED0000F1E9 /* MainTabBarViewController.swift in Sources */,
 				4AF6C8051F5A98940059496B /* ScrollerCell.swift in Sources */,
 				4AE84EA41F5C108600649404 /* imageScroll.swift in Sources */,
+				4AFF91D51F60586600FE189F /* cdetails.swift in Sources */,
 				4A5304DB1F527D090000F1E9 /* utils.swift in Sources */,
+				4A2A2D071F6578D800F42123 /* joblist.swift in Sources */,
+				4AFF91BD1F5DBD8D00FE189F /* JobDescription.swift in Sources */,
 				4ADCC7501F511DD3001A4E9F /* AppDelegate.swift in Sources */,
 				4ADCC7811F512880001A4E9F /* RegisterViewController.swift in Sources */,
 				4A5304E81F52A7720000F1E9 /* DashboardViewController.swift in Sources */,
@@ -609,6 +708,7 @@
 			baseConfigurationReference = DB5827C0AD300F2CEAAB654F /* Pods-internals.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = internals/internals.entitlements;
 				DEVELOPMENT_TEAM = C2S64LJ4ZF;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -628,6 +728,7 @@
 			baseConfigurationReference = BA9E8A53CA89B7891A8B0201 /* Pods-internals.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = internals/internals.entitlements;
 				DEVELOPMENT_TEAM = C2S64LJ4ZF;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

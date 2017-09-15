@@ -103,10 +103,7 @@ class CitysView: UIViewController,UICollectionViewDelegate,UICollectionViewDataS
         cell.age.text = content
         return cell
         
-//        let index = source[indexPath.item]
-//        cell.age.text = String.init(index)
-//        cell.backgroundColor = UIColor.red
-//        return cell
+
         
         
     }

@@ -9,15 +9,6 @@
 import UIKit
 
 class imageScroll: UIScrollView {
-
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
-    }
-    */
-
     
 
     func creatScrollImages(imageName:[String],height:CGFloat,width:CGFloat){
@@ -32,6 +23,10 @@ class imageScroll: UIScrollView {
         self.contentSize = CGSize(width: CGFloat(imageName.count)*width, height: height)
         self.bounces = false
         self.isPagingEnabled = true
+        self.showsHorizontalScrollIndicator = false
+        self.showsVerticalScrollIndicator = false
+        self.isUserInteractionEnabled = false
+        
         
         let imageView = UIImageView(frame:CGRect(x:CGFloat(imageName.count) * width, y: 0,width: width, height:height))
         imageView.image = UIImage(named:imageName[0])

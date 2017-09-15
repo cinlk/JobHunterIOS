@@ -15,6 +15,15 @@ class ScrollerCell: UITableViewCell,UIScrollViewDelegate{
     var scrollView:UIScrollView?
     var event:UIGestureRecognizer?
     
+    
+    // 闭包回调传值
+    typealias myblock = (_ str: String) -> Void
+    
+    var callBack:myblock?
+    
+    
+    
+    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.build()
@@ -22,9 +31,18 @@ class ScrollerCell: UITableViewCell,UIScrollViewDelegate{
     
     func build(){
         print("init cell")
-        scrollView = UIScrollView.init(frame: self.frame)
+        scrollView = UIScrollView.init(frame: self.contentView.frame)
         scrollView?.delegate = self
         scrollView?.showsHorizontalScrollIndicator = false
+        
+        self.isUserInteractionEnabled = true
+        scrollView?.isUserInteractionEnabled = true
+        scrollView?.bounces = false
+        scrollView?.isPagingEnabled = false
+        //scrollView?.height = self.frame.height
+        scrollView?.canCancelContentTouches  = true
+        
+        self.contentView.addSubview(scrollView!)
 
         
 
@@ -36,6 +54,70 @@ class ScrollerCell: UITableViewCell,UIScrollViewDelegate{
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    
+    
+    
+    // create job tag button
+    func createJobTags(name:[String], width:Int){
+        scrollView?.subviews.forEach{$0.removeFromSuperview()}
+        
+        for  i in  0..<name.count{
+            let tagButton = UIButton.init()
+            tagButton.backgroundColor = UIColor.white
+            tagButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
+            //tagButton.tag = 100 + i
+            tagButton.setTitle(name[i], for: .normal)
+            tagButton.setTitleColor(UIColor.gray, for: .normal)
+            tagButton.setTitleColor(UIColor.white, for: .selected)
+            
+            tagButton.addTarget(self, action: #selector(tag(button:)), for: .touchUpInside)
+            tagButton.frame = CGRect(x: i*(width+5), y: 12, width: width, height: 20)
+            tagButton.layer.borderWidth = 0.5
+            if i == 0 {
+                // 全部button
+                tagButton.isSelected = true
+                tagButton.backgroundColor = UIColor.blue
+            }
+            scrollView?.addSubview(tagButton)
+        }
+        
+        scrollView?.contentInset = UIEdgeInsetsMake(0, 5, 0, 5)
+        self.backgroundColor = UIColor.lightGray
+        scrollView?.height  = self.contentView.frame.height
+        scrollView?.contentSize  = CGSize(width: name.count*(width+5), height: Int(self.frame.height))
+        
+    }
+    
+    //
+    func  SetCallBack(_ block: @escaping myblock){
+        
+            callBack = block
+    }
+    
+    func tag(button:UIButton){
+        
+        print(button.titleLabel?.text)
+        for bu  in (self.scrollView?.subviews)!{
+            
+            if bu.isKind(of: UIButton.self){
+                if button ==  bu as! UIButton{
+                button.backgroundColor = UIColor.blue
+                button.isSelected = true
+                
+                    if callBack != nil{
+                        callBack!((button.titleLabel?.text)!)
+                    }
+                
+                }
+                else{
+                    (bu as! UIButton).backgroundColor = UIColor.white
+                    (bu as! UIButton).isSelected = false
+                }
+            }
+        }
+        
+    }
    
     
     func createScroller(images:[String],width:Int){
@@ -46,7 +128,7 @@ class ScrollerCell: UITableViewCell,UIScrollViewDelegate{
             let label = UILabel()
             scrollView?.addSubview(button)
             scrollView?.addSubview(label)
-            _ = label.sd_layout().topSpaceToView(button,0.1)?.bottomSpaceToView(scrollView,10)?.widthIs(CGFloat(width))?.heightIs(20)?.centerXEqualToView(button)
+            _ = label.sd_layout().topSpaceToView(button,0.5)?.bottomSpaceToView(scrollView,10)?.widthIs(CGFloat(width))?.heightIs(20)?.centerXEqualToView(button)
             
             label.text = images[i]
             label.font = UIFont(name: "Bobz Type", size: 10)
@@ -60,19 +142,9 @@ class ScrollerCell: UITableViewCell,UIScrollViewDelegate{
             
         }
         
-        
-        self.isUserInteractionEnabled = true
-        scrollView?.isUserInteractionEnabled = true
-        scrollView?.bounces = false
-        scrollView?.isPagingEnabled = false
-        scrollView?.height = self.frame.height
-        scrollView?.contentSize  = CGSize(width: images.count*width, height: Int(self.frame.height))
-        scrollView?.canCancelContentTouches  = true
-       
-        self.addSubview(scrollView!)
+        scrollView?.height  = self.contentView.frame.height
+        scrollView?.contentSize  = CGSize(width: images.count*width, height: Int(self.contentView.frame.height))
     
-        
-
         
         
     }
@@ -92,3 +164,4 @@ class ScrollerCell: UITableViewCell,UIScrollViewDelegate{
 
 
 }
+
