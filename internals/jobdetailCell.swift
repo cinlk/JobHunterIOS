@@ -66,7 +66,8 @@ class jobdetailCell: UITableViewCell {
             s2.distribution = .fillEqually
             let s3 = UIStackView()
             s3.alignment = .center
-            s3.spacing = 0
+            s3.spacing = 3
+            s3.distribution = .fillProportionally
             let imageView = UIImageView()
             imageView.image = UIImage(named: (items?["image"]!)!)
             imageView.contentMode = .scaleAspectFit
@@ -108,13 +109,15 @@ class jobdetailCell: UITableViewCell {
             s3.axis  = .vertical
             let salary =  UILabel()
             salary.text = items?["salary"]
-            salary.font = UIFont.boldSystemFont(ofSize: 8)
+            salary.font = UIFont.boldSystemFont(ofSize: 6)
             salary.textColor = UIColor.red
+            salary.sizeToFit()
             s3.addArrangedSubview(salary)
             let createTime = UILabel()
             createTime.text = items?["createTime"]
-            createTime.font = UIFont.systemFont(ofSize: 8)
+            createTime.font = UIFont.systemFont(ofSize: 6)
             createTime.textColor = UIColor.gray
+            createTime.sizeToFit()
             s3.addArrangedSubview(createTime)
         
         

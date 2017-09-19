@@ -7,9 +7,12 @@
 //
 
 import UIKit
+import YNSearch
+import YNDropDownMenu
 
-class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewDataSource,
-                UISearchResultsUpdating,UISearchBarDelegate{
+
+
+class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewDataSource{
 
     
     
@@ -29,6 +32,10 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
                  ["image":"fly","companyName":"宝骏","jobname":"设计师","locate":"上海","salary":"150-190元/天","createTime":"09-01","times":"4天/周"]
                 ]
     
+    
+    
+    let testItem = ["image":"fly","companyName":"宝骏","jobname":"设计师","locate":"上海","salary":"150-190元/天","createTime":"09-01","times":"4天/周"]
+    
     var imagescroller:imageScroll!
     let page = UIPageControl()
     
@@ -46,14 +53,44 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
         
     }
     
+    
     //scrollview  偏移值
     var threshold:CGFloat = -80
     var marginTop:CGFloat = 0
     var searchController:UISearchController!
     var searchBarContainer:UIView!
     var city:UIButton!
+    var resultTableView:UITableViewController!
+    
+    let ynsearchData = YNSearch()
+    let searchcategory = historyAndCatagoryView()
     
     
+    var searchString = ""{
+        
+        willSet{
+            
+        }
+    }
+    
+    var locate:Citys!
+    var jobs:jobCatagory!
+    var inters:internshipCondtion!
+
+    var searchLists:[Dictionary<String,String>] = []
+
+    
+    // test juhua
+    var jh:progressHUB?
+    
+    
+    
+    
+    
+    
+    
+    
+    //
     
     @IBOutlet weak var tables: UITableView!
     // table section设置
@@ -83,26 +120,84 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
          self.tables.register(ScrollerCell.self, forCellReuseIdentifier: "menu1")
          self.tables.register(ScrollerCell2.self, forCellReuseIdentifier: "menu2")
          self.tables.register(jobdetailCell.self, forCellReuseIdentifier: "jobs")
+        
          // header
          self.tables.register(HeaderFoot.self, forHeaderFooterViewReuseIdentifier: "dashheader")
          // 距离 bottom view 100像素，保证滑动到底层cell
          self.tables.contentInset = UIEdgeInsetsMake(0, 0, 100, 0)
         
         
+        //
+        
+        resultTableView = UITableViewController()
+        resultTableView.tableView.delegate = self
+        resultTableView.tableView.dataSource = self
+        resultTableView.tableView.tableFooterView = UIView()
+        self.resultTableView.tableView.register(jobdetailCell.self, forCellReuseIdentifier: "jobs")
+
+        
+        resultTableView.tableView.backgroundColor = UIColor.red
+        
+        jh = progressHUB(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        resultTableView.view.addSubview(jh!)
+        jh?.center = self.view.center
+        jh?.isHidden = true
+        jh?.bringSubview(toFront: resultTableView.view)
+        
         // 搜索栏
-        searchController = UISearchController(searchResultsController: nil)
+        searchController = UISearchController(searchResultsController: resultTableView)
         searchController.searchResultsUpdater = self
+        searchController.delegate = self
+        
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.dimsBackgroundDuringPresentation = true
-        searchController.searchBar.searchBarStyle = .minimal
+        searchController.searchBar.searchBarStyle = .default
         searchController.searchBar.delegate = self
-        searchController.searchBar.placeholder = "感兴趣"
-        //searchController.hidesNavigationBarDuringPresentation = false
+        searchController.searchBar.placeholder = ""
+        searchController.searchBar.showsSearchResultsButton = true
+        searchController.searchBar.showsBookmarkButton = true
         self.definesPresentationContext  = true
-        //searchController.searchBar.sizeToFit()
-              //searchController.searchBar.setImage(UIImage(named:"lock"), for: .bookmark, state: .normal)
+
         
-        let searchBarFrame = CGRect(x: 0, y:0, width: self.view.frame.width, height: 36)
+        // dropdown menu
+        
+        locate = Citys(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
+        locate.view.switchDelgate = self
+        
+        jobs = jobCatagory(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height-60))
+        jobs.job?.switchcategory = self
+        
+        inters = internshipCondtion(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
+        inters.cond.selections = self
+        let items:[YNDropDownView] = [locate,jobs,inters]
+        let conditions = YNDropDownMenu(frame: CGRect(x:0,y:64,width:self.view.frame.width,height:40) , dropDownViews: items, dropDownViewTitles: ["北京","职位类别","筛选条件"])
+        
+        
+        
+        conditions.setImageWhen(normal: UIImage(named: "arrow_nor"), selected: UIImage(named: "arrow_sel"), disabled: UIImage(named: "arrow_dim"))
+        conditions.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
+        conditions.setLabelFontWhen(normal: .systemFont(ofSize: 12), selected: .boldSystemFont(ofSize: 12), disabled: .systemFont(ofSize: 12))
+        
+        
+        conditions.backgroundBlurEnabled = true
+        conditions.bottomLine.isHidden = false
+        let back = UIView()
+        back.backgroundColor = UIColor.black
+        conditions.blurEffectView = back
+        conditions.blurEffectViewAlpha = 0.7
+        conditions.setBackgroundColor(color: UIColor.white)
+        
+        self.searchController.view.addSubview(conditions)
+         _ = resultTableView.tableView.sd_layout().topSpaceToView(self.navigationController,40)?.bottomEqualToView(self.view)?.widthIs(self.view.frame.width)
+         //_ = conditions.sd_layout().topSpaceToView(self.navigationController,64)?.widthIs(self.view.frame.width)?.heightIs(60)
+        
+        
+        
+        
+        
+        //
+        
+        let searchBarFrame = CGRect(x: 0, y:0, width: self.view.frame.width, height: 30)
         searchBarContainer = UIView(frame:searchBarFrame)
         searchBarContainer.addSubview(searchController.searchBar)
         city = UIButton()
@@ -111,15 +206,14 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
         city.backgroundColor = UIColor.green
         city.alpha =  0.5
         city.addTarget(self, action: #selector(chooseCity), for: .touchUpInside)
-        searchBarContainer.addSubview(city)
-        searchBarContainer.backgroundColor = UIColor.green
+        //searchBarContainer.addSubview(city)
+        searchBarContainer.alpha = 0
         
-        //self.view.insertSubview(searchBarContainer, aboveSubview: self.tables)
         self.navigationItem.titleView = searchBarContainer
         self.automaticallyAdjustsScrollViewInsets  = false
  
-       _ =  city.sd_layout().leftEqualToView(searchBarContainer)?.topSpaceToView(searchBarContainer,5)?.heightIs(30)?.widthIs(40)?.bottomSpaceToView(searchBarContainer,5)
-       _ =  searchController.searchBar.sd_layout().leftSpaceToView(city,10)?.topEqualToView(city)?.bottomEqualToView(city)?.rightSpaceToView(searchBarContainer,30)
+       //_ =  city.sd_layout().leftEqualToView(searchBarContainer)?.topSpaceToView(searchBarContainer,5)?.heightIs(30)?.widthIs(40)?.bottomSpaceToView(searchBarContainer,5)
+       _ =  searchController.searchBar.sd_layout().leftSpaceToView(searchBarContainer,10)?.topEqualToView(searchBarContainer)?.bottomEqualToView(searchBarContainer)?.rightSpaceToView(searchBarContainer,10)
         
         
         // 下拉刷新
@@ -155,6 +249,13 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
         print("will appear")
         self.automaticallyAdjustsScrollViewInsets  = false
         self.imagescroller.contentOffset = CGPoint(x: 0, y: 0)
+
+        
+        //
+        if searchString != "" && !searchString.isEmpty{            
+            self.showSearchResultView()
+            self.startSearch(name: searchString)
+        }
         
         
     }
@@ -188,11 +289,10 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
                 
                 
             }
+            
             self.tables.reloadData()
             self.tables.refreshControl?.endRefreshing()
         })
-        
-
         
     }
     
@@ -220,6 +320,11 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     
 
      func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        if  tableView == self.resultTableView.tableView{
+            return self.searchLists.count
+        }
+        
         switch section {
         case 0,1:
             return 1
@@ -235,6 +340,10 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     
     
      func numberOfSections(in tableView: UITableView) -> Int {
+        if tableView == self.resultTableView.tableView{
+            return 1
+        }
+        
         return self.sections
     }
     
@@ -253,6 +362,11 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     
     // cell 高度
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        if tableView == self.resultTableView.tableView{
+            return 49
+        }
+        
         if indexPath.section == 0 {
             return 80
         }
@@ -264,6 +378,17 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     
      func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
+        //
+        if tableView == self.resultTableView.tableView{
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: "jobs", for: indexPath) as! jobdetailCell
+            
+            if searchLists.count > indexPath.row{
+                cell.createCells(items:searchLists[indexPath.row])
+            }
+            
+            return cell
+        }
         
         if indexPath.section == 0 {
             
@@ -454,10 +579,6 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     }
     
     
-    //TODO 搜搜结果显示 新的view里
-    func updateSearchResults(for searchController: UISearchController){
-        
-    }
     
     // choose city
     func chooseCity(){
@@ -466,7 +587,8 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
         
         // 影藏bottom item
         self.hidesBottomBarWhenPushed = true
-        self.navigationController?.pushViewController(citylist, animated: true)
+        // TODO? use controller?
+        //self.navigationController?.pushViewController(citylist, animated: true)
         self.hidesBottomBarWhenPushed = false
 
         print("forward to city list")
@@ -491,3 +613,205 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     
 
 }
+
+
+
+extension DashboardViewController: UISearchResultsUpdating{
+    
+    
+    @available(iOS 8.0, *)
+    func updateSearchResults(for searchController: UISearchController) {
+        //TODO 会执行2次？
+        print("result search show \(self.resultTableView)")
+        
+        //self.resultTableView.resignFirstResponder()
+        //self.startSearch()
+        //self.resultTableView.tableView.reloadData()
+        
+        
+        
+        
+    }
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        print("search button click")
+        
+    }
+    
+    
+}
+
+
+extension DashboardViewController: UISearchControllerDelegate{
+    
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        // 搜索栏 清空
+        ynsearchData.setShareSearchName(value: "")
+        searchString = ""
+        searchcategory.ynSearchView.ynSearchListView.ynSearchTextFieldText = ""
+        
+        
+    }
+    
+    func presentSearchController(_ searchController: UISearchController) {
+        print("presentSearchController")
+    }
+    
+    func willPresentSearchController(_ searchController: UISearchController) {
+        print("willPresentSearchController")
+    }
+    
+    func didPresentSearchController(_ searchController: UISearchController) {
+        print("didPresentSearchController")
+
+        
+        
+    }
+    
+    
+    func willDismissSearchController(_ searchController: UISearchController) {
+        print("willDismissSearchController")
+        // 清楚搜索结果
+        DispatchQueue.main.async{
+            self.searchLists.removeAll()
+            self.resultTableView.tableView.reloadData()
+            // 重置被选择的item TODO
+            for i in self.inters.cond.condtions.visibleCells{
+                print(i.isSelected,i)
+            }
+        }
+    }
+    
+    func didDismissSearchController(_ searchController: UISearchController) {
+        print("didDismissSearchController")
+        self.navigationController?.navigationBar.subviews[0].alpha = 0
+
+    }
+
+    
+}
+
+extension DashboardViewController: UISearchBarDelegate{
+    
+    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        //        filterContentForSearchText(searchBar.text!, scope: searchBar.scopeButtonTitles![selectedScope])
+        
+    }
+    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        print("bar begin  forward to ynsearchview")
+        // 清楚搜索结果
+        DispatchQueue.main.async{
+            self.searchLists.removeAll()
+            self.resultTableView.tableView.reloadData()
+           
+        }
+        
+        
+        searchcategory.searchString = self
+        self.navigationController?.navigationBar.subviews[0].alpha = 1
+        self.navigationController?.navigationBar.subviews[0].backgroundColor = UIColor.white
+        self.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(searchcategory, animated: false)
+        self.hidesBottomBarWhenPushed = false
+
+        return true
+    }
+}
+
+
+extension DashboardViewController{
+    
+    func showSearchResultView(){
+        searchController.isActive = true
+        self.searchController.searchResultsController?.becomeFirstResponder()
+        searchController.searchBar.text = self.searchString
+        
+    }
+    func startSearch(name:String){
+        // 子线程查询
+        print("start")
+        jh?.isHidden = false
+        jh?.indicator.startAnimating()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5){
+            self.searchLists.removeAll()
+            for _ in 0..<5{
+                
+                self.searchLists.append(self.testItem)
+                
+            }
+            self.jh?.isHidden = true
+            self.jh?.indicator.stopAnimating()
+            self.resultTableView.tableView.reloadData()
+            
+        }
+    }
+
+    
+}
+
+
+
+
+// extension protocol
+extension DashboardViewController: valueDelegate{
+    func valuePass(string: String) {
+        self.searchString = string
+        
+    }
+}
+
+extension DashboardViewController: switchCity{
+    
+    func cityforsearch(city:String){
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5){
+            self.searchLists.removeAll()
+            for _ in 0..<5{
+                
+                self.searchLists.append(self.testItem)
+            }
+            self.resultTableView.tableView.reloadData()
+            
+        }
+        
+    }
+    
+    
+}
+
+extension DashboardViewController: swichjobCatagory{
+    
+    func searchCategory(category:String){
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5){
+            self.searchLists.removeAll()
+            for _ in 0..<5{
+                
+                self.searchLists.append(self.testItem)
+            }
+            self.resultTableView.tableView.reloadData()
+            
+        }
+        
+    }
+}
+
+
+extension DashboardViewController: internSelection{
+    func selected(days:Int, salary:String,month:Int,scholarship:String,staff:Bool){
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5){
+            self.searchLists.removeAll()
+            for _ in 0..<5{
+                
+                self.searchLists.append(self.testItem)
+            }
+            self.resultTableView.tableView.reloadData()
+            
+        }
+        
+    }
+    
+}
+
+
