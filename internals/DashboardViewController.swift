@@ -36,7 +36,7 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     
     let testItem = ["image":"fly","companyName":"宝骏","jobname":"设计师","locate":"上海","salary":"150-190元/天","createTime":"09-01","times":"4天/周"]
     
-    var imagescroller:imageScroll!
+    var imagescroller:UIScrollView!
     let page = UIPageControl()
     
     var timer:Timer!
@@ -84,12 +84,6 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     var jh:progressHUB?
     
     
-    
-    
-    
-    
-    
-    
     //
     
     @IBOutlet weak var tables: UITableView!
@@ -97,7 +91,9 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     var sections = 4
     
     override func viewDidLoad() {
+         super.viewDidLoad()
         
+         print(self.view.frame)
          print("===dashborad!===")
          let image = UIImage(named: "home")?.withRenderingMode(.alwaysOriginal)
         
@@ -111,9 +107,9 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
          self.tabBarItem = tabBarItem
          // navigation topbar
 
-         // 透明
-         self.navigationController?.navigationBar.subviews[0].alpha = 0
-
+         // 隐藏导航栏
+         //self.navigationController?.navigationBar.subviews[0].alpha = 0
+         self.navigationController?.navigationBar.settranslucent(true)
         
          self.tables.delegate = self
          self.tables.dataSource = self
@@ -170,7 +166,7 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
         inters = internshipCondtion(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
         inters.cond.selections = self
         let items:[YNDropDownView] = [locate,jobs,inters]
-        let conditions = YNDropDownMenu(frame: CGRect(x:0,y:64,width:self.view.frame.width,height:40) , dropDownViews: items, dropDownViewTitles: ["北京","职位类别","筛选条件"])
+        let conditions = YNDropDownMenu(frame: CGRect(x:0,y:0,width:self.view.frame.width,height:40) , dropDownViews: items, dropDownViewTitles: ["北京","职位类别","筛选条件"])
         
         
         
@@ -188,8 +184,8 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
         conditions.setBackgroundColor(color: UIColor.white)
         
         self.searchController.view.addSubview(conditions)
-         _ = resultTableView.tableView.sd_layout().topSpaceToView(self.navigationController,40)?.bottomEqualToView(self.view)?.widthIs(self.view.frame.width)
-         //_ = conditions.sd_layout().topSpaceToView(self.navigationController,64)?.widthIs(self.view.frame.width)?.heightIs(60)
+         _ = resultTableView.tableView.sd_layout().topSpaceToView(conditions,1)?.bottomEqualToView(self.view)?.widthIs(self.view.frame.width)
+         //_ = conditions.sd_layout().topSpaceToView(self.navigationController?.navigationBar,1)?.widthIs(self.view.frame.width)?.heightIs(60)
         
         
         
@@ -208,6 +204,8 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
         city.addTarget(self, action: #selector(chooseCity), for: .touchUpInside)
         //searchBarContainer.addSubview(city)
         searchBarContainer.alpha = 0
+        searchBarContainer.backgroundColor = UIColor.gray
+        
         
         self.navigationItem.titleView = searchBarContainer
         self.automaticallyAdjustsScrollViewInsets  = false
@@ -223,32 +221,36 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
         
         
         // 轮播图
-        let headerView:UIView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 120))
-        headerView.backgroundColor = UIColor.lightGray
-        self.tables.tableHeaderView = headerView
-        self.tables.tableHeaderView?.isHidden = false
+        //let headerView:UIView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 120))
+        //headerView.backgroundColor = UIColor.lightGray
+        
+        
+        //self.tables.tableHeaderView = headerView
+        //self.tables.tableHeaderView?.isHidden = false
         
         self.tables.estimatedRowHeight = 100
         self.tables.rowHeight = UITableViewAutomaticDimension
         
-        imagescroller = imageScroll(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 120))
+        imagescroller =  UIScrollView()
+        
+        
         self.imagescroller.delegate = self
-        self.imagescroller.isUserInteractionEnabled = true
         // 解决navigation 页面跳转后，scrollview content x 偏移差
         self.imagescroller.translatesAutoresizingMaskIntoConstraints = false
         
-        self.createScrollView()
-
+        self.tables.tableHeaderView  = imagescroller
+        self.tables.tableHeaderView?.frame  = CGRect(x:0 , y:0, width: self.view.frame.width, height: 120)
+        self.tables.tableHeaderView?.isHidden  = false
         
-         super.viewDidLoad()
-
+        print("imagescroll frame \(self.imagescroller)")
+        
+        
         // Do any additional setup after loading the view.
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        print("will appear")
         self.automaticallyAdjustsScrollViewInsets  = false
-        self.imagescroller.contentOffset = CGPoint(x: 0, y: 0)
+        //self.imagescroller.contentOffset = CGPoint(x: 0, y: 0)
 
         
         //
@@ -260,7 +262,11 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
         
     }
     
+    // view 会自动调整subview的layout
     override func viewDidLayoutSubviews() {
+       
+        self.createScrollView()
+
         // 调整 scrollview content x 位移
         //self.imagescroller.contentOffset = CGPoint(x: 0, y: 0)
         
@@ -481,6 +487,10 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
 
+        
+        if scrollView  == self.tables{
+            
+        
         if self.marginTop != scrollView.contentInset.top{
             self.marginTop = scrollView.contentInset.top
         }
@@ -501,7 +511,11 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
         else{
             self.searchBarContainer.alpha = 0.5
         }
-       
+            
+        }
+        else if scrollView  == self.imagescroller{
+            print(scrollView.contentOffset)
+        }
         
         
     }
@@ -510,21 +524,23 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     
     func createScrollView(){
         
-        self.imagescroller.creatScrollImages(imageName: imageBanners, height: (self.tables.tableHeaderView?.frame.height)!, width: self.view.frame.width)
+        self.imagescroller.creatScrollImages(imageName: imageBanners, height: (self.imagescroller?.frame.height)!, width: self.imagescroller.frame.width)
+        
         //page.frame = CGRect(x:self.view.frame.width / 2 - 50,y:80,width:100,height:30)
         page.numberOfPages = imageBanners.count
         page.backgroundColor = UIColor.clear
         page.isEnabled  = false
         page.pageIndicatorTintColor = UIColor.gray
         page.currentPageIndicatorTintColor = UIColor.black
+        page.frame = CGRect(x: (self.view.centerX - 60), y: self.imagescroller.frame.height-20, width: 120, height: 10)
         //将小白点放到scr之上
         
         
-        self.tables.tableHeaderView?.addSubview(self.imagescroller)
-        self.tables.tableHeaderView?.insertSubview(page, aboveSubview: self.imagescroller)
+        //self.tables.tableHeaderView?.addSubview(self.imagescroller)
+        self.tables.insertSubview(page, aboveSubview: self.tables.tableHeaderView!)
 //        _ = self.imagescroller.sd_layout().topEqualToView(self.tables.tableHeaderView)?.bottomEqualToView(self.tables.tableHeaderView)?.widthIs(CGFloat(imageBanners.count) * (self.tables.tableHeaderView?.frame.width)!)
         
-        _ = self.page.sd_layout().bottomSpaceToView(self.tables.tableHeaderView,10)?.widthIs(100)?.heightIs(30)?.leftSpaceToView(self.tables.tableHeaderView,120)
+       // _ = self.page.sd_layout().bottomSpaceToView(self.tables.tableHeaderView,10)?.widthIs(120)?.heightIs(30)
         
         self.creatTimer()
         
@@ -544,14 +560,19 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     
     //创建定时器管理者
     func timerManager() {
-        print(self.imagescroller.contentOffset.x,self.imagescroller.contentOffset.y)
+        print(self.imagescroller.contentOffset, self.imagescroller.contentSize)
         //设置偏移量
-        self.imagescroller.setContentOffset(CGPoint(x:self.imagescroller.contentOffset.x + self.view.frame.width, y:0), animated: true)
-        //当偏移量达到最后一张的时候，让偏移量置零
-        if self.imagescroller.contentOffset.x == CGFloat(self.view.frame.width) * CGFloat(self.imageBanners.count) {
-            self.imagescroller.contentOffset = CGPoint(x:0, y:0)
-            
+        let offsetx = Int((self.imagescroller.contentOffset.x + self.imagescroller.frame.width) / self.imagescroller.frame.width)
+       
+        if CGFloat(CGFloat(offsetx) * self.imagescroller.frame.width)  == CGFloat(self.imagescroller.frame.width) * CGFloat(self.imageBanners.count  ){
+            self.imagescroller.setContentOffset(CGPoint(x:0, y:0), animated: true) 
         }
+        else{
+            self.imagescroller.setContentOffset(CGPoint(x: CGFloat(offsetx) * self.imagescroller.frame.width, y:0), animated: true)
+        }
+        //当偏移量达到最后一张的时候，让偏移量置零
+       
+        
         
     }
     
@@ -560,21 +581,57 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
         
     }
     
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        if scrollView == self.imagescroller{
+            print("start scroller")
+            //self.stopTimer()
+
+        }
+    }
+    
     
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        let cpage = self.imagescroller.contentOffset.x / self.view.frame.width
-        page.currentPage = Int(cpage)
-        cnt = Int(cpage)
+        print(" decelerating \(self.imagescroller.contentOffset) \(self.view.frame)")
+        if scrollView  == self.imagescroller{
+            let offsetx = Int(scrollView.contentOffset.x / scrollView.frame.width)
+            page.currentPage =  offsetx
+        }
         
+            
         
     }
     
+    /*
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if scrollView == self.imagescroller{
+            if decelerate{
+                print("end dragging")
 
+                let cpage = self.imagescroller.contentOffset.x / self.view.frame.width
+                
+                let position = Int(cpage)
+                self.imagescroller.setContentOffset(CGPoint(x:self.imagescroller.frame.width * CGFloat(position), y: 0 ), animated: false)
 
+            }
+            
+        }
+    }*/
+ 
+    
+    private func endScroller(ratio:CGFloat){
+        if ratio <= 1{
+            
+        }
+    }
+    
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-        cnt+=1
-        page.currentPage = cnt % imageBanners.count
+        
+        if scrollView  == self.imagescroller{
+            let offsetx = Int(scrollView.contentOffset.x / scrollView.frame.width)
+            page.currentPage =  offsetx
+        }
+        
         
     }
     
@@ -659,11 +716,15 @@ extension DashboardViewController: UISearchControllerDelegate{
     
     func willPresentSearchController(_ searchController: UISearchController) {
         print("willPresentSearchController")
+        // 不藏导航栏
+        self.navigationController?.navigationBar.settranslucent(false)
+        
     }
     
     func didPresentSearchController(_ searchController: UISearchController) {
         print("didPresentSearchController")
-
+        
+      
         
         
     }
@@ -684,7 +745,8 @@ extension DashboardViewController: UISearchControllerDelegate{
     
     func didDismissSearchController(_ searchController: UISearchController) {
         print("didDismissSearchController")
-        self.navigationController?.navigationBar.subviews[0].alpha = 0
+        // 隐藏导航栏
+        self.navigationController?.navigationBar.settranslucent(true)
 
     }
 
@@ -706,13 +768,10 @@ extension DashboardViewController: UISearchBarDelegate{
            
         }
         
-        
         searchcategory.searchString = self
-        self.navigationController?.navigationBar.subviews[0].alpha = 1
-        self.navigationController?.navigationBar.subviews[0].backgroundColor = UIColor.white
-        self.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(searchcategory, animated: false)
-        self.hidesBottomBarWhenPushed = false
+        
+        
 
         return true
     }

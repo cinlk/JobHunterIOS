@@ -15,7 +15,7 @@ class demo: UITableViewController {
     
     let images = ["banner1","banner2","banner3"]
     
-    let src = imageScroll()
+    let src = UIScrollView()
     let page = UIPageControl()
 
     override func viewDidLoad() {

@@ -8,32 +8,37 @@
 
 import UIKit
 
-class imageScroll: UIScrollView {
-    
 
+
+
+extension UIScrollView {
+    
+    
+    // scrollview with images
     func creatScrollImages(imageName:[String],height:CGFloat,width:CGFloat){
         
         for i in 0..<imageName.count{
             let imageView = UIImageView(frame:CGRect(x: CGFloat(i)*width, y: 0, width: width, height: height))
+            print("image \(imageView.frame)")
             imageView.image = UIImage(named: imageName[i])
+            imageView.contentMode = .scaleAspectFill
+            imageView.clipsToBounds = true
             self.addSubview(imageView)
             
         }
         
         self.contentSize = CGSize(width: CGFloat(imageName.count)*width, height: height)
+        print("imagescroller contentSize \(self.contentSize)")
         self.bounces = false
         self.isPagingEnabled = true
         self.showsHorizontalScrollIndicator = false
         self.showsVerticalScrollIndicator = false
-        self.isUserInteractionEnabled = false
+        self.isUserInteractionEnabled = true
         
         
-        let imageView = UIImageView(frame:CGRect(x:CGFloat(imageName.count) * width, y: 0,width: width, height:height))
-        imageView.image = UIImage(named:imageName[0])
-        self.addSubview(imageView)
-        
-        
+      
         
         
     }
 }
+
