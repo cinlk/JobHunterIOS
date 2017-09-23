@@ -48,7 +48,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         warnButton.frame = CGRect.init(x: 0, y: 0, width: 20, height: 20)
         
         
-        nav?.backgroundColor = UIColor.white
+        nav?.backgroundColor = UIColor.gray
         
         self.navigationItem.rightBarButtonItems = [UIBarButtonItem.init(customView: warnButton),UIBarButtonItem.init(customView: uploadButton)]
         
@@ -128,20 +128,14 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         return 20
     }
     
-//
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
         switch  section {
         case 0:
             let header = table?.dequeueReusableHeaderFooterView(withIdentifier: "jobheader") as! HeaderFoot
+            header.contentView.backgroundColor = UIColor.white
+            header.createInfos(jobstring: infos?["jobname"], locatestring: infos?["locate"], salarystring: infos?["salary"], timestring: infos?["times"], day: infos?["time"], scholars: infos?["scholar"], hires: infos?["hired"])
             
-            header.jobName.text = "测试"
-            header.locate.text = "北京"
-            header.salary.text = "100元/天"
-            header.time.text = "4天/周"
-            header.hired.text = "可转正"
-            header.scholar.text = "本科"
-            header.days.text = "6个月"
             return header
 
         default:

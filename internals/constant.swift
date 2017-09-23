@@ -11,7 +11,7 @@ import Foundation
 
 
 
-
+let FRAME_WIDTH_320 = 320
 let FRAME_WIDTH = 375
 let NAV_BAR_FRAME_WIDTH = 320
 let NAV_BAR_FRAME_HEIGHT = 64

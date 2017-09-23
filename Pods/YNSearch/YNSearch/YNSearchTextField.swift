@@ -22,6 +22,7 @@ open class YNSearchTextField: UITextField {
     open func initView() {
         self.leftViewMode = .always
         
+        
         let searchImageViewWrapper = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 15))
         let searchImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 15, height: 15))
         let search = UIImage(named: "search", in: Bundle(for: YNSearch.self), compatibleWith: nil)
@@ -50,14 +51,14 @@ open class YNSearchTextFieldView: UIView {
     }
     
     open func initView() {
-        self.ynSearchTextField = YNSearchTextField(frame: CGRect(x: 0, y: 0, width: self.frame.width - 50, height: self.frame.height))
+        self.ynSearchTextField = YNSearchTextField(frame: CGRect(x: 0, y: 10, width: self.frame.width - 50, height: 30))
         self.addSubview(self.ynSearchTextField)
         
         self.cancelButton = UIButton(frame: CGRect(x: self.frame.width - 40, y: 0, width: 50, height: self.frame.height))
         self.cancelButton.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         self.cancelButton.setTitleColor(UIColor.darkGray, for: .normal)
         self.cancelButton.setTitleColor(UIColor.darkGray.withAlphaComponent(0.3), for: .highlighted)
-        self.cancelButton.setTitle("Cancel", for: .normal)
+        self.cancelButton.setTitle("取消", for: .normal)
         self.cancelButton.isHidden = true
         self.addSubview(self.cancelButton)
     }

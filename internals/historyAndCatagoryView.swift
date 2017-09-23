@@ -247,6 +247,7 @@ class historyAndCatagoryView: YNSearchViewController {
     
     
     func forwardSearch(text:String){
+        
         self.searchString?.valuePass(string: text)
         self.ynSearch.setShareSearchName(value: text)
         self.ynSearchTextfieldView.ynSearchTextField.endEditing(true)

@@ -11,7 +11,10 @@ import UIKit
 
 
 
+
 extension UIScrollView {
+    
+    
     
     
     // scrollview with images
@@ -37,6 +40,38 @@ extension UIScrollView {
         
         
       
+        
+        
+    }
+    
+    //创建轮播图定时器
+    func creatTimer(count:Int) {
+        // pass value in userinfo (Any)
+       
+        let timer =  Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.timerManager), userInfo: count, repeats: true)
+        
+        //这句话实现多线程，如果你的ScrollView是作为TableView的headerView的话，在拖动tableView的时候让轮播图仍然能轮播就需要用到这句话
+        RunLoop.current.add(timer, forMode: RunLoopMode.commonModes)
+        
+    }
+    
+    
+    //创建定时器管理者
+     @objc
+    func timerManager(timer:Timer) {
+        //设置偏移量
+        let count = timer.userInfo as? Int
+        let offsetx = Int((self.contentOffset.x + self.frame.width) / self.frame.width)
+        
+        
+        if CGFloat(CGFloat(offsetx) * self.frame.width)  == CGFloat(self.frame.width) * CGFloat(count!){
+            self.setContentOffset(CGPoint(x:0, y:0), animated: true)
+        }
+        else{
+            self.setContentOffset(CGPoint(x: CGFloat(offsetx) * self.frame.width, y:0), animated: true)
+        }
+        //当偏移量达到最后一张的时候，让偏移量置零
+        
         
         
     }

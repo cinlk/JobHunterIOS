@@ -14,6 +14,17 @@ protocol switchCity {
 }
 
 
+class CityViewController:UIViewController{
+    
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.navigationItem.title = "选择城市"
+        let city = CitysView(frame: self.view.frame)
+        self.view.addSubview(city)
+        
+    }
+}
 
 
 class CitysView: UIView,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout{
@@ -122,7 +133,21 @@ class CitysView: UIView,UICollectionViewDelegate,UICollectionViewDataSource,UICo
     func click(button:UIButton){
         let city = button.titleLabel?.text
         self.switchDelgate?.cityforsearch(city: city!)
-        (self.superview as! YNDropDownView).hideMenu()
+        
+        if  let parentView = self.superview as? YNDropDownView{
+            parentView.hideMenu()
+            parentView.changeMenu(title: city!, at: 0)
+            
+        }
+        else{
+                
+            self.viewController(aClass: CityViewController.self)?.navigationController?.popViewController(animated: true)
+            let dash = self.viewController(aClass: CityViewController.self)?.navigationController?.topViewController as! DashboardViewController
+            dash.dashLocateCity = city!
+            
+            
+        }
+        
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
