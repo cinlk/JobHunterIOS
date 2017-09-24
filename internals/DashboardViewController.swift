@@ -95,23 +95,13 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     // table section设置
     var sections = 4
     
+
+    
+ 
+    
     override func viewDidLoad() {
          super.viewDidLoad()
-        
-         print(self.view.frame)
-         print("===dashborad!===")
-         let image = UIImage(named: "home")?.withRenderingMode(.alwaysOriginal)
-        
-        
-         let selectImage = UIImage(named: "selectedHome")?.withRenderingMode(.alwaysOriginal)
-        
-         let tabBarItem = UITabBarItem(title: "首页", image: image, selectedImage: selectImage)
-        
-         tabBarItem.imageInsets = UIEdgeInsets(top: 5, left: 5, bottom: -5, right: -5)
-        
-         self.tabBarItem = tabBarItem
-        
-        
+        print("===dashborad!===")
         self.navigationController?.navigationBar.settranslucent(true)
 
          self.tables.delegate = self

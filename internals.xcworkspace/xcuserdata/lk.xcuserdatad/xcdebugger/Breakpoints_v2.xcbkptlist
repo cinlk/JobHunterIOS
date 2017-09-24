@@ -261,13 +261,91 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "internals/DashboardViewController.swift"
-            timestampString = "527920483.259866"
+            timestampString = "527937975.589559"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "526"
-            endingLineNumber = "526"
+            startingLineNumber = "538"
+            endingLineNumber = "538"
             landmarkName = "scrollViewDidEndDecelerating(_:)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "internals/DashboardViewController.swift"
+            timestampString = "527933887.323967"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
+            landmarkName = "DashboardViewController"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "internals.DashboardViewController.datas.getter : Swift.Array&lt;Swift.Dictionary&lt;Swift.String, Swift.String&gt;&gt;"
+                  moduleName = "internals"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lk/Desktop/IOS/IOS%20%E9%A1%B9%E7%9B%AE/internals/internals/DashboardViewController.swift"
+                  timestampString = "527933887.995707"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "30"
+                  endingLineNumber = "30"
+                  offsetFromSymbolStart = "35">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "internals.DashboardViewController.datas.setter : Swift.Array&lt;Swift.Dictionary&lt;Swift.String, Swift.String&gt;&gt;"
+                  moduleName = "internals"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lk/Desktop/IOS/IOS%20%E9%A1%B9%E7%9B%AE/internals/internals/DashboardViewController.swift"
+                  timestampString = "527933887.997329"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "30"
+                  endingLineNumber = "30"
+                  offsetFromSymbolStart = "65">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "internals.DashboardViewController.init (nibName : Swift.Optional&lt;Swift.String&gt;, bundle : Swift.Optional&lt;__ObjC.Bundle&gt;) -&gt; internals.DashboardViewController"
+                  moduleName = "internals"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lk/Desktop/IOS/IOS%20%E9%A1%B9%E7%9B%AE/internals/internals/DashboardViewController.swift"
+                  timestampString = "527933887.998652"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "30"
+                  endingLineNumber = "30"
+                  offsetFromSymbolStart = "6117">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "internals.DashboardViewController.init (coder : __ObjC.NSCoder) -&gt; Swift.Optional&lt;internals.DashboardViewController&gt;"
+                  moduleName = "internals"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lk/Desktop/IOS/IOS%20%E9%A1%B9%E7%9B%AE/internals/internals/DashboardViewController.swift"
+                  timestampString = "527933887.999963"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "30"
+                  endingLineNumber = "30"
+                  offsetFromSymbolStart = "6017">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

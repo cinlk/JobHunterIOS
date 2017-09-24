@@ -32,6 +32,8 @@ func  build_image(size: CGSize, alpha:CGFloat)->UIImage{
 }
 
 
+
+
 private let  v = UIImage()
 private let bm = build_image(size: CGSize(width: NAV_BAR_FRAME_WIDTH,height:NAV_BAR_FRAME_HEIGHT), alpha: 1)
 
@@ -108,6 +110,17 @@ extension UIImage{
         UIGraphicsEndImageContext()
         return image
     }
+    
+    func barImage(size:CGSize, offset:CGPoint) -> UIImage{
+        UIGraphicsBeginImageContextWithOptions(size, false, 0)
+        
+        self.draw(in: CGRect(x: offset.x, y: offset.y, width: size.width - offset.x, height: size.height - offset.y))
+        
+        let newImage:UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        return newImage
+        
+    }
+    
 }
 
 // viwe  对应的 uiviewcontroller

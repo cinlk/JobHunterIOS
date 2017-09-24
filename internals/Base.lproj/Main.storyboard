@@ -158,6 +158,15 @@
         <!--demo-->
         <scene sceneID="jUA-Gk-cmo">
             <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="p1C-cV-4dH" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <searchDisplayController id="GXl-EF-m6b">
+                    <connections>
+                        <outlet property="delegate" destination="vp4-1g-uKS" id="KpZ-G6-6sR"/>
+                        <outlet property="searchContentsController" destination="vp4-1g-uKS" id="mO2-DH-VmS"/>
+                        <outlet property="searchResultsDataSource" destination="vp4-1g-uKS" id="DdH-r4-ns8"/>
+                        <outlet property="searchResultsDelegate" destination="vp4-1g-uKS" id="dc3-gs-Gbw"/>
+                    </connections>
+                </searchDisplayController>
                 <tableViewController id="vp4-1g-uKS" customClass="demo" customModule="internals" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="Nxc-1L-KJc">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
@@ -183,35 +192,26 @@
                         <outlet property="searchDisplayController" destination="GXl-EF-m6b" id="ip4-Uf-ppX"/>
                     </connections>
                 </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="p1C-cV-4dH" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <searchDisplayController id="GXl-EF-m6b">
-                    <connections>
-                        <outlet property="delegate" destination="vp4-1g-uKS" id="KpZ-G6-6sR"/>
-                        <outlet property="searchContentsController" destination="vp4-1g-uKS" id="mO2-DH-VmS"/>
-                        <outlet property="searchResultsDataSource" destination="vp4-1g-uKS" id="DdH-r4-ns8"/>
-                        <outlet property="searchResultsDelegate" destination="vp4-1g-uKS" id="dc3-gs-Gbw"/>
-                    </connections>
-                </searchDisplayController>
             </objects>
             <point key="canvasLocation" x="-657" y="1425"/>
         </scene>
-        <!--View Controller-->
+        <!--个人-->
         <scene sceneID="xC3-zk-x6Q">
             <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="1yP-Y1-Z0X" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController id="461-N7-OWh" sceneMemberID="viewController">
                     <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="0Ik-d1-FYn"/>
-                        <viewControllerLayoutGuide type="bottom" id="VeC-df-12d"/>
+                        <viewControllerLayoutGuide type="top" id="wJY-GU-eKN"/>
+                        <viewControllerLayoutGuide type="bottom" id="ZM6-cb-eqs"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="3qK-kk-bgJ">
+                    <view key="view" contentMode="scaleToFill" id="QO0-ju-aAq">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <tabBarItem key="tabBarItem" systemItem="featured" id="KED-Lf-gMB"/>
+                    <tabBarItem key="tabBarItem" title="个人" id="KED-Lf-gMB"/>
                     <navigationItem key="navigationItem" id="inb-Ml-ed8"/>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="1yP-Y1-Z0X" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1594" y="1480"/>
         </scene>
@@ -225,9 +225,9 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </tabBar>
                     <connections>
-                        <segue destination="461-N7-OWh" kind="relationship" relationship="viewControllers" id="drW-qp-KTB"/>
-                        <segue destination="vp4-1g-uKS" kind="relationship" relationship="viewControllers" id="zRb-wh-CFP"/>
                         <segue destination="QqD-wV-07J" kind="relationship" relationship="viewControllers" id="zHC-tw-gdR"/>
+                        <segue destination="vp4-1g-uKS" kind="relationship" relationship="viewControllers" id="QbL-Ng-E34"/>
+                        <segue destination="461-N7-OWh" kind="relationship" relationship="viewControllers" id="eig-Qe-DL2"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Mn3-xs-IzL" userLabel="First Responder" sceneMemberID="firstResponder"/>
