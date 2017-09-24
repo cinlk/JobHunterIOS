@@ -67,6 +67,7 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
         s.showsVerticalScrollIndicator = true
         s.showsHorizontalScrollIndicator = false
         
+        
         return s
     }()
     // topview
@@ -117,6 +118,7 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
         s.showsHorizontalScrollIndicator = false
         s.backgroundColor = UIColor.gray
         s.backgroundColor = UIColor.white
+        s.isPagingEnabled = true
         
         
        return s

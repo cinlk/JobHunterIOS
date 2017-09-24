@@ -30,9 +30,14 @@ class MainTabBarViewController: UITabBarController {
         
 
     }
-    // 这里加载bar icon 图标
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        
+    }
+    // 这里加载bar icon 图标
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
         if let items = self.tabBar.items {
             let tabBarImages = getTabBarImages() // tabBarImages: [UIImage]
@@ -44,11 +49,6 @@ class MainTabBarViewController: UITabBarController {
             }
         }
 
-        
-        
-    }
-    override func viewDidLoad() {
-        super.viewDidLoad()
         
         // Do any additional setup after loading the view.
     }

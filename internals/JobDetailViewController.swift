@@ -10,6 +10,8 @@ import UIKit
 import CoreLocation
 import MapKit
 
+//内置分享sdk
+import Social
 
 class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewDataSource {
     
@@ -29,6 +31,14 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     var needed =  "3年以上互联网产品工作经验，经历过较大体量用户前后端产品项目\n 思维活跃，有独立想法，有情怀，喜欢电影行业\n 善于业务整体规划、任务模块优先级拆解、能够主导产品生命周期全流程\n 具备良好的沟通技巧和团队合作精神，有带团队经验者优先 \n高度执行力，能够独当一面，善于推动团队效率不断提升"
     
     var desc = "1、负责租房频道整体流量运营及制定获客策略，辅助制定租房频道市场营销、推广和渠道合作策略；\n 2、合理的制定目标及市场预算分配 \n 3、负责对外媒体合作和商务拓展活动；\n 4、推动租房频道线上推广及线下活动的策划、组织和执行工作； \n 5、协调运营、产品及技术等团队推动产品优化提升获客效果 \n 6、对市场信息敏感，及时汇报且要做出预判投放解决方案。"
+    
+    var shareapps:shareView?
+    
+    var centerY:CGFloat!
+    
+    var darkView :UIView!
+    
+    
     override func viewDidLoad() {
         
         
@@ -47,7 +57,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         uploadButton.setImage(#imageLiteral(resourceName: "upload"), for: .normal)
         uploadButton.frame = CGRect.init(x: 0, y: 0, width: 20, height: 20)
         
-        
+        uploadButton.addTarget(self, action: #selector(share), for: .touchUpInside)
         let warnButton = UIButton.init(type: .custom)
         warnButton.setImage(#imageLiteral(resourceName: "warn"), for: .normal)
         warnButton.frame = CGRect.init(x: 0, y: 0, width: 20, height: 20)
@@ -76,6 +86,30 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         self.table?.register(UINib(nibName:"worklocate", bundle:nil), forCellReuseIdentifier: "locate")
         
         self.view.addSubview(table!)
+        
+        
+        //
+        shareapps =  shareView(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 100))
+        centerY = shareapps?.centerY
+        
+        shareapps?.exit = self
+        
+        // 加入最外层窗口
+        let windows = UIApplication.shared.windows.last
+        
+        windows?.addSubview(shareapps!)
+        
+        darkView = UIView()
+        darkView.frame = CGRect(x: 0, y: 0, width:UIScreen.main.bounds.size.width, height:UIScreen.main.bounds.size.height)
+        darkView.backgroundColor = UIColor(red: 0 / 255.0, green: 0 / 255.0, blue: 0 / 255.0, alpha: 0.5) // 设置半透明颜色
+        
+        darkView.isUserInteractionEnabled = true // 打开用户交互
+        
+        let singTap = UITapGestureRecognizer(target: self, action:#selector(self.handleSingleTapGesture)) // 添加点击事件
+        
+        singTap.numberOfTouchesRequired = 1
+        
+        darkView.addGestureRecognizer(singTap)
         
         
         
@@ -299,4 +333,51 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         
     }
 
+}
+
+extension JobDetailViewController{
+    
+    // 分享
+    func share(){
+    //在 navigation 层view 添加darkview（蒙层) 遮挡整个界面
+    
+    self.navigationController?.view.addSubview(darkView)
+    //self.view.addSubview(darkView)
+        UIView.animate(withDuration: 0.5, animations: {
+            
+            self.shareapps?.frame = CGRect(x: 0, y: self.view.frame.height-35, width: self.view.frame.width, height: 100)
+        }, completion: nil)
+        
+        
+        
+    }
+    
+    func showAlertMessage(message: String!) {
+        let alertController = UIAlertController(title: "EasyShare", message: message, preferredStyle: UIAlertControllerStyle.alert)
+        alertController.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: nil))
+    
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+}
+
+extension JobDetailViewController:closeshare{
+    func exit() {
+        
+        darkView.removeFromSuperview()
+        UIView.animate(withDuration: 0.5, animations: {
+            
+            self.shareapps?.centerY =  self.centerY
+        }, completion: nil)
+
+    }
+}
+
+extension JobDetailViewController{
+    
+    func handleSingleTapGesture() {
+         // 点击移除半透明的View
+        self.exit()
+        
+    }
 }

@@ -206,14 +206,12 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
        
 
         searchController.customerBookmark(cname:dashLocateCity)
-        if searchController.isActive{
+        if searchController.isActive {
             self.tabBarController?.tabBar.isHidden = true
-            self.navigationController?.navigationBar.settranslucent(false)
-
         }else{
-             self.navigationController?.navigationBar.backgroundColor = nil
+            
+            self.navigationController?.navigationBar.backgroundColor = nil
         }
-
         
     }
     
@@ -229,8 +227,6 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     }
     
     override func viewDidDisappear(_ animated: Bool) {
-       
-        self.navigationController?.navigationBar.isTranslucent  = false
         
         
     }
@@ -620,8 +616,6 @@ extension DashboardViewController: UISearchControllerDelegate{
         print("willPresentSearchController")
         
         self.tabBarController?.tabBar.isHidden = true
-        
-
         // 不藏导航栏
         self.navigationController?.navigationBar.settranslucent(false)
         
@@ -629,7 +623,8 @@ extension DashboardViewController: UISearchControllerDelegate{
     
     func didPresentSearchController(_ searchController: UISearchController) {
         print("didPresentSearchController")
-        
+        print(self.searchController.isActive, self.searchController.isBeingPresented,
+              self.searchController.searchBar.isFocused)
 
         
       
@@ -659,6 +654,10 @@ extension DashboardViewController: UISearchControllerDelegate{
         // 隐藏导航栏
         self.navigationController?.navigationBar.settranslucent(true)
         self.tabBarController?.tabBar.isHidden = false
+        
+        print(self.searchController.isActive, self.searchController.isBeingPresented,
+              self.searchController.searchBar.isFocused)
+
 
 
     }

@@ -26,6 +26,8 @@
 		4A9CE36C1F716101002A8FD5 /* progressHUB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9CE36B1F716101002A8FD5 /* progressHUB.swift */; };
 		4A9CE36F1F72C2E6002A8FD5 /* myextension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9CE36E1F72C2E6002A8FD5 /* myextension.swift */; };
 		4ACBD6F51F76386D00A5FD23 /* baseSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACBD6F41F76386D00A5FD23 /* baseSearchViewController.swift */; };
+		4ACBD6F71F77DE6C00A5FD23 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ACBD6F61F77DE6C00A5FD23 /* Social.framework */; };
+		4ACBD6FC1F77E8F500A5FD23 /* shareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACBD6FB1F77E8F500A5FD23 /* shareView.swift */; };
 		4ADCC7501F511DD3001A4E9F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADCC74F1F511DD3001A4E9F /* AppDelegate.swift */; };
 		4ADCC7521F511DD3001A4E9F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADCC7511F511DD3001A4E9F /* ViewController.swift */; };
 		4ADCC7551F511DD3001A4E9F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4ADCC7531F511DD3001A4E9F /* Main.storyboard */; };
@@ -96,6 +98,8 @@
 		4A9CE36B1F716101002A8FD5 /* progressHUB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = progressHUB.swift; sourceTree = "<group>"; };
 		4A9CE36E1F72C2E6002A8FD5 /* myextension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = myextension.swift; sourceTree = "<group>"; };
 		4ACBD6F41F76386D00A5FD23 /* baseSearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = baseSearchViewController.swift; sourceTree = "<group>"; };
+		4ACBD6F61F77DE6C00A5FD23 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
+		4ACBD6FB1F77E8F500A5FD23 /* shareView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = shareView.swift; sourceTree = "<group>"; };
 		4ADCC74C1F511DD3001A4E9F /* internals.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = internals.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4ADCC74F1F511DD3001A4E9F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4ADCC7511F511DD3001A4E9F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -144,6 +148,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4ACBD6F71F77DE6C00A5FD23 /* Social.framework in Frameworks */,
 				4A3224071F5160ED0065A33F /* SwiftyJSON.framework in Frameworks */,
 				4A3224051F5160EA0065A33F /* SDAutoLayout.framework in Frameworks */,
 				4A3224031F5160E50065A33F /* Alamofire.framework in Frameworks */,
@@ -181,6 +186,7 @@
 				4AFF91A61F5C238400FE189F /* HeaderFoot.swift */,
 				4AFF91C31F5EF40000FE189F /* mapApp.swift */,
 				4A9CE36B1F716101002A8FD5 /* progressHUB.swift */,
+				4ACBD6FA1F77E76D00A5FD23 /* share */,
 			);
 			name = common;
 			sourceTree = "<group>";
@@ -250,6 +256,14 @@
 				4A4454431F74022D0072E160 /* constant.swift */,
 			);
 			name = utils;
+			sourceTree = "<group>";
+		};
+		4ACBD6FA1F77E76D00A5FD23 /* share */ = {
+			isa = PBXGroup;
+			children = (
+				4ACBD6FB1F77E8F500A5FD23 /* shareView.swift */,
+			);
+			name = share;
 			sourceTree = "<group>";
 		};
 		4ADCC7431F511DD3001A4E9F = {
@@ -353,6 +367,7 @@
 		AA98FC2D7A11ED39791D94FD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4ACBD6F61F77DE6C00A5FD23 /* Social.framework */,
 				4A3224061F5160ED0065A33F /* SwiftyJSON.framework */,
 				4A3224041F5160EA0065A33F /* SDAutoLayout.framework */,
 				4A3224021F5160E50065A33F /* Alamofire.framework */,
@@ -574,6 +589,7 @@
 				4AE4AFC11F5131AE00B5F509 /* ForgetPasswordController.swift in Sources */,
 				4A4523F21F5BABE1009D6B62 /* jobdetailCell.swift in Sources */,
 				4A9CE3661F715E37002A8FD5 /* dropMenu.swift in Sources */,
+				4ACBD6FC1F77E8F500A5FD23 /* shareView.swift in Sources */,
 				4A9CE3681F715F1D002A8FD5 /* JobClasses.swift in Sources */,
 				4ADCC7521F511DD3001A4E9F /* ViewController.swift in Sources */,
 				4AFF91DD1F641A8000FE189F /* introduction.swift in Sources */,
