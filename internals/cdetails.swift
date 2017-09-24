@@ -22,22 +22,22 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
     let tags = ["tag1","tag2","tag3dawdwadaw","tag4","tag5","tag6","awdwa","dswdadwadawdawfwefwefwefew","dawf","fefwefwefwefwefwefwfwf","dwad","yrtyjty","吊袜带挖多哇"]
     
     //table2 data
-    var joblists:[[String:String]]  = [["name":"KPI 设计","locate":"北京","days":"4天/周","times":"09-12","money":"250-300/天"],
-        ["name":"IOS 开发","locate":"北京","days":"4天/周","times":"10-12","money":"200-300/天"],
-        ["name":"日语测试","locate":"上海","days":"5天/周","times":"09-01","money":"300-350/天"],
-        ["name":"容器部署","locate":"上海","days":"5天/周","times":"09-01","money":"300-350/天"],
-        ["name":"软件培训","locate":"上海","days":"5天/周","times":"09-01","money":"300-350/天"],
-        ["name":"软件测试","locate":"上海","days":"5天/周","times":"09-01","money":"300-350/天"],
-        ["name":"容器部署","locate":"上海","days":"5天/周","times":"09-01","money":"300-350/天"],
-        ["name":"容器部署","locate":"上海","days":"5天/周","times":"09-01","money":"300-350/天"],
-        ["name":"日语老师","locate":"上海","days":"5天/周","times":"09-01","money":"300-350/天"],
-        ["name":"日语编程","locate":"上海","days":"5天/周","times":"09-01","money":"300-350/天"],
-        ["name":"软件培训","locate":"上海","days":"5天/周","times":"09-01","money":"300-350/天"],
-        ["name":"分析师good","locate":"上海","days":"5天/周","times":"09-01","money":"300-350/天"],
-        ["name":"容器部署","locate":"上海","days":"5天/周","times":"09-01","money":"300-350/天"],
-        ["name":"分析师视频","locate":"上海","days":"5天/周","times":"09-01","money":"300-350/天"],
-        ["name":"容器培训","locate":"上海","days":"5天/周","times":"09-01","money":"300-350/天"],
-        ["name":"容器测试","locate":"上海","days":"5天/周","times":"09-01","money":"300-350/天"],
+    var joblists:[[String:String]]  = [["jobname":"KPI 设计","locate":"北京","days":"4天/周","createTime":"09-12","salary":"250-300/天","times":"4天/周","time":"5个月","hired":"可转正","scholar":"本科"],
+        ["jobname":"IOS 开发","locate":"北京","createTime":"10-12","salary":"200-300/天","times":"4天/周","time":"5个月","hired":"可转正","scholar":"本科"],
+        ["jobname":"日语测试","locate":"上海","createTime":"09-01","salary":"300-350/天","times":"4天/周","time":"5个月","hired":"可转正","scholar":"本科"],
+        ["jobname":"容器部署","locate":"上海","createTime":"09-01","salary":"300-350/天","times":"4天/周","time":"5个月","hired":"可转正","scholar":"本科"],
+        ["jobname":"软件培训","locate":"上海","createTime":"09-01","salary":"300-350/天","times":"4天/周","time":"5个月","hired":"可转正","scholar":"本科"],
+        ["jobname":"软件测试","locate":"上海","createTime":"09-01","salary":"300-350/天","times":"4天/周","time":"5个月","hired":"可转正","scholar":"本科"],
+        ["jobname":"容器部署","locate":"上海","createTime":"09-01","salary":"300-350/天","times":"4天/周","time":"5个月","hired":"可转正","scholar":"本科"],
+        ["jobname":"容器部署","locate":"上海","createTime":"09-01","salary":"300-350/天","times":"4天/周","time":"5个月","hired":"可转正","scholar":"本科"],
+        ["name":"日语老师","locate":"上海","createTime":"09-01","salary":"300-350/天","times":"4天/周","time":"5个月","hired":"可转正","scholar":"本科"],
+        ["jobname":"日语编程","locate":"上海","createTime":"09-01","salary":"300-350/天","times":"4天/周","time":"5个月","hired":"可转正","scholar":"本科"],
+        ["jobname":"软件培训","locate":"上海","createTime":"09-01","salary":"300-350/天","times":"4天/周","time":"5个月","hired":"可转正","scholar":"本科"],
+        ["jobname":"分析师good","locate":"上海","createTime":"09-01","salary":"300-350/天","times":"4天/周","time":"5个月","hired":"可转正","scholar":"本科"],
+        ["jobname":"容器部署","locate":"上海","createTime":"09-01","salary":"300-350/天","times":"4天/周","time":"5个月","hired":"可转正","scholar":"本科"],
+        ["jobname":"分析师视频","locate":"上海","createTime":"09-01","salary":"300-350/天","times":"4天/周","time":"5个月","hired":"可转正","scholar":"本科"],
+        ["jobname":"容器培训","locate":"上海","createTime":"09-01","salary":"300-350/天","times":"4天/周","time":"5个月","hired":"可转正","scholar":"本科"],
+        ["jobname":"容器测试","locate":"上海","createTime":"09-01","salary":"300-350/天","times":"4天/周","time":"5个月","hired":"可转正","scholar":"本科"],
     ]
     
     var filterJobLists:[[String:String]] = []
@@ -148,11 +148,9 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
         
         t.delegate = self
         t.dataSource = self
-        t.separatorStyle = UITableViewCellSeparatorStyle.none
         t.register(ScrollerCell.self, forCellReuseIdentifier: "jobtag")
         t.register(UINib(nibName:"joblist",bundle:nil), forCellReuseIdentifier: "list")
-        //去掉多余的分割线（如果没有section） 有section去掉该代码
-        //t.tableFooterView = UIView()
+       
         
         
         return t
@@ -211,8 +209,9 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
         
         cimage.image = UIImage(named:"car")
         name.text  = "国际重车"
-        desc.text = "的达瓦大哇大多哇多 哇大无多木哇； 的萌娃；的女娃；的可能我逗你玩的"
+        desc.text = "的达瓦大哇大多哇多 哇大无多木哇； 的萌娃；的女娃；的可能我逗你玩的 \n dwaddwadawdwad吊袜带挖达到3232\n d打我的娃打我的吊"
         
+        // 不是高度自适应 （限制内容大小）
         self.topView.addSubview(cimage)
         self.topView.addSubview(name)
         self.topView.addSubview(desc)
@@ -233,7 +232,7 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
         table1.contentInset = UIEdgeInsetsMake(0, 0, 100, 0)
         table2.contentInset = UIEdgeInsetsMake(0, 0, 100, 0)
         
-
+        table2.tableFooterView  =  UIView()
         self.scroll.addSubview(table1)
         self.scroll.addSubview(table2)
         
@@ -242,8 +241,7 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
         self.view.frame.height+100)
         
         backScroller.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
-//        topView.frame = CGRect(x: 0, y: 64, width: self.view.frame.width, height: 100)
-//        backScroller.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+
         backScroller.contentSize = CGSize(width: self.view.frame.width,height:self.view.frame.height)
 //        scroll.frame = CGRect(x: 0, y: 164, width: self.view.frame.width, height: self.view.frame.height - 164)
         self.backScroller.addSubview(topView)
@@ -259,7 +257,7 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
         _ = name.sd_layout().topEqualToView(cimage)?.leftSpaceToView(cimage,10)?.widthIs(200)?.heightIs(20)
         _ = desc.sd_layout().topSpaceToView(name,2)?.leftSpaceToView(cimage,10)?.widthIs(200)?.autoHeightRatio(0)
         
-        _ = line.sd_layout().bottomSpaceToView(self.topView,30)?.leftEqualToView(self.topView)?.rightEqualToView(self.topView)?.heightIs(1)
+        _ = line.sd_layout().bottomSpaceToView(self.topView,28)?.leftEqualToView(self.topView)?.rightEqualToView(self.topView)?.heightIs(1)
         
         
         _ = scrollitem1.sd_layout().topSpaceToView(line,10)?.leftSpaceToView(self.topView,30)?.widthIs(100)?.heightIs(10)
@@ -281,18 +279,17 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
     }
     override func viewWillAppear(_ animated: Bool) {
        
-        
-    
+        self.navigationController?.navigationBar.settranslucent(false)
 
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        
+        self.navigationController?.navigationBar.settranslucent(true)
     }
 
+   
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
 
-        print(scrollView)
         if scrollView  === self.table1 || scrollView == self.table2 {
             
             if self.marginTop != scrollView.contentInset.top{
@@ -303,21 +300,29 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
             let offset = scrollView.contentOffset.y
             
             let newoffset = self.marginTop + offset
-            print(newoffset)
+            print(newoffset,self.backScroller.contentOffset,self.backScroller.contentInset)
             // 60 为界限
             if (newoffset > 0  && newoffset < 64){
-                self.backScroller.setContentOffset(CGPoint(x:0, y:newoffset-64),animated: false)
+                self.backScroller.contentInset = UIEdgeInsetsMake(-newoffset, 0, 0, 0)
+                //self.backScroller.setContentOffset(CGPoint(x:0, y:newoffset-64),animated: false)
             }else if (newoffset >= 64){
-                self.backScroller.setContentOffset(CGPoint(x: 0, y: 0),animated: false)
-            }else{
-                self.backScroller.contentOffset = CGPoint(x: 0, y: -64)
+                self.backScroller.contentInset = UIEdgeInsetsMake(-66, 0, 0, 0)
+
+                //self.backScroller.setContentOffset(CGPoint(x: 0, y: 0),animated: false)
+            }else if newoffset <= 0 {
+                if newoffset >= -64{
+                    self.backScroller.contentInset = UIEdgeInsetsMake(-newoffset, 0, 0, 0)
+                }else{
+                    self.backScroller.contentInset = UIEdgeInsetsMake(64, 0, 0, 0)
+
+                }
             }
+            
 
             
         }
         // 左右滑动
         else if scrollView == self.scroll{
-            print(scrollView.contentSize)
         }
         
     }
@@ -343,7 +348,7 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
             else if indexPath.section == 1{
                 let cell  = tableView.dequeueReusableCell(withIdentifier: "desc", for: indexPath) as! introduction
                     
-                let des = "大哇多无多首先想到的肯定是结束减速的代理方法：scrollViewDscrollViewDidEndDecelerating代理方法的，如果做过用3个界面+scrollView实现循环滚动展示图片，那么基本上都会碰到这么问题。如何准确的监听翻页？我的解决的思路如下达瓦大文大无大无多无大无大无多哇大无多无飞啊飞分为飞飞飞达瓦大文大无大无多哇付达瓦大文大无付多无dwadwadadawdawdeffergergegergergergergergerhrthrhrhhrtht"
+                let des = "大哇多无多首先想到的肯定是结束减速的代理方法：scrollViewDscrollViewDidEndDecelerating代理方法的，如果做过用3个界面+scrollView实现循环滚动展示图片，那么基本上都会碰到这么问题。如何准确的监听翻页？我的解决的思路如下达瓦大文大无大无多无大无大无多哇大无多无飞啊飞分为飞飞飞达瓦大文大无大无多哇付达瓦大文大无付多无dwadwadadawdawde"
                 
                 
                     cell.desc.text = des
@@ -383,11 +388,11 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
             print(indexPath)
             
             var content = filterJobLists[indexPath.row]
-            cell.days.text = content["days"]
-            cell.name.text = content["name"]
+            cell.days.text = content["times"]
+            cell.name.text = content["jobname"]
             cell.locate.text = content["locate"]
-            cell.money.text = content["money"]
-            cell.times.text = content["times"]
+            cell.money.text = content["salary"]
+            cell.times.text = content["createTime"]
             
             return cell
         }
@@ -420,11 +425,7 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
                 }
                 return UITableViewAutomaticDimension
         }
-//        else{
-//            if indexPath.section == 0{
-//                return 80
-//            }
-//        }
+
         return UITableViewAutomaticDimension
     }
 
@@ -432,9 +433,7 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
 
-//        if tableView == self.table1{
-//            return UITableViewAutomaticDimension
-//        }
+
         return UITableViewAutomaticDimension
         
     }
@@ -458,9 +457,11 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
     
     
 
-    
+    // 左右滑动 正确？？
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+
         if scrollView == self.scroll{
+            
             if scrollView.contentOffset.x >= self.view.frame.width{
                 self.scrollitem2.isSelected = true
                 self.scrollitem1.isSelected = false
@@ -479,6 +480,15 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
                 },completion: nil)
 
             }
+            
+            print(self.scrollitem1.isSelected,self.scrollitem2.isSelected)
+        }
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate{
+            
+            
         }
     }
     

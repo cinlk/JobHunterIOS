@@ -142,7 +142,7 @@ extension UISearchController{
                 for subView in searchBarView.subviews[i].subviews{
                     print("-----")
                     // 这只textfield backgroudview 为透明
-                    subView.alpha = 0.5
+                    subView.alpha = 0.7
                     //find the search icon and set the width/height for this.
                     /*
                     if let bookmark = subView as? UIImageView{

@@ -149,7 +149,7 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
         searchController.searchResultsUpdater = self
         searchController.delegate =  self
         searchController.searchBar.delegate = self
-        
+    
         
         // dropdown menu
         locate = Citys(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
@@ -205,9 +205,9 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        
         self.automaticallyAdjustsScrollViewInsets  = false
        
-        
         if searchString != "" && !searchString.isEmpty{            
             self.showSearchResultView()
             self.startSearch(name: searchString)
@@ -239,8 +239,8 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     }
     
     override func viewDidDisappear(_ animated: Bool) {
-        // 解决view  y自动下移动64
-        self.navigationController?.navigationBar.isTranslucent  = true
+       
+        self.navigationController?.navigationBar.isTranslucent  = false
         
         
     }
@@ -447,17 +447,45 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
         
          //向下滑动<0 向上滑动>0
         // 实际检测的offset.y 偏移量
-        let  newoffsetY = offsetY + self.marginTop        
+        let  newoffsetY = offsetY + self.marginTop
+        print(newoffsetY)
         //向上拖动变透明
-        if( newoffsetY >= 5 && newoffsetY <= 80){
-            self.searchBarContainer.alpha = CGFloat(newoffsetY/80)
+        //self.navigationController?.navigationBar.backgroudImage(alpha: CGFloat(1))
 
+        if( newoffsetY > 0  && newoffsetY <= 80){
+            self.searchBarContainer.alpha = CGFloat(newoffsetY/80)
+            self.navigationController?.navigationBar.backgroudImage(alpha: CGFloat(newoffsetY/80))
+            self.navigationController?.navigationBar.alpha = CGFloat(newoffsetY/80)
+            
         }else if (newoffsetY > 80){
             self.searchBarContainer.alpha = 1
+            self.navigationController?.navigationBar.backgroudImage(alpha: 2)
+            // 设置为fasle 导致bar y位置下移动
+            //self.navigationController?.navigationBar.isTranslucent = false
+
+            
+
+            
         }
        
-        else{
-            self.searchBarContainer.alpha = 0.5
+        else if (newoffsetY < 0 && newoffsetY >= -80){
+            self.searchBarContainer.alpha = 1 - CGFloat(-newoffsetY/80)
+            //self.navigationController?.navigationBar.backgroudImage(alpha: CGFloat(1 - CGFloat(-newoffsetY/80)))
+            self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+            self.navigationController?.navigationBar.alpha = 1 - CGFloat(-newoffsetY/80)
+            
+        }
+        else if (newoffsetY < -80){
+            self.searchBarContainer.alpha = 0
+            self.navigationController?.navigationBar.backgroudImage(alpha: CGFloat(0))
+            self.navigationController?.navigationBar.alpha = 0
+
+        }
+        else if (newoffsetY == 0){
+            self.searchBarContainer.alpha = 1
+            self.navigationController?.navigationBar.settranslucent(true)
+            self.navigationController?.navigationBar.alpha = 1
+
         }
             
         }

@@ -24,6 +24,11 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     //进入cdetail公司详情页面，该页面会查看工作信息，再次返回时时cdetail页面
     var isFirst = true
     
+    
+    // test string
+    var needed =  "3年以上互联网产品工作经验，经历过较大体量用户前后端产品项目\n 思维活跃，有独立想法，有情怀，喜欢电影行业\n 善于业务整体规划、任务模块优先级拆解、能够主导产品生命周期全流程\n 具备良好的沟通技巧和团队合作精神，有带团队经验者优先 \n高度执行力，能够独当一面，善于推动团队效率不断提升"
+    
+    var desc = "1、负责租房频道整体流量运营及制定获客策略，辅助制定租房频道市场营销、推广和渠道合作策略；\n 2、合理的制定目标及市场预算分配 \n 3、负责对外媒体合作和商务拓展活动；\n 4、推动租房频道线上推广及线下活动的策划、组织和执行工作； \n 5、协调运营、产品及技术等团队推动产品优化提升获客效果 \n 6、对市场信息敏感，及时汇报且要做出预判投放解决方案。"
     override func viewDidLoad() {
         
         
@@ -48,7 +53,6 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         warnButton.frame = CGRect.init(x: 0, y: 0, width: 20, height: 20)
         
         
-        nav?.backgroundColor = UIColor.gray
         
         self.navigationItem.rightBarButtonItems = [UIBarButtonItem.init(customView: warnButton),UIBarButtonItem.init(customView: uploadButton)]
         
@@ -58,10 +62,12 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         
         self.table?.delegate = self
         self.table?.dataSource = self
-        // 出去每行线条
+        
+        //自适应cell高度
+        self.table?.rowHeight = UITableViewAutomaticDimension
+        self.table?.estimatedRowHeight = 80
         self.table?.separatorStyle = UITableViewCellSeparatorStyle.none
 
-        
         
         self.table?.register(HeaderFoot.self, forHeaderFooterViewReuseIdentifier: "jobheader")
         
@@ -103,13 +109,16 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         UIBarButtonItem.init(customView: talk)]
         
         // 不透明
-        self.navigationController?.navigationBar.subviews[0].alpha = 1
+        self.navigationController?.navigationBar.settranslucent(false)
+        //self.table?.setContentOffset(CGPoint(x:0,y:-64), animated: false)
         
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         
         self.navigationController?.setToolbarHidden(true, animated: false)
+        self.navigationController?.navigationBar.settranslucent(true)
+
 
     }
     override func didReceiveMemoryWarning() {
@@ -209,12 +218,19 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         case 0:
             return 60
         case 1:
-            return 280
+            return UITableViewAutomaticDimension
         case 2:
-            return 90
+            return UITableViewAutomaticDimension
         default:
             return 44
         }
+    }
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+
+        return UITableViewAutomaticDimension
+        
     }
     
     
@@ -228,21 +244,21 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
             
             let cell  = table?.dequeueReusableCell(withIdentifier: "companycell", for: indexPath) as! company
             cell.cimage.image = UIImage(named: "camera")
-            cell.name.text = "测试"
-            cell.infos.text = "你好啊|100人|哈哈哈"
+            cell.name.text = "vmware公司"
+            cell.infos.text = "上市企业|1万人|不加班"
             
             return cell
         case 1:
             
             let cell  = table?.dequeueReusableCell(withIdentifier: "joninfos", for: indexPath) as! JobDescription
-            cell.demandInfo.text  = "1 \n" + "2 \n" + "3 \n"
-            cell.workcontent.text  = "1 \n" + "2 \n" + "3 \n"
+            cell.demandInfo.text  = needed
+            cell.workcontent.text  = desc
             
             return cell
         case 2:
             let cell = table?.dequeueReusableCell(withIdentifier: "locate", for: indexPath) as! worklocate
             cell.locate.text = "北京海淀区"
-            cell.details.text = "d挖到哇多无\n" + "吊袜带挖\n"
+            cell.details.text = "北四环\n" + "海淀北二街\n"
             return cell
         default:
             
@@ -251,11 +267,12 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         }
         
     }
+    
+    // TODO  section 和header 一起滑动
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView == self.table{
             // 去除 table header的黏贴性（第一个section移动到header后，header才滑动）
             var sectionHeaderHeight:CGFloat = -64; //sectionHeaderHeight
-            
             //向上滑动，top 与父view间距变大，tableview整体上移
             if (scrollView.contentOffset.y > sectionHeaderHeight && scrollView.contentOffset.y < 0) {
                 
@@ -264,9 +281,17 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
             } else if (scrollView.contentOffset.y <= sectionHeaderHeight) {
                 
                 scrollView.contentInset = UIEdgeInsetsMake(-sectionHeaderHeight, 0, 0, 0);
-            // 上移后向显示底部
-            }else{
-                scrollView.contentInset = UIEdgeInsetsMake(0, 0, -sectionHeaderHeight, 0)
+            // 上移后向显示底部  > 0
+                
+            }else if scrollView.contentOffset.y >= 0 {
+                
+                if scrollView.contentOffset.y <= 64{
+                    scrollView.contentInset = UIEdgeInsetsMake(-scrollView.contentOffset.y, 0, -sectionHeaderHeight + 40, 0)
+                }else{
+                // 因为cell高度自适应，多留出40.
+                scrollView.contentInset = UIEdgeInsetsMake(-64, 0, -sectionHeaderHeight + 40, 0)
+            
+                }
             }
         
         }

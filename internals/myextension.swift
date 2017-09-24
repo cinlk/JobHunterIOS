@@ -64,6 +64,12 @@ extension UINavigationBar{
         }
     }
     
+    // 控制backimage 来设置背景
+    func backgroudImage(alpha:CGFloat){
+        self.setBackgroundImage(build_image(size: CGSize(width: NAV_BAR_FRAME_WIDTH,height:NAV_BAR_FRAME_HEIGHT), alpha: alpha), for: .default)
+        self.isTranslucent = true
+    }
+    
     //
 }
 

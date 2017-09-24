@@ -43,6 +43,8 @@ class HeaderFoot: UITableViewHeaderFooterView {
                      scholars:String?,hires:String?){
         
         
+        self.contentView.subviews.forEach{$0.removeFromSuperview()}
+        
         // 在job详细页面头部描述-使用
         var jobName: UILabel!
         var locate: UILabel!
@@ -87,7 +89,7 @@ class HeaderFoot: UITableViewHeaderFooterView {
         self.contentView.addSubview(hired)
         _ = jobName.sd_layout().topSpaceToView(self.contentView,4)?.leftSpaceToView(self.contentView,5)?.widthIs(200)?.heightIs(20)
         _ = locate.sd_layout().topSpaceToView(jobName,10)?.leftSpaceToView(self.contentView,5)?.widthIs(60)?.heightIs(10)
-        _ = salary.sd_layout().topSpaceToView(jobName,10)?.leftSpaceToView(locate,10)?.widthIs(60)?.heightIs(10)
+        _ = salary.sd_layout().topSpaceToView(jobName,10)?.leftSpaceToView(locate,10)?.widthIs(120)?.heightIs(10)
         _ = time.sd_layout().topSpaceToView(jobName,10)?.leftSpaceToView(salary,10)?.widthIs(60)?.heightIs(10)
         
         _ = days.sd_layout().topSpaceToView(locate,10)?.leftSpaceToView(self.contentView,5)?.widthIs(60)?.heightIs(10)
