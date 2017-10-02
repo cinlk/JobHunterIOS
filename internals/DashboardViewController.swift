@@ -375,6 +375,8 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
         let headerCell = tables.dequeueReusableHeaderFooterView(withIdentifier: "dashheader") as! HeaderFoot
        
         switch section {
+        case 1:
+             headerCell.categoryName.text = ""
         case 2:
              headerCell.categoryName?.text = "最新职位"
             
@@ -538,7 +540,7 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     
     // choose city
     func chooseCity(){
-         var citylist = CityViewController()
+         let citylist = CityViewController()
         
         
         

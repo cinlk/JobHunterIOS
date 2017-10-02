@@ -306,7 +306,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView == self.table{
             // 去除 table header的黏贴性（第一个section移动到header后，header才滑动）
-            var sectionHeaderHeight:CGFloat = -64; //sectionHeaderHeight
+            let sectionHeaderHeight:CGFloat = -64; //sectionHeaderHeight
             //向上滑动，top 与父view间距变大，tableview整体上移
             if (scrollView.contentOffset.y > sectionHeaderHeight && scrollView.contentOffset.y < 0) {
                 

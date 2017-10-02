@@ -158,15 +158,6 @@
         <!--demo-->
         <scene sceneID="jUA-Gk-cmo">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="p1C-cV-4dH" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <searchDisplayController id="GXl-EF-m6b">
-                    <connections>
-                        <outlet property="delegate" destination="vp4-1g-uKS" id="KpZ-G6-6sR"/>
-                        <outlet property="searchContentsController" destination="vp4-1g-uKS" id="mO2-DH-VmS"/>
-                        <outlet property="searchResultsDataSource" destination="vp4-1g-uKS" id="DdH-r4-ns8"/>
-                        <outlet property="searchResultsDelegate" destination="vp4-1g-uKS" id="dc3-gs-Gbw"/>
-                    </connections>
-                </searchDisplayController>
                 <tableViewController id="vp4-1g-uKS" customClass="demo" customModule="internals" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="Nxc-1L-KJc">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
@@ -192,13 +183,67 @@
                         <outlet property="searchDisplayController" destination="GXl-EF-m6b" id="ip4-Uf-ppX"/>
                     </connections>
                 </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="p1C-cV-4dH" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <searchDisplayController id="GXl-EF-m6b">
+                    <connections>
+                        <outlet property="delegate" destination="vp4-1g-uKS" id="KpZ-G6-6sR"/>
+                        <outlet property="searchContentsController" destination="vp4-1g-uKS" id="mO2-DH-VmS"/>
+                        <outlet property="searchResultsDataSource" destination="vp4-1g-uKS" id="DdH-r4-ns8"/>
+                        <outlet property="searchResultsDelegate" destination="vp4-1g-uKS" id="dc3-gs-Gbw"/>
+                    </connections>
+                </searchDisplayController>
             </objects>
             <point key="canvasLocation" x="-657" y="1425"/>
+        </scene>
+        <!--消息界面-->
+        <scene sceneID="59d-fN-2An">
+            <objects>
+                <tableViewController id="6sL-mI-3vi" customClass="messageMain" customModule="internals" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="BOw-U4-McU">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="messgeItem" id="QgW-fw-GTQ" customClass="messageItemCell" customModule="internals" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="QgW-fw-GTQ" id="RoE-4w-laj">
+                                    <rect key="frame" x="0.0" y="0.0" width="342" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="6sL-mI-3vi" id="vDw-wc-FTK"/>
+                            <outlet property="delegate" destination="6sL-mI-3vi" id="MuK-xD-QaK"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="消息界面" id="eTo-eG-kQI"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="eJn-Tn-U1a" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1190" y="1413"/>
+        </scene>
+        <!--消息-->
+        <scene sceneID="aU9-Nv-jS5">
+            <objects>
+                <navigationController id="wEF-e4-SNh" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="消息" id="DgB-4F-z5u"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="bEG-dq-DXd">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="6sL-mI-3vi" kind="relationship" relationship="rootViewController" id="j7o-ls-Oqg"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ezd-vV-cqS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="236" y="1413"/>
         </scene>
         <!--个人-->
         <scene sceneID="xC3-zk-x6Q">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="1yP-Y1-Z0X" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController id="461-N7-OWh" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="wJY-GU-eKN"/>
@@ -212,6 +257,7 @@
                     <tabBarItem key="tabBarItem" title="个人" id="KED-Lf-gMB"/>
                     <navigationItem key="navigationItem" id="inb-Ml-ed8"/>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="1yP-Y1-Z0X" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1594" y="1480"/>
         </scene>
@@ -226,8 +272,8 @@
                     </tabBar>
                     <connections>
                         <segue destination="QqD-wV-07J" kind="relationship" relationship="viewControllers" id="zHC-tw-gdR"/>
-                        <segue destination="vp4-1g-uKS" kind="relationship" relationship="viewControllers" id="QbL-Ng-E34"/>
-                        <segue destination="461-N7-OWh" kind="relationship" relationship="viewControllers" id="eig-Qe-DL2"/>
+                        <segue destination="wEF-e4-SNh" kind="relationship" relationship="viewControllers" id="Pnh-vC-kEf"/>
+                        <segue destination="461-N7-OWh" kind="relationship" relationship="viewControllers" id="XL9-AT-Lg9"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Mn3-xs-IzL" userLabel="First Responder" sceneMemberID="firstResponder"/>

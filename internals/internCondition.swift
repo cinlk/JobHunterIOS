@@ -85,7 +85,10 @@ class internCondition: UIView,UICollectionViewDelegateFlowLayout,UICollectionVie
         confirmButton.isUserInteractionEnabled = true
         confirmButton.addTarget(self, action: #selector(confirm), for: .touchUpInside)
         confirmButton.setTitleColor(UIColor.black, for: .normal)
+        //confirmButton.adjustsImageWhenHighlighted  = true
+        
         self.condtions.addSubview(confirmButton)
+        
         _ = confirmButton.sd_layout().bottomSpaceToView(condtions,20)?.leftSpaceToView(condtions,20)?.heightIs(30)?.widthIs(260)
         
         
