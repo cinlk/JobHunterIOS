@@ -24,7 +24,7 @@ class progressHUB: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        var label = UILabel()
+        let label = UILabel()
         label.text = "加载数据"
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 10)

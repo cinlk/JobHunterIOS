@@ -233,7 +233,7 @@ class internCondition: UIView,UICollectionViewDelegateFlowLayout,UICollectionVie
     
     func confirm(){
         
-        var days = 0
+        let days = 0
         var salary = "不限"
         var month = 0
         var scholar = "不限"

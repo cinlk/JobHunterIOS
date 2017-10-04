@@ -13,9 +13,9 @@ class deliveredHistory: UIViewController,UIScrollViewDelegate {
     
     
     //test data
-    var data:[Dictionary<String,Any>] = []
-    var reviewDAta:[Dictionary<String,Any>] = []
-    var failDaata:[Dictionary<String,Any>] = []
+    var data:[Dictionary<String,String>] = []
+    var reviewDAta:[Dictionary<String,String>] = []
+    var failData:[Dictionary<String,String>] = []
     
     
     var line  = UIView()
@@ -253,7 +253,7 @@ class deliveredHistory: UIViewController,UIScrollViewDelegate {
        // all  数据
        data = TestData.getAllDelivers()
        reviewDAta = TestData.getReview()
-       failDaata = TestData.getfail()
+       failData = TestData.getfail()
        // Do any additional setup after loading the view.
     }
 
@@ -379,29 +379,29 @@ extension deliveredHistory:UITableViewDelegate,UITableViewDataSource{
         
         if tableView  == self.t1{
             let item = data[indexPath.row]
-            cell?.logo.image = UIImage(named: item["logo"] as! String)
+            cell?.logo.image = UIImage(named: item["image"]!)
          
-            cell?.creattime.text = (item["createtime"] as! String)
-            cell?.jobname.text = (item["jobname"] as! String)
-            cell?.locateAndCompany.text = (item["locate"] as! String) + "|" + (item["company"] as! String)
-            cell?.status.text  = (item["status"] as! CheckStatus).rawValue
+            cell?.creattime.text = (item["createTime"]!)
+            cell?.jobname.text = (item["jobname"]!)
+            cell?.locateAndCompany.text = (item["locate"]!) + "|" + (item["companyName"]!)
+            cell?.status.text  = (item["currentstatus"]!)
             
         }else if tableView == self.t2{
             let item = reviewDAta[indexPath.row]
-            cell?.logo.image = UIImage(named: item["logo"] as! String)
+            cell?.logo.image = UIImage(named: item["image"]!)
             
-            cell?.creattime.text = (item["createtime"] as! String)
-            cell?.jobname.text = (item["jobname"] as! String)
-            cell?.locateAndCompany.text = (item["locate"] as! String) + "|" + (item["company"] as! String)
+            cell?.creattime.text = (item["createTime"]!)
+            cell?.jobname.text = (item["jobname"]!)
+            cell?.locateAndCompany.text = (item["locate"]!) + "|" + (item["companyName"]!)
             cell?.status.text  = ""
             
         }else if tableView == self.t5{
-            let item = failDaata[indexPath.row]
-            cell?.logo.image = UIImage(named: item["logo"] as! String)
+            let item = failData[indexPath.row]
+            cell?.logo.image = UIImage(named: item["image"]!)
             
-            cell?.creattime.text = (item["createtime"] as! String)
-            cell?.jobname.text = (item["jobname"] as! String)
-            cell?.locateAndCompany.text = (item["locate"] as! String) + "|" + (item["company"] as! String)
+            cell?.creattime.text = (item["createTime"]!)
+            cell?.jobname.text = (item["jobname"]!)
+            cell?.locateAndCompany.text = (item["locate"]!) + "|" + (item["companyName"]!)
             cell?.status.text  = ""
 
         }
@@ -424,7 +424,7 @@ extension deliveredHistory:UITableViewDelegate,UITableViewDataSource{
             return reviewDAta.count
         }
         else if tableView == self.t5{
-            return failDaata.count
+            return failData.count
         }
         // TODO 其他类型数据
         return 0
@@ -435,6 +435,45 @@ extension deliveredHistory:UITableViewDelegate,UITableViewDataSource{
         return UITableViewAutomaticDimension
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        tableView.deselectRow(at: indexPath, animated: false)
+        let view = jobstatusView()
+        
+        if tableView  == t1{
+            var item = data[indexPath.row]
+            view.jobDetail = item
+            view.current = ["status":item["currentstatus"]!]
+            view.status =  TestData.findByid(id: item["id"]!)
+            
+            
+        }else if tableView == t2{
+            var item = reviewDAta[indexPath.row]
+            view.jobDetail = item
+            view.current = ["status":item["currentstatus"]!]
+            view.status  = TestData.findByid(id: item["id"]!)
+            
+        }else if tableView == t3{
+            
+        }else if tableView == t4{
+            
+        }else{
+            
+            var item = failData[indexPath.row]
+            view.jobDetail = item
+            // response 字数限制
+            view.current = ["status":item["currentstatus"]!,"response":"经验不匹配,能力不匹配"]
+            view.status = TestData.findByid(id: item["id"]!)
+        }
+        // 子视图 返回lable修改为空
+        let backButton =  UIBarButtonItem.init(title: "", style: .done, target: nil, action: nil)
+        self.navigationItem.backBarButtonItem = backButton
+
+        
+        self.navigationController?.pushViewController(view, animated: true)
+
+        
+    }
     
     
 }
