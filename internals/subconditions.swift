@@ -12,10 +12,11 @@ class subconditions: UIViewController {
 
     var table:UITableView!
     
-    var type = ["校招":["工作城市","职位类别","从事行业","薪资范围","学历"],"实习":["实习城市","职位类别","从事行业","实习天数","薪资范围","实习时间","学历"]]
+    var type = ["校招":["工作城市","职位类别","从事行业","薪资范围","学历"],"实习":["实习城市","职位类别","从事行业","实习天数","实习薪水","实习时间","学历"]]
     var name = ["职位类型":"请选择"]
     
-    var value = ["工作城市":"(必选)请选择","实习城市":"(必选)请选择","职位类别":"(必选)请选择","从事行业":"请选择","薪资范围":"请选择","实习天数":"请选择","实习时间":"请选择","学历":"请选择"]
+    var value = ["工作城市":"(必选)请选择","实习城市":"(必选)请选择","职位类别":"(必选)请选择","从事行业":"请选择","薪资范围":"请选择","实习天数":"请选择","实习时间":"请选择","学历":"请选择","实习薪水":"请选择"]
+    
     
     //从事行业
     
@@ -46,6 +47,8 @@ class subconditions: UIViewController {
     var  jobcategorys:Jobclassificatin!
     var centercY:CGFloat = 0
     
+    //storage
+    var data  =  localData()
     
     
     override func viewDidLoad() {
@@ -204,6 +207,7 @@ extension  subconditions:UITableViewDelegate,UITableViewDataSource{
         }
         else{
             cell.name.text = type[name["职位类型"]!]?[indexPath.row]
+            
             cell.value.text  = value[(type[name["职位类型"]!]?[indexPath.row])!]
             cell.selectionStyle = .none
         }
@@ -233,6 +237,10 @@ extension  subconditions:UITableViewDelegate,UITableViewDataSource{
             self.showindustry(name: cell.name.text!)
         case "薪资范围":
             self.salaryrange.item = ["不限","1000-2000","2000-3000","3000-4000","4000-5000"]
+            self.showsalary(name: cell.name.text!)
+        
+        case "实习薪水":
+            self.salaryrange.item = ["不限","80/天","100/天","150/天","200/天","250/天"]
             self.showsalary(name: cell.name.text!)
             
         case "实习天数":
@@ -275,7 +283,7 @@ extension subconditions{
     func getleixin(type:String,val:String){
          if type  == "职位类型"{
             name[type] = val
-            self.value = ["工作城市":"(必选)请选择","实习城市":"(必选)请选择","职位类别":"(必选)请选择","从事行业":"请选择","薪资范围":"请选择","实习天数":"请选择","实习时间":"请选择","学历":"请选择"]
+            self.value = ["工作城市":"(必选)请选择","实习城市":"(必选)请选择","职位类别":"(必选)请选择","从事行业":"请选择","薪资范围":"请选择","实习天数":"请选择","实习时间":"请选择","学历":"请选择","实习薪水":"请选择"]
             
         }
         else{
@@ -400,6 +408,21 @@ extension subconditions{
             }
             // return
             else{
+                
+                if self.value["从事行业"] == "请选择"{
+                    self.value["从事行业"] = "不限"
+                }
+                if self.value["薪资范围"]  == "请选择"{
+                    self.value["薪资范围"] = "不限"
+                }
+                if self.value["学历"]  == "请选择"{
+                    self.value["学历"] = "不限"
+                }
+                
+                let result:Dictionary<String,String> = ["工作城市":self.value["工作城市"]!,"职位类别":self.value["职位类别"]!,"从事行业":self.value["从事行业"]!,"薪资范围":self.value["薪资范围"]!,"学历":self.value["学历"]!]
+                
+                data.appendshezhaoCondition(value: result)
+                
                 self.dismiss(animated: true, completion: nil)
             }
         }
@@ -421,6 +444,29 @@ extension subconditions{
                     self.presentedViewController?.dismiss(animated: false, completion: nil)
                 }
             }else{
+                
+                if self.value["从事行业"] == "请选择"{
+                    self.value["从事行业"] = "不限"
+                }
+                if self.value["薪资范围"]  == "请选择"{
+                    self.value["薪资范围"] = "不限"
+                }
+                if self.value["实习天数"] == "请选择"{
+                    self.value["实习天数"] = "不限"
+                }
+                if self.value["实习薪水"] == "请选择"{
+                    self.value["实习薪水"] = "不限"
+                }
+                if self.value["实习时间"] == "请选择"{
+                    self.value["实习时间"] = "不限"
+                }
+                if self.value["学历"]  == "请选择"{
+                    self.value["学历"] = "不限"
+                }
+                
+                let result:Dictionary<String,String> = ["实习城市":self.value["实习城市"]!,"职位类别":self.value["职位类别"]!,"从事行业":self.value["从事行业"]!,"薪资范围":self.value["薪资范围"]!,"实习天数":self.value["实习天数"]!,"实习薪水":self.value["实习薪水"]!,"实习时间":self.value["实习时间"]!,"学历":self.value["学历"]!]
+                
+                data.appendShixiCondition(value: result)
                 self.dismiss(animated: true, completion: nil)
 
             }

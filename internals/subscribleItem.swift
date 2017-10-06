@@ -13,9 +13,14 @@ class subscribleItem: UITableViewController {
     
     // 数据保持在本地(校招,实习)
 
-    var interndata:[Dictionary<String,String>] =  [["test":"value"]]
-    var campusdata:[Dictionary<String,String>] = [["test":"value"]]
+    var interndata:[Dictionary<String,String>]?
+    var campusdata:[Dictionary<String,String>]?
     
+    
+    
+    //条件数据
+    var data = localData()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -29,6 +34,18 @@ class subscribleItem: UITableViewController {
         self.navigationItem.rightBarButtonItem?.imageInsets  = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     }
 
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        campusdata  =  data.getshezhaoCondtion()
+        interndata  = data.getshixiCondtion()
+        // 添加数据 后从新刷新table
+        self.tableView.reloadData()
+        print(campusdata)
+        print(interndata)
+        
+        
+    }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Disspose of any resources that can be recreated.
@@ -39,50 +56,57 @@ class subscribleItem: UITableViewController {
     override func numberOfSections(in tableView: UITableView) -> Int {
         
         // #warning Incomplete implementation, return the number of sections
-        var count  = 0
-        if !interndata.isEmpty{
-            count  += 1
-        }
-        if !campusdata.isEmpty{
-            count += 1
-        }
-        return count
+        return 2
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         if section == 0 {
-            return interndata.count
+            
+            if campusdata != nil{
+                return campusdata!.count
+            }
             
         }
         else{
-            return campusdata.count
+            if interndata != nil{
+                return interndata!.count
+            }
         }
+        return 0
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "subjobitems", for: indexPath) as! subjobitem
-
         // 校招
         if indexPath.section  == 0 {
-            cell.leibie.text = "PHP+.NET"
-            cell.locate.text = "北京"
-            cell.salary.text = "3K-5K"
-            cell.hangye.text = "网络游戏"
-            cell.shixiday.isHidden = true
-            cell.shixidaylog.isHidden = true
+            if let item  = campusdata?[indexPath.row]{
+                    cell.leibie.text  = item["职位类别"]
+                    cell.locate.text = item["工作城市"]
+                    cell.salary.text = item["薪资范围"]
+                    cell.hangye.text = item["从事行业"]
+                    //学历
+                    cell.shixiday.isHidden = true
+                    cell.shixidaylog.isHidden = true
+                    print(cell)
+            }
+           
             
         }else{
-            cell.leibie.text = "PHP+.NET"
-            cell.locate.text = "北京"
-            cell.salary.text = "300/天"
-            cell.hangye.text = "网络游戏"
-            cell.shixiday.text = "5天/周"
+            if let item = interndata?[indexPath.row]{
+            
+            cell.leibie.text = item["职位类别"]
+            cell.locate.text = item["实习城市"]
+            cell.salary.text = item["实习薪水"]
+            cell.hangye.text = item["从事行业"]
+            cell.shixiday.text = item["实习天数"]
+            
             cell.shixiday.isHidden = false
             cell.shixidaylog.isHidden = false
             
+            }
         }
         
         
@@ -101,10 +125,19 @@ class subscribleItem: UITableViewController {
         let view =  UITableViewHeaderFooterView.init()
         view.backgroundColor = UIColor.lightGray
         if section == 0 {
-                label.text  = "校招"
+            if campusdata != nil && !((campusdata?.isEmpty)!){
+                label.text = "校招"
+            }else{
+                return UIView()
+            }
             
         }else{
-            label.text  = "实习"
+            if interndata != nil && !((interndata?.isEmpty)!){
+                label.text = "实习"
+            }else{
+                return UIView()
+            }
+
         }
         view.addSubview(label)
         return view
@@ -115,7 +148,18 @@ class subscribleItem: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return  15
+        if section == 0 {
+            if campusdata != nil && !((campusdata?.isEmpty)!){
+                
+                return 15
+            }
+            
+        }else{
+            if interndata != nil && !((interndata?.isEmpty)!){
+                return 15
+            }
+        }
+        return  0
     }
     
     // cell 编辑
@@ -132,22 +176,61 @@ class subscribleItem: UITableViewController {
     // 自定义cell 编辑方法
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]?{
         
-        let more = UITableViewRowAction(style: .normal, title: "More") { action, index in
-            print("more button tapped")
-        }
-        more.backgroundColor = UIColor.lightGray
+//        let more = UITableViewRowAction(style: .normal, title: "More") { action, index in
+//            print("more button tapped")
+//        }
+//        more.backgroundColor = UIColor.lightGray
         
-        let favorite = UITableViewRowAction(style: .normal, title: "Favorite") { action, index in
-            print("favorite button tapped")
+        let edit = UITableViewRowAction(style: .normal, title: "edit") { action, index in
+            print("edit button tapped")
+            
+            if indexPath.section  == 0 {
+                let data = self.campusdata?[indexPath.row]
+                let editview  = editcondition()
+                editview.editdata  = data
+                editview.name["职位类型"] = "校招"
+                editview.row  = indexPath.row
+                
+                let backButton =  UIBarButtonItem.init(title: "", style: .done, target: nil, action: nil)
+                self.navigationItem.backBarButtonItem = backButton
+                
+                self.navigationController?.pushViewController(editview, animated: true)
+
+                
+                
+            }else{
+                let data = self.interndata?[indexPath.row]
+                let editview  = editcondition()
+                editview.editdata = data
+                editview.name["职位类型"] = "实习"
+                editview.row  = indexPath.row
+
+                let backButton =  UIBarButtonItem.init(title: "", style: .done, target: nil, action: nil)
+                self.navigationItem.backBarButtonItem = backButton
+                
+                self.navigationController?.pushViewController(editview, animated: true)
+
+            }
         }
-        favorite.backgroundColor = UIColor.orange
         
-        let share = UITableViewRowAction(style: .normal, title: "Share") { action, index in
-            print("share button tapped")
+        edit.backgroundColor = UIColor.orange
+        
+        let delete = UITableViewRowAction(style: .normal, title: "delete") { action, index in
+            print("delete button tapped")
+            
+            if indexPath.section == 0{
+                self.campusdata?.remove(at: indexPath.row)
+                self.data.deleteshezhaoCondition(index: indexPath.row)
+            }else{
+                self.interndata?.remove(at: indexPath.row)
+                self.data.deleteShixiCondition(index: indexPath.row)
+            }
+            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.fade)
+            
         }
-        share.backgroundColor = UIColor.blue
+        delete.backgroundColor = UIColor.blue
         
-        return [share, favorite, more]
+        return [delete, edit]
     }
     
    

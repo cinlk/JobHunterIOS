@@ -16,8 +16,87 @@ class localData: NSObject {
     
     public override init() {
         pref = UserDefaults.standard
+        
     }
     
+    // 实习条件 数据
+    open func  setshixiCondtion(value: [Dictionary<String,String>]){
+        pref.set(value, forKey: "shixicondition")
+    }
+    
+    open func getshixiCondtion()->[Dictionary<String,String>]?{
+        guard let con =  pref.object(forKey: "shixicondition") as? [Dictionary<String,String>]  else {
+            return nil
+        }
+        return con
+    }
+    
+    open func deleteShixiCondition(index:Int){
+        guard var con =  pref.object(forKey: "shixicondition") as?  [Dictionary<String,String>] else {
+            return
+        }
+        con.remove(at: index)
+        pref.set(con, forKey: "shixicondition")
+    }
+    
+    open func appendShixiCondition(value: Dictionary<String,String>){
+        var condtion = [Dictionary<String,String>]()
+        if let con =  pref.object(forKey: "shixicondition") as?  [Dictionary<String,String>]{
+            condtion  = con
+        }
+        condtion.append(value)
+        pref.set(condtion, forKey: "shixicondition")
+
+    }
+    open func updateShixiCondition(value:Dictionary<String,String>,index:Int){
+        var con  = pref.object(forKey: "shixicondition") as! [Dictionary<String,String>]
+        con.remove(at: index)
+        con.insert(value, at: index)
+        pref.set(con, forKey: "shixicondition")
+        
+    }
+    
+    // 社招条件 数据
+    
+    open func  setshezhaoCondtion(value: [Dictionary<String,String>]){
+        pref.set(value, forKey: "shezhaocondition")
+    }
+    
+    open func getshezhaoCondtion()->[Dictionary<String,String>]?{
+        guard let con =  pref.object(forKey: "shezhaocondition") as? [Dictionary<String,String>]  else {
+            return nil
+        }
+        return con
+    }
+    
+    open func deleteshezhaoCondition(index:Int){
+        guard var con =  pref.object(forKey: "shezhaocondition") as?  [Dictionary<String,String>] else {
+            return
+        }
+        con.remove(at: index)
+        pref.set(con, forKey: "shezhaocondition")
+    }
+    
+    open func appendshezhaoCondition(value: Dictionary<String,String>){
+        var condtion = [Dictionary<String,String>]()
+        if let con =  pref.object(forKey: "shezhaocondition") as?  [Dictionary<String,String>]{
+            condtion  = con
+        }
+        condtion.append(value)
+        pref.set(condtion, forKey: "shezhaocondition")
+        
+    }
+    
+    open func updateshezhaoCondition(value:Dictionary<String,String>,index:Int){
+        var con  = pref.object(forKey: "shezhaocondition") as! [Dictionary<String,String>]
+        con.remove(at: index)
+        con.insert(value, at: index)
+        pref.set(con, forKey: "shezhaocondition")
+        
+    }
+    
+    
+    ///
     open func setCategories(value: [String]) {
         pref.set(value, forKey: "categories")
     }
@@ -55,3 +134,6 @@ class localData: NSObject {
     
     
 }
+
+
+
