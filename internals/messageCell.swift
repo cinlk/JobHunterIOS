@@ -20,10 +20,10 @@ class messageCell: UITableViewCell {
     
     // 代码初始化
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        avatar = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 45, height: 45))
-        
+        avatar = UIImageView.init()
         messageLabel = UILabel()
         bubleBackGround = UIImageView()
+        
         
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         messageLabel.font = UIFont.systemFont(ofSize: 16)
@@ -31,9 +31,11 @@ class messageCell: UITableViewCell {
         // 分行
         messageLabel.numberOfLines = 0
         
-        self.addSubview(avatar)
-        self.addSubview(bubleBackGround)
-        self.addSubview(messageLabel)
+        
+        
+        self.contentView.addSubview(avatar)
+        self.contentView.addSubview(bubleBackGround)
+        self.contentView.addSubview(messageLabel)
 
         
         //
@@ -49,6 +51,7 @@ class messageCell: UITableViewCell {
     // nib 初始化
     override func awakeFromNib() {
         super.awakeFromNib()
+      
         // Initialization code
     }
 
@@ -73,14 +76,16 @@ class messageCell: UITableViewCell {
         if labelSize.height < avatarSize.height + 10{
             return avatarSize.height + 10
         }
-        print(labelSize.height)
+        print("cell height \(labelSize)")
         return labelSize.height + 5
         
         
     }
     
     func setupMessageCell(messageInfo:MessageBoby,user:FriendData){
-            
+        
+       
+        
         let screenRect:CGRect = UIScreen.main.bounds
             
         let labelSize:CGSize = UILabel.sizeOfString(string: messageInfo.content as! NSString, font: UIFont.systemFont(ofSize: 16), maxWidth: screenRect.width-10-20-avatarSize.width*2)
@@ -90,6 +95,9 @@ class messageCell: UITableViewCell {
         // 自己发的消息
         if messageInfo.sender.name  ==  user.name{
             self.avatar.frame = CGRect.init(x: screenRect.width-avatarSize.width-5 , y: 5, width: avatarSize.width, height: avatar.height)
+            // 设置image 高度约束，不然cell 初始化后有概率 变成0
+            _ = avatar.sd_layout().leftSpaceToView(self.contentView,320-50)?.topSpaceToView(self.contentView,5)?.widthIs(45)?.heightIs(45)
+            
             
             self.avatar.image = UIImage.init(named: "lk")
             
@@ -98,11 +106,16 @@ class messageCell: UITableViewCell {
             
             self.messageLabel.textAlignment = .left
             
-           
+            self.bubleBackGround.image = UIImage.resizeableImage(name: "rightmessage")
+
             self.bubleBackGround.frame = CGRect.init(x: screenRect.width-5-self.avatar.frame.width-5-bubleSize.width, y: 5, width: bubleSize.width, height: bubleSize.height)
-             self.bubleBackGround.image = UIImage.resizeableImage(name: "rightmessage")
             
+            // 取消动画，不然显示动画 不好看
+            avatar.layer.removeAllAnimations()
+            messageLabel.layer.removeAllAnimations()
+            bubleBackGround.layer.removeAllAnimations()
             
+            print("self \(self.contentView.subviews)")
             
             
         
@@ -110,6 +123,8 @@ class messageCell: UITableViewCell {
         // 别人发的消息
         else{
             self.avatar.frame = CGRect.init(x: 5, y: 5, width: avatarSize.width, height: avatarSize.height)
+             _ = avatar.sd_layout().leftSpaceToView(self.contentView,5)?.topSpaceToView(self.contentView,5)?.widthIs(45)?.heightIs(45)
+            
             self.avatar.image = UIImage.init(named: "avartar")
             
             self.messageLabel.text = messageInfo.content
@@ -117,17 +132,29 @@ class messageCell: UITableViewCell {
             self.messageLabel.frame = CGRect.init(x: self.avatar.frame.origin.x + self.avatar.frame.width + 5 + 12.5, y: 5, width: labelSize.width, height: labelSize.height)
             
             self.messageLabel.textAlignment = .left
-            self.bubleBackGround.frame = CGRect.init(x: self.avatar.frame.origin.x + self.avatar.frame.width+5, y: 5, width: bubleSize.width, height: bubleSize.height)
             self.bubleBackGround.image = UIImage.resizeableImage(name: "leftmessage")
 
+            self.bubleBackGround.frame = CGRect.init(x: self.avatar.frame.origin.x + self.avatar.frame.width+5, y: 5, width: bubleSize.width, height: bubleSize.height)
+            // 取消动画，不然显示动画 不好看
+            avatar.layer.removeAllAnimations()
+            messageLabel.layer.removeAllAnimations()
+            bubleBackGround.layer.removeAllAnimations()
             
+            
+            print("other \(self.contentView.subviews)")
+
             
             
             
         }
         
-    }
+       
         
+        
+    }
+    
+    
+    
         
         
     

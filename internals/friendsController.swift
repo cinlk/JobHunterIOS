@@ -11,7 +11,8 @@ import UIKit
 class friendsController: UIViewController {
 
     //
-    var userinfo:NSMutableArray = []
+    var userinfo:NSMutableArray = Contactlist.shared().userinfo
+    
     
     
     
@@ -26,6 +27,7 @@ class friendsController: UIViewController {
     }()
     
     override func viewDidLoad() {
+        
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.white
         self.navigationItem.title = "好友列表"
@@ -33,10 +35,10 @@ class friendsController: UIViewController {
         table.delegate = self
         table.dataSource = self
         
-        var testuser1 = FriendData.init(name: "lk", avart: "avartar")
-        var testuser2 = FriendData.init(name: "devil", avart: "avartar")
-        self.userinfo.add(testuser1)
-        self.userinfo.add(testuser2)
+//        var testuser1 = FriendData.init(name: "lk", avart: "avartar")
+//        var testuser2 = FriendData.init(name: "devil", avart: "avartar")
+//        self.userinfo.add(testuser1)
+//        self.userinfo.add(testuser2)
         
         self.view.addSubview(table)
 
@@ -92,8 +94,8 @@ extension friendsController:UITableViewDelegate,UITableViewDataSource{
         let user = userinfo[indexPath.row]
         
         let chatView = communication()
-        // 传入user  和 attachment
-        chatView.chatWith(friend: user as! FriendData)
+        //  keep before chat message?
+        chatView.chatWith(friend: user as! FriendData, jobCard: nil)
         self.navigationController?.pushViewController(chatView, animated: true)
         
         

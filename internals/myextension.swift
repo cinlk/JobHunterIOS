@@ -124,7 +124,6 @@ extension UIImage{
     //拉伸图片 ?
     class func resizeableImage(name:String)->UIImage{
         let image = UIImage.init(named: name)
-        print(image?.size)
         let top = (image?.size.height)! * 0.6
         let bottom = (image?.size.height)! * 0.5
         let lr = (image?.size.height)! * 0.5

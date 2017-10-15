@@ -52,6 +52,7 @@ class jobstatusView: UIViewController {
         // 状态变化cell
         self.table.register(UINib(nibName:"statustage", bundle:nil), forCellReuseIdentifier: "bottom")
         
+        
         self.table.tableFooterView =  UIView()
         self.table.isScrollEnabled = false
         self.table.separatorStyle = .none
@@ -235,7 +236,17 @@ extension jobstatusView:UITableViewDelegate,UITableViewDataSource{
 
 extension jobstatusView{
     func talkhr(sender:UIButton){
-        print("click \(sender)")
+        // step 1  add to friend list
+        let HR:FriendData = FriendData.init(name: jobDetail["companyName"]!+"@"+"hr", avart: "jodel")
+        Contactlist.shared().addUser(user: HR)
+        
+        
+        
+        // show chat view and job description cell
+        let chatView = communication()
+        chatView.chatWith(friend: HR,jobCard:self.jobDetail)
+        self.navigationController?.pushViewController(chatView, animated: true)
+        
     }
 }
 
@@ -269,8 +280,6 @@ class jobstatusDesCell:UITableViewCell{
     
     
 }
-
-
 
 
 
