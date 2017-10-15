@@ -130,6 +130,7 @@ class localData: NSObject {
     open func getSearchHistories() -> [String]? {
         guard let histories = pref.object(forKey: "histories") as? [String] else { return nil }
         return histories
+        
     }
     
     

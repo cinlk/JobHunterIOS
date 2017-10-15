@@ -121,6 +121,18 @@ extension UIImage{
         
     }
     
+    //拉伸图片 ?
+    class func resizeableImage(name:String)->UIImage{
+        let image = UIImage.init(named: name)
+        print(image?.size)
+        let top = (image?.size.height)! * 0.6
+        let bottom = (image?.size.height)! * 0.5
+        let lr = (image?.size.height)! * 0.5
+        
+        return (image?.resizableImage(withCapInsets: UIEdgeInsets.init(top: top, left: lr, bottom: bottom, right: lr), resizingMode: .stretch))!
+        
+    }
+    
 }
 
 // viwe  对应的 uiviewcontroller
@@ -140,4 +152,15 @@ extension UIView{
     }
 
     
+}
+
+
+extension UILabel{
+    class func sizeOfString(string:NSString,font:UIFont,maxWidth:CGFloat)->CGSize{
+        
+        let size = string.boundingRect(with: CGSize.init(width: maxWidth, height: 1200), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSFontAttributeName:font], context: nil).size
+        // 与边框的距离
+        return CGSize.init(width: size.width + 15, height: size.height + 20)
+        
+    }
 }

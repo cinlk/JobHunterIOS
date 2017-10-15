@@ -7,5 +7,8 @@ target 'internals' do
 	pod 'SDAutoLayout', '~> 2.1.3'
 	pod 'YNSearch'
         pod 'YNDropDownMenu'
+	#pod 'CocoaAsyncSocket'
+	pod 'SocketRocket'
+	pod 'SwiftProtobuf', '~>0.9.905'
 
 end

@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import QuartzCore
+
 
 class editcondition: UIViewController {
     

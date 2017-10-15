@@ -10,6 +10,6 @@
 #define bridge_h
 
 #import <SDAutoLayout/SDAutoLayout.h>
-
+#import <SocketRocket/SocketRocket.h>
 
 #endif /* bridge_h */

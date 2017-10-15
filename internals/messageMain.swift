@@ -124,7 +124,8 @@ class messageMain: UITableViewController {
 
                 self.navigationController?.pushViewController(rview, animated: true)
             case messageItemType.message.rawValue:
-                let mview = communication()
+                // 消息好友列表
+                let mview = friendsController()
                 mview.hidesBottomBarWhenPushed = true
 
                 self.navigationController?.pushViewController(mview, animated: true)
