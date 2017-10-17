@@ -71,12 +71,11 @@ class messageCell: UITableViewCell {
         let screenRect:CGRect = UIScreen.main.bounds
 //        let str:NSString  = NSString.init(cString: messageInfo.content.cString(using: String.Encoding.utf8)!, encoding: String.Encoding.utf8.rawValue)!
         // 对话框大小计算
-        let labelSize:CGSize = UILabel.sizeOfString(string: messageInfo.content as! NSString, font: UIFont.systemFont(ofSize: 16), maxWidth: screenRect.width-10-20-avatarSize.width * 2)
+        let labelSize:CGSize = UILabel.sizeOfString(string: messageInfo.content! as NSString, font: UIFont.systemFont(ofSize: 16), maxWidth: screenRect.width-10-20-avatarSize.width * 2)
         
         if labelSize.height < avatarSize.height + 10{
             return avatarSize.height + 10
         }
-        print("cell height \(labelSize)")
         return labelSize.height + 5
         
         
@@ -88,7 +87,7 @@ class messageCell: UITableViewCell {
         
         let screenRect:CGRect = UIScreen.main.bounds
             
-        let labelSize:CGSize = UILabel.sizeOfString(string: messageInfo.content as! NSString, font: UIFont.systemFont(ofSize: 16), maxWidth: screenRect.width-10-20-avatarSize.width*2)
+        let labelSize:CGSize = UILabel.sizeOfString(string: messageInfo.content! as NSString, font: UIFont.systemFont(ofSize: 16), maxWidth: screenRect.width-10-20-avatarSize.width*2)
         
         let bubleSize:CGSize = CGSize.init(width: labelSize.width+10, height: labelSize.height)
         
@@ -115,7 +114,6 @@ class messageCell: UITableViewCell {
             messageLabel.layer.removeAllAnimations()
             bubleBackGround.layer.removeAllAnimations()
             
-            print("self \(self.contentView.subviews)")
             
             
         
@@ -141,7 +139,6 @@ class messageCell: UITableViewCell {
             bubleBackGround.layer.removeAllAnimations()
             
             
-            print("other \(self.contentView.subviews)")
 
             
             

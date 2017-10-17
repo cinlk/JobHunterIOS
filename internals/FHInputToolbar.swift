@@ -11,7 +11,10 @@ import UIKit
 protocol FHInputToolbarDelegate {
     func onInputBtnTapped(text:String)
     func onleftBtnTapped(text:String)
+    func showMoreView()
 }
+
+
 
 class FHInputToolbar: UIView,UITextFieldDelegate {
 
@@ -21,6 +24,17 @@ class FHInputToolbar: UIView,UITextFieldDelegate {
     var textField:UITextField!
     var leftBtn:UIButton!
     var rightBtn:UIButton!
+    
+    
+    
+   
+//    lazy var moreView:ChatMMoreView  = { [unowned self] in
+//        let moreV = ChatMMoreView()
+//        moreV.delegate = self
+//        return moreV
+//
+//
+//        }()
     
     var delage:FHInputToolbarDelegate?
     
@@ -60,16 +74,20 @@ class FHInputToolbar: UIView,UITextFieldDelegate {
         self.textField.delegate = self
         self.textField.keyboardType = .default
         
+      
         self.addSubview(textField)
         
         self.rightBtn.frame = CGRect.init(x: UIScreen.main.bounds.width-34-5, y: 5, width: 34, height: 34)
-        
+        // more
         self.rightBtn.setBackgroundImage(UIImage.init(named: "plus"), for: .normal)
         
         self.rightBtn.addTarget(self, action: #selector(rightclick), for: .touchUpInside)
         
         self.addSubview(rightBtn)
         
+        //self.addSubview(moreView)
+        
+       // _ = moreView.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.heightIs(self.textField.height)
         
     }
     
@@ -86,15 +104,28 @@ extension FHInputToolbar{
         self.textField.text = ""
     }
     func rightclick(sender:AnyObject){
-        self.delage?.onInputBtnTapped(text: self.textField.text!)
-        self.textField.text = ""
+        
+        //self.delage?.onInputBtnTapped(text: self.textField.text!)
+        self.delage?.showMoreView()
+        
+        
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         //需要扩展
-        self.rightclick(sender: self.rightBtn)
-        
+        //self.rightclick(sender: self.rightBtn)
+        self.delage?.onInputBtnTapped(text: self.textField.text!)
+        self.textField.text = ""
         return false
         
     }
+}
+
+// MARK
+extension FHInputToolbar: MoreViewDelegate{
+    func chatMoreView(moreView: ChatMMoreView, didSelectedType type: ChatMoreType) {
+        
+    }
+    
+    
 }

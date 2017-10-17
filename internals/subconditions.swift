@@ -701,7 +701,7 @@ class conditionCity:UIView,UITableViewDelegate,UITableViewDataSource{
         }else{
             self.call!(title.text!,(rightcity[choosed]?[indexPath.row])!)
             
-            print("choose city \(rightcity[choosed]?[indexPath.row])")
+            print("choose city \(String(describing: rightcity[choosed]?[indexPath.row]))")
             return
         }
         
@@ -858,7 +858,7 @@ class Jobclassificatin:UIView,UITableViewDelegate,UITableViewDataSource,UIScroll
         //
         
         show = UIView()
-        var label = UILabel()
+        let label = UILabel()
         show.backgroundColor = UIColor.white
         label.text  = "最多选择5个"
         label.textAlignment = .center
@@ -936,7 +936,7 @@ class Jobclassificatin:UIView,UITableViewDelegate,UITableViewDataSource,UIScroll
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         
-        var cell = tableView.cellForRow(at: indexPath) as! selectCell
+        let cell = tableView.cellForRow(at: indexPath) as! selectCell
         
         if tableView == table1{
             cell.label.isHighlighted = true
@@ -1077,7 +1077,7 @@ class Jobclassificatin:UIView,UITableViewDelegate,UITableViewDataSource,UIScroll
             return
         }
         var str = ""
-        var count = result.count - 1
+        let count = result.count - 1
         for (index,item) in result.enumerated(){
            str += item
             if index != count{

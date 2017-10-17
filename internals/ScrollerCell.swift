@@ -97,7 +97,7 @@ class ScrollerCell: UITableViewCell,UIScrollViewDelegate{
     
     func tag(button:UIButton){
         
-        print(button.titleLabel?.text)
+        print(button.titleLabel?.text ?? "")
         for bu  in (self.scrollView?.subviews)!{
             
             if bu.isKind(of: UIButton.self){
@@ -150,7 +150,7 @@ class ScrollerCell: UITableViewCell,UIScrollViewDelegate{
     }
     
     func demo(button:UIButton){
-        print("image \(button.titleLabel?.text)")
+        print("image \(button.titleLabel?.text ?? "")")
         
     }
    

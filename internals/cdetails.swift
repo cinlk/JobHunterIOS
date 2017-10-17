@@ -270,7 +270,7 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
         print(scroll.frame)
         
         
-        var l = UILabel()
+        let l = UILabel()
         l.text = "公司主页"
         l.textAlignment  = .center
         l.textColor = UIColor.black

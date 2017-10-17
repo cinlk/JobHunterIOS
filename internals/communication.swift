@@ -15,9 +15,17 @@ enum  cellType:String {
     case detail = "detail"
 }
 
+enum ShowType:Int {
+    case keyboard
+    case moreView
+    case none
+}
+
 
 class communication: UIViewController,UITableViewDelegate,UITableViewDataSource {
 
+    // showtype
+    var st: ShowType = ShowType.none
     
     var coverView:UIView?
     
@@ -31,6 +39,19 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
     var friend:FriendData = FriendData.init(name: "locky", avart: "avartar")
     let myself:FriendData = FriendData.init(name: "lk", avart: "lk")
     
+    
+   
+ 
+    
+    // more
+    lazy var moreView:ChatMMoreView  = { [unowned self] in
+        let moreV = ChatMMoreView()
+    
+        moreV.delegate = self
+        return moreV
+        
+        
+        }()
     
     
     override func viewDidLoad() {
@@ -78,7 +99,9 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardhidden), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
-    
+        self.view.addSubview(moreView)
+       // 用约束 动画才能移动subview
+        _ = moreView.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.yIs(self.view.height+5)?.heightIs(200)
         self.setupNavigationTitle(text: friend.name)
         
         // Do any additional setup after loading the view.
@@ -138,7 +161,7 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
             return cell
         }
         
-        if let chatmessage:MessageBoby = self.tableSource.object(at: indexPath.row) as? MessageBoby{
+        if let _:MessageBoby = self.tableSource.object(at: indexPath.row) as? MessageBoby{
             let cell = tableView.dequeueReusableCell(withIdentifier: messageCell.reuseidentify(), for: indexPath) as! messageCell
             cell.selectionStyle = .none
             
@@ -233,13 +256,79 @@ extension communication{
     func hiddenKeyboard(sender: UITapGestureRecognizer){
         if sender.state == .ended{
             self.InputBar.textField.resignFirstResponder()
+            print("tag \(self.InputBar.textField.text)")
         }
         sender.cancelsTouchesInView = false
+        if st == .moreView{
+            UIView.animate(withDuration: 0.3, animations: {
+                  self.tableView.frame = CGRect.init(x: 0, y: 60, width: self.view.frame.width, height: self.view.frame.height-64-self.InputBar.frame.height)
+                self.moreView.frame = CGRect.init(x: 0, y: UIScreen.main.bounds.height + 5, width: UIScreen.main.bounds.width, height: 200)
+                self.InputBar.frame = CGRect.init(x: 0, y: UIScreen.main.bounds.height-44, width: UIScreen.main.bounds.width, height: 44)
+                
+            })
+            
+        }
+        st  = .none
+        
     }
 }
 
 
 extension communication:FHInputToolbarDelegate{
+    
+    // moreView
+    func showMoreView() {
+        
+        if st == .moreView {
+            return
+        }
+        else if st == .keyboard{
+            st = .moreView
+            print("moreView \(self.InputBar.textField)")
+
+            self.InputBar.textField.resignFirstResponder()
+            print("moreView \(self.InputBar.textField)")
+
+            UIView.animate(withDuration: 0.4, animations: {
+                self.InputBar.frame = CGRect.init(x: 0, y: UIScreen.main.bounds.height-44-200, width: UIScreen.main.bounds.width, height: 44)
+                self.tableView.frame = CGRect.init(x: 0, y: 64, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 64 - 44 - 200)
+                print("moreView \(self.InputBar.textField)")
+
+
+            })
+               
+             self.moreView.frame = CGRect.init(x: 0, y: UIScreen.main.bounds.height - 200, width: UIScreen.main.bounds.width, height: 200)
+                
+
+            self.InputBar.textField.textColor = UIColor.black
+            return
+            // 影藏 keyboard  出现view 动画
+            //结束后 input 下降 tablev 下降 scroll最后一行
+            
+        }else{
+            
+        }
+        st = .moreView
+
+        
+        // none 动画显示
+        
+        UIView.animate(withDuration: 0.3, animations: {
+            self.InputBar.frame = CGRect.init(x: 0, y: UIScreen.main.bounds.height-44-200, width: UIScreen.main.bounds.width, height: 44)
+            self.moreView.frame = CGRect.init(x: 0, y: UIScreen.main.bounds.height-200, width: UIScreen.main.bounds.width, height: 200)
+              self.tableView.frame = CGRect.init(x: 0, y: 64, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 64 - 44 - 200)
+            
+            
+        }) { (Bool) in
+            let path:IndexPath = IndexPath.init(row: self.tableSource.count-1, section: 0)
+            self.tableView.scrollToRow(at: path, at: UITableViewScrollPosition.bottom, animated: true)
+        }
+       
+        
+        
+        
+    }
+    
     func onInputBtnTapped(text: String) {
         if (text.isEmpty){
             return
@@ -248,7 +337,7 @@ extension communication:FHInputToolbarDelegate{
         //MARK connected back server
         
         
-        let lastMessage:MessageBoby = self.tableSource.lastObject as! MessageBoby
+        let _:MessageBoby = self.tableSource.lastObject as! MessageBoby
         
         let message:MessageBoby = MessageBoby.init(content: text, time: "10-14")
         message.sender = myself
@@ -269,13 +358,20 @@ extension communication:FHInputToolbarDelegate{
     }
     
     func keyboardChange(notify:Notification){
+        
+        
+       
+        
         let userinfo = notify.userInfo
         
         let duration = userinfo![UIKeyboardAnimationDurationUserInfoKey] as! Double
         
         let keyboardFrame = (userinfo![UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
-        
+        print("keyboard height \(keyboardFrame)")
         UIView.animate(withDuration: duration, animations: {
+            if self.st == .moreView{
+                self.moreView.frame = CGRect.init(x: 0, y: UIScreen.main.bounds.height + 5, width: UIScreen.main.bounds.width, height: 200)
+            }
             self.tableView.frame = CGRect.init(x: 0, y: 64, width: self.view.frame.width, height: self.view.frame.height-64-self.InputBar.frame.height-keyboardFrame.size.height)
             self.InputBar.frame = CGRect.init(x: 0, y: UIScreen.main.bounds.height-44-keyboardFrame.size.height, width: UIScreen.main.bounds.width, height: 44)
             
@@ -284,15 +380,22 @@ extension communication:FHInputToolbarDelegate{
             self.tableView.scrollToRow(at: path, at: UITableViewScrollPosition.bottom, animated: true)
         }
         
+         st = .keyboard
+        
         
     }
     
     func keyboardhidden(notify:Notification){
-        print("triger keyborad hidden")
+        
+        print("triger keyborad hidden \(self.InputBar.textField)")
+        
+        if st == .moreView{
+            return
+        }
         let userinfo = notify.userInfo
         
         let duration = userinfo![UIKeyboardAnimationDurationUserInfoKey] as! Double
-        
+       
         UIView.animate(withDuration: duration, animations: {
             self.tableView.frame = CGRect.init(x: 0, y: 60, width: self.view.frame.width, height: self.view.frame.height-64-self.InputBar.frame.height)
         })
@@ -384,5 +487,12 @@ class CellCard:UITableViewCell{
     
 }
 
+// more
+extension communication:MoreViewDelegate{
+    func chatMoreView(moreView: ChatMMoreView,didSelectedType type: ChatMoreType){
+        
+    }
+
+}
 
 

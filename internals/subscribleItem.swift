@@ -41,8 +41,8 @@ class subscribleItem: UITableViewController {
         interndata  = data.getshixiCondtion()
         // 添加数据 后从新刷新table
         self.tableView.reloadData()
-        print(campusdata)
-        print(interndata)
+        print(campusdata ?? "")
+        print(interndata ?? "")
         
         
     }

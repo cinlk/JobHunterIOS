@@ -102,7 +102,7 @@ extension forumView{
         mess.query  =  (textfield?.text)!
         //
         do{
-            let json:String = try mess.jsonString()
+            let _:String = try mess.jsonString()
             let protoData:Data = try mess.serializedData()
             websockDemo.share().sendMsg(mes: protoData)
             

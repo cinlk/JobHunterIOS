@@ -74,7 +74,7 @@ class websockDemo:NSObject, SRWebSocketDelegate{
                 
             })
             
-            print("aha \(self.heartBeat)")
+            print("aha \(String(describing: self.heartBeat))")
             RunLoop.current.add(self.heartBeat!, forMode: .commonModes)
 
         }
@@ -182,7 +182,7 @@ extension websockDemo{
     }
     
     func webSocket(_ webSocket: SRWebSocket!, didReceivePong pongPayload: Data!) {
-        print("收到pong\( String.init(data: pongPayload, encoding: String.Encoding.utf8))")
+        print("收到pong\(String(describing:  String.init(data: pongPayload, encoding: String.Encoding.utf8)))")
         
     }
     // 意外中断

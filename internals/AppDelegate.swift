@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UITabBarItem.appearance().setTitleTextAttributes([NSForegroundColorAttributeName: selectedColor], for: .selected)
         
         // load contacts
-        Contactlist.shared()
+        _ = Contactlist.shared()
         
         
         return true
