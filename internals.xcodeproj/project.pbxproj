@@ -63,6 +63,8 @@
 		4ACBD6F51F76386D00A5FD23 /* baseSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACBD6F41F76386D00A5FD23 /* baseSearchViewController.swift */; };
 		4ACBD6F71F77DE6C00A5FD23 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ACBD6F61F77DE6C00A5FD23 /* Social.framework */; };
 		4ACBD6FC1F77E8F500A5FD23 /* shareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACBD6FB1F77E8F500A5FD23 /* shareView.swift */; };
+		4AD03AB81F9B45270077C15B /* InputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD03AB71F9B45270077C15B /* InputTextView.swift */; };
+		4AD03ABB1F9C7DD30077C15B /* GetChatEmotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD03ABA1F9C7DD30077C15B /* GetChatEmotion.swift */; };
 		4ADCC7501F511DD3001A4E9F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADCC74F1F511DD3001A4E9F /* AppDelegate.swift */; };
 		4ADCC7521F511DD3001A4E9F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADCC7511F511DD3001A4E9F /* ViewController.swift */; };
 		4ADCC7551F511DD3001A4E9F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4ADCC7531F511DD3001A4E9F /* Main.storyboard */; };
@@ -72,6 +74,15 @@
 		4ADCC7701F511DD3001A4E9F /* internalsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADCC76F1F511DD3001A4E9F /* internalsUITests.swift */; };
 		4ADCC77E1F51251D001A4E9F /* LoginNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADCC77D1F51251D001A4E9F /* LoginNavigationController.swift */; };
 		4ADCC7811F512880001A4E9F /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADCC7801F512880001A4E9F /* RegisterViewController.swift */; };
+		4ADDDAB31F97ABA4001CB00F /* ChatEmotionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADDDAB21F97ABA4001CB00F /* ChatEmotionView.swift */; };
+		4ADDDAB51F98EF84001CB00F /* ChatEmotionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADDDAB41F98EF84001CB00F /* ChatEmotionCell.swift */; };
+		4ADDDAB81F98F054001CB00F /* MChatEmotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADDDAB71F98F054001CB00F /* MChatEmotion.swift */; };
+		4ADDDABA1F98F5CC001CB00F /* test.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4ADDDAB91F98F5CC001CB00F /* test.plist */; };
+		4ADDDABF1F98F735001CB00F /* test.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4ADDDABE1F98F735001CB00F /* test.bundle */; };
+		4ADDDAD51F98F9B3001CB00F /* ChatEmotionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADDDAD41F98F9B3001CB00F /* ChatEmotionHelper.swift */; };
+		4ADDDAD81F9B1EE3001CB00F /* ChatEmotionAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADDDAD71F9B1EE3001CB00F /* ChatEmotionAttachment.swift */; };
+		4ADDDADC1F9B40A8001CB00F /* ChatBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADDDADB1F9B40A8001CB00F /* ChatBarView.swift */; };
+		4ADDDAE01F9B426C001CB00F /* ChatMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADDDADF1F9B426C001CB00F /* ChatMoreView.swift */; };
 		4AE4AFC11F5131AE00B5F509 /* ForgetPasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE4AFC01F5131AE00B5F509 /* ForgetPasswordController.swift */; };
 		4AE694C31F91D5BD005BE1F0 /* messageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE694C21F91D5BD005BE1F0 /* messageCell.swift */; };
 		4AE694C51F91FCFA005BE1F0 /* FHInputToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE694C41F91FCFA005BE1F0 /* FHInputToolbar.swift */; };
@@ -173,6 +184,8 @@
 		4ACBD6F41F76386D00A5FD23 /* baseSearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = baseSearchViewController.swift; sourceTree = "<group>"; };
 		4ACBD6F61F77DE6C00A5FD23 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		4ACBD6FB1F77E8F500A5FD23 /* shareView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = shareView.swift; sourceTree = "<group>"; };
+		4AD03AB71F9B45270077C15B /* InputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextView.swift; sourceTree = "<group>"; };
+		4AD03ABA1F9C7DD30077C15B /* GetChatEmotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetChatEmotion.swift; sourceTree = "<group>"; };
 		4ADCC74C1F511DD3001A4E9F /* internals.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = internals.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4ADCC74F1F511DD3001A4E9F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4ADCC7511F511DD3001A4E9F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -188,6 +201,16 @@
 		4ADCC7711F511DD3001A4E9F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4ADCC77D1F51251D001A4E9F /* LoginNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginNavigationController.swift; sourceTree = "<group>"; };
 		4ADCC7801F512880001A4E9F /* RegisterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
+		4ADDDAB21F97ABA4001CB00F /* ChatEmotionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEmotionView.swift; sourceTree = "<group>"; };
+		4ADDDAB41F98EF84001CB00F /* ChatEmotionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEmotionCell.swift; sourceTree = "<group>"; };
+		4ADDDAB71F98F054001CB00F /* MChatEmotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MChatEmotion.swift; sourceTree = "<group>"; };
+		4ADDDAB91F98F5CC001CB00F /* test.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = test.plist; sourceTree = "<group>"; };
+		4ADDDABE1F98F735001CB00F /* test.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = test.bundle; sourceTree = "<group>"; };
+		4ADDDAD41F98F9B3001CB00F /* ChatEmotionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEmotionHelper.swift; sourceTree = "<group>"; };
+		4ADDDAD61F98FF7B001CB00F /* test.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = test.plist; path = internals/test.plist; sourceTree = "<group>"; };
+		4ADDDAD71F9B1EE3001CB00F /* ChatEmotionAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEmotionAttachment.swift; sourceTree = "<group>"; };
+		4ADDDADB1F9B40A8001CB00F /* ChatBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBarView.swift; sourceTree = "<group>"; };
+		4ADDDADF1F9B426C001CB00F /* ChatMoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMoreView.swift; sourceTree = "<group>"; };
 		4AE4AFC01F5131AE00B5F509 /* ForgetPasswordController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgetPasswordController.swift; sourceTree = "<group>"; };
 		4AE4AFC21F515E7500B5F509 /* bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bridge.h; sourceTree = "<group>"; };
 		4AE694C21F91D5BD005BE1F0 /* messageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = messageCell.swift; sourceTree = "<group>"; };
@@ -276,8 +299,7 @@
 				4AFF91A61F5C238400FE189F /* HeaderFoot.swift */,
 				4AFF91C31F5EF40000FE189F /* mapApp.swift */,
 				4A9CE36B1F716101002A8FD5 /* progressHUB.swift */,
-				4ACBD6FA1F77E76D00A5FD23 /* share */,
-				4AE694C41F91FCFA005BE1F0 /* FHInputToolbar.swift */,
+				4ACBD6FA1F77E76D00A5FD23 /* ChatBar */,
 			);
 			name = common;
 			sourceTree = "<group>";
@@ -375,23 +397,39 @@
 				4A9CE36E1F72C2E6002A8FD5 /* myextension.swift */,
 				4A4454431F74022D0072E160 /* constant.swift */,
 				4A93C2DB1F83574A0022E97B /* localData.swift */,
+				4ADDDAD71F9B1EE3001CB00F /* ChatEmotionAttachment.swift */,
 			);
 			name = utils;
 			sourceTree = "<group>";
 		};
-		4ACBD6FA1F77E76D00A5FD23 /* share */ = {
+		4ACBD6FA1F77E76D00A5FD23 /* ChatBar */ = {
 			isa = PBXGroup;
 			children = (
+				4ADDDADA1F9B3F6E001CB00F /* Controller */,
+				4ADDDAD91F9B3F68001CB00F /* View */,
+				4ADDDAB61F98F021001CB00F /* model */,
 				4ACBD6FB1F77E8F500A5FD23 /* shareView.swift */,
 				4AC0562E1F93B19600D5B739 /* ChatMMoreView.swift */,
 				4AC056301F93B46C00D5B739 /* LXFChatHorizontalLayout.swift */,
+				4ADDDABD1F98F706001CB00F /* emotions */,
+				4AD03AB91F9C7DA60077C15B /* help */,
 			);
-			name = share;
+			name = ChatBar;
+			sourceTree = "<group>";
+		};
+		4AD03AB91F9C7DA60077C15B /* help */ = {
+			isa = PBXGroup;
+			children = (
+				4ADDDAD41F98F9B3001CB00F /* ChatEmotionHelper.swift */,
+				4AD03ABA1F9C7DD30077C15B /* GetChatEmotion.swift */,
+			);
+			name = help;
 			sourceTree = "<group>";
 		};
 		4ADCC7431F511DD3001A4E9F = {
 			isa = PBXGroup;
 			children = (
+				4ADDDAD61F98FF7B001CB00F /* test.plist */,
 				4ADCC74E1F511DD3001A4E9F /* internals */,
 				4ADCC7631F511DD3001A4E9F /* internalsTests */,
 				4ADCC76E1F511DD3001A4E9F /* internalsUITests */,
@@ -457,6 +495,43 @@
 				4AE4AFC01F5131AE00B5F509 /* ForgetPasswordController.swift */,
 			);
 			name = "登录";
+			sourceTree = "<group>";
+		};
+		4ADDDAB61F98F021001CB00F /* model */ = {
+			isa = PBXGroup;
+			children = (
+				4ADDDAB71F98F054001CB00F /* MChatEmotion.swift */,
+			);
+			name = model;
+			sourceTree = "<group>";
+		};
+		4ADDDABD1F98F706001CB00F /* emotions */ = {
+			isa = PBXGroup;
+			children = (
+				4ADDDAB91F98F5CC001CB00F /* test.plist */,
+				4ADDDABE1F98F735001CB00F /* test.bundle */,
+			);
+			name = emotions;
+			sourceTree = "<group>";
+		};
+		4ADDDAD91F9B3F68001CB00F /* View */ = {
+			isa = PBXGroup;
+			children = (
+				4ADDDAB41F98EF84001CB00F /* ChatEmotionCell.swift */,
+				4ADDDAB21F97ABA4001CB00F /* ChatEmotionView.swift */,
+				4AE694C41F91FCFA005BE1F0 /* FHInputToolbar.swift */,
+				4ADDDADB1F9B40A8001CB00F /* ChatBarView.swift */,
+				4ADDDADF1F9B426C001CB00F /* ChatMoreView.swift */,
+				4AD03AB71F9B45270077C15B /* InputTextView.swift */,
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
+		4ADDDADA1F9B3F6E001CB00F /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Controller;
 			sourceTree = "<group>";
 		};
 		4AFF91AC1F5DAB8600FE189F /* nibs */ = {
@@ -645,6 +720,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4ADDDABA1F98F5CC001CB00F /* test.plist in Resources */,
 				4ADCC75A1F511DD3001A4E9F /* LaunchScreen.storyboard in Resources */,
 				4A2A2D081F6578D800F42123 /* joblist.xib in Resources */,
 				4A93C2E21F8369B10022E97B /* conditionCell.xib in Resources */,
@@ -652,6 +728,7 @@
 				4AFF91BE1F5DBD8D00FE189F /* JobDescription.xib in Resources */,
 				4A93C2CA1F8127810022E97B /* deliveredJobs.xib in Resources */,
 				4A93C2DA1F834F2E0022E97B /* subjobitem.xib in Resources */,
+				4ADDDABF1F98F735001CB00F /* test.bundle in Resources */,
 				4ADCC7571F511DD3001A4E9F /* Assets.xcassets in Resources */,
 				4A444ED11F8E5789006AE83D /* contactlist.xib in Resources */,
 				4A93C2D01F82292E0022E97B /* statustage.xib in Resources */,
@@ -736,6 +813,7 @@
 				4AF6C8031F571D1F0059496B /* CitysView.swift in Sources */,
 				4AE4AFC11F5131AE00B5F509 /* ForgetPasswordController.swift in Sources */,
 				4A4523F21F5BABE1009D6B62 /* jobdetailCell.swift in Sources */,
+				4AD03AB81F9B45270077C15B /* InputTextView.swift in Sources */,
 				4A9CE3661F715E37002A8FD5 /* dropMenu.swift in Sources */,
 				4A444ED01F8E5789006AE83D /* contactlist.swift in Sources */,
 				4A93C2BD1F80CEAA0022E97B /* communication.swift in Sources */,
@@ -754,14 +832,19 @@
 				4A9CE36C1F716101002A8FD5 /* progressHUB.swift in Sources */,
 				4A4454441F74022D0072E160 /* constant.swift in Sources */,
 				4A444ED31F8F9E44006AE83D /* Friends.swift in Sources */,
+				4ADDDAB81F98F054001CB00F /* MChatEmotion.swift in Sources */,
+				4ADDDAD81F9B1EE3001CB00F /* ChatEmotionAttachment.swift in Sources */,
 				4A444ECD1F8E5121006AE83D /* friendsController.swift in Sources */,
 				4AFF91B91F5DB8A900FE189F /* company.swift in Sources */,
 				4A93C2C61F8124930022E97B /* delivereddata.swift in Sources */,
+				4ADDDAB31F97ABA4001CB00F /* ChatEmotionView.swift in Sources */,
 				4AFF91A91F5C338800FE189F /* JobDetailViewController.swift in Sources */,
 				4A93C2CF1F82292E0022E97B /* statustage.swift in Sources */,
 				4A93C2BF1F80CECB0022E97B /* relationship.swift in Sources */,
 				4AFF91A71F5C238400FE189F /* HeaderFoot.swift in Sources */,
+				4ADDDAD51F98F9B3001CB00F /* ChatEmotionHelper.swift in Sources */,
 				4A93C2BB1F80CE5F0022E97B /* deliveredHistory.swift in Sources */,
+				4AD03ABB1F9C7DD30077C15B /* GetChatEmotion.swift in Sources */,
 				4A5304EA1F52FAD20000F1E9 /* demo.swift in Sources */,
 				4A93C2C31F80CF080022E97B /* forumView.swift in Sources */,
 				4ACBD6F51F76386D00A5FD23 /* baseSearchViewController.swift in Sources */,
@@ -775,6 +858,7 @@
 				4AC056311F93B46C00D5B739 /* LXFChatHorizontalLayout.swift in Sources */,
 				4AFF91E11F641AA900FE189F /* others.swift in Sources */,
 				4AFF91C41F5EF40000FE189F /* mapApp.swift in Sources */,
+				4ADDDADC1F9B40A8001CB00F /* ChatBarView.swift in Sources */,
 				4A93C2B51F80AB900022E97B /* messageMain.swift in Sources */,
 				4A2A2D041F65672B00F42123 /* JobTag.swift in Sources */,
 				4A93C2DC1F83574A0022E97B /* localData.swift in Sources */,
@@ -784,12 +868,14 @@
 				4A93C2CC1F81FD330022E97B /* jobstatusView.swift in Sources */,
 				4AE84EA41F5C108600649404 /* imageScroll.swift in Sources */,
 				4AFF91D51F60586600FE189F /* cdetails.swift in Sources */,
+				4ADDDAB51F98EF84001CB00F /* ChatEmotionCell.swift in Sources */,
 				4A5304DB1F527D090000F1E9 /* utils.swift in Sources */,
 				4A2A2D071F6578D800F42123 /* joblist.swift in Sources */,
 				4AFF91BD1F5DBD8D00FE189F /* JobDescription.swift in Sources */,
 				4AE694C31F91D5BD005BE1F0 /* messageCell.swift in Sources */,
 				4ADCC7501F511DD3001A4E9F /* AppDelegate.swift in Sources */,
 				4A9CE36A1F715F6E002A8FD5 /* internCondition.swift in Sources */,
+				4ADDDAE01F9B426C001CB00F /* ChatMoreView.swift in Sources */,
 				4ADCC7811F512880001A4E9F /* RegisterViewController.swift in Sources */,
 				4A93C2B81F80AC590022E97B /* messageItemCell.swift in Sources */,
 				4A5304E81F52A7720000F1E9 /* DashboardViewController.swift in Sources */,

@@ -30,12 +30,15 @@ class messageCell: UITableViewCell {
         messageLabel.textColor = UIColor.black
         // 分行
         messageLabel.numberOfLines = 0
+        messageLabel.textAlignment = .left
         
         
         
+        self.contentView.clipsToBounds = true
         self.contentView.addSubview(avatar)
         self.contentView.addSubview(bubleBackGround)
-        self.contentView.addSubview(messageLabel)
+        
+        self.bubleBackGround.addSubview(messageLabel)
 
         
         //
@@ -73,73 +76,83 @@ class messageCell: UITableViewCell {
         // 对话框大小计算
         let labelSize:CGSize = UILabel.sizeOfString(string: messageInfo.content! as NSString, font: UIFont.systemFont(ofSize: 16), maxWidth: screenRect.width-10-20-avatarSize.width * 2)
         
+        
         if labelSize.height < avatarSize.height + 10{
             return avatarSize.height + 10
         }
-        return labelSize.height + 5
+        return labelSize.height + 10
         
         
     }
     
     func setupMessageCell(messageInfo:MessageBoby,user:FriendData){
         
-       
+       self.messageLabel.attributedText = GetChatEmotion.shared.findAttrStr(text: messageInfo.content, font: messageLabel.font)
+        
+        
+        var labelSize = messageLabel.sizeThatFits(CGSize(width: 200.0, height: CGFloat(FLT_MAX)))
+        labelSize  = CGSize.init(width: labelSize.width, height: labelSize.height)
+        
+        _ = avatar.sd_layout().heightIs(45)?.topSpaceToView(self.contentView,5)?.widthIs(45)
+        
+        _ = messageLabel.sd_layout().widthIs(labelSize.width)?.heightIs(labelSize.height)
+        
         
         let screenRect:CGRect = UIScreen.main.bounds
             
-        let labelSize:CGSize = UILabel.sizeOfString(string: messageInfo.content! as NSString, font: UIFont.systemFont(ofSize: 16), maxWidth: screenRect.width-10-20-avatarSize.width*2)
+        //let labelSize:CGSize = UILabel.sizeOfString(string: messageInfo.content! as NSString, font: UIFont.systemFont(ofSize: 16), maxWidth: screenRect.width-10-20-avatarSize.width*2)
         
-        let bubleSize:CGSize = CGSize.init(width: labelSize.width+10, height: labelSize.height)
+        let bubleSize:CGSize = CGSize.init(width: labelSize.width+20, height: labelSize.height+20)
         
+        _ = bubleBackGround.sd_layout().topSpaceToView(self.contentView,5)?.heightIs(bubleSize.height)?.widthIs(bubleSize.width)
+
         // 自己发的消息
         if messageInfo.sender.name  ==  user.name{
-            self.avatar.frame = CGRect.init(x: screenRect.width-avatarSize.width-5 , y: 5, width: avatarSize.width, height: avatar.height)
-            // 设置image 高度约束，不然cell 初始化后有概率 变成0
-            _ = avatar.sd_layout().leftSpaceToView(self.contentView,320-50)?.topSpaceToView(self.contentView,5)?.widthIs(45)?.heightIs(45)
-            
             
             self.avatar.image = UIImage.init(named: "lk")
-            
-            self.messageLabel.text = messageInfo.content
-            self.messageLabel.frame = CGRect.init(x: screenRect.width-5-self.avatar.frame.width-2.5-labelSize.width, y: 5, width: labelSize.width, height: labelSize.height)
-            
-            self.messageLabel.textAlignment = .left
+            self.avatar.frame = CGRect.init(x: screenRect.width-avatarSize.width-5 , y: 5, width: avatarSize.width, height: avatarSize.height)
+           
             
             self.bubleBackGround.image = UIImage.resizeableImage(name: "rightmessage")
 
-            self.bubleBackGround.frame = CGRect.init(x: screenRect.width-5-self.avatar.frame.width-5-bubleSize.width, y: 5, width: bubleSize.width, height: bubleSize.height)
+             self.bubleBackGround.frame = CGRect.init(x: screenRect.width-5-self.avatar.frame.width-5-bubleSize.width, y: 5, width: bubleSize.width, height: bubleSize.height)
+            
+             //_ = bubleBackGround.sd_layout().rightSpaceToView(avatar,5)?.widthIs(bubleSize.width)
+            
+             _ = self.messageLabel.sd_layout().topSpaceToView(self.bubleBackGround,10)?.rightSpaceToView(self.bubleBackGround,10)
             
             // 取消动画，不然显示动画 不好看
             avatar.layer.removeAllAnimations()
             messageLabel.layer.removeAllAnimations()
             bubleBackGround.layer.removeAllAnimations()
-            
-            
+            print("self \(messageLabel)")
             
         
         }
         // 别人发的消息
         else{
-            self.avatar.frame = CGRect.init(x: 5, y: 5, width: avatarSize.width, height: avatarSize.height)
-             _ = avatar.sd_layout().leftSpaceToView(self.contentView,5)?.topSpaceToView(self.contentView,5)?.widthIs(45)?.heightIs(45)
             
             self.avatar.image = UIImage.init(named: "avartar")
+            self.avatar.frame = CGRect.init(x: 5, y: 5, width: avatarSize.width, height: avatarSize.height)
             
-            self.messageLabel.text = messageInfo.content
             
-            self.messageLabel.frame = CGRect.init(x: self.avatar.frame.origin.x + self.avatar.frame.width + 5 + 12.5, y: 5, width: labelSize.width, height: labelSize.height)
             
-            self.messageLabel.textAlignment = .left
+ 
             self.bubleBackGround.image = UIImage.resizeableImage(name: "leftmessage")
 
             self.bubleBackGround.frame = CGRect.init(x: self.avatar.frame.origin.x + self.avatar.frame.width+5, y: 5, width: bubleSize.width, height: bubleSize.height)
+            // 用约束有bug?
+            //_ = bubleBackGround.sd_layout().leftSpaceToView(avatar,55)?.widthIs(bubleSize.width)
+            
+            _ = self.messageLabel.sd_layout().topSpaceToView(self.bubleBackGround,10)?.leftSpaceToView(self.bubleBackGround,10)
+            
             // 取消动画，不然显示动画 不好看
             avatar.layer.removeAllAnimations()
             messageLabel.layer.removeAllAnimations()
             bubleBackGround.layer.removeAllAnimations()
             
             
-
+             print("other \(messageLabel) ")
             
             
             

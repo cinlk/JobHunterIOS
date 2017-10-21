@@ -23,34 +23,34 @@ fileprivate let cellNumberOfOnePage = cellNumbeOfOneRow * CellRow
 fileprivate let MoreCellID = "moreCell"
 
 
-protocol MoreViewDelegate:NSObjectProtocol {
-    func chatMoreView(moreView: ChatMMoreView,didSelectedType type: ChatMoreType)
+protocol ChatMoreViewDelegate:NSObjectProtocol {
+    func chatMoreView(moreView: ChatMoreView,didSelectedType type: ChatMoreType)
 }
 
-class ChatMMoreView: UIView {
-
-    weak var delegate: MoreViewDelegate?
+class ChatMoreView: UIView {
+    
+    weak var delegate: ChatMoreViewDelegate?
     
     
     lazy var moreView:UICollectionView = { [unowned self] in
-        let collectView = UICollectionView.init(frame: self.frame, collectionViewLayout: LXFChatHorizontalLayout(
+        let collectView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: LXFChatHorizontalLayout(
             column: cellNumbeOfOneRow, row:CellRow))
-            collectView.backgroundColor = UIColor.white
-            collectView.delegate = self
-            collectView.dataSource = self
-            return collectView
-    }()
-
+        collectView.backgroundColor = UIColor.white
+        collectView.delegate = self
+        collectView.dataSource = self
+        return collectView
+        }()
+    
     
     //lazy var pageContol:
     
     
     lazy var moreDataSource: [(name:String, icon:UIImage, type:ChatMoreType)] = {
-       return [
-        ("照片",#imageLiteral(resourceName: "iPhoneIcon"), ChatMoreType.pic),
-        ("相机",#imageLiteral(resourceName: "camera"), ChatMoreType.camera),
-        ("个人名片",#imageLiteral(resourceName: "briefcase"),  ChatMoreType.mycard),
-        ("快捷回复",#imageLiteral(resourceName: "shixiday"), ChatMoreType.feedback)
+        return [
+            ("照片",#imageLiteral(resourceName: "iPhoneIcon"), ChatMoreType.pic),
+            ("相机",#imageLiteral(resourceName: "camera"), ChatMoreType.camera),
+            ("个人名片",#imageLiteral(resourceName: "briefcase"),  ChatMoreType.mycard),
+            ("快捷回复",#imageLiteral(resourceName: "shixiday"), ChatMoreType.feedback)
         ]
         
     }()
@@ -74,7 +74,7 @@ class ChatMMoreView: UIView {
     
 }
 
-extension ChatMMoreView: UICollectionViewDataSource, UICollectionViewDelegate {
+extension ChatMoreView: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return moreDataSource.count
     }
@@ -84,7 +84,6 @@ extension ChatMMoreView: UICollectionViewDataSource, UICollectionViewDelegate {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MoreCellID, for: indexPath) as? LXFChatMoreCell
         
         cell?.model = moreModel
-        print(cell)
         
         return cell!
         
@@ -92,14 +91,14 @@ extension ChatMMoreView: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let moreModel = moreDataSource[indexPath.item]
-        
+        // 选择功能
         self.delegate?.chatMoreView(moreView: self, didSelectedType: moreModel.type)
     }
     
     
 }
 
-extension ChatMMoreView: UIScrollViewDelegate{
+extension ChatMoreView: UIScrollViewDelegate{
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let contentOffset = scrollView.contentOffset.x
         
@@ -134,7 +133,7 @@ class LXFChatMoreCell: UICollectionViewCell {
             self.itemButton.setImage(model?.icon, for: .normal)
             self.itemLabel.text = model?.name
             self.type = model?.type
-            self.backgroundColor = UIColor.white
+            self.backgroundColor = UIColor.lightGray
         }
     }
     
@@ -147,17 +146,18 @@ class LXFChatMoreCell: UICollectionViewCell {
         _ = itemLabel.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.bottomSpaceToView(self.contentView,2)?.heightIs(21)
         _ = itemButton.sd_layout().topSpaceToView(self.contentView,15)?.bottomSpaceToView(self.itemLabel,5)?.widthIs(60)?.centerXEqualToView(itemLabel)
         
-//        itemLabel.snp.makeConstraints { (make) in
-//            make.left.right.equalTo(self)
-//            make.bottom.equalTo(self.snp.bottom).offset(-2)
-//            make.height.equalTo(21)
-//        }
-//        itemButton.snp.makeConstraints { (make) in
-//            make.top.equalTo(self.snp.top).offset(6)
-//            make.bottom.equalTo(itemLabel.snp.top).offset(-5)
-//            make.width.equalTo(itemButton.snp.height)
-//            make.centerX.equalTo(self.snp.centerX)
-//        }
+        //        itemLabel.snp.makeConstraints { (make) in
+        //            make.left.right.equalTo(self)
+        //            make.bottom.equalTo(self.snp.bottom).offset(-2)
+        //            make.height.equalTo(21)
+        //        }
+        //        itemButton.snp.makeConstraints { (make) in
+        //            make.top.equalTo(self.snp.top).offset(6)
+        //            make.bottom.equalTo(itemLabel.snp.top).offset(-5)
+        //            make.width.equalTo(itemButton.snp.height)
+        //            make.centerX.equalTo(self.snp.centerX)
+        //        }
         
     }
 }
+
