@@ -53,7 +53,10 @@
 		4A9CE36A1F715F6E002A8FD5 /* internCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9CE3691F715F6E002A8FD5 /* internCondition.swift */; };
 		4A9CE36C1F716101002A8FD5 /* progressHUB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9CE36B1F716101002A8FD5 /* progressHUB.swift */; };
 		4A9CE36F1F72C2E6002A8FD5 /* myextension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9CE36E1F72C2E6002A8FD5 /* myextension.swift */; };
-		4AC0562F1F93B19600D5B739 /* ChatMMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC0562E1F93B19600D5B739 /* ChatMMoreView.swift */; };
+		4ABB98751F9CDB5300DD9AAB /* emotion2.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4ABB986F1F9CDB2B00DD9AAB /* emotion2.bundle */; };
+		4ABB98781F9CDB5300DD9AAB /* test.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4ADDDABE1F98F735001CB00F /* test.bundle */; };
+		4ABB987B1F9CDE8E00DD9AAB /* test.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4ABB987A1F9CDE6000DD9AAB /* test.plist */; };
+		4ABB987C1F9CDE8E00DD9AAB /* emotion2.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4ABB98791F9CDE3A00DD9AAB /* emotion2.plist */; };
 		4AC056311F93B46C00D5B739 /* LXFChatHorizontalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC056301F93B46C00D5B739 /* LXFChatHorizontalLayout.swift */; };
 		4AC2D4FC1F89242E00EF0845 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AC2D4FB1F89242E00EF0845 /* Security.framework */; };
 		4AC2D4FE1F89243700EF0845 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AC2D4FD1F89243700EF0845 /* CFNetwork.framework */; };
@@ -77,15 +80,12 @@
 		4ADDDAB31F97ABA4001CB00F /* ChatEmotionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADDDAB21F97ABA4001CB00F /* ChatEmotionView.swift */; };
 		4ADDDAB51F98EF84001CB00F /* ChatEmotionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADDDAB41F98EF84001CB00F /* ChatEmotionCell.swift */; };
 		4ADDDAB81F98F054001CB00F /* MChatEmotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADDDAB71F98F054001CB00F /* MChatEmotion.swift */; };
-		4ADDDABA1F98F5CC001CB00F /* test.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4ADDDAB91F98F5CC001CB00F /* test.plist */; };
-		4ADDDABF1F98F735001CB00F /* test.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4ADDDABE1F98F735001CB00F /* test.bundle */; };
 		4ADDDAD51F98F9B3001CB00F /* ChatEmotionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADDDAD41F98F9B3001CB00F /* ChatEmotionHelper.swift */; };
 		4ADDDAD81F9B1EE3001CB00F /* ChatEmotionAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADDDAD71F9B1EE3001CB00F /* ChatEmotionAttachment.swift */; };
 		4ADDDADC1F9B40A8001CB00F /* ChatBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADDDADB1F9B40A8001CB00F /* ChatBarView.swift */; };
 		4ADDDAE01F9B426C001CB00F /* ChatMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADDDADF1F9B426C001CB00F /* ChatMoreView.swift */; };
 		4AE4AFC11F5131AE00B5F509 /* ForgetPasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE4AFC01F5131AE00B5F509 /* ForgetPasswordController.swift */; };
 		4AE694C31F91D5BD005BE1F0 /* messageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE694C21F91D5BD005BE1F0 /* messageCell.swift */; };
-		4AE694C51F91FCFA005BE1F0 /* FHInputToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE694C41F91FCFA005BE1F0 /* FHInputToolbar.swift */; };
 		4AE84EA41F5C108600649404 /* imageScroll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE84EA31F5C108600649404 /* imageScroll.swift */; };
 		4AF6C8031F571D1F0059496B /* CitysView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C8021F571D1F0059496B /* CitysView.swift */; };
 		4AF6C8051F5A98940059496B /* ScrollerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C8041F5A98940059496B /* ScrollerCell.swift */; };
@@ -173,7 +173,9 @@
 		4A9CE3691F715F6E002A8FD5 /* internCondition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = internCondition.swift; sourceTree = "<group>"; };
 		4A9CE36B1F716101002A8FD5 /* progressHUB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = progressHUB.swift; sourceTree = "<group>"; };
 		4A9CE36E1F72C2E6002A8FD5 /* myextension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = myextension.swift; sourceTree = "<group>"; };
-		4AC0562E1F93B19600D5B739 /* ChatMMoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMMoreView.swift; sourceTree = "<group>"; };
+		4ABB986F1F9CDB2B00DD9AAB /* emotion2.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = emotion2.bundle; sourceTree = "<group>"; };
+		4ABB98791F9CDE3A00DD9AAB /* emotion2.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = emotion2.plist; sourceTree = "<group>"; };
+		4ABB987A1F9CDE6000DD9AAB /* test.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = test.plist; sourceTree = "<group>"; };
 		4AC056301F93B46C00D5B739 /* LXFChatHorizontalLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LXFChatHorizontalLayout.swift; sourceTree = "<group>"; };
 		4AC2D4FB1F89242E00EF0845 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		4AC2D4FD1F89243700EF0845 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
@@ -204,17 +206,14 @@
 		4ADDDAB21F97ABA4001CB00F /* ChatEmotionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEmotionView.swift; sourceTree = "<group>"; };
 		4ADDDAB41F98EF84001CB00F /* ChatEmotionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEmotionCell.swift; sourceTree = "<group>"; };
 		4ADDDAB71F98F054001CB00F /* MChatEmotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MChatEmotion.swift; sourceTree = "<group>"; };
-		4ADDDAB91F98F5CC001CB00F /* test.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = test.plist; sourceTree = "<group>"; };
 		4ADDDABE1F98F735001CB00F /* test.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = test.bundle; sourceTree = "<group>"; };
 		4ADDDAD41F98F9B3001CB00F /* ChatEmotionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEmotionHelper.swift; sourceTree = "<group>"; };
-		4ADDDAD61F98FF7B001CB00F /* test.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = test.plist; path = internals/test.plist; sourceTree = "<group>"; };
 		4ADDDAD71F9B1EE3001CB00F /* ChatEmotionAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEmotionAttachment.swift; sourceTree = "<group>"; };
 		4ADDDADB1F9B40A8001CB00F /* ChatBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBarView.swift; sourceTree = "<group>"; };
 		4ADDDADF1F9B426C001CB00F /* ChatMoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMoreView.swift; sourceTree = "<group>"; };
 		4AE4AFC01F5131AE00B5F509 /* ForgetPasswordController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgetPasswordController.swift; sourceTree = "<group>"; };
 		4AE4AFC21F515E7500B5F509 /* bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bridge.h; sourceTree = "<group>"; };
 		4AE694C21F91D5BD005BE1F0 /* messageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = messageCell.swift; sourceTree = "<group>"; };
-		4AE694C41F91FCFA005BE1F0 /* FHInputToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FHInputToolbar.swift; sourceTree = "<group>"; };
 		4AE84EA31F5C108600649404 /* imageScroll.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = imageScroll.swift; sourceTree = "<group>"; };
 		4AF6C8021F571D1F0059496B /* CitysView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CitysView.swift; sourceTree = "<group>"; };
 		4AF6C8041F5A98940059496B /* ScrollerCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollerCell.swift; sourceTree = "<group>"; };
@@ -409,8 +408,6 @@
 				4ADDDAD91F9B3F68001CB00F /* View */,
 				4ADDDAB61F98F021001CB00F /* model */,
 				4ACBD6FB1F77E8F500A5FD23 /* shareView.swift */,
-				4AC0562E1F93B19600D5B739 /* ChatMMoreView.swift */,
-				4AC056301F93B46C00D5B739 /* LXFChatHorizontalLayout.swift */,
 				4ADDDABD1F98F706001CB00F /* emotions */,
 				4AD03AB91F9C7DA60077C15B /* help */,
 			);
@@ -429,7 +426,6 @@
 		4ADCC7431F511DD3001A4E9F = {
 			isa = PBXGroup;
 			children = (
-				4ADDDAD61F98FF7B001CB00F /* test.plist */,
 				4ADCC74E1F511DD3001A4E9F /* internals */,
 				4ADCC7631F511DD3001A4E9F /* internalsTests */,
 				4ADCC76E1F511DD3001A4E9F /* internalsUITests */,
@@ -508,7 +504,9 @@
 		4ADDDABD1F98F706001CB00F /* emotions */ = {
 			isa = PBXGroup;
 			children = (
-				4ADDDAB91F98F5CC001CB00F /* test.plist */,
+				4ABB987A1F9CDE6000DD9AAB /* test.plist */,
+				4ABB98791F9CDE3A00DD9AAB /* emotion2.plist */,
+				4ABB986F1F9CDB2B00DD9AAB /* emotion2.bundle */,
 				4ADDDABE1F98F735001CB00F /* test.bundle */,
 			);
 			name = emotions;
@@ -517,9 +515,9 @@
 		4ADDDAD91F9B3F68001CB00F /* View */ = {
 			isa = PBXGroup;
 			children = (
+				4AC056301F93B46C00D5B739 /* LXFChatHorizontalLayout.swift */,
 				4ADDDAB41F98EF84001CB00F /* ChatEmotionCell.swift */,
 				4ADDDAB21F97ABA4001CB00F /* ChatEmotionView.swift */,
-				4AE694C41F91FCFA005BE1F0 /* FHInputToolbar.swift */,
 				4ADDDADB1F9B40A8001CB00F /* ChatBarView.swift */,
 				4ADDDADF1F9B426C001CB00F /* ChatMoreView.swift */,
 				4AD03AB71F9B45270077C15B /* InputTextView.swift */,
@@ -720,7 +718,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4ADDDABA1F98F5CC001CB00F /* test.plist in Resources */,
+				4ABB987B1F9CDE8E00DD9AAB /* test.plist in Resources */,
+				4ABB987C1F9CDE8E00DD9AAB /* emotion2.plist in Resources */,
+				4ABB98751F9CDB5300DD9AAB /* emotion2.bundle in Resources */,
+				4ABB98781F9CDB5300DD9AAB /* test.bundle in Resources */,
 				4ADCC75A1F511DD3001A4E9F /* LaunchScreen.storyboard in Resources */,
 				4A2A2D081F6578D800F42123 /* joblist.xib in Resources */,
 				4A93C2E21F8369B10022E97B /* conditionCell.xib in Resources */,
@@ -728,7 +729,6 @@
 				4AFF91BE1F5DBD8D00FE189F /* JobDescription.xib in Resources */,
 				4A93C2CA1F8127810022E97B /* deliveredJobs.xib in Resources */,
 				4A93C2DA1F834F2E0022E97B /* subjobitem.xib in Resources */,
-				4ADDDABF1F98F735001CB00F /* test.bundle in Resources */,
 				4ADCC7571F511DD3001A4E9F /* Assets.xcassets in Resources */,
 				4A444ED11F8E5789006AE83D /* contactlist.xib in Resources */,
 				4A93C2D01F82292E0022E97B /* statustage.xib in Resources */,
@@ -819,7 +819,6 @@
 				4A93C2BD1F80CEAA0022E97B /* communication.swift in Sources */,
 				4ACBD6FC1F77E8F500A5FD23 /* shareView.swift in Sources */,
 				4A93C2E11F8369B10022E97B /* conditionCell.swift in Sources */,
-				4AE694C51F91FCFA005BE1F0 /* FHInputToolbar.swift in Sources */,
 				4A93C2D41F834C030022E97B /* subscribleItem.swift in Sources */,
 				4A93C2C11F80CEF70022E97B /* recommendation.swift in Sources */,
 				4A9CE3681F715F1D002A8FD5 /* JobClasses.swift in Sources */,
@@ -853,7 +852,6 @@
 				4A444ECB1F8A168B006AE83D /* searchRequest.pb.swift in Sources */,
 				4A9CE36F1F72C2E6002A8FD5 /* myextension.swift in Sources */,
 				4AFF91C11F5DC18000FE189F /* worklocate.swift in Sources */,
-				4AC0562F1F93B19600D5B739 /* ChatMMoreView.swift in Sources */,
 				4A93C2E41F8788720022E97B /* editcondition.swift in Sources */,
 				4AC056311F93B46C00D5B739 /* LXFChatHorizontalLayout.swift in Sources */,
 				4AFF91E11F641AA900FE189F /* others.swift in Sources */,

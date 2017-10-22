@@ -12,12 +12,15 @@ class ChatEmotionHelper: NSObject {
     // MARK:- 获取表情模型数组
     class func getAllEmotions() -> [MChatEmotion] {
         var emotions: [MChatEmotion] = [MChatEmotion]()
+        
         let plistPath = Bundle.main.path(forResource: "test", ofType: "plist")
         let array = NSArray(contentsOfFile: plistPath!) as! [[String : String]]
         
         var index = 0
         for dict in array {
-            emotions.append(MChatEmotion(dict: dict))
+            let item  = MChatEmotion(dict: dict,bundle:"test.bundle",type:".png")
+           
+            emotions.append(item)
             index += 1
             if index == 23 {
                 // 添加删除表情
@@ -50,6 +53,25 @@ class ChatEmotionHelper: NSObject {
         if emotionName == nil {
             return nil
         }
+        //MARK
         return Bundle.main.bundlePath + "/test.bundle/" + emotionName! + ".png"
+    }
+    // emotion2
+    class func getAllEmotion2()-> [MChatEmotion]{
+        var emotions: [MChatEmotion] = [MChatEmotion]()
+        let plistPath = Bundle.main.path(forResource: "emotion2", ofType: "plist")
+        
+        
+        
+        let array = NSArray(contentsOfFile: plistPath!) as! [[String : String]]
+        for dict in array{
+            
+            let item  = MChatEmotion(dict: dict,bundle:"emotion2.bundle",type:".gif")
+           
+            emotions.append(item)
+            
+        }
+        return emotions
+        
     }
 }

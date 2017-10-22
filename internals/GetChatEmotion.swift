@@ -44,8 +44,9 @@ class GetChatEmotion: NSObject {
     }
     
     func findImgPath(emoStr: String) -> String? {
+        // 空 image 去掉
         for emotion in ChatEmotionHelper.getAllEmotions() {
-            if emotion.text! == emoStr {
+            if  let  text = emotion.text, text == emoStr {
                 return emotion.imgPath
             }
         }

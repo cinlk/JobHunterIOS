@@ -449,6 +449,10 @@ extension communication: ChatMoreViewDelegate{
 
 
 extension communication: ChatEmotionViewDelegate{
+    func chatEmotionGifSend(emotionView: ChatEmotionView, didSelectedEmotion emotion: MChatEmotion) {
+        print("send gif \(emotion)")
+    }
+    
     
     func chatEmotionView(emotionView: ChatEmotionView, didSelectedEmotion emotion: MChatEmotion) {
         self.chatBarView.inputText.insertEmotion(emotion: emotion)
@@ -460,6 +464,8 @@ extension communication: ChatEmotionViewDelegate{
         // MARK sdk sendmessage
 
     }
+   
+
     
     
 }

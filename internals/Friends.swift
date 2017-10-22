@@ -143,6 +143,8 @@ class MessageBoby{
     var url:String?
     var content:String!
     var time:String!
+    var type:messgeType = .text
+    
     var messageStatus:MessageStatus = MessageStatus.unKnow
     
     var sender:FriendData = FriendData.init(name: "lk", avart: "lk")
@@ -151,6 +153,7 @@ class MessageBoby{
     init(content:String,time:String) {
         self.content = content
         self.time = time
+    
     }
     
 }

@@ -17,6 +17,10 @@ class messageCell: UITableViewCell {
     var avatar:UIImageView!
     var messageLabel:UILabel!
     var bubleBackGround: UIImageView!
+    // gif
+    var gif:UIImageView?
+    
+    
     
     // 代码初始化
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
@@ -71,6 +75,9 @@ class messageCell: UITableViewCell {
     
     class func heightForCell(messageInfo:MessageBoby)->CGFloat{
         
+        if messageInfo.type  == .picture{
+            return 70
+        }
         let screenRect:CGRect = UIScreen.main.bounds
 //        let str:NSString  = NSString.init(cString: messageInfo.content.cString(using: String.Encoding.utf8)!, encoding: String.Encoding.utf8.rawValue)!
         // 对话框大小计算
@@ -86,6 +93,19 @@ class messageCell: UITableViewCell {
     }
     
     func setupMessageCell(messageInfo:MessageBoby,user:FriendData){
+        
+        
+        if messageInfo.type == .picture{
+            
+            self.gif = UIImageView.init()
+            gif?.image = UIImage.init(named: messageInfo.content)
+            
+            self.avatar.image = UIImage.init(named: "lk")
+            self.avatar.frame = CGRect.init(x: UIScreen.main.bounds.width-avatarSize.width-5 , y: 5, width: avatarSize.width, height: avatarSize.height)
+            self.gif?.frame = CGRect.init(x: UIScreen.main.bounds.width-5-self.avatar.frame.width-5-60, y: 5, width: 60, height: 60)
+            
+            return
+        }
         
        self.messageLabel.attributedText = GetChatEmotion.shared.findAttrStr(text: messageInfo.content, font: messageLabel.font)
         

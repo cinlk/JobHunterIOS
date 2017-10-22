@@ -187,7 +187,7 @@ extension UITextView {
             return
         }
         
-        // 删除
+        // 删除表情
         if emotion.isRemove {
             deleteBackward()
             return

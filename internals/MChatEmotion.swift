@@ -10,9 +10,11 @@ import UIKit
 
 class MChatEmotion: NSObject {
     // MARK:- 定义属性
+    
     var image: String? {   // 表情对应的图片名称
+        
         didSet {
-            imgPath = Bundle.main.bundlePath + "/test.bundle/" + image! + ".png"
+            imgPath = Bundle.main.bundlePath + "/"+bundle+"/" + image! + imageType
         }
     }
     var text: String?     // 表情对应的文字
@@ -21,13 +23,20 @@ class MChatEmotion: NSObject {
     var imgPath: String?
     var isRemove: Bool = false
     var isEmpty: Bool = false
+    // ".bundle"
+    var bundle: String = ""
+    // ".xxx"
+    var imageType: String = ""
+    
     
     override init() {
         super.init()
     }
     
-    convenience init(dict: [String : String]) {
+    convenience init(dict: [String : String],bundle:String,type:String) {
         self.init()
+        self.bundle = bundle
+        self.imageType = type
         setValuesForKeys(dict)
     }
     
