@@ -28,7 +28,6 @@ class MChatEmotion: NSObject {
     // ".xxx"
     var imageType: String = ""
     
-    
     override init() {
         super.init()
     }

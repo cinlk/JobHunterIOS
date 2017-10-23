@@ -85,6 +85,7 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
         self.tableView.register(messageCell.self, forCellReuseIdentifier: messageCell.reuseidentify())
         
         self.tableView.register(CellCard.self, forCellReuseIdentifier: CellCard.identify())
+        self.tableView.register(gifCell.self, forCellReuseIdentifier: gifCell.reuseidentify())
         
         
         let headerView:UIView = UIView()
@@ -187,12 +188,32 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
         }
         
         if let _:MessageBoby = self.tableSource.object(at: indexPath.row) as? MessageBoby{
-            let cell = tableView.dequeueReusableCell(withIdentifier: messageCell.reuseidentify(), for: indexPath) as! messageCell
-            cell.selectionStyle = .none
             
-            cell.setupMessageCell(messageInfo: self.tableSource.object(at: indexPath.row) as! MessageBoby, user: myself)
+          
+            let message = self.tableSource.object(at: indexPath.row) as! MessageBoby
+            
+            // MARK  diffrent message
+            if message.type == .text{
+                let cell = tableView.dequeueReusableCell(withIdentifier: messageCell.reuseidentify(), for: indexPath) as! messageCell
+                cell.selectionStyle = .none
+                
+                cell.setupMessageCell(messageInfo: message, user: myself)
+                return cell
+
+            }else if message.type == .picture{
+                let cell = tableView.dequeueReusableCell(withIdentifier: gifCell.reuseidentify(), for: indexPath) as! gifCell
+                
+                cell.setupPictureCell(messageInfo: message, user: myself)
+                cell.selectionStyle = .none
+                
+                return cell
+                
+                
+            }else{
+                
+            }
         
-            return cell
+            //return cell
         }
         
         return UITableViewCell.init(style: .default, reuseIdentifier: "nil")
@@ -202,7 +223,11 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
         if let message:MessageBoby  = self.tableSource.object(at: indexPath.row) as? MessageBoby{
-        return messageCell.heightForCell(messageInfo: message)
+            if message.type  == .text{
+                return messageCell.heightForCell(messageInfo: message)
+            }else if message.type == .picture{
+                return gifCell.heightForCell(messageInfo: message)
+            }
         }
         return CellCard.height()
     }
@@ -220,9 +245,7 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
         return
     }
     
-//    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-//        self.InputBar.textField.resignFirstResponder()
-//    }
+
     
     
  
@@ -249,18 +272,22 @@ extension communication{
     func tmpTableSource(){
         let message1:MessageBoby = MessageBoby.init(content: "你好啊!", time: "10-12")
         message1.sender = friend
+        message1.type = .text
         self.tableSource.add(message1)
         
         let message2:MessageBoby = MessageBoby.init(content: "你的名字?", time: "10-12")
         message2.sender = friend
+        message2.type = .text
         self.tableSource.add(message2)
         
         
         let message3:MessageBoby = MessageBoby.init(content: "我是lk", time: "10-13")
         message3.sender = myself
+        message3.type = .text
         self.tableSource.add(message3)
         let message4:MessageBoby = MessageBoby.init(content: "吊袜带挖达瓦大文的哇达瓦达瓦大文件的骄傲我达瓦大就按我的骄傲我大家洼达瓦大文大无大无多无大无大无多哇大无多无", time: "10-13")
         message4.sender = myself
+        message4.type = .text
         self.tableSource.add(message4)
     }
     
@@ -269,16 +296,17 @@ extension communication{
         self.tableSource.add(card)
         let message1:MessageBoby = MessageBoby.init(content: "我是lk", time: "10-13")
         message1.sender = myself
+        message1.type = .text
         self.tableSource.add(message1)
         
         let message2:MessageBoby = MessageBoby.init(content: "哦哦哦!", time: "10-12")
         message2.sender = friend
+        message2.type = .text
         self.tableSource.add(message2)
         
     }
     
     func hiddenKeyboard(sender: UITapGestureRecognizer){
-        print("tab ")
         
         if sender.state == .ended{
            // self.InputBar.textField.resignFirstResponder()
@@ -300,49 +328,45 @@ extension communication{
         self.chatBarView.inputText.text = ""
         let messagebody:MessageBoby = MessageBoby.init(content: message, time: "10-13")
         messagebody.sender = myself
+        messagebody.type = .text
+        
         self.tableSource.add(messagebody)
         
-        self.tableView.reloadData()
+        //self.tableView.reloadData()
+        //self.tableView.beginUpdates()
         let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
+        //self.tableView.insertRows(at: [path as IndexPath], with: .none)
+        self.tableView.reloadData()
+        //self.tableView.endUpdates()
         self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)
     }
-   
+    
+    
+    // send gif picture
+    func sendGifMessage(emotion: MChatEmotion){
+        
+        let messageBody:MessageBoby = MessageBoby.init(content: emotion.imgPath!, time: "10-12")
+        messageBody.type  = .picture
+        messageBody.sender = myself
+        
+        self.tableSource.add(messageBody)
+        
+        print(self.tableSource.count)
+        
+       
+        //self.tableView.beginUpdates()
+        
+        let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
+        //self.tableView.insertRows(at: [path as IndexPath], with: .none)
+         self.tableView.reloadData()
+        //self.tableView.endUpdates()
+        
+        self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)
+        
+        
+        
+    }
 }
-
-
-//extension communication:FHInputToolbarDelegate{
-//
-//
-//
-//    func onInputBtnTapped(text: String) {
-//        if (text.isEmpty){
-//            return
-//        }
-//
-//        //MARK connected back server
-//
-//        let _:MessageBoby = self.tableSource.lastObject as! MessageBoby
-//
-//        let message:MessageBoby = MessageBoby.init(content: text, time: "10-14")
-//        message.sender = myself
-//
-//        self.tableSource.add(message)
-//        self.tableView.reloadData()
-//        // 滚动效果
-//        let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
-//
-//        self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)
-//
-//    }
-//
-//    func onleftBtnTapped(text: String) {
-//
-//    }
-//
-//
-//
-//
-//}
 
 
 
@@ -412,10 +436,6 @@ class CellCard:UITableViewCell{
     }
     
     
-//    func createCell(info:Dictionary<String,String>){
-//
-//    }
-    
     class func identify()->String{
         return cellType.card.rawValue
     }
@@ -450,7 +470,9 @@ extension communication: ChatMoreViewDelegate{
 
 extension communication: ChatEmotionViewDelegate{
     func chatEmotionGifSend(emotionView: ChatEmotionView, didSelectedEmotion emotion: MChatEmotion) {
-        print("send gif \(emotion)")
+        self.sendGifMessage(emotion: emotion)
+        
+        
     }
     
     
@@ -487,7 +509,6 @@ extension communication: ChatBarViewDelegate{
     }
     
     func showEmotionKeyboard() {
-         print("show emotion")
         self.emotion.alpha  = 1
         self.moreView.alpha = 0
         //_ = moreView.sd_layout().topSpaceToView(self.emotion,0)
@@ -546,11 +567,7 @@ extension communication: ChatBarViewDelegate{
 
 extension communication{
     func moveBar(distance: CGFloat) {
-        print("movr bar")
         //_ = self.chatBarView.sd_layout().bottomSpaceToView(self.view,distance)
-        
-       
-        print(self.chatBarView,self.emotion)
         
 
         UIView.animate(withDuration: 0.3, animations: {
@@ -574,7 +591,6 @@ extension communication{
         
     }
     func keyboardhidden(sender:NSNotification){
-         print("hidden")
         keyboardFrame = CGRect.zero
         if chatBarView.keyboardType == .emotion || chatBarView.keyboardType == .more{
             return

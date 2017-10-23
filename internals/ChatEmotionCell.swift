@@ -23,7 +23,6 @@ class ChatEmotionCell: UICollectionViewCell {
                     return
                 }
                 emotionImageView.image = UIImage(contentsOfFile: imgPath)
-                print(imgPath,emo.text)
             }
         }
     }
@@ -52,7 +51,6 @@ class ChatEmotionCell2: UICollectionViewCell {
             emotionImageView.image = UIImage.init(contentsOfFile: imgPath)
             let characterSet = CharacterSet.init(charactersIn: "[]")
             name.text  = label.trimmingCharacters(in: characterSet)
-            print(imgPath,label)
         }
     }
     

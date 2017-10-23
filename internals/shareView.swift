@@ -104,7 +104,6 @@ class shareView: UIView {
         _ = cancelButton.sd_layout().bottomSpaceToView(self,5)?.centerXEqualToView(self)?.widthIs(40)?.heightIs(20)
         _ = separateView.sd_layout().bottomSpaceToView(cancelButton,5)?.widthIs(self.frame.width)?.heightIs(5)
         
-
         
     }
     

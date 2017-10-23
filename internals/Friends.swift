@@ -137,8 +137,11 @@ enum MessageStatus{
     case canceled
 }
 
-class MessageBoby{
+class MessageBoby: CustomStringConvertible{
     
+    var description: String{
+        return self.content + self.type.rawValue
+    }
     var messageID:Int?
     var url:String?
     var content:String!
@@ -155,5 +158,6 @@ class MessageBoby{
         self.time = time
     
     }
+    
     
 }

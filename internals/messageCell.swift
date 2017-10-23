@@ -27,6 +27,7 @@ class messageCell: UITableViewCell {
         avatar = UIImageView.init()
         messageLabel = UILabel()
         bubleBackGround = UIImageView()
+        gif = UIImageView()
         
         
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -41,7 +42,7 @@ class messageCell: UITableViewCell {
         self.contentView.clipsToBounds = true
         self.contentView.addSubview(avatar)
         self.contentView.addSubview(bubleBackGround)
-        
+        self.contentView.addSubview(gif!)
         self.bubleBackGround.addSubview(messageLabel)
 
         
@@ -75,9 +76,6 @@ class messageCell: UITableViewCell {
     
     class func heightForCell(messageInfo:MessageBoby)->CGFloat{
         
-        if messageInfo.type  == .picture{
-            return 70
-        }
         let screenRect:CGRect = UIScreen.main.bounds
 //        let str:NSString  = NSString.init(cString: messageInfo.content.cString(using: String.Encoding.utf8)!, encoding: String.Encoding.utf8.rawValue)!
         // 对话框大小计算
@@ -92,22 +90,15 @@ class messageCell: UITableViewCell {
         
     }
     
+    // picture message setup
+ 
+    
+    
+    // text message setup
     func setupMessageCell(messageInfo:MessageBoby,user:FriendData){
         
-        
-        if messageInfo.type == .picture{
-            
-            self.gif = UIImageView.init()
-            gif?.image = UIImage.init(named: messageInfo.content)
-            
-            self.avatar.image = UIImage.init(named: "lk")
-            self.avatar.frame = CGRect.init(x: UIScreen.main.bounds.width-avatarSize.width-5 , y: 5, width: avatarSize.width, height: avatarSize.height)
-            self.gif?.frame = CGRect.init(x: UIScreen.main.bounds.width-5-self.avatar.frame.width-5-60, y: 5, width: 60, height: 60)
-            
-            return
-        }
-        
-       self.messageLabel.attributedText = GetChatEmotion.shared.findAttrStr(text: messageInfo.content, font: messageLabel.font)
+        self.gif?.frame = CGRect.zero
+        self.messageLabel.attributedText = GetChatEmotion.shared.findAttrStr(text: messageInfo.content, font: messageLabel.font)
         
         
         var labelSize = messageLabel.sizeThatFits(CGSize(width: 200.0, height: CGFloat(FLT_MAX)))
