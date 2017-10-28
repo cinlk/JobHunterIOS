@@ -35,9 +35,11 @@ class ChatMoreView: UIView {
     lazy var moreView:UICollectionView = { [unowned self] in
         let collectView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: LXFChatHorizontalLayout(
             column: cellNumbeOfOneRow, row:CellRow))
-        collectView.backgroundColor = UIColor.white
+        collectView.backgroundColor = UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0)
         collectView.delegate = self
         collectView.dataSource = self
+        collectView.showsVerticalScrollIndicator = false
+        collectView.showsHorizontalScrollIndicator = false
         return collectView
         }()
     
@@ -47,10 +49,10 @@ class ChatMoreView: UIView {
     
     lazy var moreDataSource: [(name:String, icon:UIImage, type:ChatMoreType)] = {
         return [
-            ("照片",#imageLiteral(resourceName: "iPhoneIcon"), ChatMoreType.pic),
+            ("照片",#imageLiteral(resourceName: "picture"), ChatMoreType.pic),
             ("相机",#imageLiteral(resourceName: "camera"), ChatMoreType.camera),
-            ("个人名片",#imageLiteral(resourceName: "briefcase"),  ChatMoreType.mycard),
-            ("快捷回复",#imageLiteral(resourceName: "shixiday"), ChatMoreType.feedback)
+            ("个人名片",#imageLiteral(resourceName: "mycard"),  ChatMoreType.mycard),
+            ("快捷回复",#imageLiteral(resourceName: "autoMessage"), ChatMoreType.feedback)
         ]
         
     }()
@@ -64,7 +66,7 @@ class ChatMoreView: UIView {
         
         _ = moreView.sd_layout().leftEqualToView(self)?.topEqualToView(self)?.rightEqualToView(self)?.heightIs(200)
         
-        self.backgroundColor  = UIColor.lightGray
+        self.backgroundColor  = UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0)
         
         moreView.contentSize = CGSize.init(width: UIScreen.main.bounds.width, height: moreView.height)
         moreView.register(LXFChatMoreCell.self, forCellWithReuseIdentifier: MoreCellID)
@@ -94,6 +96,8 @@ extension ChatMoreView: UICollectionViewDataSource, UICollectionViewDelegate {
         // 选择功能
         self.delegate?.chatMoreView(moreView: self, didSelectedType: moreModel.type)
     }
+    
+    
     
     
 }
@@ -130,10 +134,12 @@ class LXFChatMoreCell: UICollectionViewCell {
     // MARK:- 记录属性
     var model: (name: String, icon: UIImage, type: ChatMoreType)? {
         didSet {
+            
             self.itemButton.setImage(model?.icon, for: .normal)
+            self.itemButton.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5)
             self.itemLabel.text = model?.name
             self.type = model?.type
-            self.backgroundColor = UIColor.lightGray
+            self.backgroundColor =  UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0)
         }
     }
     
@@ -146,17 +152,7 @@ class LXFChatMoreCell: UICollectionViewCell {
         _ = itemLabel.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.bottomSpaceToView(self.contentView,2)?.heightIs(21)
         _ = itemButton.sd_layout().topSpaceToView(self.contentView,15)?.bottomSpaceToView(self.itemLabel,5)?.widthIs(60)?.centerXEqualToView(itemLabel)
         
-        //        itemLabel.snp.makeConstraints { (make) in
-        //            make.left.right.equalTo(self)
-        //            make.bottom.equalTo(self.snp.bottom).offset(-2)
-        //            make.height.equalTo(21)
-        //        }
-        //        itemButton.snp.makeConstraints { (make) in
-        //            make.top.equalTo(self.snp.top).offset(6)
-        //            make.bottom.equalTo(itemLabel.snp.top).offset(-5)
-        //            make.width.equalTo(itemButton.snp.height)
-        //            make.centerX.equalTo(self.snp.centerX)
-        //        }
+      
         
     }
 }

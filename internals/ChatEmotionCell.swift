@@ -41,6 +41,7 @@ class ChatEmotionCell: UICollectionViewCell {
         }
     }
 
+// 动态图表情
 class ChatEmotionCell2: UICollectionViewCell {
     var emotion: MChatEmotion? {
         didSet{

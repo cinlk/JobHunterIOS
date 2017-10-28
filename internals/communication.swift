@@ -64,6 +64,55 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
        return v
     }()
     
+    //replyMessageView
+    lazy var replyView:ReplyView = {
+       let v = ReplyView.init(frame: CGRect.init(x: 50, y: 200, width: 200, height: 200))
+       v.delegate = self
+       return v
+        
+    }()
+    
+    
+    
+    //backgroudView
+    lazy var darkView:UIView = {
+        var  v = UIView()
+        v.frame = CGRect(x: 0, y: 0, width:UIScreen.main.bounds.size.width, height:UIScreen.main.bounds.size.height)
+        v.backgroundColor = UIColor(red: 0 / 255.0, green: 0 / 255.0, blue: 0 / 255.0, alpha: 0.5) // 设置半透明颜色
+        
+        v.isUserInteractionEnabled = true // 打开用户交互
+        
+        let singTap = UITapGestureRecognizer(target: self, action:#selector(self.handleSingleTapGesture)) // 添加点击事件
+        
+        singTap.numberOfTouchesRequired = 1
+        
+        v.addGestureRecognizer(singTap)
+        return v
+        
+    }()
+    
+    
+    // mycard
+    
+    lazy var cardAlert:UIAlertController = { [unowned self ] in
+        let alertView = UIAlertController.init(title: "分享你的个人名片", message: nil, preferredStyle: .alert)
+        alertView.addAction(UIAlertAction.init(title: "立刻分享", style: .default, handler: { (action) in
+            print("立刻分享")
+            self.sendPersonCard()
+            
+        }))
+        alertView.addAction(UIAlertAction.init(title: "预览个人名片", style: .default, handler: { (action) in
+            print(action)
+        }))
+        alertView.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: { (action) in
+            print(action)
+        }))
+        
+        return alertView
+        
+        
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -76,9 +125,11 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
         //背景图片
         let backGroudImageView:UIImageView = UIImageView.init(image: UIImage.init(named: "chatBackground"))
         backGroudImageView.frame = CGRect.init(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+        self.view.backgroundColor = UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0)
+        //self.view.addSubview(backGroudImageView)
         
-        self.view.addSubview(backGroudImageView)
-        
+        self.tableView.showsHorizontalScrollIndicator = false
+        self.tableView.showsVerticalScrollIndicator = false
         self.tableView.clipsToBounds = true
         self.tableView.delegate = self
         self.tableView.dataSource = self
@@ -86,6 +137,8 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
         
         self.tableView.register(CellCard.self, forCellReuseIdentifier: CellCard.identify())
         self.tableView.register(gifCell.self, forCellReuseIdentifier: gifCell.reuseidentify())
+        self.tableView.register(PersonCardCell.self, forCellReuseIdentifier: PersonCardCell.reuseidentity())
+        
         
         
         let headerView:UIView = UIView()
@@ -129,6 +182,11 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
         _ = emotion.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.chatBarView,0)?.heightIs(216)
         
         
+        
+       
+        
+        
+    
         
         // Do any additional setup after loading the view.
     }
@@ -200,7 +258,7 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
                 cell.setupMessageCell(messageInfo: message, user: myself)
                 return cell
 
-            }else if message.type == .picture{
+            }else if message.type == .gif || message.type == .bigGif{
                 let cell = tableView.dequeueReusableCell(withIdentifier: gifCell.reuseidentify(), for: indexPath) as! gifCell
                 
                 cell.setupPictureCell(messageInfo: message, user: myself)
@@ -215,6 +273,13 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
         
             //return cell
         }
+        if let personCard = self.tableSource.object(at: indexPath.row) as? PersonCardBody{
+            let cell = tableView.dequeueReusableCell(withIdentifier: PersonCardCell.reuseidentity(), for: indexPath) as? PersonCardCell
+            cell?.buildCell(name: personCard.name!, image: personCard.image!)
+            cell?.selectionStyle = .none
+            return cell!
+            
+        }
         
         return UITableViewCell.init(style: .default, reuseIdentifier: "nil")
         
@@ -225,9 +290,11 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
         if let message:MessageBoby  = self.tableSource.object(at: indexPath.row) as? MessageBoby{
             if message.type  == .text{
                 return messageCell.heightForCell(messageInfo: message)
-            }else if message.type == .picture{
+            }else if message.type == .gif || message.type == .bigGif{
                 return gifCell.heightForCell(messageInfo: message)
             }
+        }else if let personCard = self.tableSource.object(at: indexPath.row) as? PersonCardBody{
+            return PersonCardCell.heightForCell()
         }
         return CellCard.height()
     }
@@ -241,6 +308,10 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
             let backButton =  UIBarButtonItem.init(title: "", style: .done, target: nil, action: nil)
             self.navigationItem.backBarButtonItem = backButton
             self.navigationController?.pushViewController(detail, animated: true)
+        }
+        else if let personCard = self.tableSource.object(at: indexPath.row) as? PersonCardBody{
+            print("show person card View \(personCard)")
+            
         }
         return
     }
@@ -339,21 +410,25 @@ extension communication{
         self.tableView.reloadData()
         //self.tableView.endUpdates()
         self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)
+        
     }
     
     
+    
     // send gif picture
-    func sendGifMessage(emotion: MChatEmotion){
+    func sendGifMessage(emotion: MChatEmotion, type:String){
         
         let messageBody:MessageBoby = MessageBoby.init(content: emotion.imgPath!, time: "10-12")
-        messageBody.type  = .picture
+        if type == "bigGif"{
+            messageBody.type = .bigGif
+        }else{
+            messageBody.type  = .gif
+        }
+        //messageBody.type  = .picture
         messageBody.sender = myself
         
         self.tableSource.add(messageBody)
         
-        print(self.tableSource.count)
-        
-       
         //self.tableView.beginUpdates()
         
         let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
@@ -364,6 +439,32 @@ extension communication{
         self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)
         
         
+    }
+    //
+    func sendReply(content:String){
+        let messagebody:MessageBoby = MessageBoby.init(content: content, time: "10-13")
+        messagebody.sender = myself
+        messagebody.type = .text
+        
+        self.tableSource.add(messagebody)
+        
+        //self.tableView.reloadData()
+        //self.tableView.beginUpdates()
+        let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
+        //self.tableView.insertRows(at: [path as IndexPath], with: .none)
+        self.tableView.reloadData()
+        //self.tableView.endUpdates()
+        self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)
+    }
+    //
+    
+    func sendPersonCard(){
+        
+        let card:PersonCardBody = PersonCardBody.init(name: myself.name, image: myself.avart)
+        self.tableSource.add(card)
+        let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
+        self.tableView.reloadData()
+        self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)
         
     }
 }
@@ -453,8 +554,8 @@ extension communication: ChatMoreViewDelegate{
            
             //self.present(imgPickerVC, animated: true, completion: nil)
         } else if type == .feedback {  // 小视频
-          
-//            videoVC.startAnimation(with: .small)
+            self.navigationController?.view.addSubview(self.darkView)
+            self.navigationController?.view.addSubview(self.replyView)
           
         } else if type == .camera {  // 视频聊天
 //            let sheet = LXFActionSheet(delegate: self, cancelTitle: "取消", otherTitles: ["直播聊天"])
@@ -462,6 +563,14 @@ extension communication: ChatMoreViewDelegate{
 //            // 隐藏chatBarView
 //            let chatVC = self.delegate as! LXFChatController
 //            chatVC.resetChatBarFrame()
+        }else if type == .mycard{
+            // show mycard alert
+            
+          
+            self.present(cardAlert, animated: true, completion: nil)
+           
+         
+            
         }
     }
 
@@ -469,8 +578,8 @@ extension communication: ChatMoreViewDelegate{
 
 
 extension communication: ChatEmotionViewDelegate{
-    func chatEmotionGifSend(emotionView: ChatEmotionView, didSelectedEmotion emotion: MChatEmotion) {
-        self.sendGifMessage(emotion: emotion)
+    func chatEmotionGifSend(emotionView: ChatEmotionView, didSelectedEmotion emotion: MChatEmotion, type:String) {
+        self.sendGifMessage(emotion: emotion, type:type)
         
         
     }
@@ -498,8 +607,10 @@ extension communication: ChatBarViewDelegate{
     func showTextKeyboard() {
         
         UIView.animate(withDuration: 0.3) {
-            self.emotion.alpha = 0
-            self.moreView.alpha = 0
+            //self.emotion.alpha = 0
+            //self.moreView.alpha = 0
+            self.emotion.isHidden = true
+            self.moreView.isHidden = true
         }
         self.moveBar(distance: keyboardFrame?.height ?? 0)
     }
@@ -509,8 +620,10 @@ extension communication: ChatBarViewDelegate{
     }
     
     func showEmotionKeyboard() {
-        self.emotion.alpha  = 1
-        self.moreView.alpha = 0
+        //self.emotion.alpha  = 1
+        //self.moreView.alpha = 0
+        self.emotion.isHidden = false
+        self.moreView.isHidden = true
         //_ = moreView.sd_layout().topSpaceToView(self.emotion,0)
         _  = moreView.sd_layout().leftEqualToView(self.emotion)?.yIs(self.emotion.bottom)?.widthIs(self.emotion.width)?.heightIs(self.emotion.height)
        
@@ -521,8 +634,11 @@ extension communication: ChatBarViewDelegate{
     }
     
     func showMoreKeyboard() {
-        self.emotion.alpha = 0
-        self.moreView.alpha = 1
+       // self.emotion.alpha = 0
+        //self.moreView.alpha = 1
+        self.emotion.isHidden = true
+        self.moreView.isHidden = false
+        
         //_ = moreView.sd_layout().topSpaceToView(self.emotion,-216)
         _ = moreView.sd_layout().leftEqualToView(self.emotion)?.yIs(self.emotion.bottom - 216)?.widthIs(self.emotion.width)?.heightIs(self.emotion.height)
         UIView.animate(withDuration: 0.3) {
@@ -611,4 +727,18 @@ extension communication{
         self.moreView.frame = CGRect.init(x: 0, y: UIScreen.main.bounds.height, width: UIScreen.main.bounds.width, height: 216)
     }
 
+    func handleSingleTapGesture(){
+        self.darkView.removeFromSuperview()
+        self.replyView.removeFromSuperview()
+    }
+}
+
+
+
+// moresubView delegate
+extension communication: ReplyMessageDelegate{
+    func didSelectedMessage(view: UITableView, message: String) {
+        self.handleSingleTapGesture()
+        self.sendReply(content: message)
+    }
 }

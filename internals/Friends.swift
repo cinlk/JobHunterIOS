@@ -127,6 +127,8 @@ class FriendData:NSObject,NSCoding{
 enum messgeType:String {
     case text = "text"
     case picture = "picture"
+    case gif =  "gif"
+    case bigGif = "bigGif"
     case voice = "voice"
     
 }

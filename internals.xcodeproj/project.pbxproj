@@ -13,6 +13,8 @@
 		4A3224031F5160E50065A33F /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224021F5160E50065A33F /* Alamofire.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		4A3224051F5160EA0065A33F /* SDAutoLayout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224041F5160EA0065A33F /* SDAutoLayout.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		4A3224071F5160ED0065A33F /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224061F5160ED0065A33F /* SwiftyJSON.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		4A406B5F1FA4D3D900277AA0 /* PersonCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A406B5E1FA4D3D900277AA0 /* PersonCardCell.swift */; };
+		4A406B611FA4DB0A00277AA0 /* personCardBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A406B601FA4DB0A00277AA0 /* personCardBody.swift */; };
 		4A444ECB1F8A168B006AE83D /* searchRequest.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A444ECA1F8A168B006AE83D /* searchRequest.pb.swift */; };
 		4A444ECD1F8E5121006AE83D /* friendsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A444ECC1F8E5121006AE83D /* friendsController.swift */; };
 		4A444ED01F8E5789006AE83D /* contactlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A444ECE1F8E5789006AE83D /* contactlist.swift */; };
@@ -68,6 +70,7 @@
 		4ACBD6FC1F77E8F500A5FD23 /* shareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACBD6FB1F77E8F500A5FD23 /* shareView.swift */; };
 		4AD03AB81F9B45270077C15B /* InputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD03AB71F9B45270077C15B /* InputTextView.swift */; };
 		4AD03ABB1F9C7DD30077C15B /* GetChatEmotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD03ABA1F9C7DD30077C15B /* GetChatEmotion.swift */; };
+		4ADADAAB1FA4C09400134AAE /* ReplyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADADAAA1FA4C09400134AAE /* ReplyView.swift */; };
 		4ADCC7501F511DD3001A4E9F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADCC74F1F511DD3001A4E9F /* AppDelegate.swift */; };
 		4ADCC7521F511DD3001A4E9F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADCC7511F511DD3001A4E9F /* ViewController.swift */; };
 		4ADCC7551F511DD3001A4E9F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4ADCC7531F511DD3001A4E9F /* Main.storyboard */; };
@@ -91,6 +94,9 @@
 		4AF6C8051F5A98940059496B /* ScrollerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C8041F5A98940059496B /* ScrollerCell.swift */; };
 		4AF6C80B1F5AEB880059496B /* ScrollerCell2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C80A1F5AEB880059496B /* ScrollerCell2.swift */; };
 		4AFCCD621F9E490400E0E168 /* gifCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFCCD611F9E490400E0E168 /* gifCell.swift */; };
+		4AFCCD6A1FA3837000E0E168 /* emotion3.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4AFCCD651FA37D8C00E0E168 /* emotion3.plist */; };
+		4AFCCD6B1FA3837000E0E168 /* emotion3.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4AFCCD631FA37D7000E0E168 /* emotion3.bundle */; };
+		4AFCCD721FA4AE8F00E0E168 /* replylist.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4AFCCD711FA4AE8F00E0E168 /* replylist.plist */; };
 		4AFF91A71F5C238400FE189F /* HeaderFoot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91A61F5C238400FE189F /* HeaderFoot.swift */; };
 		4AFF91A91F5C338800FE189F /* JobDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91A81F5C338800FE189F /* JobDetailViewController.swift */; };
 		4AFF91B91F5DB8A900FE189F /* company.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91B71F5DB8A900FE189F /* company.swift */; };
@@ -134,6 +140,8 @@
 		4A3224021F5160E50065A33F /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = "../../../../Library/Developer/Xcode/DerivedData/internals-fvfjoslaltdhlmclwrenlrxzczpm/Build/Products/Debug-iphonesimulator/Alamofire/Alamofire.framework"; sourceTree = "<group>"; };
 		4A3224041F5160EA0065A33F /* SDAutoLayout.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDAutoLayout.framework; path = "Pods/../build/Debug-iphoneos/SDAutoLayout/SDAutoLayout.framework"; sourceTree = "<group>"; };
 		4A3224061F5160ED0065A33F /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = "../../../../Library/Developer/Xcode/DerivedData/internals-fvfjoslaltdhlmclwrenlrxzczpm/Build/Products/Debug-iphonesimulator/SwiftyJSON/SwiftyJSON.framework"; sourceTree = "<group>"; };
+		4A406B5E1FA4D3D900277AA0 /* PersonCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonCardCell.swift; sourceTree = "<group>"; };
+		4A406B601FA4DB0A00277AA0 /* personCardBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = personCardBody.swift; sourceTree = "<group>"; };
 		4A444ECA1F8A168B006AE83D /* searchRequest.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = searchRequest.pb.swift; path = ../../pbModel/searchRequest.pb.swift; sourceTree = "<group>"; };
 		4A444ECC1F8E5121006AE83D /* friendsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = friendsController.swift; sourceTree = "<group>"; };
 		4A444ECE1F8E5789006AE83D /* contactlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = contactlist.swift; sourceTree = "<group>"; };
@@ -189,6 +197,7 @@
 		4ACBD6FB1F77E8F500A5FD23 /* shareView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = shareView.swift; sourceTree = "<group>"; };
 		4AD03AB71F9B45270077C15B /* InputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextView.swift; sourceTree = "<group>"; };
 		4AD03ABA1F9C7DD30077C15B /* GetChatEmotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetChatEmotion.swift; sourceTree = "<group>"; };
+		4ADADAAA1FA4C09400134AAE /* ReplyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyView.swift; sourceTree = "<group>"; };
 		4ADCC74C1F511DD3001A4E9F /* internals.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = internals.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4ADCC74F1F511DD3001A4E9F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4ADCC7511F511DD3001A4E9F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -220,6 +229,9 @@
 		4AF6C8041F5A98940059496B /* ScrollerCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollerCell.swift; sourceTree = "<group>"; };
 		4AF6C80A1F5AEB880059496B /* ScrollerCell2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollerCell2.swift; sourceTree = "<group>"; };
 		4AFCCD611F9E490400E0E168 /* gifCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gifCell.swift; sourceTree = "<group>"; };
+		4AFCCD631FA37D7000E0E168 /* emotion3.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = emotion3.bundle; sourceTree = "<group>"; };
+		4AFCCD651FA37D8C00E0E168 /* emotion3.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = emotion3.plist; sourceTree = "<group>"; };
+		4AFCCD711FA4AE8F00E0E168 /* replylist.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = replylist.plist; sourceTree = "<group>"; };
 		4AFF91A61F5C238400FE189F /* HeaderFoot.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeaderFoot.swift; sourceTree = "<group>"; };
 		4AFF91A81F5C338800FE189F /* JobDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobDetailViewController.swift; sourceTree = "<group>"; };
 		4AFF91B71F5DB8A900FE189F /* company.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = company.swift; sourceTree = "<group>"; };
@@ -499,6 +511,7 @@
 			isa = PBXGroup;
 			children = (
 				4ADDDAB71F98F054001CB00F /* MChatEmotion.swift */,
+				4A406B601FA4DB0A00277AA0 /* personCardBody.swift */,
 			);
 			name = model;
 			sourceTree = "<group>";
@@ -506,10 +519,12 @@
 		4ADDDABD1F98F706001CB00F /* emotions */ = {
 			isa = PBXGroup;
 			children = (
+				4AFCCD651FA37D8C00E0E168 /* emotion3.plist */,
 				4ABB987A1F9CDE6000DD9AAB /* test.plist */,
 				4ABB98791F9CDE3A00DD9AAB /* emotion2.plist */,
 				4ABB986F1F9CDB2B00DD9AAB /* emotion2.bundle */,
 				4ADDDABE1F98F735001CB00F /* test.bundle */,
+				4AFCCD631FA37D7000E0E168 /* emotion3.bundle */,
 			);
 			name = emotions;
 			sourceTree = "<group>";
@@ -517,6 +532,7 @@
 		4ADDDAD91F9B3F68001CB00F /* View */ = {
 			isa = PBXGroup;
 			children = (
+				4AFCCD6C1FA4ABBE00E0E168 /* moreSubViews */,
 				4AC056301F93B46C00D5B739 /* LXFChatHorizontalLayout.swift */,
 				4ADDDAB41F98EF84001CB00F /* ChatEmotionCell.swift */,
 				4ADDDAB21F97ABA4001CB00F /* ChatEmotionView.swift */,
@@ -533,6 +549,16 @@
 			children = (
 			);
 			name = Controller;
+			sourceTree = "<group>";
+		};
+		4AFCCD6C1FA4ABBE00E0E168 /* moreSubViews */ = {
+			isa = PBXGroup;
+			children = (
+				4AFCCD711FA4AE8F00E0E168 /* replylist.plist */,
+				4ADADAAA1FA4C09400134AAE /* ReplyView.swift */,
+				4A406B5E1FA4D3D900277AA0 /* PersonCardCell.swift */,
+			);
+			name = moreSubViews;
 			sourceTree = "<group>";
 		};
 		4AFF91AC1F5DAB8600FE189F /* nibs */ = {
@@ -721,6 +747,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4AFCCD6A1FA3837000E0E168 /* emotion3.plist in Resources */,
+				4AFCCD6B1FA3837000E0E168 /* emotion3.bundle in Resources */,
 				4ABB987B1F9CDE8E00DD9AAB /* test.plist in Resources */,
 				4ABB987C1F9CDE8E00DD9AAB /* emotion2.plist in Resources */,
 				4ABB98751F9CDB5300DD9AAB /* emotion2.bundle in Resources */,
@@ -729,6 +757,7 @@
 				4A2A2D081F6578D800F42123 /* joblist.xib in Resources */,
 				4A93C2E21F8369B10022E97B /* conditionCell.xib in Resources */,
 				4A93C2B91F80AC590022E97B /* messageItemCell.xib in Resources */,
+				4AFCCD721FA4AE8F00E0E168 /* replylist.plist in Resources */,
 				4AFF91BE1F5DBD8D00FE189F /* JobDescription.xib in Resources */,
 				4A93C2CA1F8127810022E97B /* deliveredJobs.xib in Resources */,
 				4A93C2DA1F834F2E0022E97B /* subjobitem.xib in Resources */,
@@ -843,10 +872,12 @@
 				4ADDDAB31F97ABA4001CB00F /* ChatEmotionView.swift in Sources */,
 				4AFF91A91F5C338800FE189F /* JobDetailViewController.swift in Sources */,
 				4A93C2CF1F82292E0022E97B /* statustage.swift in Sources */,
+				4A406B611FA4DB0A00277AA0 /* personCardBody.swift in Sources */,
 				4A93C2BF1F80CECB0022E97B /* relationship.swift in Sources */,
 				4AFF91A71F5C238400FE189F /* HeaderFoot.swift in Sources */,
 				4ADDDAD51F98F9B3001CB00F /* ChatEmotionHelper.swift in Sources */,
 				4A93C2BB1F80CE5F0022E97B /* deliveredHistory.swift in Sources */,
+				4ADADAAB1FA4C09400134AAE /* ReplyView.swift in Sources */,
 				4AD03ABB1F9C7DD30077C15B /* GetChatEmotion.swift in Sources */,
 				4A5304EA1F52FAD20000F1E9 /* demo.swift in Sources */,
 				4A93C2C31F80CF080022E97B /* forumView.swift in Sources */,
@@ -854,6 +885,7 @@
 				4A93C2E71F88B8E20022E97B /* client.swift in Sources */,
 				4A9CE3641F715B30002A8FD5 /* historyAndCatagoryView.swift in Sources */,
 				4A444ECB1F8A168B006AE83D /* searchRequest.pb.swift in Sources */,
+				4A406B5F1FA4D3D900277AA0 /* PersonCardCell.swift in Sources */,
 				4A9CE36F1F72C2E6002A8FD5 /* myextension.swift in Sources */,
 				4AFF91C11F5DC18000FE189F /* worklocate.swift in Sources */,
 				4A93C2E41F8788720022E97B /* editcondition.swift in Sources */,

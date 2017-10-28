@@ -136,7 +136,6 @@ class messageCell: UITableViewCell {
             avatar.layer.removeAllAnimations()
             messageLabel.layer.removeAllAnimations()
             bubleBackGround.layer.removeAllAnimations()
-            print("self \(messageLabel)")
             
         
         }
@@ -163,7 +162,6 @@ class messageCell: UITableViewCell {
             bubleBackGround.layer.removeAllAnimations()
             
             
-             print("other \(messageLabel) ")
             
             
             

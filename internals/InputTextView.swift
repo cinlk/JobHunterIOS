@@ -47,6 +47,9 @@ class InputTextView: UIView {
         inputV.layer.backgroundColor = UIColor.white.cgColor
         inputV.layer.borderWidth = 0.5
         inputV.delegate = self
+        inputV.showsVerticalScrollIndicator = false
+        inputV.showsHorizontalScrollIndicator = false
+        
         inputV.addObserver(self, forKeyPath: "attributedText", options: .new, context: nil)
         return inputV
     }()

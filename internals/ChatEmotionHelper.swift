@@ -57,16 +57,17 @@ class ChatEmotionHelper: NSObject {
         return Bundle.main.bundlePath + "/test.bundle/" + emotionName! + ".png"
     }
     // emotion2
-    class func getAllEmotion2()-> [MChatEmotion]{
+    class func getAllEmotion2(emotionName:String, type:String)-> [MChatEmotion]{
         var emotions: [MChatEmotion] = [MChatEmotion]()
-        let plistPath = Bundle.main.path(forResource: "emotion2", ofType: "plist")
+        let plistPath = Bundle.main.path(forResource: emotionName, ofType: "plist")
         
         
         
         let array = NSArray(contentsOfFile: plistPath!) as! [[String : String]]
         for dict in array{
             
-            let item  = MChatEmotion(dict: dict,bundle:"emotion2.bundle",type:".gif")
+            let bundle = emotionName+".bundle"
+            let item  = MChatEmotion(dict: dict,bundle:bundle,type:type)
            
             emotions.append(item)
             
@@ -74,4 +75,18 @@ class ChatEmotionHelper: NSObject {
         return emotions
         
     }
+    
+    // get reply messages
+    class func getAllReplyMessages(fileName:String) -> [String]{
+        var res:[String] = []
+        let plistPath = Bundle.main.path(forResource: fileName, ofType: "plist")
+        let array = NSArray.init(contentsOfFile: plistPath!) as! [String]
+        
+        for str in array{
+            res.append(str)
+        }
+        
+        return res
+    }
+    
 }

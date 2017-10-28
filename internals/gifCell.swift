@@ -45,7 +45,10 @@ class gifCell: UITableViewCell {
     }
     
     class func heightForCell(messageInfo:MessageBoby)->CGFloat{
-            return 80
+        if messageInfo.type == .bigGif{
+            return  120
+        }
+        return 80
         
     }
     
@@ -70,15 +73,22 @@ class gifCell: UITableViewCell {
             
             self.avatar.image = UIImage.init(named: "lk")
             self.avatar.frame = CGRect.init(x: UIScreen.main.bounds.width-avatarSize.width-5 , y: 5, width: avatarSize.width, height: avatarSize.height)
-            self.gif?.frame = CGRect.init(x: UIScreen.main.bounds.width-5-self.avatar.frame.width-5-70, y: 15, width: 60, height: 60)
+            if messageInfo.type == .bigGif{
+                self.gif?.frame = CGRect.init(x: UIScreen.main.bounds.width-5-self.avatar.frame.width-5-110, y: 15, width: 100, height: 100)
+            }else{
+                self.gif?.frame = CGRect.init(x: UIScreen.main.bounds.width-5-self.avatar.frame.width-5-70, y: 15, width: 60, height: 60)
+            }
             
             
             
         }else{
             self.avatar.image = UIImage.init(named: "avartar")
             self.avatar.frame = CGRect.init(x: 5, y: 5, width: avatarSize.width, height: avatarSize.height)
-            self.gif?.frame = CGRect.init(x: self.avatar.frame.width+5+10, y: 15, width: 60, height: 60)
-            
+            if messageInfo.type == .bigGif{
+                self.gif?.frame = CGRect.init(x: self.avatar.frame.width+5+10, y: 15, width: 100, height: 100)
+            }else{
+                self.gif?.frame = CGRect.init(x: self.avatar.frame.width+5+10, y: 15, width: 60, height: 60)
+            }
         }
         
         

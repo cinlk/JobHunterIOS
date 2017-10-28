@@ -79,7 +79,7 @@ extension UINavigationBar{
 extension UIImage{
     
     
-    // gif 图片解析
+    // gif 图片解析, gif 多个图片片段按时间顺序组成
     static func animationImageWithData(data:NSData?) -> UIImage {
         
         if data != nil {
@@ -92,7 +92,7 @@ extension UIImage{
             
             if count <= 1 {
                 
-                animatedImage = UIImage.init(data: data as! Data)
+                animatedImage = UIImage.init(data: data! as Data)
                 
             }else {
                 
@@ -128,7 +128,7 @@ extension UIImage{
         
     }
 
-    
+    // 获取每一帧延时时间
     static func frameDuration(index:Int,source:CGImageSource) -> Float {
         
         
@@ -207,7 +207,7 @@ extension UIImage{
         
     }
     
-    //拉伸图片 ?
+    //拉伸图片
     class func resizeableImage(name:String)->UIImage{
         let image = UIImage.init(named: name)
         let top = (image?.size.height)! * 0.6
