@@ -22,7 +22,7 @@ class  TestData{
     
     static func getAllDelivers() -> [Dictionary<String,String>]{
         
-        let data = [["companyName":"红玉凸新","jobname":"运营实习生","locate":"重庆","image":"jodel","createTime":"2017-9-12","salary":"100-150元/天", "times":"4天/周","time":"6个月","hired":"可转正","scholar":"本科","currentstatus":"投递成功","id":"1"],
+        let data = [["companyName":"小张","jobname":"运营实习生","locate":"重庆","image":"jodel","createTime":"2017-9-12","salary":"100-150元/天", "times":"4天/周","time":"6个月","hired":"可转正","scholar":"本科","currentstatus":"投递成功","id":"1"],
                     
             ["companyName":"google","jobname":"研发实习生","locate":"mountain","image":"google","createTime":"2017-9-31","salary":"100-150元/天","times":"4天/周","time":"6个月","hired":"可转正","scholar":"本科","currentstatus":"被查看","id":"2"],
             ["companyName":"企鹅","jobname":"产品调研","locate":"北京","image":"qq","createTime":"2017-9-31","salary":"100-150元/天","times":"4天/周","time":"6个月","hired":"可转正","scholar":"本科","currentstatus":"不合适","id":"3"]]

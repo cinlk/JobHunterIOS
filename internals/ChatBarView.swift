@@ -67,7 +67,9 @@ class ChatBarView: UIView {
     lazy var chatEmotionButton:UIButton = {
         var button = UIButton.init(type: UIButtonType.custom)
         
-        button.setBackgroundImage(#imageLiteral(resourceName: "smileEmotion"), for: .normal)
+        button.setBackgroundImage(#imageLiteral(resourceName: "smile"), for: .normal)
+        button.setBackgroundImage(#imageLiteral(resourceName: "keyboard"), for: .selected)
+        
         button.addTarget(self, action: #selector(emotionClick(sender:)), for: .touchUpInside)
         return button
         
@@ -173,7 +175,9 @@ extension ChatBarView{
             //切换到 text
             keyboardType = .text
             inputText.becomeFirstResponder()
+            self.chatEmotionButton.isSelected = false
         }else{
+            
             if keyboardType == .text{
                 //inputText.resignFirstResponder()
                 delegate?.hiddens()
@@ -188,7 +192,7 @@ extension ChatBarView{
             
             // 代理显示
             delegate?.showEmotionKeyboard()
-            
+            self.chatEmotionButton.isSelected = true
             
             
         }

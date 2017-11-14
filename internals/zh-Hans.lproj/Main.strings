@@ -1,0 +1,36 @@
+
+/* Class = "UILabel"; text = "实 习 生"; ObjectID = "6Ue-58-ASh"; */
+"6Ue-58-ASh.text" = "实 习 生";
+
+/* Class = "UITabBarItem"; title = "消息"; ObjectID = "DgB-4F-z5u"; */
+"DgB-4F-z5u.title" = "消息";
+
+/* Class = "UITextField"; placeholder = "手机号"; ObjectID = "GZM-ex-yyJ"; */
+"GZM-ex-yyJ.placeholder" = "手机号";
+
+/* Class = "UIButton"; normalTitle = "登  录"; ObjectID = "J09-K4-CcS"; */
+"J09-K4-CcS.normalTitle" = "登  录";
+
+/* Class = "UITabBarItem"; title = "个人"; ObjectID = "KED-Lf-gMB"; */
+"KED-Lf-gMB.title" = "个人";
+
+/* Class = "UITextField"; placeholder = "密码"; ObjectID = "P25-oh-lUG"; */
+"P25-oh-lUG.placeholder" = "密码";
+
+/* Class = "UITabBarItem"; title = "demo"; ObjectID = "TTC-Em-RKE"; */
+"TTC-Em-RKE.title" = "demo";
+
+/* Class = "UIButton"; normalTitle = "注  册"; ObjectID = "Wmz-ZS-sxB"; */
+"Wmz-ZS-sxB.normalTitle" = "注  册";
+
+/* Class = "UITabBarItem"; title = "职位"; ObjectID = "ZrE-WM-TfV"; */
+"ZrE-WM-TfV.title" = "职位";
+
+/* Class = "UINavigationItem"; title = "消息界面"; ObjectID = "eTo-eG-kQI"; */
+"eTo-eG-kQI.title" = "消息界面";
+
+/* Class = "UIButton"; normalTitle = "忘记密码"; ObjectID = "lEt-pg-Nrf"; */
+"lEt-pg-Nrf.normalTitle" = "忘记密码";
+
+/* Class = "UITabBarItem"; title = "Item"; ObjectID = "nke-17-OXB"; */
+"nke-17-OXB.title" = "Item";

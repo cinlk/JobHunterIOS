@@ -7,7 +7,8 @@
 //
 
 import UIKit
-
+import MobileCoreServices
+import Photos
 
 enum  cellType:String {
     case card = "card"
@@ -97,7 +98,6 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
     lazy var cardAlert:UIAlertController = { [unowned self ] in
         let alertView = UIAlertController.init(title: "分享你的个人名片", message: nil, preferredStyle: .alert)
         alertView.addAction(UIAlertAction.init(title: "立刻分享", style: .default, handler: { (action) in
-            print("立刻分享")
             self.sendPersonCard()
             
         }))
@@ -138,6 +138,7 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
         self.tableView.register(CellCard.self, forCellReuseIdentifier: CellCard.identify())
         self.tableView.register(gifCell.self, forCellReuseIdentifier: gifCell.reuseidentify())
         self.tableView.register(PersonCardCell.self, forCellReuseIdentifier: PersonCardCell.reuseidentity())
+        self.tableView.register(ImageCell.self, forCellReuseIdentifier: ImageCell.reuseIdentify())
         
         
         
@@ -280,8 +281,16 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
             return cell!
             
         }
+        if let imageBody = self.tableSource.object(at: indexPath.row) as? ImageBody{
+            let cell = tableView.dequeueReusableCell(withIdentifier: ImageCell.reuseIdentify(), for: indexPath) as? ImageCell
+            
+            cell?.buildCell(image: imageBody.image, avater: imageBody.avatar!)
+            cell?.selectionStyle = .none
+            return cell!
+        }
         
         return UITableViewCell.init(style: .default, reuseIdentifier: "nil")
+        
         
     }
     
@@ -295,6 +304,8 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
             }
         }else if let personCard = self.tableSource.object(at: indexPath.row) as? PersonCardBody{
             return PersonCardCell.heightForCell()
+        }else if let _ = self.tableSource.object(at: indexPath.row) as? ImageBody{
+            return ImageCell.cellHeight()
         }
         return CellCard.height()
     }
@@ -341,22 +352,22 @@ extension communication{
     }
     // fake data source
     func tmpTableSource(){
-        let message1:MessageBoby = MessageBoby.init(content: "你好啊!", time: "10-12")
+        let message1:MessageBoby = MessageBoby.init(content: "测试语句1!", time: "10-12")
         message1.sender = friend
         message1.type = .text
         self.tableSource.add(message1)
         
-        let message2:MessageBoby = MessageBoby.init(content: "你的名字?", time: "10-12")
+        let message2:MessageBoby = MessageBoby.init(content: "测试语句2!", time: "10-12")
         message2.sender = friend
         message2.type = .text
         self.tableSource.add(message2)
         
         
-        let message3:MessageBoby = MessageBoby.init(content: "我是lk", time: "10-13")
+        let message3:MessageBoby = MessageBoby.init(content: "测试语句3!✌️", time: "10-13")
         message3.sender = myself
         message3.type = .text
         self.tableSource.add(message3)
-        let message4:MessageBoby = MessageBoby.init(content: "吊袜带挖达瓦大文的哇达瓦达瓦大文件的骄傲我达瓦大就按我的骄傲我大家洼达瓦大文大无大无多无大无大无多哇大无多无", time: "10-13")
+        let message4:MessageBoby = MessageBoby.init(content: "重复重复重复😎重复重复重复重复重😎复重复重复重复重复重复重复重复重复重复重复重复重复重复😑重复重复重复😑重复重复重复重复重复重复重复重复!", time: "10-13")
         message4.sender = myself
         message4.type = .text
         self.tableSource.add(message4)
@@ -365,12 +376,12 @@ extension communication{
     // fake data  starting with job card
     func tmpTableSurce2(_ card:Dictionary<String,String>){
         self.tableSource.add(card)
-        let message1:MessageBoby = MessageBoby.init(content: "我是lk", time: "10-13")
+        let message1:MessageBoby = MessageBoby.init(content: "测试语句4", time: "10-13")
         message1.sender = myself
         message1.type = .text
         self.tableSource.add(message1)
         
-        let message2:MessageBoby = MessageBoby.init(content: "哦哦哦!", time: "10-12")
+        let message2:MessageBoby = MessageBoby.init(content: "测试语句5", time: "10-12")
         message2.sender = friend
         message2.type = .text
         self.tableSource.add(message2)
@@ -467,6 +478,17 @@ extension communication{
         self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)
         
     }
+    // send image
+    
+    func sendImage(image:NSData, avartar:String){
+        
+        let imageBody:ImageBody = ImageBody.init(image: image, avatar: avartar)
+        self.tableSource.add(imageBody)
+        let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
+        self.tableView.reloadData()
+        self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)
+        
+    }
 }
 
 
@@ -552,17 +574,79 @@ extension communication: ChatMoreViewDelegate{
     func chatMoreView(moreView: ChatMoreView, didSelectedType type: ChatMoreType) {
         if type == .pic {   // 图片
            
-            //self.present(imgPickerVC, animated: true, completion: nil)
+            if self.getPhotoLibraryAuthorization(){
+                    //self.present(imgPickerVC, animated: true, completion: nil)
+                    if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
+                        //初始化图片控制器
+                        let picker = UIImagePickerController()
+                        //picker.navigationItem.rightBarButtonItem?.title = "取消"
+                        //picker.navigationItem.title = "相机胶卷"
+                        
+                        //设置代理
+                        picker.delegate = self
+                        
+                        //设置媒体类型
+                        //picker.mediaTypes = [kUTTypeImage as String,kUTTypeVideo as String]
+                        picker.mediaTypes = [kUTTypeImage as String]
+                        //设置允许编辑
+                        picker.allowsEditing = true
+                        
+                        //指定图片控制器类型
+                        picker.sourceType = .photoLibrary
+                        
+                        //弹出控制器,显示界面
+                        self.present(picker, animated: true, completion: nil)
+                        
+                    }else{
+                        print("请在iphone的 \"设置-隐私-照片\" 选择中，允许xxx访问你的照片")
+                        
+                    }
+            }else{
+                let alert = UIAlertController(title: "温馨提示", message: "没有相册的访问权限，请在应用设置中开启权限", preferredStyle: .alert)
+                
+                let cancelAction = UIAlertAction(title: "确定", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+            }
+            
         } else if type == .feedback {  // 小视频
             self.navigationController?.view.addSubview(self.darkView)
             self.navigationController?.view.addSubview(self.replyView)
           
-        } else if type == .camera {  // 视频聊天
-//            let sheet = LXFActionSheet(delegate: self, cancelTitle: "取消", otherTitles: ["直播聊天"])
-//            sheet.show()
-//            // 隐藏chatBarView
-//            let chatVC = self.delegate as! LXFChatController
-//            chatVC.resetChatBarFrame()
+        } else if type == .camera {  // 相机  只能用真机调试
+            if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
+                
+                //初始化图片控制器
+                let picker = UIImagePickerController()
+                
+                //设置代理
+                picker.delegate = self
+                
+                //设置媒体类型
+                picker.mediaTypes = [kUTTypeImage as String,kUTTypeVideo as String]
+                
+                //设置来源
+                picker.sourceType = UIImagePickerControllerSourceType.camera
+                
+                //设置镜头 front:前置摄像头  Rear:后置摄像头
+                if UIImagePickerController.isCameraDeviceAvailable(UIImagePickerControllerCameraDevice.front) {
+                    picker.cameraDevice = UIImagePickerControllerCameraDevice.front
+                }
+                
+                //设置闪光灯(On:开、Off:关、Auto:自动)
+                picker.cameraFlashMode = UIImagePickerControllerCameraFlashMode.on
+                
+                //允许编辑
+                picker.allowsEditing = true
+                
+                //打开相机
+                self.present(picker, animated: true, completion: nil)
+            }
+            else{
+                print("找不到相机")
+            }
+            
         }else if type == .mycard{
             // show mycard alert
             
@@ -731,6 +815,28 @@ extension communication{
         self.darkView.removeFromSuperview()
         self.replyView.removeFromSuperview()
     }
+    // picture 授权  Photos module
+    func getPhotoLibraryAuthorization() -> Bool {
+        let authorizationStatus = PHPhotoLibrary.authorizationStatus()
+        
+        switch authorizationStatus {
+        case .authorized:
+            print("已经授权")
+            return true
+        case .notDetermined:
+            print("不确定是否授权")
+            // 请求授权
+            PHPhotoLibrary.requestAuthorization({ (status) in })
+        case .denied:
+            print("拒绝授权")
+        case .restricted:
+            print("限制授权")
+            break
+        }
+        
+        return false
+    }
+    
 }
 
 
@@ -742,3 +848,27 @@ extension communication: ReplyMessageDelegate{
         self.sendReply(content: message)
     }
 }
+
+
+extension communication: UIImagePickerControllerDelegate,UINavigationControllerDelegate{
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        //查看info对象
+        print(info)
+        
+        
+        let image:UIImage!
+        image = info[UIImagePickerControllerOriginalImage] as? UIImage
+        //图片控制器退出
+        picker.dismiss(animated: true, completion: {
+            () -> Void in
+        })
+        print("choose image \(image)")
+        
+        self.sendImage(image: UIImageJPEGRepresentation(image, 1.0) as! NSData, avartar: myself.avart)
+        
+    }
+    
+}
+
+
