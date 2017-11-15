@@ -123,7 +123,7 @@ class ScrollerCell2: UITableViewCell,UIScrollViewDelegate {
         
     }
     
-    func click(button:UIButton){
+    @objc func click(button:UIButton){
         print("click")
     }
     

@@ -129,7 +129,7 @@ class MyTag:UICollectionViewCell{
   
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         let attributes = super.preferredLayoutAttributesFitting(layoutAttributes)
-        attributes.frame = CGRect(x: 0, y: 0, width:NSString(string: age.text!).size(attributes: [NSFontAttributeName:age.font]).width+10, height: 30)
+        attributes.frame = CGRect(x: 0, y: 0, width:NSString(string: age.text!).size(withAttributes: [NSAttributedStringKey.font:age.font]).width+10, height: 30)
                 // 由于cell哪里label frame为0,0,0,0 这里重新设置frame显示字体
         age.frame = attributes.frame
 

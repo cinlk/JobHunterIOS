@@ -496,7 +496,7 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
     
     
     
-    func clickButton(button:UIButton){
+    @objc func clickButton(button:UIButton){
         if (button == self.scrollitem1){
             self.scroll.setContentOffset(CGPoint(x:0,y:0), animated: true)
             self.scrollitem2.isSelected = false

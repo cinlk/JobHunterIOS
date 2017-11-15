@@ -351,7 +351,7 @@ extension editcondition{
     
 }
 extension editcondition{
-    func storage(sender:UIButton){
+    @objc func storage(sender:UIButton){
         if self.name["职位类型"] == "校招"{
             
                 self.data.updateshezhaoCondition(value: editdata!, index: row)
@@ -367,7 +367,7 @@ extension editcondition{
     func closed(){
         self.navigationController?.popViewController(animated: true)
     }
-    func hidenView(){
+    @objc func hidenView(){
         darkView.removeFromSuperview()
         self.lx.removeFromSuperview()
         self.citys.removeFromSuperview()

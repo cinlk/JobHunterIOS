@@ -235,7 +235,7 @@ extension jobstatusView:UITableViewDelegate,UITableViewDataSource{
 
 
 extension jobstatusView{
-    func talkhr(sender:UIButton){
+    @objc func talkhr(sender:UIButton){
         // step 1  add to friend list
         let HR:FriendData = FriendData.init(name: jobDetail["companyName"]!+"@"+"hr", avart: "jodel")
         Contactlist.shared().addUser(user: HR)

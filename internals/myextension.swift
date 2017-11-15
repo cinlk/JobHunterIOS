@@ -187,7 +187,7 @@ extension UIImage{
         //ctx.setAlpha(0)
         // 填充绘制
         ctx.fill(rect)
-        let attr = [ NSForegroundColorAttributeName : textColor, NSFontAttributeName : UIFont.systemFont(ofSize: minSide*0.5)]
+        let attr = [ NSAttributedStringKey.foregroundColor : textColor, NSAttributedStringKey.font : UIFont.systemFont(ofSize: minSide*0.5)]
         // 写入文字
         (letter as NSString).draw(at: CGPoint(x: 3, y: 10), withAttributes: attr)
         // 得到图片
@@ -243,7 +243,7 @@ extension UIView{
 extension UILabel{
     class func sizeOfString(string:NSString,font:UIFont,maxWidth:CGFloat)->CGSize{
         
-        let size = string.boundingRect(with: CGSize.init(width: maxWidth, height: 1200), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSFontAttributeName:font], context: nil).size
+        let size = string.boundingRect(with: CGSize.init(width: maxWidth, height: 1200), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font:font], context: nil).size
         // 与边框的距离
         return CGSize.init(width: size.width + 15, height: size.height + 20)
         
@@ -259,7 +259,7 @@ extension UITextView {
         
         let range = NSRange(location: 0, length: attrMStr.length)
         attrMStr.enumerateAttributes(in: range, options: []) { (dict, range, _) in
-            if let attachment = dict["NSAttachment"] as? ChatEmotionAttachment {
+            if let attachment = dict[NSAttributedStringKey.attachment] as? ChatEmotionAttachment {
                 attrMStr.replaceCharacters(in: range, with: attachment.text!)
             }
         }

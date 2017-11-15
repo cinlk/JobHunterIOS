@@ -237,7 +237,7 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     
     
     // 下拉刷新数据
-    func refreshdata(){
+    @objc func refreshdata(){
         
         print("flush data")
         self.jobItems.removeAll()

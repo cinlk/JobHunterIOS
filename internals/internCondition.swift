@@ -231,7 +231,7 @@ class internCondition: UIView,UICollectionViewDelegateFlowLayout,UICollectionVie
         
     }
     
-    func confirm(){
+    @objc func confirm(){
         
         let days = 0
         var salary = "不限"

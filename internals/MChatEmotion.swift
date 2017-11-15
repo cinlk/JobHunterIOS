@@ -8,16 +8,16 @@
 
 import UIKit
 
-class MChatEmotion: NSObject {
+@objcMembers class MChatEmotion: NSObject {
     // MARK:- 定义属性
     
-    var image: String? {   // 表情对应的图片名称
+     dynamic var image: String? {   // 表情对应的图片名称
         
         didSet {
             imgPath = Bundle.main.bundlePath + "/"+bundle+"/" + image! + imageType
         }
     }
-    var text: String?     // 表情对应的文字
+    dynamic var text: String?     // 表情对应的文字
     
     // MARK:- 数据处理
     var imgPath: String?
@@ -36,6 +36,7 @@ class MChatEmotion: NSObject {
         self.init()
         self.bundle = bundle
         self.imageType = type
+        
         setValuesForKeys(dict)
     }
     

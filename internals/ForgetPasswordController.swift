@@ -57,7 +57,7 @@ class ForgetPasswordController: UIViewController,UITextFieldDelegate {
 
     
     
-    func backToPrevious(){
+    @objc  func backToPrevious(){
         self.navigationController!.popViewController(animated: true)
     }
     

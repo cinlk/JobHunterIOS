@@ -389,7 +389,7 @@ extension subconditions{
     
 }
 extension subconditions{
-    func storage(sender:UIButton){
+    @objc func storage(sender:UIButton){
         if self.name["职位类型"] == "校招"{
             if self.value["工作城市"] == "(必选)请选择"{
                 let alert = UIAlertController.init(title: "请选择城市", message: nil, preferredStyle: .alert)
@@ -474,10 +474,10 @@ extension subconditions{
         }
     }
     
-    func closed(sender:UIImage){
+    @objc func closed(sender:UIImage){
         self.dismiss(animated: true, completion: nil)
     }
-    func hidenView(){
+    @objc func hidenView(){
         darkView.removeFromSuperview()
         self.lx.removeFromSuperview()
         self.citys.removeFromSuperview()
@@ -1030,7 +1030,7 @@ class Jobclassificatin:UIView,UITableViewDelegate,UITableViewDataSource,UIScroll
     }
 
     
-    func tickDown(){
+    @objc func tickDown(){
         print("start ")
         if leftTime<=0{
             self.show.isHidden = true
@@ -1070,7 +1070,7 @@ class Jobclassificatin:UIView,UITableViewDelegate,UITableViewDataSource,UIScroll
     
     
     
-    func click(){
+    @objc func click(){
         
         if result.isEmpty{
             self.call!(title.text!,"职位类别不限")

@@ -480,7 +480,7 @@ extension deliveredHistory:UITableViewDelegate,UITableViewDataSource{
 
 // 切换
 extension deliveredHistory{
-    func switchitem(sender:UIButton){
+     @objc func switchitem(sender:UIButton){
         
         sender.isSelected  = true
         for item in self.topitem.subviews{

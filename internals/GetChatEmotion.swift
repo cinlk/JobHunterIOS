@@ -26,7 +26,7 @@ class GetChatEmotion: NSObject {
         let resutlts = regex.matches(in: text, options: [], range: NSMakeRange(0, text.characters.count))
         
         //        let attrMStr = NSMutableAttributedString(string: text)
-        let attrMStr = NSMutableAttributedString(string: text, attributes: [NSFontAttributeName : font])
+        let attrMStr = NSMutableAttributedString(string: text, attributes: [NSAttributedStringKey.font : font])
         
         
         for (_, result) in resutlts.enumerated().reversed() {

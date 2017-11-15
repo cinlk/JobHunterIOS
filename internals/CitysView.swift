@@ -130,7 +130,7 @@ class CitysView: UIView,UICollectionViewDelegate,UICollectionViewDataSource,UICo
     }
     
     // choose city
-    func click(button:UIButton){
+    @objc func click(button:UIButton){
         let city = button.titleLabel?.text
         self.switchDelgate?.cityforsearch(city: city!)
         

@@ -338,7 +338,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
 extension JobDetailViewController{
     
     // 分享
-    func share(){
+    @objc func share(){
     //在 navigation 层view 添加darkview（蒙层) 遮挡整个界面
     
     self.navigationController?.view.addSubview(darkView)
@@ -375,7 +375,7 @@ extension JobDetailViewController:closeshare{
 
 extension JobDetailViewController{
     
-    func handleSingleTapGesture() {
+    @objc func handleSingleTapGesture() {
          // 点击移除半透明的View
         self.exit()
         

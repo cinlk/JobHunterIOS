@@ -107,7 +107,7 @@ class shareView: UIView {
         
     }
     
-    func cancel(){
+    @objc func cancel(){
         exit?.exit()
         
     }
@@ -117,7 +117,7 @@ class shareView: UIView {
 }
 
 extension shareView{
-    func click(button:UIButton){
+    @objc func click(button:UIButton){
         print("click to share")
         
     }

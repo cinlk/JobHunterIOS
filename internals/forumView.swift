@@ -90,7 +90,7 @@ class forumView: UIViewController,UITextFieldDelegate {
 
 
 extension forumView{
-    func send(){
+    @objc func send(){
         
         if  textfield?.text?.characters.count == 0{
             return
@@ -113,13 +113,13 @@ extension forumView{
 
     }
     
-    func connect(){
+    @objc func connect(){
         print(websockDemo.share())
         websockDemo.share().connect()
         
     }
     
-    func disconnect(){
+    @objc func disconnect(){
         print(websockDemo.share())
         websockDemo.share().disConnect()
     }

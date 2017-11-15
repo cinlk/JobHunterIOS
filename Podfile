@@ -10,5 +10,8 @@ target 'internals' do
 	#pod 'CocoaAsyncSocket'
 	pod 'SocketRocket'
 	pod 'SwiftProtobuf', '~>0.9.905'
+	pod 'RxSwift' 
+	pod 'RxCocoa' 
+	pod 'RxDataSources', '~> 2.0.2'
 
 end

@@ -23,8 +23,8 @@ class recommendation: UIViewController,UITableViewDelegate,UITableViewDataSource
         
         let sub =  UIBarButtonItem.init(title: "我的订阅", style: .plain, target: self, action: #selector(addSub))
         
-        sub.setTitleTextAttributes([NSForegroundColorAttributeName:UIColor.blue,
-                                    NSFontAttributeName : UIFont.systemFont(ofSize: 14)], for: .normal)
+        sub.setTitleTextAttributes([NSAttributedStringKey.foregroundColor:UIColor.blue,
+                                    NSAttributedStringKey.font : UIFont.systemFont(ofSize: 14)], for: .normal)
         self.navigationItem.rightBarButtonItem  = sub
         data = self.loadJobs()
         
@@ -108,7 +108,7 @@ extension recommendation {
         return datas
     }
     
-    func addSub(){
+    @objc func addSub(){
         
         let subscribleView = subscribleItem()
         let backButton =  UIBarButtonItem.init(title: "", style: .done, target: nil, action: nil)

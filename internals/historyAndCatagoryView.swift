@@ -278,7 +278,7 @@ class historyAndCatagoryView: YNSearchViewController {
     }
 
     
-    func closeKeyBoard(){
+    @objc func closeKeyBoard(){
         self.ynSearchTextfieldView.ynSearchTextField.resignFirstResponder()
         
     }

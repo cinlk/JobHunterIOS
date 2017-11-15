@@ -95,7 +95,7 @@ class ScrollerCell: UITableViewCell,UIScrollViewDelegate{
             callBack = block
     }
     
-    func tag(button:UIButton){
+    @objc func tag(button:UIButton){
         
         print(button.titleLabel?.text ?? "")
         for bu  in (self.scrollView?.subviews)!{
@@ -148,7 +148,7 @@ class ScrollerCell: UITableViewCell,UIScrollViewDelegate{
         
         
     }
-    
+    @objc  
     func demo(button:UIButton){
         print("image \(button.titleLabel?.text ?? "")")
         

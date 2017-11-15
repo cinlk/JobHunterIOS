@@ -18,6 +18,7 @@ class ChatEmotionHelper: NSObject {
         
         var index = 0
         for dict in array {
+            
             let item  = MChatEmotion(dict: dict,bundle:"test.bundle",type:".png")
            
             emotions.append(item)

@@ -247,7 +247,7 @@ class subscribleItem: UITableViewController {
 
 extension subscribleItem{
     
-    func addItem(){
+    @objc func addItem(){
         let condition =  subconditions()
         self.present(condition, animated: true, completion: nil)
         

@@ -54,7 +54,7 @@ class RegisterViewController: UIViewController,UITextFieldDelegate{
         // Dispose of any resources that can be recreated.
     }
     
-    func backToPrevious(){
+    @objc func backToPrevious(){
         self.navigationController!.popViewController(animated: true)
     }
     

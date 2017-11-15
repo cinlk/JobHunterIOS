@@ -146,10 +146,10 @@ class ChatBarView: UIView {
 
 
 extension ChatBarView{
-    func voiceClick(sender:UIButton){
+    @objc func voiceClick(sender:UIButton){
         
     }
-    func moreClick(sender: UIButton){
+    @objc func moreClick(sender: UIButton){
         
         if keyboardType == .more{
             keyboardType = .text
@@ -168,7 +168,7 @@ extension ChatBarView{
         }
         
     }
-    func emotionClick(sender: UIButton){
+    @objc func emotionClick(sender: UIButton){
         print("emotion keyboard show!")
         
         if keyboardType == .emotion{

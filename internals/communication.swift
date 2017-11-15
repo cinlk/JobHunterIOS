@@ -388,7 +388,7 @@ extension communication{
         
     }
     
-    func hiddenKeyboard(sender: UITapGestureRecognizer){
+    @objc func hiddenKeyboard(sender: UITapGestureRecognizer){
         
         if sender.state == .ended{
            // self.InputBar.textField.resignFirstResponder()
@@ -790,7 +790,7 @@ extension communication{
        
         
     }
-    func keyboardhidden(sender:NSNotification){
+    @objc func keyboardhidden(sender:NSNotification){
         keyboardFrame = CGRect.zero
         if chatBarView.keyboardType == .emotion || chatBarView.keyboardType == .more{
             return
@@ -798,7 +798,7 @@ extension communication{
         self.moveBar(distance: 0)
         
     }
-    func keyboardChange(sender:NSNotification){
+    @objc  func keyboardChange(sender:NSNotification){
         keyboardFrame = sender.userInfo![UIKeyboardFrameEndUserInfoKey] as? CGRect
         if chatBarView.keyboardType == .emotion || chatBarView.keyboardType == .more{
             return
@@ -811,7 +811,7 @@ extension communication{
         self.moreView.frame = CGRect.init(x: 0, y: UIScreen.main.bounds.height, width: UIScreen.main.bounds.width, height: 216)
     }
 
-    func handleSingleTapGesture(){
+    @objc func handleSingleTapGesture(){
         self.darkView.removeFromSuperview()
         self.replyView.removeFromSuperview()
     }

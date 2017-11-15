@@ -216,22 +216,22 @@ extension ChatEmotionView {
     func addBtnClick(_ btn: UIButton) {
         
     }
-    func emotionBtnClick(_ btn: UIButton) {
+    @objc func emotionBtnClick(_ btn: UIButton) {
         self.changeCollectionCell(type: .emotion)
     }
-    func sendBtnClick(_ btn: UIButton) {
+    @objc func sendBtnClick(_ btn: UIButton) {
          delegate?.chatEmotionViewSend(emotionView: self)
         
         //delegate?.chatEmotionViewSend(emotionView: self)
     }
-    func santaBtnClick(_ btn: UIButton) {
+    @objc func santaBtnClick(_ btn: UIButton) {
         self.changeCollectionCell(type: .santa)
     }
-    func moneyClick(_ btn: UIButton){
+    @objc func moneyClick(_ btn: UIButton){
         self.changeCollectionCell(type: .money)
     }
     
-    func chickenBtnClick(_ btn: UIButton){
+    @objc func chickenBtnClick(_ btn: UIButton){
         self.changeCollectionCell(type: .chick)
     }
     

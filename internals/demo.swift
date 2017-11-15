@@ -134,7 +134,7 @@ class demo: UITableViewController {
     }
     
     //创建定时器管理者
-    func timerManager() {
+    @objc func timerManager() {
       
         //设置偏移量
         src.setContentOffset(CGPoint(x:src.contentOffset.x + self.view.frame.width, y:0), animated: true)
