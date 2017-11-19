@@ -35,13 +35,13 @@ class ValidateNumber {
             if newValue{
                 coundDown = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(counttime), userInfo: nil, repeats: true)
                 remainSeconds = 10
-                self.b?.backgroundColor = UIColor.gray
+                self.b?.backgroundColor = UIColor.clear
             }
                 
             else{
                 coundDown?.invalidate()
                 coundDown = nil
-                self.b?.backgroundColor = UIColor.white
+                self.b?.backgroundColor = UIColor.clear
             }
             self.b?.isEnabled = !newValue
             

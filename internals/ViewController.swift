@@ -12,15 +12,41 @@ import RxSwift
 class ViewController: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var phoneNumber: UITextField!
-    
-    
     @IBOutlet weak var password: UITextField!
     
+    @IBOutlet weak var loginButton: UIButton!
+    
+    var activiyIndicator:UIActivityIndicatorView?
+    
+    
+    
+    var  phoneBottomLine:CALayer?
+    var  passwordBottomLine:CALayer?
+    let  disposeBag = DisposeBag.init()
+    let  loginServers = loginServer.shareInstance
+    
+    // warn label
+    var validatPhone:UILabel?
     
     override func viewDidLoad() {
+
+        super.viewDidLoad()
+
+        validatPhone = UILabel.init()
+        validatPhone?.font  = UIFont.systemFont(ofSize: 10)
+        self.view.addSubview(validatPhone!)
+        
+        activiyIndicator = UIActivityIndicatorView.init()
+        activiyIndicator?.activityIndicatorViewStyle = .white
+        activiyIndicator?.hidesWhenStopped = true
+        
+        self.loginButton.addSubview(activiyIndicator!)
+        
+        loginButton.setTitleColor(UIColor.black, for: .normal)
+        
+        
         phoneNumber.delegate = self
         password.delegate = self
-        
         phoneNumber.keyboardAppearance = .dark
         phoneNumber.returnKeyType = .done
         phoneNumber.keyboardType = .numberPad
@@ -29,45 +55,100 @@ class ViewController: UIViewController, UITextFieldDelegate {
         password.returnKeyType = .done
         password.isSecureTextEntry = true
         
+        phoneBottomLine = CALayer()
+        passwordBottomLine = CALayer()
+        phoneBottomLine?.backgroundColor = UIColor.black.cgColor
+        passwordBottomLine?.backgroundColor = UIColor.black.cgColor
         
-        // textfield 下边框
-        let bottomLine = CALayer()
-        bottomLine.frame = CGRect(x: 0, y: phoneNumber.frame.height-1, width: phoneNumber.frame.width-30, height: 1)
-        bottomLine.backgroundColor  = UIColor.black.cgColor
+        
         phoneNumber.borderStyle = UITextBorderStyle.none
-        phoneNumber.layer.addSublayer(bottomLine)
+        phoneNumber.layer.addSublayer(phoneBottomLine!)
         
-        let bottomLine2 = CALayer()
-        bottomLine2.frame = CGRect(x: 0, y: password.frame.height-1, width: password.frame.width-30, height: 1)
-        bottomLine2.backgroundColor  = UIColor.black.cgColor
         password.borderStyle = UITextBorderStyle.none
-        password.layer.addSublayer(bottomLine2)
+        password.layer.addSublayer(passwordBottomLine!)
+        
+         self.navigationItem.backBarButtonItem = UIBarButtonItem.init(title: "", style: .plain, target: self, action: nil)
         
         
-        //NSNotification.addObserver(self, forKeyPath: <#T##String#>, options: <#T##NSKeyValueObservingOptions#>, context: <#T##UnsafeMutableRawPointer?#>)
+        
         self.touchDefine()
-        super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        self.setUpObserver()
+        
+
+        
     }
 
+    func setUpObserver(){
+        
+        let mv =  loginVM(input: (self.loginButton.rx.tap.asDriver(),loginServer:self.loginServers))
+        
+        
+        phoneNumber.rx.text.orEmpty.bind(to: mv.phoneNumberText).disposed(by: disposeBag)
+        password.rx.text.orEmpty.bind(to: mv.passowordText).disposed(by: disposeBag)
+        
+        
+        
+        // 不能用option 显示 没有实现reactive协议
+       _ =  mv.validatePhone?.bind(to: self.validatPhone!.rx.rxob)
+        mv.loginbuttonEnable?.subscribe( onNext: {
+            [unowned self ]  valid in
+            self.loginButton.isEnabled = valid
+            self.loginButton.alpha = valid ? 1.0 : 0.5
+        }).disposed(by: disposeBag)
+        
+        // progress
+        mv.progressEnable.debug().drive(self.activiyIndicator!.rx.isAnimating)
+        .disposed(by: disposeBag)
+        
+        //
+        mv.loginProcess.drive(onNext: {
+            [unowned self] result  in
+            
+            switch result{
+            case let Result.success(account, password):
+                self.showMainView(account,role: "admin")
+            case let Result.error(message):
+                self.showAlert(error: message)
+            default:
+                print("")
+            }
+            
+        }, onCompleted: nil, onDisposed: nil).disposed(by: disposeBag)
+        
+        
+        
+    }
+    
+    override func viewWillLayoutSubviews() {
+        
+        
+        phoneBottomLine!.frame = CGRect(x: 0, y: phoneNumber.frame.height-1, width: phoneNumber.frame.width-30, height: 1)
+        passwordBottomLine!.frame = CGRect(x: 0, y: password.frame.height-1, width: password.frame.width-30, height: 1)
+        
+        _ = self.validatPhone?.sd_layout().topSpaceToView(self.phoneNumber,5)?.widthIs(self.phoneNumber.width)?.heightIs(10)?.leftEqualToView(self.phoneNumber)
+        
+        _ = self.activiyIndicator?.sd_layout().topSpaceToView(self.loginButton,2)?.widthIs(15)?.bottomSpaceToView(self.loginButton,2)?.leftSpaceToView(self.loginButton,15)
+        
+        
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+        
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func register(_ sender: Any) {
-        print (" go to registry view")
-        //let regiterView = self.storyboard.
+    @IBAction func register(_ sender: UIButton) {
+
         let registerView =  RegisterViewController()
+       
         self.navigationController?.pushViewController(registerView, animated: true)
     }
 
     
-    @IBAction func login(_ sender: UIButton) {
-        
-        
-        let user = ["name":"lk","role":"admin"]
-        
+    func showMainView(_ account:String, role:String) {
+
+        let user = ["name":account,"role":role]
         print("forward to main")
         self.performSegue(withIdentifier: "showMain", sender: user)
         
@@ -75,16 +156,10 @@ class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     
-    // didStart
-    @IBAction func Inputphone(_ sender: UITextField) {
-        print(" edit start")
-    }
-    
     
     
     @IBAction func forgetPassword(_ sender: Any) {
         
-        print(" go to set password")
         let passwordView = ForgetPasswordController()
         
         self.navigationController?.pushViewController(passwordView, animated: true)
@@ -108,10 +183,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         if segue.identifier == "showMain"{
-            print("go forward to Main")
-            
             let controller = segue.destination as? MainTabBarViewController
-            
             controller?.info = sender as? Dictionary
            
         }
@@ -121,38 +193,30 @@ class ViewController: UIViewController, UITextFieldDelegate {
     //textfield delegate
     func textFieldDidBeginEditing(_ textField: UITextField) {
         
-        //        textField.becomeFirstResponder()
-        let frame: CGRect = textField.frame
-        
-        let offset: CGFloat = frame.origin.y+32-(self.view.frame.size.height-216)
-        let animationDuration : TimeInterval = 0.30
-        
-        UIView.beginAnimations("ResizeForKeyboard", context: nil)
-        
-        UIView.setAnimationDuration(animationDuration)
-        
-        //将视图的Y坐标向上移动offset个单位，以使下面腾出地方用于软键盘的显示
-        if(offset>0) {
-            self.view.frame = CGRect(x:0.0, y: -offset, width:self.view.frame.size.width,
-                                     height:self.view.frame.size.height)
-            
-        }
-        
-        UIView.commitAnimations()
-        
+            textField.scrollUpView(view: self.view)
         
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-       
-        self.view.frame = CGRect(x:0, y:0, width:self.view.frame.size.width,
-                                 height:self.view.frame.size.height)
+        
+        UIView.animate(withDuration: 0.30) {
+            self.view.frame = CGRect(x:0, y:0, width:self.view.frame.size.width,
+                                     height:self.view.frame.size.height)
+        }
+        
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
         textField.resignFirstResponder()
         return true
+    }
+    
+    private func showAlert(error:String){
+        let action = UIAlertAction.init(title: "确定", style: .default, handler: nil)
+        let alertView = UIAlertController.init(title: nil, message: error, preferredStyle: .alert)
+        alertView.addAction(action)
+        self.present(alertView, animated: true, completion: nil)
     }
     
     

@@ -33,9 +33,8 @@ func  build_image(size: CGSize, alpha:CGFloat)->UIImage{
 
 
 
-
 private let  v = UIImage()
-private let bm = build_image(size: CGSize(width: NAV_BAR_FRAME_WIDTH,height:NAV_BAR_FRAME_HEIGHT), alpha: 1)
+private let bm = build_image(size: CGSize.init(width: NAV_BAR_FRAME_WIDTH, height: NAV_BAR_FRAME_HEIGHT), alpha: 1)
 
 extension UINavigationBar{
     

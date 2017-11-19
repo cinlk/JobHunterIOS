@@ -12,6 +12,8 @@ target 'internals' do
 	pod 'SwiftProtobuf', '~>0.9.905'
 	pod 'RxSwift' 
 	pod 'RxCocoa' 
-	pod 'RxDataSources', '~> 2.0.2'
+	pod 'RxDataSources', '~> 3.0' 
+	pod 'Moya/RxSwift'
+	pod 'ObjectMapper'
 
 end
