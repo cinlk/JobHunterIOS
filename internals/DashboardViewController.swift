@@ -9,46 +9,28 @@
 import UIKit
 import YNSearch
 import YNDropDownMenu
+import ObjectMapper
+import RxCocoa
+import RxSwift
+import RxDataSources
+import MJRefresh
 
+class DashboardViewController: UIViewController{
 
-
-class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewDataSource{
-
-    
-    
-    let imageBanners = ["banner1","banner2","banner3","banner4"]
-    let menuOneImages = ["volk","swift","car","onedriver","podio"]
-    let items = ["finacial","ali","fly","resume"]
-    
-    // job data
-    var jobItems = [["image":"finacial","companyName":"中金","jobname":"分析师","locate":"北京","salary":"100-150元/天","createTime":"08-31","times":"4天/周","time":"6个月","hired":"可转正","scholar":"本科"],
-                    ["image":"dong","companyName":"日立会社","jobname":"工程师","locate":"北京","salary":"200-150元/天","createTime":"08-25","times":"5天/周","time":"3个月","hired":"不可转正","scholar":"专科"],
-                    ["image":"volk","companyName":"大众汽车","jobname":"研究员","locate":"上海","salary":"150-190元/天","createTime":"09-01","times":"4天/周","time":"12个月","hired":"可转正","scholar":"硕士"],
-                     ["image":"ali","companyName":"阿里巴巴","jobname":"研究员","locate":"上海","salary":"150-190元/天","createTime":"09-01","times":"4天/周","time":"5个月","hired":"可转正","scholar":"本科"]]
-    
-    // 内推职位
-    var datas = [["image":"swift","companyName":"apple","jobname":"码农","locate":"北京","salary":"150-190元/天","createTime":"09-01","times":"4天/周","time":"6个月","hired":"可转正","scholar":"本科"],
-                 ["image":"onedriver","companyName":"microsoft","jobname":"AI","locate":"上海","salary":"150-190元/天","createTime":"09-01","times":"4天/周","time":"6个月","hired":"可转正","scholar":"本科"],
-                 ["image":"fly","companyName":"宝骏","jobname":"设计师","locate":"上海","salary":"150-190元/天","createTime":"09-01","times":"4天/周","time":"6个月","hired":"可转正","scholar":"本科"]
-                ]
-    
-    
-    
-    let testItem = ["image":"fly","companyName":"宝骏","jobname":"设计师","locate":"上海","salary":"150-190元/天","createTime":"09-01","times":"4天/周","time":"6个月","hired":"可转正","scholar":"本科"]
-    
+    // image 点击占时逻辑一致？ image 将来改变
+    let imageBanners = MAIN_PAGE_IMAGE_BANNERS
     var imagescroller:UIScrollView!
     let page = UIPageControl()
     
     var cnt = 0
     var contentOffset:CGPoint = CGPoint(x: 0, y: 0)
     
-    
     //scrollview  偏移值
     var threshold:CGFloat = -80
     var marginTop:CGFloat = 0
-    //var searchController:UISearchController!
+
+    // searchview
     var searchController:baseSearchViewController!
-    
     var searchBarContainer:UIView!
     var resultTableView:UITableViewController!
     
@@ -59,9 +41,9 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     var searchString = ""{
         
         willSet{
-            
         }
     }
+    
     
     var locate:Citys!
     var jobs:jobCatagory!
@@ -71,16 +53,11 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
 
     
     
-    // test juhua
-    var jh:progressHUB?
-    
-    
     //  主页跟新城市
     var dashLocateCity = "北京"{
         willSet{
             self.refreshByCity(city: newValue)
         }
-        
         didSet{
             
         }
@@ -89,59 +66,52 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     
     //
     var flag = false
-    
-    
+    let  disposebag = DisposeBag.init()
+    // table
     @IBOutlet weak var tables: UITableView!
-    // table section设置
-    var sections = 4
+    let sections = 3
     
-
     
- 
     
     override func viewDidLoad() {
          super.viewDidLoad()
-        print("===dashborad!===")
-        self.navigationController?.navigationBar.settranslucent(true)
-
-         self.tables.delegate = self
-         self.tables.dataSource = self
-         self.tables.register(ScrollerCell.self, forCellReuseIdentifier: "menu1")
-         self.tables.register(ScrollerCell2.self, forCellReuseIdentifier: "menu2")
-         self.tables.register(jobdetailCell.self, forCellReuseIdentifier: "jobs")
+         /**** navigation ****/
         
-         // header
+         self.navigationController?.navigationBar.settranslucent(true)
+         self.navigationItem.titleView = searchBarContainer
+         self.automaticallyAdjustsScrollViewInsets  = false
+        
+         /***** table *****/
+         self.tables.register(MainPageCatagoryCell.self, forCellReuseIdentifier: "catagory")
+         self.tables.register(MainPageRecommandCell.self, forCellReuseIdentifier: "recommand")
+         self.tables.register(jobdetailCell.self, forCellReuseIdentifier: jobdetailCell.identity())
          self.tables.register(HeaderFoot.self, forHeaderFooterViewReuseIdentifier: "dashheader")
-         // 距离 bottom view 100像素，保证滑动到底层cell
-         self.tables.contentInset = UIEdgeInsetsMake(0, 0, 100, 0)
+         // 底部距离 50像素，保证滑动到底部cell
+         self.tables.contentInset = UIEdgeInsetsMake(0, 0, 50, 0)
+        // 轮播图
+        imagescroller =  UIScrollView()
+        self.imagescroller.delegate = self
+        // 解决navigation 页面跳转后，scrollview content x 偏移差
+        self.imagescroller.translatesAutoresizingMaskIntoConstraints = false
+        self.tables.tableHeaderView  = imagescroller
+        self.tables.tableHeaderView?.frame  = CGRect(x:0 , y:0, width: self.view.frame.width, height: 120)
+        self.tables.tableHeaderView?.isHidden  = false
         
         
-        //
+        
+        /***** search *****/
+        // search 切到到另一个view后，search bar不保留
         self.definesPresentationContext  = true
-
         resultTableView = UITableViewController()
-        resultTableView.tableView.delegate = self
-        resultTableView.tableView.dataSource = self
+        //resultTableView.tableView.delegate = self
+        //resultTableView.tableView.dataSource = self
         resultTableView.tableView.tableFooterView = UIView()
-        
-        resultTableView.tableView.register(jobdetailCell.self, forCellReuseIdentifier: "jobs")
-        
-        
-        
-        jh = progressHUB(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
-        resultTableView.view.addSubview(jh!)
-        jh?.center = self.view.center
-        jh?.isHidden = true
-        jh?.bringSubview(toFront: resultTableView.view)
-
-        
+        resultTableView.tableView.register(jobdetailCell.self, forCellReuseIdentifier: jobdetailCell.identity())
         searchController  = baseSearchViewController(searchResultsController: resultTableView)
         searchController.searchResultsUpdater = self
         searchController.delegate =  self
         searchController.searchBar.delegate = self
-    
-        
-        // dropdown menu
+        // 下拉菜单view
         locate = Citys(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
         locate.view.switchDelgate = self
         
@@ -151,45 +121,27 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
         inters.cond.selections = self
         searchController.createDropDown(menus: ["北京","职位类别","筛选条件"],views: [locate,jobs,inters])
         //searchController.customerBookmark(cname:dashLocateCity)
-
-        
         // 搜索框
-        
         let searchBarFrame = CGRect(x: 0, y:0, width: self.view.frame.width, height: 30)
         searchBarContainer = UIView(frame:searchBarFrame)
         searchBarContainer.addSubview(searchController.searchBar)
-        
         //searchBarContainer.addSubview(city)
         searchBarContainer.alpha = 0
         
-        
-        
-        self.navigationItem.titleView = searchBarContainer
-        self.automaticallyAdjustsScrollViewInsets  = false
+    
  
    
        _ =  searchController.searchBar.sd_layout().leftSpaceToView(searchBarContainer,10)?.topEqualToView(searchBarContainer)?.bottomEqualToView(searchBarContainer)?.rightSpaceToView(searchBarContainer,10)
         
         
-        // 下拉刷新
-        self.tables.refreshControl = UIRefreshControl()
-        self.tables.refreshControl?.addTarget(self, action: #selector(refreshdata), for: .valueChanged)
-        self.tables.refreshControl?.attributedTitle = NSAttributedString(string: "下拉刷新数据")
         
+       
         
-        self.tables.estimatedRowHeight = 100
-        self.tables.rowHeight = UITableViewAutomaticDimension
+        // mvvm
+        self.loadViewModel()
+        // 加载数据
+        self.tables.mj_header.beginRefreshing()
         
-        // 轮播图
-        imagescroller =  UIScrollView()
-        
-        
-        self.imagescroller.delegate = self
-        // 解决navigation 页面跳转后，scrollview content x 偏移差
-        self.imagescroller.translatesAutoresizingMaskIntoConstraints = false
-        self.tables.tableHeaderView  = imagescroller
-        self.tables.tableHeaderView?.frame  = CGRect(x:0 , y:0, width: self.view.frame.width, height: 120)
-        self.tables.tableHeaderView?.isHidden  = false
         
         
     }
@@ -197,14 +149,10 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     override func viewWillAppear(_ animated: Bool) {
         
         self.automaticallyAdjustsScrollViewInsets  = false
-       
         if searchString != "" && !searchString.isEmpty{            
             self.showSearchResultView()
             self.startSearch(name: searchString)
         }
-        
-       
-
         searchController.customerBookmark(cname:dashLocateCity)
         if searchController.isActive {
             self.tabBarController?.tabBar.isHidden = true
@@ -217,6 +165,10 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     
     // view 会自动调整subview的layout
     override func viewDidLayoutSubviews() {
+        
+        
+        
+        
         // 值创建一次
         if flag == false{
             self.createScrollView()
@@ -236,190 +188,53 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
     }
     
     
-    // 下拉刷新数据
-    @objc func refreshdata(){
+    
+    func loadViewModel(){
         
-        print("flush data")
-        self.jobItems.removeAll()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
-            for _ in 0..<5{
+        let request = mainPageServer.shareInstance
+        let vm = mainPageViewMode.init(request: request)
+        
+        let dataSource = DashboardViewController.dataSource()
+        self.tables.rx.setDelegate(self).addDisposableTo(disposebag)
+        
+        //view to VM
+
+        // VM to view
+        vm.sections.asDriver().drive(self.tables.rx.items(dataSource: dataSource)).disposed(by: disposebag)
+        vm.refreshStatus.asObservable().subscribe(onNext: {
+            [weak self] status in
+            switch status{
+            case .beginHeaderRefrsh:
+                self?.tables.mj_header.beginRefreshing()
+            case .endHeaderRefresh:
+                self?.tables.mj_footer.resetNoMoreData()
+                self?.tables.mj_header.endRefreshing()
+            case .beginFooterRefresh:
+                self?.tables.mj_footer.beginRefreshing()
+            case .endFooterRefresh:
+                self?.tables.mj_footer.endRefreshing()
+            case .NoMoreData:
+                self?.tables.mj_footer.endRefreshingWithNoMoreData()
                 
-                self.jobItems.append(["image":"finacial","companyName":"中金","jobname":"分析师","locate":"北京","salary":"100-150元/天","createTime":"08-31","times":"4天/周"])
-                
-                
+            default:
+                break
             }
+        }).disposed(by: disposebag)
+
+        
+        self.tables.mj_header = MJRefreshNormalHeader.init(refreshingBlock: {
+            vm.refreshData.onNext(true)
             
-            self.tables.reloadData()
-            self.tables.refreshControl?.endRefreshing()
         })
         
-    }
-    
-
-     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        if  tableView == self.resultTableView.tableView{
-            return self.searchLists.count
-        }
-        
-        switch section {
-        case 0,1:
-            return 1
-        case 2:
-            return self.jobItems.count
-        case 3:
-            return self.datas.count
-        default:
-            return 0
-        }
-        
-    }
-    
-    
-     func numberOfSections(in tableView: UITableView) -> Int {
-        if tableView == self.resultTableView.tableView{
-            return 1
-        }
-        
-        return self.sections
-    }
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        switch section {
-        case 0:
-            return 0.0
-        case 1:
-            return 10
-        case 2,3:
-            return 30
-        default:
-            return 10
-        }
-    }
-    
-    // cell 高度
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        
-        if tableView == self.resultTableView.tableView{
-            return 49
-        }
-        
-        if indexPath.section == 0 {
-            return 80
-        }
-        else if indexPath.section == 1{
-            return 100
-        }
-        return 50
-    }
-    
-     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        self.tables.mj_footer = MJRefreshAutoNormalFooter.init(refreshingBlock: {
+            vm.refreshData.onNext(false)
+        })
         
         //
-        if tableView == self.resultTableView.tableView{
-            
-            let cell = tableView.dequeueReusableCell(withIdentifier: "jobs", for: indexPath) as! jobdetailCell
-            
-            if searchLists.count > indexPath.row{
-                cell.createCells(items:searchLists[indexPath.row])
-            }
-            
-            return cell
-        }
         
-        if indexPath.section == 0 {
-            
-            let cell  = tableView.dequeueReusableCell(withIdentifier: "menu1", for: indexPath) as! ScrollerCell
-            cell.createScroller(images: menuOneImages, width: 80)
-            return cell
-            
-            
-        }
-        else if indexPath.section == 1{
-         
-          let cell = tableView.dequeueReusableCell(withIdentifier: "menu2", for: indexPath) as! ScrollerCell2
-            
-          cell.createScroller(items: items,width: 150)
-          return cell
-            
-        }
-        else if indexPath.section == 2{
-        
-        print(jobItems.count,indexPath.row,indexPath.section)
-            
-        let cell = tableView.dequeueReusableCell(withIdentifier: "jobs", for: indexPath) as! jobdetailCell
-            
-            if jobItems.count > indexPath.row{
-                cell.createCells(items:jobItems[indexPath.row])
-            }
-            
-        return cell
-            
-        }else{
-            
-            let cell = tableView.dequeueReusableCell(withIdentifier: "jobs", for: indexPath) as! jobdetailCell
-            
-            if datas.count > indexPath.row{
-                cell.createCells(items:datas[indexPath.row])
-            }
-            
-            return cell
-        }
-        
-        
-        
+      
     }
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        
-            
-        let headerCell = tables.dequeueReusableHeaderFooterView(withIdentifier: "dashheader") as! HeaderFoot
-       
-        switch section {
-        case 1:
-             headerCell.categoryName.text = ""
-        case 2:
-             headerCell.categoryName?.text = "最新职位"
-            
-        case 3:
-              headerCell.categoryName?.text = "内推职位"
-        default: break
-        }
-        
-        
-        return headerCell
-    }
-    
-    
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-       
-        // 禁止第二个section 的cell点击响应事件
-        if tableView  == self.tables{
-            if indexPath.section == 1{
-                return
-            }
-        }
-         // 取消选中状态保持
-            tableView.deselectRow(at: indexPath, animated: true)
-        
-        
-            if tableView.dequeueReusableCell(withIdentifier: "jobs", for: indexPath) is jobdetailCell{
-                print("forward to detail view")
-                var info:[String:String] = [:]
-                if indexPath.section == 2{
-                    info = self.jobItems[indexPath.row]
-                }else if indexPath.section == 3{
-                    info = self.datas[indexPath.row]
-                    
-                }
-                self.showDetails(jobDetail: info)
-                
-        }
-        
-    }
-    
-    //
-    
    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
 
@@ -436,7 +251,6 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
          //向下滑动<0 向上滑动>0
         // 实际检测的offset.y 偏移量
         let  newoffsetY = offsetY + self.marginTop
-        print(newoffsetY)
         //向上拖动变透明
         //self.navigationController?.navigationBar.backgroudImage(alpha: CGFloat(1))
 
@@ -573,6 +387,128 @@ class DashboardViewController: UIViewController,UITableViewDelegate,UITableViewD
 
 
 
+// table
+extension DashboardViewController: UITableViewDelegate{
+    
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        if  tableView == self.resultTableView.tableView{
+            return self.searchLists.count
+        }
+        
+        switch section {
+        case 0,1:
+            return 1
+        case 2:
+            return 0
+        default:
+            return 0
+        }
+        
+    }
+    
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        if tableView == self.resultTableView.tableView{
+            return 1
+        }
+        
+        return self.sections
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        switch section {
+        case 0:
+            return 0.0
+        case 1:
+            return 10
+        case 2:
+            return 30
+        default:
+            return 10
+        }
+    }
+    
+    // cell 高度
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        if tableView == self.resultTableView.tableView{
+            return 49
+        }
+        
+        if indexPath.section == 0 {
+            return 80
+        }
+        else if indexPath.section == 1{
+            return 100
+        }
+        return 50
+    }
+    
+    
+    static func dataSource() -> RxTableViewSectionedReloadDataSource<MultiSecontions>{
+        return RxTableViewSectionedReloadDataSource<MultiSecontions>.init(configureCell: { (dataSource, table, idxPath, _) -> UITableViewCell in
+           
+            switch dataSource[idxPath]{
+            case let .catagoryItem(imageNames):
+                
+                let cell:MainPageCatagoryCell = table.dequeueReusableCell(withIdentifier: "catagory") as! MainPageCatagoryCell
+                cell.createScroller(images: imageNames, width: 80)
+                return cell
+            case let .recommandItem(imageNames):
+                
+                let cell:MainPageRecommandCell = table.dequeueReusableCell(withIdentifier: "recommand") as!
+                MainPageRecommandCell
+                cell.createScroller(items: imageNames, width: 150)
+                return cell
+            case let .campuseRecruite(jobs):
+                
+                let cell:jobdetailCell = table.dequeueReusableCell(withIdentifier: jobdetailCell.identity()) as!
+                jobdetailCell
+                
+                
+                cell.createCells(items: jobs.toJSON())
+                
+               return cell
+            }
+        },
+        titleForHeaderInSection: {
+            dataSource ,index in
+            let section = dataSource[index]
+            return section.title
+        }
+        )
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        // 禁止第二个section 的cell点击响应事件
+        if tableView  == self.tables{
+            if indexPath.section == 1{
+                return
+            }
+        }
+        // 取消选中状态保持
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        
+        if tableView.dequeueReusableCell(withIdentifier: jobdetailCell.identity()) is jobdetailCell{
+            var info:[String:String] = [:]
+//            if indexPath.section == 2{
+//                info = self.jobItems[indexPath.row]
+//            }else if indexPath.section == 3{
+//                info = self.datas[indexPath.row]
+//
+//            }
+//            self.showDetails(jobDetail: info)
+            print("show job detail")
+            
+        }
+        
+    }
+}
+
 extension DashboardViewController: UISearchResultsUpdating{
     
     
@@ -580,11 +516,6 @@ extension DashboardViewController: UISearchResultsUpdating{
     func updateSearchResults(for searchController: UISearchController) {
         //TODO 会执行2次？
         print("result search show \(self.resultTableView)")
-        
-        //self.resultTableView.resignFirstResponder()
-        //self.startSearch()
-        //self.resultTableView.tableView.reloadData()
-        
         
         
         
@@ -657,10 +588,6 @@ extension DashboardViewController: UISearchControllerDelegate{
         self.navigationController?.navigationBar.settranslucent(true)
         self.tabBarController?.tabBar.isHidden = false
         
-        print(self.searchController.isActive, self.searchController.isBeingPresented,
-              self.searchController.searchBar.isFocused)
-
-
 
     }
 
@@ -705,19 +632,15 @@ extension DashboardViewController{
     }
     func startSearch(name:String){
         // 子线程查询
-        print("start")
-        jh?.isHidden = false
-        jh?.indicator.startAnimating()
+        
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 5){
             self.searchLists.removeAll()
             for _ in 0..<5{
                 
-                self.searchLists.append(self.testItem)
+                //self.searchLists.append(self.testItem)
                 
             }
-            self.jh?.isHidden = true
-            self.jh?.indicator.stopAnimating()
             self.resultTableView.tableView.reloadData()
             
         }
@@ -740,21 +663,17 @@ extension DashboardViewController: valueDelegate{
 extension DashboardViewController: switchCity{
     
     func cityforsearch(city:String){
-        
         DispatchQueue.main.asyncAfter(deadline: .now() + 5){
             self.searchLists.removeAll()
             for _ in 0..<5{
                 
-                self.searchLists.append(self.testItem)
+                //self.searchLists.append(self.testItem)
             }
             self.resultTableView.tableView.reloadData()
             
         }
         
     }
-    
-
-    
     
     
 }
@@ -767,7 +686,7 @@ extension DashboardViewController: swichjobCatagory{
             self.searchLists.removeAll()
             for _ in 0..<5{
                 
-                self.searchLists.append(self.testItem)
+                //self.searchLists.append(self.testItem)
             }
             self.resultTableView.tableView.reloadData()
             
@@ -782,8 +701,7 @@ extension DashboardViewController: internSelection{
         DispatchQueue.main.asyncAfter(deadline: .now() + 5){
             self.searchLists.removeAll()
             for _ in 0..<5{
-                
-                self.searchLists.append(self.testItem)
+                //self.searchLists.append()
             }
             self.resultTableView.tableView.reloadData()
             
@@ -798,23 +716,6 @@ extension  DashboardViewController{
     
     func refreshByCity(city:String){
         
-        self.jobItems.removeAll()
-        self.tables.refreshControl?.beginRefreshing()
-        // 手动修改table 位移 模拟下拉
-        self.tables.contentOffset.y = -64
-        self.searchController.searchBar.alpha = 0
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
-            for _ in 0..<5{
-                
-                self.jobItems.append(["image":"finacial","companyName":"中金","jobname":"分析师","locate":city,"salary":"100-150元/天","createTime":"08-31","times":"4天/周"])
-                
-            }
-            self.tables.reloadData()
-            self.tables.refreshControl?.endRefreshing()
-            self.tables.contentOffset.y = 0
-            self.searchController.searchBar.alpha = 1
-            
-        })
         
     }
     

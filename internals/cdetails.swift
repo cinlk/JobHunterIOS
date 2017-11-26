@@ -150,7 +150,7 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
         
         t.delegate = self
         t.dataSource = self
-        t.register(ScrollerCell.self, forCellReuseIdentifier: "jobtag")
+        t.register(MainPageCatagoryCell.self, forCellReuseIdentifier: "jobtag")
         t.register(UINib(nibName:"joblist",bundle:nil), forCellReuseIdentifier: "list")
        
         
@@ -371,7 +371,7 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
         else{
             // table2 刷新数据不刷新 cell  0
             if indexPath.section == 0 {
-                let cell = tableView.dequeueReusableCell(withIdentifier: "jobtag", for: indexPath) as! ScrollerCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: "jobtag", for: indexPath) as! MainPageCatagoryCell
                 cell.createJobTags(name: jobTags, width: 80)
                 cell.SetCallBack{
                     [weak self]

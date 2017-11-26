@@ -1,5 +1,5 @@
 //
-//  ScrollerCell2.swift
+//  MainPageRecommandCell.swift
 //  internals
 //
 //  Created by ke.liang on 2017/9/2.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ScrollerCell2: UITableViewCell,UIScrollViewDelegate {
+class MainPageRecommandCell: UITableViewCell,UIScrollViewDelegate {
 
    
     lazy var scroller:UIScrollView = {

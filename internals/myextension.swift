@@ -60,8 +60,6 @@ extension UINavigationBar{
             self.setBackgroundImage(bm, for: .default)
             self.isTranslucent = false
             
-
-          
         }
     }
     

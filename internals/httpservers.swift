@@ -23,8 +23,10 @@ import ObjectMapper
 enum UserMoyaType{
     
     case SignIn(account:String, password:String)
-    case Verify(account:String, verifyCode:String)
-    case Registry(account:String, password:String)
+    case Verify(phone:String)
+    case Registry(account:String, password:String, verifyCode:String)
+    case ResetPassword(account:String,password:String, verifyCode:String)
+    
     
 }
 
@@ -43,29 +45,42 @@ extension UserMoyaType: TargetType{
     
     var path: String {
         switch self {
-        case .SignIn(let account,let  password):
+        case .SignIn:
             return "/authorizations"
-        default:
-            return ""
+        case .Verify:
+            return "/verifyPhone"
+        case .Registry:
+            return "/register"
+        case .ResetPassword:
+            return "/resetPassword"
+        
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .SignIn(let _,let  _):
+        case .SignIn:
             return .post
-        default:
-            return .get
+        case .Registry:
+            return .post
+        case .Verify:
+            return .post
+        case .ResetPassword:
+            return .post
         }
     }
     
     var parameters: [String: Any]? {
         switch self {
-        case .SignIn(let account, let password):
-            
+        case .SignIn:
             return ["scopes": ["public_repo", "user"], "note": "RxSignInSignUp_demo (\(Date()))"]
-        default:
-            return nil
+        case let .Verify(phone):
+            return ["phone":phone]
+        case  let .Registry(account, password, verifyCode):
+            return ["phone":account, "password": password, "verifyCode":verifyCode]
+        
+        case  let .ResetPassword(account, password, verifyCode):
+            return ["phone":account, "password":password, "verifyCode":verifyCode]
         }
     }
     
@@ -91,20 +106,64 @@ extension UserMoyaType: TargetType{
 }
 
 
-
+class BaseServer{
+    
+    // 判断逻辑
+    func validatePhone(phone:String) -> Observable<Result>{
+        guard phone != "", !phone.isEmpty else {
+            return Observable<Result>.just(.none)
+        }
+        
+        guard  phone.count == 11  else {
+            return Observable<Result>.just(.wrongPhoneNumber(message: ""))
+        }
+        return Observable<Result>.just(.pass)
+        
+        
+    }
+    
+    func validatePassword(password:String) -> Observable<Result>{
+        guard password != "",!password.isEmpty else {
+            return Observable<Result>.just(.none)
+        }
+        guard password.count >= 6 else {
+            return Observable<Result>.just(.error(message: "密码至少大于6位"))
+        }
+       
+        return Observable<Result>.just(.pass)
+    
+    }
+    
+    func validateVerifyCode(verifyCode:String) -> Observable<Result>{
+        
+        guard verifyCode != "", !verifyCode.isEmpty else {
+            return Observable<Result>.just(.none)
+        }
+        
+        guard verifyCode.count == 6 else {
+            return Observable<Result>.just(.error(message: "验证码为6位数"))
+        }
+       
+        
+        return Observable<Result>.just(.pass)
+        
+    }
+    
+    // 确认密码
+    func validateConfirmPassword(firstPassword:String, secondPassword:String) -> Observable<Result>{
+        guard firstPassword.count>=6 && secondPassword.count>=6 else {
+            return Observable<Result>.just(.error(message: "密码至少大于6位"))
+        }
+        guard firstPassword == secondPassword else{
+            return Observable<Result>.just(.error(message: "2次输入的密码不相同"))
+        }
+        return Observable<Result>.just(.pass)
+    }
+    
+}
 //
-
-
-
-
-
-
 // login
-class  loginServer{
-    
-    
-    
-   
+class  loginServer: BaseServer{
     
     let httpRequestHandler: MoyaProvider<UserMoyaType>?
 
@@ -112,16 +171,14 @@ class  loginServer{
     var TestUser:Users?
     static let shareInstance:loginServer = loginServer()
     
-    private init() {
+    private override init() {
+        
         //self.TestUser = Users.init("13718754627", "111111")
         
         self.TestUser = Users(JSONString: "{'user':'dwdaw','role':'ada'}")
         
         
-        
-        
-        
-        var endpointClosure = { (target: UserMoyaType) -> Endpoint<UserMoyaType> in
+        let endpointClosure = { (target: UserMoyaType) -> Endpoint<UserMoyaType> in
             let url = target.baseURL.appendingPathComponent(target.path).absoluteString
             let endpoint: Endpoint<UserMoyaType> = Endpoint(url: url, sampleResponseClosure: {.networkResponse(200, target.sampleData)}, method: target.method, task: target.task, httpHeaderFields: nil)
             
@@ -139,34 +196,11 @@ class  loginServer{
             }
         }
         
-        httpRequestHandler = MoyaProvider<UserMoyaType>.init(endpointClosure: endpointClosure)
-    }
-    
-    
-    
-    // 判断逻辑
-    func validatePhone(phone:String) -> Observable<Result>{
+        self.httpRequestHandler = MoyaProvider<UserMoyaType>.init(endpointClosure: endpointClosure)
+        
+        super.init()
         
         
-        guard  phone.count < 13  else {
-            return Observable<Result>.just(.wrongPhoneNumber(message: "号码无效"))
-        }
-        guard phone.count != 0  else {
-            return Observable<Result>.just(.none)
-        }
-        return Observable<Result>.just(.pass)
-        
-        
-    }
-    
-    func validatePassword(password:String) -> Observable<Result>{
-        guard password != "" else {
-            return Observable<Result>.just(.error(message: "密码为空"))
-        }
-        guard password.count >= 6 else {
-            return Observable<Result>.just(.error(message: "密码至少大于6位"))
-        }
-        return Observable<Result>.just(.pass)
     }
     
     
@@ -175,30 +209,87 @@ class  loginServer{
         //MARK 模拟网络请求序列 延迟效果
 
         //Thread.sleep(forTimeInterval: 3)
-        // test
-        
-        print(TestUser)
         
         return (httpRequestHandler?.rx.request(.SignIn(account: "wowpandan@gmail.com", password: "s*#posix6u!")).debug().filterSuccessfulStatusCodes().mapJSON().map{
             json in
             print(json)
-            return Result.error(message: "测试哈")
+            return Result.success(account: "admin", password: "role")
             }.asObservable())!
         
         
-        
-//        if account != self.TestUser?.phoneNumber  || password != self.TestUser?.password{
-//            return Observable<Result>.just(.error(message: "用户名或密码错误"))
-//        }
-//        return Observable<Result>.just(.success(account: account, password: password))
-//
-//
         
     }
     
 }
 
 // registry
-class RegistryServer{
+class RegistryServer: BaseServer{
+    
+    static let instance = RegistryServer()
+    
+    let  httpRequest:MoyaProvider<UserMoyaType>?
+    
+    private override init() {
+        self.httpRequest = MoyaProvider<UserMoyaType>.init()
+        super.init()
+        
+    }
+    
+    
+    //MARK
+    func registry(phone:String, verifyCode:String, password:String) -> Observable<myResponse> {
+        
+        return (self.httpRequest?.rx.request(.Registry(account: phone, password: password, verifyCode: verifyCode)).debug()
+            .mapJSON().map{
+              json in
+                myResponse.none
+            }.asObservable().share(replay: 1)
+        )!
+        
+    }
+    
+    
+    func getVerifyCode(phone:String) -> Observable<myResponse>{
+        
+        return (self.httpRequest?.rx.request(.Verify(phone: phone)).debug()
+            .mapJSON().map{
+                json  in
+                return myResponse.error(code: 404, message: "测试")
+        }.asObservable().share(replay: 1))!
+    }
+    
+}
+
+// ChangePassword service
+class ChangePasswordService: BaseServer {
+    
+    static let instance = ChangePasswordService.init()
+    let  httpRequest:MoyaProvider<UserMoyaType>?
+    
+    override init() {
+        httpRequest = MoyaProvider<UserMoyaType>.init()
+        super.init()
+    }
+    
+    
+    func getVerifyCode(phone:String) -> Observable<myResponse>{
+        
+        
+        return (self.httpRequest?.rx.request(.Verify(phone: phone)).debug()
+            .mapJSON().map{
+                json  in
+                return myResponse.error(code: 404, message: "测试")
+            }.asObservable().share(replay: 1))!
+    }
+    
+    func submitNewPassword(phone:String, code:String,password:String) -> Observable<myResponse>{
+        
+        return (self.httpRequest?.rx.request(.ResetPassword(account: phone, password: password, verifyCode: code))
+            .debug().mapJSON().map{
+                json in
+                return myResponse.error(code: 404, message: "测试")
+            }.asObservable().share(replay: 1))!
+    }
+    
     
 }

@@ -7,7 +7,8 @@
 //
 
 import UIKit
-
+import RxSwift
+import RxCocoa
 
 
 class ForgetPasswordController: UIViewController,UITextFieldDelegate {
@@ -95,6 +96,7 @@ class ForgetPasswordController: UIViewController,UITextFieldDelegate {
         button.backgroundColor = UIColor.blue
         button.setTitleColor(UIColor.lightGray, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        
         return button
         
     }()
@@ -123,9 +125,21 @@ class ForgetPasswordController: UIViewController,UITextFieldDelegate {
         return line
     }()
     
+    lazy var indicatory:UIActivityIndicatorView = {
+        var indicatory = UIActivityIndicatorView.init()
+        indicatory.hidesWhenStopped = true
+        indicatory.activityIndicatorViewStyle = .gray
+        return indicatory
+    }()
     
     var codeNumber:ValidateNumber?
     
+    let request = ChangePasswordService.instance
+    
+    var verifyButtonEnable = true
+    
+    let disposebag = DisposeBag.init()
+
     
     override func viewDidLoad() {
         
@@ -151,9 +165,10 @@ class ForgetPasswordController: UIViewController,UITextFieldDelegate {
         
         self.view.addSubview(confirmPasswordImage)
         self.view.addSubview(confirmPasswordText)
+    
         
         self.view.addSubview(submit)
-        
+        self.submit.addSubview(indicatory)
         
         phoneText.layer.addSublayer(bottomLine1)
         verifyText.layer.addSublayer(bottomLine2)
@@ -161,6 +176,7 @@ class ForgetPasswordController: UIViewController,UITextFieldDelegate {
         confirmPasswordText.layer.addSublayer(bottomLine4)
         
         self.addTouchinSide()
+        self.setViewModel()
         super.viewDidLoad()
         
 
@@ -184,6 +200,9 @@ class ForgetPasswordController: UIViewController,UITextFieldDelegate {
         
         _ = submit.sd_layout().topSpaceToView(confirmPasswordText,80)?.leftEqualToView(confirmPasswordImage)?.rightEqualToView(verifyButton)?.heightIs(40)
         
+        _ = indicatory.sd_layout().leftSpaceToView(submit,5)?.topSpaceToView(submit,2)?.bottomSpaceToView(submit,2)?.widthIs(20)
+        
+        
     }
     
     override func viewDidLayoutSubviews() {
@@ -196,6 +215,53 @@ class ForgetPasswordController: UIViewController,UITextFieldDelegate {
         bottomLine3.frame = CGRect.init(x: 0, y: passwordText.frame.height-1, width: passwordText.frame.width, height: 1)
         bottomLine4.frame = CGRect.init(x: 0, y: confirmPasswordText.frame.height-1, width: confirmPasswordText.frame.width, height: 1)
         
+        
+        
+    }
+    
+    private func setViewModel(){
+        
+        let vm = ChangePasswordVM.init(input: (tap: submit.rx.tap.asDriver().debug(), request: request))
+        
+        // view to model
+        self.phoneText.rx.text.orEmpty.bind(to: vm.phoneText).disposed(by: disposebag)
+        self.verifyText.rx.text.orEmpty.bind(to: vm.verifyCode).disposed(by: disposebag)
+        self.passwordText.rx.text.orEmpty.bind(to: vm.newPassword).disposed(by: disposebag)
+        self.confirmPasswordText.rx.text.orEmpty.bind(to: vm.confirmPassword).disposed(by: disposebag)
+        
+        
+        
+        
+        
+        // model to view
+        
+        vm.showProgress.debug().drive(self.indicatory.rx.isAnimating).disposed(by: disposebag)
+
+        vm.validatePhone.subscribe(onNext: { (res) in
+            self.verifyButtonEnable = res.validate
+            
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: disposebag)
+        
+        
+        vm.submitEnable.asDriver().drive(onNext: { (bool) in
+            self.submit.isEnabled = bool
+            self.submit.alpha = bool ? 1 : 0.5
+            print(self.submit)
+            
+        }, onCompleted: nil, onDisposed: nil).disposed(by: disposebag)
+      
+        
+        vm.submitResult.drive(onNext: { (res) in
+            switch res{
+            case  let .error(_, message):
+                self.showAlert(error: message)
+            case .success(_, _):
+                print("success")
+            default:
+                self.showAlert(error: "提交失败")
+            }
+            
+        }, onCompleted: nil, onDisposed: nil).disposed(by: disposebag)
         
         
     }
@@ -223,9 +289,7 @@ class ForgetPasswordController: UIViewController,UITextFieldDelegate {
     }
     
     
-    @objc private func submited(){
-        
-    }
+
 
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -245,7 +309,28 @@ class ForgetPasswordController: UIViewController,UITextFieldDelegate {
 
     // vertify number
     @objc private func verify(){
-        codeNumber?.start()
+        if self.verifyButtonEnable{
+            _ = self.request.getVerifyCode(phone: self.phoneText.text!).subscribe(onNext: { (res) in
+                switch res{
+                case .ok:
+                    print("")
+                case let  .error(_, message):
+                    self.showAlert(error: message)
+                default:
+                    self.showAlert(error: "")
+                }
+            }, onError: nil, onCompleted: nil, onDisposed: nil)
+            codeNumber?.start()
+        }else{
+            
+        }
+    }
+    
+    private func showAlert(error:String){
+        let action = UIAlertAction.init(title: "确定", style: .default, handler: nil)
+        let alertView = UIAlertController.init(title: nil, message: error, preferredStyle: .alert)
+        alertView.addAction(action)
+        self.present(alertView, animated: true, completion: nil)
     }
     
    

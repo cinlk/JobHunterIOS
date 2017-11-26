@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = '78C7C6D26AD7F5C911AD0C66BE0003F3'
+               BlueprintIdentifier = 'F1C379DB2772094B32FE462FD0E83BB2'
                BlueprintName = 'YNSearch'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'YNSearch.framework'>

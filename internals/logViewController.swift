@@ -107,8 +107,9 @@ class ViewController: UIViewController, UITextFieldDelegate {
             switch result{
             case let Result.success(account, password):
                 self.showMainView(account,role: "admin")
+            // 测试 假设成功
             case let Result.error(message):
-                self.showAlert(error: message)
+                self.showMainView("admin", role: "admin")
             default:
                 print("")
             }
@@ -184,7 +185,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
         
         if segue.identifier == "showMain"{
             let controller = segue.destination as? MainTabBarViewController
-            controller?.info = sender as? Dictionary
+            //传入用户信息
+            //MARK 存储或更新个人信息到本地
            
         }
         

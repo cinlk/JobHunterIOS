@@ -19,6 +19,7 @@ enum Result{
     case wrongPhoneNumber(message:String)
     case accountExist(messae:String)
     case error(message:String)
+    case verifyCode(number:String)
     case user(user:Users)
     
 }
@@ -54,6 +55,18 @@ extension Result{
     }
 }
 
+// http response kind
+enum myResponse{
+    case none
+    case ok
+    case success(code:Int, message:String)
+    case error(code:Int, message:String)
+   
+}
+
+extension myResponse{
+    
+}
 
 
 
@@ -69,9 +82,6 @@ class loginVM{
     var loginbuttonEnable:Observable<Bool>?
     
     var loginProcess:Driver<Result>
-    
-    
-    
     
     let progressEnable: Driver<Bool>
     
@@ -108,9 +118,6 @@ class loginVM{
             return vphone.validate && vpassword.validate && !progress
         }.distinctUntilChanged().share(replay: 1)
         
-
-        
-        
         
         let phoneAndpassword = Driver.combineLatest(phoneNumberText.asDriver(), passowordText.asDriver()){
             ($0,$1)
@@ -119,32 +126,15 @@ class loginVM{
         // trackActivity  如果流有消息 则为true， 没消息则为false
         loginProcess = input.loginTap.withLatestFrom(phoneAndpassword).flatMapLatest{
             phone,password in
-            return input.loginServer.login(phone, password: password).trackActivity(signInIndicator).asDriver(onErrorJustReturn: .error(message: "连接服务失败"))
-            
-            
-            
-
+            return input.loginServer.login(phone, password:
+                password).trackActivity(signInIndicator).asDriver(onErrorJustReturn: .error(message: "连接服务失败"))
         }
-        
-       
-        
-        
-        
-        
-        
-        
         
     }
     
-    
-    
-    
-    
-  
-    
-    
-    
 }
+
+
 
 
 

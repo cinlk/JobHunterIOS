@@ -8,10 +8,13 @@
 
 import UIKit
 import SDAutoLayout
+import RxSwift
 
 class RegisterViewController: UIViewController,UITextFieldDelegate{
     
     var registerButton:UIButton?
+    var indicator:UIActivityIndicatorView?
+    
     var verifyButton:UIButton?
     
     var phoneImage:UIImageView?
@@ -21,7 +24,11 @@ class RegisterViewController: UIViewController,UITextFieldDelegate{
     
     var phoneText:UITextField?
     var passwordText:UITextField?
+    var checkPassword:UILabel?
+    
     var verifyText:UITextField?
+    var checkVerify:UILabel?
+    
     
     var bottom:CALayer?
     var bottom2:CALayer?
@@ -30,6 +37,12 @@ class RegisterViewController: UIViewController,UITextFieldDelegate{
 
     var codeNumber:ValidateNumber?
     
+    
+    var registerVM:RegistryViewModel?
+    
+    let disposebag = DisposeBag()
+
+    var isRegistry = false
     
     override func viewDidLoad() {
 
@@ -46,6 +59,11 @@ class RegisterViewController: UIViewController,UITextFieldDelegate{
         registerButton?.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         registerButton?.backgroundColor = UIColor.blue
         registerButton?.titleLabel?.textAlignment = .center
+        
+        indicator = UIActivityIndicatorView.init(activityIndicatorStyle: .gray)
+        indicator?.hidesWhenStopped = true
+        indicator?.color = UIColor.red
+        
         
         verifyButton = UIButton.init(type: .custom)
         verifyButton?.setTitle("获取验证码", for: .normal)
@@ -79,43 +97,48 @@ class RegisterViewController: UIViewController,UITextFieldDelegate{
         verifyText?.delegate = self
         verifyText?.borderStyle = UITextBorderStyle.none
         
+        checkVerify = UILabel.init()
+        checkVerify?.font = UIFont.systemFont(ofSize: 8)
+        checkVerify?.textColor = UIColor.black
+        
         
         passwordImage = UIImageView.init()
         passwordImage?.image = #imageLiteral(resourceName: "password")
         
         passwordText = UITextField.init()
         passwordText?.placeholder = "输入密码"
-        passwordText?.keyboardType = .numberPad
         passwordText?.clearButtonMode = .whileEditing
         passwordText?.delegate = self
         passwordText?.borderStyle = UITextBorderStyle.none
         
+        checkPassword = UILabel.init()
+        checkPassword?.font = UIFont.systemFont(ofSize: 8)
         
         
         bottom  = CALayer()
         bottom2  = CALayer()
         bottom3  = CALayer()
         
-        
         self.view.addSubview(registerButton!)
+        self.registerButton?.addSubview(indicator!)
         self.view.addSubview(verifyButton!)
         self.view.addSubview(phoneImage!)
         self.view.addSubview(phoneText!)
         
         self.view.addSubview(verifyImage!)
         self.view.addSubview(verifyText!)
+        self.view.addSubview(checkVerify!)
         
         self.view.addSubview(passwordImage!)
         self.view.addSubview(passwordText!)
-        
+        self.view.addSubview(checkPassword!)
         
         phoneText?.layer.addSublayer(bottom!)
         verifyText?.layer.addSublayer(bottom2!)
         passwordText?.layer.addSublayer(bottom3!)
 
-
         self.addTouchinSide()
-        
+        self.setViewModel()
         super.viewDidLoad()
         
     }
@@ -131,6 +154,61 @@ class RegisterViewController: UIViewController,UITextFieldDelegate{
         self.view.isUserInteractionEnabled =  true
         self.view.addGestureRecognizer(touch)
         
+        
+    }
+    // viewModel
+    private func setViewModel(){
+        let server = RegistryServer.instance
+        
+        self.registerVM = RegistryViewModel.init(input: (phoneText!.rx.text.asDriver(),registerButton!.rx.tap.asDriver(), server))
+        
+        
+        
+        //view to viewmodel
+        _ = self.phoneText!.rx.text.orEmpty.takeUntil(self.rx.deallocated).bind(to: self.registerVM!.phoneTextStr)
+        _ = self.verifyText?.rx.text.orEmpty.takeUntil(self.rx.deallocated).bind(to: self.registerVM!.verifyCodeStr)
+        _ = self.passwordText?.rx.text.orEmpty.takeUntil(self.rx.deallocated).bind(to: self.registerVM!.passwordStr)
+        
+        
+        
+        
+        
+        //viewmode to view
+        _ = self.registerVM?.validatePhone.asDriver().drive(onNext: { (result) in
+            switch result{
+            case .pass:
+                self.isRegistry = true
+            default:
+                self.isRegistry = false
+            }
+        }, onCompleted: nil, onDisposed: nil)
+        
+        
+        self.registerVM?.registryEnable.asDriver().debug().drive(onNext: { (bool) in
+                self.registerButton?.isEnabled = bool
+                self.registerButton?.alpha = bool ? 1 : 0.5
+            
+        }, onCompleted: nil, onDisposed: nil).disposed(by: disposebag)
+        
+        
+        self.registerVM?.validateCode.asDriver().drive(self.checkVerify!.rx.rxob).disposed(by: disposebag)
+        self.registerVM?.validatePassword.asDriver().debug().drive(self.checkPassword!.rx.rxob).disposed(by: disposebag)
+        
+        
+        self.registerVM?.progress.drive(self.indicator!.rx.isAnimating).disposed(by: disposebag)
+        
+        
+        
+        self.registerVM?.registeyResult.drive(onNext: { (response) in
+            switch response{
+            case  let .error(_, message):
+                self.showAlert(error: message)
+            case .success(_, _):
+                self.register()
+            default:
+                self.showAlert(error: "注册失败")
+            }
+        }, onCompleted: nil, onDisposed: nil).disposed(by: disposebag)
         
     }
     
@@ -154,16 +232,19 @@ class RegisterViewController: UIViewController,UITextFieldDelegate{
         
         _ = verifyText?.sd_layout().leftEqualToView(phoneText)?.rightEqualToView(registerButton)?.heightIs(30)?.bottomEqualToView(verifyImage)
         
+        _ = checkVerify?.sd_layout().topSpaceToView(verifyText,2)?.leftEqualToView(verifyText)?.widthIs(100)?.heightIs(10)
+        
         _ = passwordImage?.sd_layout().leftEqualToView(phoneImage)?.topSpaceToView(verifyText,20)?.widthIs(25)?.heightIs(30)
         
         _ = passwordText?.sd_layout().leftEqualToView(phoneText)?.rightEqualToView(registerButton)?.heightIs(30)?.bottomEqualToView(passwordImage)
         
+        _ = checkPassword?.sd_layout().topSpaceToView(passwordText,2)?.leftEqualToView(passwordText)?.widthIs(100)?.heightIs(10)
         
         
         
          _ = registerButton?.sd_layout().topSpaceToView(passwordText,80)?.leftEqualToView(phoneImage)?.rightEqualToView(verifyButton)?.heightIs(40)
         
-        
+        _ = indicator?.sd_layout().leftSpaceToView(self.registerButton,5)?.topSpaceToView(self.registerButton,2)?.bottomSpaceToView(self.registerButton,2)?.widthIs(20)
         
     }
     
@@ -180,13 +261,30 @@ class RegisterViewController: UIViewController,UITextFieldDelegate{
     
     // message code number
     @objc private func validateCode(){
+        
+        if self.isRegistry{
+            RegistryServer.instance.getVerifyCode(phone: (self.phoneText?.text)!).subscribe(onNext: { (res) in
+                switch res{
+                case .ok:
+                    print("")
+                case let  .error(_, message):
+                    self.showAlert(error: message)
+                default:
+                    self.showAlert(error: "")
+                }
+            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: disposebag)
         codeNumber?.start()
+            
+        }
+        else{
+            self.showAlert(error: "号码无效")
+        }
         
     }
   
     
-    @objc private func register(sender:UIEvent){
-        print("注册")
+   private func register(){
+        print("注册成功")
     }
     func textFieldDidEndEditing(_ textField: UITextField) {
         
@@ -201,6 +299,14 @@ class RegisterViewController: UIViewController,UITextFieldDelegate{
         
         textField.resignFirstResponder()
         return true
+    }
+    
+    
+    private func showAlert(error:String){
+        let action = UIAlertAction.init(title: "确定", style: .default, handler: nil)
+        let alertView = UIAlertController.init(title: nil, message: error, preferredStyle: .alert)
+        alertView.addAction(action)
+        self.present(alertView, animated: true, completion: nil)
     }
     
     

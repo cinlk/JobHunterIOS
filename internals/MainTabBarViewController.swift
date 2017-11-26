@@ -11,10 +11,8 @@ import UIKit
 class MainTabBarViewController: UITabBarController {
 
     
-    var info:Dictionary<String,String>?
-    
-    
     func getTabBarImages() -> [UIImage]{
+        
         let size = CGSize(width: 27, height: 26)
         let offset = CGPoint(x: 0, y: 0)
         var image = UIImage(named: "home")?.withRenderingMode(.alwaysOriginal)
@@ -44,29 +42,18 @@ class MainTabBarViewController: UITabBarController {
             for i in 0..<items.count {
                 let tabBarItem = items[i]
                 let tabBarImage = tabBarImages[i]
-                tabBarItem.image = tabBarImage.withRenderingMode(.alwaysOriginal)
+                tabBarItem.image = tabBarImage
                 tabBarItem.selectedImage = tabBarImage
             }
         }
-
         
-        // Do any additional setup after loading the view.
     }
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

@@ -47,9 +47,11 @@ class jobdetailCell: UITableViewCell {
        
     }
     
+    static func identity()->String{
+        return "compuseJobs"
+    }
     
-    
-    func createCells(items:[String:String]?){
+    func createCells(items:[String:Any]?){
         
             // 移除子view,cell是重复利用的
             stackView.subviews.forEach{$0.removeFromSuperview()}
@@ -69,7 +71,7 @@ class jobdetailCell: UITableViewCell {
             s3.spacing = 3
             s3.distribution = .fillProportionally
             let imageView = UIImageView()
-            imageView.image = UIImage(named: (items?["image"]!)!)
+            imageView.image = UIImage(named: (items?["picture"]!)! as! String)
             imageView.contentMode = .scaleAspectFit
             imageView.clipsToBounds  = true
             im.addArrangedSubview(imageView)
@@ -79,25 +81,25 @@ class jobdetailCell: UITableViewCell {
         
         
             let jobName = UILabel()
-            jobName.text = items?["jobname"]
+            jobName.text = items?["jobName"] as? String
             jobName.font = UIFont.boldSystemFont(ofSize: 10)
             s2.addArrangedSubview(jobName)
         
         
             let companyName = UILabel()
-            companyName.text = items?["companyName"]
+            companyName.text = items?["comapany"] as? String
             companyName.font  = UIFont.systemFont(ofSize: 8)
             companyName.textColor = UIColor.gray
         
             s2.addArrangedSubview(companyName)
         
             let locate = UILabel()
-            locate.text  = items?["locate"]
+            locate.text  = items?["address"] as? String
             locate.font = UIFont.systemFont(ofSize: 6)
             locate.textColor = UIColor.gray
             s1.addArrangedSubview(locate)
             let times = UILabel()
-            times.text = items?["times"]
+            //times.text = items?["day"] as? String
             times.font = UIFont.systemFont(ofSize: 6)
             times.textColor = UIColor.gray
             s1.addArrangedSubview(times)
@@ -108,13 +110,13 @@ class jobdetailCell: UITableViewCell {
             //
             s3.axis  = .vertical
             let salary =  UILabel()
-            salary.text = items?["salary"]
+            salary.text = items?["salary"] as? String
             salary.font = UIFont.boldSystemFont(ofSize: 6)
             salary.textColor = UIColor.red
             salary.sizeToFit()
             s3.addArrangedSubview(salary)
             let createTime = UILabel()
-            createTime.text = items?["createTime"]
+            createTime.text = items?["create_time"] as? String
             createTime.font = UIFont.systemFont(ofSize: 6)
             createTime.textColor = UIColor.gray
             createTime.sizeToFit()

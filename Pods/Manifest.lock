@@ -1,6 +1,7 @@
 PODS:
   - Alamofire (4.5.1)
   - Differentiator (3.0.1)
+  - MJRefresh (3.1.15)
   - Moya/Core (10.0.0):
     - Alamofire (~> 4.1)
     - Result (~> 3.0)
@@ -24,7 +25,7 @@ PODS:
   - YNSearch (2.3.0)
 
 DEPENDENCIES:
-  - Alamofire (~> 4.0)
+  - MJRefresh
   - Moya/RxSwift
   - ObjectMapper
   - RxCocoa
@@ -50,6 +51,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   Alamofire: 2d95912bf4c34f164fdfc335872e8c312acaea4a
   Differentiator: ffe513ce1ea4e7198b89fac94d6e281c673055a9
+  MJRefresh: 9af70f5f9327a2cf87f0fb5929f35fcc2fa638ea
   Moya: adb58b0f4e58430db43cc6e2f6ebab1836501186
   ObjectMapper: 92230db59bf8f341a5c3a3cf0b9fbdde3cf0d87f
   Result: d2d07204ce72856f1fd9130bbe42c35a7b0fea10
@@ -63,6 +65,6 @@ SPEC CHECKSUMS:
   YNDropDownMenu: 4f4b463ecbfd492dc886abaf18d73dead0e32133
   YNSearch: 972d404c60b909ce51c2ad71cfbc642ffc0b03cc
 
-PODFILE CHECKSUM: 3b40eb24e0364577ba6ce1aad97873df578492ed
+PODFILE CHECKSUM: dfc96539e0fb68afe7c96e8575798cb833101c39
 
 COCOAPODS: 1.2.1

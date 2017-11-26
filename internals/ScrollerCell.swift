@@ -1,5 +1,5 @@
 //
-//  ScrollerCell.swift
+//  MainPageCatagoryCell
 //  internals
 //
 //  Created by ke.liang on 2017/9/2.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ScrollerCell: UITableViewCell,UIScrollViewDelegate{
+class MainPageCatagoryCell: UITableViewCell,UIScrollViewDelegate{
 
     
     
