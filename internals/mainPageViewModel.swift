@@ -40,6 +40,8 @@ class mainPageViewMode {
     
     var refreshData = PublishSubject<Bool>.init()
     
+    
+    
     var index:Int = 0
     
     var request:mainPageServer!
@@ -52,8 +54,11 @@ class mainPageViewMode {
     let sections: Driver<[MultiSecontions]>
     
     init(request: mainPageServer) {
+        
         self.request = request
 
+       
+        
         
         // 转换为 multisection 数据，注意section顺序
         sections = Driver.combineLatest(compuseJobItems.asDriver(), recommand.asDriver(), catagory.asDriver()){

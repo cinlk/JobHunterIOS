@@ -35,6 +35,7 @@
 		4A6BC2391FC926C5002C17B6 /* Jobs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC2381FC926C5002C17B6 /* Jobs.swift */; };
 		4A6BC23B1FC92BA3002C17B6 /* mainPageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC23A1FC92BA3002C17B6 /* mainPageViewModel.swift */; };
 		4A6BC23D1FC92C26002C17B6 /* mainPageHttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC23C1FC92C26002C17B6 /* mainPageHttpServer.swift */; };
+		4A6BC2431FCB12A3002C17B6 /* Exhibition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC2421FCB12A3002C17B6 /* Exhibition.swift */; };
 		4A93C2B51F80AB900022E97B /* messageMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2B41F80AB900022E97B /* messageMain.swift */; };
 		4A93C2B81F80AC590022E97B /* messageItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2B61F80AC590022E97B /* messageItemCell.swift */; };
 		4A93C2B91F80AC590022E97B /* messageItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A93C2B71F80AC590022E97B /* messageItemCell.xib */; };
@@ -178,6 +179,7 @@
 		4A6BC2381FC926C5002C17B6 /* Jobs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Jobs.swift; sourceTree = "<group>"; };
 		4A6BC23A1FC92BA3002C17B6 /* mainPageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mainPageViewModel.swift; sourceTree = "<group>"; };
 		4A6BC23C1FC92C26002C17B6 /* mainPageHttpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mainPageHttpServer.swift; sourceTree = "<group>"; };
+		4A6BC2421FCB12A3002C17B6 /* Exhibition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exhibition.swift; sourceTree = "<group>"; };
 		4A8D09A21FA59AEC00C0F7FB /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		4A8D09A31FA59AEC00C0F7FB /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		4A8D09A41FA59C1B00C0F7FB /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
@@ -440,6 +442,7 @@
 			isa = PBXGroup;
 			children = (
 				4A6BC2381FC926C5002C17B6 /* Jobs.swift */,
+				4A6BC2421FCB12A3002C17B6 /* Exhibition.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -1011,6 +1014,7 @@
 				4AFF91A71F5C238400FE189F /* HeaderFoot.swift in Sources */,
 				4ADDDAD51F98F9B3001CB00F /* ChatEmotionHelper.swift in Sources */,
 				4A93C2BB1F80CE5F0022E97B /* deliveredHistory.swift in Sources */,
+				4A6BC2431FCB12A3002C17B6 /* Exhibition.swift in Sources */,
 				4ADADAAB1FA4C09400134AAE /* ReplyView.swift in Sources */,
 				4AD03ABB1F9C7DD30077C15B /* GetChatEmotion.swift in Sources */,
 				4A5304EA1F52FAD20000F1E9 /* demo.swift in Sources */,

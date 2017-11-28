@@ -106,7 +106,7 @@ class demo: UITableViewController {
     
     func createScrollView(){
         
-        src.creatScrollImages(imageName: images, height: 120, width: self.view.frame.width)
+        //src.creatScrollImages(imageName: images, height: 120, width: self.view.frame.width)
         page.frame = CGRect(x:self.view.frame.width / 2 - 50,y:80,width:100,height:30)
         page.numberOfPages = images.count
         page.backgroundColor = UIColor.clear

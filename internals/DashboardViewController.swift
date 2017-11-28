@@ -17,8 +17,6 @@ import MJRefresh
 
 class DashboardViewController: UIViewController{
 
-    // image 点击占时逻辑一致？ image 将来改变
-    let imageBanners = MAIN_PAGE_IMAGE_BANNERS
     var imagescroller:UIScrollView!
     let page = UIPageControl()
     
@@ -28,7 +26,12 @@ class DashboardViewController: UIViewController{
     //scrollview  偏移值
     var threshold:CGFloat = -80
     var marginTop:CGFloat = 0
-
+    var timer:Timer?
+    var startContentOffsetX:CGFloat = 0
+    var EndContentOffsetX:CGFloat = 0
+    var WillEndContentOffsetX:CGFloat = 0
+    
+    
     // searchview
     var searchController:baseSearchViewController!
     var searchBarContainer:UIView!
@@ -74,28 +77,45 @@ class DashboardViewController: UIViewController{
     
     
     override func viewDidLoad() {
-         super.viewDidLoad()
-         /**** navigation ****/
+        super.viewDidLoad()
+        /**** navigation ****/
         
-         self.navigationController?.navigationBar.settranslucent(true)
-         self.navigationItem.titleView = searchBarContainer
-         self.automaticallyAdjustsScrollViewInsets  = false
+        self.navigationController?.navigationBar.settranslucent(true)
         
-         /***** table *****/
-         self.tables.register(MainPageCatagoryCell.self, forCellReuseIdentifier: "catagory")
-         self.tables.register(MainPageRecommandCell.self, forCellReuseIdentifier: "recommand")
-         self.tables.register(jobdetailCell.self, forCellReuseIdentifier: jobdetailCell.identity())
-         self.tables.register(HeaderFoot.self, forHeaderFooterViewReuseIdentifier: "dashheader")
-         // 底部距离 50像素，保证滑动到底部cell
-         self.tables.contentInset = UIEdgeInsetsMake(0, 0, 50, 0)
+        
+        self.automaticallyAdjustsScrollViewInsets  = false
+        
+        /***** table *****/
+        self.tables.register(MainPageCatagoryCell.self, forCellReuseIdentifier: "catagory")
+        self.tables.register(MainPageRecommandCell.self, forCellReuseIdentifier: "recommand")
+        self.tables.register(jobdetailCell.self, forCellReuseIdentifier: jobdetailCell.identity())
+        self.tables.register(HeaderFoot.self, forHeaderFooterViewReuseIdentifier: "dashheader")
+        
         // 轮播图
         imagescroller =  UIScrollView()
         self.imagescroller.delegate = self
         // 解决navigation 页面跳转后，scrollview content x 偏移差
         self.imagescroller.translatesAutoresizingMaskIntoConstraints = false
+        
+        self.imagescroller.bounces = false
+        self.imagescroller.isPagingEnabled = true
+        self.imagescroller.scrollsToTop = false
+        self.imagescroller.showsHorizontalScrollIndicator = false
+        self.imagescroller.showsVerticalScrollIndicator = false
+        self.imagescroller.isUserInteractionEnabled = true
+        
+      
         self.tables.tableHeaderView  = imagescroller
-        self.tables.tableHeaderView?.frame  = CGRect(x:0 , y:0, width: self.view.frame.width, height: 120)
+        //self.tables.tableHeaderView?.frame  = CGRect(x:0 , y: -64 , width: self.view.frame.width, height: 120)
         self.tables.tableHeaderView?.isHidden  = false
+        page.backgroundColor = UIColor.clear
+        page.isEnabled  = false
+        page.pageIndicatorTintColor = UIColor.gray
+        page.currentPageIndicatorTintColor = UIColor.black
+        self.tables.insertSubview(page, aboveSubview: self.tables.tableHeaderView!)
+        
+        
+        
         
         
         
@@ -112,6 +132,7 @@ class DashboardViewController: UIViewController{
         searchController.delegate =  self
         searchController.searchBar.delegate = self
         // 下拉菜单view
+        
         locate = Citys(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
         locate.view.switchDelgate = self
         
@@ -128,14 +149,8 @@ class DashboardViewController: UIViewController{
         //searchBarContainer.addSubview(city)
         searchBarContainer.alpha = 0
         
-    
- 
-   
-       _ =  searchController.searchBar.sd_layout().leftSpaceToView(searchBarContainer,10)?.topEqualToView(searchBarContainer)?.bottomEqualToView(searchBarContainer)?.rightSpaceToView(searchBarContainer,10)
-        
-        
-        
-       
+        self.navigationItem.titleView = searchBarContainer
+
         
         // mvvm
         self.loadViewModel()
@@ -163,18 +178,33 @@ class DashboardViewController: UIViewController{
         
     }
     
+    
+    override func viewWillLayoutSubviews() {
+        
+            // iso 11 设置位置偏移
+            if #available(iOS 11.0, *) {
+                self.tables.contentInsetAdjustmentBehavior = .never
+                self.imagescroller.contentInsetAdjustmentBehavior = .never
+            } else {
+                // Fallback on earlier versions
+            }
+        
+        // 底部距离 50像素，保证滑动到底部cell
+        self.tables.contentInset = UIEdgeInsetsMake(0, 0, 50, 0)
+        _ = self.tables.tableHeaderView?.sd_layout().leftEqualToView(self.tables)?.rightEqualToView(self.tables)?.heightIs(120)?.topEqualToView(self.tables)
+        
+         _ =  searchController.searchBar.sd_layout().leftSpaceToView(searchBarContainer,10)?.topEqualToView(searchBarContainer)?.bottomEqualToView(searchBarContainer)?.rightSpaceToView(searchBarContainer,10)
+         // 这里设置page，imagescroller 的layout设置生效后
+         page.frame = CGRect(x: (self.view.centerX - 60), y: self.imagescroller.frame.height-20, width: 120, height: 10)
+        
+        
+        
+    }
     // view 会自动调整subview的layout
     override func viewDidLayoutSubviews() {
         
+    
         
-        
-        
-        // 值创建一次
-        if flag == false{
-            self.createScrollView()
-        }
-        
-        flag = true
         
     }
     
@@ -222,18 +252,64 @@ class DashboardViewController: UIViewController{
         }).disposed(by: disposebag)
 
         
-        self.tables.mj_header = MJRefreshNormalHeader.init(refreshingBlock: {
+        
+        self.tables.mj_header  = MJRefreshNormalHeader.init {
             vm.refreshData.onNext(true)
-            
-        })
+        }
+        
+        (self.tables.mj_header as! MJRefreshNormalHeader).lastUpdatedTimeLabel.isHidden = true
+        (self.tables.mj_header as! MJRefreshNormalHeader).setTitle("下拉刷新", for: .idle)
+        (self.tables.mj_header as! MJRefreshNormalHeader).setTitle("开始刷新", for: .pulling)
+        (self.tables.mj_header as! MJRefreshNormalHeader).setTitle("刷新 ...", for: .refreshing)
         
         self.tables.mj_footer = MJRefreshAutoNormalFooter.init(refreshingBlock: {
             vm.refreshData.onNext(false)
         })
         
-        //
+        (self.tables.mj_footer as! MJRefreshAutoNormalFooter).setTitle("上拉刷新", for: .idle)
+        (self.tables.mj_footer as! MJRefreshAutoNormalFooter).setTitle("刷新", for: .refreshing)
+            
         
-      
+            
+        // 获取轮播数据和图
+        _ = request.getImageBanners().debug().drive(onNext: { [unowned self ] (rotates) in
+            self.page.numberOfPages = rotates.count
+            let width = self.imagescroller.width
+            let height = self.imagescroller.height
+            if rotates.isEmpty{
+                return
+            }else{
+                _ = self.imagescroller.subviews.map{
+                    $0.removeFromSuperview()
+                }
+                // 前置最后一张图，后置第一张图，滑动时显示正确的图
+                let last = rotates[rotates.count - 1 ]
+                let first = rotates[0]
+                var  arrays = rotates
+                arrays.append(first)
+                arrays.insert(last, at: 0)
+                
+                for (n,item) in arrays.enumerated(){
+                   
+                    let imageView = UIImageView(frame:CGRect(x: CGFloat(n) * width, y: 0, width: width, height: height))
+                    //MARK get image from url
+                    imageView.image = UIImage.init(named: item.imageURL ?? "banner1")
+                    imageView.contentMode = .scaleAspectFill
+                    imageView.clipsToBounds = true
+                    self.imagescroller.addSubview(imageView)
+                }
+                
+                self.imagescroller.contentSize = CGSize.init(width: CGFloat(CGFloat(arrays.count) * width), height: height)
+                //第二张开始
+                self.imagescroller.contentOffset = CGPoint.init(x: self.view.frame.width, y: 0)
+                
+            }
+            
+        }, onCompleted: {
+           self.creatTimer()
+        }, onDisposed: nil)
+    
+        
     }
    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -292,6 +368,8 @@ class DashboardViewController: UIViewController{
             
         }
         else if scrollView  == self.imagescroller{
+            
+            
         }
         
         
@@ -299,56 +377,104 @@ class DashboardViewController: UIViewController{
     
     
     
-    func createScrollView(){
-        
-        self.imagescroller.creatScrollImages(imageName: imageBanners, height: (self.imagescroller?.frame.height)!, width: self.imagescroller.frame.width)
-        
-        page.numberOfPages = imageBanners.count
-        page.backgroundColor = UIColor.clear
-        page.isEnabled  = false
-        page.pageIndicatorTintColor = UIColor.gray
-        page.currentPageIndicatorTintColor = UIColor.black
-        page.frame = CGRect(x: (self.view.centerX - 60), y: self.imagescroller.frame.height-20, width: 120, height: 10)
-        
-        self.tables.insertSubview(page, aboveSubview: self.tables.tableHeaderView!)
-        
-        self.imagescroller.creatTimer(count: self.imageBanners.count)
-        
-    }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         if scrollView == self.imagescroller{
-            print("start scroller")
+            startContentOffsetX = scrollView.contentOffset.x
+            // 取消轮播
+            self.timer?.invalidate()
+            self.timer = nil
+            print("拖动 \(startContentOffsetX)")
         }
     }
     
     
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if scrollView == self.imagescroller{
+            WillEndContentOffsetX = scrollView.contentOffset.x
+        }
+        print("结束推动 \(WillEndContentOffsetX)")
+       
+        
+    }
     
+
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        if scrollView  == self.imagescroller{
-            let offsetx = Int(scrollView.contentOffset.x / scrollView.frame.width)
-            page.currentPage =  offsetx
+        
+        // MARK 判断滑动方向
+        if (scrollView  == self.imagescroller) {
+            EndContentOffsetX = scrollView.contentOffset.x
+            print("结束减速 \(EndContentOffsetX)")
+            var animated = true
+            //左移动
+            if (EndContentOffsetX < WillEndContentOffsetX && WillEndContentOffsetX < startContentOffsetX){
+                
+                if self.page.currentPage == 0 {
+                    animated = false
+                    self.page.currentPage = self.page.numberOfPages - 1
+                }else{
+                    self.page.currentPage -=  1
+                }
+               
+                imagescroller.setContentOffset(CGPoint.init(x: (CGFloat(page.currentPage + 1)) * self.view.size.width,y: 0), animated: animated)
+
+            //右移动
+            }else if (EndContentOffsetX > WillEndContentOffsetX && WillEndContentOffsetX > startContentOffsetX){
+                if self.page.currentPage == self.page.numberOfPages-1{
+                    animated = false
+                    self.page.currentPage = 0
+                    
+                }else{
+                    self.page.currentPage += 1
+
+                }
+                imagescroller.setContentOffset(CGPoint.init(x: (CGFloat(page.currentPage + 1)) * self.view.size.width,y: 0), animated: animated)
+
+            }
+            //开启timer 轮播
+            self.creatTimer()
         }
         
-            
-        
+       
     }
+   
     
-    private func endScroller(ratio:CGFloat){
-        if ratio <= 1{
-            
-        }
-    }
-    
+    // 动画结束设置page 位置
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-        
-        if scrollView  == self.imagescroller{
-            let offsetx = Int(scrollView.contentOffset.x / scrollView.frame.width)
-            page.currentPage =  offsetx
-        }
-        
+      
         
     }
+    
+    
+    
+    //创建轮播图定时器 MARK
+    func creatTimer() {
+        // pass value in userinfo (Any)
+        
+        timer =  Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.change), userInfo: nil, repeats: true)
+        
+        
+        //这句话实现多线程，如果你的ScrollView是作为TableView的headerView的话，在拖动tableView的时候让轮播图仍然能轮播就需要用到这句话
+        RunLoop.current.add(timer!, forMode: RunLoopMode.commonModes)
+        
+    }
+    
+    
+    //创建定时器管理者
+    
+    @objc func change(timer:Timer) {
+        //设置偏移量
+        if page.currentPage == page.numberOfPages - 1 {
+            page.currentPage = 0
+        } else if page.currentPage < page.numberOfPages - 1 {
+            page.currentPage += 1
+        }
+        imagescroller.setContentOffset(CGPoint.init(x: (CGFloat(page.currentPage + 1)) * self.view.size.width,y: 0), animated: true)
+        
+    }
+
+    
+  
     
     
     

@@ -44,6 +44,8 @@ extension Jobs: TargetType{
             return "/catagories"
         case .getRecommandItems:
             return "/recommands"
+        case .getImageBanners:
+            return "/banners"
         default:
             return "/index"
         }
@@ -58,6 +60,8 @@ extension Jobs: TargetType{
         case .getRecommandItems:
             return .get
         case .getCatagoryItem:
+            return .get
+        case .getImageBanners:
             return .get
         default:
             return .head
@@ -127,6 +131,11 @@ class mainPageServer {
     // MARK
     public func getRecommand() -> Observable<[String]> {
         return Observable.just(["money","money","money","money"])
+    }
+    //MARK
+    public func getImageBanners() -> Driver<[RotateImages]>{
+        
+        return self.httpRequest.rx.request(Jobs.getImageBanners).asObservable().mapArray(RotateImages.self, tag: "RotateImages").asDriver(onErrorJustReturn: [])
     }
 
     

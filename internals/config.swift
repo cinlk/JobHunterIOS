@@ -27,7 +27,3 @@ let APP_JOB_URL:String = "http://127.0.0.1:8080"
 
 
 
-// 
-let MAIN_PAGE_IMAGE_BANNERS = ["banner1","banner2","banner3","banner4"]
-
-

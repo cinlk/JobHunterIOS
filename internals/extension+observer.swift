@@ -19,7 +19,7 @@ extension Reactive where Base: UILabel{
     
     var rxob: Binder<Result>{
         return Binder.init(self.base){ (label, v) in
-           
+            
                 label.textColor = v.textColor
                 label.text = v.describtion
                 
@@ -28,6 +28,20 @@ extension Reactive where Base: UILabel{
     
 }
 
+extension Reactive where Base: UIScrollView{
+    
+    var rxob: Binder<ItemLayout>{
+        return Binder.init(self.base){
+            (sc,ly) in
+            switch ly{
+            case let .RotateImageLayout(images, width, height):
+               print("")
+            }
+           
+           
+    }
+}
+}
 
 
 extension Reactive where Base: UIButton{

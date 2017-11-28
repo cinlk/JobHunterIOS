@@ -10,6 +10,8 @@ import Foundation
 import ObjectMapper
 import RxDataSources
 
+
+
 struct CompuseRecruiteJobs :Mappable{
     var picture:String?
     var company:String?

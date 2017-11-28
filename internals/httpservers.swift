@@ -114,7 +114,7 @@ class BaseServer{
             return Observable<Result>.just(.none)
         }
         
-        guard  phone.count == 11  else {
+        guard  phone.count <= 11  else {
             return Observable<Result>.just(.wrongPhoneNumber(message: ""))
         }
         return Observable<Result>.just(.pass)
