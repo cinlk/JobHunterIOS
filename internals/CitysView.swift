@@ -42,7 +42,7 @@ class CitysView: UIView,UICollectionViewDelegate,UICollectionViewDataSource,UICo
     
     // mydata
     var dataSource:Dictionary<String,[String]> = ["定位":["北京"],"热门城市":["上海","成都","广州","重庆","苏州","城市1","城市1"
-        ,"城市1","城市1","城市1","城市1","城市1","城市1"],"ABCD":["常德","北湖","城市1","城市1","城市1","城市1","城市1"]]
+        ,"城市1","城市1","城市1","城市1","城市1","城市1"],"ABCD":["常德","北湖达瓦","城市1","特比长长222","城市1","城市1","特比长长长长"]]
     
     var indexs = ["定位","热门城市","ABCD"]
     

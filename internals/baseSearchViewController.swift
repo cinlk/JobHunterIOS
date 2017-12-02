@@ -10,14 +10,43 @@ import UIKit
 import YNSearch
 import YNDropDownMenu
 
+
+
+protocol baseSearchDelegate {
+    func chooseCity()
+}
+
+
+
+
 class baseSearchViewController: UISearchController {
 
+    
+    var searchField:UITextField!
+    let leftDistance:CGFloat = 40
+    var cityDelegate:baseSearchDelegate?
     
     var height:Int = 0 {
         willSet{
             self.searchBar.setSearchFieldBackgroundImage(build_image(frame: CGRect.init(x: 0, y: 0, width: 1, height: newValue), color: UIColor.clear), for: .normal)
         }
     }
+    
+    // leftCityBuuton
+    lazy  private var cityButton:UIButton = {
+       var button = UIButton.init()
+        button.setTitleColor(UIColor.gray, for: .normal)
+        button.titleLabel?.font  = UIFont.systemFont(ofSize: 12)
+        button.titleLabel?.textAlignment = .center
+        button.backgroundColor = UIColor.clear
+        button.setTitle("全国", for: .normal)
+        button.titleLabel?.adjustsFontSizeToFitWidth = false
+        button.autoresizesSubviews = true
+        button.addTarget(self, action: #selector(cityClick), for: .touchUpInside)
+        return button
+        
+    }()
+    
     
     var resultTableView:UITableViewController!
     
@@ -33,18 +62,37 @@ class baseSearchViewController: UISearchController {
 
         self.searchBar.searchBarStyle = .default
         self.searchBar.placeholder = "输入查询内容"
+        self.searchBar.tintColor = UIColor.blue
+        
         //设置透明
-        self.searchBar.backgroundColor = UIColor.init(red: 1.0, green: 1.0, blue: 1.0, alpha: 1)
+        self.searchBar.backgroundColor = UIColor.init(red: 0, green: 0, blue: 0, alpha: 0)
         self.searchBar.alpha = 0.7
         //self.searchBar.setSearchFieldBackgroundImage(build_image(frame: CGRect.init(x: 0, y: 0, width: 1.0, height: 1.0), color: UIColor.clear), for: .normal)
         
         // 去掉背景上下黑线
         self.searchBar.backgroundImage = UIImage()
         self.searchBar.barTintColor = UIColor.clear
+        //设置边框和圆角 已经borderview 背景颜色
+        searchField = self.searchBar.value(forKey: "searchField") as! UITextField
+        searchField.layer.borderColor = UIColor.white.cgColor
+        searchField.layer.borderWidth = 1;
+        searchField.layer.backgroundColor  = UIColor.white.cgColor
+        searchField.backgroundColor = UIColor.clear
+        searchField.layer.cornerRadius = 14.0
+        searchField.borderStyle  = .roundedRect
+        searchField.tintColor = UIColor.black
+        searchField.layer.masksToBounds = true
         
         
-    
         
+        searchField.addSubview(self.cityButton)
+            
+//        let icon = searchField.leftView!
+//        let textfiledlabel = searchField.value(forKey: "placeholderLabel") as! UILabel
+        searchBar.setPositionAdjustment(UIOffset.init(horizontal: leftDistance, vertical: 0), for: .search)
+        //_ = cityButton.sd_layout().bottomEqualToView(textfiledlabel)?.rightSpaceToView(icon,10)?.widthIs(30)?.heightIs(20)
+        
+        cityButton.frame = CGRect.init(x: 5, y: 4.5, width: 30, height: 20)
 
     }
     
@@ -56,24 +104,7 @@ class baseSearchViewController: UISearchController {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
     
-    func customerBookmark(cname:String){
-        
-        
-        let im = UIImage()
-        
-        self.searchBar.showsBookmarkButton = true
-
-        self.searchBar.setImage(im.str_image(cname, size: (60.0,60.0)), for: .bookmark, state: .normal)
-        
-        // fix  size TODO
-        self.searchBar.setPositionAdjustment(UIOffsetMake(-250, 0), for: .bookmark)
-        
-       // self.indexOfSearchFieldInSubviews()
-        
-    }
     
-    
-
     
     func createDropDown(menus:[String],views:[YNDropDownView]){
         
@@ -100,6 +131,34 @@ class baseSearchViewController: UISearchController {
         
     }
     
+    
+    func changeCityTitle(title:String){
+        
+        // 计算city 字符串长度，改变button长度，和searchicon 偏移位置
+        let rect = title.getStringCGRect(size: CGSize.init(width: 100, height: 0),font: (self.cityButton.titleLabel?.font!)!)
+        if rect.width > 30{
+            
+            let add =  rect.width - 30
+            UIView.animate(withDuration: 0.1, animations: {
+                self.searchBar.setPositionAdjustment(UIOffsetMake(self.leftDistance + add, 0), for: .search)
+                self.cityButton.frame = CGRect.init(x: 5, y: 4.5, width: 30 + add , height: 20)
+                
+            })
+        }else{
+            self.cityButton.frame = CGRect.init(x: 5, y: 4.5, width: 30, height: 20)
+            self.searchBar.setPositionAdjustment(UIOffsetMake(self.leftDistance  , 0), for: .search)
+
+        }
+    
+        self.cityButton.setTitle(title, for: .normal)
+
+    }
+    
+    @objc func cityClick(){
+        self.cityDelegate?.chooseCity()
+    }
+    
+  
     override func viewDidLoad() {
         super.viewDidLoad()
     

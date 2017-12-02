@@ -37,6 +37,8 @@
 		4A6BC23D1FC92C26002C17B6 /* mainPageHttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC23C1FC92C26002C17B6 /* mainPageHttpServer.swift */; };
 		4A6BC2431FCB12A3002C17B6 /* Exhibition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC2421FCB12A3002C17B6 /* Exhibition.swift */; };
 		4A8D28BB1FD195C900FA983F /* utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8D28BA1FD195C900FA983F /* utils.swift */; };
+		4A8D28BD1FD2734400FA983F /* extension+searchDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8D28BC1FD2734400FA983F /* extension+searchDelegate.swift */; };
+		4A8D28BF1FD27A2F00FA983F /* extension+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8D28BE1FD27A2F00FA983F /* extension+String.swift */; };
 		4A93C2B51F80AB900022E97B /* messageMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2B41F80AB900022E97B /* messageMain.swift */; };
 		4A93C2B81F80AC590022E97B /* messageItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2B61F80AC590022E97B /* messageItemCell.swift */; };
 		4A93C2B91F80AC590022E97B /* messageItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A93C2B71F80AC590022E97B /* messageItemCell.xib */; };
@@ -186,6 +188,8 @@
 		4A8D09A41FA59C1B00C0F7FB /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
 		4A8D09A51FA59C1B00C0F7FB /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		4A8D28BA1FD195C900FA983F /* utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = utils.swift; sourceTree = "<group>"; };
+		4A8D28BC1FD2734400FA983F /* extension+searchDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+searchDelegate.swift"; sourceTree = "<group>"; };
+		4A8D28BE1FD27A2F00FA983F /* extension+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+String.swift"; sourceTree = "<group>"; };
 		4A93C2B41F80AB900022E97B /* messageMain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = messageMain.swift; sourceTree = "<group>"; };
 		4A93C2B61F80AC590022E97B /* messageItemCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = messageItemCell.swift; sourceTree = "<group>"; };
 		4A93C2B71F80AC590022E97B /* messageItemCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = messageItemCell.xib; sourceTree = "<group>"; };
@@ -692,6 +696,8 @@
 				4AEDFE851FBFEA5B0071F4D8 /* extension+textfield.swift */,
 				4AEDFE8F1FC00A7B0071F4D8 /* extension+observer.swift */,
 				4AEDFE931FC087440071F4D8 /* ActivityIndicator.swift */,
+				4A8D28BC1FD2734400FA983F /* extension+searchDelegate.swift */,
+				4A8D28BE1FD27A2F00FA983F /* extension+String.swift */,
 			);
 			name = extension;
 			sourceTree = "<group>";
@@ -1031,6 +1037,7 @@
 				4A444ED01F8E5789006AE83D /* contactlist.swift in Sources */,
 				4A93C2BD1F80CEAA0022E97B /* communication.swift in Sources */,
 				4AEDFE901FC00A7B0071F4D8 /* extension+observer.swift in Sources */,
+				4A8D28BF1FD27A2F00FA983F /* extension+String.swift in Sources */,
 				4ACBD6FC1F77E8F500A5FD23 /* shareView.swift in Sources */,
 				4A93C2E11F8369B10022E97B /* conditionCell.swift in Sources */,
 				4A93C2D41F834C030022E97B /* subscribleItem.swift in Sources */,
@@ -1097,6 +1104,7 @@
 				4AE694C31F91D5BD005BE1F0 /* messageCell.swift in Sources */,
 				4AEDFE941FC087440071F4D8 /* ActivityIndicator.swift in Sources */,
 				4AEDFE921FC06A3B0071F4D8 /* httpservers.swift in Sources */,
+				4A8D28BD1FD2734400FA983F /* extension+searchDelegate.swift in Sources */,
 				4ADCC7501F511DD3001A4E9F /* AppDelegate.swift in Sources */,
 				4A6BC23D1FC92C26002C17B6 /* mainPageHttpServer.swift in Sources */,
 				4A9CE36A1F715F6E002A8FD5 /* internCondition.swift in Sources */,

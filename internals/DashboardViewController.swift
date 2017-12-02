@@ -57,7 +57,7 @@ class DashboardViewController: UIViewController{
     
     
     //  主页跟新城市
-    var dashLocateCity = "北京"{
+    var dashLocateCity = "全国"{
         willSet{
             self.refreshByCity(city: newValue)
         }
@@ -138,6 +138,7 @@ class DashboardViewController: UIViewController{
         searchController.searchResultsUpdater = self
         searchController.delegate =  self
         searchController.searchBar.delegate = self
+        searchController.cityDelegate = self
         // 下拉菜单view
         
         locate = Citys(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
@@ -193,6 +194,12 @@ class DashboardViewController: UIViewController{
         
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        
+       
+        
+    }
+    
     
     override func viewWillLayoutSubviews() {
         
@@ -206,13 +213,13 @@ class DashboardViewController: UIViewController{
         
         // 底部距离 50像素，保证滑动到底部cell
         self.tables.contentInset = UIEdgeInsetsMake(0, 0, 50, 0)
-        _ = self.tables.tableHeaderView?.sd_layout().leftEqualToView(self.tables)?.rightEqualToView(self.tables)?.heightIs(120)?.topEqualToView(self.tables)
+        _ = self.tables.tableHeaderView?.sd_layout().leftEqualToView(self.tables)?.rightEqualToView(self.tables)?.heightIs(180)?.topEqualToView(self.tables)
         
          _ =  searchController.searchBar.sd_layout().leftSpaceToView(searchBarContainer,10)?.topEqualToView(searchBarContainer)?.bottomEqualToView(searchBarContainer)?.rightSpaceToView(searchBarContainer,10)
          // 这里设置page，imagescroller 的layout设置生效后
          page.frame = CGRect(x: (self.view.centerX - 60), y: self.imagescroller.frame.height-20, width: 120, height: 10)
         
-        
+       
         
     }
     // view 会自动调整subview的layout
@@ -490,21 +497,6 @@ class DashboardViewController: UIViewController{
     
     
     
-    // choose city
-    func chooseCity(){
-         let citylist = CityViewController()
-        
-        
-        
-        // 影藏bottom item
-        
-        self.hidesBottomBarWhenPushed = true
-        // TODO? use controller?
-        self.navigationController?.pushViewController(citylist, animated: true)
-        self.hidesBottomBarWhenPushed = false
-        
-        
-    }
    // show details
     func showDetails(jobDetail:[String:String]){
         
@@ -754,8 +746,26 @@ extension DashboardViewController: UISearchBarDelegate{
 
         return true
     }
-    func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
-        self.chooseCity()
+    
+    
+    
+}
+
+extension DashboardViewController: baseSearchDelegate{
+    
+    // choose city
+    func chooseCity(){
+        let citylist = CityViewController()
+        
+        
+        // 影藏bottom item
+        
+        self.hidesBottomBarWhenPushed = true
+        // TODO? use controller?
+        self.navigationController?.pushViewController(citylist, animated: true)
+        self.hidesBottomBarWhenPushed = false
+        
+        
     }
 }
 
@@ -853,7 +863,7 @@ extension DashboardViewController: internSelection{
 extension  DashboardViewController{
     
     func refreshByCity(city:String){
-        
+        self.searchController.changeCityTitle(title: city)
         
     }
     
