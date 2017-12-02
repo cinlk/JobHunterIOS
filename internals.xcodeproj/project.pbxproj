@@ -36,6 +36,7 @@
 		4A6BC23B1FC92BA3002C17B6 /* mainPageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC23A1FC92BA3002C17B6 /* mainPageViewModel.swift */; };
 		4A6BC23D1FC92C26002C17B6 /* mainPageHttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC23C1FC92C26002C17B6 /* mainPageHttpServer.swift */; };
 		4A6BC2431FCB12A3002C17B6 /* Exhibition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC2421FCB12A3002C17B6 /* Exhibition.swift */; };
+		4A8D28BB1FD195C900FA983F /* utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8D28BA1FD195C900FA983F /* utils.swift */; };
 		4A93C2B51F80AB900022E97B /* messageMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2B41F80AB900022E97B /* messageMain.swift */; };
 		4A93C2B81F80AC590022E97B /* messageItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2B61F80AC590022E97B /* messageItemCell.swift */; };
 		4A93C2B91F80AC590022E97B /* messageItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A93C2B71F80AC590022E97B /* messageItemCell.xib */; };
@@ -184,6 +185,7 @@
 		4A8D09A31FA59AEC00C0F7FB /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		4A8D09A41FA59C1B00C0F7FB /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
 		4A8D09A51FA59C1B00C0F7FB /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		4A8D28BA1FD195C900FA983F /* utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = utils.swift; sourceTree = "<group>"; };
 		4A93C2B41F80AB900022E97B /* messageMain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = messageMain.swift; sourceTree = "<group>"; };
 		4A93C2B61F80AC590022E97B /* messageItemCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = messageItemCell.swift; sourceTree = "<group>"; };
 		4A93C2B71F80AC590022E97B /* messageItemCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = messageItemCell.xib; sourceTree = "<group>"; };
@@ -423,6 +425,7 @@
 		4A6BC2311FC861DD002C17B6 /* 主界面 */ = {
 			isa = PBXGroup;
 			children = (
+				4A8D28B41FD190FF00FA983F /* 搜索 */,
 				4A6BC2341FC8623A002C17B6 /* ViewModel */,
 				4A6BC2331FC86233002C17B6 /* Model */,
 				4A6BC2321FC86218002C17B6 /* View+Controller */,
@@ -464,6 +467,46 @@
 			name = config;
 			sourceTree = "<group>";
 		};
+		4A8D28B41FD190FF00FA983F /* 搜索 */ = {
+			isa = PBXGroup;
+			children = (
+				4A8D28B71FD1912800FA983F /* ViewModel */,
+				4A8D28B61FD1911F00FA983F /* Models */,
+				4A8D28B51FD1910D00FA983F /* View+Controllers */,
+			);
+			name = "搜索";
+			sourceTree = "<group>";
+		};
+		4A8D28B51FD1910D00FA983F /* View+Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				4ACBD6F41F76386D00A5FD23 /* baseSearchViewController.swift */,
+			);
+			name = "View+Controllers";
+			sourceTree = "<group>";
+		};
+		4A8D28B61FD1911F00FA983F /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		4A8D28B71FD1912800FA983F /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = ViewModel;
+			sourceTree = "<group>";
+		};
+		4A8D28B91FD195B600FA983F /* tools */ = {
+			isa = PBXGroup;
+			children = (
+				4A8D28BA1FD195C900FA983F /* utils.swift */,
+			);
+			name = tools;
+			sourceTree = "<group>";
+		};
 		4A93C2C41F8124810022E97B /* datas */ = {
 			isa = PBXGroup;
 			children = (
@@ -488,7 +531,6 @@
 				4A9CE3651F715E37002A8FD5 /* dropMenu.swift */,
 				4A9CE3671F715F1D002A8FD5 /* JobClasses.swift */,
 				4A9CE3691F715F6E002A8FD5 /* internCondition.swift */,
-				4ACBD6F41F76386D00A5FD23 /* baseSearchViewController.swift */,
 			);
 			name = searchs;
 			sourceTree = "<group>";
@@ -550,6 +592,7 @@
 		4ADCC74E1F511DD3001A4E9F /* internals */ = {
 			isa = PBXGroup;
 			children = (
+				4A8D28B91FD195B600FA983F /* tools */,
 				4A6BC2351FC86446002C17B6 /* config */,
 				4AEDFE841FBFE78A0071F4D8 /* extension */,
 				4AFF91C51F5F0E9300FE189F /* internals.entitlements */,
@@ -979,6 +1022,7 @@
 				4AF6C8031F571D1F0059496B /* CitysView.swift in Sources */,
 				4AE4AFC11F5131AE00B5F509 /* ForgetPasswordController.swift in Sources */,
 				4A6BC23B1FC92BA3002C17B6 /* mainPageViewModel.swift in Sources */,
+				4A8D28BB1FD195C900FA983F /* utils.swift in Sources */,
 				4A4523F21F5BABE1009D6B62 /* jobdetailCell.swift in Sources */,
 				4A6BC22C1FC312A7002C17B6 /* RegistryViewModel.swift in Sources */,
 				4AD03AB81F9B45270077C15B /* InputTextView.swift in Sources */,

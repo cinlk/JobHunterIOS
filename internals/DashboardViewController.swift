@@ -74,13 +74,23 @@ class DashboardViewController: UIViewController{
     @IBOutlet weak var tables: UITableView!
     let sections = 3
     
+    //导航栏view
+    private lazy var navigationView = UIView.init()
+    
+    
+    
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         /**** navigation ****/
         
-        self.navigationController?.navigationBar.settranslucent(true)
+        //self.navigationController?.navigationBar.settranslucent(true)
+        navigationView.frame = CGRect.init(x: 0, y: 0, width: self.view.size.width, height: 64)
+        navigationView.backgroundColor = UIColor.init(red: 0.667, green: 0.667, blue: 0.667, alpha: 0)
+        
+        
+        
         
         
         self.automaticallyAdjustsScrollViewInsets  = false
@@ -116,9 +126,6 @@ class DashboardViewController: UIViewController{
         
         
         
-        
-        
-        
         /***** search *****/
         // search 切到到另一个view后，search bar不保留
         self.definesPresentationContext  = true
@@ -144,10 +151,11 @@ class DashboardViewController: UIViewController{
         //searchController.customerBookmark(cname:dashLocateCity)
         // 搜索框
         let searchBarFrame = CGRect(x: 0, y:0, width: self.view.frame.width, height: 30)
+        searchController.height = 30
         searchBarContainer = UIView(frame:searchBarFrame)
         searchBarContainer.addSubview(searchController.searchBar)
         //searchBarContainer.addSubview(city)
-        searchBarContainer.alpha = 0
+        searchBarContainer.backgroundColor = UIColor.clear
         
         self.navigationItem.titleView = searchBarContainer
 
@@ -168,12 +176,19 @@ class DashboardViewController: UIViewController{
             self.showSearchResultView()
             self.startSearch(name: searchString)
         }
-        searchController.customerBookmark(cname:dashLocateCity)
+        
+        //self.navigationController?.setNavigationBarHidden(true, animated: animated)
+        self.navigationController?.navigationBar.settranslucent(true)
+        
+        self.navigationController?.view.insertSubview(navigationView, at: 1)
+        
+        
+        
         if searchController.isActive {
             self.tabBarController?.tabBar.isHidden = true
         }else{
             
-            self.navigationController?.navigationBar.backgroundColor = nil
+            self.navigationController?.navigationBar.backgroundColor = UIColor.clear
         }
         
     }
@@ -203,15 +218,16 @@ class DashboardViewController: UIViewController{
     // view 会自动调整subview的layout
     override func viewDidLayoutSubviews() {
         
+    }
     
-        
+    override func viewWillDisappear(_ animated: Bool) {
+        self.navigationView.removeFromSuperview()
+        //self.navigationController?.setNavigationBarHidden(false, animated: animated)
+        self.navigationController?.navigationBar.settranslucent(false)
+       
         
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        
-        
-    }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -314,57 +330,53 @@ class DashboardViewController: UIViewController{
    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
 
-        
         if scrollView  == self.tables{
             
-        
-        if self.marginTop != scrollView.contentInset.top{
-            self.marginTop = scrollView.contentInset.top
-        }
-        
-        let offsetY = scrollView.contentOffset.y
-        
-         //向下滑动<0 向上滑动>0
-        // 实际检测的offset.y 偏移量
-        let  newoffsetY = offsetY + self.marginTop
-        //向上拖动变透明
-        //self.navigationController?.navigationBar.backgroudImage(alpha: CGFloat(1))
-
-        if( newoffsetY > 0  && newoffsetY <= 80){
-            self.searchBarContainer.alpha = CGFloat(newoffsetY/80)
-            self.navigationController?.navigationBar.backgroudImage(alpha: CGFloat(newoffsetY/80))
-            self.navigationController?.navigationBar.alpha = CGFloat(newoffsetY/80)
+                if self.marginTop != scrollView.contentInset.top{
+                    self.marginTop = scrollView.contentInset.top
+                }
+                print("table view contentoffset \(scrollView.contentOffset)")
+                print("table view contentinset \(scrollView.contentInset)")
             
-        }else if (newoffsetY > 80){
-            self.searchBarContainer.alpha = 1
-            self.navigationController?.navigationBar.backgroudImage(alpha: 2)
-            // 设置为fasle 导致bar y位置下移动
-            //self.navigationController?.navigationBar.isTranslucent = false
-
+                let offsetY = scrollView.contentOffset.y
+                let newoffsetY = offsetY + self.marginTop
+                //向下滑动 newoffsetY 小于0
+                //向上滑动 newoffsetY 大于0
             
-
+                // searchcontiner 透明度
+                print("newoffsetY \(newoffsetY)")
+                if (newoffsetY >= 0 && newoffsetY <= 64){
+                       self.searchBarContainer.alpha = 1
+                       self.navigationView.backgroundColor  = UIColor.init(red: 0.667, green: 0.667, blue: 0.667, alpha: newoffsetY/64)
+                    
+                }
+                else if ( newoffsetY > 64){
+                    self.navigationView.backgroundColor  = UIColor.init(red: 0.667, green: 0.667, blue: 0.667, alpha: 1)
+                    
+                }
+                else {
+                    let apl = 0.7 -  (-newoffsetY / 64)
+                    if apl < 0{
+                        self.searchBarContainer.alpha =  0
+                    }else{
+                        self.searchBarContainer.alpha =  apl
+                    }
+                    
+                       self.navigationView.backgroundColor  = UIColor.init(red: 0.667, green: 0.667, blue: 0.667, alpha: 0)
+                    
+                }
+            if newoffsetY < 0 {
+                UIView.animate(withDuration: 0.1, animations: {
+                    self.navigationView.alpha = 0
+                })
+            }else{
+                UIView.animate(withDuration: 0.1, animations: {
+                    self.navigationView.alpha = 1
+                })
+            }
             
-        }
-       
-        else if (newoffsetY < 0 && newoffsetY >= -80){
-            self.searchBarContainer.alpha = 1 - CGFloat(-newoffsetY/80)
-            //self.navigationController?.navigationBar.backgroudImage(alpha: CGFloat(1 - CGFloat(-newoffsetY/80)))
-            self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-            self.navigationController?.navigationBar.alpha = 1 - CGFloat(-newoffsetY/80)
             
-        }
-        else if (newoffsetY < -80){
-            self.searchBarContainer.alpha = 0
-            self.navigationController?.navigationBar.backgroudImage(alpha: CGFloat(0))
-            self.navigationController?.navigationBar.alpha = 0
-
-        }
-        else if (newoffsetY == 0){
-            self.searchBarContainer.alpha = 1
-            self.navigationController?.navigationBar.settranslucent(true)
-            self.navigationController?.navigationBar.alpha = 1
-
-        }
+            
             
         }
         else if scrollView  == self.imagescroller{

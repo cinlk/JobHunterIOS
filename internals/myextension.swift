@@ -11,30 +11,8 @@ import Foundation
 
 
 
-func  build_image(size: CGSize, alpha:CGFloat)->UIImage{
-    
-    let frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-    let color = UIColor.gray
-    
-    
-    UIGraphicsBeginImageContext(frame.size)
-    let context:CGContext = UIGraphicsGetCurrentContext()!
-    context.setFillColor(color.cgColor)
-    context.fill(frame)
-    
-    let image:UIImage = UIGraphicsGetImageFromCurrentImageContext()!
-    UIGraphicsEndImageContext()
-    
-    return image
-    
-    
-    
-}
-
-
-
 private let  v = UIImage()
-private let bm = build_image(size: CGSize.init(width: NAV_BAR_FRAME_WIDTH, height: NAV_BAR_FRAME_HEIGHT), alpha: 1)
+//private let bm = build_image(size: CGSize.init(width: NAV_BAR_FRAME_WIDTH, height: NAV_BAR_FRAME_HEIGHT), alpha: 1)
 
 extension UINavigationBar{
     
@@ -45,19 +23,15 @@ extension UINavigationBar{
         
         // 显示 lable
         self.tintColor  = UIColor.black
-        
         if tag == true{
             self.setBackgroundImage(v, for: .default)
             self.shadowImage = v
             self.isTranslucent = true
-            self.backgroundColor =  nil
-            
-           
-
+            self.backgroundColor =  UIColor.clear
         }
         else{
             print("nav bar \(self.size)")
-            self.setBackgroundImage(bm, for: .default)
+            self.setBackgroundImage(build_image(frame: CGRect.init(x: 0, y: 0, width: NAV_BAR_FRAME_WIDTH, height: NAV_BAR_FRAME_HEIGHT), color: UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)), for: .default)
             self.isTranslucent = false
             
         }
@@ -65,7 +39,7 @@ extension UINavigationBar{
     
     // 控制backimage 来设置背景
     func backgroudImage(alpha:CGFloat){
-        self.setBackgroundImage(build_image(size: CGSize(width: NAV_BAR_FRAME_WIDTH,height:NAV_BAR_FRAME_HEIGHT), alpha: alpha), for: .default)
+        //self.setBackgroundImage(build_image(size: CGSize(width: NAV_BAR_FRAME_WIDTH,height:NAV_BAR_FRAME_HEIGHT), alpha: alpha), for: .default)
         self.isTranslucent = true
     }
     
