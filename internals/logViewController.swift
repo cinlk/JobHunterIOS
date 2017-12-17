@@ -70,8 +70,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
          self.navigationItem.backBarButtonItem = UIBarButtonItem.init(title: "", style: .plain, target: self, action: nil)
         
         
-        // 影藏导航栏
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
+       
         self.touchDefine()
         self.setUpObserver()
         
@@ -119,6 +118,10 @@ class ViewController: UIViewController, UITextFieldDelegate {
         
         
         
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        // 影藏导航栏
+        self.navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     override func viewWillLayoutSubviews() {

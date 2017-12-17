@@ -28,5 +28,19 @@ func  build_image(frame: CGRect, color:UIColor)->UIImage{
 
 
 
-let whiteColot = UIColor.init(red: 1.0, green: 1.0, blue: 1.0, alpha: 0.5)
-
+func getCitys(filename:String)->[String:[String]]{
+    
+    guard  let filePath = Bundle.main.path(forResource: filename, ofType: "plist")else{
+        
+        
+        return [:]
+    }
+    guard  let citys = NSDictionary.init(contentsOfFile: filePath) as? [String:[String]] else {
+        
+        return [:]
+    }
+    
+    return citys
+    
+    
+}

@@ -210,12 +210,13 @@ class  loginServer: BaseServer{
 
         //Thread.sleep(forTimeInterval: 3)
         
-        return (httpRequestHandler?.rx.request(.SignIn(account: "wowpandan@gmail.com", password: "s*#posix6u!")).debug().filterSuccessfulStatusCodes().mapJSON().map{
-            json in
-            print(json)
-            return Result.success(account: "admin", password: "role")
-            }.asObservable())!
+//        return (httpRequestHandler?.rx.request(.SignIn(account: "wowpandan@gmail.com", password: "s*#posix6u!")).debug().filterSuccessfulStatusCodes().mapJSON().map{
+//            json in
+//            print(json)
+//            return Result.success(account: "admin", password: "role")
+//            }.asObservable())!
         
+        return Observable.just(Result.success(account: "admin", password: "role"))
         
         
     }

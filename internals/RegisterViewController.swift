@@ -219,9 +219,9 @@ class RegisterViewController: UIViewController,UITextFieldDelegate{
     
     override func viewWillLayoutSubviews() {
         
-        _ = phoneImage?.sd_layout().leftSpaceToView(self.view,40)?.topSpaceToView(self.navigationController?.navigationBar,20)?.widthIs(25)?.heightIs(30)
+        _ = phoneImage?.sd_layout().leftSpaceToView(self.view,40)?.topSpaceToView(self.view,NAV_BAR_FRAME_HEIGHT + 20)?.widthIs(25)?.heightIs(30)
         
-        _ = verifyButton?.sd_layout().rightSpaceToView(self.view,30)?.bottomEqualToView  (phoneImage)?.heightIs(30)?.widthIs(100)
+        _ = verifyButton?.sd_layout().rightSpaceToView(self.view,30)?.bottomEqualToView(phoneImage)?.heightIs(30)?.widthIs(100)
         
         _ = phoneText?.sd_layout().leftSpaceToView(phoneImage,10)?.bottomEqualToView(phoneImage)?.heightIs(30)?.rightSpaceToView(verifyButton,5)
         
@@ -230,13 +230,13 @@ class RegisterViewController: UIViewController,UITextFieldDelegate{
         
         _ = verifyImage?.sd_layout().leftEqualToView(phoneImage)?.topSpaceToView(phoneText,20)?.widthIs(25)?.heightIs(30)
         
-        _ = verifyText?.sd_layout().leftEqualToView(phoneText)?.rightEqualToView(registerButton)?.heightIs(30)?.bottomEqualToView(verifyImage)
+        _ = verifyText?.sd_layout().leftEqualToView(phoneText)?.rightEqualToView(verifyButton)?.heightIs(30)?.bottomEqualToView(verifyImage)
         
         _ = checkVerify?.sd_layout().topSpaceToView(verifyText,2)?.leftEqualToView(verifyText)?.widthIs(100)?.heightIs(10)
         
         _ = passwordImage?.sd_layout().leftEqualToView(phoneImage)?.topSpaceToView(verifyText,20)?.widthIs(25)?.heightIs(30)
         
-        _ = passwordText?.sd_layout().leftEqualToView(phoneText)?.rightEqualToView(registerButton)?.heightIs(30)?.bottomEqualToView(passwordImage)
+        _ = passwordText?.sd_layout().leftEqualToView(phoneText)?.rightEqualToView(verifyButton)?.heightIs(30)?.bottomEqualToView(passwordImage)
         
         _ = checkPassword?.sd_layout().topSpaceToView(passwordText,2)?.leftEqualToView(passwordText)?.widthIs(100)?.heightIs(10)
         
@@ -245,6 +245,11 @@ class RegisterViewController: UIViewController,UITextFieldDelegate{
          _ = registerButton?.sd_layout().topSpaceToView(passwordText,80)?.leftEqualToView(phoneImage)?.rightEqualToView(verifyButton)?.heightIs(40)
         
         _ = indicator?.sd_layout().leftSpaceToView(self.registerButton,5)?.topSpaceToView(self.registerButton,2)?.bottomSpaceToView(self.registerButton,2)?.widthIs(20)
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
         
     }
     
@@ -286,6 +291,8 @@ class RegisterViewController: UIViewController,UITextFieldDelegate{
    private func register(){
         print("注册成功")
     }
+    
+    
     func textFieldDidEndEditing(_ textField: UITextField) {
         
         self.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.height)

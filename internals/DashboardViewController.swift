@@ -14,6 +14,15 @@ import RxCocoa
 import RxSwift
 import RxDataSources
 import MJRefresh
+import SVProgressHUD
+
+protocol UISearchRecordDelegatae  {
+    
+    func showHistory()
+    func listRecords(word:String)
+    
+}
+
 
 class DashboardViewController: UIViewController{
 
@@ -35,25 +44,20 @@ class DashboardViewController: UIViewController{
     // searchview
     var searchController:baseSearchViewController!
     var searchBarContainer:UIView!
-    var resultTableView:UITableViewController!
     
     let ynsearchData = YNSearch()
-    let searchcategory = historyAndCatagoryView()
+   
     
     // 初始化 搜索内容
     var searchString = ""{
-        
         willSet{
         }
     }
     
     
-    var locate:Citys!
-    var jobs:jobCatagory!
-    var inters:internshipCondtion!
 
     var searchLists:[Dictionary<String,String>] = []
-
+    
     
     
     //  主页跟新城市
@@ -61,10 +65,6 @@ class DashboardViewController: UIViewController{
         willSet{
             self.refreshByCity(city: newValue)
         }
-        didSet{
-            
-        }
-    
     }
     
     //
@@ -77,6 +77,9 @@ class DashboardViewController: UIViewController{
     //导航栏view
     private lazy var navigationView = UIView.init()
     
+    
+    //
+    var delegate:UISearchRecordDelegatae?
     
     
     
@@ -129,26 +132,24 @@ class DashboardViewController: UIViewController{
         /***** search *****/
         // search 切到到另一个view后，search bar不保留
         self.definesPresentationContext  = true
-        resultTableView = UITableViewController()
-        //resultTableView.tableView.delegate = self
-        //resultTableView.tableView.dataSource = self
-        resultTableView.tableView.tableFooterView = UIView()
-        resultTableView.tableView.register(jobdetailCell.self, forCellReuseIdentifier: jobdetailCell.identity())
-        searchController  = baseSearchViewController(searchResultsController: resultTableView)
+       
+        
+        searchController  = baseSearchViewController.init(searchResultsController: searchResultController())
+        
+        // delegate 实现
         searchController.searchResultsUpdater = self
         searchController.delegate =  self
         searchController.searchBar.delegate = self
+        // search record 实现代理
+        self.delegate = searchController.serchRecordView as? UISearchRecordDelegatae
+        
+        
         searchController.cityDelegate = self
         // 下拉菜单view
         
-        locate = Citys(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
-        locate.view.switchDelgate = self
-        
-        jobs = jobCatagory(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height-60))
-        jobs.job?.switchcategory = self
-        inters = internshipCondtion(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
-        inters.cond.selections = self
-        searchController.createDropDown(menus: ["北京","职位类别","筛选条件"],views: [locate,jobs,inters])
+     
+        // MARK 条件view
+        //searchController.createDropDown(menus: ["北京","职位类别","筛选条件"],views: [locate,jobs,inters])
         //searchController.customerBookmark(cname:dashLocateCity)
         // 搜索框
         let searchBarFrame = CGRect(x: 0, y:0, width: self.view.frame.width, height: 30)
@@ -175,7 +176,7 @@ class DashboardViewController: UIViewController{
         self.automaticallyAdjustsScrollViewInsets  = false
         if searchString != "" && !searchString.isEmpty{            
             self.showSearchResultView()
-            self.startSearch(name: searchString)
+            //self.startSearch(name: searchString)
         }
         
         //self.navigationController?.setNavigationBarHidden(true, animated: animated)
@@ -195,9 +196,6 @@ class DashboardViewController: UIViewController{
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        
-       
-        
     }
     
     
@@ -248,7 +246,7 @@ class DashboardViewController: UIViewController{
         let vm = mainPageViewMode.init(request: request)
         
         let dataSource = DashboardViewController.dataSource()
-        self.tables.rx.setDelegate(self).addDisposableTo(disposebag)
+        self.tables.rx.setDelegate(self).disposed(by: disposebag)
         
         //view to VM
 
@@ -342,8 +340,7 @@ class DashboardViewController: UIViewController{
                 if self.marginTop != scrollView.contentInset.top{
                     self.marginTop = scrollView.contentInset.top
                 }
-                print("table view contentoffset \(scrollView.contentOffset)")
-                print("table view contentinset \(scrollView.contentInset)")
+            
             
                 let offsetY = scrollView.contentOffset.y
                 let newoffsetY = offsetY + self.marginTop
@@ -351,7 +348,6 @@ class DashboardViewController: UIViewController{
                 //向上滑动 newoffsetY 大于0
             
                 // searchcontiner 透明度
-                print("newoffsetY \(newoffsetY)")
                 if (newoffsetY >= 0 && newoffsetY <= 64){
                        self.searchBarContainer.alpha = 1
                        self.navigationView.backgroundColor  = UIColor.init(red: 0.667, green: 0.667, blue: 0.667, alpha: newoffsetY/64)
@@ -403,7 +399,7 @@ class DashboardViewController: UIViewController{
             // 取消轮播
             self.timer?.invalidate()
             self.timer = nil
-            print("拖动 \(startContentOffsetX)")
+            
         }
     }
     
@@ -412,7 +408,6 @@ class DashboardViewController: UIViewController{
         if scrollView == self.imagescroller{
             WillEndContentOffsetX = scrollView.contentOffset.x
         }
-        print("结束推动 \(WillEndContentOffsetX)")
        
         
     }
@@ -423,7 +418,6 @@ class DashboardViewController: UIViewController{
         // MARK 判断滑动方向
         if (scrollView  == self.imagescroller) {
             EndContentOffsetX = scrollView.contentOffset.x
-            print("结束减速 \(EndContentOffsetX)")
             var animated = true
             //左移动
             if (EndContentOffsetX < WillEndContentOffsetX && WillEndContentOffsetX < startContentOffsetX){
@@ -457,12 +451,6 @@ class DashboardViewController: UIViewController{
        
     }
    
-    
-    // 动画结束设置page 位置
-    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-      
-        
-    }
     
     
     
@@ -502,17 +490,12 @@ class DashboardViewController: UIViewController{
         
         let detail = JobDetailViewController()
         detail.infos = jobDetail
-        
         //
         self.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(detail, animated: true)
         self.hidesBottomBarWhenPushed = false
-        
-        
     }
     
-    
-
 }
 
 
@@ -523,9 +506,6 @@ extension DashboardViewController: UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if  tableView == self.resultTableView.tableView{
-            return self.searchLists.count
-        }
         
         switch section {
         case 0,1:
@@ -540,10 +520,6 @@ extension DashboardViewController: UITableViewDelegate{
     
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if tableView == self.resultTableView.tableView{
-            return 1
-        }
-        
         return self.sections
     }
     
@@ -563,9 +539,6 @@ extension DashboardViewController: UITableViewDelegate{
     // cell 高度
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
-        if tableView == self.resultTableView.tableView{
-            return 49
-        }
         
         if indexPath.section == 0 {
             return 80
@@ -585,6 +558,7 @@ extension DashboardViewController: UITableViewDelegate{
                 
                 let cell:MainPageCatagoryCell = table.dequeueReusableCell(withIdentifier: "catagory") as! MainPageCatagoryCell
                 cell.createScroller(images: imageNames, width: 80)
+                
                 return cell
             case let .recommandItem(imageNames):
                 
@@ -639,35 +613,63 @@ extension DashboardViewController: UITableViewDelegate{
     }
 }
 
+// 与searchbar 交换
 extension DashboardViewController: UISearchResultsUpdating{
     
     
     @available(iOS 8.0, *)
     func updateSearchResults(for searchController: UISearchController) {
         //TODO 会执行2次？
-        print("result search show \(self.resultTableView)")
-        
-        
+        //print("result search show \(self.resultTableView)")
+        print("updatae search resulr \(searchController.searchBar.text)")
+        // 显示searchrecord view
+        //self.searchController.serchRecordView.view.isHidden = false
+        if  let text = searchController.searchBar.text, !text.isEmpty{
+           
+            self.delegate?.listRecords(word: text)
+        }else{
+             self.delegate?.showHistory()
+        }
+        self.searchController.showRecordView = true
+
         
     }
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         print("search button click")
+        // 显示搜索resultview
+        guard let str = searchBar.text else {
+            return
+        }
+        guard !str.isEmpty else {
+            return
+        }
+        //self.searchController.serchRecordView.view.isHidden = true
+        self.searchController.showRecordView = false
+        
+        // 查找新的item 然后 重新加载table
+        localData.shared.appendSearchHistories(value: searchBar.text!)
+        let vm = (self.searchController.searchResultsController as! searchResultController).vm
+        vm?.loadData.onNext("test")
+        SVProgressHUD.show(withStatus: "加载数据")
         
     }
+    
+    
     
     
 }
 
 
+// searchController delegate
 extension DashboardViewController: UISearchControllerDelegate{
     
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         // 搜索栏 清空
-        ynsearchData.setShareSearchName(value: "")
-        searchString = ""
-        searchcategory.ynSearchView.ynSearchListView.ynSearchTextFieldText = ""
-        
+//        ynsearchData.setShareSearchName(value: "")
+//        searchString = ""
+//        searchcategory.ynSearchView.ynSearchListView.ynSearchTextFieldText = ""
+//
         
     }
     
@@ -676,23 +678,29 @@ extension DashboardViewController: UISearchControllerDelegate{
     }
     
     func willPresentSearchController(_ searchController: UISearchController) {
-        print("willPresentSearchController")
         
-        self.tabBarController?.tabBar.isHidden = true
-        // 不藏导航栏
+        if searchController is baseSearchViewController{
+           let sc =  (searchController as! baseSearchViewController)
+           // 显示搜索历史界面
+           //sc.serchRecordView.view.isHidden = false
+            sc.showRecordView = true
+            sc.serchRecordView.HistoryTable.reloadData()
+           
+            
+        }
+        print("willPresentSearchController")
+       
+        
         self.navigationController?.navigationBar.settranslucent(false)
+        self.tabBarController?.tabBar.isHidden = true
+        
+        
         
     }
     
     func didPresentSearchController(_ searchController: UISearchController) {
         print("didPresentSearchController")
-        print(self.searchController.isActive, self.searchController.isBeingPresented,
-              self.searchController.searchBar.isFocused)
 
-        
-      
-        
-        
     }
     
     
@@ -701,20 +709,26 @@ extension DashboardViewController: UISearchControllerDelegate{
         // 清楚搜索结果
         DispatchQueue.main.async{
             self.searchLists.removeAll()
-            self.resultTableView.tableView.reloadData()
-            // 重置被选择的item TODO
-            for i in self.inters.cond.condtions.visibleCells{
-                print(i.isSelected,i)
-            }
+            
+        
         }
-        self.inters.hideMenu()
-        self.locate.hideMenu()
-        self.jobs.hideMenu()
+       
     }
     
     func didDismissSearchController(_ searchController: UISearchController) {
         print("didDismissSearchController")
         // 隐藏导航栏
+        if searchController is baseSearchViewController{
+            let sc =  (searchController as! baseSearchViewController)
+            // 影藏搜索历史界面
+           
+//            sc.serchRecordView.dismiss(animated: false, completion: {
+//
+//            })
+            sc.showRecordView = false
+            
+        }
+
         self.navigationController?.navigationBar.settranslucent(true)
         self.tabBarController?.tabBar.isHidden = false
         
@@ -723,7 +737,7 @@ extension DashboardViewController: UISearchControllerDelegate{
 
     
 }
-
+// searchBar delegate
 extension DashboardViewController: UISearchBarDelegate{
     
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
@@ -731,22 +745,22 @@ extension DashboardViewController: UISearchBarDelegate{
         
     }
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
-        print("bar begin  forward to ynsearchview")
-        // 清楚搜索结果
-        DispatchQueue.main.async{
-            self.searchLists.removeAll()
-            self.resultTableView.tableView.reloadData()
-           
-        }
-        self.hidesBottomBarWhenPushed = true
-        searchcategory.searchString = self
-        self.navigationController?.pushViewController(searchcategory, animated: false)
-        self.hidesBottomBarWhenPushed = false
         
-
+        
         return true
     }
-    
+    //文本发生改变
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        print("search bar text \(searchText)")
+        // text 为空时 显示历史记录
+        if searchText.isEmpty{
+            self.delegate?.showHistory()
+        }else{
+            self.delegate?.listRecords(word: searchText)
+        }
+        // text 不为空 tableview 显示匹配搜索结果
+        
+    }
     
     
 }
@@ -755,13 +769,9 @@ extension DashboardViewController: baseSearchDelegate{
     
     // choose city
     func chooseCity(){
-        let citylist = CityViewController()
-        
-        
+        let citylist = CityViewController.init()
         // 影藏bottom item
-        
         self.hidesBottomBarWhenPushed = true
-        // TODO? use controller?
         self.navigationController?.pushViewController(citylist, animated: true)
         self.hidesBottomBarWhenPushed = false
         
@@ -778,93 +788,24 @@ extension DashboardViewController{
         searchController.searchBar.text = self.searchString
         
     }
-    func startSearch(name:String){
-        // 子线程查询
-        
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5){
-            self.searchLists.removeAll()
-            for _ in 0..<5{
-                
-                //self.searchLists.append(self.testItem)
-                
-            }
-            self.resultTableView.tableView.reloadData()
-            
-        }
-    }
 
     
 }
 
 
 
-
-// extension protocol
-extension DashboardViewController: valueDelegate{
-    func valuePass(string: String) {
-        self.searchString = string
-        
-    }
-}
-
-extension DashboardViewController: switchCity{
-    
-    func cityforsearch(city:String){
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5){
-            self.searchLists.removeAll()
-            for _ in 0..<5{
-                
-                //self.searchLists.append(self.testItem)
-            }
-            self.resultTableView.tableView.reloadData()
-            
-        }
-        
-    }
-    
-    
-}
-
-extension DashboardViewController: swichjobCatagory{
-    
-    func searchCategory(category:String){
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5){
-            self.searchLists.removeAll()
-            for _ in 0..<5{
-                
-                //self.searchLists.append(self.testItem)
-            }
-            self.resultTableView.tableView.reloadData()
-            
-        }
-        
-    }
-}
-
-
-extension DashboardViewController: internSelection{
-    func selected(days:Int, salary:String,month:Int,scholarship:String,staff:Bool){
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5){
-            self.searchLists.removeAll()
-            for _ in 0..<5{
-                //self.searchLists.append()
-            }
-            self.resultTableView.tableView.reloadData()
-            
-        }
-        
-    }
-    
-}
 
 
 extension  DashboardViewController{
     
     func refreshByCity(city:String){
         self.searchController.changeCityTitle(title: city)
+        //MARK refresh table
+        
         
     }
     
 }
+
+//delegate
+

@@ -22,6 +22,8 @@ enum Jobs{
     case getImageBanners
     case getCatagoryItem
     case getRecommandItems
+    case searchJobs(word:String)
+    
     case getAlls
     
 }
@@ -46,6 +48,8 @@ extension Jobs: TargetType{
             return "/recommands"
         case .getImageBanners:
             return "/banners"
+        case let .searchJobs(word):
+            return "/jobs/\(word)"  // MARK  restfull post?
         default:
             return "/index"
         }
@@ -62,6 +66,8 @@ extension Jobs: TargetType{
         case .getCatagoryItem:
             return .get
         case .getImageBanners:
+            return .get
+        case .searchJobs:
             return .get
         default:
             return .head
@@ -87,6 +93,11 @@ extension Jobs: TargetType{
         ]
         return  try! JSONSerialization.data(withJSONObject: data, options: [])
         
+    }
+    
+    var parameterEncoding: ParameterEncoding{
+        
+        return URLEncoding.default
     }
     
     var task: Task {
@@ -137,6 +148,11 @@ class mainPageServer {
         
         return self.httpRequest.rx.request(Jobs.getImageBanners).asObservable().mapArray(RotateImages.self, tag: "RotateImages").asDriver(onErrorJustReturn: [])
     }
-
+    // MARK search jobs
+    public func searchKeyByWord(word:String) -> Observable<[CompuseRecruiteJobs]> {
+        return self.httpRequest.rx.request(Jobs.searchJobs(word: word)).filterSuccessfulStatusCodes().asObservable().mapArray(CompuseRecruiteJobs.self, tag: "CompuseRecruiteJobs")
+        
+    }
+    
     
 }

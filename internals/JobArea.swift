@@ -10,23 +10,14 @@ import UIKit
 import YNDropDownMenu
 
 
-// protocol
-
-protocol swichjobCatagory {
-    func searchCategory(category:String)
-}
-
-
-
-class JobClasses:UIView,UITableViewDataSource,UITableViewDelegate{
+class JobArea:YNDropDownView,UITableViewDataSource,UITableViewDelegate{
     
-    
-    var switchcategory: swichjobCatagory?
-    
+        
     var table1:UITableView?
     var table2:UITableView?
     
-    var stack:UIStackView?
+    var passData: ((_ cond:[String:String]?) -> Void)?
+    
     
     var first = ["全部","IT互联网","电子电气","人事行政","传媒设计","杀掉无多哇多无多无多"]
     var selected = "全部"
@@ -81,11 +72,7 @@ class JobClasses:UIView,UITableViewDataSource,UITableViewDelegate{
             return first.count
         }
         else{
-            if selected == "全部"{
-                return all.count
-            }else{
-                return (seconds[selected]?.count)!
-            }
+            return  selected == "全部" ?  1 : (seconds[selected]?.count)!
         }
     }
     
@@ -102,26 +89,20 @@ class JobClasses:UIView,UITableViewDataSource,UITableViewDelegate{
             cell.backgroundColor = UIColor.gray
         }else{
             
-            for i in (cell.subviews){
-                if i.tag == 101{
-                    i.removeFromSuperview()
-                }
+            cell.subviews.filter({ (view) -> Bool in
+                return view.tag == 101
+            }).forEach{
+                $0.removeFromSuperview()
             }
             
             cell.textLabel?.textColor = UIColor.black
-            if  selected == "全部"{
-                cell.textLabel?.text = "全部"
-            }else{
-                cell.textLabel?.text = seconds[selected]?[indexPath.row]
-            }
+            cell.textLabel?.text =  selected == "全部" ? "全部" : seconds[selected]?[indexPath.row]
             
         }
-        
         
         return cell
         
     }
-    
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -136,20 +117,16 @@ class JobClasses:UIView,UITableViewDataSource,UITableViewDelegate{
         
         
         if tableView == table1{
-            
             selected = first[indexPath.row]
             table2?.reloadData()
             
         }else{
             cell?.addSubview(lines)
-            var name = ""
-            if selected == "全部"{
-                name = "全部"
-                return
+            let name:String = selected == "全部" ? "全部" : (seconds[selected]?[indexPath.row])!
+            self.hideMenu()
+            if let pass = passData{
+                pass(["行业领域":name])
             }
-            name = (seconds[selected]?[indexPath.row])!
-            self.switchcategory?.searchCategory(category: name)
-            (self.superview as! YNDropDownView).hideMenu()
             
         }
     }
@@ -158,11 +135,9 @@ class JobClasses:UIView,UITableViewDataSource,UITableViewDelegate{
         let cell = tableView.cellForRow(at: indexPath)
         cell?.textLabel?.textColor = UIColor.black
         if tableView == table2{
-            for i in (cell?.subviews)!{
-                if i.tag == 101{
-                    i.removeFromSuperview()
-                }
-            }
+            cell?.subviews.filter({ (view) -> Bool in
+                return view.tag == 101
+            })[0].removeFromSuperview()
         }
     }
     

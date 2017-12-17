@@ -113,16 +113,30 @@ class localData: NSObject {
     open func deleteSearchHistories(index: Int) {
         guard var histories = pref.object(forKey: "histories") as? [String] else { return }
         histories.remove(at: index)
-        
         pref.set(histories, forKey: "histories")
     }
-    
+    open func deleteSearcHistories(item: String){
+         guard var histories = pref.object(forKey: "histories") as? [String] else { return }
+         if let index = histories.index(of: item){
+            histories.remove(at: index)
+            pref.set(histories, forKey: "histories")
+        }
+        
+        
+    }
+    open func removeAllHistory(){
+        guard var histories = pref.object(forKey: "histories") as? [String] else { return }
+        histories.removeAll()
+        pref.set(histories, forKey: "histories")
+    }
     open func appendSearchHistories(value: String) {
         var histories = [String]()
         if let _histories = pref.object(forKey: "histories") as? [String] {
             histories = _histories
         }
-        histories.append(value)
+        if !histories.contains(value){
+            histories.append(value)
+        }
         
         pref.set(histories, forKey: "histories")
     }
@@ -134,6 +148,29 @@ class localData: NSObject {
     }
     
     
+}
+
+class InitailData:NSObject{
+    
+    
+     static let  shareInstance  = InitailData()
+     var datas = [""]
+     private override init() {
+       super.init()
+       datas = self.getMatchKeyWords()
+        
+       
+    }
+    
+    
+    private func getMatchKeyWords() -> [String]{
+        
+        // 从服务器获取 职位标题
+       
+        return ["软件测试","软件研发", "实现","6个月以上","授课老师","市场实现","篮球","戴尔校园","cat",
+        "kashmira","dotcloud","yun","testdf","dwdTestko","pupremix","ghremix"]
+    
+    }
 }
 
 

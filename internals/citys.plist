@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>KLMN</key>
+	<array>
+		<string>特别长特别长特比长</string>
+		<string>昆明</string>
+		<string>昆山</string>
+		<string>聊城</string>
+		<string>廊坊</string>
+		<string>洛阳</string>
+		<string>连云港</string>
+		<string>兰州</string>
+		<string>绵阳</string>
+		<string>宁波</string>
+		<string>南京</string>
+		<string>南宁</string>
+		<string>南通</string>
+	</array>
+	<key>GHIJ</key>
+	<array>
+		<string>桂林</string>
+		<string>广州</string>
+		<string>合肥</string>
+		<string>呼和浩特</string>
+		<string>海口</string>
+		<string>杭州</string>
+		<string>湖州</string>
+		<string>济南</string>
+		<string>济宁</string>
+		<string>嘉兴</string>
+		<string>江阴</string>
+	</array>
+	<key>ABCDEF</key>
+	<array>
+		<string>鞍山</string>
+		<string>安阳</string>
+		<string>保定</string>
+		<string>北京</string>
+		<string>成都</string>
+		<string>重庆</string>
+		<string>长沙</string>
+		<string>常州</string>
+		<string>大连</string>
+		<string>东营</string>
+		<string>德州</string>
+		<string>佛山</string>
+		<string>福州</string>
+	</array>
+	<key>热门城市</key>
+	<array>
+		<string>全国</string>
+		<string>西安</string>
+		<string>深圳</string>
+		<string>武汉</string>
+		<string>长沙</string>
+		<string>苏州</string>
+		<string>南京</string>
+		<string>上海</string>
+		<string>成都</string>
+		<string>广州</string>
+		<string>杭州</string>
+		<string>北京</string>
+	</array>
+</dict>
+</plist>

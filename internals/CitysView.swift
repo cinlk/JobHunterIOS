@@ -8,123 +8,160 @@
 
 import UIKit
 import YNDropDownMenu
-
-protocol switchCity {
-    func cityforsearch(city:String)
-}
+import CoreLocation
 
 
-class CityViewController:UIViewController{
+
+class CityViewController:UICollectionViewController, UICollectionViewDelegateFlowLayout{
+    
+    
+
+    // 定位
+
+        
+    var activiyIndicator = UIActivityIndicatorView.init()
+    
+    lazy var locatcityButton:UIButton = {
+        let button = UIButton.init(type: UIButtonType.custom)
+        button.backgroundColor = UIColor.white
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        button.titleLabel?.textAlignment = .center
+        button.setTitleColor(UIColor.black, for: .normal)
+        button.layer.borderWidth = 0.7
+        button.layer.cornerRadius = 10.0
+        button.layer.borderColor = UIColor.gray.cgColor
+        button.layer.masksToBounds = true
+        button.setTitle("正在定位", for: .normal)
+        button.addSubview(activiyIndicator)
+        
+        return button
+    }()
+
+    lazy var locationM: CLLocationManager = {
+        let locationM = CLLocationManager()
+        locationM.delegate = self
+        locationM.desiredAccuracy = kCLLocationAccuracyBest
+        locationM.distanceFilter = kCLLocationAccuracyKilometer
+        
+        if #available(iOS 8.0, *) {
+            locationM.requestWhenInUseAuthorization()
+        }
+        return locationM
+    }()
+    
+    lazy var geoCoder: CLGeocoder = {
+        return CLGeocoder()
+    }()
+    
+    
+    
+    var localCity:String = "" {
+        willSet{
+            locatcityButton.setTitle(newValue, for: .normal)
+        }
+    }
+    
+    var currentLocation:CLLocation!
+    
+    var indexs:[String] = []
+    var citys:[String:[String]] = [:] {
+        willSet{
+            indexs = newValue.keys.sorted().reversed()
+        }
+       
+    }
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = "选择城市"
-        let city = CitysView(frame: self.view.frame)
-        self.view.addSubview(city)
         
+        self.collectionView?.backgroundColor = UIColor.white
+        self.collectionView?.isScrollEnabled = true
+        self.collectionView?.isMultipleTouchEnabled = false
+        self.collectionView?.register(MyCityCell.self, forCellWithReuseIdentifier: "city")
+        self.collectionView?.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "localCity")
+        self.collectionView?.register(headerView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "header")
+        self.collectionView?.register(footerView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, withReuseIdentifier: "footer")
+     
+        activiyIndicator.activityIndicatorViewStyle = .gray
+        //activiyIndicator.color = UIColor.blue  # 这里有BUG?
+        activiyIndicator.hidesWhenStopped = true
+        citys =  getCitys(filename: CITYS)
+        
+        
+    
     }
-}
-
-
-class CitysView: UIView,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout{
     
-    
-    var currentCity:String!
-    
-    var CityCollection:UICollectionView!
-    
-    
-    // protocal delegate
-    var switchDelgate: switchCity?
-    
-    
-    
-    // mydata
-    var dataSource:Dictionary<String,[String]> = ["定位":["北京"],"热门城市":["上海","成都","广州","重庆","苏州","城市1","城市1"
-        ,"城市1","城市1","城市1","城市1","城市1","城市1"],"ABCD":["常德","北湖达瓦","城市1","特比长长222","城市1","城市1","特比长长长长"]]
-    
-    var indexs = ["定位","热门城市","ABCD"]
-    
-    
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        self.backgroundColor = UIColor.white
-        
-        self.buildCollection()
-        
-        // Do any additional setup after loading the view.
+    init(){
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = UICollectionViewScrollDirection.vertical  //滚动方向
+        layout.sectionInset=UIEdgeInsetsMake(10, 10, 10, 10)
+        // 一行放置元素长度计算 =  （元素个数*widht + miniSpace*num）
+        layout.itemSize = CGSize(width: (UIScreen.main.bounds.width - 4*10)/3 , height: 30)
+        layout.minimumInteritemSpacing = 10
+        layout.minimumLineSpacing = 20
+        super.init(collectionViewLayout: layout)
     }
+ 
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        
+        // start fetching location
+        activiyIndicator.startAnimating()
+        localCity = "正在定位"
+        self.locationCity()
+        
+    }
     
-    
-    func buildCollection(){
+    override func viewWillDisappear(_ animated: Bool) {
+        activiyIndicator.stopAnimating()
         
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = UICollectionViewScrollDirection.vertical  //滚动方向
-        layout.sectionInset=UIEdgeInsetsMake(10, 10, 10, 10)
-        
-        layout.itemSize = CGSize(width: 30, height: 20)
-        layout.minimumInteritemSpacing = 5
-        layout.minimumLineSpacing = 5
-        
-        // layout.headerReferenceSize = CGSize(width: 0, height: 0)
-        // layout.footerReferenceSize = CGSize(width: 0, height: 0)
-        
-        
-        
-        
-        CityCollection = UICollectionView.init(frame: self.frame, collectionViewLayout: layout)
-        
-        
-        
-        CityCollection.delegate = self
-        CityCollection.backgroundColor  = UIColor.white
-        CityCollection.dataSource  = self
-        
-        CityCollection.register(myitem.self, forCellWithReuseIdentifier: "single")
-        CityCollection.register(headerView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "headeview")
-        CityCollection.register(footerView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, withReuseIdentifier: "footview")
-        CityCollection.isScrollEnabled = true
-        CityCollection.isMultipleTouchEnabled =  false
-        CityCollection.contentInset  = UIEdgeInsetsMake(0, 0, 100, 0)
-        CityCollection.contentSize =  CGSize(width: self.frame.width, height: self.frame.height)
-        self.addSubview(CityCollection)
+    }
+    override func viewWillLayoutSubviews() {
+        _ = activiyIndicator.sd_layout().rightSpaceToView(self.locatcityButton.titleLabel,10)?.topEqualToView(self.locatcityButton.titleLabel)?.bottomEqualToView(self.locatcityButton.titleLabel)?.widthIs(5)
         
     }
     
     
-    
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return  dataSource.count
-        
+    override func numberOfSections(in collectionView: UICollectionView) -> Int {
+        //第一个为定位城市
+        return citys.count + 1
     }
     
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let sectionArray:NSArray = dataSource[indexs[section]]! as NSArray
-        return sectionArray.count
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if section == 0 {
+            return 1
+        }else {
+            let sectionArray:NSArray = citys[indexs[section - 1 ]]! as NSArray
+            return sectionArray.count
+        }
         
     }
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell  = collectionView.dequeueReusableCell(withReuseIdentifier: "single", for: indexPath) as! myitem
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+       
+        if indexPath.section == 0 {
+            // MARK
+            let cell  = collectionView.dequeueReusableCell(withReuseIdentifier: "localCity", for: indexPath)
+            cell.contentView.addSubview(locatcityButton)
+            locatcityButton.frame = cell.contentView.frame
+            return cell
+            
+        }else {
+            let cell  = collectionView.dequeueReusableCell(withReuseIdentifier: "city", for: indexPath) as! MyCityCell
+            
+            cell.name.addTarget(self, action: #selector(click(button:)), for: .touchUpInside)
+            
         
-        cell.name.addTarget(self, action: #selector(click(button:)), for: .touchUpInside)
-        
-        let sectionArray:NSArray = dataSource[indexs[indexPath.section]]! as NSArray
-        
-        let content = sectionArray.object(at: indexPath.row) as! String
-        cell.name.setTitle(content, for: .normal)
-        return cell
-        
-        
+            let content =  (citys[indexs[indexPath.section - 1]]! as NSArray).object(at: indexPath.row) as! String
+            cell.name.setTitle(content, for: .normal)
+            return cell
+        }
         
         
     }
@@ -132,116 +169,123 @@ class CitysView: UIView,UICollectionViewDelegate,UICollectionViewDataSource,UICo
     // choose city
     @objc func click(button:UIButton){
         let city = button.titleLabel?.text
-        self.switchDelgate?.cityforsearch(city: city!)
-        
-        if  let parentView = self.superview as? YNDropDownView{
-            parentView.hideMenu()
-            parentView.changeMenu(title: city!, at: 0)
-            
-        }
-        else{
-                
-            self.viewController(aClass: CityViewController.self)?.navigationController?.popViewController(animated: true)
-            let dash = self.viewController(aClass: CityViewController.self)?.navigationController?.topViewController as! DashboardViewController
-            dash.dashLocateCity = city!
-            
-            
-        }
+        self.navigationController?.popViewController(animated: true)
+        let main = self.navigationController?.topViewController as! DashboardViewController
+        main.dashLocateCity = city!
         
     }
     
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
     }
     // 更新visible cell
     
     
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         //CityCollection. .append(collectionView.cellForItem(at: indexPath))
     }
-    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
         
-        
-        //CityCollection.visibleCells.remove(at: index)
     }
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionElementKindSectionHeader{
-            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "headeview", for: indexPath) as! headerView
-            header.name.text = indexs[indexPath.section]
+            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "header", for: indexPath) as! headerView
+            if indexPath.section == 0 {
+                header.name.text = "定位城市"
+            }else{
+                header.name.text = indexs[indexPath.section - 1]
+            }
             return header
         }
-        let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footview", for: indexPath)
+        let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath)
         return footer
     }
     
     
-    //    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-    //
-    //        return  UIEdgeInsetsMake(0, 0, 0, 0)
-    //    }
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 60, height: 30)
-    }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width:collectionView.frame.size.width,height:35)
+        return CGSize(width:collectionView.frame.size.width,height:20)
         
     }
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    
+}
+
+extension CityViewController: CLLocationManagerDelegate{
+    
+
+    func locationCity(){
+        locationM.startUpdatingLocation()
         
-        print(indexPath)
-        let sectionArray:NSArray = dataSource[indexs[indexPath.section]]! as NSArray
-        
-        let content = sectionArray.object(at: indexPath.row) as! String
-        
-        
-        print(content)
     }
     
-    //    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-    //
-    //        print("hit")
-    //        //loop through the cells, get each cell, and run this test on each cell
-    //        //you need to define a proper loop
-    //        // 当前可见的cell, 点击point点，scroll下拉后 似乎不包括point（bug？）
-    //
-    //
-    //        for cell in self.CityCollection.visibleCells {
-    //                //get the cells button
-    //
-    //                        return cell
-    //        }
-    //
-    //        //after the loop, if it could not find the touch in one of the cells return the view you are on
-    //        return CityCollection
-    //
-    //    }
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        
+        
+        guard let newLocation = locations.last else {return}
+        print(newLocation)//<+31.26514482,+121.61259089> +/- 50.00m (speed 0.00 mps / course -1.00) @ 2016/11/14 中国标准时间 14:49:51
+        if newLocation.horizontalAccuracy < 0 { return }
+        geoCoder.reverseGeocodeLocation(newLocation) { [unowned self] (pls: [CLPlacemark]?, error: Error?) in
+            print(error)
+            if error == nil {
+                guard let pl = pls?.first else {return}
+                print(pl.name!)//金京路
+                print(pl.locality!)//上海市
+                self.localCity = pl.locality!
+                self.activiyIndicator.stopAnimating()
+
+                /*
+                 open var name: String? { get } // eg. Apple Inc.
+                 open var thoroughfare: String? { get } // street name, eg. Infinite Loop
+                 open var subThoroughfare: String? { get } // eg. 1
+                 open var locality: String? { get } // city, eg. Cupertino
+                 open var subLocality: String? { get } // neighborhood, common name, eg. Mission District
+                 open var administrativeArea: String? { get } // state, eg. CA
+                 open var subAdministrativeArea: String? { get } // county, eg. Santa Clara
+                 open var postalCode: String? { get } // zip code, eg. 95014
+                 open var isoCountryCode: String? { get } // eg. US
+                 open var country: String? { get } // eg. United States
+                 open var inlandWater: String? { get } // eg. Lake Tahoe
+                 open var ocean: String? { get } // eg. Pacific Ocean
+                 open var areasOfInterest: [String]? { get } // eg. Golden Gate Park
+                 */
+            }
+        }
+        manager.stopUpdatingLocation()
+    }
     
-    
-    
-    
-    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("定位出错 \(error)")
+        // 测试
+        self.localCity = "全国"
+        activiyIndicator.stopAnimating()
+    }
     
 }
 
 
 
+
 class MyCityCell:UICollectionViewCell{
     
-    lazy var age:UILabel = {
-        let age = UILabel.init()
-        age.textColor = UIColor.black
-        age.textAlignment = .center
-        age.backgroundColor = UIColor.white
-        age.adjustsFontSizeToFitWidth  = true
-        return age
+    lazy var name:UIButton = {
+        let name = UIButton.init()
+        name.backgroundColor = UIColor.white
+        name.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        name.titleLabel?.textAlignment = .center
+        name.setTitleColor(UIColor.black, for: .normal)
+        name.layer.borderWidth = 0.7
+        name.layer.cornerRadius = 10.0
+        name.layer.borderColor = UIColor.gray.cgColor
+        name.layer.masksToBounds = true
+        
+        return name
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.addSubview(age)
-        _ = age.sd_layout().topEqualToView(self)?.widthIs(60)?.heightIs(30)
+        name.frame = self.contentView.frame
+        self.addSubview(name)
         
     }
     
@@ -266,18 +310,19 @@ class footerView: UICollectionReusableView {
 class headerView: UICollectionReusableView {
     
     lazy var name:UILabel = {
-        let name = UILabel.init()//2098
+        let name = UILabel.init()
         name.translatesAutoresizingMaskIntoConstraints = false
-        name.backgroundColor = UIColor.gray//
+        name.textColor = UIColor.blue//
         name.textAlignment = .left
-        name.textColor = UIColor.white
+        name.font = UIFont.systemFont(ofSize: 12)
         
         return name
     }()
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.backgroundColor = UIColor.lightGray
         self.addSubview(name)
-        _ = name.sd_layout().topSpaceToView(self,1)?.widthIs(self.frame.width)?.heightIs(20)
+        _ = name.sd_layout().topSpaceToView(self,2.5)?.bottomSpaceToView(self,2.5)?.leftSpaceToView(self,5)?.widthIs(120)?.heightIs(15)
         
     }
     required init?(coder aDecoder: NSCoder) {
@@ -287,35 +332,35 @@ class headerView: UICollectionReusableView {
     
 }
 
-class singleCell: UICollectionViewCell {
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.addSubview(age)
-        
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat:  "H:|-[age]-|",
-                                                           options: [],
-                                                           metrics: nil,
-                                                           views: ["age":age]))
-        
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[age]-|",
-                                                           options: [],
-                                                           metrics: nil,
-                                                           views: ["age" : age ]))
-    }
-    
-    lazy var age: UILabel = {
-        let age = UILabel.init()
-        age.translatesAutoresizingMaskIntoConstraints = false
-        age.backgroundColor = UIColor.blue
-        age.textAlignment = .center
-        age.textColor = UIColor.white
-        age.text = "0"
-        return age
-    }()
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
+//class singleCell: UICollectionViewCell {
+//
+//    override init(frame: CGRect) {
+//        super.init(frame: frame)
+//        self.addSubview(age)
+//
+//        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat:  "H:|-[age]-|",
+//                                                           options: [],
+//                                                           metrics: nil,
+//                                                           views: ["age":age]))
+//
+//        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[age]-|",
+//                                                           options: [],
+//                                                           metrics: nil,
+//                                                           views: ["age" : age ]))
+//    }
+//
+//    lazy var age: UILabel = {
+//        let age = UILabel.init()
+//        age.translatesAutoresizingMaskIntoConstraints = false
+//        age.backgroundColor = UIColor.blue
+//        age.textAlignment = .center
+//        age.textColor = UIColor.white
+//        age.text = "0"
+//        return age
+//    }()
+//
+//    required init?(coder aDecoder: NSCoder) {
+//        fatalError("init(coder:) has not been implemented")
+//    }
+//}
 

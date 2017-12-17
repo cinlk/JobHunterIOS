@@ -16,5 +16,6 @@ target 'internals' do
 	pod 'Moya/RxSwift'
 	pod 'ObjectMapper'
 	pod 'MJRefresh'
+	pod 'SVProgressHUD'
 
 end

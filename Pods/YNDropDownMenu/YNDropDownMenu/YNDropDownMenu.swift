@@ -485,8 +485,8 @@ open class YNDropDownMenu: UIView, YNDropDownDelegate {
         UIView.animate(
             withDuration: self.showMenuDuration,
             delay: 0,
-            usingSpringWithDamping: self.showMenuSpringWithDamping,
-            initialSpringVelocity: self.showMenuSpringVelocity,
+            //usingSpringWithDamping: self.showMenuSpringWithDamping,
+            //initialSpringVelocity: self.showMenuSpringVelocity,
             options: [],
             animations: {
                 dropDownView.frame.origin.y = CGFloat(self.menuHeight)
@@ -516,8 +516,8 @@ open class YNDropDownMenu: UIView, YNDropDownDelegate {
         UIView.animate(
             withDuration: self.hideMenuDuration,
             delay: 0,
-            usingSpringWithDamping: self.hideMenuSpringWithDamping,
-            initialSpringVelocity: self.hideMenuSpringVelocity,
+            //usingSpringWithDamping: self.hideMenuSpringWithDamping,
+            //initialSpringVelocity: self.hideMenuSpringVelocity,
             options: [],
             animations: {
                 dropDownView.frame.origin.y = CGFloat(self.menuHeight)
