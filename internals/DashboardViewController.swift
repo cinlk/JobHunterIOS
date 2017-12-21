@@ -102,7 +102,6 @@ class DashboardViewController: UIViewController{
         self.tables.register(MainPageCatagoryCell.self, forCellReuseIdentifier: "catagory")
         self.tables.register(MainPageRecommandCell.self, forCellReuseIdentifier: "recommand")
         self.tables.register(jobdetailCell.self, forCellReuseIdentifier: jobdetailCell.identity())
-        self.tables.register(HeaderFoot.self, forHeaderFooterViewReuseIdentifier: "dashheader")
         
         // 轮播图
         imagescroller =  UIScrollView()
@@ -174,10 +173,10 @@ class DashboardViewController: UIViewController{
     override func viewWillAppear(_ animated: Bool) {
         
         self.automaticallyAdjustsScrollViewInsets  = false
-        if searchString != "" && !searchString.isEmpty{            
-            self.showSearchResultView()
-            //self.startSearch(name: searchString)
-        }
+//        if searchString != "" && !searchString.isEmpty{
+//            self.showSearchResultView()
+//            //self.startSearch(name: searchString)
+//        }
         
         //self.navigationController?.setNavigationBarHidden(true, animated: animated)
         self.navigationController?.navigationBar.settranslucent(true)
@@ -185,15 +184,16 @@ class DashboardViewController: UIViewController{
         self.navigationController?.view.insertSubview(navigationView, at: 1)
         
         
-        
-        if searchController.isActive {
-            self.tabBarController?.tabBar.isHidden = true
-        }else{
-            
-            self.navigationController?.navigationBar.backgroundColor = UIColor.clear
-        }
+//        if searchController.isActive {
+//            self.tabBarController?.tabBar.isHidden = true
+//        }else{
+//
+//            self.navigationController?.navigationBar.backgroundColor = UIColor.clear
+//        }
         
     }
+    
+    
     
     override func viewDidAppear(_ animated: Bool) {
     }
@@ -229,7 +229,7 @@ class DashboardViewController: UIViewController{
         self.navigationView.removeFromSuperview()
         //self.navigationController?.setNavigationBarHidden(false, animated: animated)
         self.navigationController?.navigationBar.settranslucent(false)
-       
+        self.navigationController?.view.willRemoveSubview(navigationView)
         
     }
     
@@ -248,6 +248,21 @@ class DashboardViewController: UIViewController{
         let dataSource = DashboardViewController.dataSource()
         self.tables.rx.setDelegate(self).disposed(by: disposebag)
         
+        self.tables.rx.itemSelected.subscribe(onNext: { (indexpath) in
+            if indexpath.section == 1{
+                return
+            }
+            
+            self.tables.deselectRow(at: indexpath, animated: true)
+            if  let cell = self.tables.cellForRow(at: indexpath) as? jobdetailCell, let data = cell.model{
+                self.showDetails(jobDetail: data as! [String:String])
+                
+            }
+            
+        }, onError: { (error) in
+            print("select item \(error)")
+            
+        }, onCompleted: nil, onDisposed: nil).disposed(by: disposebag)
         //view to VM
 
         // VM to view
@@ -546,7 +561,7 @@ extension DashboardViewController: UITableViewDelegate{
         else if indexPath.section == 1{
             return 100
         }
-        return 50
+        return 60
     }
     
     
@@ -585,32 +600,7 @@ extension DashboardViewController: UITableViewDelegate{
         )
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        // 禁止第二个section 的cell点击响应事件
-        if tableView  == self.tables{
-            if indexPath.section == 1{
-                return
-            }
-        }
-        // 取消选中状态保持
-        tableView.deselectRow(at: indexPath, animated: true)
-        
-        
-        if tableView.dequeueReusableCell(withIdentifier: jobdetailCell.identity()) is jobdetailCell{
-            var info:[String:String] = [:]
-//            if indexPath.section == 2{
-//                info = self.jobItems[indexPath.row]
-//            }else if indexPath.section == 3{
-//                info = self.datas[indexPath.row]
-//
-//            }
-//            self.showDetails(jobDetail: info)
-            print("show job detail")
-            
-        }
-        
-    }
+   
 }
 
 // 与searchbar 交换
@@ -791,9 +781,6 @@ extension DashboardViewController{
 
     
 }
-
-
-
 
 
 extension  DashboardViewController{

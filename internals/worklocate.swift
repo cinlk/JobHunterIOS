@@ -17,26 +17,27 @@ class worklocate: UITableViewCell {
     
     @IBOutlet weak var details: UILabel!
     
-    
-    @IBOutlet weak var forward: UIImageView!
-    
+    var line:UIView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
         
-        forward.contentMode  = .scaleAspectFit
+        locate.font = UIFont.boldSystemFont(ofSize: 16)
+        details.font = UIFont.systemFont(ofSize: 12)
+        details.textColor = UIColor.gray
+        locate.textColor = UIColor.black
         
+        _  = locate.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(200)?.heightIs(25)
         
-        forward.image  = UIImage(named: "rightforward")
-        forward.backgroundColor = UIColor.white
+        line = UIView.init()
         
-        let line = UIView(frame: CGRect(x: 0, y: locate.frame.height+10, width: self.contentView.frame.width, height: 1))
         line.backgroundColor = UIColor.gray
         self.contentView.addSubview(line)
         
+          _ = line.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topSpaceToView(locate,5)?.heightIs(1)
         
-        
+        _ = details.sd_layout().topSpaceToView(line,5)?.leftEqualToView(locate)?.widthIs(260)?.heightIs(20)
         
     }
 

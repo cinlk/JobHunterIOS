@@ -1,5 +1,5 @@
 //
-//  cdetails.swift
+//  companyDetailView.swift
 //  internals
 //
 //  Created by ke.liang on 2017/9/7.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITableViewDataSource{
+class companyDetailViewController: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITableViewDataSource{
     
     
     
@@ -196,11 +196,6 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
         
         self.filterJobLists = joblists
         
-        let subscribleThis  = UIButton.init(type: .custom)
-        subscribleThis.setImage(#imageLiteral(resourceName: "heart"), for: .normal)
-        subscribleThis.frame = CGRect.init(x: 0, y: 0, width: 20, height: 20)
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(customView: subscribleThis)
-        
         self.view.backgroundColor = UIColor.white
      
         
@@ -277,16 +272,21 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
         l.frame = CGRect(x: 10, y: 10, width: 120, height: 30)
         self.navigationItem.titleView = l
         
+        //
+        self.setBarItem()
+        
+        
         
     }
     override func viewWillAppear(_ animated: Bool) {
        
-        self.navigationController?.navigationBar.settranslucent(false)
+        self.navigationItem.title = ""
+        //self.navigationController?.navigationBar.settranslucent(false)
 
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        self.navigationController?.navigationBar.settranslucent(true)
+        //self.navigationController?.navigationBar.settranslucent(true)
     }
 
    
@@ -535,6 +535,20 @@ class cdetails: UIViewController,UIScrollViewDelegate,UITableViewDelegate,UITabl
         
         self.table2.reloadSections(positon, with: .none)
 
+        
+    }
+}
+
+extension companyDetailViewController{
+    
+    private func setBarItem(){
+        
+        let shareButton  = UIButton.init(type: .custom)
+        var heart = UIImage.init(named: "heart")
+        heart = heart?.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero)
+        shareButton.setImage(heart, for: .normal)
+        shareButton.frame = CGRect.init(x: 0, y: 0, width: 30, height: 30)
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(customView: shareButton)
         
     }
 }

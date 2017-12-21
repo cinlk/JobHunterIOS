@@ -10,18 +10,12 @@ import UIKit
 
 class JobDescription: UITableViewCell {
 
-    
-    
-    
     @IBOutlet weak var topdescription: UILabel!
-    
     
     @IBOutlet weak var works: UILabel!
     
     
-    
     @IBOutlet weak var workcontent: UILabel!
-    
     
     
     @IBOutlet weak var demand: UILabel!
@@ -29,14 +23,12 @@ class JobDescription: UITableViewCell {
     
     @IBOutlet weak var demandInfo: UILabel!
     
-    
-    
-
 
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        workcontent.font = UIFont.systemFont(ofSize: 15)
+        demandInfo.font = UIFont.systemFont(ofSize: 15)
         
         let line = UIView(frame: CGRect(x: 0, y: topdescription.frame.height+10, width: self.contentView.frame.width, height: 1))
         line.backgroundColor = UIColor.gray

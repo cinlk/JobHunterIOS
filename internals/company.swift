@@ -10,10 +10,6 @@ import UIKit
 
 class company: UITableViewCell {
 
-    
-    
-    
-    
     @IBOutlet weak var cimage: UIImageView!
     
     @IBOutlet weak var name: UILabel!
@@ -22,11 +18,17 @@ class company: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
         cimage.contentMode = .scaleAspectFit
         cimage.isUserInteractionEnabled = false
+        
+        _ = cimage.sd_layout().leftSpaceToView(self.contentView,5)?.topSpaceToView(self.contentView,3)?.bottomSpaceToView(self.contentView,3)?.widthIs(40)
+        _ = name.sd_layout().leftSpaceToView(cimage,10)?.topEqualToView(cimage)?.widthIs(200)?.heightIs(20)
+        _ = infos.sd_layout().leftEqualToView(name)?.topSpaceToView(name,2.5)?.widthIs(200)?.heightIs(15)
+        
+        
     }
 
+   
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 

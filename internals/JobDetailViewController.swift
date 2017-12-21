@@ -15,143 +15,117 @@ import Social
 
 class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewDataSource {
     
-    
     var infos:[String:String]?
     
     
-    var table:UITableView?
+    lazy var jobheader:JobDetailHeader = {
+       let jh = JobDetailHeader.init(frame: CGRect.zero)
+        infos!["类型"] = "社招"
+        jh.createInfos(item: infos!)
+        return jh
+    }()
+    lazy var table:UITableView = {
+        let table = UITableView.init()
+        table.delegate = self
+        table.dataSource = self
+        //自适应cell高度
+        table.rowHeight = UITableViewAutomaticDimension
+        table.estimatedRowHeight = 80
+        table.separatorStyle = UITableViewCellSeparatorStyle.none
+        table.tableHeaderView = jobheader
+        table.backgroundColor = UIColor.lightGray
+        table.tableHeaderView?.backgroundColor = UIColor.white
+        table.contentInset = UIEdgeInsets.init(top: 0, left: 0, bottom: 60, right: 0)
+        table.showsHorizontalScrollIndicator = false
+        table.register(UINib(nibName:"company", bundle:nil), forCellReuseIdentifier: "companycell")
+        table.register(UINib(nibName:"JobDescription", bundle:nil), forCellReuseIdentifier: "joninfos")
+        table.register(UINib(nibName:"worklocate", bundle:nil), forCellReuseIdentifier: "locate")
+        table.register(UINib(nibName:"RecruiterCell", bundle: nil), forCellReuseIdentifier: "recruiter")
+        return table
+        
+    }()
     
-    var sections = 3
-    
+    var sections = 4
     //进入cdetail公司详情页面，该页面会查看工作信息，再次返回时时cdetail页面
     var isFirst = true
     
-    
     // test string
-    var needed =  "3年以上互联网产品工作经验，经历过较大体量用户前后端产品项目\n 思维活跃，有独立想法，有情怀，喜欢电影行业\n 善于业务整体规划、任务模块优先级拆解、能够主导产品生命周期全流程\n 具备良好的沟通技巧和团队合作精神，有带团队经验者优先 \n高度执行力，能够独当一面，善于推动团队效率不断提升"
+    var needed =  "1 3年以上互联网产品工作经验，经历过较大体量用户前后端产品项目\n 2 思维活跃，有独立想法，有情怀，喜欢电影行业\n 3 善于业务整体规划、任务模块优先级拆解、能够主导产品生命周期全流程\n 4 具备良好的沟通技巧和团队合作精神，有带团队经验者优先 \n 5 高度执行力，能够独当一面，善于推动团队效率不断提升"
     
     var desc = "1、负责租房频道整体流量运营及制定获客策略，辅助制定租房频道市场营销、推广和渠道合作策略；\n 2、合理的制定目标及市场预算分配 \n 3、负责对外媒体合作和商务拓展活动；\n 4、推动租房频道线上推广及线下活动的策划、组织和执行工作； \n 5、协调运营、产品及技术等团队推动产品优化提升获客效果 \n 6、对市场信息敏感，及时汇报且要做出预判投放解决方案。"
     
-    var shareapps:shareView?
+    // 分享界面
+    lazy var shareapps:shareView = { [unowned self] in
+        //放在最下方
+        let view =  shareView(frame: CGRect(x: 0, y: UIScreen.main.bounds.height, width: UIScreen.main.bounds.width, height: 150))
+        // 加入最外层窗口
+        view.sharedata = self.infos?["jobName"] ?? ""
+         UIApplication.shared.windows.last?.addSubview(view)
+         return view
+     }()
     
     var centerY:CGFloat!
     
-    var darkView :UIView!
-    
-    
-    override func viewDidLoad() {
-        
-        
-        
-        super.viewDidLoad()
-        
-        
-        self.view.backgroundColor = UIColor.white
-        print(infos ?? "none")
-        let nav = self.navigationController?.navigationBar
-        nav?.barStyle = UIBarStyle.default
-        
-        
-        
-        let uploadButton = UIButton.init(type: .custom)
-        uploadButton.setImage(#imageLiteral(resourceName: "upload"), for: .normal)
-        uploadButton.frame = CGRect.init(x: 0, y: 0, width: 20, height: 20)
-        
-        uploadButton.addTarget(self, action: #selector(share), for: .touchUpInside)
-        let warnButton = UIButton.init(type: .custom)
-        warnButton.setImage(#imageLiteral(resourceName: "warn"), for: .normal)
-        warnButton.frame = CGRect.init(x: 0, y: 0, width: 20, height: 20)
-        
-        
-        
-        self.navigationItem.rightBarButtonItems = [UIBarButtonItem.init(customView: warnButton),UIBarButtonItem.init(customView: uploadButton)]
-        
-        //table
-        
-        self.table  = UITableView(frame: self.view.frame, style: .plain)
-        
-        self.table?.delegate = self
-        self.table?.dataSource = self
-        
-        //自适应cell高度
-        self.table?.rowHeight = UITableViewAutomaticDimension
-        self.table?.estimatedRowHeight = 80
-        self.table?.separatorStyle = UITableViewCellSeparatorStyle.none
-
-        
-        self.table?.register(HeaderFoot.self, forHeaderFooterViewReuseIdentifier: "jobheader")
-        
-        self.table?.register(UINib(nibName:"company", bundle:nil), forCellReuseIdentifier: "companycell")
-        self.table?.register(UINib(nibName:"JobDescription", bundle:nil), forCellReuseIdentifier: "joninfos")
-        self.table?.register(UINib(nibName:"worklocate", bundle:nil), forCellReuseIdentifier: "locate")
-        
-        self.view.addSubview(table!)
-        
-        
-        //
-        shareapps =  shareView(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 100))
-        centerY = shareapps?.centerY
-        
-        shareapps?.exit = self
-        
-        // 加入最外层窗口
-        let windows = UIApplication.shared.windows.last
-        
-        windows?.addSubview(shareapps!)
-        
-        darkView = UIView()
+    lazy var darkView :UIView = {
+        let darkView = UIView()
         darkView.frame = CGRect(x: 0, y: 0, width:UIScreen.main.bounds.size.width, height:UIScreen.main.bounds.size.height)
         darkView.backgroundColor = UIColor(red: 0 / 255.0, green: 0 / 255.0, blue: 0 / 255.0, alpha: 0.5) // 设置半透明颜色
-        
         darkView.isUserInteractionEnabled = true // 打开用户交互
+        return darkView
+    }()
+    
+    // bottom viwe
+    lazy var bottomView:UIView = {  [unowned self] in
+        let v = UIView.init()
+        v.backgroundColor = UIColor.white
+        v.alpha = 0.95
+        let sendResume = UIButton.init()
+        sendResume.setTitle("发送简历", for: .normal)
+        sendResume.setTitleColor(UIColor.black, for: .normal)
+        sendResume.titleLabel?.font = UIFont.systemFont(ofSize: 15)
+        sendResume.layer.borderWidth = 0.5
+        sendResume.layer.borderColor = UIColor.green.cgColor
+        sendResume.addTarget(self, action: #selector(self.sendResume), for: .touchUpInside)
+        let talk = UIButton.init()
+        talk.setTitle("和TA聊聊", for: .normal)
+        talk.backgroundColor = UIColor.green
+        talk.setTitleColor(UIColor.white, for: .normal)
+        talk.layer.borderWidth = 0.5
+        talk.layer.borderColor = UIColor.clear.cgColor
+        talk.addTarget(self, action: #selector(self.talk), for: .touchUpInside)
+        v.addSubview(talk)
+        v.addSubview(sendResume)
+        _ = sendResume.sd_layout().leftSpaceToView(v,10)?.topSpaceToView(v,5)?.bottomSpaceToView(v,5)?.widthIs(100)
+        _ = talk.sd_layout().leftSpaceToView(sendResume,10)?.topEqualToView(sendResume)?.bottomEqualToView(sendResume)?.rightSpaceToView(v,10)
         
+        return v
+        
+    }()
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.view.backgroundColor = UIColor.white
+        
+        self.addBarItems()
+        self.view.addSubview(table)
+        
+        self.view.addSubview(bottomView)
         let singTap = UITapGestureRecognizer(target: self, action:#selector(self.handleSingleTapGesture)) // 添加点击事件
-        
         singTap.numberOfTouchesRequired = 1
-        
         darkView.addGestureRecognizer(singTap)
+        self.centerY = shareapps.centerY
         
         
-        
-        // Do any additional setup after loading the view.
     }
 
     override func viewWillAppear(_ animated: Bool) {
         self.navigationItem.title = "职位详情"
-        self.navigationController?.setToolbarHidden(false, animated: false)
-        
-        let sendResume = UIButton.init(type: .custom)
-        sendResume.setTitle("发送简历", for: .normal)
-        sendResume.setTitleColor(UIColor.white, for: .normal)
-        sendResume.backgroundColor = UIColor.green
-        sendResume.frame = CGRect(x: 0, y: 0, width: 100, height: 40)
-       
-        
-        sendResume.layer.borderColor = UIColor.black.cgColor
-        sendResume.layer.borderWidth  = 1.0
-        
-        let talk = UIButton.init(type: .custom)
-        
-        talk.setTitle("和ta聊聊", for: .normal)
-        talk.setTitleColor(UIColor.green, for: .normal)
-        talk.backgroundColor = UIColor.white
-        talk.frame = CGRect(x: 0, y: 0, width: 180, height: 40)
-        
-        talk.layer.borderColor = UIColor.black.cgColor
-        talk.layer.borderWidth  = 1.0
-        self.toolbarItems = [UIBarButtonItem.init(customView: sendResume),
-        UIBarButtonItem.init(customView: talk)]
-        
-        // 不透明
-        self.navigationController?.navigationBar.settranslucent(false)
-        //self.table?.setContentOffset(CGPoint(x:0,y:-64), animated: false)
-        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        self.navigationItem.title = ""
         
-        self.navigationController?.setToolbarHidden(true, animated: false)
-        self.navigationController?.navigationBar.settranslucent(true)
+        //self.navigationController?.setToolbarHidden(true, animated: false)
+        //self.navigationController?.navigationBar.settranslucent(true)
 
 
     }
@@ -161,29 +135,14 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     }
     
 
-   // table
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if section == 0 {
-            return 80
-        }
+    override func viewWillLayoutSubviews() {
         
-        return 20
-    }
-    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        _  = self.table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
+        _ = self.table.tableHeaderView?.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.heightIs(120)
         
-        switch  section {
-        case 0:
-            let header = table?.dequeueReusableHeaderFooterView(withIdentifier: "jobheader") as! HeaderFoot
-            header.contentView.backgroundColor = UIColor.white
-            header.createInfos(jobstring: infos?["jobname"], locatestring: infos?["locate"], salarystring: infos?["salary"], timestring: infos?["times"], day: infos?["time"], scholars: infos?["scholar"], hires: infos?["hired"])
-            
-            return header
-
-        default:
-            return nil
-        }
+        _ = self.bottomView.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)?.heightIs(50)
+        
+        
         
     }
     
@@ -194,17 +153,27 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         return 1
     }
     
+    // section header 高度
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view =  UIView.init(frame: CGRect.init(x: 0, y: 0, width: 320, height: 10))
+        view.backgroundColor = UIColor.lightGray
+        return view
+    }
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        
+        return  section == 0 ? 0: 10
+    }
+    
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        self.table?.deselectRow(at: indexPath, animated: true)
+        self.table.deselectRow(at: indexPath, animated: true)
         
         if indexPath.section  == 0 {
             
             if isFirst{
                 print("公司主页")
-                self.navigationItem.title = ""
-                let detail = cdetails()
+                let detail = companyDetailViewController()
             
                 self.hidesBottomBarWhenPushed = true
                 self.navigationController?.pushViewController(detail, animated: true)
@@ -219,11 +188,6 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         else if indexPath.section  == 2{
             // show mapApp
             let address = "北京市融科资讯中心"
-            
-            
-            // import find address
-            
-            
             let geocoder = CLGeocoder()
             var place:CLLocationCoordinate2D?
                 
@@ -239,12 +203,12 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
 
             }
             
+        }else if indexPath.section == 3{
             
         }
         
         
     }
-    
     
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -254,103 +218,98 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         case 1:
             return UITableViewAutomaticDimension
         case 2:
-            return UITableViewAutomaticDimension
+            return 65
+        case 3:
+            return 80
         default:
-            return 44
+            return 60
         }
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        
-
         return UITableViewAutomaticDimension
-        
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        print(indexPath.section)
         switch indexPath.section {
         
-            
         case 0:
             
-            let cell  = table?.dequeueReusableCell(withIdentifier: "companycell", for: indexPath) as! company
+            let cell  = table.dequeueReusableCell(withIdentifier: "companycell", for: indexPath) as! company
             cell.cimage.image = UIImage(named: "camera")
             cell.name.text = "vmware公司"
             cell.infos.text = "上市企业|1万人|不加班"
-            
             return cell
         case 1:
             
-            let cell  = table?.dequeueReusableCell(withIdentifier: "joninfos", for: indexPath) as! JobDescription
+            let cell  = table.dequeueReusableCell(withIdentifier: "joninfos", for: indexPath) as! JobDescription
             cell.demandInfo.text  = needed
             cell.workcontent.text  = desc
-            
+            cell.selectionStyle = .none
             return cell
         case 2:
-            let cell = table?.dequeueReusableCell(withIdentifier: "locate", for: indexPath) as! worklocate
-            cell.locate.text = "北京海淀区"
-            cell.details.text = "北四环\n" + "海淀北二街\n"
+            let cell = table.dequeueReusableCell(withIdentifier: "locate", for: indexPath) as! worklocate
+            cell.locate.text = "工作地址"
+            cell.details.text = "北京海淀区-"+"-北四环-" + "海淀北二街"
+            cell.selectionStyle = .none
+            return cell
+        case 3:
+            let cell = table.dequeueReusableCell(withIdentifier: "recruiter", for: indexPath) as! RecruiterCell
+            cell.name.text = "lucky"
+            cell.position.text = "hr vice present "
+            cell.onlineTime.text = "最近活跃:6小时前"
+            cell.icon.image = UIImage.init(named: "chrome")
+            cell.selectionStyle = .none
             return cell
         default:
-            
             return  UITableViewCell()
             
         }
         
     }
     
-    // TODO  section 和header 一起滑动
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView == self.table{
-            // 去除 table header的黏贴性（第一个section移动到header后，header才滑动）
-            let sectionHeaderHeight:CGFloat = -64; //sectionHeaderHeight
-            //向上滑动，top 与父view间距变大，tableview整体上移
-            if (scrollView.contentOffset.y > sectionHeaderHeight && scrollView.contentOffset.y < 0) {
-                
-                scrollView.contentInset = UIEdgeInsetsMake(-scrollView.contentOffset.y, 0, 0, 0);
-            //向下滑动
-            } else if (scrollView.contentOffset.y <= sectionHeaderHeight) {
-                
-                scrollView.contentInset = UIEdgeInsetsMake(-sectionHeaderHeight, 0, 0, 0);
-            // 上移后向显示底部  > 0
-                
-            }else if scrollView.contentOffset.y >= 0 {
-                
-                if scrollView.contentOffset.y <= 64{
-                    scrollView.contentInset = UIEdgeInsetsMake(-scrollView.contentOffset.y, 0, -sectionHeaderHeight + 40, 0)
-                }else{
-                // 因为cell高度自适应，多留出40.
-                scrollView.contentInset = UIEdgeInsetsMake(-64, 0, -sectionHeaderHeight + 40, 0)
-            
-                }
-            }
-        
-        }
-            
-        
-    }
 
 }
 
 extension JobDetailViewController{
     
     // 分享
-    @objc func share(){
-    //在 navigation 层view 添加darkview（蒙层) 遮挡整个界面
-    
+    @objc func share(){    
     self.navigationController?.view.addSubview(darkView)
     //self.view.addSubview(darkView)
         UIView.animate(withDuration: 0.5, animations: {
             
-            self.shareapps?.frame = CGRect(x: 0, y: self.view.frame.height-35, width: self.view.frame.width, height: 100)
+            self.shareapps.frame = CGRect(x: 0, y: UIScreen.main.bounds.height - 150, width: UIScreen.main.bounds.width, height: 150)
         }, completion: nil)
         
         
         
     }
+    // 举报
+    @objc func warn(){
+        let report = JuBaoViewController()
+        
+        
+        self.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(report, animated: true)
+        
+        
+    }
+    @objc func collect(){
+        
+    }
+    
+    @objc func sendResume(){
+        
+    }
+    
+    @objc func talk(){
+        
+    }
+    
+    
     
     func showAlertMessage(message: String!) {
         let alertController = UIAlertController(title: "EasyShare", message: message, preferredStyle: UIAlertControllerStyle.alert)
@@ -359,25 +318,53 @@ extension JobDetailViewController{
         self.present(alertController, animated: true, completion: nil)
     }
     
-}
-
-extension JobDetailViewController:closeshare{
-    func exit() {
-        
-        darkView.removeFromSuperview()
-        UIView.animate(withDuration: 0.5, animations: {
-            
-            self.shareapps?.centerY =  self.centerY
-        }, completion: nil)
-
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView == self.table{
+            if scrollView.contentOffset.y > 50.0{
+                self.navigationItem.title = infos?["jobName"]
+            }else{
+               self.navigationItem.title = "职位详情"
+            }
+        }
     }
 }
 
 extension JobDetailViewController{
+   
     
     @objc func handleSingleTapGesture() {
          // 点击移除半透明的View
-        self.exit()
+        darkView.removeFromSuperview()
+        UIView.animate(withDuration: 0.5, animations: {
+            
+            self.shareapps.centerY =  self.centerY
+        }, completion: nil)
+        
+    }
+    
+    func  addBarItems(){
+        
+        // 定义customer button 和 调整image
+        var up =  #imageLiteral(resourceName: "upload")
+        up = up.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.init(x: 0, y: 0))
+        let b1 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
+        b1.addTarget(self, action: #selector(share), for: .touchUpInside)
+        b1.setImage(up, for: .normal)
+        
+        var wa =  #imageLiteral(resourceName: "warn")
+        wa = wa.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.init(x: 0, y: 0))
+        let b2 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
+        b2.addTarget(self, action: #selector(warn), for: .touchUpInside)
+        b2.setImage(wa, for: .normal)
+        
+        var collection = #imageLiteral(resourceName: "heart")
+        collection = collection.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.init(x: 0, y: 0))
+        let b3 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
+        b3.addTarget(self, action: #selector(collect), for: .touchUpInside)
+        b3.setImage(collection, for: .normal)
+       
+        self.navigationItem.setRightBarButtonItems([ UIBarButtonItem.init(customView: b3),UIBarButtonItem.init(customView: b1),UIBarButtonItem.init(customView: b2)], animated: false)
+        
         
     }
 }

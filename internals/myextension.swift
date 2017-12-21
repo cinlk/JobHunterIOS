@@ -30,7 +30,7 @@ extension UINavigationBar{
             self.backgroundColor =  UIColor.clear
         }
         else{
-            // 背景为灰色
+            // 背景image为灰色
             self.setBackgroundImage(build_image(frame: CGRect.init(x: 0, y: 0, width: NAV_BAR_FRAME_WIDTH, height: NAV_BAR_FRAME_HEIGHT), color: UIColor.init(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)), for: .default)
             self.isTranslucent = false
             

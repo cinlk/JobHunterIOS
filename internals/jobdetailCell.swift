@@ -11,6 +11,7 @@ import UIKit
 class jobdetailCell: UITableViewCell {
     
     var initial: Bool = false
+    var model:[String:Any]?
     
     lazy var stackView:UIStackView = {
         
@@ -19,8 +20,6 @@ class jobdetailCell: UITableViewCell {
         stack.alignment = .fill
         stack.spacing = 10
         stack.distribution = .fillEqually
-       
-        
         return stack
     }()
     
@@ -38,11 +37,10 @@ class jobdetailCell: UITableViewCell {
     }
     
     
-    
     private  func build(){
         
-            stackView.frame = CGRect(x: 5, y: 5, width: self.frame.width-10, height: self.frame.height-10)
-            self.contentView.addSubview(stackView)
+        stackView.frame = CGRect(x: 5, y: 5, width: self.frame.width-10, height: self.frame.height-10)
+        self.contentView.addSubview(stackView)
         
        
     }
@@ -53,15 +51,20 @@ class jobdetailCell: UITableViewCell {
     
     func createCells(items:[String:Any]?){
         
+            self.model = items
             // 移除子view,cell是重复利用的
             stackView.subviews.forEach{$0.removeFromSuperview()}
+        
             let im = UIStackView()
             im.axis  = .vertical
             im.distribution = .fillProportionally
+        
+        
             let s1 = UIStackView()
-            s1.axis = .horizontal
-            s1.spacing = 3
+            s1.spacing = 5
+            s1.distribution = .fillEqually
             s1.alignment = .bottom
+        
             let s2 = UIStackView()
             s2.alignment = .leading
             s2.spacing  = 5
@@ -70,8 +73,12 @@ class jobdetailCell: UITableViewCell {
             s3.alignment = .center
             s3.spacing = 3
             s3.distribution = .fillProportionally
+        
+        
+        
             let imageView = UIImageView()
-            imageView.image = UIImage(named: (items?["picture"]!)! as! String)
+            let picture = items!["picture"] ?? ""
+            imageView.image = UIImage(named: picture as! String)
             imageView.contentMode = .scaleAspectFit
             imageView.clipsToBounds  = true
             im.addArrangedSubview(imageView)
@@ -87,7 +94,7 @@ class jobdetailCell: UITableViewCell {
         
         
             let companyName = UILabel()
-            companyName.text = items?["comapany"] as? String
+            companyName.text = items?["company"] as? String
             companyName.font  = UIFont.systemFont(ofSize: 8)
             companyName.textColor = UIColor.gray
         
@@ -95,33 +102,33 @@ class jobdetailCell: UITableViewCell {
         
             let locate = UILabel()
             locate.text  = items?["address"] as? String
-            locate.font = UIFont.systemFont(ofSize: 6)
+            locate.font = UIFont.systemFont(ofSize: 8)
             locate.textColor = UIColor.gray
-            s1.addArrangedSubview(locate)
-            let times = UILabel()
-            //times.text = items?["day"] as? String
-            times.font = UIFont.systemFont(ofSize: 6)
-            times.textColor = UIColor.gray
-            s1.addArrangedSubview(times)
         
-            s2.addArrangedSubview(s1)
+            s2.addArrangedSubview(locate)
             stackView.addArrangedSubview(s2)
-            
+        
+            let education = UILabel()
+            education.text = items!["education"] as? String
+            education.font = UIFont.systemFont(ofSize: 8)
+            education.textColor = UIColor.black
+            s1.addArrangedSubview(education)
+            stackView.addArrangedSubview(s1)
+        
             //
             s3.axis  = .vertical
             let salary =  UILabel()
             salary.text = items?["salary"] as? String
-            salary.font = UIFont.boldSystemFont(ofSize: 6)
+            salary.font = UIFont.boldSystemFont(ofSize: 8)
             salary.textColor = UIColor.red
             salary.sizeToFit()
             s3.addArrangedSubview(salary)
             let createTime = UILabel()
             createTime.text = items?["create_time"] as? String
-            createTime.font = UIFont.systemFont(ofSize: 6)
+            createTime.font = UIFont.systemFont(ofSize: 8)
             createTime.textColor = UIColor.gray
             createTime.sizeToFit()
             s3.addArrangedSubview(createTime)
-        
         
             stackView.addArrangedSubview(s3)
         
@@ -137,7 +144,7 @@ class jobdetailCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
     

@@ -291,7 +291,6 @@ extension SearchRecodeViewController:UISearchRecordDelegatae{
         
     }
     func listRecords(word:String){
-        print("list Record")
         ShowHistoryTable = false
         // 过滤匹配
         matchRecords.removeAll()
