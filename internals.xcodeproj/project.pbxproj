@@ -46,6 +46,10 @@
 		4A8858FA1FE8076C0009D73D /* RecruiterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8858F81FE8076C0009D73D /* RecruiterCell.swift */; };
 		4A8858FB1FE8076C0009D73D /* RecruiterCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A8858F91FE8076C0009D73D /* RecruiterCell.xib */; };
 		4A8858FF1FEBE89A0009D73D /* JuBaoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8858FE1FEBE89A0009D73D /* JuBaoViewController.swift */; };
+		4A8859051FED3D310009D73D /* companyscrollTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8859041FED3D310009D73D /* companyscrollTableViewController.swift */; };
+		4A88590A1FEFF0390009D73D /* JobTagsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8859091FEFF0390009D73D /* JobTagsCell.swift */; };
+		4A88590C1FF12A950009D73D /* companyJobCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A88590B1FF12A950009D73D /* companyJobCell.swift */; };
+		4A88590E1FF3E2000009D73D /* publisherControllerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A88590D1FF3E2000009D73D /* publisherControllerView.swift */; };
 		4A8D28BB1FD195C900FA983F /* utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8D28BA1FD195C900FA983F /* utils.swift */; };
 		4A8D28BD1FD2734400FA983F /* extension+searchDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8D28BC1FD2734400FA983F /* extension+searchDelegate.swift */; };
 		4A8D28BF1FD27A2F00FA983F /* extension+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8D28BE1FD27A2F00FA983F /* extension+String.swift */; };
@@ -137,7 +141,6 @@
 		4AFF91C11F5DC18000FE189F /* worklocate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91BF1F5DC18000FE189F /* worklocate.swift */; };
 		4AFF91C21F5DC18000FE189F /* worklocate.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4AFF91C01F5DC18000FE189F /* worklocate.xib */; };
 		4AFF91C41F5EF40000FE189F /* mapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91C31F5EF40000FE189F /* mapApp.swift */; };
-		4AFF91D51F60586600FE189F /* companyDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91D41F60586600FE189F /* companyDetailView.swift */; };
 		4AFF91D91F641A6200FE189F /* tagsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91D71F641A6200FE189F /* tagsTableViewCell.swift */; };
 		4AFF91DA1F641A6200FE189F /* tagsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4AFF91D81F641A6200FE189F /* tagsTableViewCell.xib */; };
 		4AFF91DD1F641A8000FE189F /* introduction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91DB1F641A8000FE189F /* introduction.swift */; };
@@ -205,6 +208,10 @@
 		4A8858F81FE8076C0009D73D /* RecruiterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecruiterCell.swift; sourceTree = "<group>"; };
 		4A8858F91FE8076C0009D73D /* RecruiterCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecruiterCell.xib; sourceTree = "<group>"; };
 		4A8858FE1FEBE89A0009D73D /* JuBaoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JuBaoViewController.swift; sourceTree = "<group>"; };
+		4A8859041FED3D310009D73D /* companyscrollTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = companyscrollTableViewController.swift; sourceTree = "<group>"; };
+		4A8859091FEFF0390009D73D /* JobTagsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobTagsCell.swift; sourceTree = "<group>"; };
+		4A88590B1FF12A950009D73D /* companyJobCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = companyJobCell.swift; sourceTree = "<group>"; };
+		4A88590D1FF3E2000009D73D /* publisherControllerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = publisherControllerView.swift; sourceTree = "<group>"; };
 		4A8D09A21FA59AEC00C0F7FB /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		4A8D09A31FA59AEC00C0F7FB /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		4A8D09A41FA59C1B00C0F7FB /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
@@ -309,7 +316,6 @@
 		4AFF91C01F5DC18000FE189F /* worklocate.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = worklocate.xib; sourceTree = "<group>"; };
 		4AFF91C31F5EF40000FE189F /* mapApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = mapApp.swift; sourceTree = "<group>"; };
 		4AFF91C51F5F0E9300FE189F /* internals.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = internals.entitlements; sourceTree = "<group>"; };
-		4AFF91D41F60586600FE189F /* companyDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = companyDetailView.swift; sourceTree = "<group>"; };
 		4AFF91D71F641A6200FE189F /* tagsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = tagsTableViewCell.swift; sourceTree = "<group>"; };
 		4AFF91D81F641A6200FE189F /* tagsTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = tagsTableViewCell.xib; sourceTree = "<group>"; };
 		4AFF91DB1F641A8000FE189F /* introduction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = introduction.swift; sourceTree = "<group>"; };
@@ -517,12 +523,14 @@
 		4A8858F51FE6AA180009D73D /* View+Controller */ = {
 			isa = PBXGroup;
 			children = (
-				4AFF91D41F60586600FE189F /* companyDetailView.swift */,
+				4A8859081FEFC9440009D73D /* CompanyTableCellView */,
 				4ACBD6FB1F77E8F500A5FD23 /* shareView.swift */,
 				4AFF91A61F5C238400FE189F /* HeaderFoot.swift */,
 				4A4523F11F5BABE1009D6B62 /* jobdetailCell.swift */,
 				4AFF91A81F5C338800FE189F /* JobDetailViewController.swift */,
 				4A8858FE1FEBE89A0009D73D /* JuBaoViewController.swift */,
+				4A8859041FED3D310009D73D /* companyscrollTableViewController.swift */,
+				4A88590D1FF3E2000009D73D /* publisherControllerView.swift */,
 			);
 			name = "View+Controller";
 			sourceTree = "<group>";
@@ -539,6 +547,21 @@
 			children = (
 			);
 			name = ViewModel;
+			sourceTree = "<group>";
+		};
+		4A8859081FEFC9440009D73D /* CompanyTableCellView */ = {
+			isa = PBXGroup;
+			children = (
+				4AFF91DF1F641AA900FE189F /* others.swift */,
+				4AFF91E01F641AA900FE189F /* others.xib */,
+				4AFF91DB1F641A8000FE189F /* introduction.swift */,
+				4AFF91DC1F641A8000FE189F /* introduction.xib */,
+				4AFF91D71F641A6200FE189F /* tagsTableViewCell.swift */,
+				4AFF91D81F641A6200FE189F /* tagsTableViewCell.xib */,
+				4A8859091FEFF0390009D73D /* JobTagsCell.swift */,
+				4A88590B1FF12A950009D73D /* companyJobCell.swift */,
+			);
+			name = CompanyTableCellView;
 			sourceTree = "<group>";
 		};
 		4A8D28B41FD190FF00FA983F /* 搜索 */ = {
@@ -847,12 +870,6 @@
 		4AFF91D61F641A1600FE189F /* companyCell */ = {
 			isa = PBXGroup;
 			children = (
-				4AFF91D71F641A6200FE189F /* tagsTableViewCell.swift */,
-				4AFF91D81F641A6200FE189F /* tagsTableViewCell.xib */,
-				4AFF91DB1F641A8000FE189F /* introduction.swift */,
-				4AFF91DC1F641A8000FE189F /* introduction.xib */,
-				4AFF91DF1F641AA900FE189F /* others.swift */,
-				4AFF91E01F641AA900FE189F /* others.xib */,
 				4A2A2D031F65672B00F42123 /* JobTag.swift */,
 				4A2A2D051F6578D800F42123 /* joblist.swift */,
 				4A2A2D061F6578D800F42123 /* joblist.xib */,
@@ -1113,6 +1130,7 @@
 				4A8D28BB1FD195C900FA983F /* utils.swift in Sources */,
 				4A4523F21F5BABE1009D6B62 /* jobdetailCell.swift in Sources */,
 				4A6BC22C1FC312A7002C17B6 /* RegistryViewModel.swift in Sources */,
+				4A88590A1FEFF0390009D73D /* JobTagsCell.swift in Sources */,
 				4AD03AB81F9B45270077C15B /* InputTextView.swift in Sources */,
 				4A406B691FA58BDC00277AA0 /* ImageMessage.swift in Sources */,
 				4A444ED01F8E5789006AE83D /* contactlist.swift in Sources */,
@@ -1142,6 +1160,7 @@
 				4AFF91B91F5DB8A900FE189F /* company.swift in Sources */,
 				4A93C2C61F8124930022E97B /* delivereddata.swift in Sources */,
 				4ADDDAB31F97ABA4001CB00F /* ChatEmotionView.swift in Sources */,
+				4A8859051FED3D310009D73D /* companyscrollTableViewController.swift in Sources */,
 				4A8858F31FE550D40009D73D /* searchResultController.swift in Sources */,
 				4AFF91A91F5C338800FE189F /* JobDetailViewController.swift in Sources */,
 				4A93C2CF1F82292E0022E97B /* statustage.swift in Sources */,
@@ -1158,6 +1177,7 @@
 				4ACBD6F51F76386D00A5FD23 /* baseSearchViewController.swift in Sources */,
 				4A93C2E71F88B8E20022E97B /* client.swift in Sources */,
 				4A9CE3641F715B30002A8FD5 /* historyAndCatagoryView.swift in Sources */,
+				4A88590E1FF3E2000009D73D /* publisherControllerView.swift in Sources */,
 				4A444ECB1F8A168B006AE83D /* searchRequest.pb.swift in Sources */,
 				4A406B5F1FA4D3D900277AA0 /* PersonCardCell.swift in Sources */,
 				4A9CE36F1F72C2E6002A8FD5 /* myextension.swift in Sources */,
@@ -1168,6 +1188,7 @@
 				4AC056311F93B46C00D5B739 /* LXFChatHorizontalLayout.swift in Sources */,
 				4AFF91E11F641AA900FE189F /* others.swift in Sources */,
 				4A6BC2371FC86453002C17B6 /* config.swift in Sources */,
+				4A88590C1FF12A950009D73D /* companyJobCell.swift in Sources */,
 				4AFF91C41F5EF40000FE189F /* mapApp.swift in Sources */,
 				4ADDDADC1F9B40A8001CB00F /* ChatBarView.swift in Sources */,
 				4A6BC2301FC856D7002C17B6 /* PersonViewController.swift in Sources */,
@@ -1184,7 +1205,6 @@
 				4A93C2CC1F81FD330022E97B /* jobstatusView.swift in Sources */,
 				4AE84EA41F5C108600649404 /* imageScroll.swift in Sources */,
 				4A1E59A41FDEE065004DCF53 /* CompanySelector.swift in Sources */,
-				4AFF91D51F60586600FE189F /* companyDetailView.swift in Sources */,
 				4ADDDAB51F98EF84001CB00F /* ChatEmotionCell.swift in Sources */,
 				4A5304DB1F527D090000F1E9 /* tool.swift in Sources */,
 				4A2A2D071F6578D800F42123 /* joblist.swift in Sources */,

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -19,14 +19,15 @@
                 <rect key="frame" x="0.0" y="0.0" width="413" height="117.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="公司福利" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GDR-2O-gem">
-                        <rect key="frame" x="21" y="8" width="70" height="21"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="公司福利" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GDR-2O-gem">
+                        <rect key="frame" x="33" y="11" width="70" height="21"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="k9P-l9-nFP">
-                        <rect key="frame" x="0.0" y="39" width="413" height="79"/>
+                        <rect key="frame" x="0.0" y="42" width="413" height="73.5"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="j2g-Iv-rvp">
                             <size key="itemSize" width="50" height="50"/>
@@ -38,11 +39,9 @@
                 </subviews>
                 <constraints>
                     <constraint firstAttribute="bottomMargin" secondItem="k9P-l9-nFP" secondAttribute="bottom" constant="-8.5" id="R5D-dc-ckg"/>
+                    <constraint firstItem="k9P-l9-nFP" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="42" id="RbM-SJ-9hc"/>
                     <constraint firstItem="k9P-l9-nFP" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="dGO-12-tAI"/>
-                    <constraint firstItem="k9P-l9-nFP" firstAttribute="top" secondItem="GDR-2O-gem" secondAttribute="bottom" constant="10" id="hVE-YM-g4i"/>
-                    <constraint firstItem="GDR-2O-gem" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" id="iEG-3A-9by"/>
                     <constraint firstAttribute="trailing" secondItem="k9P-l9-nFP" secondAttribute="trailing" id="j84-Mq-WQ9"/>
-                    <constraint firstItem="GDR-2O-gem" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="13" id="vqc-S1-agk"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>

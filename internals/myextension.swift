@@ -12,27 +12,28 @@ import Foundation
 
 
 private let  v = UIImage()
+private let grayimg = build_image(frame: CGRect.init(x: 0, y: 0, width: NAV_BAR_FRAME_WIDTH, height: NAV_BAR_FRAME_HEIGHT), color: UIColor.init(red: 0.5, green: 0.5, blue: 0.5, alpha: 1))
 //private let bm = build_image(size: CGSize.init(width: NAV_BAR_FRAME_WIDTH, height: NAV_BAR_FRAME_HEIGHT), alpha: 1)
 
 extension UINavigationBar{
     
     
-    
     // change to translucent
     func settranslucent(_ tag: Bool){
-        
+        self.isTranslucent = true
         // 显示 lable
         self.tintColor  = UIColor.black
         if tag == true{
             self.setBackgroundImage(v, for: .default)
             self.shadowImage = v
-            self.isTranslucent = true
             self.backgroundColor =  UIColor.clear
         }
         else{
+            print("change image")
             // 背景image为灰色
-            self.setBackgroundImage(build_image(frame: CGRect.init(x: 0, y: 0, width: NAV_BAR_FRAME_WIDTH, height: NAV_BAR_FRAME_HEIGHT), color: UIColor.init(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)), for: .default)
-            self.isTranslucent = false
+            self.setBackgroundImage(grayimg, for: .default)
+            //self.isTranslucent = false
+            
             
         }
     }

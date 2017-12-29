@@ -46,8 +46,8 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     }()
     
     var sections = 4
-    //进入cdetail公司详情页面，该页面会查看工作信息，再次返回时时cdetail页面
-    var isFirst = true
+   
+    
     
     // test string
     var needed =  "1 3年以上互联网产品工作经验，经历过较大体量用户前后端产品项目\n 2 思维活跃，有独立想法，有情怀，喜欢电影行业\n 3 善于业务整体规划、任务模块优先级拆解、能够主导产品生命周期全流程\n 4 具备良好的沟通技巧和团队合作精神，有带团队经验者优先 \n 5 高度执行力，能够独当一面，善于推动团队效率不断提升"
@@ -72,6 +72,13 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         darkView.backgroundColor = UIColor(red: 0 / 255.0, green: 0 / 255.0, blue: 0 / 255.0, alpha: 0.5) // 设置半透明颜色
         darkView.isUserInteractionEnabled = true // 打开用户交互
         return darkView
+    }()
+    
+    // navigation 背景view
+    lazy var nBackView:UIView = {
+       let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 64))
+       v.backgroundColor = UIColor.lightGray
+       return v
     }()
     
     // bottom viwe
@@ -116,19 +123,28 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         
         
     }
-
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+    }
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         self.navigationItem.title = "职位详情"
+        // 加入背景view
+        self.navigationController?.view.insertSubview(nBackView, at: 1)
+        
+        print("job detail appear \(self.view)")
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        nBackView.removeFromSuperview()
         self.navigationItem.title = ""
-        
-        //self.navigationController?.setToolbarHidden(true, animated: false)
-        //self.navigationController?.navigationBar.settranslucent(true)
-
+        self.navigationController?.view.willRemoveSubview(nBackView)
 
     }
+    
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -136,7 +152,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     
 
     override func viewWillLayoutSubviews() {
-        
+        super.viewWillLayoutSubviews()
         _  = self.table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
         _ = self.table.tableHeaderView?.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.heightIs(120)
         
@@ -169,48 +185,41 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         
         self.table.deselectRow(at: indexPath, animated: true)
         
-        if indexPath.section  == 0 {
-            
-            if isFirst{
-                print("公司主页")
-                let detail = companyDetailViewController()
-            
-                self.hidesBottomBarWhenPushed = true
-                self.navigationController?.pushViewController(detail, animated: true)
-
-            }
-            else{
-                self.navigationController?.popViewController(animated: true)
-            }
-         
-            
-        }
-        else if indexPath.section  == 2{
-            // show mapApp
+        switch indexPath.section {
+        case 0:
+            let detail = companyscrollTableViewController()
+            self.hidesBottomBarWhenPushed = true
+            self.navigationController?.pushViewController(detail, animated: true)
+        case 2:
             let address = "北京市融科资讯中心"
             let geocoder = CLGeocoder()
             var place:CLLocationCoordinate2D?
-                
+            
             geocoder.geocodeAddressString(address) {
-                    (placemarks, error) in
-                    guard error == nil else {
-                        print(error!)
-                        return
-                    }
-                    place = placemarks?.first?.location?.coordinate
+                (placemarks, error) in
+                guard error == nil else {
+                    print(error!)
+                    return
+                }
+                place = placemarks?.first?.location?.coordinate
                 let alert  =  PazNavigationApp.directionsAlertController(coordinate: place!, name: address, title: "选择地图", message: nil)
                 self.present(alert, animated: true, completion: nil)
-
             }
+                
+        case 3:
+                let hr = publisherControllerView(style: .plain)
+                self.hidesBottomBarWhenPushed = true
+                self.navigationController?.pushViewController(hr, animated: true)
             
-        }else if indexPath.section == 3{
-            
+        default:
+            break
         }
-        
-        
+       
+     
     }
     
     
+     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {
         case 0:
@@ -291,12 +300,12 @@ extension JobDetailViewController{
     @objc func warn(){
         let report = JuBaoViewController()
         
-        
         self.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(report, animated: true)
         
         
     }
+   
     @objc func collect(){
         
     }
@@ -309,7 +318,9 @@ extension JobDetailViewController{
         
     }
     
-    
+    override func willMove(toParentViewController parent: UIViewController?) {
+        //self.navigationController?.navigationBar.settranslucent(true)
+    }
     
     func showAlertMessage(message: String!) {
         let alertController = UIAlertController(title: "EasyShare", message: message, preferredStyle: UIAlertControllerStyle.alert)
@@ -327,6 +338,7 @@ extension JobDetailViewController{
             }
         }
     }
+    
 }
 
 extension JobDetailViewController{

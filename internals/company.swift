@@ -20,9 +20,10 @@ class company: UITableViewCell {
         super.awakeFromNib()
         cimage.contentMode = .scaleAspectFit
         cimage.isUserInteractionEnabled = false
+        self.selectionStyle = .none
         
         _ = cimage.sd_layout().leftSpaceToView(self.contentView,5)?.topSpaceToView(self.contentView,3)?.bottomSpaceToView(self.contentView,3)?.widthIs(40)
-        _ = name.sd_layout().leftSpaceToView(cimage,10)?.topEqualToView(cimage)?.widthIs(200)?.heightIs(20)
+        _ = name.sd_layout().leftSpaceToView(cimage,10)?.topSpaceToView(self.contentView,10)?.widthIs(200)?.heightIs(20)
         _ = infos.sd_layout().leftEqualToView(name)?.topSpaceToView(name,2.5)?.widthIs(200)?.heightIs(15)
         
         
@@ -35,4 +36,7 @@ class company: UITableViewCell {
         // Configure the view for the selected state
     }
     
+    class func cellHeight() -> CGFloat{
+        return 55
+    }
 }

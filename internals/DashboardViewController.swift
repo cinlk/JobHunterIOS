@@ -228,7 +228,7 @@ class DashboardViewController: UIViewController{
     override func viewWillDisappear(_ animated: Bool) {
         self.navigationView.removeFromSuperview()
         //self.navigationController?.setNavigationBarHidden(false, animated: animated)
-        self.navigationController?.navigationBar.settranslucent(false)
+        //self.navigationController?.navigationBar.settranslucent(false)
         self.navigationController?.view.willRemoveSubview(navigationView)
         
     }
