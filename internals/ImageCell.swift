@@ -68,7 +68,7 @@ class ImageCell: UITableViewCell {
     
     func buildCell(image:NSData?,avater:String){
         self.avartar.image = UIImage.init(named: avater)
-        self.imageV.image = UIImage.init(data: image as! Data)
+        self.imageV.image = UIImage.init(data: (image as? Data)!)
         
     }
     

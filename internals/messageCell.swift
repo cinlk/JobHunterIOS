@@ -101,7 +101,7 @@ class messageCell: UITableViewCell {
         self.messageLabel.attributedText = GetChatEmotion.shared.findAttrStr(text: messageInfo.content, font: messageLabel.font)
         
         
-        var labelSize = messageLabel.sizeThatFits(CGSize(width: 200.0, height: CGFloat(FLT_MAX)))
+        var labelSize = messageLabel.sizeThatFits(CGSize(width: 200.0, height: CGFloat(Float.greatestFiniteMagnitude)))
         labelSize  = CGSize.init(width: labelSize.width, height: labelSize.height)
         
         _ = avatar.sd_layout().heightIs(45)?.topSpaceToView(self.contentView,5)?.widthIs(45)

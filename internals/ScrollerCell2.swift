@@ -106,7 +106,7 @@ class MainPageRecommandCell: UITableViewCell,UIScrollViewDelegate {
              label.alpha = 1
              pview.addSubview(button)
              pview.addSubview(label)
-             button.sd_layout().leftSpaceToView(pview,5)?.rightEqualToView(pview)?.heightRatioToView(pview,1)?.widthRatioToView(pview,1)
+             _ = button.sd_layout().leftSpaceToView(pview,5)?.rightEqualToView(pview)?.heightRatioToView(pview,1)?.widthRatioToView(pview,1)
             
             
             

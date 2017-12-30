@@ -23,7 +23,7 @@ class GetChatEmotion: NSObject {
             return nil
         }
         
-        let resutlts = regex.matches(in: text, options: [], range: NSMakeRange(0, text.characters.count))
+        let resutlts = regex.matches(in: text, options: [], range: NSMakeRange(0, text.count))
         
         //        let attrMStr = NSMutableAttributedString(string: text)
         let attrMStr = NSMutableAttributedString(string: text, attributes: [NSAttributedStringKey.font : font])

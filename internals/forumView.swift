@@ -92,7 +92,7 @@ class forumView: UIViewController,UITextFieldDelegate {
 extension forumView{
     @objc func send(){
         
-        if  textfield?.text?.characters.count == 0{
+        if  textfield?.text?.count == 0{
             return
         }
         var mess = SearchRequest()

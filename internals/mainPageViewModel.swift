@@ -84,17 +84,17 @@ class mainPageViewMode {
             self.index = IsPullDown ? 0 : self.index + 1
             if IsPullDown{
                
-                self.request.getCatagories().subscribe(onNext: { (names) in
+                _ = self.request.getCatagories().subscribe(onNext: { (names) in
                     self.catagory.value = names
                 })
-                self.request.getRecommand().subscribe(onNext: { (names) in
+                _ = self.request.getRecommand().subscribe(onNext: { (names) in
                     self.recommand.value = names
                 }, onError: {
                     error in
                     print(error)
                 }
                 )
-                self.request.getCompuseJobs(index: self.index).subscribe(onNext: { (compuseJobs) in
+                _ = self.request.getCompuseJobs(index: self.index).subscribe(onNext: { (compuseJobs) in
                     self.compuseJobItems.value = IsPullDown ? compuseJobs : (self.compuseJobItems.value) + compuseJobs
                 }, onError: { error in
                     self.compuseJobItems.value = []
@@ -113,7 +113,7 @@ class mainPageViewMode {
                         }
                         self.compuseJobItems.value = IsPullDown ? items : (self.compuseJobItems.value) + items
                     
-                    case let .error(error):
+                    case .error(_):
                         self.compuseJobItems.value = []
                     case .completed:
                         if !self.moreData{

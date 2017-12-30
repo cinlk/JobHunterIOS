@@ -226,7 +226,6 @@ extension CityViewController: CLLocationManagerDelegate{
         print(newLocation)//<+31.26514482,+121.61259089> +/- 50.00m (speed 0.00 mps / course -1.00) @ 2016/11/14 中国标准时间 14:49:51
         if newLocation.horizontalAccuracy < 0 { return }
         geoCoder.reverseGeocodeLocation(newLocation) { [unowned self] (pls: [CLPlacemark]?, error: Error?) in
-            print(error)
             if error == nil {
                 guard let pl = pls?.first else {return}
                 print(pl.name!)//金京路

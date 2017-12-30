@@ -358,8 +358,6 @@ extension companyscrollTableViewController: UIScrollViewDelegate,UITableViewDele
         let stopHeight =  headerHeight+remainHeight - 30
         if scrollView.isKind(of: UITableView.self){
             let offsetY = scrollView.contentOffset.y
-            //headerView.frame.origin.y -= offsetY
-            print(headerView.underLine)
             if offsetY >= stopHeight {
                  headerView.frame.origin.y = 64 -  stopHeight
                 
@@ -385,7 +383,7 @@ extension companyscrollTableViewController: UIScrollViewDelegate,UITableViewDele
             let right = self.headerView.btn2.center.x
             let btndistance  =  right -  left
             var direction = false
-            print(scrollView.contentOffset)
+            
             // 左滑动
             if currentOffsetX > startScrollOffsetX {
                 progress = currentOffsetX / scroviewW - floor(currentOffsetX / scroviewW)

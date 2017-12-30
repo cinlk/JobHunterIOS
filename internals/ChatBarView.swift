@@ -212,7 +212,7 @@ extension ChatBarView: UITextViewDelegate{
         let normalheight:CGFloat = 35.0
         let maxheight:CGFloat = 80.0
         
-        var height =  textView.sizeThatFits(CGSize.init(width: textView.width, height: CGFloat(FLT_MAX))).height
+        var height =  textView.sizeThatFits(CGSize.init(width: textView.width, height: CGFloat(Float.greatestFiniteMagnitude))).height
         height =  height > normalheight ? height : normalheight
         height = height < maxheight ? height : maxheight
         
@@ -234,7 +234,7 @@ extension ChatBarView: UITextViewDelegate{
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        self.inputText.scrollRangeToVisible(NSMakeRange(inputText.text.characters.count, 1))
+        self.inputText.scrollRangeToVisible(NSMakeRange(inputText.text.count, 1))
         self.textViewDidChange(inputText)
         
     }

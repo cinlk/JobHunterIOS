@@ -31,12 +31,12 @@ extension Reactive where Base: UILabel{
 extension Reactive where Base: UIScrollView{
     
     var rxob: Binder<ItemLayout>{
-        return Binder.init(self.base){
-            (sc,ly) in
-            switch ly{
-            case let .RotateImageLayout(images, width, height):
-               print("")
-            }
+        return Binder.init(self.base){_,_ in 
+//            (sc,ly) in
+//            switch ly{
+//            case let .RotateImageLayout(images, width, height):
+//               print("")
+//            }
            
            
     }

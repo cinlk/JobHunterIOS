@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="CCa-RV-7j5">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="CCa-RV-7j5">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -158,46 +158,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tDz-fE-rsy" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-759" y="694"/>
-        </scene>
-        <!--demo-->
-        <scene sceneID="jUA-Gk-cmo">
-            <objects>
-                <tableViewController id="vp4-1g-uKS" customClass="demo" customModule="internals" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="Nxc-1L-KJc">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="sdt-h0-YmO">
-                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="sdt-h0-YmO" id="zzr-dp-a9n">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="vp4-1g-uKS" id="NAj-Wf-k0k"/>
-                            <outlet property="delegate" destination="vp4-1g-uKS" id="TPb-oU-IfB"/>
-                        </connections>
-                    </tableView>
-                    <tabBarItem key="tabBarItem" title="demo" id="TTC-Em-RKE"/>
-                    <connections>
-                        <outlet property="searchDisplayController" destination="GXl-EF-m6b" id="ip4-Uf-ppX"/>
-                    </connections>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="p1C-cV-4dH" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <searchDisplayController id="GXl-EF-m6b">
-                    <connections>
-                        <outlet property="delegate" destination="vp4-1g-uKS" id="KpZ-G6-6sR"/>
-                        <outlet property="searchContentsController" destination="vp4-1g-uKS" id="mO2-DH-VmS"/>
-                        <outlet property="searchResultsDataSource" destination="vp4-1g-uKS" id="DdH-r4-ns8"/>
-                        <outlet property="searchResultsDelegate" destination="vp4-1g-uKS" id="dc3-gs-Gbw"/>
-                    </connections>
-                </searchDisplayController>
-            </objects>
-            <point key="canvasLocation" x="-657" y="1425"/>
         </scene>
         <!--消息界面-->
         <scene sceneID="59d-fN-2An">

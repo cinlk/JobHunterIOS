@@ -302,7 +302,7 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
             }else if message.type == .gif || message.type == .bigGif{
                 return gifCell.heightForCell(messageInfo: message)
             }
-        }else if let personCard = self.tableSource.object(at: indexPath.row) as? PersonCardBody{
+        }else if self.tableSource.object(at: indexPath.row) is PersonCardBody{
             return PersonCardCell.heightForCell()
         }else if let _ = self.tableSource.object(at: indexPath.row) as? ImageBody{
             return ImageCell.cellHeight()
@@ -865,7 +865,7 @@ extension communication: UIImagePickerControllerDelegate,UINavigationControllerD
         })
         print("choose image \(image)")
         
-        self.sendImage(image: UIImageJPEGRepresentation(image, 1.0) as! NSData, avartar: myself.avart)
+        self.sendImage(image: UIImageJPEGRepresentation(image, 1.0)! as NSData, avartar: myself.avart)
         
     }
     

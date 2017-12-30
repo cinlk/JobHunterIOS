@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import YNSearch
 import YNDropDownMenu
 import ObjectMapper
 import RxCocoa
@@ -45,7 +44,6 @@ class DashboardViewController: UIViewController{
     var searchController:baseSearchViewController!
     var searchBarContainer:UIView!
     
-    let ynsearchData = YNSearch()
    
     
     // 初始化 搜索内容
@@ -140,7 +138,7 @@ class DashboardViewController: UIViewController{
         searchController.delegate =  self
         searchController.searchBar.delegate = self
         // search record 实现代理
-        self.delegate = searchController.serchRecordView as? UISearchRecordDelegatae
+        self.delegate = searchController.serchRecordView
         
         
         searchController.cityDelegate = self
@@ -609,11 +607,7 @@ extension DashboardViewController: UISearchResultsUpdating{
     
     @available(iOS 8.0, *)
     func updateSearchResults(for searchController: UISearchController) {
-        //TODO 会执行2次？
-        //print("result search show \(self.resultTableView)")
-        print("updatae search resulr \(searchController.searchBar.text)")
-        // 显示searchrecord view
-        //self.searchController.serchRecordView.view.isHidden = false
+        
         if  let text = searchController.searchBar.text, !text.isEmpty{
            
             self.delegate?.listRecords(word: text)
@@ -655,11 +649,7 @@ extension DashboardViewController: UISearchControllerDelegate{
     
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        // 搜索栏 清空
-//        ynsearchData.setShareSearchName(value: "")
-//        searchString = ""
-//        searchcategory.ynSearchView.ynSearchListView.ynSearchTextFieldText = ""
-//
+
         
     }
     

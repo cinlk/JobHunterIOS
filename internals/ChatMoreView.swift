@@ -104,7 +104,7 @@ extension ChatMoreView: UICollectionViewDataSource, UICollectionViewDelegate {
 
 extension ChatMoreView: UIScrollViewDelegate{
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let contentOffset = scrollView.contentOffset.x
+        _ = scrollView.contentOffset.x
         
     }
 }

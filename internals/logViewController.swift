@@ -105,10 +105,10 @@ class ViewController: UIViewController, UITextFieldDelegate {
             [unowned self] result  in
             
             switch result{
-            case let Result.success(account, password):
+            case let Result.success(account, _):
                 self.showMainView(account,role: "admin")
             // 测试 假设成功
-            case let Result.error(message):
+            case Result.error(_):
                 self.showMainView("admin", role: "admin")
             default:
                 print("")
@@ -188,7 +188,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         if segue.identifier == "showMain"{
-            let controller = segue.destination as? MainTabBarViewController
+            let _ = segue.destination as? MainTabBarViewController
             //传入用户信息
             //MARK 存储或更新个人信息到本地
            
