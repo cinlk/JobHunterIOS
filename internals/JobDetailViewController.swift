@@ -24,7 +24,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         jh.createInfos(item: infos!)
         return jh
     }()
-    lazy var table:UITableView = {
+    lazy var table:UITableView = { [unowned self]  in
         let table = UITableView.init()
         table.delegate = self
         table.dataSource = self
@@ -42,7 +42,6 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         table.register(UINib(nibName:"worklocate", bundle:nil), forCellReuseIdentifier: "locate")
         table.register(UINib(nibName:"RecruiterCell", bundle: nil), forCellReuseIdentifier: "recruiter")
         return table
-        
     }()
     
     var sections = 4
@@ -357,24 +356,26 @@ extension JobDetailViewController{
     func  addBarItems(){
         
         // 定义customer button 和 调整image
-        var up =  #imageLiteral(resourceName: "upload")
-        up = up.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.init(x: 0, y: 0))
+        let size = CGSize.init(width: 25, height: 25)
+        
+        let shares = UIImage.barImage(size: size, offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "upload")
         let b1 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
         b1.addTarget(self, action: #selector(share), for: .touchUpInside)
-        b1.setImage(up, for: .normal)
+        b1.clipsToBounds = true
+        b1.setImage(shares, for: .normal)
         
-        var wa =  #imageLiteral(resourceName: "warn")
-        wa = wa.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.init(x: 0, y: 0))
+        
+        let wa = UIImage.barImage(size: size, offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "warn")
         let b2 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
         b2.addTarget(self, action: #selector(warn), for: .touchUpInside)
+        b2.clipsToBounds = true
         b2.setImage(wa, for: .normal)
         
-        var collection = #imageLiteral(resourceName: "heart")
-        collection = collection.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.init(x: 0, y: 0))
+        let collection = UIImage.barImage(size: size, offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "heart")
         let b3 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
         b3.addTarget(self, action: #selector(collect), for: .touchUpInside)
+        b3.clipsToBounds = true
         b3.setImage(collection, for: .normal)
-       
         self.navigationItem.setRightBarButtonItems([ UIBarButtonItem.init(customView: b3),UIBarButtonItem.init(customView: b1),UIBarButtonItem.init(customView: b2)], animated: false)
         
         

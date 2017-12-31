@@ -60,7 +60,6 @@ class HistoryRecordCell: UITableViewCell {
     }
     
     
-    
     static func identity()->String{
         return "recordName"
     }

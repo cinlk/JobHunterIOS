@@ -11,39 +11,42 @@ import UIKit
 class MainTabBarViewController: UITabBarController {
 
     
-    func getTabBarImages() -> [UIImage]{
+     // 自定义tabbarimg
+     private func getTabBarImages() -> [(UIImage,UIImage)]{
         
-        let size = CGSize(width: 27, height: 26)
         let offset = CGPoint(x: 0, y: 0)
-        var image = UIImage(named: "home")?.withRenderingMode(.alwaysOriginal)
-        var speech = UIImage(named: "message")?.withRenderingMode(.alwaysOriginal)
-        var person = UIImage(named: "person")?.withRenderingMode(.alwaysOriginal)
+        let home = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Home_Img)
+        let selectHome = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Select_Home_Img)
+        let message = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Message_Img)
+        let selectMessage = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Select_Message_Img)
         
-        image  = image?.barImage(size: size, offset: offset)
-        speech = speech?.barImage(size: size, offset: offset)
-        person  = person?.barImage(size: size, offset: offset)
-        return [image!,speech!,person!]
+        let person  =  UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Person_Img)
+        
+        let selectPerson = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Select_Person_Img)
         
         
-        
-
+        return [(home, selectHome),(message,selectMessage),(person,selectPerson)]
+    
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         
     }
-    // 这里加载bar icon 图标
+    // 加载bar icon 图标
     override func viewDidLoad() {
         super.viewDidLoad()
         
         if let items = self.tabBar.items {
-            let tabBarImages = getTabBarImages() // tabBarImages: [UIImage]
-            for i in 0..<items.count {
-                let tabBarItem = items[i]
-                let tabBarImage = tabBarImages[i]
-                tabBarItem.image = tabBarImage
-                tabBarItem.selectedImage = tabBarImage
+            let tabBarImages = getTabBarImages()
+            for (index,tabitem) in items.enumerated(){
+                let tabBarImage = tabBarImages[index]
+                // storyboard 设置主页 title 无效，这里设置
+                if index == 0 {
+                    tabitem.title = "主页"
+                }
+                tabitem.image = tabBarImage.0
+                tabitem.selectedImage = tabBarImage.1
             }
         }
         

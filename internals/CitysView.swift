@@ -14,11 +14,7 @@ import CoreLocation
 
 class CityViewController:UICollectionViewController, UICollectionViewDelegateFlowLayout{
     
-    
-
     // 定位
-
-        
     var activiyIndicator = UIActivityIndicatorView.init()
     
     lazy var locatcityButton:UIButton = {
@@ -233,28 +229,15 @@ extension CityViewController: CLLocationManagerDelegate{
                 self.localCity = pl.locality!
                 self.activiyIndicator.stopAnimating()
 
-                /*
-                 open var name: String? { get } // eg. Apple Inc.
-                 open var thoroughfare: String? { get } // street name, eg. Infinite Loop
-                 open var subThoroughfare: String? { get } // eg. 1
-                 open var locality: String? { get } // city, eg. Cupertino
-                 open var subLocality: String? { get } // neighborhood, common name, eg. Mission District
-                 open var administrativeArea: String? { get } // state, eg. CA
-                 open var subAdministrativeArea: String? { get } // county, eg. Santa Clara
-                 open var postalCode: String? { get } // zip code, eg. 95014
-                 open var isoCountryCode: String? { get } // eg. US
-                 open var country: String? { get } // eg. United States
-                 open var inlandWater: String? { get } // eg. Lake Tahoe
-                 open var ocean: String? { get } // eg. Pacific Ocean
-                 open var areasOfInterest: [String]? { get } // eg. Golden Gate Park
-                 */
+               
             }
         }
         manager.stopUpdatingLocation()
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("定位出错 \(error)")
+
+        
         // 测试
         self.localCity = "全国"
         activiyIndicator.stopAnimating()
@@ -306,6 +289,7 @@ class footerView: UICollectionReusableView {
 
 
 
+
 class headerView: UICollectionReusableView {
     
     lazy var name:UILabel = {
@@ -331,35 +315,4 @@ class headerView: UICollectionReusableView {
     
 }
 
-//class singleCell: UICollectionViewCell {
-//
-//    override init(frame: CGRect) {
-//        super.init(frame: frame)
-//        self.addSubview(age)
-//
-//        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat:  "H:|-[age]-|",
-//                                                           options: [],
-//                                                           metrics: nil,
-//                                                           views: ["age":age]))
-//
-//        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[age]-|",
-//                                                           options: [],
-//                                                           metrics: nil,
-//                                                           views: ["age" : age ]))
-//    }
-//
-//    lazy var age: UILabel = {
-//        let age = UILabel.init()
-//        age.translatesAutoresizingMaskIntoConstraints = false
-//        age.backgroundColor = UIColor.blue
-//        age.textAlignment = .center
-//        age.textColor = UIColor.white
-//        age.text = "0"
-//        return age
-//    }()
-//
-//    required init?(coder aDecoder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-//    }
-//}
 

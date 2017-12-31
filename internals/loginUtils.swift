@@ -8,8 +8,6 @@
 
 import Foundation
 
-
-
 class ValidateNumber {
     
     var b:UIButton?

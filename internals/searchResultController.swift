@@ -13,7 +13,7 @@ import RxDataSources
 import MJRefresh
 import SVProgressHUD
 
-class searchResultController: UIViewController {
+class searchResultController: UIViewController,UIScrollViewDelegate {
 
     lazy var table:UITableView = {
        let tb = UITableView.init()
@@ -23,7 +23,8 @@ class searchResultController: UIViewController {
     }()
     
     
-    let disposebag = DisposeBag.init()
+    private let disposebag = DisposeBag.init()
+    
     var vm:searchViewModel!
     
     
@@ -32,34 +33,17 @@ class searchResultController: UIViewController {
         super.viewDidLoad()
         self.view.addSubview(self.table)
         self.searchModeView()
-        // Do any additional setup after loading the view.
+        
     }
 
     override func viewWillLayoutSubviews() {
         _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
     }
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
+  
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }
 
-extension searchResultController:UIScrollViewDelegate{
-    
-    
-}
 
 
 extension searchResultController{
@@ -92,7 +76,7 @@ extension searchResultController{
             
         }
         
-        
+
         vm.refreshStatus.asDriver().drive(onNext: { [unowned self]  (state) in
             switch state{
             case .endFooterRefresh:
@@ -109,14 +93,7 @@ extension searchResultController{
             
         }, onCompleted: nil, onDisposed: nil).disposed(by: disposebag)
         
-    
-        
-        
     }
-    
     
 }
 
-extension searchResultController:UITableViewDelegate{
-    
-}

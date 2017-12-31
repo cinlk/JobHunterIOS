@@ -83,7 +83,7 @@ class companyscrollTableViewController: UIViewController {
     
     // navigation 背景view
     lazy var navigationBackView:UIView = {
-       let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 64))
+       let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 64))
        v.backgroundColor = UIColor.lightGray
        return v
     }()
@@ -91,7 +91,7 @@ class companyscrollTableViewController: UIViewController {
     // 分享界面
     lazy var shareapps:shareView = { [unowned self] in
         //放在最下方
-        let view =  shareView(frame: CGRect(x: 0, y: UIScreen.main.bounds.height, width: UIScreen.main.bounds.width, height: 150))
+        let view =  shareView(frame: CGRect(x: 0, y: ScreenH, width: ScreenW, height: 150))
         // 加入最外层窗口
         //view.sharedata = self.infos?["jobName"] ?? ""
         UIApplication.shared.windows.last?.addSubview(view)
@@ -100,7 +100,7 @@ class companyscrollTableViewController: UIViewController {
     
     lazy var darkView :UIView = { [unowned self] in
         let darkView = UIView()
-        darkView.frame = CGRect(x: 0, y: 0, width:UIScreen.main.bounds.size.width, height:UIScreen.main.bounds.size.height)
+        darkView.frame = CGRect(x: 0, y: 0, width: ScreenW, height: ScreenH)
         darkView.backgroundColor = UIColor(red: 0 / 255.0, green: 0 / 255.0, blue: 0 / 255.0, alpha: 0.5) // 设置半透明颜色
         darkView.isUserInteractionEnabled = true // 打开用户交互
         let singTap = UITapGestureRecognizer(target: self, action:#selector(self.handleSingleTapGesture)) // 添加点击事件
@@ -126,21 +126,21 @@ class companyscrollTableViewController: UIViewController {
         super.viewDidLoad()
         
         
-        detailTable.frame = CGRect.init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
-        joblistTable.frame = CGRect.init(x: UIScreen.main.bounds.width, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+        detailTable.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH)
+        joblistTable.frame = CGRect.init(x: ScreenW, y: 0, width: ScreenW, height: ScreenH)
         
         scrollerView.addSubview(detailTable)
         scrollerView.addSubview(joblistTable)
-        scrollerView.contentSize = CGSize.init(width: UIScreen.main.bounds.width * 2, height: 0)
+        scrollerView.contentSize = CGSize.init(width: ScreenW * 2, height: 0)
         
         self.view.addSubview(scrollerView)
         self.view.addSubview(headerView)
         self.view.backgroundColor = UIColor.lightGray
         //假headerview 和section
-        let h1 = UIView.init(frame: CGRect.init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 100))
+        let h1 = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 100))
         h1.backgroundColor = UIColor.lightGray
         detailTable.tableHeaderView = h1
-        let h2 = UIView.init(frame: CGRect.init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 100))
+        let h2 = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 100))
         h2.backgroundColor = UIColor.lightGray
         joblistTable.tableHeaderView = h2
         
@@ -191,6 +191,9 @@ class companyscrollTableViewController: UIViewController {
         _ = headerView.sd_layout().yIs(64)?.rightEqualToView(self.view)?.leftEqualToView(self.view)?.heightIs(remainHeight + headerHeight)
         _ = scrollerView.sd_layout().topEqualToView(self.view)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
         
+        // 不在headerview里设置layout约束, 不然动画时会被约束限制
+        headerView.underLine.frame = CGRect.init(x: headerView.btn1.center.x + 15, y: headerView.frame.height - 1 , width: 30, height: 1)
+        
         
     }
     
@@ -217,11 +220,13 @@ extension companyscrollTableViewController{
         
     }
     private func addShareBarItem(){
-        var up =  #imageLiteral(resourceName: "upload")
-        up = up.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.init(x: 0, y: 0))
+        var up =  UIImage.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "upload")
+      
         let b1 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
         b1.addTarget(self, action: #selector(share), for: .touchUpInside)
         b1.setImage(up, for: .normal)
+        b1.clipsToBounds = true
+        
         self.navigationItem.setRightBarButton(UIBarButtonItem.init(customView: b1), animated: false)
     }
     
@@ -576,7 +581,7 @@ class CompanyHeaderView:UIView{
     override init(frame: CGRect) {
         super.init(frame: frame)
         // MARK 修改
-        underLine.frame = CGRect.init(x: self.btn1.center.x, y: 109 , width: 30, height: 1)
+        //underLine.frame = CGRect.init(x: self.btn1.center.x, y: 109 , width: 30, height: 1)
 
         self.addSubview(icon)
         self.addSubview(companyName)

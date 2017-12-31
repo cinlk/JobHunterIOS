@@ -161,6 +161,8 @@ class MainPageCatagoryCell: UITableViewCell,UIScrollViewDelegate{
         // Configure the view for the selected state
     }
     
+    
+    
 
 
 }

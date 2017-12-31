@@ -51,7 +51,6 @@ extension JobTagsCell{
         sub.backgroundColor = UIColor.clear
         self.contentView.addSubview(sub)
         
-//        _ = sub.sd_layout().topSpaceToView(self.contentView,10)?.leftSpaceToView(self.contentView,10)?.rightSpaceToView(self.contentView,10)?.bottomSpaceToView(self.contentView,10)
         _ = sub.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topEqualToView(self.contentView)?.bottomEqualToView(self.contentView)
         
         var res:CGFloat = 0

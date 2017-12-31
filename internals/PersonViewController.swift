@@ -43,7 +43,9 @@ class PersonViewController: UIViewController {
 
     @objc  func logout(){
         // 清理数据
-        let loginView = self.storyboard?.instantiateViewController(withIdentifier: "login")  as! ViewController
+        
+        let loginView = self.storyboard?.instantiateViewController(withIdentifier: "login")  as! LogViewController
+        
         self.present(loginView, animated: true, completion: nil)
         
         

@@ -30,3 +30,16 @@ extension UITextField{
     }
     
 }
+
+
+extension UITextField{
+    
+    convenience init(placeholder:String, keyboardType:UIKeyboardType = .default,clearButtonMode:UITextFieldViewMode = .never,
+         borderStyle:UITextBorderStyle = .line) {
+         self.init(frame: CGRect.zero)
+         self.placeholder = placeholder
+         self.keyboardType = keyboardType
+         self.clearButtonMode = clearButtonMode
+         self.borderStyle = borderStyle
+    }
+}

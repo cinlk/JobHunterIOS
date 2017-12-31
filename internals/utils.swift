@@ -10,7 +10,7 @@ import Foundation
 
 
 //
-func  build_image(frame: CGRect, color:UIColor)->UIImage{
+public func  build_image(frame: CGRect, color:UIColor)->UIImage{
     
     UIGraphicsBeginImageContext(frame.size)
     let context:CGContext = UIGraphicsGetCurrentContext()!
@@ -28,7 +28,7 @@ func  build_image(frame: CGRect, color:UIColor)->UIImage{
 
 
 
-func getCitys(filename:String)->[String:[String]]{
+public func getCitys(filename:String)->[String:[String]]{
     
     guard  let filePath = Bundle.main.path(forResource: filename, ofType: "plist")else{
         
@@ -43,4 +43,12 @@ func getCitys(filename:String)->[String:[String]]{
     return citys
     
     
+}
+
+
+func showAlert(error:String, vc:UIViewController){
+    let action = UIAlertAction.init(title: "确定", style: .default, handler: nil)
+    let alertView = UIAlertController.init(title: nil, message: error, preferredStyle: .alert)
+    alertView.addAction(action)
+    vc.present(alertView, animated: true, completion: nil)
 }

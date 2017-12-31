@@ -11,16 +11,14 @@ import RxSwift
 import RxCocoa
 
 
-class ForgetPasswordController: UIViewController,UITextFieldDelegate {
+class ForgetPasswordController: UIViewController {
 
 
     lazy var verifyButton:UIButton = {
        
-        let  button = UIButton.init(type: UIButtonType.custom)
-        button.setTitle("获取验证码", for: .normal)
+        let  button = UIButton.init(title: ("获取验证码", .normal))
         button.setTitleColor(UIColor.lightGray, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
-        
         return button
         
     }()
@@ -32,13 +30,9 @@ class ForgetPasswordController: UIViewController,UITextFieldDelegate {
         
     }()
     
-    lazy var phoneText:UITextField = {
-        let text = UITextField.init()
-        text.keyboardType = .numberPad
+    lazy var phoneText:UITextField = { [unowned self] in
+        let text = UITextField.init(placeholder: "输入手机号", keyboardType: .numberPad, clearButtonMode: .whileEditing, borderStyle: .none)
         text.delegate = self
-        text.placeholder = "输入手机号码"
-        text.borderStyle = .none
-        text.clearButtonMode = .whileEditing
         return text
     }()
 
@@ -49,13 +43,9 @@ class ForgetPasswordController: UIViewController,UITextFieldDelegate {
         return imageView
     }()
     
-    lazy var verifyText:UITextField = {
-        let text = UITextField.init()
-        text.keyboardType = .numberPad
+    lazy var verifyText:UITextField = { [unowned self] in
+        let text = UITextField.init(placeholder: "输入验证码", keyboardType: .numberPad, clearButtonMode: .whileEditing, borderStyle: .none)
         text.delegate = self
-        text.placeholder = "输入验证码"
-        text.borderStyle = .none
-        text.clearButtonMode = .whileEditing
         return text
         
     }()
@@ -65,12 +55,10 @@ class ForgetPasswordController: UIViewController,UITextFieldDelegate {
         imageView.image = #imageLiteral(resourceName: "password")
         return imageView
     }()
-    lazy var passwordText:UITextField = {
-        let text = UITextField.init()
+    
+    lazy var passwordText:UITextField = { [unowned self] in
+        let text = UITextField.init(placeholder: "新密码", clearButtonMode: .whileEditing, borderStyle: .none)
         text.delegate = self
-        text.placeholder = "新密码"
-        text.borderStyle = .none
-        text.clearButtonMode = .whileEditing
         return text
     }()
     
@@ -79,24 +67,18 @@ class ForgetPasswordController: UIViewController,UITextFieldDelegate {
         imageView.image = #imageLiteral(resourceName: "password")
         return imageView
     }()
-    lazy var confirmPasswordText:UITextField = {
     
-        let text = UITextField.init()
+    lazy var confirmPasswordText:UITextField = { [unowned self] in
+    
+        let text = UITextField.init(placeholder: "确认新密码", clearButtonMode: .whileEditing, borderStyle: .none)
         text.delegate = self
-        text.placeholder = "确认新密码"
-        text.borderStyle = .none
-        text.clearButtonMode = .whileEditing
         return text
     }()
     
     lazy var submit:UIButton = {
-       
-        let  button = UIButton.init(type: UIButtonType.custom)
-        button.setTitle("提 交", for: .normal)
-        button.backgroundColor = UIColor.blue
+        let  button = UIButton.init(title: ("提 交", .normal), alignment: .center, bColor: UIColor.blue)
         button.setTitleColor(UIColor.lightGray, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
-        
         return button
         
     }()
@@ -132,49 +114,18 @@ class ForgetPasswordController: UIViewController,UITextFieldDelegate {
         return indicatory
     }()
     
-    var codeNumber:ValidateNumber?
+    private var codeNumber:ValidateNumber?
     
-    let request = ChangePasswordService.instance
+    private let request = ChangePasswordService.instance
     
-    var verifyButtonEnable = true
+    private var verifyButtonEnable = true
     
-    let disposebag = DisposeBag.init()
+    private let disposebag = DisposeBag.init()
 
-    
     override func viewDidLoad() {
         
-        self.view.backgroundColor = UIColor.white
-        
-        self.navigationItem.title = "重置密码"
-        self.navigationController?.navigationBar.barTintColor = UIColor.white
-        self.navigationController?.navigationBar.shadowImage = UIImage()
-        
-        
-        self.view.addSubview(phoneImage)
-        self.view.addSubview(phoneText)
-        self.view.addSubview(verifyButton)
-        verifyButton.addTarget(self, action: #selector(verify), for: .touchUpInside)
-        codeNumber = ValidateNumber.init(button: verifyButton)
-        
-        
-        self.view.addSubview(verifyImage)
-        self.view.addSubview(verifyText)
-        
-        self.view.addSubview(passwordImage)
-        self.view.addSubview(passwordText)
-        
-        self.view.addSubview(confirmPasswordImage)
-        self.view.addSubview(confirmPasswordText)
-    
-        
-        self.view.addSubview(submit)
-        self.submit.addSubview(indicatory)
-        
-        phoneText.layer.addSublayer(bottomLine1)
-        verifyText.layer.addSublayer(bottomLine2)
-        passwordText.layer.addSublayer(bottomLine3)
-        confirmPasswordText.layer.addSublayer(bottomLine4)
-        
+       
+        self.setViews()
         self.addTouchinSide()
         self.setViewModel()
         super.viewDidLoad()
@@ -224,78 +175,11 @@ class ForgetPasswordController: UIViewController,UITextFieldDelegate {
         
     }
     
-    private func setViewModel(){
-        
-        let vm = ChangePasswordVM.init(input: (tap: submit.rx.tap.asDriver().debug(), request: request))
-        
-        // view to model
-        self.phoneText.rx.text.orEmpty.bind(to: vm.phoneText).disposed(by: disposebag)
-        self.verifyText.rx.text.orEmpty.bind(to: vm.verifyCode).disposed(by: disposebag)
-        self.passwordText.rx.text.orEmpty.bind(to: vm.newPassword).disposed(by: disposebag)
-        self.confirmPasswordText.rx.text.orEmpty.bind(to: vm.confirmPassword).disposed(by: disposebag)
-        
-        
-        
-        
-        
-        // model to view
-        
-        vm.showProgress.debug().drive(self.indicatory.rx.isAnimating).disposed(by: disposebag)
 
-        vm.validatePhone.subscribe(onNext: { (res) in
-            self.verifyButtonEnable = res.validate
-            
-        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: disposebag)
-        
-        
-        vm.submitEnable.asDriver().drive(onNext: { (bool) in
-            self.submit.isEnabled = bool
-            self.submit.alpha = bool ? 1 : 0.5
-            print(self.submit)
-            
-        }, onCompleted: nil, onDisposed: nil).disposed(by: disposebag)
-      
-        
-        vm.submitResult.drive(onNext: { (res) in
-            switch res{
-            case  let .error(_, message):
-                self.showAlert(error: message)
-            case .success(_, _):
-                print("success")
-            default:
-                self.showAlert(error: "提交失败")
-            }
-            
-        }, onCompleted: nil, onDisposed: nil).disposed(by: disposebag)
-        
-        
-    }
-    
-    private func addTouchinSide(){
-        
-        let touch = UITapGestureRecognizer(target:self, action: #selector(self.touchs))
-        self.view.isUserInteractionEnabled =  true
-        self.view.addGestureRecognizer(touch)
-        
-        
-    }
-    
-    @objc private func touchs(){
-        self.view.endEditing(true)
-    }
-    
+   
+}
 
-    
-
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    
-
-
+extension ForgetPasswordController: UITextFieldDelegate{
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         
@@ -311,32 +195,122 @@ class ForgetPasswordController: UIViewController,UITextFieldDelegate {
         textField.resignFirstResponder()
         return true
     }
+}
 
+extension ForgetPasswordController{
+    
+    private func setViews(){
+        
+        self.view.backgroundColor = UIColor.white
+        self.navigationItem.title = "重置密码"
+        self.navigationController?.navigationBar.barTintColor = UIColor.white
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        
+        self.view.addSubview(phoneImage)
+        self.view.addSubview(phoneText)
+        self.view.addSubview(verifyButton)
+        verifyButton.addTarget(self, action: #selector(verify), for: .touchUpInside)
+        codeNumber = ValidateNumber.init(button: verifyButton)
+        
+        
+        self.view.addSubview(verifyImage)
+        self.view.addSubview(verifyText)
+        
+        self.view.addSubview(passwordImage)
+        self.view.addSubview(passwordText)
+        
+        self.view.addSubview(confirmPasswordImage)
+        self.view.addSubview(confirmPasswordText)
+        
+        
+        self.view.addSubview(submit)
+        self.submit.addSubview(indicatory)
+        
+        phoneText.layer.addSublayer(bottomLine1)
+        verifyText.layer.addSublayer(bottomLine2)
+        passwordText.layer.addSublayer(bottomLine3)
+        confirmPasswordText.layer.addSublayer(bottomLine4)
+    }
+    
+    private func addTouchinSide(){
+        
+        let touch = UITapGestureRecognizer(target:self, action: #selector(self.touchs))
+        self.view.isUserInteractionEnabled =  true
+        self.view.addGestureRecognizer(touch)
+        
+        
+    }
+    
+    @objc private func touchs(){
+        self.view.endEditing(true)
+    }
+    
     // vertify number
     @objc private func verify(){
         if self.verifyButtonEnable{
             _ = self.request.getVerifyCode(phone: self.phoneText.text!).subscribe(onNext: { (res) in
                 switch res{
                 case .ok:
-                    print("")
+                   showAlert(error: "成功", vc: self)
                 case let  .error(_, message):
-                    self.showAlert(error: message)
+                   showAlert(error: message, vc: self)
                 default:
-                    self.showAlert(error: "")
+                    showAlert(error: "", vc: self)
                 }
             }, onError: nil, onCompleted: nil, onDisposed: nil)
+            //
             codeNumber?.start()
         }else{
             
         }
     }
     
-    private func showAlert(error:String){
-        let action = UIAlertAction.init(title: "确定", style: .default, handler: nil)
-        let alertView = UIAlertController.init(title: nil, message: error, preferredStyle: .alert)
-        alertView.addAction(action)
-        self.present(alertView, animated: true, completion: nil)
+}
+
+extension ForgetPasswordController{
+    
+    private func setViewModel(){
+        
+        let vm = ChangePasswordVM.init(input: (tap: submit.rx.tap.asDriver().debug(), request: request))
+        
+        // view to model
+        self.phoneText.rx.text.orEmpty.bind(to: vm.phoneText).disposed(by: disposebag)
+        self.verifyText.rx.text.orEmpty.bind(to: vm.verifyCode).disposed(by: disposebag)
+        self.passwordText.rx.text.orEmpty.bind(to: vm.newPassword).disposed(by: disposebag)
+        self.confirmPasswordText.rx.text.orEmpty.bind(to: vm.confirmPassword).disposed(by: disposebag)
+        
+        // model to view
+        
+        vm.showProgress.debug().drive(self.indicatory.rx.isAnimating).disposed(by: disposebag)
+        
+        vm.validatePhone.subscribe(onNext: { (res) in
+            self.verifyButtonEnable = res.validate
+            
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: disposebag)
+        
+        
+        vm.submitEnable.asDriver().drive(onNext: { (bool) in
+            self.submit.isEnabled = bool
+            self.submit.alpha = bool ? 1 : 0.5
+            print(self.submit)
+            
+        }, onCompleted: nil, onDisposed: nil).disposed(by: disposebag)
+        
+        
+        vm.submitResult.drive(onNext: { (res) in
+            switch res{
+            case  let .error(_, message):
+                showAlert(error: message, vc: self)
+            case .success(_, _):
+                showAlert(error: "success", vc: self)
+            default:
+                showAlert(error: "", vc: self)
+            }
+            
+        }, onCompleted: nil, onDisposed: nil).disposed(by: disposebag)
+        
+        
     }
     
-   
+    
 }

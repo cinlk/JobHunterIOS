@@ -9,8 +9,6 @@
 import UIKit
 
 
-
-
 fileprivate var ROWNUMBERS = 1
 fileprivate let COLUME = 4
 

@@ -11,11 +11,6 @@ import ObjectMapper
 
 class Users: Mappable {
     
-    
-    
-   
-    
-
     var phoneNumber:String?
     var password:String?
     var role:String?

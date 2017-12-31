@@ -9,7 +9,7 @@
 import UIKit
 
 
-protocol SearchResultDelegate {
+protocol SearchResultDelegate: class{
     
     func ShowSearchResults(word:String)
     
@@ -17,8 +17,7 @@ protocol SearchResultDelegate {
 
 class SearchRecodeViewController: UIViewController {
 
-    // recordDefaultData
-    let userData = localData.shared
+    private let userData = localData.shared
     
     var ShowHistoryTable:Bool = true {
         willSet{
@@ -33,29 +32,36 @@ class SearchRecodeViewController: UIViewController {
     }
     
     
-    // 第一个tableview 显示catalog和历史记录
-    var HistoryTable:UITableView!
     
-    var FilterTable:UITableView!
+    // 搜索历史
+    lazy var HistoryTable:UITableView = {
+        
+        let HistoryTable = UITableView.init()
+        HistoryTable.backgroundColor = UIColor.lightGray
+        HistoryTable.isHidden = false
+        HistoryTable.tableFooterView = UIView.init()
+        HistoryTable.register(HistoryRecordCell.self, forCellReuseIdentifier: HistoryRecordCell.identity())
+        //HistoryTable.tableHeaderView =  RecordHeaderView()
+        return HistoryTable
+    }()
+    // 匹配搜索记录
+    lazy var FilterTable:UITableView = {
+        let FilterTable = UITableView.init()
+        FilterTable.isHidden = true
+        FilterTable.backgroundColor = UIColor.white
+        FilterTable.tableFooterView = UIView.init()
+        return FilterTable
+    }()
        
     
     
-    var delegate:UISearchRecordDelegatae?
+    weak var delegate:UISearchRecordDelegatae?
     
-    
-    // 第二个tableview 显示关键字匹配结果
-    var keyword = ""{
-        willSet{
-            ShowHistoryTable = false
-            //计算
-            
-        }
-    }
-    var matchRecords:[String] = [""]
+    private var matchRecords:[String] = [""]
     
     
     // delegate
-    var resultDelegate:SearchResultDelegate?
+    weak var resultDelegate:SearchResultDelegate?
     
     var AddHistoryItem = false{
         willSet{
@@ -63,47 +69,35 @@ class SearchRecodeViewController: UIViewController {
             self.HistoryTable.reloadData()
         }
     }
-    var hcount  = 0
+    
+    private var hcount  = 0
     
     override func viewDidLoad() {
-        super.viewDidLoad()
-       
-        //
-        //userData.removeAllHistory()
-       
         
+        super.viewDidLoad()
         userData.appendSearchHistories(value: "测试1")
         userData.appendSearchHistories(value: "测试2")
         hcount  =  1 + (userData.getSearchHistories()?.count)!
-
+        // 加载tags
+        let tags = ["咨询","设计","人事","IOS","法律","公关","财务","云计算","创业","python","地产","iphone"]
+        let vtag:UIView =  UIView.RecordHeaderView(tags: tags)
+        vtag.viewWithTag(1)?.subviews.forEach {  (v) in
+        
+            if v.isKind(of: UIButton.self){
+                (v as! UIButton).addTarget(self, action: #selector(chooseTag), for: .touchUpInside)
+            }
+        }
+        HistoryTable.tableHeaderView = vtag
         self.view.backgroundColor = UIColor.lightGray
-        
-        HistoryTable = UITableView.init()
-        HistoryTable.delegate = self
-        HistoryTable.dataSource = self
-        HistoryTable.backgroundColor = UIColor.lightGray
-        HistoryTable.isHidden = false
-        HistoryTable.tableFooterView = UIView.init()
-        HistoryTable.register(HistoryRecordCell.self, forCellReuseIdentifier: HistoryRecordCell.identity())
-        HistoryTable.tableHeaderView =  RecordHeaderView()
-        
-        
-        FilterTable = UITableView.init()
-        FilterTable.dataSource = self
-        FilterTable.delegate = self
-        FilterTable.isHidden = true
-        FilterTable.backgroundColor = UIColor.white
-        FilterTable.tableFooterView = UIView.init()
         self.view.addSubview(HistoryTable)
         self.view.addSubview(FilterTable)
+        HistoryTable.delegate = self
+        HistoryTable.dataSource = self
+        FilterTable.delegate = self
+        FilterTable.dataSource = self
 
-        // Do any additional setup after loading the view.
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
 
     override func viewWillAppear(_ animated: Bool) {
@@ -134,74 +128,12 @@ class SearchRecodeViewController: UIViewController {
 
 extension SearchRecodeViewController{
     
-    func RecordHeaderView() -> UIView{
-        
-        let tags = ["咨询","设计","人事","IOS","法律","公关","财务","云计算","创业","python","地产","iphone"]
-        let view = UIView.init()
-        view.backgroundColor = UIColor.lightGray
-        var height = 0
-        let tag = UILabel.init()
-        tag.text = "热门搜索"
-        tag.textColor = UIColor.gray
-        tag.font = UIFont.systemFont(ofSize: 16)
-        view.addSubview(tag)
-        _  = tag.sd_layout().leftSpaceToView(view,10)?.topSpaceToView(view,10)?.widthIs(100)?.heightIs(30)
-        
-        let sub = UIView.init()
-        view.addSubview(sub)
-        _ = sub.sd_layout().topSpaceToView(tag,0)?.leftSpaceToView(view,10)?.rightSpaceToView(view,10)?.bottomSpaceToView(view,10)
-        
-        let n1 = tags.count / 3
-        var res = tags.count % 3
-        var row = 0
-        height = (n1+res) * 50
-        var x = 0
-        var y = 0
-        for (index, item) in tags.enumerated(){
-            
-            if (index %  3 == 0  && index != 0) {
-                row += 1
-            }
-            let btn = UIButton.init(type: .custom)
-            btn.setTitle(item, for: .normal)
-            btn.backgroundColor = UIColor.white
-            btn.setTitleColor(UIColor.blue, for: .normal)
-            btn.addTarget(self, action: #selector(chooseTag), for: .touchUpInside)
-            res = index  % 3
-            switch res{
-            case 0:
-                x = 20
-                
-            case 1:
-                x = 130
-               
-            case 2:
-                x = 240
-               
-            default:
-                break
-            }
-            y = row*35 + 5
-           
-            btn.frame = CGRect.init(x: x, y: y, width: 100, height: 30)
-           
-            sub.addSubview(btn)
-        }
-      
-        view.frame = CGRect.init(x: 0, y: 0, width: Int(self.view.size.width), height:  height + 10)
-        return view
-        
-        
-    }
-    
     @objc func chooseTag(_ sender:UIButton){
-        print(sender)
         // 显示 searchresultView
-        self.resultDelegate?.ShowSearchResults(word: (sender.titleLabel?.text)!)
+         self.resultDelegate?.ShowSearchResults(word: (sender.titleLabel?.text)!)
     }
     
     @objc func deleteRecord(_ sender:UIButton){
-        print("delete \(sender.tag)")
         self.HistoryTable.beginUpdates()
         let text =  (self.HistoryTable.cellForRow(at: IndexPath.init(row: sender.tag, section: 0)) as? HistoryRecordCell)?.item.text
         userData.deleteSearcHistories(item: text ?? "")
@@ -236,9 +168,8 @@ extension SearchRecodeViewController:UITableViewDelegate,UITableViewDataSource{
         let cell =  UITableViewCell.init()
         if tableView == self.HistoryTable{
             if  indexPath.row  == hcount - 1{
-                cell.textLabel?.text = "清楚历史"
+                cell.textLabel?.text = "清除历史记录"
                 cell.textLabel?.textAlignment  = .center
-                
                 cell.isHidden =  hcount == 1 ? true:false
                 return cell
             }
@@ -264,7 +195,6 @@ extension SearchRecodeViewController:UITableViewDelegate,UITableViewDataSource{
             if indexPath.row == hcount  - 1 {
                 userData.removeAllHistory()
                 hcount = 1
-                
                 tableView.reloadData()
                 return
             }
@@ -294,7 +224,6 @@ extension SearchRecodeViewController:UISearchRecordDelegatae{
         ShowHistoryTable = false
         // 过滤匹配
         matchRecords.removeAll()
-        
         matchRecords.append(contentsOf: InitailData.shareInstance.datas.filter { (item) -> Bool in
             
             return item.lowercased().contains(word.lowercased())

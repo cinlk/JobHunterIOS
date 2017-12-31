@@ -115,7 +115,6 @@ class JobDetailHeader:UIView {
             _ = des.sd_layout().topSpaceToView(typeIcon,10)?.leftEqualToView(typeIcon)?.widthIs(100)?.heightIs(20)
             
             
-
         }else{
             
         }
