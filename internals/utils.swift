@@ -52,3 +52,66 @@ func showAlert(error:String, vc:UIViewController){
     alertView.addAction(action)
     vc.present(alertView, animated: true, completion: nil)
 }
+
+
+
+
+struct showitem {
+    
+    var name:String?
+    var image:String?
+    var bubbles:Int?
+    
+}
+
+
+func buildStackItemView(items:[showitem]?, ItemRowNumbers:Int, mainStack:UIStackView?, itemButtons:inout [UIButton]?){
+    guard let items = items else {
+        return
+    }
+    let count = items.count
+    let row = count / ItemRowNumbers + (count % ItemRowNumbers == 0 ? 0: 1)
+    
+    var start = 0
+    var step = ItemRowNumbers
+    
+    for i in 0..<row{
+        let  stack = UIStackView.init()
+        stack.axis = .horizontal
+        stack.distribution = .fillEqually
+        stack.spacing = 10
+        //
+        start = i*ItemRowNumbers
+        if i == row - 1 {
+            step = min(start + ItemRowNumbers, count) - ItemRowNumbers
+        }
+        for index in start..<start + step{
+            let view = UIView.init(frame: CGRect.zero)
+            view.backgroundColor = UIColor.white
+            let btn = UIButton.init()
+            btn.tag = index
+            let img = UIImage.barImage(size: CGSize.init(width: 30, height: 30), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: items[index].image!)
+            btn.setImage(img, for: .normal)
+            btn.backgroundColor = UIColor.clear
+            
+            itemButtons?.append(btn)
+            
+            let  lable = UILabel.init()
+            lable.font = UIFont.systemFont(ofSize: 14)
+            lable.text =  items[index].name
+            lable.textAlignment = .center
+            
+            view.addSubview(btn)
+            view.addSubview(lable)
+            
+            _ = btn.sd_layout().leftSpaceToView(view,10)?.rightSpaceToView(view,10)?.topSpaceToView(view,5)?.heightIs(45)
+            _ = lable.sd_layout().topSpaceToView(btn,2)?.leftEqualToView(btn)?.rightEqualToView(btn)?.bottomSpaceToView(view,5)
+            
+            stack.addArrangedSubview(view)
+        }
+        
+        mainStack?.addArrangedSubview(stack)
+    }
+    
+    
+}

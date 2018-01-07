@@ -228,7 +228,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         case 2:
             return 65
         case 3:
-            return 80
+            return RecruiterCell.cellHeight()
         default:
             return 60
         }

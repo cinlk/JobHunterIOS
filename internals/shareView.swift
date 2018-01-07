@@ -16,7 +16,15 @@ class shareView: UIView {
 
 
     var images:[String] = ["qq","sina","wechat","link","chrome","car","",""]
-    // 
+    private var showItems:[showitem] = [showitem.init(name: "qq", image: "qq", bubbles: nil),
+                                        showitem.init(name: "sina", image: "sina", bubbles: nil),
+                                        showitem.init(name: "wechat", image: "wechat", bubbles: nil),
+                                        showitem.init(name: "link", image: "link", bubbles: nil),
+                                        showitem.init(name: "chrome", image: "chrome", bubbles: nil),
+                                        showitem.init(name: "car", image: "car", bubbles: nil),
+                                        showitem.init(name: "", image: "", bubbles: nil),
+                                        showitem.init(name: "", image: "", bubbles: nil)]
+    //
     var sharedata:String?
     
     
@@ -30,68 +38,19 @@ class shareView: UIView {
     }()
     
 
+    private var  itemButtons:[UIButton]?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = UIColor.white
         self.addSubview(stackview)
+        buildStackItemView(items: showItems, ItemRowNumbers: COLUME, mainStack: stackview, itemButtons: &itemButtons)
         _ = stackview.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.bottomEqualToView(self)?.topEqualToView(self)
-        
-         self.buildStackIcon()
-        
         
 
     }
 
     
-    private func buildStackIcon(){
-        ROWNUMBERS = ( images.count / COLUME )  + ( images.count % COLUME == 0 ? 0 : 1)
-        var j = 0
-        var step = COLUME
-        for i in 0..<ROWNUMBERS{
-            
-            
-            let stack = UIStackView.init()
-            //stack.alignment = .fill
-            stack.axis = .horizontal
-            stack.spacing = 20
-            stack.distribution = .fillEqually
-            
-            
-            j = i*COLUME
-            if i  == ROWNUMBERS - 1 {
-                step = min(j+COLUME, self.images.count) - COLUME
-            }
-            for k in j..<j+step{
-                let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: 50, height: 75))
-                view.backgroundColor = UIColor.white
-                
-                let btn =  UIButton.init()
-                btn.backgroundColor = UIColor.clear
-                btn.setImage(UIImage.init(named: images[k]), for: .normal)
-                btn.addTarget(self, action: #selector(click), for: .touchUpInside)
-                btn.setTitle(images[k], for: .normal)
-                
-                
-                let text = UILabel.init()
-                text.font = UIFont.systemFont(ofSize: 14)
-                text.text = images[k]
-                text.textAlignment = .center
-                
-                view.addSubview(btn)
-                view.addSubview(text)
-                _ = btn.sd_layout().leftSpaceToView(view,10)?.rightSpaceToView(view,10)?.topSpaceToView(view,5)?.heightIs(45)
-                _ = text.sd_layout().topSpaceToView(btn,2)?.leftEqualToView(btn)?.rightEqualToView(btn)?.bottomSpaceToView(view,5)
-                
-                stack.addArrangedSubview(view)
-                
-            }
-            
-            stackview.addArrangedSubview(stack)
-        }
-        
-        
-    }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -99,20 +58,4 @@ class shareView: UIView {
     
 }
 
-extension shareView{
- 
-   @objc func click(sender:UIButton){
-    if let text = sender.titleLabel?.text{
-            switch text{
-            case "qq":
-                print("qq 分享")
-            case "sina":
-                print("sina 分享")
-            default:
-                break
-            }
-    }
-    
-    }
 
-}

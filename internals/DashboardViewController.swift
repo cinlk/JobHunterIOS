@@ -233,7 +233,7 @@ extension DashboardViewController: UITableViewDelegate{
         else if indexPath.section == 1{
             return 100
         }
-        return 60
+        return jobdetailCell.cellHeight()
     }
     
     

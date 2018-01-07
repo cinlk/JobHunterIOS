@@ -60,4 +60,7 @@ class RecruiterCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
+    class func cellHeight()->CGFloat{
+        return 80.0
+    }
 }

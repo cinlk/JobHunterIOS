@@ -10,8 +10,12 @@ import UIKit
 
 extension UIColor{
     
-    convenience init(r:Int,g:Int,b:Int,alpha:CGFloat = 1) {
+    convenience init(r:CGFloat,g:CGFloat,b:CGFloat,alpha:CGFloat = 1) {
         
-        self.init(red: CGFloat(r) / 255.0, green: CGFloat(g) / 255.0, blue: CGFloat(b) / 255.0, alpha: alpha)
+        self.init(red: r / 255.0, green: g / 255.0, blue: b / 255.0, alpha: alpha)
+    }
+    
+    class func randomeColor()-> UIColor{
+       return UIColor.init(r: CGFloat(arc4random()%255), g: CGFloat(arc4random()%255), b: CGFloat(arc4random()%255))
     }
 }

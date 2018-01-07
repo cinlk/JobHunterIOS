@@ -195,6 +195,7 @@ class companyscrollTableViewController: UIViewController {
         headerView.underLine.frame = CGRect.init(x: headerView.btn1.center.x + 15, y: headerView.frame.height - 1 , width: 30, height: 1)
         
         
+        
     }
     
     deinit {
@@ -223,6 +224,7 @@ extension companyscrollTableViewController{
         var up =  UIImage.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "upload")
       
         let b1 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
+        
         b1.addTarget(self, action: #selector(share), for: .touchUpInside)
         b1.setImage(up, for: .normal)
         b1.clipsToBounds = true
@@ -516,6 +518,7 @@ class CompanyHeaderView:UIView{
     lazy var companyName:UILabel = {
         let label = UILabel.init()
         label.text = ""
+        
         label.font = UIFont.boldSystemFont(ofSize: 15)
         return label
     }()

@@ -8,16 +8,11 @@
 
 import UIKit
 
+ 
 class JobDetailHeader:UIView {
 
-//    lazy  var categoryName: UILabel = {
-//        let categoryName = UILabel()
-//        categoryName.font = UIFont.boldSystemFont(ofSize: 12)
-//        categoryName.textAlignment = .center
-//        categoryName.textColor = UIColor.black
-//        return categoryName
-//    }()
-    
+ 
+   
     lazy var line:UIView = {
        let line = UIView.init()
        line.backgroundColor = UIColor.black
@@ -25,13 +20,12 @@ class JobDetailHeader:UIView {
        return line
     }()
     
-    var jobName: UILabel!
-    var address: UILabel!
-    var salary: UILabel!
-    var education: UILabel!
-    var type: UILabel!
-    var des:UILabel!
-    
+    private var jobName: UILabel!
+    private var address: UILabel!
+    private var salary: UILabel!
+    private var education: UILabel!
+    private var type: UILabel!
+    private var des:UILabel!
     
     // 户口？
     
@@ -44,6 +38,7 @@ class JobDetailHeader:UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         self.addSubview(line)
         _ = line.sd_layout().bottomEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(1)
         
@@ -60,6 +55,7 @@ class JobDetailHeader:UIView {
         des = UILabel.init()
         des.font = UIFont.systemFont(ofSize: 14)
         
+
         
         self.addSubview(jobName)
         self.addSubview(address)

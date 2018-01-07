@@ -9,6 +9,9 @@
 
 import UIKit
 
+fileprivate let campus = "campus"
+fileprivate let intern = "intern"
+
 class localData: NSObject {
     var pref: UserDefaults!
     
@@ -19,81 +22,62 @@ class localData: NSObject {
         
     }
     
-    // 实习条件 数据
-    open func  setshixiCondtion(value: [Dictionary<String,String>]){
-        pref.set(value, forKey: "shixicondition")
+    // 实习 或社招订阅 数据
+    /*
+     *   {"社招":[],"实习":[]}
+    */
+    open func  setsubscribe(value: Dictionary<String,[Dictionary<String,String>]>){
+        pref.set(value, forKey: "subscrible")
+    }
+    open func clearSubscribeData(){
+        pref.removeObject(forKey: "subscrible")
     }
     
-    open func getshixiCondtion()->[Dictionary<String,String>]?{
-        guard let con =  pref.object(forKey: "shixicondition") as? [Dictionary<String,String>]  else {
+    open func getSubscribeByType(type:String)->[Dictionary<String,String>]?{
+        
+        guard let con =  pref.object(forKey: "subscrible") as? Dictionary<String,[Dictionary<String,String>]>  else {
             return nil
         }
-        return con
+        return con[type]
+        
     }
     
-    open func deleteShixiCondition(index:Int){
-        guard var con =  pref.object(forKey: "shixicondition") as?  [Dictionary<String,String>] else {
+    open func deleteSubscribeByIndex(type:String,_ index:Int){
+        guard var con =  pref.object(forKey: "subscrible") as?  Dictionary<String,[Dictionary<String,String>]> else {
             return
         }
-        con.remove(at: index)
-        pref.set(con, forKey: "shixicondition")
+        con[type]?.remove(at: index)
+        pref.set(con, forKey: "subscrible")
     }
     
-    open func appendShixiCondition(value: Dictionary<String,String>){
-        var condtion = [Dictionary<String,String>]()
-        if let con =  pref.object(forKey: "shixicondition") as?  [Dictionary<String,String>]{
-            condtion  = con
+    open func appendSubscribe(type:String, value: Dictionary<String,String>){
+        
+        var tmp:Dictionary<String,[Dictionary<String,String>]>  = [campus:[],intern:[]]
+        
+        if let   con =  pref.object(forKey: "subscrible") as?  Dictionary<String,[Dictionary<String,String>]>{
+            print(con)
+            tmp = con
         }
-        condtion.append(value)
-        pref.set(condtion, forKey: "shixicondition")
+       
+        
+        tmp[type]?.append(value)
+        pref.set(tmp, forKey: "subscrible")
+       
 
     }
-    open func updateShixiCondition(value:Dictionary<String,String>,index:Int){
-        var con  = pref.object(forKey: "shixicondition") as! [Dictionary<String,String>]
-        con.remove(at: index)
-        con.insert(value, at: index)
-        pref.set(con, forKey: "shixicondition")
+    open func updateSubscribe(type:String, value:Dictionary<String,String>,index:Int){
         
-    }
-    
-    // 社招条件 数据
-    
-    open func  setshezhaoCondtion(value: [Dictionary<String,String>]){
-        pref.set(value, forKey: "shezhaocondition")
-    }
-    
-    open func getshezhaoCondtion()->[Dictionary<String,String>]?{
-        guard let con =  pref.object(forKey: "shezhaocondition") as? [Dictionary<String,String>]  else {
-            return nil
-        }
-        return con
-    }
-    
-    open func deleteshezhaoCondition(index:Int){
-        guard var con =  pref.object(forKey: "shezhaocondition") as?  [Dictionary<String,String>] else {
+        guard var con =  pref.object(forKey: "subscrible") as?  Dictionary<String,[Dictionary<String,String>]> else {
             return
         }
-        con.remove(at: index)
-        pref.set(con, forKey: "shezhaocondition")
-    }
-    
-    open func appendshezhaoCondition(value: Dictionary<String,String>){
-        var condtion = [Dictionary<String,String>]()
-        if let con =  pref.object(forKey: "shezhaocondition") as?  [Dictionary<String,String>]{
-            condtion  = con
-        }
-        condtion.append(value)
-        pref.set(condtion, forKey: "shezhaocondition")
+      
+        con[type]?.remove(at: index)
+        con[type]?.insert(value, at: index)
+        pref.set(con, forKey: "subscrible")
         
     }
     
-    open func updateshezhaoCondition(value:Dictionary<String,String>,index:Int){
-        var con  = pref.object(forKey: "shezhaocondition") as! [Dictionary<String,String>]
-        con.remove(at: index)
-        con.insert(value, at: index)
-        pref.set(con, forKey: "shezhaocondition")
-        
-    }
+ 
     
     
     ///

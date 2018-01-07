@@ -159,5 +159,31 @@ extension UIImage{
     
    
     
+    func kt_drawRectWithRoundedCorner(radius: CGFloat, _ sizetoFit: CGSize) -> UIImage {
+        let rect = CGRect(origin: CGPoint(x: 0, y: 0), size: sizetoFit)
+        
+        UIGraphicsBeginImageContextWithOptions(rect.size, false, UIScreen.main.scale)
+        UIGraphicsGetCurrentContext()!.addPath(UIBezierPath(roundedRect: rect, byRoundingCorners: UIRectCorner.allCorners,
+                                                            cornerRadii: CGSize(width: radius, height: radius)).cgPath)
+        UIGraphicsGetCurrentContext()?.clip()
+        
+        self.draw(in: rect)
+        
+        CGContext.drawPath(UIGraphicsGetCurrentContext()!)(using: .fillStroke)
+        let output = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        return output!
+    }
+ 
+    
 }
 
+
+extension UIImageView{
+    
+    func kt_addCorner(radius: CGFloat) {
+        self.image = self.image?.kt_drawRectWithRoundedCorner(radius: radius, self.bounds.size)
+    }
+    
+}

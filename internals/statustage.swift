@@ -29,6 +29,10 @@ class statustage: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         self.isUserInteractionEnabled = false
+        self.selectionStyle = .none
+        
+        self.status.sizeToFit()
+        self.time.sizeToFit()
     
     }
 

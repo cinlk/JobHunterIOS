@@ -8,55 +8,53 @@
 
 import UIKit
 
-class recommendation: UIViewController,UITableViewDelegate,UITableViewDataSource {
+class recommendation: UIViewController {
 
     
-    var data:[Dictionary<String,String>]!
-    var table:UITableView!
+    private var data:[Dictionary<String,String>]!
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        self.view.backgroundColor  = UIColor.white
-
-        self.navigationItem.title =  "推荐职位"
-        // 我的订阅
-        
-        let sub =  UIBarButtonItem.init(title: "我的订阅", style: .plain, target: self, action: #selector(addSub))
-        
-        sub.setTitleTextAttributes([NSAttributedStringKey.foregroundColor:UIColor.blue,
-                                    NSAttributedStringKey.font : UIFont.systemFont(ofSize: 14)], for: .normal)
-        self.navigationItem.rightBarButtonItem  = sub
-        data = self.loadJobs()
-        
-        
-        table =  UITableView()
+    lazy var table:UITableView = { [unowned self] in
+        let table = UITableView.init(frame: self.view.bounds, style: .plain)
         table.frame  = self.view.frame
         table.tableFooterView = UIView()
         table.delegate = self
         table.dataSource = self
+        table.register(jobdetailCell.self, forCellReuseIdentifier: jobdetailCell.identity())
+        return table
+    }()
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
-        self.table.register(jobdetailCell.self, forCellReuseIdentifier: "job")
-        // Do any additional setup after loading the view.
-        
-        self.view.addSubview(table)
+        self.setViews()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationItem.title =  "推荐职位"
+
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationItem.title =  ""
         
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    
+}
+
+
+
+extension recommendation: UITableViewDelegate,UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var cell  =  table.dequeueReusableCell(withIdentifier: "job", for: indexPath) as? jobdetailCell
-        if cell == nil{
-            cell  = jobdetailCell()
+        if let  cell  =  table.dequeueReusableCell(withIdentifier: jobdetailCell.identity(), for: indexPath) as? jobdetailCell{
+            cell.createCells(items: data[indexPath.row])
+            cell.selectionStyle = .none
+            return cell
         }
-        cell?.createCells(items: data[indexPath.row])
-        cell?.selectionStyle = .none
-        return cell!
+        return UITableViewCell.init()
     }
     
     
@@ -67,42 +65,47 @@ class recommendation: UIViewController,UITableViewDelegate,UITableViewDataSource
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return data.count
     }
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         table.deselectRow(at: indexPath, animated: false)
         
         let detail =  JobDetailViewController()
         detail.infos = data[indexPath.row]
-        // 子视图 返回lable修改为空
-        let backButton =  UIBarButtonItem.init(title: "", style: .done, target: nil, action: nil)
-        self.navigationItem.backBarButtonItem = backButton
         self.navigationController?.pushViewController(detail, animated: true)
-
+        
         
         
     }
     
-    
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return jobdetailCell.cellHeight()
     }
-    */
-
 }
 
 
 extension recommendation {
     
-    func loadJobs()->[Dictionary<String,String>]{
+    
+    private func setViews(){
         
-        let datas = [["image":"swift","companyName":"apple","jobname":"码农","locate":"北京","salary":"150-190元/天","createTime":"09-01","times":"4天/周","time":"6个月","hired":"可转正","scholar":"本科"],
-                     ["image":"onedriver","companyName":"microsoft","jobname":"AI","locate":"上海","salary":"150-190元/天","createTime":"09-01","times":"4天/周","time":"6个月","hired":"可转正","scholar":"本科"],
-                     ["image":"fly","companyName":"宝骏","jobname":"设计师","locate":"上海","salary":"150-190元/天","createTime":"09-01","times":"4天/周","time":"6个月","hired":"可转正","scholar":"本科"]
+        
+        let sub =  UIBarButtonItem.init(title: "我的订阅", style: .plain, target: self, action: #selector(addSub))
+        sub.setTitleTextAttributes([NSAttributedStringKey.foregroundColor:UIColor.blue,
+                                    NSAttributedStringKey.font : UIFont.systemFont(ofSize: 14)], for: .normal)
+        self.navigationItem.rightBarButtonItem  = sub
+        self.view.addSubview(table)
+        data = self.loadJobs()
+        self.table.reloadData()
+        
+    }
+    
+    
+    private func loadJobs()->[Dictionary<String,String>]{
+        
+        let datas = [["picture":"swift","company":"apple","jobName":"码农","address":"北京","salary":"150-190元/天","create_time":"09-01","education":"本科","type":"社招"],
+                     ["picture":"swift","company":"apple","jobName":"码农","address":"北京","salary":"150-190元/天","create_time":"09-01","education":"本科","type":"社招"],
+                     ["picture":"swift","company":"apple","jobName":"码农","address":"北京","salary":"150-190元/天","create_time":"09-01","education":"本科","type":"社招"],
+            
         ]
         
         return datas
@@ -111,8 +114,6 @@ extension recommendation {
     @objc func addSub(){
         
         let subscribleView = subscribleItem()
-        let backButton =  UIBarButtonItem.init(title: "", style: .done, target: nil, action: nil)
-        self.navigationItem.backBarButtonItem = backButton
         self.navigationController?.pushViewController(subscribleView, animated: true)
         
     }

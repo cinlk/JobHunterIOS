@@ -1,26 +1,26 @@
 //
-//  conditionCell.swift
+//  conversationCell.swift
 //  internals
 //
-//  Created by ke.liang on 2017/10/3.
-//  Copyright © 2017年 lk. All rights reserved.
+//  Created by ke.liang on 2018/1/1.
+//  Copyright © 2018年 lk. All rights reserved.
 //
 
 import UIKit
 
-class conditionCell: UITableViewCell {
+class conversationCell: UITableViewCell {
 
     @IBOutlet weak var name: UILabel!
     
-  
+    @IBOutlet weak var content: UILabel!
     
-    @IBOutlet weak var value: UILabel!
+    @IBOutlet weak var time: UILabel!
+    
+    @IBOutlet weak var touxiang: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        self.selectionStyle = .none
-        
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -31,11 +31,10 @@ class conditionCell: UITableViewCell {
     
     
     class func identity()->String{
-        return "conditin"
+        return "conversationCell"
     }
     
-    class func cellHeight()->CGFloat{
-        return 45.0
+    class func cellHeight()->CGFloat {
+        return 60.0
     }
-    
 }

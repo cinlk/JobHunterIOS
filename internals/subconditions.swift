@@ -8,58 +8,36 @@
 
 import UIKit
 
+
+
+fileprivate let campus = "campus"
+fileprivate let intern = "intern"
+
+
+
+fileprivate let tableHeadH:CGFloat = 64
+fileprivate let categoryH:CGFloat = 200
+fileprivate let salayViewH:CGFloat = 300
+fileprivate let internDayViewH:CGFloat = 300
+fileprivate let internMonthViewH:CGFloat = 300
+fileprivate let levelH:CGFloat = 300
+fileprivate let cityH:CGFloat = 300
+fileprivate let businessH:CGFloat = 300
+fileprivate let jobcategoryH:CGFloat = 300
+fileprivate let NotificationName = "resetTable"
+
 class subconditions: UIViewController {
 
-    var table:UITableView!
-    
-    var type = ["校招":["工作城市","职位类别","从事行业","薪资范围","学历"],"实习":["实习城市","职位类别","从事行业","实习天数","实习薪水","实习时间","学历"]]
-    var name = ["职位类型":"请选择"]
-    
-    var value = ["工作城市":"(必选)请选择","实习城市":"(必选)请选择","职位类别":"(必选)请选择","从事行业":"请选择","薪资范围":"请选择","实习天数":"请选择","实习时间":"请选择","学历":"请选择","实习薪水":"请选择"]
     
     
-    //从事行业
     
-    // 弹出界面
-    var darkView:UIView!
-    var lx:leixin!
-    var centerlxY:CGFloat = 0
-    
-    var citys:conditionCity!
-    var centerCityY:CGFloat = 0
-    
-    var industry:conditionCity!
-    var centerIndustryY:CGFloat = 0
-    
-    var salaryrange:leixin!
-    var centersalaryY:CGFloat = 0
-    
-    var shixiday:leixin!
-    var centershixidayY:CGFloat = 0
-    
-    var shiximonth:leixin!
-    var centermonthY:CGFloat = 0
-    
-    var level:leixin!
-    var centerlevelY:CGFloat = 0
-    
-    
-    var  jobcategorys:Jobclassificatin!
-    var centercY:CGFloat = 0
-    
-    //storage
-    var data  =  localData()
-    
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        name["职位类型"]  = "校招"
+    lazy var table:UITableView = { [unowned self] in
+        var table = UITableView.init()
         table = UITableView.init(frame: self.view.frame)
-        table.tableHeaderView =  UIView.init(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 64))
+        table.tableHeaderView =  UIView.init(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: tableHeadH))
         table.tableHeaderView?.backgroundColor = UIColor.blue
         table.tableFooterView =  UIView()
-        table.register(UINib(nibName:"conditionCell", bundle:nil), forCellReuseIdentifier: "conditions")
+        table.register(UINib(nibName:"conditionCell", bundle:nil), forCellReuseIdentifier: conditionCell.identity())
         
         
         let title =  UILabel()
@@ -91,179 +69,187 @@ class subconditions: UIViewController {
         
         table.tableHeaderView?.addSubview(cancel)
         
-        _  = cancel.sd_layout().leftSpaceToView(self.table.tableHeaderView,10)?.bottomSpaceToView(self.table.tableHeaderView,5)?.widthIs(20)?.heightIs(20)
-        
-        
-        
+        _  = cancel.sd_layout().leftSpaceToView(table.tableHeaderView,10)?.bottomSpaceToView(table.tableHeaderView,5)?.widthIs(20)?.heightIs(20)
+        table.isScrollEnabled = false
         table.delegate = self
         table.dataSource = self
+        return table
         
-        // 影藏页面
+    }()
+    
+    
+    private let subscribeData = SubScribeConditionItems.init()
+
+
+    //从事行业
+    
+    // 弹出界面
+    lazy var darkView:UIView = { [unowned self] in
         
-        darkView = UIView()
-        darkView.frame = CGRect(x: 0, y: 0, width:UIScreen.main.bounds.size.width, height:UIScreen.main.bounds.size.height)
+        let darkView = UIView()
+        darkView.frame = CGRect(x: 0, y: 0, width:ScreenW, height:ScreenH)
         darkView.backgroundColor = UIColor(red: 0 / 255.0, green: 0 / 255.0, blue: 0 / 255.0, alpha: 0.5) // 设置半透明颜色
-        
         darkView.isUserInteractionEnabled = true // 打开用户交互
         
         let singTap = UITapGestureRecognizer(target: self, action:#selector(hidenView)) // 添加点击事件
-        
         singTap.numberOfTouchesRequired = 1
-        
         darkView.addGestureRecognizer(singTap)
+        return darkView
+    }()
+    
+    
+    fileprivate lazy  var category:ChooseOneView = { [unowned self] in
+        let category =  ChooseOneView.init(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: categoryH), info: subscribeData.types )
+        category.call  = self.oneItem
+        
+        return category
+    }()
+    private var centerlxY:CGFloat = 0
+    
+    
+    
+    fileprivate lazy var citys:CityAndBusiness = {
 
-        
-        lx =  leixin()
-        lx.call  = self.getleixin
-        
-        lx.frame = CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 100)
-        centerlxY = lx.centerY
-        
-        citys = conditionCity(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 300))
-        centerCityY = citys.centerY
+        let citys = CityAndBusiness.init(frame:  CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: cityH), leftInfo: subscribeData.cityCond.city, righInfo: subscribeData.cityCond.cityChilds)
         citys.call  = getCity
-        
-        //
-        
-        industry  = conditionCity(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 300))
-        centerIndustryY = industry.centerY
-        industry.call  = getCity
-        
-        //
-        salaryrange = leixin(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 300))
-        salaryrange.call  = self.getleixin
-        centersalaryY = salaryrange.centerY
-        
-        
-        shixiday = leixin(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 300))
-        shixiday.call  = self.getleixin
-        centershixidayY = shixiday.centerY
-        
-        
-        shiximonth = leixin(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 300))
-        shiximonth.call  = self.getleixin
-        centermonthY = shiximonth.centerY
-        
-        
-        level = leixin(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 300))
-        level.call  = self.getleixin
-        centerlevelY = level.centerY
-        
-        //TODO
-        jobcategorys = Jobclassificatin(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 300))
-        jobcategorys.call  = self.getleixin
-        centercY = jobcategorys.centerY
-        
-        
-        
-        
-        self.view.addSubview(table)
-        
-        
-        
-        // Do any additional setup after loading the view.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+        return citys
+    }()
     
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    var centerCityY:CGFloat = 0
+    
+    fileprivate lazy var business:CityAndBusiness = {
+        let business  = CityAndBusiness.init(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: businessH), leftInfo: subscribeData.businessCond.business, righInfo: subscribeData.businessCond.businessChilds)
+        business.call  = getCity
+        return business
+    }()
+    
+    var centerIndustryY:CGFloat = 0
+    
+    fileprivate lazy var salaryrange:ChooseOneView = { [unowned self] in
+        let salaryrange = ChooseOneView(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: salayViewH), info: subscribeData.salary)
+        salaryrange.call  = self.oneItem
+       
+        return salaryrange
+    }()
+    
+    var centersalaryY:CGFloat = 0
+    
+    fileprivate lazy var internDay:ChooseOneView = {
+        let  internDay = ChooseOneView(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: internDayViewH), info: subscribeData.internDay)
+        
+        internDay.call  = self.oneItem
+        return internDay
+    }()
+    var centershixidayY:CGFloat = 0
+    
+     fileprivate lazy  var internMonth:ChooseOneView = { [unowned self] in
+        let  internMonth = ChooseOneView(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: internMonthViewH),info: subscribeData.internMonth)
+        internMonth.call  = self.oneItem
+        return internMonth
+    }()
+    
+    
+    var centermonthY:CGFloat = 0
+    
+     fileprivate lazy var degree:ChooseOneView = {
+        let degree = ChooseOneView(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: levelH),info: subscribeData.degree)
+        degree.call  = self.oneItem
+        return degree
+    }()
+    
+    
+    
+    var centerlevelY:CGFloat = 0
+    
+    
+    fileprivate lazy var  jobcategorys:Jobclassificatin = { [unowned self] in
+        
+        let jobcategorys = Jobclassificatin.init(frame: CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: jobcategoryH), level1: subscribeData.jobCategory.level1, level2:  subscribeData.jobCategory.level2, level3:  subscribeData.jobCategory.level3)
+        jobcategorys.call  = self.oneItem
+        return jobcategorys
+    }()
+    
+    var centercY:CGFloat = 0
+    
+    fileprivate var isEdit = false
+    fileprivate var row:Int = 0
+    
+    //storage
+    let data  =  localData.shared
+    
+    
+    
+    
+    init(modifyData:[String:String]? = nil, row:Int? = nil) {
+        super.init(nibName: nil, bundle: nil)
+        
+        if let data = modifyData{
+            subscribeData.swich = data["职位类型"]!
+            subscribeData.setCurrentValueByDict(data: data)
+            isEdit = true
+            self.row = row!
+        }
     }
-    */
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.setViews()
+        
+    }
+
 
 }
 
 extension  subconditions:UITableViewDelegate,UITableViewDataSource{
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section  == 0 {
-            return 1
-        }
-        return (type[name["职位类型"]!]?.count)!
+        
+        return  subscribeData.currentTypeList.count
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         
-        let cell =   table.dequeueReusableCell(withIdentifier: "conditions", for: indexPath) as! conditionCell
-        if indexPath.section == 0 {
-            cell.name.text = "职位类型"
-            cell.value.text  = name["职位类型"]
+        if let cell =   table.dequeueReusableCell(withIdentifier: conditionCell.identity(), for: indexPath) as? conditionCell{
+            let name = subscribeData.currentTypeList[indexPath.row]
+            cell.name.text =  name
+            cell.value.text  = subscribeData.getCurrentValue()[name]
             
+            return cell
         }
-        else{
-            cell.name.text = type[name["职位类型"]!]?[indexPath.row]
-            
-            cell.value.text  = value[(type[name["职位类型"]!]?[indexPath.row])!]
-            cell.selectionStyle = .none
-        }
-        cell.selectionStyle = .none
-        return cell
+        
+        return UITableViewCell.init()
+      
+        
+        
     }
     
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 15
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return conditionCell.cellHeight()
     }
+    
+   
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath) as! conditionCell
-        switch (cell.name?.text)! {
-        case "职位类型":
-            lx.item = ["校招","实习"]
-            self.showlexin(name:cell.name.text!)
-            
-        case "工作城市","实习城市":
-            self.showcity(name: cell.name.text!)
-            
-             self.citys.leftcity = ["不限","热门城市","广东","浙江","湖北"]
-             self.citys.rightcity = ["不限":[],"热门城市":["北京","上海","广州","深圳"],"广东":["广州","韶关","深圳"],"浙江":["杭州","温州","湖州"],"湖北":["武汉","黄石"]]
-        case "从事行业":
-            self.industry.leftcity = ["不限","IT/互联网","电子/通信/硬件","金融","汽车/机械/制造"]
-            self.industry.rightcity = ["不限":[],"IT/互联网":["互联网/电子商务","网络游戏","计算机软件","IT服务/系统集成"],"电子/通信/硬件":["电子技术/半导体/集成电路","通信","计算机硬件"],"金融":["银行","保险","会计/审计","基金/证券/投资"],"汽车/机械/制造":["汽车/模特","印刷/包装/造纸","加工制造"]]
-            self.showindustry(name: cell.name.text!)
-        case "薪资范围":
-            self.salaryrange.item = ["不限","1000-2000","2000-3000","3000-4000","4000-5000"]
-            self.showsalary(name: cell.name.text!)
-        
-        case "实习薪水":
-            self.salaryrange.item = ["不限","80/天","100/天","150/天","200/天","250/天"]
-            self.showsalary(name: cell.name.text!)
-            
-        case "实习天数":
-            self.shixiday.item = ["2天/周","3天/周","4天/周","5天/周"]
-            self.showshixiday(name: cell.name.text!)
-            
-        case "实习时间":
-            self.shiximonth.item = ["1个月","2个月","3个月","4个月","5个月","半年","半年以上"]
-            self.showshiximonth(name: cell.name.text!)
-        case "学历":
-            self.level.item = ["不限","大专","本科","硕士","博士"]
-            self.showlevel(name: cell.name.text!)
-        case "职位类别":
-            self.jobcategorys.t1 = ["销售/客服","技术","产品/设计/运营","项目管理/质量管理"]
-            self.jobcategorys.t2 = ["":[],"销售/客服":["销售业务","销售管理","销售行政","客服"],"技术":["前端开发","后端开发"],"产品/设计/运营":["产品","设计","运营"],"项目管理/质量管理":["项目管理/项目协调","质量管理/安全防护"]]
-            self.jobcategorys.t3 = ["":[],"销售业务":["销售代表","客户代表","项目执行","代理销售","保险销售"],"销售管理":["客户经理/主管","大客户销售经理","招商总监","团购经理/主管"]
-                ,"销售行政":["销售行政专员/助理","商务专员/助理","业务分析师/主管"],"客服":["VIP专员","网络客服","客服总监"],"前端开发":["web开发","JavaScript","HTML5","Flash"],
-                 "后端开发":["Java","Python","PHP",".NET","C#","C/C++","Golang"],"项目管理/项目协调":["项目专员"],"质量管理/安全防护":["质量检测员"],"产品":["产品助理","网页产品"],"设计":["网页设计","UI设计","美术设计"],"运营":["数据运营","产品运营"]]
-            self.showjobclasses(name: cell.name.text!)
-            
-        default:
-            break
+        guard let name = cell.name.text else{
+            return
         }
+        // 不能修改职位类型
+        if isEdit && indexPath.row == 0{
+            return
+        }
+        self.showSelectedView(title: name)
         
         
     }
@@ -271,207 +257,165 @@ extension  subconditions:UITableViewDelegate,UITableViewDataSource{
 }
 
 extension subconditions{
-    func showlexin(name:String){
-        self.view.addSubview(darkView)
-        self.view.addSubview(lx)
-        lx.title.text = name
-        UIView.animate(withDuration: 0.5, animations: {
-                    self.lx.frame  = CGRect(x: 0, y: self.view.frame.height-200, width: self.view.frame.width, height: 200)
-        }, completion: nil)
+    
+    
+    private func setViews(){
+        
+        centerlxY = category.centerY
+        centersalaryY = salaryrange.centerY
+        centershixidayY = internDay.centerY
+        centermonthY = internMonth.centerY
+        centerlevelY = degree.centerY
+        centerCityY = citys.centerY
+        centerIndustryY = business.centerY
+        centercY = jobcategorys.centerY
+        
+        
+        self.view.addSubview(table)
+        self.view.addSubview(category)
+        self.view.addSubview(salaryrange)
+        self.view.addSubview(internMonth)
+        self.view.addSubview(internDay)
+        self.view.addSubview(degree)
+        self.view.addSubview(citys)
+        self.view.addSubview(business)
+        self.view.addSubview(jobcategorys)
     }
+    
+    func showSelectedView(title:String){
+        self.view.insertSubview(darkView, at: 1)
+        
+        switch title {
+            case "职位类型":
+                category.title.text = title
+                UIView.animate(withDuration: 0.5, animations: {
+                    self.category.frame  = CGRect(x: 0, y: self.view.frame.height-categoryH, width: self.view.frame.width, height: categoryH)
+                }, completion: nil)
+        
+            case "工作城市","实习城市":
+                citys.title.text  = title
+                UIView.animate(withDuration: 0.5, animations: {
+                    self.citys.frame = CGRect(x: 0, y: self.view.frame.height-cityH, width: self.view.frame.width, height: cityH)
+                    
+                }, completion: nil)
+        
+            case "从事行业":
+                business.title.text = title
+                UIView.animate(withDuration: 0.5, animations: {
+                    self.business.frame = CGRect(x: 0, y: self.view.frame.height-businessH, width: self.view.frame.width, height: businessH)
+                    
+                }, completion: nil)
+            
+             case "薪资范围":
+                self.salaryrange.changeInfoValue(newValue: subscribeData.salary)
+                salaryrange.title.text = title
+                UIView.animate(withDuration: 0.5, animations: {
+                    self.salaryrange.frame = CGRect(x: 0, y: self.view.frame.height-salayViewH, width: self.view.frame.width, height: salayViewH)
+                    
+                }, completion: nil)
+            
+            case "实习薪水":
+                self.salaryrange.changeInfoValue(newValue: subscribeData.internSalary)
+                salaryrange.title.text = title
+                UIView.animate(withDuration: 0.5, animations: {
+                    self.salaryrange.frame = CGRect(x: 0, y: self.view.frame.height-salayViewH, width: self.view.frame.width, height: salayViewH)
+                    
+                }, completion: nil)
+            
+            case "实习天数":
+                internDay.title.text = title
+                UIView.animate(withDuration: 0.5, animations: {
+                    self.internDay.frame = CGRect(x: 0, y: self.view.frame.height-internDayViewH, width: self.view.frame.width, height: internDayViewH)
+                    
+                }, completion: nil)
+ 
+            case "实习时间":
+                internMonth.title.text = title
+                UIView.animate(withDuration: 0.5, animations: {
+                    self.internMonth.frame = CGRect(x: 0, y: self.view.frame.height-internMonthViewH, width: self.view.frame.width, height: internMonthViewH)
+                    
+                }, completion: nil)
+        
+             case "学历":
+                degree.title.text = title
+                UIView.animate(withDuration: 0.5, animations: {
+                    self.degree.frame = CGRect(x: 0, y: self.view.frame.height-levelH, width: self.view.frame.width, height: levelH)
+                    
+                }, completion: nil)
+        
+             case "职位类别":
+                jobcategorys.title.text = title
+                UIView.animate(withDuration: 0.5, animations: {
+                    self.jobcategorys.frame = CGRect(x: 0, y: self.view.frame.height-300, width: self.view.frame.width, height: 300)
+                    
+                }, completion: nil)
+ 
+            default:
+                break
+                }
+        
+          
+    }
+    
+    
+
     // 回调方法
-    func getleixin(type:String,val:String){
+    func oneItem(type:String,val:String){
          if type  == "职位类型"{
-            name[type] = val
-            self.value = ["工作城市":"(必选)请选择","实习城市":"(必选)请选择","职位类别":"(必选)请选择","从事行业":"请选择","薪资范围":"请选择","实习天数":"请选择","实习时间":"请选择","学历":"请选择","实习薪水":"请选择"]
+            subscribeData.swich = val
+            subscribeData.resetCurrentValue()
+            // 取消被选中的cell item
+            NotificationCenter.default.post(name:  NSNotification.Name(rawValue: NotificationName), object: self, userInfo: nil)
             
         }
         else{
-            value[type] = val
+            subscribeData.updateCurrentValue(value: val, key: type)
         }
         self.hidenView()
-        //重置选择数据
-
         self.table.reloadData()
     }
     
-    func showcity(name:String){
-        self.view.addSubview(darkView)
-        self.view.addSubview(citys)
-        citys.title.text  = name
-        UIView.animate(withDuration: 0.5, animations: {
-            self.citys.frame = CGRect(x: 0, y: self.view.frame.height-300, width: self.view.frame.width, height: 300)
-
-        }, completion: nil)
-        
-    }
     func getCity(type:String,locate:String){
-        value[type] =  locate
+        subscribeData.updateCurrentValue(value: locate, key: type)
         self.hidenView()
         self.table.reloadData()
         
         
     }
     
-    func showindustry(name:String){
-        self.view.addSubview(darkView)
-        self.view.addSubview(self.industry)
-        industry.title.text = name
-        UIView.animate(withDuration: 0.5, animations: {
-            self.industry.frame = CGRect(x: 0, y: self.view.frame.height-300, width: self.view.frame.width, height: 300)
-            
-        }, completion: nil)
-        
-    }
-    
-    func showsalary(name:String){
-        self.view.addSubview(darkView)
-        self.view.addSubview(self.salaryrange)
-        salaryrange.title.text = name
-        UIView.animate(withDuration: 0.5, animations: {
-            self.salaryrange.frame = CGRect(x: 0, y: self.view.frame.height-300, width: self.view.frame.width, height: 300)
-            
-        }, completion: nil)
 
-    }
-    
-    func showshixiday(name:String){
-        self.view.addSubview(darkView)
-        self.view.addSubview(self.shixiday)
-        shixiday.title.text = name
-        UIView.animate(withDuration: 0.5, animations: {
-            self.shixiday.frame = CGRect(x: 0, y: self.view.frame.height-300, width: self.view.frame.width, height: 300)
-            
-        }, completion: nil)
-        
-    }
-    
-    func showshiximonth(name:String){
-        self.view.addSubview(darkView)
-        self.view.addSubview(self.shiximonth)
-        shiximonth.title.text = name
-        UIView.animate(withDuration: 0.5, animations: {
-            self.shiximonth.frame = CGRect(x: 0, y: self.view.frame.height-300, width: self.view.frame.width, height: 300)
-            
-        }, completion: nil)
-        
-    }
-    
-    
-    
-    func showlevel(name:String){
-        self.view.addSubview(darkView)
-        self.view.addSubview(self.level)
-        level.title.text = name
-        UIView.animate(withDuration: 0.5, animations: {
-            self.level.frame = CGRect(x: 0, y: self.view.frame.height-300, width: self.view.frame.width, height: 300)
-            
-        }, completion: nil)
-        
-    }
-
-    
-    func showjobclasses(name:String){
-        self.view.addSubview(darkView)
-        self.view.addSubview(self.jobcategorys)
-        jobcategorys.title.text = name
-        UIView.animate(withDuration: 0.5, animations: {
-            self.jobcategorys.frame = CGRect(x: 0, y: self.view.frame.height-300, width: self.view.frame.width, height: 300)
-            
-        }, completion: nil)
-        
-    }
-
-
-   
-    
-    
-    
 }
 extension subconditions{
     @objc func storage(sender:UIButton){
-        if self.name["职位类型"] == "校招"{
-            if self.value["工作城市"] == "(必选)请选择"{
-                let alert = UIAlertController.init(title: "请选择城市", message: nil, preferredStyle: .alert)
-                self.present(alert, animated: true, completion: nil)
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
-                    self.presentedViewController?.dismiss(animated: false, completion: nil)
-                }
-                
-            }else if self.value["职位类别"] == "(必选)请选择"{
+        
+           
+        let (result, err) = subscribeData.getResults()
+        guard  result != nil else {
+            let alert = UIAlertController.init(title: err!, message: nil, preferredStyle: .alert)
+            self.present(alert, animated: true, completion: nil)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
+                self.presentedViewController?.dismiss(animated: false, completion: nil)
+            }
+            return
             
-                let alert = UIAlertController.init(title: "请选择职位类别", message: nil, preferredStyle: .alert)
-                self.present(alert, animated: true, completion: nil)
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
-                    self.presentedViewController?.dismiss(animated: false, completion: nil)
-                }
-            }
-            // return
-            else{
-                
-                if self.value["从事行业"] == "请选择"{
-                    self.value["从事行业"] = "不限"
-                }
-                if self.value["薪资范围"]  == "请选择"{
-                    self.value["薪资范围"] = "不限"
-                }
-                if self.value["学历"]  == "请选择"{
-                    self.value["学历"] = "不限"
-                }
-                
-                let result:Dictionary<String,String> = ["工作城市":self.value["工作城市"]!,"职位类别":self.value["职位类别"]!,"从事行业":self.value["从事行业"]!,"薪资范围":self.value["薪资范围"]!,"学历":self.value["学历"]!]
-                
-                data.appendshezhaoCondition(value: result)
-                
-                self.dismiss(animated: true, completion: nil)
-            }
         }
-        else{
-            
-            if self.value["实习城市"] == "(必选)请选择"{
-                let alert = UIAlertController.init(title: "请选择城市", message: nil, preferredStyle: .alert)
-                self.present(alert, animated: true, completion: nil)
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
-                    self.presentedViewController?.dismiss(animated: false, completion: nil)
-                }
-
-                
-            }else if self.value["职位类别"] == "(必选)请选择"{
-            
-                let alert = UIAlertController.init(title: "请选择职位类别", message: nil, preferredStyle: .alert)
-                self.present(alert, animated: true, completion: nil)
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
-                    self.presentedViewController?.dismiss(animated: false, completion: nil)
-                }
+       
+        if result?["职位类型"] == "校招"{
+            if isEdit{
+                data.updateSubscribe(type: campus, value: result!, index: self.row)
             }else{
-                
-                if self.value["从事行业"] == "请选择"{
-                    self.value["从事行业"] = "不限"
-                }
-                if self.value["薪资范围"]  == "请选择"{
-                    self.value["薪资范围"] = "不限"
-                }
-                if self.value["实习天数"] == "请选择"{
-                    self.value["实习天数"] = "不限"
-                }
-                if self.value["实习薪水"] == "请选择"{
-                    self.value["实习薪水"] = "不限"
-                }
-                if self.value["实习时间"] == "请选择"{
-                    self.value["实习时间"] = "不限"
-                }
-                if self.value["学历"]  == "请选择"{
-                    self.value["学历"] = "不限"
-                }
-                
-                let result:Dictionary<String,String> = ["实习城市":self.value["实习城市"]!,"职位类别":self.value["职位类别"]!,"从事行业":self.value["从事行业"]!,"薪资范围":self.value["薪资范围"]!,"实习天数":self.value["实习天数"]!,"实习薪水":self.value["实习薪水"]!,"实习时间":self.value["实习时间"]!,"学历":self.value["学历"]!]
-                
-                data.appendShixiCondition(value: result)
-                self.dismiss(animated: true, completion: nil)
-
+                data.appendSubscribe(type: campus, value: result!)
             }
-            
+        }else if result?["职位类型"] == "实习"{
+            if isEdit{
+                data.updateSubscribe(type: intern, value: result!, index: self.row)
+            }else{
+                data.appendSubscribe(type: intern, value: result!)
+            }
         }
+        
+        self.dismiss(animated: true, completion: nil)
+        
     }
     
     @objc func closed(sender:UIImage){
@@ -479,24 +423,16 @@ extension subconditions{
     }
     @objc func hidenView(){
         darkView.removeFromSuperview()
-        self.lx.removeFromSuperview()
-        self.citys.removeFromSuperview()
-        self.industry.removeFromSuperview()
-        self.salaryrange.removeFromSuperview()
-        self.shixiday.removeFromSuperview()
-        self.shiximonth.removeFromSuperview()
-        self.level.removeFromSuperview()
-        self.jobcategorys.removeFromSuperview()
         
         UIView.animate(withDuration: 0.5, animations: {
             
-            self.lx?.centerY =  self.centerlxY
+            self.category.centerY =  self.centerlxY
             self.citys.centerY  = self.centerCityY
-            self.industry.centerY = self.centerIndustryY
+            self.business.centerY = self.centerIndustryY
             self.salaryrange.centerY  = self.centersalaryY
-            self.shixiday.centerY = self.centershixidayY
-            self.shiximonth.centerY = self.centermonthY
-            self.level.centerY = self.centerlevelY
+            self.internDay.centerY = self.centershixidayY
+            self.internMonth.centerY = self.centermonthY
+            self.degree.centerY = self.centerlevelY
             self.jobcategorys.centerY = self.centercY
             
         }, completion: nil)
@@ -505,19 +441,32 @@ extension subconditions{
 }
 
 
+
+
 //
-class leixin:UIView,UITableViewDelegate,UITableViewDataSource{
+private class ChooseOneView:UIView,UITableViewDelegate,UITableViewDataSource{
     
     
     // 回调传值
     var call:((String,String)->Void)?
     
     
-    var table:UITableView = UITableView()
+    private var table:UITableView = UITableView()
     var title = UILabel()
-    var item:[String] = []
-    override init(frame: CGRect) {
+    private var info:[String]!
+ 
+    
+    init(frame: CGRect, info:[String]) {
+        self.info = info
+        
         super.init(frame: frame)
+        
+        self.setViews()
+        
+    }
+    
+    private func setViews(){
+        
         title.text = "职位类型"
         title.textColor = UIColor.black
         title.font = UIFont.systemFont(ofSize: 14)
@@ -527,10 +476,14 @@ class leixin:UIView,UITableViewDelegate,UITableViewDataSource{
         table.delegate = self
         table.dataSource = self
         table.tableFooterView = UIView()
-        
+        table.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         self.addSubview(title)
         self.addSubview(line)
         self.addSubview(table)
+        
+       
+        NotificationCenter.default.addObserver(self, selector: #selector(resetTable(_:)), name: NSNotification.Name(rawValue: NotificationName), object: nil)
+        
         
         _ = title.sd_layout().topSpaceToView(self,5)?.centerXEqualToView(self)?.widthIs(120)?.heightIs(25)
         _ = line.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.topSpaceToView(self,35)?.heightIs(1)
@@ -539,6 +492,22 @@ class leixin:UIView,UITableViewDelegate,UITableViewDataSource{
         
         
         
+    }
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NotificationName), object: nil)
+    }
+    
+    @objc private func resetTable(_ notify:NotificationCenter){
+        self.table.indexPathsForSelectedRows?.forEach({ [unowned self]  (index) in
+             let cell = self.table.cellForRow(at: index)
+             cell?.textLabel?.isHighlighted = false
+        })
+        
         
     }
     
@@ -546,12 +515,12 @@ class leixin:UIView,UITableViewDelegate,UITableViewDataSource{
         return 1
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return item.count
+        return info.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell.init(style: .default, reuseIdentifier: "cell")
-        cell.textLabel?.text = item[indexPath.row]
+        cell.textLabel?.text = info[indexPath.row]
         cell.textLabel?.textAlignment = .left
         cell.textLabel?.font  = UIFont.systemFont(ofSize: 12)
         cell.selectionStyle = .none
@@ -562,10 +531,8 @@ class leixin:UIView,UITableViewDelegate,UITableViewDataSource{
         
         let cell = tableView.cellForRow(at: indexPath)
         cell?.textLabel?.isHighlighted = true
-        if self.call != nil{
-            self.call!(title.text!,(cell?.textLabel?.text)!)
-        }
         
+        self.call?(title.text!,(cell?.textLabel?.text)!)
         
     }
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
@@ -576,32 +543,35 @@ class leixin:UIView,UITableViewDelegate,UITableViewDataSource{
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return  40
     }
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    
+   
+    func changeInfoValue(newValue:[String]){
+        self.info = newValue
     }
+    
     
 }
 
 //  工作城市 和 从事行业
 
-class conditionCity:UIView,UITableViewDelegate,UITableViewDataSource{
+private class CityAndBusiness:UIView,UITableViewDelegate,UITableViewDataSource{
     
     
-    lazy var lefttable:UITableView = {
+    private lazy var lefttable:UITableView = {
         var table = UITableView()
         table.backgroundColor = UIColor.gray
         table.tableFooterView = UIView()
         table.isMultipleTouchEnabled  = false
-        
+        table.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         return table
     }()
     
-    lazy var righttable:UITableView = {
+    private lazy var righttable:UITableView = {
        var table = UITableView()
         table.backgroundColor = UIColor.white
         table.tableFooterView = UIView()
         table.isMultipleTouchEnabled  = false
-
+        table.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         return table
         
         
@@ -613,15 +583,30 @@ class conditionCity:UIView,UITableViewDelegate,UITableViewDataSource{
     var call:((String,String)->Void)?
     
    
-    var leftcity:[String] = []
-    var rightcity:Dictionary<String,[String]> = [:]
+    private var leftcity:[String]!
+    private var rightcity:Dictionary<String,[String]>!
+    // 左边选中值
+    private var choosed:String = "不限"
     
-    var choosed:String = "不限"
-    override init(frame: CGRect) {
+    init(frame: CGRect, leftInfo:[String], righInfo:Dictionary<String,[String]>) {
+        self.leftcity = leftInfo
+        self.rightcity = righInfo
         super.init(frame: frame)
-        self.backgroundColor = UIColor.white
+        self.setViews()
+        
+        
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NotificationName), object: nil)
+
+    }
+    
+    private func setViews(){
+        
         title.font = UIFont.systemFont(ofSize: 14)
         title.textColor = UIColor.black
+        
         self.addSubview(title)
         _ = title.sd_layout().topSpaceToView(self,10)?.centerYEqualToView(self)?.widthIs(120)?.heightIs(25)
         
@@ -639,11 +624,12 @@ class conditionCity:UIView,UITableViewDelegate,UITableViewDataSource{
         self.addSubview(lefttable)
         self.addSubview(righttable)
         
-        _ = lefttable.sd_layout().leftEqualToView(self)?.topSpaceToView(line,0)?.widthIs(160)?.heightIs(self.frame.height)
-        
-        _ = righttable.sd_layout().leftSpaceToView(lefttable,0)?.topSpaceToView(line,0)?.widthIs(160)?.heightIs(self.frame.height)
+        NotificationCenter.default.addObserver(self, selector: #selector(resetTable(_:)), name: NSNotification.Name(rawValue: NotificationName), object: nil)
         
         
+        _ = lefttable.sd_layout().leftEqualToView(self)?.topSpaceToView(line,0)?.widthIs(ScreenW / 2 )?.heightIs(self.frame.height)
+        // MARK  这里如果用rightEqualToView(self) 约束，大小是对的，但是reloadtable 不生效？？ 换成widthIs(ScreenW / 2 ) 有效？
+        _ = righttable.sd_layout().leftSpaceToView(lefttable,0)?.topSpaceToView(line,0)?.widthIs(ScreenW / 2)?.heightIs(self.frame.height)
         
     }
     
@@ -651,7 +637,19 @@ class conditionCity:UIView,UITableViewDelegate,UITableViewDataSource{
         fatalError("init(coder:) has not been implemented")
     }
     
-    
+
+  
+    @objc private func resetTable(_ notify:Notification){
+        self.righttable.indexPathsForSelectedRows?.forEach({ [unowned self] (index) in
+            let cell = self.righttable.cellForRow(at: index)
+            cell?.textLabel?.isHighlighted = false
+        })
+        self.lefttable.indexPathsForSelectedRows?.forEach({ [unowned self] (index) in
+            let cell = self.lefttable.cellForRow(at: index)
+            cell?.textLabel?.isHighlighted = false
+        })
+    }
+        
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -662,7 +660,8 @@ class conditionCity:UIView,UITableViewDelegate,UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell =  UITableViewCell.init(style: .default, reuseIdentifier: "demo")
+        let cell =  tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        
         if tableView  == lefttable{
             cell.textLabel?.text  = leftcity[indexPath.row]
         }else{
@@ -675,14 +674,14 @@ class conditionCity:UIView,UITableViewDelegate,UITableViewDataSource{
         return cell
     }
     
+    
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if tableView == lefttable{
             return leftcity.count
         }
-        if rightcity[choosed] != nil{
-           return rightcity[choosed]!.count
-        }
-        return 0
+
+        return rightcity[choosed]?.count ?? 0
     }
     
     
@@ -694,14 +693,14 @@ class conditionCity:UIView,UITableViewDelegate,UITableViewDataSource{
         if tableView  == lefttable{
             choosed  =  leftcity[indexPath.row]
             if choosed == "不限"{
-                self.call!(title.text!,choosed)
+                self.call?(title.text!,choosed)
                 return
             }
-            righttable.reloadData()
-        }else{
-            self.call!(title.text!,(rightcity[choosed]?[indexPath.row])!)
+         
+          self.righttable.reloadData()
             
-            print("choose city \(String(describing: rightcity[choosed]?[indexPath.row]))")
+        }else{
+            self.call?(title.text!,(rightcity[choosed]?[indexPath.row])!)
             return
         }
         
@@ -710,6 +709,8 @@ class conditionCity:UIView,UITableViewDelegate,UITableViewDataSource{
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath)
         cell?.textLabel?.isHighlighted  = false
+        
+        
     }
     
 }
@@ -717,75 +718,99 @@ class conditionCity:UIView,UITableViewDelegate,UITableViewDataSource{
 
 // 职位类别
 
-class Jobclassificatin:UIView,UITableViewDelegate,UITableViewDataSource,UIScrollViewDelegate{
+private class Jobclassificatin:UIView{
     
     
     
-    //
     var call:((String,String)->Void)?
+
+    fileprivate  lazy var title:UILabel = {
+        let title = UILabel.init()
+        title.font = UIFont.systemFont(ofSize: 12)
+        title.textColor = UIColor.black
+        return title
+    }()
     
-    //
-   
+   private var line = UIView()
     
-    var t1:[String] = []
-    var t2:Dictionary<String,Array<String>> = ["":[]]
-    var t3:Dictionary<String,Array<String>> = ["":[]]
+    fileprivate lazy var confirm:UIButton = {
+        let confirm = UIButton.init()
+        confirm.setTitle("确定", for: .normal)
+        confirm.addTarget(self, action: #selector(click), for: .touchUpInside)
+        confirm.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
+        confirm.setTitleColor(UIColor.blue, for: .normal)
+        return confirm
+    }()
     
-    var title = UILabel()
-    var line = UIView()
-    var confirm = UIButton()
     
     
-    lazy var table1:UITableView = {
+    
+    lazy var table1:UITableView = { [unowned self] in
         var table = UITableView()
         table.tableFooterView = UIView()
         table.allowsMultipleSelection = false
         table.backgroundColor = UIColor.lightGray
-        table.register(selectCell.self, forCellReuseIdentifier: "select")
-
+        table.delegate = self
+        table.dataSource = self
+        table.register(selectCell.self, forCellReuseIdentifier: selectCell.identity())
         return table
-        
     }()
     
-    lazy var table2:UITableView = {
+    lazy var table2:UITableView = {  [unowned self] in
         
         var table = UITableView()
         table.tableFooterView = UIView()
         table.allowsMultipleSelection = false
         table.backgroundColor = UIColor.white
-        table.register(selectCell.self, forCellReuseIdentifier: "select")
+        table.delegate = self
+        table.dataSource = self
+        table.register(selectCell.self, forCellReuseIdentifier: selectCell.identity())
         
         return table
         
     }()
     
-    lazy var table3:UITableView = {
-        
+    lazy var table3:UITableView = { [unowned self] in
         
         var table = UITableView()
         table.tableFooterView = UIView()
         table.allowsMultipleSelection = false
         table.backgroundColor = UIColor.lightGray
-        table.register(selectCell.self, forCellReuseIdentifier: "select")
-
-        
-        
+        table.delegate = self
+        table.dataSource = self
+        table.register(selectCell.self, forCellReuseIdentifier: selectCell.identity())
         return table
         
     }()
     
-    
-    lazy var scroller:UIScrollView = {
+    lazy var scroller:UIScrollView = { [unowned self] in
         var scroll = UIScrollView()
         scroll.showsVerticalScrollIndicator = false
         scroll.showsHorizontalScrollIndicator = false
         scroll.isPagingEnabled = true
+        scroll.backgroundColor = UIColor.white
         scroll.bounces = false
+        scroll.delegate = self
+        scroll.contentSize = CGSize.init(width: ScreenW + ScreenW / 2 , height: self.frame.height - 36)
         return scroll
-        
     }()
     
+    fileprivate lazy var warnLabel:UILabel = {
+        let label = UILabel()
+        label.text  = "最多选择5个"
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.textColor = UIColor.black
+        return label
+    }()
     
+    fileprivate lazy var AlertShow:UIView = {
+        let show = UIView()
+        show.backgroundColor = UIColor.lightGray
+        show.alpha =  0.6
+        show.isHidden  = true
+        return show
+    }()
     
     // 最多5个选择
     var count = 0
@@ -796,93 +821,133 @@ class Jobclassificatin:UIView,UITableViewDelegate,UITableViewDataSource,UIScroll
     //第一层
     var first:[String] = []
     
-    
+    private var t1:[String] = []
+    private var t2:Dictionary<String,[String]> = ["":[]]
+    private var t3:Dictionary<String,[String]> = ["":[]]
     var choose1 = ""
     var chooos2 = ""
-    var show:UIView!
     var timer:Timer?
-    
     var leftTime:Int = 5
     
-    override init(frame: CGRect) {
+    
+    init(frame: CGRect, level1:[String], level2:Dictionary<String,[String]>, level3:Dictionary<String,[String]>) {
         super.init(frame: frame)
-        self.backgroundColor = UIColor.white
-        title.font = UIFont.systemFont(ofSize: 12)
-        title.textColor = UIColor.black
-        line.backgroundColor  = UIColor.lightGray
-        confirm.setTitle("确定", for: .normal)
-        confirm.addTarget(self, action: #selector(click), for: .touchUpInside)
-        confirm.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
-        confirm.setTitleColor(UIColor.blue, for: .normal)
-        
-        self.addSubview(title)
-        self.addSubview(line)
-        self.addSubview(confirm)
-        
-        _ = title.sd_layout().topSpaceToView(self,5)?.centerXEqualToView(self)?.widthIs(100)?.heightIs(25)
-        _ = confirm.sd_layout().rightSpaceToView(self,5)?.topSpaceToView(self,5)?.widthIs(50)?.heightIs(20)
-        
-        _ = line.sd_layout().topSpaceToView(title,5)?.widthIs(self.frame.width)?.heightIs(1)
-        
-        table1.delegate = self
-        table1.dataSource = self
-        
-        table2.delegate = self
-        table2.dataSource = self
-        
-        table3.delegate = self
-        table3.dataSource = self
-        
-        
-        
-        scroller.delegate = self
-        
-        
-        self.addSubview(scroller)
+        self.t1 = level1
+        self.t2 = level2
+        self.t3 = level3
+        self.setViews()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NotificationName), object: nil)
 
-        _ = scroller.sd_layout().leftEqualToView(self)?.topSpaceToView(line,0)?.bottomEqualToView(self)?.widthIs(self.frame.width)
-        
-        scroller.contentSize = CGSize(width: 480, height:  self.frame.height-36)
-
-        
-        scroller.addSubview(table1)
-        scroller.addSubview(table2)
-        scroller.addSubview(table3)
-        
-        _ = table1.sd_layout().leftEqualToView(scroller)?.topEqualToView(scroller)?.bottomEqualToView(scroller)?.widthIs(160)
-        _ = table2.sd_layout().leftSpaceToView(table1,0)?.topEqualToView(scroller)?.bottomEqualToView(scroller)?.widthIs(160)
-        _ = table3.sd_layout().leftSpaceToView(table2,0)?.topEqualToView(scroller)?.bottomEqualToView(scroller)?.widthIs(160)
-
-        
-        
-        //
-        
-        show = UIView()
-        let label = UILabel()
-        show.backgroundColor = UIColor.white
-        label.text  = "最多选择5个"
-        label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.textColor = UIColor.black
-        show.backgroundColor = UIColor.lightGray
-        show.alpha =  0.6
-        
-        
-        self.addSubview(show)
-        _ = show.sd_layout().topSpaceToView(self,70)?.leftSpaceToView(self,100)?.widthIs(120)?.heightIs(25)
-        show.isHidden  = true
-        
-        show.addSubview(label)
-        _ = label.sd_layout().centerXEqualToView(show)?.topSpaceToView(show,2)?.widthIs(100)?.heightIs(20)
-
-        
-        
-        
+    }
+    
+    @objc private func resetTable(_ notify:Notification){
+        self.table1.indexPathsForSelectedRows?.forEach({ [unowned self] (index) in
+            let cell = self.table1.cellForRow(at: index) as? selectCell
+            cell?.label.isHighlighted = false
+        })
+        self.table2.indexPathsForSelectedRows?.forEach({ [unowned self] (index) in
+            let cell = self.table2.cellForRow(at: index) as? selectCell
+            cell?.label.isHighlighted = false
+        })
+        self.table3.indexPathsForSelectedRows?.forEach({ [unowned self] (index) in
+            let cell = self.table3.cellForRow(at: index) as? selectCell
+            cell?.label.isHighlighted = false
+        })
+        count = 0
+        first.removeAll()
+        middle.removeAll()
+        result.removeAll()
+        self.scroller.setContentOffset(CGPoint.init(x: 0, y: 0), animated: false)
         
         
     }
     
+    private func setViews(){
+        
+        
+        line.backgroundColor  = UIColor.lightGray
+        self.backgroundColor = UIColor.white
+        
+        self.addSubview(title)
+        self.addSubview(line)
+        self.addSubview(confirm)
+        self.addSubview(scroller)
+        self.addSubview(AlertShow)
+        scroller.addSubview(table1)
+        scroller.addSubview(table2)
+        scroller.addSubview(table3)
+        AlertShow.addSubview(warnLabel)
+        
+        _ = title.sd_layout().topSpaceToView(self,5)?.centerXEqualToView(self)?.widthIs(100)?.heightIs(25)
+        _ = confirm.sd_layout().rightSpaceToView(self,5)?.centerYEqualToView(title)?.widthIs(50)?.heightIs(20)
+        _ = line.sd_layout().topSpaceToView(title,5)?.widthIs(ScreenW)?.heightIs(1)
+        
+        
+        _ = scroller.sd_layout().leftEqualToView(self)?.topSpaceToView(line,0)?.bottomEqualToView(self)?.rightEqualToView(self)
+        
+        
+        _ = table1.sd_layout().leftEqualToView(scroller)?.topEqualToView(scroller)?.bottomEqualToView(scroller)?.widthIs(ScreenW / 2)
+        _ = table2.sd_layout().leftSpaceToView(table1,0)?.topEqualToView(scroller)?.bottomEqualToView(scroller)?.widthIs(ScreenW / 2)
+        _ = table3.sd_layout().leftSpaceToView(table2,0)?.topEqualToView(scroller)?.bottomEqualToView(scroller)?.widthIs(ScreenW / 2)
+        
+        
+        _ = AlertShow.sd_layout().topSpaceToView(self,70)?.centerXEqualToView(self)?.widthIs(120)?.heightIs(25)
+        _ = warnLabel.sd_layout().centerXEqualToView(AlertShow)?.topSpaceToView(AlertShow,2)?.widthIs(100)?.heightIs(20)
+        
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(resetTable(_:)), name: NSNotification.Name(rawValue: NotificationName), object: nil)
+        
+    }
     
+    @objc func tickDown(){
+        
+        
+        if leftTime<=0{
+            self.AlertShow.isHidden = true
+            self.timer?.invalidate()
+            self.timer = nil
+            return
+        }
+        // MARK 界面禁止识别触发事件？
+        self.AlertShow.isHidden = false
+        leftTime -= 1
+        
+    }
+    
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    
+    // 返回数据 用 + 连接的
+    @objc private func click(){
+        
+        if result.isEmpty{
+            self.call?(title.text!,"不限")
+            return
+        }
+        var str = ""
+        let count = result.count - 1
+        for (index,item) in result.enumerated(){
+           str += item
+            if index != count{
+                str += "+"
+            }
+        }
+        self.call?(title.text!,str)
+    }
+    
+    
+    
+    
+}
+
+extension Jobclassificatin: UITableViewDelegate,UITableViewDataSource,UIScrollViewDelegate{
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -891,20 +956,18 @@ class Jobclassificatin:UIView,UITableViewDelegate,UITableViewDataSource,UIScroll
         if tableView  == table1{
             return t1.count
         }else if tableView == table2{
-            return t2[choose1]!.count
+            return t2[choose1]?.count ?? 0
         }else{
-            return t3[chooos2]!.count
+            return t3[chooos2]?.count ?? 0
         }
     }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "select", for: indexPath) as! selectCell
-        cell.selectionStyle = .none
-        
-        
+        let cell = tableView.dequeueReusableCell(withIdentifier: selectCell.identity(), for: indexPath) as! selectCell
         if tableView  == table1{
             let str = t1[indexPath.row]
             if first.contains(str){
-                    cell.label.isHighlighted = true
+                cell.label.isHighlighted = true
             }
             cell.label.text  = t1[indexPath.row]
             
@@ -932,117 +995,6 @@ class Jobclassificatin:UIView,UITableViewDelegate,UITableViewDataSource,UIScroll
         return cell
     }
     
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        
-        let cell = tableView.cellForRow(at: indexPath) as! selectCell
-        
-        if tableView == table1{
-            cell.label.isHighlighted = true
-
-            choose1  = (cell.label.text)!
-            chooos2 = ""
-            table2.reloadData()
-            table3.reloadData()
-            
-        }else if tableView == table2{
-            cell.label.isHighlighted = true
-
-            chooos2 = (cell.label.text)!
-            table3.reloadData()
-            scroller.setContentOffset(CGPoint(x:160,y:0), animated: true)
-        }else{
-            
-            //再次点击取消选择
-            if result.contains(cell.label.text!){
-                var tmp:String = ""
-                    cell.sel = false
-                    cell.label.isHighlighted = false
-                    cell.accessoryType = .none
-
-                    count -= 1
-                    result.remove(at: result.index(of: cell.label.text!)!)
-                
-                    //
-                
-                    for (k,v) in t3{
-                        for item in v{
-                            if cell.label.text! == item{
-                                middle.remove(at: middle.index(of: k)!)
-                                tmp = k
-                            }
-                        }
-                    }
-                
-                // 第一层
-                for (k,v) in t2{
-                    for item in v{
-                        if tmp == item{
-                            first.remove(at: first.index(of: k)!)
-                        }
-                    }
-                }
-
-
-                    return
-            }else{
-                if count < 5{
-                    
-                    var tmp:String = ""
-                    cell.label.isHighlighted = true
-                    cell.sel = true
-                    cell.accessoryType = .checkmark
-                    count += 1
-                    result.append(cell.label.text!)
-                    for (k,v) in t3{
-                        for item in v{
-                            print(item,cell.label.text!)
-                            if cell.label.text! == item{
-                                middle.append(k)
-                                tmp = k
-                            }
-                        }
-                    }
-                    // 第一层
-                    for (k,v) in t2{
-                        for item in v{
-                            if tmp == item{
-                                first.append(k)
-                            }
-                        }
-                    }
-                    
-                }else{
-                    
-                    if self.timer == nil{
-                        print("initil timer")
-                        leftTime = 5
-                        self.timer = Timer.scheduledTimer(timeInterval: TimeInterval(1), target: self, selector: #selector(tickDown), userInfo: nil, repeats: true)
-                    }
-                    
-                }
-            }
-           
-                
-                
-        }
-    }
-
-    
-    @objc func tickDown(){
-        print("start ")
-        if leftTime<=0{
-            self.show.isHidden = true
-            self.timer?.invalidate()
-            self.timer = nil
-            return
-        }
-        self.show.isHidden = false
-        leftTime -= 1
-        
-    }
-    
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath) as! selectCell
         if tableView == table1{
@@ -1062,61 +1014,144 @@ class Jobclassificatin:UIView,UITableViewDelegate,UITableViewDataSource,UIScroll
     }
     
     
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    
-    
-    
-    @objc func click(){
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        if result.isEmpty{
-            self.call!(title.text!,"职位类别不限")
-            return
+        
+        let cell = tableView.cellForRow(at: indexPath) as! selectCell
+        
+        if tableView == table1{
+            cell.label.isHighlighted = true
+            
+            choose1  = (cell.label.text)!
+            chooos2 = ""
+            table2.reloadData()
+            table3.reloadData()
+            
+        }else if tableView == table2{
+            cell.label.isHighlighted = true
+            
+            chooos2 = (cell.label.text)!
+            table3.reloadData()
+            scroller.setContentOffset(CGPoint(x:ScreenW / 2,y:0), animated: true)
+        }else{
+            self.setResult(cell: cell)
         }
-        var str = ""
-        let count = result.count - 1
-        for (index,item) in result.enumerated(){
-           str += item
-            if index != count{
-                str += "+"
-            }
-        }
-        self.call!(title.text!,str)
+            
     }
-    
-    
-    
-    
 }
 
-class selectCell:UITableViewCell{
+extension Jobclassificatin{
     
-    var sel:Bool = false
-    
-    var label = UILabel()
+    private func setResult(cell: selectCell){
+        //再次点击取消选择
+        if result.contains(cell.label.text!){
+            var tmp:String = ""
+            cell.isSelected = false
+            cell.label.isHighlighted = false
+            cell.accessoryType = .none
+            
+            count -= 1
+            result.remove(at: result.index(of: cell.label.text!)!)
+            
+            // 取消父值 关联算法？
+            loop1: for (k,v) in t3{
+                
+                for item in v{
+                    if cell.label.text! == item{
+                        middle.remove(at: middle.index(of: k)!)
+                        tmp = k
+                        break loop1
+                    }
+                }
+            }
+            
+            // 第一层
+            loop2: for (k,v) in t2{
+                for item in v{
+                    if tmp == item{
+                        first.remove(at: first.index(of: k)!)
+                        break loop2
+                    }
+                }
+            }
+            
+            return
+        }else{
+            guard count < 5 else{
+                if self.timer == nil{
+                    leftTime = 5
+                    self.timer = Timer.scheduledTimer(timeInterval: TimeInterval(1), target: self, selector: #selector(tickDown), userInfo: nil, repeats: true)
+                }
+                return
+                
+            }
+            
+            
+            var tmp:String = ""
+            cell.label.isHighlighted = true
+            cell.isSelected = true
+            cell.accessoryType = .checkmark
+            count += 1
+            result.append(cell.label.text!)
+            
+            loop1: for (k,v) in t3{
+                for item in v{
+                    if cell.label.text! == item{
+                        middle.append(k)
+                        tmp = k
+                        break loop1
+                    }
+                }
+            }
+            // 第一层
+            loop2: for (k,v) in t2{
+                for item in v{
+                    if tmp == item{
+                        first.append(k)
+                        break loop2
+                    }
+                }
+            }
+            
+        }
+        
+    }
+        
+        
+}
+
+
+private class selectCell:UITableViewCell{
     
    
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        sel  = false
+    lazy var label:UILabel = {
+        let label = UILabel.init()
         label.isHighlighted = false
         label.textColor = UIColor.black
         label.highlightedTextColor = UIColor.blue
         label.font = UIFont.boldSystemFont(ofSize: 12)
-        
+        return label
+    }()
+    
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.isSelected = false
         self.contentView.addSubview(label)
-        _ = label.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,10)?.widthIs(120)?.heightIs(20)
-        
-        
-        
+        self.selectionStyle = .none
+        _ = label.sd_layout().leftSpaceToView(self.contentView,10)?.centerYEqualToView(self.contentView)?.widthIs(120)?.heightIs(20)
         
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    class func identity()->String{
+        return "cell"
+    }
+    
+    class func cellHeith()->CGFloat{
+        return 45.0
     }
 }
