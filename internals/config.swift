@@ -20,6 +20,7 @@ let NAV_BAR_FRAME_WIDTH:CGFloat = 320.0
 let NAV_BAR_FRAME_HEIGHT:CGFloat = 64.0
 let KEYBOARD_HEIGHT:CGFloat = 216.0
 
+
 let NavBarH:CGFloat = 44
 let NavH:CGFloat = 64
 
@@ -46,6 +47,9 @@ let Person_Img = "person"
 let Select_Person_Img = "selectedPerson"
 
 
+// chat bar
+let ChatInputBarH:CGFloat = 45.0
+let ChatKeyBoardH:CGFloat =  258.0
 
 
 

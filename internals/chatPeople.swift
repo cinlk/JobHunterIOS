@@ -99,6 +99,7 @@ class Contactlist:NSObject{
     }
     
     
+    
 }
 
 
@@ -228,68 +229,3 @@ class messageRecords:NSObject{
 }
 
 
-enum messgeType:String {
-    case text = "text"
-    case picture = "picture"
-    case gif =  "gif"
-    case bigGif = "bigGif"
-    case voice = "voice"
-    
-}
-
-enum MessageStatus{
-    case read
-    case unKnow
-    case canceled
-}
-
-
-// 继承  nsobject 和  nscoding
-class MessageBoby: NSObject,NSCoding{
-
-    var messageID:Int?
-    var url:String?
-    var content:String
-    var time:String
-    var type:messgeType = .text
-    
-    var messageStatus:MessageStatus = MessageStatus.unKnow
-    
-//    var senderId:String
-//    var targetId:String
-    var sender:FriendModel
-    var target:FriendModel
-    
-    
-    init(content:String,time:String, sender:FriendModel, target:FriendModel) {
-        self.content = content
-        self.time = time
-        self.sender = sender
-        self.target = target
-    
-    }
-    
-    
-    func encode(with aCoder: NSCoder) {
-        aCoder.encode(content, forKey: "content")
-        aCoder.encode(time, forKey: "time")
-        aCoder.encode(sender, forKey: "sender")
-        aCoder.encode(target, forKey: "target")
-    
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        self.content =  aDecoder.decodeObject(forKey: "content") as! String
-        self.time = aDecoder.decodeObject(forKey: "time") as! String
-        self.target = aDecoder.decodeObject(forKey: "target") as! FriendModel
-        self.sender = aDecoder.decodeObject(forKey: "sender") as! FriendModel
-    }
-    
-    
-}
-
-extension MessageBoby{
-   override var description: String{
-        return self.content + self.type.rawValue
-    }
-}

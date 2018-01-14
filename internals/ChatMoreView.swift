@@ -8,11 +8,11 @@
 
 import UIKit
 
-enum ChatMoreType:Int{
-    case pic
-    case camera
-    case mycard
-    case feedback // 快捷回复
+enum ChatMoreType:String{
+    case pic = "picture"
+    case camera = "camera"
+    case mycard = "personCard"
+    case feedback = "text"// 快捷回复
     
 }
 
@@ -20,10 +20,10 @@ enum ChatMoreType:Int{
 fileprivate let cellNumbeOfOneRow = 3
 fileprivate let CellRow = 2
 fileprivate let cellNumberOfOnePage = cellNumbeOfOneRow * CellRow
-fileprivate let MoreCellID = "moreCell"
 
 
-protocol ChatMoreViewDelegate:NSObjectProtocol {
+
+protocol ChatMoreViewDelegate:class {
     func chatMoreView(moreView: ChatMoreView,didSelectedType type: ChatMoreType)
 }
 
@@ -31,20 +31,19 @@ class ChatMoreView: UIView {
     
     weak var delegate: ChatMoreViewDelegate?
     
-    
     lazy var moreView:UICollectionView = { [unowned self] in
-        let collectView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: LXFChatHorizontalLayout(
+        let collectView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: ChatHorizontalLayout(
             column: cellNumbeOfOneRow, row:CellRow))
-        collectView.backgroundColor = UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0)
+        collectView.backgroundColor = UIColor.backGroundColor()
+        collectView.register(ChatMoreCell.self, forCellWithReuseIdentifier: ChatMoreCell.identity())
         collectView.delegate = self
         collectView.dataSource = self
         collectView.showsVerticalScrollIndicator = false
         collectView.showsHorizontalScrollIndicator = false
+        collectView.isPagingEnabled = false
         return collectView
-        }()
-    
-    
-    //lazy var pageContol:
+        
+    }()
     
     
     lazy var moreDataSource: [(name:String, icon:UIImage, type:ChatMoreType)] = {
@@ -60,16 +59,13 @@ class ChatMoreView: UIView {
     
     
     override func layoutSubviews() {
+        
         super.layoutSubviews()
+        
         self.addSubview(moreView)
-        //self.addSubview(page)
-        
-        _ = moreView.sd_layout().leftEqualToView(self)?.topEqualToView(self)?.rightEqualToView(self)?.heightIs(200)
-        
-        self.backgroundColor  = UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0)
-        
+        _ = moreView.sd_layout().leftEqualToView(self)?.topEqualToView(self)?.rightEqualToView(self)?.heightIs(self.frame.height)
         moreView.contentSize = CGSize.init(width: UIScreen.main.bounds.width, height: moreView.height)
-        moreView.register(LXFChatMoreCell.self, forCellWithReuseIdentifier: MoreCellID)
+        
         
         
     }
@@ -77,23 +73,22 @@ class ChatMoreView: UIView {
 }
 
 extension ChatMoreView: UICollectionViewDataSource, UICollectionViewDelegate {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return moreDataSource.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let moreModel = moreDataSource[indexPath.item]
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MoreCellID, for: indexPath) as? LXFChatMoreCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChatMoreCell.identity(), for: indexPath) as? ChatMoreCell
         
         cell?.model = moreModel
-        
         return cell!
         
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let moreModel = moreDataSource[indexPath.item]
-        // 选择功能
         self.delegate?.chatMoreView(moreView: self, didSelectedType: moreModel.type)
     }
     
@@ -102,14 +97,9 @@ extension ChatMoreView: UICollectionViewDataSource, UICollectionViewDelegate {
     
 }
 
-extension ChatMoreView: UIScrollViewDelegate{
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        _ = scrollView.contentOffset.x
-        
-    }
-}
 
-class LXFChatMoreCell: UICollectionViewCell {
+fileprivate class ChatMoreCell: UICollectionViewCell {
+    
     lazy var itemButton: UIButton = {
         let itemBtn = UIButton()
         itemBtn.backgroundColor = UIColor.white
@@ -139,11 +129,12 @@ class LXFChatMoreCell: UICollectionViewCell {
             self.itemButton.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5)
             self.itemLabel.text = model?.name
             self.type = model?.type
-            self.backgroundColor =  UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0)
+            self.backgroundColor =  UIColor.backGroundColor()
         }
     }
     
     override func layoutSubviews() {
+        
         super.layoutSubviews()
         
         self.contentView.addSubview(itemButton)
@@ -154,6 +145,10 @@ class LXFChatMoreCell: UICollectionViewCell {
         
       
         
+    }
+    
+    class func identity()->String{
+        return "ChatMoreCell"
     }
 }
 

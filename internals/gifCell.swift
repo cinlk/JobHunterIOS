@@ -30,7 +30,7 @@ class gifCell: UITableViewCell {
         
         
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-
+        self.selectionStyle = .none
         self.contentView.clipsToBounds = true
         self.contentView.addSubview(avatar)
         self.contentView.addSubview(gif!)

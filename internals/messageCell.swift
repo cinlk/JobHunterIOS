@@ -30,13 +30,14 @@ class messageCell: UITableViewCell {
         gif = UIImageView()
         
         
+        
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         messageLabel.font = UIFont.systemFont(ofSize: 16)
         messageLabel.textColor = UIColor.black
         // 分行
         messageLabel.numberOfLines = 0
         messageLabel.textAlignment = .left
-        
+        self.selectionStyle = .none
         
         
         self.contentView.clipsToBounds = true

@@ -1,7 +1,15 @@
+//
+//  ChatMMoreView.swift
+//  internals
+//
+//  Created by ke.liang on 2017/10/15.
+//  Copyright © 2017年 lk. All rights reserved.
+//
+
 
 import UIKit
 
-class LXFChatHorizontalLayout: UICollectionViewFlowLayout {
+class ChatHorizontalLayout: UICollectionViewFlowLayout {
     // 保存所有item
     fileprivate var attributesArr: [UICollectionViewLayoutAttributes] = []
     fileprivate var col: Int = 0
@@ -21,10 +29,11 @@ class LXFChatHorizontalLayout: UICollectionViewFlowLayout {
     override func prepare() {
         super.prepare()
         
-        let itemWH: CGFloat = UIScreen.main.bounds.width / CGFloat(col)
         
+        let itemW: CGFloat = UIScreen.main.bounds.width / CGFloat(col)
+        let itemH: CGFloat = (collectionView?.bounds.height)! / CGFloat(row)
         // 设置itemSize
-        itemSize = CGSize(width: itemWH, height: itemWH)
+        itemSize = CGSize(width: itemW, height: itemH)
         minimumLineSpacing = 0
         minimumInteritemSpacing = 0
         scrollDirection = .horizontal
@@ -33,8 +42,9 @@ class LXFChatHorizontalLayout: UICollectionViewFlowLayout {
         collectionView?.isPagingEnabled = true
         collectionView?.showsHorizontalScrollIndicator = false
         collectionView?.showsVerticalScrollIndicator = true
-        let insertMargin = (collectionView!.bounds.height - CGFloat(row) * itemWH) * 0.5
-        collectionView?.contentInset = UIEdgeInsetsMake(insertMargin, 0, insertMargin, 0)
+        //let insertMargin = (collectionView!.bounds.height - CGFloat(row) * itemH) * 0.5
+        collectionView?.contentInset = UIEdgeInsetsMake(0, 0, 0, 0)
+        
         
         var page = 0
         let itemsCount = collectionView?.numberOfItems(inSection: 0) ?? 0

@@ -10,16 +10,15 @@ import UIKit
 
 
 // 显示对应的键盘
-protocol ChatBarViewDelegate: NSObjectProtocol {
+protocol ChatBarViewDelegate: class {
+    
     func showTextKeyboard()
     func showVoice()
     func showEmotionKeyboard()
     func showMoreKeyboard()
     func chatBarUpdateHeight(height:CGFloat)
     func chatBarSendMessage()
-    //
     func hiddens()
-    
     
 }
 
@@ -32,39 +31,27 @@ enum ChatKeyboardType: Int {
 }
 
 
+
+fileprivate let inputTextHeight:CGFloat = 35.0
+fileprivate let inputTextMaxHeight:CGFloat = 70.0
+
 class ChatBarView: UIView {
 
-   
-//    var chatInputView:InputTextView?
-    
-//    var chatEmotionView: ChatEmotionView?
-//    var chatMoreView: ChatMoreView?
     
     weak var delegate: ChatBarViewDelegate?
     
     var keyboardType: ChatKeyboardType = .none
-    // chatbar height
-    var inputTextViewCurHeight:CGFloat = 45
     
     
-    lazy var chatVoidButton:UIButton = {
+    private lazy var chatMoreButton:UIButton = {
         var button = UIButton.init(type: UIButtonType.custom)
-        button.setBackgroundImage(#imageLiteral(resourceName: "voice"), for: .normal)
-        button.addTarget(self, action: #selector(voiceClick(sender:)), for: .touchUpInside)
-        
-        return button
-        
-    }()
-    
-    lazy var chatMoreButton:UIButton = {
-        var button = UIButton.init(type: UIButtonType.custom)
-        button.setBackgroundImage(#imageLiteral(resourceName: "plus"), for: .normal)
+        button.setBackgroundImage(#imageLiteral(resourceName: "chatMore"), for: .normal)
         button.addTarget(self, action: #selector(moreClick(sender:)), for: .touchUpInside)
         return button
         
     }()
     
-    lazy var chatEmotionButton:UIButton = {
+    private lazy var chatEmotionButton:UIButton = {
         var button = UIButton.init(type: UIButtonType.custom)
         
         button.setBackgroundImage(#imageLiteral(resourceName: "smile"), for: .normal)
@@ -76,7 +63,7 @@ class ChatBarView: UIView {
     }()
     
     // 输入框
-    lazy var inputText:UITextView = {
+    open lazy var inputText:UITextView = {
         let inputV = UITextView()
         inputV.font = UIFont.systemFont(ofSize: 15.0)
         inputV.textColor = UIColor.black
@@ -90,47 +77,18 @@ class ChatBarView: UIView {
         return inputV
     }()
     
+    private lazy var backGroundImg:UIImageView = {
+        let img = UIImageView.init(frame: CGRect.zero)
+        img.image = #imageLiteral(resourceName: "b3")
+        img.contentMode = .scaleToFill
+        img.clipsToBounds = true
+        return img
+    }()
     
     override init(frame: CGRect) {
         
- //       chatInputView =  InputTextView()
-//        chatMoreView  = ChatMoreView()
-//        chatEmotionView = ChatEmotionView()
         super.init(frame: frame)
-
-        let backImage = UIImageView.init()
-        backImage.image = #imageLiteral(resourceName: "b3")
-        self.addSubview(backImage)
-        
-        self.addSubview(chatVoidButton)
-        self.addSubview(inputText)
-        self.addSubview(chatEmotionButton)
-        self.addSubview(chatMoreButton)
-        
-        
- //       self.addSubview(chatInputView!)
-//        self.addSubview(chatMoreView!)
-//        self.addSubview(chatEmotionView!)
-        
-//        _  = chatInputView?.sd_layout().leftEqualToView(self)?.topEqualToView(self)?.rightEqualToView(self)?.heightIs(50)
-        
-//        _  = chatMoreView?.sd_layout().leftEqualToView(self)?.topSpaceToView(chatInputView,0)?.rightEqualToView(self)?.bottomEqualToView(self)
-//
-//        _  = chatEmotionView?.sd_layout().leftEqualToView(self)?.topSpaceToView(chatInputView,0)?.rightEqualToView(self)?.bottomEqualToView(self)
-//
-        _  = backImage.sd_layout().bottomEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.topEqualToView(self)
-        
-        _ = chatVoidButton.sd_layout().leftSpaceToView(self,5)?.topSpaceToView(self,5)?.heightIs(35)?.widthIs(45)
-        _ = inputText.sd_layout().leftSpaceToView(chatVoidButton,0)?.topEqualToView(chatVoidButton)?.bottomSpaceToView(self,5)?.widthIs(170)
-        
-        _ = chatEmotionButton.sd_layout().leftSpaceToView(inputText,5)?.topEqualToView(chatVoidButton)?.bottomEqualToView(chatVoidButton)?.widthIs(45)
-        
-        _ = chatMoreButton.sd_layout().leftSpaceToView(chatEmotionButton,5)?.topEqualToView(chatVoidButton)?.bottomEqualToView(chatVoidButton)?.widthIs(45)
-        
-        
-        
-        
-        
+        self.setViews()
         
     }
     
@@ -146,93 +104,108 @@ class ChatBarView: UIView {
 
 
 extension ChatBarView{
-    @objc func voiceClick(sender:UIButton){
+    
+    private func setViews(){
+        
+        self.addSubview(backGroundImg)
+        
+        self.addSubview(inputText)
+        self.addSubview(chatEmotionButton)
+        self.addSubview(chatMoreButton)
+        
+        
+        _  = backGroundImg.sd_layout().bottomEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.topEqualToView(self)
+        
+        _ = chatMoreButton.sd_layout().rightSpaceToView(self,5)?.topSpaceToView(self,5)?.heightIs(35)?.widthIs(40)
+        _ = chatEmotionButton.sd_layout().rightSpaceToView(chatMoreButton,5)?.topEqualToView(chatMoreButton)?.bottomEqualToView(chatMoreButton)?.widthIs(40)
+        
+        _ = inputText.sd_layout().leftSpaceToView(self,5)?.topSpaceToView(self,5)?.bottomSpaceToView(self,5)?.rightSpaceToView(chatEmotionButton,5)
+    
         
     }
+}
+
+
+extension ChatBarView{
+    
+   
     @objc func moreClick(sender: UIButton){
         
-        if keyboardType == .more{
+        
+        switch keyboardType {
+        case .more:
             keyboardType = .text
             inputText.becomeFirstResponder()
-        }else{
-            if keyboardType == .voice{
-                
-            }else if keyboardType == .text{
-                //inputText.resignFirstResponder()
-                delegate?.hiddens()
-            }
-            keyboardType = .more
-            inputText.resignFirstResponder()
-            delegate?.showMoreKeyboard()
-            
+            return
+        case .text:
+            delegate?.hiddens()
+        default:
+            break
         }
         
-    }
-    @objc func emotionClick(sender: UIButton){
-        print("emotion keyboard show!")
+        keyboardType = .more
+        inputText.resignFirstResponder()
+        delegate?.showMoreKeyboard()
         
-        if keyboardType == .emotion{
-            //切换到 text
+    }
+    
+    @objc func emotionClick(sender: UIButton){
+        
+        switch keyboardType {
+        case .emotion:
             keyboardType = .text
             inputText.becomeFirstResponder()
             self.chatEmotionButton.isSelected = false
-        }else{
-            
-            if keyboardType == .text{
-                //inputText.resignFirstResponder()
-                delegate?.hiddens()
-                
-            }else if keyboardType == .voice{
-                // MARK
-            }
-            
-            keyboardType = .emotion
-            inputText.resignFirstResponder()
-            
-            
-            // 代理显示
-            delegate?.showEmotionKeyboard()
-            self.chatEmotionButton.isSelected = true
-            
-            
+            return
+        case .text:
+            delegate?.hiddens()
+        default:
+            break
         }
+        
+        keyboardType = .emotion
+        inputText.resignFirstResponder()
+        delegate?.showEmotionKeyboard()
+        self.chatEmotionButton.isSelected = true
+        
     }
 }
 
 extension ChatBarView: UITextViewDelegate{
     
+    // 显示输入框
     func textViewDidBeginEditing(_ textView: UITextView) {
         
         keyboardType = .text
         delegate?.showTextKeyboard()
     }
-    // 改变输入框
+    
+    // 调整输入框高度
     func textViewDidChange(_ textView: UITextView) {
         
-        let normalheight:CGFloat = 35.0
-        let maxheight:CGFloat = 80.0
+       
         
         var height =  textView.sizeThatFits(CGSize.init(width: textView.width, height: CGFloat(Float.greatestFiniteMagnitude))).height
-        height =  height > normalheight ? height : normalheight
-        height = height < maxheight ? height : maxheight
+       
+        height =  height > inputTextHeight ? height : inputTextHeight
+        height = height < inputTextMaxHeight ? height : inputTextMaxHeight
         
-        inputTextViewCurHeight  = height + 10
-        if inputTextViewCurHeight != textView.height{
-           delegate?.chatBarUpdateHeight(height: inputTextViewCurHeight)
+       
+        let currentHeight = height + 5 + 5
+        if currentHeight >= ChatInputBarH{
+           delegate?.chatBarUpdateHeight(height: currentHeight)
         }
         
     }
-    
+    // 发送文本消息
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool{
         if text == "\n"{
             delegate?.chatBarSendMessage()
             return false
         }
-        
-        
         return true
     }
-    
+    // 监听text高度变化
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         self.inputText.scrollRangeToVisible(NSMakeRange(inputText.text.count, 1))
         self.textViewDidChange(inputText)

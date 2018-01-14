@@ -9,33 +9,26 @@
 import UIKit
 
 
-protocol ReplyMessageDelegate {
+protocol ReplyMessageDelegate: class {
     func didSelectedMessage(view:UITableView, message:String)
     
 }
 
 
-class ReplyView: UIView,UITableViewDelegate,UITableViewDataSource {
- 
 
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
-    }
-    */
-    
-    //
+fileprivate let sourceFileName = "replylist"
+
+class quickReplyView: UIView {
+ 
     lazy var datasource:[String] = {
         
-        return ChatEmotionHelper.getAllReplyMessages(fileName: "replylist")
+        return ChatEmotionHelper.getAllReplyMessages(fileName: sourceFileName)
         
     }()
     
     
     // delegate
-    var delegate:ReplyMessageDelegate?
+    weak var delegate:ReplyMessageDelegate?
     
     
     // banner
@@ -68,33 +61,30 @@ class ReplyView: UIView,UITableViewDelegate,UITableViewDataSource {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+    }
+    
+    
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
         self.addSubview(banner)
         self.addSubview(replyTable)
         
         _ = banner.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.topEqualToView(self)?.heightIs(45)
         _ = replyTable.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.topSpaceToView(banner,0)?.bottomEqualToView(self)
-      
-        
-        
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    override func layoutSubviews() {
-        super.layoutSubviews()
         
       
     }
     
-    
-
-    
-
 }
 
 
-extension ReplyView {
+extension quickReplyView: UITableViewDelegate,UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

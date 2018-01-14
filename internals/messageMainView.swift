@@ -65,7 +65,8 @@ class messageMain: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         self.navigationItem.title = "消息界面"
         self.tabBarController?.tabBar.isHidden = false
-        
+        //self.refresh()
+    
         
      }
     override func viewWillDisappear(_ animated: Bool) {
@@ -104,10 +105,22 @@ class messageMain: UITableViewController {
         
         cell.touxiang.image = UIImage.init(named: user.avart)
         cell.name.text = user.name + " " + user.companyName
-        print(user,ContactManger.usersMessage[user.id]?.messages.count)
+        //print(user,ContactManger.usersMessage[user.id]?.messages.count)
         let messageContent =  ContactManger.getLasteMessageForUser(user: user)
-        cell.content.text = messageContent?.content
-        cell.time.text = messageContent?.time
+        
+        switch messageContent!.type {
+        case .bigGif, .smallGif:
+            break
+        // 图文并排
+        case .text:
+          cell.content.attributedText = GetChatEmotion.shared.findAttrStr(text: messageContent?.content, font: UIFont.systemFont(ofSize: 12))
+          cell.time.text = messageContent?.time
+          return cell
+        default:
+            return UITableViewCell.init()
+        }
+        //cell.content.text = messageContent?.content
+        
         
         return cell
     }
@@ -125,6 +138,7 @@ class messageMain: UITableViewController {
         
         tableView.deselectRow(at: indexPath, animated: true)
         let user = ChatPeople![indexPath.row]
+        // MARK 从communication 界面返回后刷新？
         let chatView = communication(hr: user)
         self.tabBarController?.tabBar.isHidden = true
         self.navigationController?.pushViewController(chatView, animated: true)
@@ -193,6 +207,7 @@ extension messageMain{
 }
 
 extension messageMain{
+    
     @objc private func refresh(){
         ChatPeople = ContactManger.getUsers()
         self.tableView.reloadData()

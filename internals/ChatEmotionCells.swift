@@ -8,7 +8,9 @@
 
 import UIKit
 
-class ChatEmotionCell: UICollectionViewCell {
+
+// 静态表情
+class StaticChatEmotionCell: UICollectionViewCell {
 
     // MARK:- 定义属性
     var emotion: MChatEmotion? {
@@ -36,13 +38,19 @@ class ChatEmotionCell: UICollectionViewCell {
         super.layoutSubviews()
         
         self.contentView.addSubview(emotionImageView)
-        _ = emotionImageView.sd_layout().centerXEqualToView(self.contentView)?.widthIs(32)?.heightIs(32)
+        _ = emotionImageView.sd_layout().topSpaceToView(self.contentView,2.5)?.centerXEqualToView(self.contentView)?.widthIs(32)?.heightIs(32)
         
         }
+    
+    class func identity()->String{
+        return "StaticChatEmotionCell"
+    }
+    
     }
 
 // 动态图表情
-class ChatEmotionCell2: UICollectionViewCell {
+class DynamicChatEmotionCell: UICollectionViewCell {
+    
     var emotion: MChatEmotion? {
         didSet{
             guard let emo = emotion else {return}
@@ -62,7 +70,6 @@ class ChatEmotionCell2: UICollectionViewCell {
        var lb = UILabel.init()
         lb.font = UIFont.systemFont(ofSize: 10)
         lb.textColor = UIColor.black
-        
         lb.textAlignment = .center
         return lb
     }()
@@ -71,9 +78,13 @@ class ChatEmotionCell2: UICollectionViewCell {
         super.layoutSubviews()
         self.contentView.addSubview(emotionImageView)
         self.contentView.addSubview(name)
-        _ = emotionImageView.sd_layout().centerXEqualToView(self.contentView)?.widthIs(60)?.heightIs(60)
+        _ = emotionImageView.sd_layout().topSpaceToView(self.contentView,2.5)?.centerXEqualToView(self.contentView)?.widthIs(60)?.heightIs(60)
         _ = name.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(emotionImageView,1)?.widthIs(60)?.heightIs(20)
         
+    }
+    
+    class func identity()->String{
+        return "DynamicChatEmotionCell"
     }
     
 }

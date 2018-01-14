@@ -80,6 +80,12 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
        return v
     }()
     
+    private var talkTitle =  "和TA聊聊"
+    private var IsRecord = false
+    private var lastMessage:MessageBoby?
+    
+    let hr:FriendModel = FriendModel.init(name: "hr", avart: "hr", companyName: "霹雳", id: "2")
+    
     // bottom viwe
     lazy var bottomView:UIView = {  [unowned self] in
         let v = UIView.init()
@@ -90,14 +96,16 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         sendResume.setTitleColor(UIColor.black, for: .normal)
         sendResume.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         sendResume.layer.borderWidth = 0.5
+        sendResume.tag = 0
         sendResume.layer.borderColor = UIColor.green.cgColor
         sendResume.addTarget(self, action: #selector(self.sendResume), for: .touchUpInside)
         let talk = UIButton.init()
-        talk.setTitle("和TA聊聊", for: .normal)
+        talk.setTitle(self.talkTitle, for: .normal)
         talk.backgroundColor = UIColor.green
         talk.setTitleColor(UIColor.white, for: .normal)
         talk.layer.borderWidth = 0.5
         talk.layer.borderColor = UIColor.clear.cgColor
+        talk.tag = 1
         talk.addTarget(self, action: #selector(self.talk), for: .touchUpInside)
         v.addSubview(talk)
         v.addSubview(sendResume)
@@ -120,6 +128,8 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         darkView.addGestureRecognizer(singTap)
         self.centerY = shareapps.centerY
         
+        lastMessage  =  Contactlist.shared.getLasteMessageForUser(user: hr)
+        
         
     }
     override func viewDidAppear(_ animated: Bool) {
@@ -130,9 +140,13 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         self.navigationItem.title = "职位详情"
         // 加入背景view
         self.navigationController?.view.insertSubview(nBackView, at: 1)
-        
-        print("job detail appear \(self.view)")
-        
+        if lastMessage != nil{
+            self.talkTitle = "继续聊天"
+        }else{
+            self.talkTitle = "和TA聊聊"
+        }
+        (bottomView.subviews[0] as! UIButton).setTitle(self.talkTitle, for: .normal)
+ 
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -314,12 +328,24 @@ extension JobDetailViewController{
     }
     
     @objc func talk(){
-        // test
-        let hr:FriendModel = FriendModel.init(name: "hr", avart: "hr", companyName: "霹雳", id: "2")
-        let messgeBody:MessageBoby = MessageBoby.init(content: "hr 你好，对贵公司该职位感兴趣，希望进一步沟通", time: "2018-01-11", sender: myself, target: hr)
         
-        Contactlist.shared.addUser(user: hr)
-        Contactlist.shared.usersMessage[hr.id]?.addMessageByMes(newMes: messgeBody)
+        // test
+        if lastMessage == nil{
+            
+            lastMessage = MessageBoby.init(content: "hr 你好，对贵公司该职位感兴趣，希望进一步沟通", time: "2018-01-11", sender: myself, target: hr)
+            
+            let info = ["icon":"sina","jobName":"产品开发","company":"霹雳火","salary":"面议","tags":"北京|本科|校招"]
+            if let  jobDetailMessage = JobDetailMessage.init(infos: info, time: "2018-01-13", sender: myself, target: hr){
+                    Contactlist.shared.addUser(user: hr)
+                    Contactlist.shared.usersMessage[hr.id]?.addMessageByMes(newMes: jobDetailMessage)
+                    Contactlist.shared.usersMessage[hr.id]?.addMessageByMes(newMes: lastMessage!)
+            }else{
+                print("出错 ------- ")
+                return
+            }
+            
+        }
+        
         let chatView = communication(hr: hr)
         // chatView.chatWith(friend:, jobCard: nil)
         self.hidesBottomBarWhenPushed = true
