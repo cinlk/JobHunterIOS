@@ -11,9 +11,7 @@ import UIKit
 class friendsController: UIViewController {
 
     //
-    var userinfo:NSMutableArray = Contactlist.shared().userinfo
-    
-    
+    var userinfo:[FriendModel]? = Contactlist.shared.getUsers()
     
     
     lazy var table:UITableView = {
@@ -53,15 +51,7 @@ class friendsController: UIViewController {
     }
     
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
+   
 
 }
 
@@ -71,7 +61,7 @@ extension friendsController:UITableViewDelegate,UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell  = tableView.dequeueReusableCell(withIdentifier: contactlist.resueIdentifier(), for: indexPath) as! contactlist
         
-        cell.setupFriendCell(user: userinfo[indexPath.row] as! FriendData)
+        cell.setupFriendCell(user: userinfo![indexPath.row] )
         cell.selectionStyle  = .none
         
         return cell
@@ -82,8 +72,7 @@ extension friendsController:UITableViewDelegate,UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return userinfo.count
-        
+        return userinfo!.count
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -91,12 +80,13 @@ extension friendsController:UITableViewDelegate,UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let user = userinfo[indexPath.row]
+        if let user = userinfo?[indexPath.row]{
+//            let chatView = communication()
+//             chatView.chatWith(friend: user, jobCard: nil)
+//            self.navigationController?.pushViewController(chatView, animated: true)
+        }
         
-        let chatView = communication()
-        //  keep before chat message?
-        chatView.chatWith(friend: user as! FriendData, jobCard: nil)
-        self.navigationController?.pushViewController(chatView, animated: true)
+       
         
         
         

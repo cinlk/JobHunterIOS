@@ -49,3 +49,6 @@ let Select_Person_Img = "selectedPerson"
 
 
 
+let myself:FriendModel = FriendModel.init(name: "lk", avart: "lk", companyName: "", id: "1")
+
+

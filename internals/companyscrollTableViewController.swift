@@ -221,7 +221,7 @@ extension companyscrollTableViewController{
         
     }
     private func addShareBarItem(){
-        var up =  UIImage.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "upload")
+        let up =  UIImage.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "upload")
       
         let b1 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
         

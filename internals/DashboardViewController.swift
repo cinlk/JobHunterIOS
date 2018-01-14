@@ -577,7 +577,7 @@ extension DashboardViewController{
             
             self.tables.deselectRow(at: indexpath, animated: true)
             if  let cell = self.tables.cellForRow(at: indexpath) as? jobdetailCell, let data = cell.model{
-                self.showDetails(jobDetail: data as! [String:String])
+                self.showDetails(jobDetail: data )
                 
             }
             

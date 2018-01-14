@@ -47,7 +47,7 @@ class XiaoMi: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath)
+        //let cell = tableView.cellForRow(at: indexPath)
         let detailView = detailWebViewController()
         self.navigationController?.pushViewController(detailView, animated: true)
         

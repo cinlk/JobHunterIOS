@@ -240,7 +240,7 @@ extension subscribleItem{
 
 extension subscribleItem{
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        var contentOffSetY = scrollView.contentOffset.y
+        //var contentOffSetY = scrollView.contentOffset.y
         
       
     }

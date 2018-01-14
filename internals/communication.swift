@@ -26,6 +26,11 @@ enum ShowType:Int {
 
 class communication: UIViewController,UITableViewDelegate,UITableViewDataSource {
 
+    
+    lazy var contactManager:Contactlist = {
+        
+        return Contactlist.shared
+    }()
     // showtype
     var st: ShowType = ShowType.none
     
@@ -40,9 +45,8 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
     var chatBarView:ChatBarView!
     
     
-    var friend:FriendData = FriendData.init(name: "locky", avart: "avartar")
-    let myself:FriendData = FriendData.init(name: "lk", avart: "lk")
-    
+    var hr:FriendModel?
+        
     
     //
     var keyboardFrame:CGRect?
@@ -113,6 +117,20 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
         
     }()
     
+    
+    init(hr:FriendModel) {
+        self.hr = hr
+        super.init(nibName: nil, bundle: nil)
+        self.chatRecordLoad()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -177,29 +195,20 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
        // 用约束 动画才能移动subview
         _ = moreView.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.chatBarView,0)?.heightIs(216)
         
-        self.setupNavigationTitle(text: friend.name)
+        self.setupNavigationTitle(text: (hr?.name)!)
         
         self.view.addSubview(emotion)
         _ = emotion.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.chatBarView,0)?.heightIs(216)
         
-        
-        
-       
-        
-        
-    
-        
         // Do any additional setup after loading the view.
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+  
     // remove self when destroied
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
+    
     
     func setupNavigationTitle(text:String){
         
@@ -216,9 +225,7 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
         //self.navigationItem.title = title
         self.navigationItem.titleView = titleLabel
         
-        
-        
-        
+    
         
     }
     
@@ -336,55 +343,68 @@ class communication: UIViewController,UITableViewDelegate,UITableViewDataSource 
 
 extension communication{
     
-    // chat begin by jobcard
-    func chatWith(friend:FriendData,jobCard:Dictionary<String,String>?){
-        self.friend  = friend
-        self.setupNavigationTitle(text: self.friend.name)
-        self.tableSource.removeAllObjects()
-        if jobCard != nil{
-            self.tmpTableSurce2(jobCard!)
-        }else{
-            self.tmpTableSource()
+    
+    
+    private func chatRecordLoad(){
+        
+        //record
+        if let mes = contactManager.usersMessage[self.hr!.id]?.messages{
+            for item in mes{
+                self.tableSource.add(item)
+            }
         }
-        self.tableView.reloadData()
+    }
+    // chat begin by jobcard
+    func chatWith(friend:FriendModel,jobCard:Dictionary<String,String>?){
+//        self.friend  = friend
+//        self.setupNavigationTitle(text: self.friend.id)
+//        self.tableSource.removeAllObjects()
+//        if jobCard != nil{
+//            self.tmpTableSurce2(jobCard!)
+//        }else{
+//            self.tmpTableSource()
+//        }
+//        self.tableView.reloadData()
         
         
     }
+    
+    
     // fake data source
     func tmpTableSource(){
-        let message1:MessageBoby = MessageBoby.init(content: "测试语句1!", time: "10-12")
-        message1.sender = friend
-        message1.type = .text
-        self.tableSource.add(message1)
-        
-        let message2:MessageBoby = MessageBoby.init(content: "测试语句2!", time: "10-12")
-        message2.sender = friend
-        message2.type = .text
-        self.tableSource.add(message2)
-        
-        
-        let message3:MessageBoby = MessageBoby.init(content: "测试语句3!✌️", time: "10-13")
-        message3.sender = myself
-        message3.type = .text
-        self.tableSource.add(message3)
-        let message4:MessageBoby = MessageBoby.init(content: "重复重复重复😎重复重复重复重复重😎复重复重复重复重复重复重复重复重复重复重复重复重复重复😑重复重复重复😑重复重复重复重复重复重复重复重复!", time: "10-13")
-        message4.sender = myself
-        message4.type = .text
-        self.tableSource.add(message4)
+//        let message1:MessageBoby = MessageBoby.init(content: "测试语句1!", time: "10-12")
+//        message1.sender = friend
+//        message1.type = .text
+//        self.tableSource.add(message1)
+//
+//        let message2:MessageBoby = MessageBoby.init(content: "测试语句2!", time: "10-12")
+//        message2.sender = friend
+//        message2.type = .text
+//        self.tableSource.add(message2)
+//
+//
+//        let message3:MessageBoby = MessageBoby.init(content: "测试语句3!✌️", time: "10-13")
+//        message3.sender = myself
+//        message3.type = .text
+//        self.tableSource.add(message3)
+//        let message4:MessageBoby = MessageBoby.init(content: "重复重复重复😎重复重复重复重复重😎复重复重复重复重复重复重复重复重复重复重复重复重复重复😑重复重复重复😑重复重复重复重复重复重复重复重复!", time: "10-13")
+//        message4.sender = myself
+//        message4.type = .text
+//        self.tableSource.add(message4)
     }
     
     // fake data  starting with job card
     func tmpTableSurce2(_ card:Dictionary<String,String>){
-        self.tableSource.add(card)
-        let message1:MessageBoby = MessageBoby.init(content: "测试语句4", time: "10-13")
-        message1.sender = myself
-        message1.type = .text
-        self.tableSource.add(message1)
-        
-        let message2:MessageBoby = MessageBoby.init(content: "测试语句5", time: "10-12")
-        message2.sender = friend
-        message2.type = .text
-        self.tableSource.add(message2)
+//        self.tableSource.add(card)
+//        let message1:MessageBoby = MessageBoby.init(content: "测试语句4", time: "10-13")
+//        message1.sender = myself
+//        message1.type = .text
+//        self.tableSource.add(message1)
+//
+//        let message2:MessageBoby = MessageBoby.init(content: "测试语句5", time: "10-12")
+//        message2.sender = friend
+//        message2.type = .text
+//        self.tableSource.add(message2)
         
     }
     
@@ -408,8 +428,8 @@ extension communication{
         let message = self.chatBarView.inputText.getEmotionString()
         
         self.chatBarView.inputText.text = ""
-        let messagebody:MessageBoby = MessageBoby.init(content: message, time: "10-13")
-        messagebody.sender = myself
+        let messagebody:MessageBoby = MessageBoby.init(content: message, time: "01-12", sender: myself, target: self.hr!)
+        
         messagebody.type = .text
         
         self.tableSource.add(messagebody)
@@ -429,14 +449,14 @@ extension communication{
     // send gif picture
     func sendGifMessage(emotion: MChatEmotion, type:String){
         
-        let messageBody:MessageBoby = MessageBoby.init(content: emotion.imgPath!, time: "10-12")
+        let messageBody:MessageBoby = MessageBoby.init(content: emotion.imgPath!, time: "10-12", sender: myself, target: self.hr!)
         if type == "bigGif"{
             messageBody.type = .bigGif
         }else{
             messageBody.type  = .gif
         }
         //messageBody.type  = .picture
-        messageBody.sender = myself
+        //messageBody.sender = myself
         
         self.tableSource.add(messageBody)
         
@@ -453,8 +473,8 @@ extension communication{
     }
     //
     func sendReply(content:String){
-        let messagebody:MessageBoby = MessageBoby.init(content: content, time: "10-13")
-        messagebody.sender = myself
+        let messagebody:MessageBoby = MessageBoby.init(content: content, time: "10-13", sender: myself, target: self.hr!)
+        //messagebody.sender = myself
         messagebody.type = .text
         
         self.tableSource.add(messagebody)
@@ -471,7 +491,7 @@ extension communication{
     
     func sendPersonCard(){
         
-        let card:PersonCardBody = PersonCardBody.init(name: myself.name, image: myself.avart)
+        let card:PersonCardBody = PersonCardBody.init(name: myself.id, image: myself.avart)
         self.tableSource.add(card)
         let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
         self.tableView.reloadData()
@@ -752,7 +772,7 @@ extension communication: ChatBarViewDelegate{
         self.currentChatBarHright =  height
         
     }
-    
+
     func chatBarSendMessage() {
         self.sendMessage()
         // MARK sdk sendmessage
@@ -865,7 +885,7 @@ extension communication: UIImagePickerControllerDelegate,UINavigationControllerD
         })
         print("choose image \(image)")
         
-        self.sendImage(image: UIImageJPEGRepresentation(image, 1.0)! as NSData, avartar: myself.avart)
+       // self.sendImage(image: UIImageJPEGRepresentation(image, 1.0)! as NSData, avartar: myself.avart)
         
     }
     

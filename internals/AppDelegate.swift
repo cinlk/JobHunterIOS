@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UITabBarItem.appearance().setTitleTextAttributes([NSAttributedStringKey.foregroundColor: selectedColor], for: .selected)
         
         // load contacts
-        _ = Contactlist.shared()
+       // Contactlist.shared.removeAll()
         // load search keywords
         _ = InitailData.shareInstance
        //localData.shared.clearSubscribeData()

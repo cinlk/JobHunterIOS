@@ -29,7 +29,7 @@
 		4A444ECD1F8E5121006AE83D /* friendsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A444ECC1F8E5121006AE83D /* friendsController.swift */; };
 		4A444ED01F8E5789006AE83D /* contactlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A444ECE1F8E5789006AE83D /* contactlist.swift */; };
 		4A444ED11F8E5789006AE83D /* contactlist.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A444ECF1F8E5789006AE83D /* contactlist.xib */; };
-		4A444ED31F8F9E44006AE83D /* Friends.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A444ED21F8F9E44006AE83D /* Friends.swift */; };
+		4A444ED31F8F9E44006AE83D /* chatPeople.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A444ED21F8F9E44006AE83D /* chatPeople.swift */; };
 		4A4523F21F5BABE1009D6B62 /* jobdetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4523F11F5BABE1009D6B62 /* jobdetailCell.swift */; };
 		4A5304DB1F527D090000F1E9 /* loginUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5304DA1F527D090000F1E9 /* loginUtils.swift */; };
 		4A5304E41F52A6ED0000F1E9 /* MainTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5304E31F52A6ED0000F1E9 /* MainTabBarViewController.swift */; };
@@ -66,7 +66,6 @@
 		4A93C2B91F80AC590022E97B /* messageItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A93C2B71F80AC590022E97B /* messageItemCell.xib */; };
 		4A93C2BB1F80CE5F0022E97B /* deliveredHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2BA1F80CE5F0022E97B /* deliveredHistory.swift */; };
 		4A93C2BD1F80CEAA0022E97B /* communication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2BC1F80CEAA0022E97B /* communication.swift */; };
-		4A93C2BF1F80CECB0022E97B /* relationship.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2BE1F80CECB0022E97B /* relationship.swift */; };
 		4A93C2C11F80CEF70022E97B /* recommendation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2C01F80CEF70022E97B /* recommendation.swift */; };
 		4A93C2C31F80CF080022E97B /* forumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2C21F80CF080022E97B /* forumView.swift */; };
 		4A93C2C61F8124930022E97B /* delivereddata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2C51F8124930022E97B /* delivereddata.swift */; };
@@ -210,7 +209,7 @@
 		4A444ECC1F8E5121006AE83D /* friendsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = friendsController.swift; sourceTree = "<group>"; };
 		4A444ECE1F8E5789006AE83D /* contactlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = contactlist.swift; sourceTree = "<group>"; };
 		4A444ECF1F8E5789006AE83D /* contactlist.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = contactlist.xib; sourceTree = "<group>"; };
-		4A444ED21F8F9E44006AE83D /* Friends.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Friends.swift; sourceTree = "<group>"; };
+		4A444ED21F8F9E44006AE83D /* chatPeople.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = chatPeople.swift; sourceTree = "<group>"; };
 		4A4523F11F5BABE1009D6B62 /* jobdetailCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = jobdetailCell.swift; sourceTree = "<group>"; };
 		4A5304DA1F527D090000F1E9 /* loginUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = loginUtils.swift; sourceTree = "<group>"; };
 		4A5304E31F52A6ED0000F1E9 /* MainTabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabBarViewController.swift; sourceTree = "<group>"; };
@@ -251,7 +250,6 @@
 		4A93C2B71F80AC590022E97B /* messageItemCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = messageItemCell.xib; sourceTree = "<group>"; };
 		4A93C2BA1F80CE5F0022E97B /* deliveredHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = deliveredHistory.swift; sourceTree = "<group>"; };
 		4A93C2BC1F80CEAA0022E97B /* communication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = communication.swift; sourceTree = "<group>"; };
-		4A93C2BE1F80CECB0022E97B /* relationship.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = relationship.swift; sourceTree = "<group>"; };
 		4A93C2C01F80CEF70022E97B /* recommendation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = recommendation.swift; sourceTree = "<group>"; };
 		4A93C2C21F80CF080022E97B /* forumView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = forumView.swift; sourceTree = "<group>"; };
 		4A93C2C51F8124930022E97B /* delivereddata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = delivereddata.swift; sourceTree = "<group>"; };
@@ -494,8 +492,6 @@
 				4A88591A1FFA57530009D73D /* ViewModel */,
 				4A8859191FFA57460009D73D /* View+Controller */,
 				4AE694C21F91D5BD005BE1F0 /* messageCell.swift */,
-				4A93C2BC1F80CEAA0022E97B /* communication.swift */,
-				4A93C2BE1F80CECB0022E97B /* relationship.swift */,
 				4A93C2C21F80CF080022E97B /* forumView.swift */,
 				4A444ECC1F8E5121006AE83D /* friendsController.swift */,
 			);
@@ -623,6 +619,7 @@
 		4A8859191FFA57460009D73D /* View+Controller */ = {
 			isa = PBXGroup;
 			children = (
+				4A9A0BE52009DE5E008721F3 /* 聊天消息 */,
 				4AF7DCD8200398C6009047F5 /* 系统通知 */,
 				4A072C42200100C3006D2791 /* 推荐职位 */,
 				4AE0DEA11FFBC36400A16ED4 /* 消息主界面 */,
@@ -641,6 +638,8 @@
 		4A88591B1FFA575B0009D73D /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				4A93C2C51F8124930022E97B /* delivereddata.swift */,
+				4A444ED21F8F9E44006AE83D /* chatPeople.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -695,8 +694,6 @@
 		4A93C2C41F8124810022E97B /* datas */ = {
 			isa = PBXGroup;
 			children = (
-				4A93C2C51F8124930022E97B /* delivereddata.swift */,
-				4A444ED21F8F9E44006AE83D /* Friends.swift */,
 			);
 			name = datas;
 			sourceTree = "<group>";
@@ -707,6 +704,14 @@
 				4A93C2E61F88B8E20022E97B /* client.swift */,
 			);
 			name = socketim;
+			sourceTree = "<group>";
+		};
+		4A9A0BE52009DE5E008721F3 /* 聊天消息 */ = {
+			isa = PBXGroup;
+			children = (
+				4A93C2BC1F80CEAA0022E97B /* communication.swift */,
+			);
+			name = "聊天消息";
 			sourceTree = "<group>";
 		};
 		4A9CE3621F715AE0002A8FD5 /* searchs */ = {
@@ -1292,7 +1297,7 @@
 				4A8858FA1FE8076C0009D73D /* RecruiterCell.swift in Sources */,
 				4AFCCD621F9E490400E0E168 /* gifCell.swift in Sources */,
 				4A9CE36C1F716101002A8FD5 /* progressHUB.swift in Sources */,
-				4A444ED31F8F9E44006AE83D /* Friends.swift in Sources */,
+				4A444ED31F8F9E44006AE83D /* chatPeople.swift in Sources */,
 				4ADDDAB81F98F054001CB00F /* MChatEmotion.swift in Sources */,
 				4ADDDAD81F9B1EE3001CB00F /* ChatEmotionAttachment.swift in Sources */,
 				4A444ECD1F8E5121006AE83D /* friendsController.swift in Sources */,
@@ -1306,7 +1311,6 @@
 				4A93C2CF1F82292E0022E97B /* statustage.swift in Sources */,
 				4A406B611FA4DB0A00277AA0 /* personCardBody.swift in Sources */,
 				4A8859121FF7F4930009D73D /* extension+button.swift in Sources */,
-				4A93C2BF1F80CECB0022E97B /* relationship.swift in Sources */,
 				4AFF91A71F5C238400FE189F /* JobHeaderView.swift in Sources */,
 				4ADDDAD51F98F9B3001CB00F /* ChatEmotionHelper.swift in Sources */,
 				4A93C2BB1F80CE5F0022E97B /* deliveredHistory.swift in Sources */,

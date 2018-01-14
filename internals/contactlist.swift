@@ -48,17 +48,8 @@ class contactlist: UITableViewCell {
     }
     
     
-    func setupFriendCell(user:FriendData){
-        if (user.name.isEmpty == true){
-            self.name.text = "someOne"
-        }else{
-            self.name.text = user.name.components(separatedBy: "@")[0]
-            
-        }
-        self.avarta.image = UIImage.init(named: user.avart)
-        self.days.text  = user.getDays()
-        self.lastmessage.text = user.lastmessage ?? ""
-        
+    func setupFriendCell(user:FriendModel){
+      
     }
     
 }

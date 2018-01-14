@@ -314,6 +314,19 @@ extension JobDetailViewController{
     }
     
     @objc func talk(){
+        // test
+        let hr:FriendModel = FriendModel.init(name: "hr", avart: "hr", companyName: "霹雳", id: "2")
+        let messgeBody:MessageBoby = MessageBoby.init(content: "hr 你好，对贵公司该职位感兴趣，希望进一步沟通", time: "2018-01-11", sender: myself, target: hr)
+        
+        Contactlist.shared.addUser(user: hr)
+        Contactlist.shared.usersMessage[hr.id]?.addMessageByMes(newMes: messgeBody)
+        let chatView = communication(hr: hr)
+        // chatView.chatWith(friend:, jobCard: nil)
+        self.hidesBottomBarWhenPushed = true
+        NotificationCenter.default.post(name: NSNotification.Name.init("refreshChat"), object: nil)
+        
+        self.navigationController?.pushViewController(chatView, animated: true)
+        
         
     }
     

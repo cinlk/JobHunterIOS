@@ -25,8 +25,16 @@ class messageMain: UITableViewController {
 
     
     
+    
     // history message  record items
-    var records:[String] = ["人1","人2","人3"]
+    lazy var ContactManger = Contactlist.shared
+    
+    lazy var ChatPeople:[FriendModel]? = {
+        return ContactManger.getUsers()
+    }()
+    
+    
+    
     fileprivate var showItems:[showitem] = [showitem.init(name: "投递记录", image: "delivery", bubbles: 1),
                                 showitem.init(name: "论坛动态", image: "forum", bubbles: 1),
                                 showitem.init(name: "系统通知", image: "bell", bubbles: 1),
@@ -50,11 +58,14 @@ class messageMain: UITableViewController {
         }
         self.tableView.tableHeaderView = headerView
         self.tableView.tableFooterView = UIView()
+        NotificationCenter.default.addObserver(self, selector: #selector(refresh), name: NSNotification.Name.init("refreshChat"), object: nil)
+        
      }
 
     override func viewWillAppear(_ animated: Bool) {
         self.navigationItem.title = "消息界面"
         self.tabBarController?.tabBar.isHidden = false
+        
         
      }
     override func viewWillDisappear(_ animated: Bool) {
@@ -62,6 +73,10 @@ class messageMain: UITableViewController {
         self.navigationItem.title = ""
     }
     
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     
     override func viewWillLayoutSubviews() {
         _ = self.tableView.tableHeaderView?.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.heightIs(150)
@@ -76,8 +91,8 @@ class messageMain: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return records.count
+        
+        return ChatPeople?.count ?? 0
     }
 
     
@@ -85,10 +100,15 @@ class messageMain: UITableViewController {
         
         
         let cell = tableView.dequeueReusableCell(withIdentifier: conversationCell.identity(), for: indexPath) as! conversationCell
-        cell.touxiang.image = UIImage.init(named: "avartar")
-        cell.name.text = "测试  公司"
-        cell.content.text = "最后一条消息"
-        cell.time.text = "2018-01-01"
+        let user = ChatPeople![indexPath.row]
+        
+        cell.touxiang.image = UIImage.init(named: user.avart)
+        cell.name.text = user.name + " " + user.companyName
+        print(user,ContactManger.usersMessage[user.id]?.messages.count)
+        let messageContent =  ContactManger.getLasteMessageForUser(user: user)
+        cell.content.text = messageContent?.content
+        cell.time.text = messageContent?.time
+        
         return cell
     }
     
@@ -99,58 +119,45 @@ class messageMain: UITableViewController {
    
     
     
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         
         tableView.deselectRow(at: indexPath, animated: true)
-        
-//        if let cell  =  tableView.cellForRow(at: indexPath) as? messageItemCell{
-//
-//            // 子视图 返回lable修改为空
-//            let backButton =  UIBarButtonItem.init(title: "", style: .done, target: nil, action: nil)
-//            self.navigationItem.backBarButtonItem = backButton
-//
-//            switch (cell.category.text)! {
-//            case messageItemType.forum.rawValue:
-//                let fview =  forumView()
-//                fview.hidesBottomBarWhenPushed = true
-//                self.navigationController?.pushViewController(fview, animated: true)
-//
-//
-//            case messageItemType.result.rawValue:
-//                let rview =  deliveredHistory()
-//                rview.hidesBottomBarWhenPushed = true
-//                self.navigationController?.pushViewController(rview, animated: true)
-//            case messageItemType.recommend.rawValue:
-//                let rview = recommendation()
-//                rview.hidesBottomBarWhenPushed = true
-//
-//                self.navigationController?.pushViewController(rview, animated: true)
-//            case messageItemType.relationshp.rawValue:
-//                let rview = relationship()
-//                rview.hidesBottomBarWhenPushed = true
-//
-//                self.navigationController?.pushViewController(rview, animated: true)
-//            case messageItemType.message.rawValue:
-//                // 消息好友列表
-//                let mview = friendsController()
-//                mview.hidesBottomBarWhenPushed = true
-//
-//                self.navigationController?.pushViewController(mview, animated: true)
-//
-//            default:
-//                print("not found item")
-//
-//            }
-//        }
-        
+        let user = ChatPeople![indexPath.row]
+        let chatView = communication(hr: user)
+        self.tabBarController?.tabBar.isHidden = true
+        self.navigationController?.pushViewController(chatView, animated: true)
         
         
     }
 
-    override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let edit = UITableViewRowAction.init(style: .normal, title: "置顶") { (action, index) in
+            if index.row == 0 {
+                return
+            }
+            // 交换？？
+            let first = IndexPath.init(row: 0, section: 0)
+            //tableView.moveRow(at: first, to: index)
+            tableView.moveRow(at: index, to: IndexPath.init(row: 0, section: 0))
+            print(action)
+        }
         
+        edit.backgroundColor = UIColor.orange
         
+        let delete = UITableViewRowAction.init(style: .normal, title: "删除") { [unowned self] (action, index) in
+            let user = self.ChatPeople![index.row]
+            self.ChatPeople?.remove(at: index.row)
+            self.ContactManger.removeUser(user: user, index: index.row)
+            tableView.deleteRows(at: [index], with: .none)
+        }
+        delete.backgroundColor = UIColor.blue
+        return [edit, delete]
     }
 
 }
@@ -182,6 +189,13 @@ extension messageMain{
         }
         
         
+    }
+}
+
+extension messageMain{
+    @objc private func refresh(){
+        ChatPeople = ContactManger.getUsers()
+        self.tableView.reloadData()
     }
 }
 

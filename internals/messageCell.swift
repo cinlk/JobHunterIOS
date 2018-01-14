@@ -79,7 +79,7 @@ class messageCell: UITableViewCell {
         let screenRect:CGRect = UIScreen.main.bounds
 //        let str:NSString  = NSString.init(cString: messageInfo.content.cString(using: String.Encoding.utf8)!, encoding: String.Encoding.utf8.rawValue)!
         // 对话框大小计算
-        let labelSize:CGSize = UILabel.sizeOfString(string: messageInfo.content! as NSString, font: UIFont.systemFont(ofSize: 16), maxWidth: screenRect.width-10-20-avatarSize.width * 2)
+        let labelSize:CGSize = UILabel.sizeOfString(string: messageInfo.content as NSString, font: UIFont.systemFont(ofSize: 16), maxWidth: screenRect.width-10-20-avatarSize.width * 2)
         
         
         if labelSize.height < avatarSize.height + 10{
@@ -95,7 +95,7 @@ class messageCell: UITableViewCell {
     
     
     // text message setup
-    func setupMessageCell(messageInfo:MessageBoby,user:FriendData){
+    func setupMessageCell(messageInfo:MessageBoby,user:FriendModel){
         
         self.gif?.frame = CGRect.zero
         self.messageLabel.attributedText = GetChatEmotion.shared.findAttrStr(text: messageInfo.content, font: messageLabel.font)
@@ -118,9 +118,9 @@ class messageCell: UITableViewCell {
         _ = bubleBackGround.sd_layout().topSpaceToView(self.contentView,5)?.heightIs(bubleSize.height)?.widthIs(bubleSize.width)
 
         // 自己发的消息
-        if messageInfo.sender.name  ==  user.name{
+        if messageInfo.sender.id  ==  user.id{
             
-            self.avatar.image = UIImage.init(named: "lk")
+            self.avatar.image = UIImage.init(named: messageInfo.sender.avart)
             self.avatar.frame = CGRect.init(x: screenRect.width-avatarSize.width-5 , y: 5, width: avatarSize.width, height: avatarSize.height)
            
             
@@ -142,7 +142,7 @@ class messageCell: UITableViewCell {
         // 别人发的消息
         else{
             
-            self.avatar.image = UIImage.init(named: "avartar")
+            self.avatar.image = UIImage.init(named: messageInfo.sender.avart)
             self.avatar.frame = CGRect.init(x: 5, y: 5, width: avatarSize.width, height: avatarSize.height)
             
             
