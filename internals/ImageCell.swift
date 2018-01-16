@@ -39,7 +39,7 @@ class ImageCell: UITableViewCell {
         self.contentView.addSubview(imageV)
         self.contentView.addSubview(avartar)
         self.backgroundColor = UIColor.clear
-        
+        self.selectionStyle = .none
         avartar.frame = CGRect.init(x: screenRect.width - 45 - 5, y: 5, width: 45, height: 45)
         
         _ = imageV.sd_layout().rightSpaceToView(avartar,5)?.topSpaceToView(self.contentView,10)?.widthIs(75)?.heightIs(80)

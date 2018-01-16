@@ -71,11 +71,6 @@ class InputTextView: UIView {
         _  = chatEmotionButton.sd_layout().leftSpaceToView(inputText,0)?.topEqualToView(self)?.bottomEqualToView(self)?.widthIs(45)
         _  = chatMoreButton.sd_layout().leftSpaceToView(chatEmotionButton,5)?.topEqualToView(chatEmotionButton)?.bottomEqualToView(chatEmotionButton)?.widthIs(45)
         
-        
-        
-        
-        
-        
     }
     
     required init?(coder aDecoder: NSCoder) {

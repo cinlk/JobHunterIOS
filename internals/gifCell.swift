@@ -56,12 +56,12 @@ class gifCell: UITableViewCell {
         return "gifCell"
     }
     
-    func setupPictureCell(messageInfo:MessageBoby, user:FriendModel){
+    func setupPictureCell(messageInfo:imageMessageBody, user:FriendModel){
         
         
  
         // image path file
-        let path  = messageInfo.content
+        let path  = messageInfo.imgPath
         let data = NSData.init(contentsOf: NSURL.init(fileURLWithPath: path) as URL)
         // 动态图
         let animationImage = UIImage.animationImageWithData(data: data)
@@ -69,7 +69,6 @@ class gifCell: UITableViewCell {
         
         if user.id  == messageInfo.sender.id{
             
-            //gif?.image = UIImage.init(contentsOfFile: path!)
             
             self.avatar.image = UIImage.init(named:  messageInfo.sender.avart)
             self.avatar.frame = CGRect.init(x: UIScreen.main.bounds.width-avatarSize.width-5 , y: 5, width: avatarSize.width, height: avatarSize.height)
@@ -78,7 +77,6 @@ class gifCell: UITableViewCell {
             }else{
                 self.gif?.frame = CGRect.init(x: UIScreen.main.bounds.width-5-self.avatar.frame.width-5-70, y: 15, width: 60, height: 60)
             }
-            
             
             
         }else{
@@ -90,7 +88,6 @@ class gifCell: UITableViewCell {
                 self.gif?.frame = CGRect.init(x: self.avatar.frame.width+5+10, y: 15, width: 60, height: 60)
             }
         }
-        
         
         
     }

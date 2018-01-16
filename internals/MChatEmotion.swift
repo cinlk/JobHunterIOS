@@ -15,12 +15,15 @@ import UIKit
         
         didSet {
             imgPath = Bundle.main.bundlePath + "/"+bundle+"/" + image! + imageType
+            storeImg = "/"+bundle+"/" + image! + imageType
         }
     }
     dynamic var text: String?     // 表情对应的文字
     
     // MARK:- 数据处理
     var imgPath: String?
+    var storeImg:String?
+    
     var isRemove: Bool = false
     var isEmpty: Bool = false
     // ".bundle"

@@ -62,13 +62,29 @@ class PersonCardCell: UITableViewCell {
        return n
     }()
     
-    let screenRect:CGRect = UIScreen.main.bounds
+    var mode:(name:String, image:String)?{
+        
+        didSet{
+            imageV.image = UIImage.init(named: mode!.image)
+            name.text = mode!.name
+            avartar.image = UIImage.init(named: mode!.image)
+        }
+    }
+    
+    
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.backgroundColor = UIColor.clear
+        self.selectionStyle = .none
+    }
+    
+   
+    
+    override func layoutSubviews() {
         
         self.addSubview(avartar)
-        avartar.frame = CGRect.init(x: screenRect.width - 45 - 5, y: 5, width: 45, height: 45)
+        avartar.frame = CGRect.init(x: ScreenW - 45 - 5, y: 5, width: 45, height: 45)
         
         self.addSubview(bubbleBackGround)
         
@@ -78,19 +94,15 @@ class PersonCardCell: UITableViewCell {
         bubbleBackGround.addSubview(name)
         
         bubbleBackGround.image =  UIImage.resizeableImage(name: "rightmessage")
-        bubbleBackGround.frame = CGRect.init(x:screenRect.width-5-45-5-160 , y: 5, width: 155, height: 75)
+        bubbleBackGround.frame = CGRect.init(x:ScreenW-5-45-5-160 , y: 5, width: 165, height: 80)
         
-        _ = title.sd_layout().leftSpaceToView(bubbleBackGround,10)?.topSpaceToView(bubbleBackGround,5)?.widthIs(120)?.heightIs(15)
+        _ = title.sd_layout().leftSpaceToView(bubbleBackGround,15)?.topSpaceToView(bubbleBackGround,10)?.widthIs(120)?.heightIs(15)
         
         _ = line.sd_layout().leftEqualToView(self.title)?.topSpaceToView(self.title,3)?.rightSpaceToView(bubbleBackGround,10)?.heightIs(1)
         
-        _ = imageV.sd_layout().leftEqualToView(title)?.bottomSpaceToView(bubbleBackGround,5)?.topSpaceToView(line,5)?.widthIs(45)
+        _ = imageV.sd_layout().leftEqualToView(title)?.bottomSpaceToView(bubbleBackGround,10)?.topSpaceToView(line,5)?.widthIs(45)
         
-        _ = name.sd_layout().leftSpaceToView(imageV,0)?.topSpaceToView(line,10)?.widthIs(80)?.heightIs(20)
-        
-        
-        self.backgroundColor = UIColor.clear
-        
+        _ = name.sd_layout().leftSpaceToView(imageV,5)?.topSpaceToView(line,10)?.widthIs(80)?.heightIs(20)
         
         
     }
@@ -119,13 +131,6 @@ class PersonCardCell: UITableViewCell {
         
     }
 
-    func buildCell(name:String, image:String){
-        imageV.image = UIImage.init(named: image)
-        self.name.text = name
-        avartar.image = UIImage.init(named: image)
-        
-        
-    }
     
     
 }

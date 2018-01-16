@@ -109,20 +109,26 @@ class messageMain: UITableViewController {
         let messageContent =  ContactManger.getLasteMessageForUser(user: user)
         
         switch messageContent!.type {
-        case .bigGif, .smallGif:
-            break
+        case .bigGif, .smallGif, .picture:
+            cell.content.text = "[图片]"
+            cell.time.text = messageContent?.time
+            return cell
         // 图文并排
         case .text:
           cell.content.attributedText = GetChatEmotion.shared.findAttrStr(text: messageContent?.content, font: UIFont.systemFont(ofSize: 12))
           cell.time.text = messageContent?.time
           return cell
+        case .personCard:
+            cell.content.text = "[个人名片]"
+            cell.time.text = messageContent?.time
+            return cell
+        
         default:
             return UITableViewCell.init()
         }
         //cell.content.text = messageContent?.content
+    
         
-        
-        return cell
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

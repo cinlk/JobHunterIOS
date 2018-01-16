@@ -264,9 +264,10 @@ extension communication: UITableViewDelegate,UITableViewDataSource{
                 return cell
                 
             }else if message.type == .smallGif || message.type == .bigGif{
+                
                 let cell = tableView.dequeueReusableCell(withIdentifier: gifCell.reuseidentify(), for: indexPath) as! gifCell
                 
-                cell.setupPictureCell(messageInfo: message, user: myself)
+                cell.setupPictureCell(messageInfo: message as! imageMessageBody , user: myself)
                
                 
                 return cell
@@ -281,26 +282,22 @@ extension communication: UITableViewDelegate,UITableViewDataSource{
                 cell.salary.text = "面议"
                 return cell
                 
+            }else if message.type == .personCard{
+                let cell = tableView.dequeueReusableCell(withIdentifier: PersonCardCell.reuseidentity(), for: indexPath) as! PersonCardCell
+                let mes = message as! PersonCardMessage
+                cell.mode = (name: mes.name, image: mes.image)
+                return cell
+                
+            }else if message.type == .picture{
+                let cell = tableView.dequeueReusableCell(withIdentifier: ImageCell.reuseIdentify(), for: indexPath) as! ImageCell
+                var mes = message as! CameraImageMessage
+                cell.buildCell(image: mes.imageData, avater: mes.sender.avart)
+                return cell
             }else{
                 
             }
-            
-            //return cell
         }
-        if let personCard = self.tableSource.object(at: indexPath.row) as? PersonCardBody{
-            let cell = tableView.dequeueReusableCell(withIdentifier: PersonCardCell.reuseidentity(), for: indexPath) as? PersonCardCell
-            cell?.buildCell(name: personCard.name!, image: personCard.image!)
-            cell?.selectionStyle = .none
-            return cell!
-            
-        }
-        if let imageBody = self.tableSource.object(at: indexPath.row) as? ImageBody{
-            let cell = tableView.dequeueReusableCell(withIdentifier: ImageCell.reuseIdentify(), for: indexPath) as? ImageCell
-            
-            cell?.buildCell(image: imageBody.image, avater: imageBody.avatar!)
-            cell?.selectionStyle = .none
-            return cell!
-        }
+     
         
         return UITableViewCell.init(style: .default, reuseIdentifier: "nil")
         
@@ -317,9 +314,9 @@ extension communication: UITableViewDelegate,UITableViewDataSource{
             }else if message.type == .jobDetail{
                 return JobMessageCell.cellHeight()
             }
-        }else if self.tableSource.object(at: indexPath.row) is PersonCardBody{
+        }else if self.tableSource.object(at: indexPath.row) is PersonCardMessage{
             return PersonCardCell.heightForCell()
-        }else if let _ = self.tableSource.object(at: indexPath.row) as? ImageBody{
+        }else if let _ = self.tableSource.object(at: indexPath.row) as? CameraImageMessage{
             return ImageCell.cellHeight()
         }
         return CellCard.height()
@@ -335,7 +332,7 @@ extension communication: UITableViewDelegate,UITableViewDataSource{
             self.navigationItem.backBarButtonItem = backButton
             self.navigationController?.pushViewController(detail, animated: true)
         }
-        else if let personCard = self.tableSource.object(at: indexPath.row) as? PersonCardBody{
+        else if let personCard = self.tableSource.object(at: indexPath.row) as? PersonCardMessage{
             print("show person card View \(personCard)")
             
         }
@@ -352,7 +349,16 @@ extension communication{
         //record
         if let mes = contactManager.usersMessage[self.hr!.id]?.messages{
             for item in mes{
-                print(item)
+                if item.type == .smallGif || item.type == .bigGif{
+                    let mes = item as! imageMessageBody
+                    // 拼接当前img绝对路径
+                    // copy ??
+                    mes.imgPath = Bundle.main.bundlePath + mes.imgPath
+                    
+                    self.tableSource.add(mes)
+                    continue
+                }
+                
                 self.tableSource.add(item)
             }
         }
@@ -400,65 +406,69 @@ extension communication{
     
     
     
-    // send gif picture
+    //   gif 图片
     func sendGifMessage(emotion: MChatEmotion, type:messgeType){
         
-        // MARK userdefault存储 gif message
-        switch type {
-        case .smallGif:
-            break
-        case .bigGif:
-            break
-        default:
-            return
-        }
-        let messageBody:MessageBoby = MessageBoby.init(content: emotion.imgPath!, time: "10-12", sender: myself, target: self.hr!)
-       
+        
+        var messageBody:imageMessageBody  = imageMessageBody.init(time: "01-23", path: emotion.imgPath!, sender: myself, target: self.hr!, type: type)
+        
+        
         
         self.tableSource.add(messageBody)
-        
         self.tableView.reloadData()
         let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
         self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)
         
         
+        // 存储到本地(copy 一份数据)
+        let tmp = imageMessageBody.init(time: "01-23", path: emotion.storeImg!, sender: myself, target: self.hr!, type: type)
+        Contactlist.shared.usersMessage[(hr?.id)!]?.addMessageByMes(newMes: tmp)
+        
+        
     }
-    //
+    // 快捷回复
     func sendReply(content:String){
+        
         let messagebody:MessageBoby = MessageBoby.init(content: content, time: "10-13", sender: myself, target: self.hr!)
         //messagebody.sender = myself
         messagebody.type = .text
         
         self.tableSource.add(messagebody)
         
-        //self.tableView.reloadData()
-        //self.tableView.beginUpdates()
+        self.tableView.reloadData()
         let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
         //self.tableView.insertRows(at: [path as IndexPath], with: .none)
-        self.tableView.reloadData()
-        //self.tableView.endUpdates()
         self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)
+        // 存入本地
+        Contactlist.shared.usersMessage[(hr?.id)!]?.addMessageByMes(newMes: messagebody)
     }
-    //
     
+    // 个人名片
     func sendPersonCard(){
         
-        let card:PersonCardBody = PersonCardBody.init(name: myself.id, image: myself.avart)
-        self.tableSource.add(card)
-        let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
+        let personCard:PersonCardMessage = PersonCardMessage.init(name: myself.name, image: myself.avart, time: "今天", sender: myself, target: self.hr!)
+        self.tableSource.add(personCard)
         self.tableView.reloadData()
+        let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
         self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)
+        // 存入本地
+        Contactlist.shared.usersMessage[(hr?.id)!]?.addMessageByMes(newMes: personCard)
         
     }
-    // send image
     
+    // 照片
     func sendImage(image:NSData, avartar:String){
         
-        let imageBody:ImageBody = ImageBody.init(image: image, avatar: avartar)
-        self.tableSource.add(imageBody)
-        let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
+        let Cameraimage:CameraImageMessage = CameraImageMessage.init(imageData: image, time: "啊哈", sender: myself, target: self.hr!)
+        self.tableSource.add(Cameraimage)
         self.tableView.reloadData()
+        let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
         self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)
+        
+        // 存入本地
+        Contactlist.shared.usersMessage[(hr?.id)!]?.addMessageByMes(newMes: Cameraimage)
+        
+        
         
     }
 }
@@ -831,11 +841,12 @@ extension communication: ReplyMessageDelegate{
 }
 
 
+
+// camera 照片
 extension communication: UIImagePickerControllerDelegate,UINavigationControllerDelegate{
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         //查看info对象
-        print(info)
         
         
         let image:UIImage!
@@ -844,9 +855,9 @@ extension communication: UIImagePickerControllerDelegate,UINavigationControllerD
         picker.dismiss(animated: true, completion: {
             () -> Void in
         })
-        print("choose image \(image)")
         
-       // self.sendImage(image: UIImageJPEGRepresentation(image, 1.0)! as NSData, avartar: myself.avart)
+        print("choose image \(image)")
+        self.sendImage(image: UIImageJPEGRepresentation(image, 1.0)! as NSData, avartar: myself.avart)
         
     }
     

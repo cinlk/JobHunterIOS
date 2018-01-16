@@ -16,6 +16,7 @@ enum messgeType:String {
     case bigGif = "bigGif"
     case voice = "voice"
     case jobDetail = "jobDetail"
+    case personCard = "personCard"
     
     
 }
@@ -27,8 +28,9 @@ enum MessageStatus{
 }
 
 
+
 //baseMessage 继承  nsobject 和  nscoding
-class MessageBoby: NSObject,NSCoding{
+class MessageBoby: NSObject, NSCoding{
     
     var messageID:Int?
     var url:String?
@@ -79,11 +81,11 @@ class MessageBoby: NSObject,NSCoding{
 
 extension MessageBoby{
     override var description: String{
-        return self.content + self.type.rawValue
+        return self.content + ":" + self.type.rawValue
     }
 }
+// copy 实现 ？
 
-//
 class  JobDetailMessage:MessageBoby{
     
     private var icon:String
@@ -96,27 +98,27 @@ class  JobDetailMessage:MessageBoby{
         
         
         
-        guard let Icon = infos?["icon"] else {
+        guard let icon = infos?["icon"] else {
             return nil
         }
         guard let jobName = infos?["jobName"] else {
             return nil
         }
         
-        guard let Company = infos?["company"] else {
+        guard let company = infos?["company"] else {
             return nil
         }
-        guard  let Salary = infos?["salary"] else {
+        guard  let salary = infos?["salary"] else {
             return nil
         }
-        guard let Tags = infos?["tags"] else {
+        guard let tags = infos?["tags"] else {
             return nil
         }
-        icon = Icon
-        JobName = jobName
-        company = Company
-        salary = Salary
-        tags = Tags
+        self.icon = icon
+        self.JobName = jobName
+        self.company = company
+        self.salary = salary
+        self.tags = tags
         super.init(content: "", time: time, sender: sender, target: target)
         type = .jobDetail
         
@@ -146,17 +148,100 @@ class  JobDetailMessage:MessageBoby{
 }
 
 
+//  gif image message
 
-
-class ImageBody:NSCoder{
+class  imageMessageBody:MessageBoby{
     
-    var image:NSData?
-    var avatar:String?
+    var imgPath:String
     
-    init(image:NSData, avatar:String){
-        self.image = image
-        self.avatar = avatar
+    init(time:String, path:String, sender:FriendModel, target:FriendModel, type:messgeType) {
+        imgPath = path
+        super.init(content: "", time: time, sender: sender , target: target)
+        self.type = type
+        
+        
     }
+    
+    override func encode(with aCoder: NSCoder) {
+        super.encode(with: aCoder)
+        aCoder.encode(imgPath, forKey: "imgPath")
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        
+        self.imgPath = aDecoder.decodeObject(forKey: "imgPath") as! String
+        super.init(coder: aDecoder)
+        
+    }
+}
+
+extension imageMessageBody{
+    override var description: String{
+        return self.imgPath + ":" + self.type.rawValue
+    }
+}
+
+
+
+
+class PersonCardMessage:MessageBoby{
+    
+    
+    var name:String
+    var image:String
+    
+    init(name:String,image:String,time:String, sender:FriendModel, target:FriendModel) {
+        self.name = name
+        self.image = image
+        super.init(content: "", time: time, sender: sender, target: target)
+        self.type = .personCard
+    }
+    
+    
+    
+    override func encode(with aCoder: NSCoder) {
+        super.encode(with: aCoder)
+        aCoder.encode(name, forKey: "name")
+        aCoder.encode(image, forKey: "image")
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        
+        self.name = aDecoder.decodeObject(forKey: "name") as! String
+        self.image = aDecoder.decodeObject(forKey: "image") as! String
+        super.init(coder: aDecoder)
+    }
+    
+}
+
+
+
+class CameraImageMessage:MessageBoby{
+    
+    var imageData:NSData
+    
+    
+    init(imageData:NSData, time:String, sender:FriendModel, target:FriendModel){
+        
+        self.imageData = imageData
+        super.init(content: "", time: time, sender: sender, target: target)
+        self.type = .picture
+    }
+    
+    override func encode(with aCoder: NSCoder) {
+        super.encode(with: aCoder)
+        aCoder.encode(imageData, forKey: "imageData")
+        
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        self.imageData = aDecoder.decodeObject(forKey: "imageData") as! NSData
+        super.init(coder: aDecoder)
+    }
+    
     
     
 }
