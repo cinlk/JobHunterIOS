@@ -8,51 +8,47 @@
 
 import UIKit
 
-
-let avatarSize:CGSize = CGSize.init(width: 45, height: 45)
-
 class messageCell: UITableViewCell {
 
+    private var avatar:UIImageView = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: avatarSize.width, height: avatarSize.height))
     
-    var avatar:UIImageView!
-    var messageLabel:UILabel!
-    var bubleBackGround: UIImageView!
-    // gif
-    var gif:UIImageView?
-    
+    private lazy var messageLabel:MessageLabel = {
+        let ml = MessageLabel.init(frame: CGRect.zero)
+        ml.font = UIFont.systemFont(ofSize: 16)
+        ml.textColor = UIColor.black
+        ml.numberOfLines = 0
+        ml.textAlignment = .left
+        ml.lineBreakMode = .byWordWrapping
+        return ml
+    }()
+    private var bubleBackGround: UIImageView = UIImageView.init(frame: CGRect.zero)
+ 
     
     
     // 代码初始化
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        avatar = UIImageView.init()
-        messageLabel = UILabel()
-        bubleBackGround = UIImageView()
-        gif = UIImageView()
-        
-        
+       
         
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        messageLabel.font = UIFont.systemFont(ofSize: 16)
-        messageLabel.textColor = UIColor.black
-        // 分行
-        messageLabel.numberOfLines = 0
-        messageLabel.textAlignment = .left
+       
         self.selectionStyle = .none
+        self.backgroundColor = UIColor.clear
+
+    
+    }
+    
+    override func layoutSubviews() {
         
-        
+        avatar.setCircle()
         self.contentView.clipsToBounds = true
         self.contentView.addSubview(avatar)
         self.contentView.addSubview(bubleBackGround)
-        self.contentView.addSubview(gif!)
-        self.bubleBackGround.addSubview(messageLabel)
-
-        
-        //
-        self.backgroundColor = UIColor.clear
-        
-        
-    
-    }
+        self.contentView.addSubview(messageLabel)
+        // 暴力取消view动画， 影藏keyboard后 table 向上滑动 出现cell 动画？
+        avatar.layer.removeAllAnimations()
+        messageLabel.layer.removeAllAnimations()
+        bubleBackGround.layer.removeAllAnimations()
+     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -66,7 +62,7 @@ class messageCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
     
@@ -77,10 +73,7 @@ class messageCell: UITableViewCell {
     
     class func heightForCell(messageInfo:MessageBoby)->CGFloat{
         
-        let screenRect:CGRect = UIScreen.main.bounds
-//        let str:NSString  = NSString.init(cString: messageInfo.content.cString(using: String.Encoding.utf8)!, encoding: String.Encoding.utf8.rawValue)!
-        // 对话框大小计算
-        let labelSize:CGSize = UILabel.sizeOfString(string: messageInfo.content as NSString, font: UIFont.systemFont(ofSize: 16), maxWidth: screenRect.width-10-20-avatarSize.width * 2)
+        let labelSize:CGSize = UILabel.sizeOfString(string: messageInfo.content as NSString, font: UIFont.systemFont(ofSize: 16), maxWidth: ScreenW-10-20-avatarSize.width * 2)
         
         
         if labelSize.height < avatarSize.height + 10{
@@ -88,95 +81,147 @@ class messageCell: UITableViewCell {
         }
         return labelSize.height + 10
         
-        
     }
     
     // picture message setup
- 
-    
-    
     // text message setup
     func setupMessageCell(messageInfo:MessageBoby,user:FriendModel){
         
-        self.gif?.frame = CGRect.zero
+        
         self.messageLabel.attributedText = GetChatEmotion.shared.findAttrStr(text: messageInfo.content, font: messageLabel.font)
+        let labelSize = messageLabel.sizeThatFits(CGSize(width: ScreenW-10-20-avatarSize.width * 2, height: CGFloat(Float.greatestFiniteMagnitude)))
         
+       
+        var h:CGFloat = 0
+        var y:CGFloat = 5
         
-        var labelSize = messageLabel.sizeThatFits(CGSize(width: 200.0, height: CGFloat(Float.greatestFiniteMagnitude)))
-        labelSize  = CGSize.init(width: labelSize.width, height: labelSize.height)
-        
-        _ = avatar.sd_layout().heightIs(45)?.topSpaceToView(self.contentView,5)?.widthIs(45)
-        
-        _ = messageLabel.sd_layout().widthIs(labelSize.width)?.heightIs(labelSize.height)
-        
-        
-        let screenRect:CGRect = UIScreen.main.bounds
+        // 只有一行字 居中显示
+        if labelSize.height < 20 {
+            h = avatarSize.height - 10
+            y = (avatarSize.height - labelSize.height) / 2
             
-        //let labelSize:CGSize = UILabel.sizeOfString(string: messageInfo.content! as NSString, font: UIFont.systemFont(ofSize: 16), maxWidth: screenRect.width-10-20-avatarSize.width*2)
+            
+        }else{
+            h = labelSize.height
+            y = 5
+        }
         
-        let bubleSize:CGSize = CGSize.init(width: labelSize.width+20, height: labelSize.height+20)
         
-        _ = bubleBackGround.sd_layout().topSpaceToView(self.contentView,5)?.heightIs(bubleSize.height)?.widthIs(bubleSize.width)
+        
+        // 让labe 左右两边间隔5 像素 (25)
+        let bubleSize:CGSize = CGSize.init(width: labelSize.width + 20 + 5, height: h + 10)
 
         // 自己发的消息
         if messageInfo.sender.id  ==  user.id{
             
             self.avatar.image = UIImage.init(named: messageInfo.sender.avart)
-            self.avatar.frame = CGRect.init(x: screenRect.width-avatarSize.width-5 , y: 5, width: avatarSize.width, height: avatarSize.height)
+            self.avatar.frame = CGRect.init(x: ScreenW-avatarSize.width-5 , y: 0, width: avatarSize.width, height: avatarSize.height)
            
             
-            self.bubleBackGround.image = UIImage.resizeableImage(name: "rightmessage")
-
-             self.bubleBackGround.frame = CGRect.init(x: screenRect.width-5-self.avatar.frame.width-5-bubleSize.width, y: 5, width: bubleSize.width, height: bubleSize.height)
+           
+            //self.bubleBackGround.image = UIImage.resizeableImage(name: "rightmessage")
+            self.bubleBackGround.image = UIImage.init(named: "mebubble")?.stretchableImage(withLeftCapWidth: 15, topCapHeight: 25)
             
-             //_ = bubleBackGround.sd_layout().rightSpaceToView(avatar,5)?.widthIs(bubleSize.width)
+            self.bubleBackGround.frame = CGRect.init(x: ScreenW-5-self.avatar.frame.width-5-bubleSize.width, y: 0, width: bubleSize.width, height: bubleSize.height)
+            self.messageLabel.frame = CGRect.init(x: ScreenW-5-self.avatar.frame.width-5-bubleSize.width + 10 , y: y, width: labelSize.width, height: labelSize.height)
             
-             _ = self.messageLabel.sd_layout().topSpaceToView(self.bubleBackGround,10)?.rightSpaceToView(self.bubleBackGround,10)
-            
-            // 取消动画，不然显示动画 不好看
-            avatar.layer.removeAllAnimations()
-            messageLabel.layer.removeAllAnimations()
-            bubleBackGround.layer.removeAllAnimations()
-            
+//            avatar.layer.removeAllAnimations()
+//            messageLabel.layer.removeAllAnimations()
+//            bubleBackGround.layer.removeAllAnimations()
+//
         
         }
         // 别人发的消息
         else{
             
             self.avatar.image = UIImage.init(named: messageInfo.sender.avart)
-            self.avatar.frame = CGRect.init(x: 5, y: 5, width: avatarSize.width, height: avatarSize.height)
+            self.avatar.frame = CGRect.init(x: 5, y: 0, width: avatarSize.width, height: avatarSize.height)
             
             
+            //self.bubleBackGround.image = UIImage.resizeableImage(name: "leftmessage")
             
- 
-            self.bubleBackGround.image = UIImage.resizeableImage(name: "leftmessage")
-
-            self.bubleBackGround.frame = CGRect.init(x: self.avatar.frame.origin.x + self.avatar.frame.width+5, y: 5, width: bubleSize.width, height: bubleSize.height)
-            // 用约束有bug?
-            //_ = bubleBackGround.sd_layout().leftSpaceToView(avatar,55)?.widthIs(bubleSize.width)
-            
-            _ = self.messageLabel.sd_layout().topSpaceToView(self.bubleBackGround,10)?.leftSpaceToView(self.bubleBackGround,10)
+            self.bubleBackGround.image = UIImage.init(named: "yoububble")?.stretchableImage(withLeftCapWidth: 21, topCapHeight: 25)
+            self.bubleBackGround.frame = CGRect.init(x: 5 + self.avatar.frame.width + 5, y: 0, width: bubleSize.width, height: bubleSize.height)
+            self.messageLabel.frame = CGRect.init(x: 5 + self.avatar.frame.width + 5 + 10, y: y, width: labelSize.width, height: labelSize.height)
             
             // 取消动画，不然显示动画 不好看
-            avatar.layer.removeAllAnimations()
-            messageLabel.layer.removeAllAnimations()
-            bubleBackGround.layer.removeAllAnimations()
-            
-            
-            
+//            avatar.layer.removeAllAnimations()
+//            messageLabel.layer.removeAllAnimations()
+//            bubleBackGround.layer.removeAllAnimations()
+//
             
             
         }
         
+     
+
        
         
         
     }
     
     
-    
-        
-        
-    
 
 }
+
+
+// 自定义可复制的uilabe
+fileprivate class MessageLabel:UILabel{
+    
+    
+    override var canBecomeFirstResponder: Bool{
+        return true
+    }
+    
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.addGesture()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    private func addGesture(){
+        isUserInteractionEnabled = true
+        let gesture = UILongPressGestureRecognizer.init(target: self, action: #selector(clickLable))
+        gesture.minimumPressDuration = 3
+        gesture.numberOfTouchesRequired = 1
+        
+        self.addGestureRecognizer(gesture)
+    }
+
+     @objc private  func clickLable(){
+        
+        becomeFirstResponder()
+        
+        let menu = UIMenuController.shared
+        
+        let copy = UIMenuItem.init(title: "复制", action: #selector(copyText))
+        menu.menuItems = [copy]
+        menu.setTargetRect(bounds, in: self)
+        menu.setMenuVisible(true, animated: true)
+        
+        
+    }
+    
+    
+    @objc private func copyText(){
+        
+        UIPasteboard.general.string = self.text
+        
+    }
+    
+    // 除了复制功能以外 其他交换禁止
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(copyText){
+            return true
+        }
+        return false
+    }
+}
+
+
+

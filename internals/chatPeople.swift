@@ -77,6 +77,19 @@ class Contactlist:NSObject{
         usersMessage[user.id] = messageRecords.init(id: user.id)
     }
     
+//    func setTopUser(index:Int){
+//
+//        if var col = pref.object(forKey: contacts) as? [Data]{
+//            let item = col.remove(at: index)
+//            col.insert(item, at: 0)
+//            pref.set(col, forKey: contacts)
+//            //
+//            let u =  users.remove(at: index)
+//            users.insert(u, at: 0)
+//        }
+//
+//
+//    }
     func removeUser(user:FriendModel, index:Int){
         if users.contains(user){
             if var col = pref.object(forKey: contacts) as? [Data]{
@@ -98,6 +111,15 @@ class Contactlist:NSObject{
         return  usersMessage[user.id]?.messages.last
     }
     
+    // job id
+    open func getTalkedJobsById(user:FriendModel, jobId:String)->(Bool,Dictionary<String,String>?){
+        
+        
+        return (false, nil)
+    }
+    
+    
+    
     
     
 }
@@ -111,8 +133,8 @@ class FriendModel:NSObject,NSCoding{
     // 唯一号
     var id:String
     var avart:String
-    
-    
+    // 消息聊天 是否置顶
+    //var isFocus:Bool
     
     
     init(name:String,avart:String, companyName:String,id:String) {
@@ -120,7 +142,7 @@ class FriendModel:NSObject,NSCoding{
         self.avart = avart
         self.companyName = companyName
         self.id = id
-        
+        //self.isFocus = false
         
     }
     
@@ -129,15 +151,20 @@ class FriendModel:NSObject,NSCoding{
         aCoder.encode(avart, forKey: "avatar")
         aCoder.encode(companyName, forKey: "companyName")
         aCoder.encode(id, forKey: "id")
+        //aCoder.encode(isFocus, forKey: "isFocus")
         
         
     }
     
     required init?(coder aDecoder: NSCoder) {
+        
         self.name =  aDecoder.decodeObject(forKey: "name") as! String
         self.avart = aDecoder.decodeObject(forKey: "avatar") as! String
         self.companyName = aDecoder.decodeObject(forKey: "companyName") as! String
         self.id = aDecoder.decodeObject(forKey: "id") as! String
+        
+        //self.isFocus = aDecoder.decodeBool(forKey: "isFocus")
+        
     }
    
     
@@ -150,6 +177,8 @@ class FriendModel:NSObject,NSCoding{
     }
     
     
+    
+    
 }
 
 class messageRecords:NSObject{
@@ -158,14 +187,14 @@ class messageRecords:NSObject{
     private var prefix:String
     private var id:String
     var messages:[MessageBoby] = []
-    
+ 
     init(id:String) {
         self.id = id
         pre = UserDefaults.standard
         prefix = "mes_" + id
         super.init()
         _ = self.GetAllMes()
-        
+ 
     }
     
     
@@ -182,6 +211,9 @@ class messageRecords:NSObject{
         return nil 
         
     }
+   
+    
+    
     
     open func addMessageByMes(newMes:MessageBoby){
         

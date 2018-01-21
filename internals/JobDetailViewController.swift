@@ -81,25 +81,31 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     }()
     
     private var talkTitle =  "和TA聊聊"
-    private var IsRecord = false
-    private var lastMessage:MessageBoby?
+    private var resumeTitle = "投递简历"
+    private var isTalked = false
+    private var isSendResume = false
     
     let hr:FriendModel = FriendModel.init(name: "hr", avart: "hr", companyName: "霹雳", id: "2")
     
     // bottom viwe
+    private var sendResumeBtn = UIButton.init(frame: CGRect.zero)
+    private var talkBtn = UIButton.init(frame: CGRect.zero)
+    
     lazy var bottomView:UIView = {  [unowned self] in
         let v = UIView.init()
         v.backgroundColor = UIColor.white
         v.alpha = 0.95
-        let sendResume = UIButton.init()
-        sendResume.setTitle("发送简历", for: .normal)
+        let sendResume = self.sendResumeBtn
+        sendResume.setTitle(self.resumeTitle, for: .normal)
         sendResume.setTitleColor(UIColor.black, for: .normal)
+        sendResume.backgroundColor = UIColor.white
         sendResume.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         sendResume.layer.borderWidth = 0.5
         sendResume.tag = 0
+        sendResume.isUserInteractionEnabled = !self.isSendResume
         sendResume.layer.borderColor = UIColor.green.cgColor
         sendResume.addTarget(self, action: #selector(self.sendResume), for: .touchUpInside)
-        let talk = UIButton.init()
+        let talk = self.talkBtn
         talk.setTitle(self.talkTitle, for: .normal)
         talk.backgroundColor = UIColor.green
         talk.setTitleColor(UIColor.white, for: .normal)
@@ -115,6 +121,13 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         return v
         
     }()
+    
+    
+    
+    // test job id
+    var jobID:String = ""
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.white
@@ -128,8 +141,13 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         darkView.addGestureRecognizer(singTap)
         self.centerY = shareapps.centerY
         
-        lastMessage  =  Contactlist.shared.getLasteMessageForUser(user: hr)
-        
+        if SendResumeJobIds.contains(self.jobID){
+            isSendResume = true
+        }
+        if talkedJobIds.contains(self.jobID){
+            isTalked = true
+        }
+       
         
     }
     override func viewDidAppear(_ animated: Bool) {
@@ -140,12 +158,18 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         self.navigationItem.title = "职位详情"
         // 加入背景view
         self.navigationController?.view.insertSubview(nBackView, at: 1)
-        if lastMessage != nil{
-            self.talkTitle = "继续聊天"
-        }else{
-            self.talkTitle = "和TA聊聊"
-        }
-        (bottomView.subviews[0] as! UIButton).setTitle(self.talkTitle, for: .normal)
+        self.talkTitle =  isTalked ? "继续聊天" : "和TA聊聊"
+        if isSendResume{
+            self.resumeTitle = "已经投递"
+            sendResumeBtn.setTitle(self.resumeTitle, for: .normal)
+            sendResumeBtn.backgroundColor = UIColor.lightGray
+            sendResumeBtn.isUserInteractionEnabled = !self.isSendResume
+         }
+        
+        self.talkBtn.setTitle(self.talkTitle, for: .normal)
+        
+        
+        
  
     }
     
@@ -324,27 +348,29 @@ extension JobDetailViewController{
     }
     
     @objc func sendResume(){
+        print("sendResume \(jobID)")
+        SendResumeJobIds.append(self.jobID)
+        sendResumeBtn.setTitle("已经投递", for: .normal)
+        sendResumeBtn.backgroundColor = UIColor.lightGray
+        sendResumeBtn.isUserInteractionEnabled = false
         
     }
     
     @objc func talk(){
         
-        // test
-        if lastMessage == nil{
-            
-            lastMessage = MessageBoby.init(content: "hr 你好，对贵公司该职位感兴趣，希望进一步沟通", time: "2018-01-11", sender: myself, target: hr)
+        if !isTalked{
+            let Message = MessageBoby.init(content: "hr 你好，对贵公司该职位感兴趣，希望进一步沟通", time: "2018-01-11", sender: myself, target: hr)
             
             let info = ["icon":"sina","jobName":"产品开发","company":"霹雳火","salary":"面议","tags":"北京|本科|校招"]
             if let  jobDetailMessage = JobDetailMessage.init(infos: info, time: "2018-01-13", sender: myself, target: hr){
-                    Contactlist.shared.addUser(user: hr)
-                    Contactlist.shared.usersMessage[hr.id]?.addMessageByMes(newMes: jobDetailMessage)
-                    Contactlist.shared.usersMessage[hr.id]?.addMessageByMes(newMes: lastMessage!)
-            }else{
-                print("出错 ------- ")
-                return
+                Contactlist.shared.addUser(user: hr)
+                Contactlist.shared.usersMessage[hr.id]?.addMessageByMes(newMes: jobDetailMessage)
+                Contactlist.shared.usersMessage[hr.id]?.addMessageByMes(newMes: Message)
+                talkedJobIds.append(self.jobID)
+                
             }
-            
         }
+        
         
         let chatView = communication(hr: hr)
         // chatView.chatWith(friend:, jobCard: nil)

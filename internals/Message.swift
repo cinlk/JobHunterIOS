@@ -88,11 +88,11 @@ extension MessageBoby{
 
 class  JobDetailMessage:MessageBoby{
     
-    private var icon:String
-    private var JobName: String
-    private var company:String
-    private var salary:String
-    private var tags:String
+    var icon:String
+    var jobName: String
+    var company:String
+    var salary:String
+    var tags:String
     
     init?(infos:[String:String]?,time:String,sender:FriendModel,target:FriendModel) {
         
@@ -115,7 +115,7 @@ class  JobDetailMessage:MessageBoby{
             return nil
         }
         self.icon = icon
-        self.JobName = jobName
+        self.jobName = jobName
         self.company = company
         self.salary = salary
         self.tags = tags
@@ -127,23 +127,32 @@ class  JobDetailMessage:MessageBoby{
     
     override func encode(with aCoder: NSCoder) {
         super.encode(with: aCoder)
-        aCoder.encode(content, forKey: "icon")
-        aCoder.encode(content, forKey: "JobName")
-        aCoder.encode(content, forKey: "company")
-        aCoder.encode(content, forKey: "salary")
-        aCoder.encode(content, forKey: "tags")
+        aCoder.encode(icon, forKey: "icon")
+        aCoder.encode(jobName, forKey: "jobName")
+        aCoder.encode(company, forKey: "company")
+        aCoder.encode(salary, forKey: "salary")
+        aCoder.encode(tags, forKey: "tags")
         
         
     }
     
     required init?(coder aDecoder: NSCoder) {
         self.icon =  aDecoder.decodeObject(forKey: "icon") as! String
-        self.JobName =  aDecoder.decodeObject(forKey: "JobName") as! String
+        self.jobName =  aDecoder.decodeObject(forKey: "jobName") as! String 
         self.company =  aDecoder.decodeObject(forKey: "company") as! String
         self.salary =  aDecoder.decodeObject(forKey: "salary") as! String
         self.tags =  aDecoder.decodeObject(forKey: "tags") as! String
         super.init(coder: aDecoder)
         
+    }
+    
+    open func toDict()->Dictionary<String,String>{
+        return ["icon": self.icon , "jobName": self.jobName, "company": self.company, "salary":self.salary,
+                "tags": self.tags]
+    }
+    
+    override var description: String{
+        return self.icon  + ":" + self.jobName
     }
 }
 
@@ -154,9 +163,9 @@ class  imageMessageBody:MessageBoby{
     
     var imgPath:String
     
-    init(time:String, path:String, sender:FriendModel, target:FriendModel, type:messgeType) {
+    init(time:String, path:String,content:String,sender:FriendModel, target:FriendModel, type:messgeType) {
         imgPath = path
-        super.init(content: "", time: time, sender: sender , target: target)
+        super.init(content: content, time: time, sender: sender , target: target)
         self.type = type
         
         

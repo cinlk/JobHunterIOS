@@ -18,17 +18,17 @@ extension String {
         return sSize
     }
     
-    // MARK
-    func last2StrinBySeparate(char:Character)->String{
-        var  res = self.split(separator: char)
-       
-        if res.count > 2{
-            
-            let sr:[String] =  [""]
-           return  sr.joined(separator: String.init(char))
-        }else{
-            return  res.joined(separator: String.init(char))
-        }
+    
+    // 分割然后拼接字符串
+    func imageSubString(st:String)->String{
+        
+        let sp = self.components(separatedBy: st)
+        let sSt = sp[sp.count - 2]
+        let eSt = sp[sp.count - 1]
+        
+        return "/" + sSt + "/" + eSt
+        
+        
     }
     
 }

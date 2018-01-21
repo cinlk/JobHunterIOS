@@ -32,15 +32,34 @@ class JobMessageCell: UITableViewCell {
         }
     }
     
+    var info:(icon:String,jobName:String, company:String, tags:String, salary:String)? {
+        
+        didSet{
+            self.icon.image = UIImage.init(named: info!.icon)
+            self.company.text = info!.company
+            self.jobName.text = info!.jobName
+            self.tags.text = info!.tags
+            self.salary.text = info!.salary
+            
+        }
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
         self.selectionStyle = .none
         self.backgroundColor = UIColor.white
-        
-    
-        
     }
+    
+    override func layoutSubviews() {
+        
+        _ = self.icon.sd_layout().topSpaceToView(self.contentView,5)?.leftEqualToView(self.contentView)?.widthIs(40)?.heightIs(30)
+        _ = self.jobName.sd_layout().topEqualToView(icon)?.leftSpaceToView(icon,5)?.widthIs(200)?.heightIs(20)
+        _ = self.company.sd_layout().leftEqualToView(jobName)?.topSpaceToView(jobName,2.5)?.widthIs(120)?.heightIs(15)
+        _ = self.tags.sd_layout().leftEqualToView(company)?.topSpaceToView(company,2.5)?.widthIs(200)?.heightIs(15)
+        _ = salary.sd_layout().topEqualToView(icon)?.rightSpaceToView(self.contentView,5)?.widthIs(100)?.heightIs(15)
+    }
+    
     
     class func identitiy()->String{
         return "jobMessageCard"
@@ -50,20 +69,7 @@ class JobMessageCell: UITableViewCell {
         return 100.0
     }
     
-    private func setViews(){
-        _ = self.icon.sd_layout().topSpaceToView(self.contentView,5)?.leftEqualToView(self.contentView)?.widthIs(40)?.heightIs(30)
-        _ = self.jobName.sd_layout().topEqualToView(icon)?.leftSpaceToView(icon,5)?.widthIs(200)?.heightIs(20)
-        
-        _ = self.company.sd_layout().leftEqualToView(jobName)?.topSpaceToView(jobName,2.5)?.widthIs(120)?.heightIs(15)
-        _ = self.tags.sd_layout().leftEqualToView(company)?.topSpaceToView(company,2.5)?.widthIs(200)?.heightIs(15)
-        
-        _ = salary.sd_layout().topEqualToView(icon)?.rightSpaceToView(self.contentView,5)?.widthIs(100)?.heightIs(15)
-        
-        
-        
-        
-        
-    }
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 

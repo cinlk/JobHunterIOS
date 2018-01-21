@@ -672,8 +672,11 @@ extension DashboardViewController{
     // show details
     private func showDetails(jobDetail:[String:String]){
         
+        // test jobid MARK
         let detail = JobDetailViewController()
         detail.infos = jobDetail
+        detail.jobID = String(arc4random() % 3)
+        print(detail.jobID)
         //
         self.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(detail, animated: true)

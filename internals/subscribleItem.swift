@@ -178,13 +178,22 @@ extension subscribleItem{
     
     
     // cell 编辑
-    override func setEditing(_ editing: Bool, animated: Bool) {
-        super.setEditing(editing, animated: animated)
-        self.tableView.setEditing(editing, animated: animated)
-    }
-    
+//    override func setEditing(_ editing: Bool, animated: Bool) {
+//        super.setEditing(editing, animated: animated)
+//        self.tableView.setEditing(editing, animated: animated)
+//    }
+//
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
+    }
+    
+    
+    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
+        
+        if tableView.isEditing {
+            return .delete
+        }
+        return .none
     }
     
     
@@ -193,9 +202,11 @@ extension subscribleItem{
         
         
         
-        var editView:subconditions!
+       
         
         let edit = UITableViewRowAction(style: .normal, title: "edit") { action, index in
+            
+            var editView:subconditions
             
             if indexPath.section  == 0 {
                 let data = self.campusdata?[indexPath.row]
@@ -226,15 +237,52 @@ extension subscribleItem{
         }
         delete.backgroundColor = UIColor.blue
         
-        return [delete, edit]
+        return [edit,delete]
     }
     
     
-    
-    
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    @available(iOS 11.0, *)
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        
+        let deleteAction = UIContextualAction.init(style: UIContextualAction.Style.destructive, title: "delete", handler: { (action, view, completion) in
+            //TODO: Delete
+            if indexPath.section == 0{
+                self.campusdata?.remove(at: indexPath.row)
+                self.data.deleteSubscribeByIndex(type: campus, indexPath.row)
+            }else{
+                self.interndata?.remove(at: indexPath.row)
+                self.data.deleteSubscribeByIndex(type: intern, indexPath.row)
+            }
+            view.backgroundColor = UIColor.orange
+            completion(true)
+        })
+        
+        let editAction = UIContextualAction.init(style: UIContextualAction.Style.normal, title: "edit", handler: { (action, view, completion) in
+            //TODO: Edit
+            var editView:subconditions
+            
+            if indexPath.section  == 0 {
+                let data = self.campusdata?[indexPath.row]
+                editView = subconditions.init(modifyData: data, row: indexPath.row)
+                
+            }else{
+                let data = self.interndata?[indexPath.row]
+                editView = subconditions.init(modifyData: data, row: indexPath.row)
+                
+            }
+            self.present(editView, animated: true, completion: nil)
+            completion(true)
+        })
+        
+        let config = UISwipeActionsConfiguration(actions: [deleteAction, editAction])
+        // 禁止 full swipe 触发action
+        config.performsFirstActionWithFullSwipe = false
+        return config
         
     }
+    
+
 }
 
 

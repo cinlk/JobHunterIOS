@@ -51,6 +51,7 @@ class messageMain: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         self.tableView.register(UINib.init(nibName: "conversationCell", bundle: nil), forCellReuseIdentifier: conversationCell.identity())
         buildStackItemView(items: showItems, ItemRowNumbers: 3, mainStack: headerView.mainStack, itemButtons: &headerView.itemButtons)
         headerView.itemButtons?.forEach { [unowned self] (btn) in
@@ -58,6 +59,7 @@ class messageMain: UITableViewController {
         }
         self.tableView.tableHeaderView = headerView
         self.tableView.tableFooterView = UIView()
+        
         NotificationCenter.default.addObserver(self, selector: #selector(refresh), name: NSNotification.Name.init("refreshChat"), object: nil)
         
      }
@@ -65,6 +67,8 @@ class messageMain: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         self.navigationItem.title = "消息界面"
         self.tabBarController?.tabBar.isHidden = false
+        
+        
         //self.refresh()
     
         
@@ -100,44 +104,48 @@ class messageMain: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: conversationCell.identity(), for: indexPath) as! conversationCell
         let user = ChatPeople![indexPath.row]
         
+        
         cell.touxiang.image = UIImage.init(named: user.avart)
         cell.name.text = user.name + " " + user.companyName
+        
         //print(user,ContactManger.usersMessage[user.id]?.messages.count)
-        let messageContent =  ContactManger.getLasteMessageForUser(user: user)
-        
-        switch messageContent!.type {
-        case .bigGif, .smallGif, .picture:
-            cell.content.text = "[图片]"
-            cell.time.text = messageContent?.time
-            return cell
-        // 图文并排
-        case .text:
-          cell.content.attributedText = GetChatEmotion.shared.findAttrStr(text: messageContent?.content, font: UIFont.systemFont(ofSize: 12))
-          cell.time.text = messageContent?.time
-          return cell
-        case .personCard:
-            cell.content.text = "[个人名片]"
-            cell.time.text = messageContent?.time
-            return cell
-        
-        default:
-            return UITableViewCell.init()
+        if let messageContent =  ContactManger.getLasteMessageForUser(user: user){
+            switch messageContent.type {
+            case .bigGif, .smallGif:
+                cell.content.text = messageContent.content
+                cell.time.text = messageContent.time
+                return cell
+            case .picture:
+                cell.content.text = "[图片]"
+                cell.time.text = messageContent.time
+            // 图文并排
+            case .text:
+                cell.content.attributedText = GetChatEmotion.shared.findAttrStr(text: messageContent.content, font: UIFont.systemFont(ofSize: 12))
+                cell.time.text = messageContent.time
+                return cell
+            case .personCard:
+                cell.content.text = "[个人名片]"
+                cell.time.text = messageContent.time
+                return cell
+                
+            default:
+                break
+            }
         }
-        //cell.content.text = messageContent?.content
-    
+        
+        return UITableViewCell.init()
+       
         
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return conversationCell.cellHeight()
     }
-    
-   
-    
-    
+
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
@@ -145,7 +153,7 @@ class messageMain: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         let user = ChatPeople![indexPath.row]
         // MARK 从communication 界面返回后刷新？
-        let chatView = communication(hr: user)
+        let chatView = communication(hr: user,index: indexPath ,parent: self)
         self.tabBarController?.tabBar.isHidden = true
         self.navigationController?.pushViewController(chatView, animated: true)
         
@@ -156,19 +164,22 @@ class messageMain: UITableViewController {
         return true
     }
     
+    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
+        if tableView.isEditing {
+            return .delete
+        }
+        return .none
+    }
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let edit = UITableViewRowAction.init(style: .normal, title: "置顶") { (action, index) in
             if index.row == 0 {
                 return
             }
-            // 交换？？
-            let first = IndexPath.init(row: 0, section: 0)
-            //tableView.moveRow(at: first, to: index)
-            tableView.moveRow(at: index, to: IndexPath.init(row: 0, section: 0))
-            print(action)
+            print("置顶")
         }
         
         edit.backgroundColor = UIColor.orange
+        edit.accessibilityFrame  = CGRect.init(x: 0, y: 0, width: 30, height: 30)
         
         let delete = UITableViewRowAction.init(style: .normal, title: "删除") { [unowned self] (action, index) in
             let user = self.ChatPeople![index.row]
@@ -177,12 +188,41 @@ class messageMain: UITableViewController {
             tableView.deleteRows(at: [index], with: .none)
         }
         delete.backgroundColor = UIColor.blue
-        return [edit, delete]
+        delete.accessibilityFrame = CGRect.init(x: 0, y: 0, width: 30, height: 30)
+        
+        // 删除不能放前面 出现滑动删除效果
+        return [edit,delete]
+    }
+  
+    // ios 11  cell swipe 功能
+    @available(iOS 11.0, *)
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+       
+        let deleteAction = UIContextualAction.init(style: UIContextualAction.Style.destructive, title: "delete", handler: { (action, view, completion) in
+            //TODO: Delete
+            let user = self.ChatPeople![indexPath.row]
+            self.ChatPeople?.remove(at: indexPath.row)
+            self.ContactManger.removeUser(user: user, index: indexPath.row)
+            //tableView.deleteRows(at: [indexPath], with: .fade)
+            completion(true)
+        })
+        
+        let editAction = UIContextualAction.init(style: UIContextualAction.Style.normal, title: "zhiding", handler: { (action, view, completion) in
+            //TODO: Edit
+            completion(true)
+        })
+        
+        let config = UISwipeActionsConfiguration(actions: [deleteAction, editAction])
+        // 禁止 full swipe 触发action
+        config.performsFirstActionWithFullSwipe = false
+        return config
     }
 
 }
 
 extension messageMain{
+    
     @objc func chooseSub(btn:UIButton){
         // 影藏底部baritem
         self.tabBarController?.tabBar.isHidden = true
@@ -208,7 +248,6 @@ extension messageMain{
             return
         }
         
-        
     }
 }
 
@@ -222,10 +261,6 @@ extension messageMain{
 
 
 
-
-private let ItemRowNumbers = 3
-private let ItemviewW = ScreenW / 3
-
 class MessageMainHeaderView: UIView {
     
     
@@ -237,6 +272,7 @@ class MessageMainHeaderView: UIView {
        s.tag = 1
        s.spacing = 10
        return s
+        
     }()
     
     lazy var bottomView:UIView = {

@@ -51,8 +51,24 @@ let Select_Person_Img = "selectedPerson"
 let ChatInputBarH:CGFloat = 45.0
 let ChatKeyBoardH:CGFloat =  258.0
 
+// chat view
+
+let avatarSize:CGSize = CGSize.init(width: 45, height: 45)
 
 
 let myself:FriendModel = FriendModel.init(name: "lk", avart: "lk", companyName: "", id: "1")
+
+
+
+// APP launch data
+
+var talkedJobIds = [String]()
+var SendResumeJobIds = [String]()
+
+
+
+
+
+
 
 

@@ -494,7 +494,6 @@
 				4A88591B1FFA575B0009D73D /* Model */,
 				4A88591A1FFA57530009D73D /* ViewModel */,
 				4A8859191FFA57460009D73D /* View+Controller */,
-				4AE694C21F91D5BD005BE1F0 /* messageCell.swift */,
 				4A93C2C21F80CF080022E97B /* forumView.swift */,
 				4A444ECC1F8E5121006AE83D /* friendsController.swift */,
 			);
@@ -726,6 +725,10 @@
 		4A9A0BE6200B1613008721F3 /* CommunicationCells */ = {
 			isa = PBXGroup;
 			children = (
+				4AE694C21F91D5BD005BE1F0 /* messageCell.swift */,
+				4A406B5E1FA4D3D900277AA0 /* PersonCardCell.swift */,
+				4A406B661FA5834F00277AA0 /* ImageCell.swift */,
+				4AFCCD611F9E490400E0E168 /* gifCell.swift */,
 				4A9A0BE7200B164F008721F3 /* JobMessageCell.swift */,
 				4A9A0BE8200B164F008721F3 /* JobMessageCell.xib */,
 			);
@@ -973,9 +976,6 @@
 			isa = PBXGroup;
 			children = (
 				4ADDDAB41F98EF84001CB00F /* ChatEmotionCells.swift */,
-				4AFCCD611F9E490400E0E168 /* gifCell.swift */,
-				4A406B5E1FA4D3D900277AA0 /* PersonCardCell.swift */,
-				4A406B661FA5834F00277AA0 /* ImageCell.swift */,
 			);
 			name = cellViews;
 			sourceTree = "<group>";
@@ -1487,7 +1487,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -1538,7 +1538,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";

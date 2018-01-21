@@ -13,7 +13,6 @@ import UIKit
 protocol ChatBarViewDelegate: class {
     
     func showTextKeyboard()
-    func showVoice()
     func showEmotionKeyboard()
     func showMoreKeyboard()
     func chatBarUpdateHeight(height:CGFloat)
