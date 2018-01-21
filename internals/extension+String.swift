@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 extension String {
     
     func getStringCGRect(size:CGSize, font:UIFont) -> CGRect{
@@ -30,6 +29,8 @@ extension String {
         
         
     }
+    
+    
     
 }
 

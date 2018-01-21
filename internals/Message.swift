@@ -17,6 +17,7 @@ enum messgeType:String {
     case voice = "voice"
     case jobDetail = "jobDetail"
     case personCard = "personCard"
+    case time = "time"
     
     
 }
@@ -35,7 +36,7 @@ class MessageBoby: NSObject, NSCoding{
     var messageID:Int?
     var url:String?
     var content:String
-    var time:String
+    var time:TimeInterval
     var type:messgeType = .text
     
     var messageStatus:MessageStatus = MessageStatus.unKnow
@@ -46,7 +47,7 @@ class MessageBoby: NSObject, NSCoding{
     var target:FriendModel
     
     
-    init(content:String,time:String, sender:FriendModel, target:FriendModel) {
+    init(content:String,time:TimeInterval, sender:FriendModel, target:FriendModel) {
         self.content = content
         self.time = time
         self.sender = sender
@@ -68,7 +69,9 @@ class MessageBoby: NSObject, NSCoding{
     
     required init?(coder aDecoder: NSCoder) {
         self.content =  aDecoder.decodeObject(forKey: "content") as! String
-        self.time = aDecoder.decodeObject(forKey: "time") as! String
+        self.time = aDecoder.decodeDouble(forKey: "time")
+        
+        //self.time = aDecoder.decodeDouble(forKey: "time")
         if let t = aDecoder.decodeObject(forKey: "type")  as? String{
             self.type = messgeType.init(rawValue: t)!
         }
@@ -94,7 +97,7 @@ class  JobDetailMessage:MessageBoby{
     var salary:String
     var tags:String
     
-    init?(infos:[String:String]?,time:String,sender:FriendModel,target:FriendModel) {
+    init?(infos:[String:String]?,time:TimeInterval,sender:FriendModel,target:FriendModel) {
         
         
         
@@ -163,7 +166,7 @@ class  imageMessageBody:MessageBoby{
     
     var imgPath:String
     
-    init(time:String, path:String,content:String,sender:FriendModel, target:FriendModel, type:messgeType) {
+    init(time:TimeInterval, path:String,content:String,sender:FriendModel, target:FriendModel, type:messgeType) {
         imgPath = path
         super.init(content: content, time: time, sender: sender , target: target)
         self.type = type
@@ -192,6 +195,22 @@ extension imageMessageBody{
 }
 
 
+class TimeMessageBody: MessageBoby{
+    
+    
+    var timeStr:String?
+    
+    init(time: TimeInterval, sender: FriendModel, target: FriendModel) {
+        super.init(content: "", time: time, sender: sender, target: target)
+        self.type = .time
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+}
 
 
 class PersonCardMessage:MessageBoby{
@@ -200,7 +219,7 @@ class PersonCardMessage:MessageBoby{
     var name:String
     var image:String
     
-    init(name:String,image:String,time:String, sender:FriendModel, target:FriendModel) {
+    init(name:String,image:String,time:TimeInterval, sender:FriendModel, target:FriendModel) {
         self.name = name
         self.image = image
         super.init(content: "", time: time, sender: sender, target: target)
@@ -232,7 +251,7 @@ class CameraImageMessage:MessageBoby{
     var imageData:NSData
     
     
-    init(imageData:NSData, time:String, sender:FriendModel, target:FriendModel){
+    init(imageData:NSData, time:TimeInterval, sender:FriendModel, target:FriendModel){
         
         self.imageData = imageData
         super.init(content: "", time: time, sender: sender, target: target)

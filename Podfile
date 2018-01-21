@@ -17,5 +17,6 @@ target 'internals' do
 	pod 'ObjectMapper'
 	pod 'MJRefresh'
 	pod 'SVProgressHUD'
+	pod 'SwiftDate'
 
 end

@@ -28,6 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
        // Contactlist.shared.removeAll()
         // load search keywords
         _ = InitailData.shareInstance
+        //Contactlist.shared.removeAll()
        //localData.shared.clearSubscribeData()
         
         return true

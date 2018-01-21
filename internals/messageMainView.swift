@@ -117,19 +117,19 @@ class messageMain: UITableViewController {
             switch messageContent.type {
             case .bigGif, .smallGif:
                 cell.content.text = messageContent.content
-                cell.time.text = messageContent.time
+                cell.time.text = chatTimeString(with: messageContent.time)
                 return cell
             case .picture:
                 cell.content.text = "[图片]"
-                cell.time.text = messageContent.time
+                cell.time.text = chatTimeString(with: messageContent.time)
             // 图文并排
             case .text:
                 cell.content.attributedText = GetChatEmotion.shared.findAttrStr(text: messageContent.content, font: UIFont.systemFont(ofSize: 12))
-                cell.time.text = messageContent.time
+                cell.time.text = chatTimeString(with: messageContent.time)
                 return cell
             case .personCard:
                 cell.content.text = "[个人名片]"
-                cell.time.text = messageContent.time
+                cell.time.text = chatTimeString(with: messageContent.time)  
                 return cell
                 
             default:

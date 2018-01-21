@@ -358,11 +358,12 @@ extension JobDetailViewController{
     
     @objc func talk(){
         
+        
         if !isTalked{
-            let Message = MessageBoby.init(content: "hr 你好，对贵公司该职位感兴趣，希望进一步沟通", time: "2018-01-11", sender: myself, target: hr)
+            let Message = MessageBoby.init(content: "hr 你好，对贵公司该职位感兴趣，希望进一步沟通", time: Date.init().timeIntervalSince1970, sender: myself, target: hr)
             
             let info = ["icon":"sina","jobName":"产品开发","company":"霹雳火","salary":"面议","tags":"北京|本科|校招"]
-            if let  jobDetailMessage = JobDetailMessage.init(infos: info, time: "2018-01-13", sender: myself, target: hr){
+            if let  jobDetailMessage = JobDetailMessage.init(infos: info, time: Date.init().timeIntervalSince1970, sender: myself, target: hr){
                 Contactlist.shared.addUser(user: hr)
                 Contactlist.shared.usersMessage[hr.id]?.addMessageByMes(newMes: jobDetailMessage)
                 Contactlist.shared.usersMessage[hr.id]?.addMessageByMes(newMes: Message)

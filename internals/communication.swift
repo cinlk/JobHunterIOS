@@ -49,8 +49,9 @@ class communication: UIViewController {
         tb.register(gifCell.self, forCellReuseIdentifier: gifCell.reuseidentify())
         tb.register(PersonCardCell.self, forCellReuseIdentifier: PersonCardCell.reuseidentity())
         tb.register(ImageCell.self, forCellReuseIdentifier: ImageCell.reuseIdentify())
+        tb.register(ChatTimeCell.self, forCellReuseIdentifier: ChatTimeCell.identity())
         tb.separatorStyle = .none
-        tb.backgroundColor = UIColor.lightGray
+        tb.backgroundColor = UIColor.white
         let gest = UITapGestureRecognizer.init(target: self, action: #selector(hiddenKeyboard(sender:)))
         tb.addGestureRecognizer(gest)
         return tb
@@ -290,7 +291,7 @@ extension communication: UITableViewDelegate,UITableViewDataSource{
             case .jobDetail:
                 let cell = tableView.dequeueReusableCell(withIdentifier: JobMessageCell.identitiy(), for: indexPath) as! JobMessageCell
                 let mes = message as! JobDetailMessage
-                print(mes)
+               
                 cell.info  = (icon: mes.icon,jobName: mes.jobName, company:mes.company, tags:mes.tags , salary:mes.salary)
                 return cell
             case .personCard:
@@ -303,6 +304,10 @@ extension communication: UITableViewDelegate,UITableViewDataSource{
                 let mes = message as! CameraImageMessage
                 cell.buildCell(image: mes.imageData, avater: mes.sender.avart)
                 return cell
+            case .time:
+                let cell = tableView.dequeueReusableCell(withIdentifier: ChatTimeCell.identity(), for: indexPath) as? ChatTimeCell
+                cell?.model = message as! TimeMessageBody
+                return cell!
             default:
                 break
             }
@@ -329,6 +334,8 @@ extension communication: UITableViewDelegate,UITableViewDataSource{
                  return ImageCell.cellHeight()
             case .jobDetail:
                 return JobMessageCell.cellHeight()
+            case .time:
+                return ChatTimeCell.cellHeight()
             default:
                 break
             }
@@ -371,7 +378,9 @@ extension communication{
     private func chatRecordLoad(){
         //record
         if let mes = contactManager.usersMessage[self.hr!.id]?.messages{
-            for item in mes{
+            // 添加time 消息
+            let after = addTimeMsg(mes:mes)
+            for item in after{
                 
                 // 图片路径 Bundle.main.bundlePath 每次会变化
                 if item.type == .smallGif || item.type == .bigGif{
@@ -388,7 +397,29 @@ extension communication{
         }
     }
     
+    private func addTimeMsg(mes:[MessageBoby]) -> [MessageBoby]{
+        var res = [MessageBoby]()
+        for index in 0..<mes.count{
+            if index == 0 {
+                res.append(createTimeMsg(msg: mes[index]))
+            }else{
+                if (needAddMinuteModel(preModel: mes[index - 1], curModel: mes[index])){
+                    res.append(createTimeMsg(msg: mes[index]))
+                }
+            }
+            res.append(mes[index])
+        }
+        return res
+    }
     
+    fileprivate func createTimeMsg(msg: MessageBoby) -> TimeMessageBody{
+        
+       
+        let time = TimeMessageBody.init(time: msg.time, sender: msg.sender, target: msg.target)
+        time.timeStr = chatTimeString(with: msg.time)
+        return time
+        
+    }
     
     @objc func hiddenKeyboard(sender: UITapGestureRecognizer){
         
@@ -530,7 +561,7 @@ extension communication: ChatEmotionViewDelegate{
         }
         // 清理inputview
         self.chatBarView.inputText.text = ""
-        let messagebody:MessageBoby = MessageBoby.init(content: message, time: "01-12", sender: myself, target: self.hr!)
+        let messagebody:MessageBoby = MessageBoby.init(content: message, time: Date.init().timeIntervalSince1970, sender: myself, target: self.hr!)
         
         self.reloads(mes: messagebody)
         
@@ -540,7 +571,7 @@ extension communication: ChatEmotionViewDelegate{
     func sendGifMessage(emotion: MChatEmotion, type:messgeType){
         
         
-        let messageBody:imageMessageBody  = imageMessageBody.init(time: "01-23", path: emotion.imgPath!, content: emotion.text!,sender: myself, target: self.hr!, type: type)
+        let messageBody:imageMessageBody  = imageMessageBody.init(time: Date.init().timeIntervalSince1970, path: emotion.imgPath!, content: emotion.text!,sender: myself, target: self.hr!, type: type)
         self.reloads(mes: messageBody)
         
         
@@ -548,7 +579,7 @@ extension communication: ChatEmotionViewDelegate{
     // 快捷回复
     func sendReply(content:String){
         
-        let messagebody:MessageBoby = MessageBoby.init(content: content, time: "10-13", sender: myself, target: self.hr!)
+        let messagebody:MessageBoby = MessageBoby.init(content: content, time: Date.init().timeIntervalSince1970, sender: myself, target: self.hr!)
         self.reloads(mes: messagebody)
 
     }
@@ -556,14 +587,14 @@ extension communication: ChatEmotionViewDelegate{
     // 个人名片
     func sendPersonCard(){
         
-        let personCard:PersonCardMessage = PersonCardMessage.init(name: myself.name, image: myself.avart, time: "今天", sender: myself, target: self.hr!)
+        let personCard:PersonCardMessage = PersonCardMessage.init(name: myself.name, image: myself.avart, time: Date.init().timeIntervalSince1970, sender: myself, target: self.hr!)
         self.reloads(mes: personCard)
     }
 
     // 照片
     func sendImage(image:NSData, avartar:String){
         
-        let Cameraimage:CameraImageMessage = CameraImageMessage.init(imageData: image, time: "啊哈", sender: myself, target: self.hr!)
+        let Cameraimage:CameraImageMessage = CameraImageMessage.init(imageData: image, time: Date.init().timeIntervalSince1970, sender: myself, target: self.hr!)
         self.reloads(mes: Cameraimage)
     }
     
