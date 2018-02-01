@@ -4,7 +4,6 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -20,7 +19,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vEZ-o6-OIl">
-                        <rect key="frame" x="58" y="5" width="200" height="20"/>
+                        <rect key="frame" x="65" y="5" width="200" height="20"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="6Hi-Pr-F06"/>
                             <constraint firstAttribute="width" constant="200" id="eUU-JZ-Ybk"/>
@@ -30,7 +29,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="content" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4n6-Gd-OdJ">
-                        <rect key="frame" x="58" y="33" width="292" height="15"/>
+                        <rect key="frame" x="65" y="33" width="285" height="15"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="15" id="ub5-aW-XeC"/>
                         </constraints>
@@ -48,7 +47,7 @@
                         <color key="textColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avartar" translatesAutoresizingMaskIntoConstraints="NO" id="6bH-U6-iCM">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avartar" translatesAutoresizingMaskIntoConstraints="NO" id="6bH-U6-iCM">
                         <rect key="frame" x="10" y="9" width="40" height="40"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="40" id="koK-4g-LzF"/>
@@ -57,11 +56,11 @@
                     </imageView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="vEZ-o6-OIl" firstAttribute="leading" secondItem="6bH-U6-iCM" secondAttribute="trailing" constant="8" id="As9-75-WMo"/>
+                    <constraint firstItem="vEZ-o6-OIl" firstAttribute="leading" secondItem="6bH-U6-iCM" secondAttribute="trailing" constant="15" id="As9-75-WMo"/>
                     <constraint firstItem="6bH-U6-iCM" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="DB1-1N-zJQ"/>
                     <constraint firstAttribute="bottom" secondItem="4n6-Gd-OdJ" secondAttribute="bottom" constant="10.5" id="T8Y-6q-C4x"/>
                     <constraint firstItem="6bH-U6-iCM" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="W1L-4a-qzm"/>
-                    <constraint firstItem="4n6-Gd-OdJ" firstAttribute="leading" secondItem="6bH-U6-iCM" secondAttribute="trailing" constant="8" id="Z6r-gQ-if3"/>
+                    <constraint firstItem="4n6-Gd-OdJ" firstAttribute="leading" secondItem="6bH-U6-iCM" secondAttribute="trailing" constant="15" id="Z6r-gQ-if3"/>
                     <constraint firstAttribute="trailing" secondItem="pqn-Oe-Cvs" secondAttribute="trailing" constant="10" id="bMk-6M-0JZ"/>
                     <constraint firstItem="vEZ-o6-OIl" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="5" id="hiq-8q-bDd"/>
                     <constraint firstAttribute="trailing" secondItem="4n6-Gd-OdJ" secondAttribute="trailing" constant="-8" id="kHd-oZ-6fr"/>

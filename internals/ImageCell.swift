@@ -12,7 +12,7 @@ class ImageCell: UITableViewCell {
 
     
     lazy var avartar:UIImageView = {
-        var v = UIImageView.init()
+        var v = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: avatarSize.width, height: avatarSize.height))
         v.contentMode = .scaleAspectFit
         v.clipsToBounds = true
         return v
@@ -26,7 +26,13 @@ class ImageCell: UITableViewCell {
         return v
     }()
     
-    let screenRect = UIScreen.main.bounds
+    
+    var mode:(avartarStr:String, imageData:NSData)? {
+        didSet{
+            self.avartar.image = UIImage.init(named: mode!.avartarStr)
+            self.imageV.image = UIImage.init(data: mode!.imageData as Data)
+        }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -40,9 +46,10 @@ class ImageCell: UITableViewCell {
         self.contentView.addSubview(avartar)
         self.backgroundColor = UIColor.clear
         self.selectionStyle = .none
-        avartar.frame = CGRect.init(x: screenRect.width - 45 - 5, y: 5, width: 45, height: 45)
+        avartar.setCircle()
+        avartar.frame = CGRect.init(x: ScreenW - 45 - 5, y: 5, width: 45, height: 45)
         
-        _ = imageV.sd_layout().rightSpaceToView(avartar,5)?.topSpaceToView(self.contentView,10)?.widthIs(75)?.heightIs(80)
+        _ = imageV.sd_layout().rightSpaceToView(avartar,10)?.topSpaceToView(self.contentView,10)?.widthIs(75)?.heightIs(80)
         
 
     }
@@ -50,8 +57,6 @@ class ImageCell: UITableViewCell {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    
     
     
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -68,10 +73,10 @@ class ImageCell: UITableViewCell {
         return "imageCell"
     }
     
-    func buildCell(image:NSData?,avater:String){
-        self.avartar.image = UIImage.init(named: avater)
-        self.imageV.image = UIImage.init(data: (image as Data?)!)
-        
-    }
     
 }
+
+
+// image operations
+
+

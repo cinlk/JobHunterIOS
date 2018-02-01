@@ -44,7 +44,7 @@ class messageCell: UITableViewCell {
         self.contentView.addSubview(avatar)
         self.contentView.addSubview(bubleBackGround)
         self.contentView.addSubview(messageLabel)
-        // 暴力取消view动画， 影藏keyboard后 table 向上滑动 出现cell 动画？
+        // 取消view动画， 影藏keyboard后 table 向上滑动 出现cell 动画？
         avatar.layer.removeAllAnimations()
         messageLabel.layer.removeAllAnimations()
         bubleBackGround.layer.removeAllAnimations()
@@ -125,11 +125,6 @@ class messageCell: UITableViewCell {
             self.bubleBackGround.frame = CGRect.init(x: ScreenW-5-self.avatar.frame.width-5-bubleSize.width, y: 0, width: bubleSize.width, height: bubleSize.height)
             self.messageLabel.frame = CGRect.init(x: ScreenW-5-self.avatar.frame.width-5-bubleSize.width + 10 , y: y, width: labelSize.width, height: labelSize.height)
             
-//            avatar.layer.removeAllAnimations()
-//            messageLabel.layer.removeAllAnimations()
-//            bubleBackGround.layer.removeAllAnimations()
-//
-        
         }
         // 别人发的消息
         else{
@@ -144,11 +139,6 @@ class messageCell: UITableViewCell {
             self.bubleBackGround.frame = CGRect.init(x: 5 + self.avatar.frame.width + 5, y: 0, width: bubleSize.width, height: bubleSize.height)
             self.messageLabel.frame = CGRect.init(x: 5 + self.avatar.frame.width + 5 + 10, y: y, width: labelSize.width, height: labelSize.height)
             
-            // 取消动画，不然显示动画 不好看
-//            avatar.layer.removeAllAnimations()
-//            messageLabel.layer.removeAllAnimations()
-//            bubleBackGround.layer.removeAllAnimations()
-//
             
             
         }

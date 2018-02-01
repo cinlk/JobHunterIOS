@@ -18,6 +18,7 @@ class conversationCell: UITableViewCell {
     
     @IBOutlet weak var touxiang: UIImageView!
     
+   
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -31,6 +32,8 @@ class conversationCell: UITableViewCell {
     }
     
     
+    
+    
     class func identity()->String{
         return "conversationCell"
     }
@@ -38,4 +41,6 @@ class conversationCell: UITableViewCell {
     class func cellHeight()->CGFloat {
         return 60.0
     }
+    
+    
 }

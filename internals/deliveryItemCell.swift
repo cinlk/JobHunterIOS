@@ -25,10 +25,12 @@ class deliveryItemCell: UITableViewCell {
     @IBOutlet weak var create_time: UILabel!
     
     
+    var notRead:Bool = false
     
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        icon.clipsToBounds = false
         // Initialization code
     }
 
@@ -46,4 +48,5 @@ class deliveryItemCell: UITableViewCell {
     class func cellHeight()->CGFloat {
         return  68.0
     }
+    
 }

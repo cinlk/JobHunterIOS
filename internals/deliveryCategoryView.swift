@@ -71,6 +71,8 @@ class deliveryCategoryView: UITableViewController {
             cell.type.text = item["type"]
             cell.create_time.text = item["create_time"]
             cell.resulte.text = "【" + item["resulte"]! + "】"
+            // test color
+            cell.icon.pp.addDot(color: UIColor.red)
             return cell
         }
         return UITableViewCell.init()

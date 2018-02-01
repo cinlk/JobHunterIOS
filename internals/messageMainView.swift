@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import PPBadgeViewSwift
 
 enum messageItemType:Int {
     case result = 0
@@ -17,15 +17,10 @@ enum messageItemType:Int {
     case recommend
     case careertak
     case others
-    
-    
 }
 
 class messageMain: UITableViewController {
 
-    
-    
-    
     // history message  record items
     lazy var ContactManger = Contactlist.shared
     
@@ -33,6 +28,12 @@ class messageMain: UITableViewController {
         return ContactManger.getUsers()
     }()
     
+    private lazy var navigationBackView:UIView = {
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 64))
+        // naviagtionbar 默认颜色
+        v.backgroundColor = UIColor.init(r: 245, g: 245, b: 245)
+        return v
+    }()
     
     
     fileprivate var showItems:[showitem] = [showitem.init(name: "投递记录", image: "delivery", bubbles: 1),
@@ -57,33 +58,45 @@ class messageMain: UITableViewController {
         headerView.itemButtons?.forEach { [unowned self] (btn) in
             btn.addTarget(self, action: #selector(chooseSub(btn:)), for: .touchUpInside)
         }
-        self.tableView.tableHeaderView = headerView
-        self.tableView.tableFooterView = UIView()
         
+        self.tableView.tableHeaderView = headerView
+        // badges test
+        headerView.itemButtons![0].showBadges(x:30)
+        self.tableView.tableFooterView = UIView()
+        // set naviagation
+       
+        self.navigationController?.navigationBar.shadowImage = UIImage.init()
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage.init(), for: .default)
         NotificationCenter.default.addObserver(self, selector: #selector(refresh), name: NSNotification.Name.init("refreshChat"), object: nil)
         
      }
 
     override func viewWillAppear(_ animated: Bool) {
-        self.navigationItem.title = "消息界面"
+        self.navigationItem.title = "消息记录"
         self.tabBarController?.tabBar.isHidden = false
-        
+        self.navigationController?.view.insertSubview(navigationBackView, at: 1)
         
         //self.refresh()
     
         
      }
+    
     override func viewWillDisappear(_ animated: Bool) {
         // 设置为空，不然子view，backbutton显示title
         self.navigationItem.title = ""
+        navigationBackView.removeFromSuperview()
+        self.navigationController?.view.willRemoveSubview(navigationBackView)
     }
     
     
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
+   
     
     override func viewWillLayoutSubviews() {
+       super.viewDidLayoutSubviews()
+        
         _ = self.tableView.tableHeaderView?.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.heightIs(150)
         
         
@@ -111,25 +124,29 @@ class messageMain: UITableViewController {
         
         cell.touxiang.image = UIImage.init(named: user.avart)
         cell.name.text = user.name + " " + user.companyName
+        cell.touxiang.pp.addBadge(number: 10)
+        
+        
+       
         
         //print(user,ContactManger.usersMessage[user.id]?.messages.count)
         if let messageContent =  ContactManger.getLasteMessageForUser(user: user){
             switch messageContent.type {
             case .bigGif, .smallGif:
                 cell.content.text = messageContent.content
-                cell.time.text = chatTimeString(with: messageContent.time)
+                cell.time.text = LXFChatMsgTimeHelper.shared.chatTimeString(with: messageContent.time)
                 return cell
             case .picture:
                 cell.content.text = "[图片]"
-                cell.time.text = chatTimeString(with: messageContent.time)
+                cell.time.text = LXFChatMsgTimeHelper.shared.chatTimeString(with: messageContent.time)
             // 图文并排
             case .text:
                 cell.content.attributedText = GetChatEmotion.shared.findAttrStr(text: messageContent.content, font: UIFont.systemFont(ofSize: 12))
-                cell.time.text = chatTimeString(with: messageContent.time)
+                cell.time.text = LXFChatMsgTimeHelper.shared.chatTimeString(with: messageContent.time)
                 return cell
             case .personCard:
                 cell.content.text = "[个人名片]"
-                cell.time.text = chatTimeString(with: messageContent.time)  
+                cell.time.text = LXFChatMsgTimeHelper.shared.chatTimeString(with: messageContent.time)  
                 return cell
                 
             default:

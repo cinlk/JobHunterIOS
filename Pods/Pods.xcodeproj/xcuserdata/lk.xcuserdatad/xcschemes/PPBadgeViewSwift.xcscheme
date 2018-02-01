@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = '28C6DD864C44E95C8BE296CF63791858'
-               BlueprintName = 'SwiftyJSON'
+               BlueprintIdentifier = '569572219FEF4D1041000AC58F5FFB11'
+               BlueprintName = 'PPBadgeViewSwift'
                ReferencedContainer = 'container:Pods.xcodeproj'
-               BuildableName = 'SwiftyJSON.framework'>
+               BuildableName = 'PPBadgeViewSwift.framework'>
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

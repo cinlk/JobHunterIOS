@@ -13,7 +13,7 @@ class PersonCardCell: UITableViewCell {
     
     //avartar
     lazy var avartar:UIImageView = {
-        var v = UIImageView.init()
+        var v = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: avatarSize.width, height: avatarSize.height))
         v.contentMode = .scaleAspectFit
         v.clipsToBounds = true
         return v
@@ -77,6 +77,8 @@ class PersonCardCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = UIColor.clear
         self.selectionStyle = .none
+        avartar.setCircle()
+        
     }
     
    
@@ -103,6 +105,7 @@ class PersonCardCell: UITableViewCell {
         _ = imageV.sd_layout().leftEqualToView(title)?.bottomSpaceToView(bubbleBackGround,10)?.topSpaceToView(line,5)?.widthIs(45)
         
         _ = name.sd_layout().leftSpaceToView(imageV,5)?.topSpaceToView(line,10)?.widthIs(80)?.heightIs(20)
+        
         
         
     }

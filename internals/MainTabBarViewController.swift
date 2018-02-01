@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import UserNotifications
+
 
 class MainTabBarViewController: UITabBarController {
 
@@ -49,9 +51,16 @@ class MainTabBarViewController: UITabBarController {
                 tabitem.selectedImage = tabBarImage.1
             }
         }
+        // #TODO 被通知加载 显示圆点
+        self.tabBar.items![1].pp.addBadge(text: "···")
+        self.tabBar.items![1].pp.setBadgeLabel(attributes: { (lable) in
+            lable.font = UIFont.systemFont(ofSize: 10)
+            lable.textColor = UIColor.white
+        })
         
+        self.tabBar.items![2].pp.addDot(color: UIColor.red)
+        //self.tabBar.items![2].pp.hiddenBadge()
     }
-    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

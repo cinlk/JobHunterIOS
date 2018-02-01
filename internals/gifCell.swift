@@ -11,9 +11,13 @@ import UIKit
 class gifCell: UITableViewCell {
 
     
-    var avatar:UIImageView!
-    // gif
-    var gif:UIImageView?
+    private var avatar:UIImageView = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: avatarSize.width, height: avatarSize.height))
+    private lazy var gif:UIImageView =  {
+        let img = UIImageView.init(frame: CGRect.zero)
+        img.backgroundColor = UIColor.clear
+        img.clipsToBounds = true
+        return img
+    }()
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -25,15 +29,14 @@ class gifCell: UITableViewCell {
     }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        avatar = UIImageView.init()
-        gif = UIImageView()
+        avatar.setCircle()
         
         
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
         self.contentView.clipsToBounds = true
         self.contentView.addSubview(avatar)
-        self.contentView.addSubview(gif!)
+        self.contentView.addSubview(gif)
         self.backgroundColor = UIColor.clear
 
 
@@ -65,7 +68,7 @@ class gifCell: UITableViewCell {
         let data = NSData.init(contentsOf: NSURL.init(fileURLWithPath: path) as URL)
         // 动态图
         let animationImage = UIImage.animationImageWithData(data: data)
-        gif?.image = animationImage
+        gif.image = animationImage
         
         if user.id  == messageInfo.sender.id{
             
@@ -73,9 +76,9 @@ class gifCell: UITableViewCell {
             self.avatar.image = UIImage.init(named:  messageInfo.sender.avart)
             self.avatar.frame = CGRect.init(x: UIScreen.main.bounds.width-avatarSize.width-5 , y: 5, width: avatarSize.width, height: avatarSize.height)
             if messageInfo.type == .bigGif{
-                self.gif?.frame = CGRect.init(x: UIScreen.main.bounds.width-5-self.avatar.frame.width-5-110, y: 15, width: 100, height: 100)
+                self.gif.frame = CGRect.init(x: UIScreen.main.bounds.width-5-self.avatar.frame.width-5-110, y: 15, width: 100, height: 100)
             }else{
-                self.gif?.frame = CGRect.init(x: UIScreen.main.bounds.width-5-self.avatar.frame.width-5-70, y: 15, width: 60, height: 60)
+                self.gif.frame = CGRect.init(x: UIScreen.main.bounds.width-5-self.avatar.frame.width-5-70, y: 15, width: 60, height: 60)
             }
             
             
@@ -83,9 +86,9 @@ class gifCell: UITableViewCell {
             self.avatar.image = UIImage.init(named: messageInfo.sender.avart)
             self.avatar.frame = CGRect.init(x: 5, y: 5, width: avatarSize.width, height: avatarSize.height)
             if messageInfo.type == .bigGif{
-                self.gif?.frame = CGRect.init(x: self.avatar.frame.width+5+10, y: 15, width: 100, height: 100)
+                self.gif.frame = CGRect.init(x: self.avatar.frame.width+5+10, y: 15, width: 100, height: 100)
             }else{
-                self.gif?.frame = CGRect.init(x: self.avatar.frame.width+5+10, y: 15, width: 60, height: 60)
+                self.gif.frame = CGRect.init(x: self.avatar.frame.width+5+10, y: 15, width: 60, height: 60)
             }
         }
         

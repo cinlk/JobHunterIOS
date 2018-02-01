@@ -18,5 +18,7 @@ target 'internals' do
 	pod 'MJRefresh'
 	pod 'SVProgressHUD'
 	pod 'SwiftDate'
+	#pod 'BadgeSwift'
+	pod 'PPBadgeViewSwift'
 
 end

@@ -35,11 +35,9 @@ class communication: UIViewController {
     
     lazy var tableView:UITableView = { [unowned self] in
         
-        let tb = UITableView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: ScreenH - NavH - ChatInputBarH),
-                                  style: .plain)
+        let tb = UITableView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: ScreenH - NavH - ChatInputBarH),style: .plain)
         tb.delegate = self
         tb.dataSource = self
-         
         tb.estimatedRowHeight = UITableViewAutomaticDimension
         tb.showsHorizontalScrollIndicator = false
         tb.showsVerticalScrollIndicator = false
@@ -51,7 +49,7 @@ class communication: UIViewController {
         tb.register(ImageCell.self, forCellReuseIdentifier: ImageCell.reuseIdentify())
         tb.register(ChatTimeCell.self, forCellReuseIdentifier: ChatTimeCell.identity())
         tb.separatorStyle = .none
-        tb.backgroundColor = UIColor.white
+        tb.backgroundColor = UIColor.lightGray
         let gest = UITapGestureRecognizer.init(target: self, action: #selector(hiddenKeyboard(sender:)))
         tb.addGestureRecognizer(gest)
         return tb
@@ -130,6 +128,24 @@ class communication: UIViewController {
         
         
     }()
+    // moreAction
+    private lazy var alertView:UIAlertController = { [unowned self] in
+        let alertV = UIAlertController.init(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+        //let actions =
+        alertV.addAction(UIAlertAction.init(title: "查看TA的名片", style: UIAlertActionStyle.default, handler: { (action) in
+            // MARK
+            
+            self.navigationController?.pushViewController(publisherControllerView.init(style: .plain), animated: true)
+        }))
+        alertV.addAction(UIAlertAction.init(title: "屏蔽TA", style: .default, handler: { (action) in
+            print("屏蔽TA")
+        }))
+        alertV.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: { (action) in
+            print("取消")
+        }))
+        
+        return alertV
+    }()
     
     // showtype
     var st: ShowType = ShowType.none
@@ -164,21 +180,23 @@ class communication: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setViews()
+        
+        
     }
 
    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.navigationBar.barTintColor = UIColor.green
         self.hidesBottomBarWhenPushed = true
-
+  
     }
+    
+    
     
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationController?.navigationBar.barTintColor = UIColor.lightGray
         
         // 刷新cell 的message
         guard let mg = self.parentView as? messageMain else {
@@ -189,9 +207,13 @@ class communication: UIViewController {
         }
        
         mg.tableView.reloadRows(at: [index], with: .none)
+        self.navigationItem.title = ""
+
         
     }
     
+   
+
  
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -218,7 +240,8 @@ extension communication {
     private func setViews(){
         
         self.view.backgroundColor = UIColor.backGroundColor()
-        self.setupNavigateTitle(text: (hr?.name)!)
+        let hrDes = hr!.name + "@" + hr!.companyName
+        self.setupNavigate(title: hrDes)
         
         self.view.addSubview(tableView)
         self.view.addSubview(chatBarView)
@@ -240,19 +263,21 @@ extension communication {
     }
     
     
-    func setupNavigateTitle(text:String){
+    func setupNavigate(title:String){
         
  
         let titleLabel:UILabel = UILabel.init(frame: CGRect.init(x: 50, y: 0, width: 220, height: 44))
-        titleLabel.text = text
+        titleLabel.text = title
         titleLabel.textColor = UIColor.black
         titleLabel.textAlignment = .center
         titleLabel.backgroundColor = UIColor.clear
         titleLabel.font = UIFont.systemFont(ofSize: 18)
         self.navigationItem.titleView = titleLabel
-        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "more"), style: .plain, target: self, action: #selector(moreButton))
     }
+    
 }
+
 
 // table
 extension communication: UITableViewDelegate,UITableViewDataSource{
@@ -291,7 +316,7 @@ extension communication: UITableViewDelegate,UITableViewDataSource{
             case .jobDetail:
                 let cell = tableView.dequeueReusableCell(withIdentifier: JobMessageCell.identitiy(), for: indexPath) as! JobMessageCell
                 let mes = message as! JobDetailMessage
-               
+                
                 cell.info  = (icon: mes.icon,jobName: mes.jobName, company:mes.company, tags:mes.tags , salary:mes.salary)
                 return cell
             case .personCard:
@@ -302,12 +327,13 @@ extension communication: UITableViewDelegate,UITableViewDataSource{
             case .picture:
                 let cell = tableView.dequeueReusableCell(withIdentifier: ImageCell.reuseIdentify(), for: indexPath) as! ImageCell
                 let mes = message as! CameraImageMessage
-                cell.buildCell(image: mes.imageData, avater: mes.sender.avart)
+                cell.mode = (mes.sender.avart, mes.imageData)
+                
                 return cell
             case .time:
-                let cell = tableView.dequeueReusableCell(withIdentifier: ChatTimeCell.identity(), for: indexPath) as? ChatTimeCell
-                cell?.model = message as! TimeMessageBody
-                return cell!
+                let cell = tableView.dequeueReusableCell(withIdentifier: ChatTimeCell.identity(), for: indexPath) as! ChatTimeCell
+                cell.model = message as? TimeMessageBody
+                return cell
             default:
                 break
             }
@@ -343,10 +369,6 @@ extension communication: UITableViewDelegate,UITableViewDataSource{
         
         return 44.5
     }
-    
-
-    
-    
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
@@ -403,7 +425,7 @@ extension communication{
             if index == 0 {
                 res.append(createTimeMsg(msg: mes[index]))
             }else{
-                if (needAddMinuteModel(preModel: mes[index - 1], curModel: mes[index])){
+                if (LXFChatMsgTimeHelper.shared.needAddMinuteModel(preModel: mes[index - 1], curModel: mes[index])){
                     res.append(createTimeMsg(msg: mes[index]))
                 }
             }
@@ -416,7 +438,7 @@ extension communication{
         
        
         let time = TimeMessageBody.init(time: msg.time, sender: msg.sender, target: msg.target)
-        time.timeStr = chatTimeString(with: msg.time)
+        time.timeStr = LXFChatMsgTimeHelper.shared.chatTimeString(with: msg.time)
         return time
         
     }
@@ -437,6 +459,12 @@ extension communication{
         sender.cancelsTouchesInView = false
         
     }
+    
+    @objc func moreButton(){
+        
+        self.present(alertView, animated: true, completion: nil)
+    }
+    
     
 }
 
@@ -526,8 +554,6 @@ extension communication: ChatMoreViewDelegate{
         case .mycard:
             self.present(cardAlert, animated: true, completion: nil)
             
-        default:
-            break
         }
     }
 
@@ -600,7 +626,12 @@ extension communication: ChatEmotionViewDelegate{
     
     private func  reloads(mes: MessageBoby){
         
+        
+        if LXFChatMsgTimeHelper.shared.needAddMinuteModel(preModel: self.tableSource.lastObject as! MessageBoby, curModel: mes){
+            self.tableSource.add(createTimeMsg(msg: mes))
+        }
         self.tableSource.add(mes)
+        
         self.tableView.reloadData()
         let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
         self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)

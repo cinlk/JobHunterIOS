@@ -65,9 +65,10 @@ class ChatTimeCell: UITableViewCell {
 
 extension ChatTimeCell{
     fileprivate func setModel(){
-        guard let mode = model else {
+        guard model != nil else {
             return
         }
+        
         timeLabel.text = model?.timeStr
         timeLabel.sizeToFit()
         _ = timeLabel.sd_layout().centerXEqualToView(self.contentView)?.widthIs(timeLabel.width)?.heightIs(timeLabel.height)?.centerYEqualToView(self.contentView)

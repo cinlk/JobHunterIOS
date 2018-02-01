@@ -7,8 +7,7 @@
 //
 
 import UIKit
-
-
+ 
 extension UIButton {
     
     convenience init(title:(name:String, type:UIControlState), fontSize:CGFloat = 10, alignment: NSTextAlignment = .left, bColor:UIColor = UIColor.clear) {
@@ -19,5 +18,13 @@ extension UIButton {
         self.setTitle(title.0, for: title.1)
     }
     
-    
+
+    public func showBadges(x:CGFloat){
+        self.imageView?.clipsToBounds = false
+        self.imageView?.pp.addBadge(number: 99)
+        //  这里无法获取imageView的大小,初始为0，传入固定值
+        self.imageView?.pp.moveBadge(x: x, y: 0)
+    }
 }
+
+

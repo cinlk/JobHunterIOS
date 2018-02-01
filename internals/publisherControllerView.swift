@@ -7,10 +7,6 @@
 //
 
 import UIKit
-
-
-
-
 private let tsection = 2
 private let tHeaderHeight:CGFloat = 200
 
@@ -73,14 +69,10 @@ class publisherControllerView: UITableViewController {
         
         self.navigationItem.title = ""
         self.setHeader()
-        
+ 
        
     }
    
-    
-  
-    
-    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -89,7 +81,6 @@ class publisherControllerView: UITableViewController {
         } else {
             self.automaticallyAdjustsScrollViewInsets = false
         }
-         //self.navigationController?.navigationBar.settranslucent(true)
         self.navigationController?.view.insertSubview(navigationBack, at: 1)
     }
     
@@ -99,13 +90,6 @@ class publisherControllerView: UITableViewController {
         self.navigationController?.view.willRemoveSubview(navigationBack)
         
     }
-    
-    // 解决 pop 后 backimage 颜色延迟显示
-    override func willMove(toParentViewController parent: UIViewController?) {
-        super.willMove(toParentViewController: parent)
-         //self.navigationController?.navigationBar.settranslucent(false)
-    }
-   
     
     
     override func viewWillLayoutSubviews() {
@@ -179,12 +163,10 @@ extension publisherControllerView{
         th.backgroundColor = UIColor.clear
         self.tableView.tableHeaderView = th
         
-        
         bview.frame = self.view.frame
         bview.addSubview(bImg)
         bview.addSubview(headerView)
         self.tableView.backgroundView = bview
-      
     
     }
     
@@ -277,3 +259,5 @@ class publishHeaderView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 }
+
+
