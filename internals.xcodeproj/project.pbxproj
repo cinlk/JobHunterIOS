@@ -14,7 +14,6 @@
 		4A072C45200203ED006D2791 /* subscribeItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A072C44200203ED006D2791 /* subscribeItems.swift */; };
 		4A1E59A41FDEE065004DCF53 /* CompanySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1E59A31FDEE065004DCF53 /* CompanySelector.swift */; };
 		4A1E59A61FDEE0DB004DCF53 /* PositionSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1E59A51FDEE0DB004DCF53 /* PositionSelector.swift */; };
-		4A2A2D041F65672B00F42123 /* JobTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2A2D031F65672B00F42123 /* JobTag.swift */; };
 		4A2A2D071F6578D800F42123 /* joblist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2A2D051F6578D800F42123 /* joblist.swift */; };
 		4A2A2D081F6578D800F42123 /* joblist.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A2A2D061F6578D800F42123 /* joblist.xib */; };
 		4A3224031F5160E50065A33F /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224021F5160E50065A33F /* Alamofire.framework */; settings = {ATTRIBUTES = (Required, ); }; };
@@ -197,7 +196,6 @@
 		4A1E59A31FDEE065004DCF53 /* CompanySelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanySelector.swift; sourceTree = "<group>"; };
 		4A1E59A51FDEE0DB004DCF53 /* PositionSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PositionSelector.swift; sourceTree = "<group>"; };
 		4A208D8F1FC16F2500C1AA0B /* RxDataSources.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RxDataSources.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4A2A2D031F65672B00F42123 /* JobTag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobTag.swift; sourceTree = "<group>"; };
 		4A2A2D051F6578D800F42123 /* joblist.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = joblist.swift; sourceTree = "<group>"; };
 		4A2A2D061F6578D800F42123 /* joblist.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = joblist.xib; sourceTree = "<group>"; };
 		4A3224021F5160E50065A33F /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = "../../../../Library/Developer/Xcode/DerivedData/internals-fvfjoslaltdhlmclwrenlrxzczpm/Build/Products/Debug-iphonesimulator/Alamofire/Alamofire.framework"; sourceTree = "<group>"; };
@@ -484,8 +482,11 @@
 		4A5304DD1F52A4180000F1E9 /* 主页 */ = {
 			isa = PBXGroup;
 			children = (
-				4A6BC2311FC861DD002C17B6 /* 主界面 */,
-				4AFF91D61F641A1600FE189F /* companyCell */,
+				4A6BC2321FC86218002C17B6 /* View+Controller */,
+				4A6BC2331FC86233002C17B6 /* Model */,
+				4A6BC2341FC8623A002C17B6 /* ViewModel */,
+				4A8D28B41FD190FF00FA983F /* 搜索 */,
+				4A8858F41FE6A9CE0009D73D /* job信息界面 */,
 			);
 			name = "主页";
 			sourceTree = "<group>";
@@ -516,21 +517,10 @@
 			name = "我";
 			sourceTree = "<group>";
 		};
-		4A6BC2311FC861DD002C17B6 /* 主界面 */ = {
-			isa = PBXGroup;
-			children = (
-				4A8858F41FE6A9CE0009D73D /* job信息界面 */,
-				4A8D28B41FD190FF00FA983F /* 搜索 */,
-				4A6BC2341FC8623A002C17B6 /* ViewModel */,
-				4A6BC2331FC86233002C17B6 /* Model */,
-				4A6BC2321FC86218002C17B6 /* View+Controller */,
-			);
-			name = "主界面";
-			sourceTree = "<group>";
-		};
 		4A6BC2321FC86218002C17B6 /* View+Controller */ = {
 			isa = PBXGroup;
 			children = (
+				4AFF91D61F641A1600FE189F /* companyCell */,
 				4AF6C80A1F5AEB880059496B /* mainRecommandCell.swift */,
 				4AF6C8041F5A98940059496B /* mainCatagoryCell.swift */,
 				4AF6C8021F571D1F0059496B /* CitysView.swift */,
@@ -622,7 +612,7 @@
 		4A8859191FFA57460009D73D /* View+Controller */ = {
 			isa = PBXGroup;
 			children = (
-				4A9A0BE52009DE5E008721F3 /* 聊天消息 */,
+				4A9A0BE52009DE5E008721F3 /* 聊天界面 */,
 				4AF7DCD8200398C6009047F5 /* 系统通知 */,
 				4A072C42200100C3006D2791 /* 推荐职位 */,
 				4AE0DEA11FFBC36400A16ED4 /* 消息主界面 */,
@@ -713,7 +703,7 @@
 			name = socketim;
 			sourceTree = "<group>";
 		};
-		4A9A0BE52009DE5E008721F3 /* 聊天消息 */ = {
+		4A9A0BE52009DE5E008721F3 /* 聊天界面 */ = {
 			isa = PBXGroup;
 			children = (
 				4ACBD6FA1F77E76D00A5FD23 /* ChatBar */,
@@ -721,7 +711,7 @@
 				4A93C2BC1F80CEAA0022E97B /* communication.swift */,
 				4A406B641FA5772100277AA0 /* PickImageController.swift */,
 			);
-			name = "聊天消息";
+			name = "聊天界面";
 			sourceTree = "<group>";
 		};
 		4A9A0BE6200B1613008721F3 /* CommunicationCells */ = {
@@ -1005,7 +995,6 @@
 		4AFF91D61F641A1600FE189F /* companyCell */ = {
 			isa = PBXGroup;
 			children = (
-				4A2A2D031F65672B00F42123 /* JobTag.swift */,
 				4A2A2D051F6578D800F42123 /* joblist.swift */,
 				4A2A2D061F6578D800F42123 /* joblist.xib */,
 			);
@@ -1383,7 +1372,6 @@
 				4AE0DEA41FFBC5AC00A16ED4 /* pagetitleView.swift in Sources */,
 				4A9A0BD62003BFB3008721F3 /* visitorCell.swift in Sources */,
 				4A93C2B51F80AB900022E97B /* messageMainView.swift in Sources */,
-				4A2A2D041F65672B00F42123 /* JobTag.swift in Sources */,
 				4A93C2DC1F83574A0022E97B /* localData.swift in Sources */,
 				4AEDFE8D1FBFF8AD0071F4D8 /* LoginViewModel.swift in Sources */,
 				4ADCC77E1F51251D001A4E9F /* LoginNavigationController.swift in Sources */,
