@@ -11,7 +11,9 @@ import UIKit
 
 
 fileprivate let SectionN = 2
-fileprivate let tableHeaderH:CGFloat = ScreenH / 3 
+fileprivate let tableHeaderH:CGFloat = ScreenH / 3
+fileprivate let avatarW:CGFloat = 60
+fileprivate let avatarH:CGFloat = 60
 
 class PersonViewController: UIViewController {
 
@@ -21,7 +23,7 @@ class PersonViewController: UIViewController {
         table.tableFooterView = UIView.init()
         table.delegate = self
         table.dataSource = self
-        
+         table.register(personTableCell.self, forCellReuseIdentifier: personTableCell.identity())
         return table
     }()
     
@@ -39,14 +41,28 @@ class PersonViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.clear
+        
         // Do any additional setup after loading the view.
     }
-
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.tabBarController?.tabBar.isHidden = false
+        self.table.contentInsetAdjustmentBehavior = .never
+        self.navigationController?.navigationBar.isHidden = true
+    }
+   
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.navigationBar.isHidden = false
+        self.navigationItem.title = ""
+    }
     
     override func viewWillLayoutSubviews() {
         self.view.addSubview(table)
         self.table.tableHeaderView = tableHeader
-        
+        tableHeader.avatarImg.image = UIImage.init(named: "chicken")
+        tableHeader.nameTitle.text = "我的名字"
         
     }
 
@@ -68,14 +84,13 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         case 0:
-            let cell = UITableViewCell.init()
-            cell.textLabel?.text = "我的简历"
+            let cell =  table.dequeueReusableCell(withIdentifier: personTableCell.identity(), for: indexPath) as! personTableCell
+            cell.mode = (image:#imageLiteral(resourceName: "personResume"),title:"我的简历")
             return cell
             
         case 1:
-            let cell = UITableViewCell.init()
-            cell.textLabel?.text = self.mode[indexPath.row].title
-            
+            let cell =  table.dequeueReusableCell(withIdentifier: personTableCell.identity(), for: indexPath) as! personTableCell
+            cell.mode = self.mode[indexPath.row]
             return cell
         default:
             return UITableViewCell.init()
@@ -96,12 +111,48 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
         
     }
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return personTableCell.cellHeight()
+    }
     
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        self.tabBarController?.tabBar.isHidden = true
+        switch indexPath.section {
+        case 0:
+            // MARK
+            let resumeView = personResumeTable(style: .plain)
+            self.navigationController?.pushViewController(resumeView, animated: true)
+            
+        case 1:
+            let row = indexPath.row
+            
+        default:
+            break
+            
+        }
+    }
     
 }
 
 
 private class personTableHeader:UIView{
+    
+    lazy var avatarImg:UIImageView = { [unowned self] in
+        let img = UIImageView.init(frame: CGRect.init(x: (self.width - avatarW)/2, y: (self.height - avatarH)/2, width: avatarW, height: avatarH))
+        img.contentMode = .scaleToFill
+        return img
+    }()
+    
+    lazy var nameTitle:UILabel = {
+        let name = UILabel.init(frame: CGRect.zero)
+        name.textAlignment = .center
+        name.textColor = UIColor.white
+        name.font = UIFont.systemFont(ofSize: 16)
+        return name
+    }()
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -113,6 +164,15 @@ private class personTableHeader:UIView{
     
     override func layoutSubviews() {
         self.backgroundColor = UIColor.orange
+        avatarImg.setCircle()
+        nameTitle.sizeToFit()
+        nameTitle.frame = CGRect.init(x: 10, y: avatarImg.origin.y + avatarImg.height + 10, width: ScreenW - 20, height: 30)
+        self.addSubview(avatarImg)
+        self.addSubview(nameTitle)
+        
+        
+        
+        
         
     }
 }

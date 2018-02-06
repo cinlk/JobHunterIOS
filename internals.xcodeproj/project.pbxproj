@@ -43,6 +43,15 @@
 		4A7616271FFE5C8900FC6A58 /* deliveryCategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7616261FFE5C8900FC6A58 /* deliveryCategoryView.swift */; };
 		4A76162A1FFE5DB600FC6A58 /* deliveryItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7616281FFE5DB600FC6A58 /* deliveryItemCell.swift */; };
 		4A76162B1FFE5DB600FC6A58 /* deliveryItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A7616291FFE5DB600FC6A58 /* deliveryItemCell.xib */; };
+		4A82A0D12026DF4300185E8B /* personTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0D02026DF4300185E8B /* personTableCell.swift */; };
+		4A82A0D32026F6CA00185E8B /* personResumeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0D22026F6CA00185E8B /* personResumeTable.swift */; };
+		4A82A0D62026FD7100185E8B /* myResumeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0D52026FD7100185E8B /* myResumeViewController.swift */; };
+		4A82A0D82027042B00185E8B /* resume_personInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0D72027042B00185E8B /* resume_personInfoCell.swift */; };
+		4A82A0DA202709B700185E8B /* person_resume.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0D9202709B700185E8B /* person_resume.swift */; };
+		4A82A0DC2027199700185E8B /* person_educationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0DB2027199700185E8B /* person_educationCell.swift */; };
+		4A82A0DE2027493E00185E8B /* person_projectCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0DD2027493E00185E8B /* person_projectCell.swift */; };
+		4A82A0E02028939F00185E8B /* person_skillCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0DF2028939F00185E8B /* person_skillCell.swift */; };
+		4A82A0E22028A8C900185E8B /* person_evaluateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0E12028A8C900185E8B /* person_evaluateCell.swift */; };
 		4A8858F31FE550D40009D73D /* searchResultController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8858F21FE550D40009D73D /* searchResultController.swift */; };
 		4A8858FA1FE8076C0009D73D /* RecruiterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8858F81FE8076C0009D73D /* RecruiterCell.swift */; };
 		4A8858FB1FE8076C0009D73D /* RecruiterCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A8858F91FE8076C0009D73D /* RecruiterCell.xib */; };
@@ -225,6 +234,15 @@
 		4A7616261FFE5C8900FC6A58 /* deliveryCategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = deliveryCategoryView.swift; sourceTree = "<group>"; };
 		4A7616281FFE5DB600FC6A58 /* deliveryItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = deliveryItemCell.swift; sourceTree = "<group>"; };
 		4A7616291FFE5DB600FC6A58 /* deliveryItemCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = deliveryItemCell.xib; sourceTree = "<group>"; };
+		4A82A0D02026DF4300185E8B /* personTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = personTableCell.swift; sourceTree = "<group>"; };
+		4A82A0D22026F6CA00185E8B /* personResumeTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = personResumeTable.swift; sourceTree = "<group>"; };
+		4A82A0D52026FD7100185E8B /* myResumeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myResumeViewController.swift; sourceTree = "<group>"; };
+		4A82A0D72027042B00185E8B /* resume_personInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = resume_personInfoCell.swift; sourceTree = "<group>"; };
+		4A82A0D9202709B700185E8B /* person_resume.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = person_resume.swift; sourceTree = "<group>"; };
+		4A82A0DB2027199700185E8B /* person_educationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = person_educationCell.swift; sourceTree = "<group>"; };
+		4A82A0DD2027493E00185E8B /* person_projectCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = person_projectCell.swift; sourceTree = "<group>"; };
+		4A82A0DF2028939F00185E8B /* person_skillCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = person_skillCell.swift; sourceTree = "<group>"; };
+		4A82A0E12028A8C900185E8B /* person_evaluateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = person_evaluateCell.swift; sourceTree = "<group>"; };
 		4A8858F21FE550D40009D73D /* searchResultController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = searchResultController.swift; sourceTree = "<group>"; };
 		4A8858F81FE8076C0009D73D /* RecruiterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecruiterCell.swift; sourceTree = "<group>"; };
 		4A8858F91FE8076C0009D73D /* RecruiterCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecruiterCell.xib; sourceTree = "<group>"; };
@@ -470,7 +488,7 @@
 		4A5304DC1F52A3E10000F1E9 /* 板块 */ = {
 			isa = PBXGroup;
 			children = (
-				4A5304E01F52A4770000F1E9 /* 我 */,
+				4A5304E01F52A4770000F1E9 /* 个人主页 */,
 				4A5304DF1F52A4420000F1E9 /* 面试 */,
 				4A5304DE1F52A42B0000F1E9 /* 消息 */,
 				4A5304DD1F52A4180000F1E9 /* 主页 */,
@@ -509,12 +527,14 @@
 			name = "面试";
 			sourceTree = "<group>";
 		};
-		4A5304E01F52A4770000F1E9 /* 我 */ = {
+		4A5304E01F52A4770000F1E9 /* 个人主页 */ = {
 			isa = PBXGroup;
 			children = (
-				4A6BC22F1FC856D7002C17B6 /* PersonViewController.swift */,
+				4A82A0CE2026D8A700185E8B /* viewModel */,
+				4A82A0CD2026D89C00185E8B /* model */,
+				4A82A0CC2026D88C00185E8B /* view+controller */,
 			);
-			name = "我";
+			name = "个人主页";
 			sourceTree = "<group>";
 		};
 		4A6BC2321FC86218002C17B6 /* View+Controller */ = {
@@ -554,6 +574,53 @@
 				4A6BC2361FC86453002C17B6 /* config.swift */,
 			);
 			name = config;
+			sourceTree = "<group>";
+		};
+		4A82A0CC2026D88C00185E8B /* view+controller */ = {
+			isa = PBXGroup;
+			children = (
+				4A82A0D42026FD5500185E8B /* 简历 */,
+				4A82A0CF2026DEEA00185E8B /* tableCells */,
+				4A6BC22F1FC856D7002C17B6 /* PersonViewController.swift */,
+			);
+			name = "view+controller";
+			sourceTree = "<group>";
+		};
+		4A82A0CD2026D89C00185E8B /* model */ = {
+			isa = PBXGroup;
+			children = (
+				4A82A0D9202709B700185E8B /* person_resume.swift */,
+			);
+			name = model;
+			sourceTree = "<group>";
+		};
+		4A82A0CE2026D8A700185E8B /* viewModel */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = viewModel;
+			sourceTree = "<group>";
+		};
+		4A82A0CF2026DEEA00185E8B /* tableCells */ = {
+			isa = PBXGroup;
+			children = (
+				4A82A0D02026DF4300185E8B /* personTableCell.swift */,
+				4A82A0D72027042B00185E8B /* resume_personInfoCell.swift */,
+				4A82A0DB2027199700185E8B /* person_educationCell.swift */,
+				4A82A0DD2027493E00185E8B /* person_projectCell.swift */,
+				4A82A0DF2028939F00185E8B /* person_skillCell.swift */,
+				4A82A0E12028A8C900185E8B /* person_evaluateCell.swift */,
+			);
+			name = tableCells;
+			sourceTree = "<group>";
+		};
+		4A82A0D42026FD5500185E8B /* 简历 */ = {
+			isa = PBXGroup;
+			children = (
+				4A82A0D22026F6CA00185E8B /* personResumeTable.swift */,
+				4A82A0D52026FD7100185E8B /* myResumeViewController.swift */,
+			);
+			name = "简历";
 			sourceTree = "<group>";
 		};
 		4A8858F41FE6A9CE0009D73D /* job信息界面 */ = {
@@ -1320,6 +1387,7 @@
 				4AFF91D91F641A6200FE189F /* tagsTableViewCell.swift in Sources */,
 				4A072C412000BC2D006D2791 /* JobItemInfoView.swift in Sources */,
 				4A9A0BE22007ABA8008721F3 /* WebNewsView.swift in Sources */,
+				4A82A0D32026F6CA00185E8B /* personResumeTable.swift in Sources */,
 				4AF6C80B1F5AEB880059496B /* mainRecommandCell.swift in Sources */,
 				4A93C2DE1F8359A20022E97B /* subconditions.swift in Sources */,
 				4A02614B1FD4360400747B30 /* SearchRecodeViewController.swift in Sources */,
@@ -1331,6 +1399,7 @@
 				4ADDDAD81F9B1EE3001CB00F /* ChatEmotionAttachment.swift in Sources */,
 				4AFF91B91F5DB8A900FE189F /* company.swift in Sources */,
 				4A93C2C61F8124930022E97B /* delivereddata.swift in Sources */,
+				4A82A0DE2027493E00185E8B /* person_projectCell.swift in Sources */,
 				4ADDDAB31F97ABA4001CB00F /* ChatEmotionView.swift in Sources */,
 				4A8859051FED3D310009D73D /* companyscrollTableViewController.swift in Sources */,
 				4A8858F31FE550D40009D73D /* searchResultController.swift in Sources */,
@@ -1347,6 +1416,7 @@
 				4AD03ABB1F9C7DD30077C15B /* GetChatEmotion.swift in Sources */,
 				4A93C2C31F80CF080022E97B /* forumView.swift in Sources */,
 				4ACBD6F51F76386D00A5FD23 /* baseSearchViewController.swift in Sources */,
+				4A82A0DC2027199700185E8B /* person_educationCell.swift in Sources */,
 				4A93C2E71F88B8E20022E97B /* client.swift in Sources */,
 				4A9CE3641F715B30002A8FD5 /* historyAndCatagoryView.swift in Sources */,
 				4A88590E1FF3E2000009D73D /* publisherControllerView.swift in Sources */,
@@ -1371,6 +1441,7 @@
 				4A406B671FA5834F00277AA0 /* ImageCell.swift in Sources */,
 				4AE0DEA41FFBC5AC00A16ED4 /* pagetitleView.swift in Sources */,
 				4A9A0BD62003BFB3008721F3 /* visitorCell.swift in Sources */,
+				4A82A0D12026DF4300185E8B /* personTableCell.swift in Sources */,
 				4A93C2B51F80AB900022E97B /* messageMainView.swift in Sources */,
 				4A93C2DC1F83574A0022E97B /* localData.swift in Sources */,
 				4AEDFE8D1FBFF8AD0071F4D8 /* LoginViewModel.swift in Sources */,
@@ -1386,21 +1457,26 @@
 				4ADDDAB51F98EF84001CB00F /* ChatEmotionCells.swift in Sources */,
 				4AB0FEDA201630B000932C02 /* externals.swift in Sources */,
 				4A5304DB1F527D090000F1E9 /* loginUtils.swift in Sources */,
+				4A82A0E22028A8C900185E8B /* person_evaluateCell.swift in Sources */,
 				4A2A2D071F6578D800F42123 /* joblist.swift in Sources */,
 				4AEDFE861FBFEA5B0071F4D8 /* extension+textfield.swift in Sources */,
 				4AFF91BD1F5DBD8D00FE189F /* JobDescription.swift in Sources */,
 				4AE694C31F91D5BD005BE1F0 /* messageCell.swift in Sources */,
 				4AEDFE941FC087440071F4D8 /* ActivityIndicator.swift in Sources */,
+				4A82A0E02028939F00185E8B /* person_skillCell.swift in Sources */,
 				4AEDFE921FC06A3B0071F4D8 /* httpservers.swift in Sources */,
 				4A8D28BD1FD2734400FA983F /* extension+searchDelegate.swift in Sources */,
 				4ADCC7501F511DD3001A4E9F /* AppDelegate.swift in Sources */,
 				4A6BC23D1FC92C26002C17B6 /* mainPageHttpServer.swift in Sources */,
 				4A9CE36A1F715F6E002A8FD5 /* internCondition.swift in Sources */,
 				4AB8FFE71FDD025B0020F026 /* HistoryRecordCell.swift in Sources */,
+				4A82A0D62026FD7100185E8B /* myResumeViewController.swift in Sources */,
+				4A82A0D82027042B00185E8B /* resume_personInfoCell.swift in Sources */,
 				4A9A0BDF200650A0008721F3 /* xiaomiTableCell.swift in Sources */,
 				4A406B651FA5772100277AA0 /* PickImageController.swift in Sources */,
 				4AB0FED82014E23200932C02 /* ChatTimeCell.swift in Sources */,
 				4A8859101FF7EAD80009D73D /* extension+alert.swift in Sources */,
+				4A82A0DA202709B700185E8B /* person_resume.swift in Sources */,
 				4ADDDAE01F9B426C001CB00F /* ChatMoreView.swift in Sources */,
 				4ADCC7811F512880001A4E9F /* RegisterViewController.swift in Sources */,
 				4A9A0BE9200B164F008721F3 /* JobMessageCell.swift in Sources */,
