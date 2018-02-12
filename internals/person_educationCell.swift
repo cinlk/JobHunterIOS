@@ -9,117 +9,44 @@
 import UIKit
 
 
-
+// 一条内容的高度
 fileprivate let itemViewH:CGFloat = 80
 
-class person_educationCell: UITableViewCell {
+class person_educationCell: personBaseCell {
 
-   
-     lazy private var title:UILabel = {
-        let t = UILabel.init(frame: CGRect.zero)
-        t.text = "教育经历"
-        t.font = UIFont.boldSystemFont(ofSize: 16)
-        t.textAlignment = .left
-        t.textColor = UIColor.black
-        return t
-        
-    }()
     
-    private lazy var line:UIView = {
-        let v = UIView.init()
-        v.backgroundColor = UIColor.lightGray
-        return v
-    }()
-
-    // 没有数据显示该view
-    private lazy var defaultView:UIView = {
-        let v = UIView.init(frame: CGRect.zero)
-        let title:UILabel = UILabel.init(frame: CGRect.zero)
-        title.text = "添加数据"
-        title.textAlignment = .center
-        title.font = UIFont.systemFont(ofSize: 16)
-        let icon:UIImageView = UIImageView.init(image: #imageLiteral(resourceName: "chatMore"))
-        icon.clipsToBounds = true
-        icon.contentMode = .scaleToFill
-        v.backgroundColor = UIColor.clear
-        
-        v.isHidden = true
-        v.addSubview(title)
-        v.addSubview(icon)
-        _ = icon.sd_layout().rightSpaceToView(v,10)?.topSpaceToView(v,5)?.bottomSpaceToView(v,5)?.widthIs(30)
-        _ = title.sd_layout().leftSpaceToView(v,10)?.rightSpaceToView(icon,20)?.topEqualToView(icon)?.bottomEqualToView(icon)
-        
-        return v
-        
-    }()
+    private var contentVHeigh:CGFloat = 0
     
-    private lazy var contentV:UIView = {
-       let v = UIView.init(frame: CGRect.zero)
-       v.backgroundColor = UIColor.clear
-       return v
-    }()
-   
-    
-    var contentVHeigh:CGFloat = 0
-    private var cellHeight:CGFloat = 0
-    
-    
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.selectionStyle = .none
-        
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        self.contentView.addSubview(title)
-        self.contentView.addSubview(line)
-        self.contentView.addSubview(contentV)
-        self.contentView.addSubview(defaultView)
-        _ = title.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.rightSpaceToView(self.contentView,10)?.heightIs(20)
-        
-        _ = line.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topSpaceToView(title,2)?.heightIs(1)
-        _ = defaultView.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topSpaceToView(line,5)?.heightIs(40)
-        
-        _ = contentV.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topSpaceToView(line,5)?.heightIs(0)
-        
+        self.title.text = "教育经历"
     }
     
-    
-    
-    class func identity()->String{
-        return "person_educationCell"
-    }
-    
+    // 设置内容view
     open func setContentItemView(datas:[person_education]?){
         
-        guard let items = datas, items.count > 0  else{
-            defaultView.isHidden = false
-            contentV.height = 0
-            cellHeight = 80
-            return
-        }
-        defaultView.isHidden = true
-        
-        // 有数据
+        // 即使设置contetV 的高度为0,但是内部view 高度不为0 任然会显示出来
         self.contentV.subviews.forEach { (view) in
             if view.isKind(of: itemView.self){
                 view.removeFromSuperview()
             }
         }
-        // 计算contentv 的高度
+        
+        // 没有数据显示defaultview
+        guard let items = datas, items.count > 0  else{
+            defaultView.isHidden = false
+            contentV.height = 0
+            cellHeight = defaultViewHeight
+            return
+        }
+        
+        // 显示数据
+        defaultView.isHidden = true
+        // 计算contentv 高度： 内容高度 加上 内容之间的间歇
         contentVHeigh =  CGFloat(items.count)*itemViewH + CGFloat(5 * (items.count - 1))
-        cellHeight = contentVHeigh + 40
+        
+        cellHeight = contentVHeigh + describeHeight
         
         contentV.height = contentVHeigh
         
@@ -133,17 +60,9 @@ class person_educationCell: UITableViewCell {
         
     }
     
-    
-    open func caculateCellHeight(datas:[person_education])->CGFloat{
-        guard datas.count > 0  else {
-            return 80
-        }
-        // 计算contentv 的高度
-        let  h  =  CGFloat(datas.count)*itemViewH + CGFloat(5 * (datas.count - 1))
-        return h + 40
-        
+    class func identity()->String{
+        return "person_educationCell"
     }
-    
     
     
 
@@ -193,8 +112,8 @@ private class itemView:UIView{
     var mode:person_education?{
         didSet{
             startEndTime.text = mode!.startTime + "至" + mode!.endTime
-            department.text = mode!.department
             combineLabel.text = mode!.colleage + "-" + mode!.degree + "-" + mode!.city
+            department.text = mode!.department
         }
     }
     

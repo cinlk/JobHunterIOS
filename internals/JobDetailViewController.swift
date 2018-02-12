@@ -56,7 +56,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     // 分享界面
     lazy var shareapps:shareView = { [unowned self] in
         //放在最下方
-        let view =  shareView(frame: CGRect(x: 0, y: UIScreen.main.bounds.height, width: UIScreen.main.bounds.width, height: 150))
+        let view =  shareView(frame: CGRect(x: 0, y: ScreenH, width: ScreenW, height: 150))
         // 加入最外层窗口
         view.sharedata = self.infos?["jobName"] ?? ""
          UIApplication.shared.windows.last?.addSubview(view)
@@ -67,7 +67,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     
     lazy var darkView :UIView = {
         let darkView = UIView()
-        darkView.frame = CGRect(x: 0, y: 0, width:UIScreen.main.bounds.size.width, height:UIScreen.main.bounds.size.height)
+        darkView.frame = CGRect(x: 0, y: 0, width:ScreenW, height:ScreenH)
         darkView.backgroundColor = UIColor(red: 0 / 255.0, green: 0 / 255.0, blue: 0 / 255.0, alpha: 0.5) // 设置半透明颜色
         darkView.isUserInteractionEnabled = true // 打开用户交互
         return darkView
@@ -327,7 +327,7 @@ extension JobDetailViewController{
     //self.view.addSubview(darkView)
         UIView.animate(withDuration: 0.5, animations: {
             
-            self.shareapps.frame = CGRect(x: 0, y: UIScreen.main.bounds.height - 150, width: UIScreen.main.bounds.width, height: 150)
+            self.shareapps.frame = CGRect(x: 0, y: ScreenH - 150, width: ScreenW, height: 150)
         }, completion: nil)
         
         

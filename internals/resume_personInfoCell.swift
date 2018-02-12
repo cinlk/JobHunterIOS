@@ -11,8 +11,8 @@ import UIKit
 fileprivate let fontSize:CGFloat = 14
 fileprivate let textColort:UIColor = UIColor.black
 fileprivate let leftAlignment = NSTextAlignment.left
-fileprivate let txSize:CGSize = CGSize.init(width: 60, height: 60)
-
+fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
+fileprivate let cellH:CGFloat = 150.0
 
 class resume_personInfoCell: UITableViewCell {
 
@@ -84,6 +84,7 @@ class resume_personInfoCell: UITableViewCell {
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: fontSize)
         label.textColor = textColort
+        label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center
         return label
     }()
@@ -92,6 +93,7 @@ class resume_personInfoCell: UITableViewCell {
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: fontSize)
         label.textColor = textColort
+        label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center
         return label
     }()
@@ -100,7 +102,7 @@ class resume_personInfoCell: UITableViewCell {
     var mode:person_base_info?{
         
         didSet{
-            self.touxaing.image = mode!.tx
+            self.touxaing.image = UIImage.init(named:  mode!.tx)
             name.text = mode!.name
             sex.text = mode!.sex
             city.text = mode!.city
@@ -108,17 +110,15 @@ class resume_personInfoCell: UITableViewCell {
             degree.text = mode!.degree
             birthday.text = mode!.birthday
             email.text = mode!.email
-            lable1.text = mode!.sex + " " + mode!.city + " " + mode!.degree + " " + mode!.birthday
-            lable2.text = mode!.phone + " " + mode!.email
+            lable1.text = mode!.sex + "|" + mode!.city + "|" + mode!.degree + "|" + mode!.birthday
+            lable2.text = mode!.phone + "|" + mode!.email
         }
     }
     
     
     
-    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.selectionStyle = .none
         
     }
     
@@ -142,7 +142,7 @@ class resume_personInfoCell: UITableViewCell {
         lable2.sizeToFit()
         
         
-        _ = touxaing.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(self.contentView,10)?.widthIs(txSize.width)?.heightIs(txSize.height)
+        _ = touxaing.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(self.contentView,10)?.widthIs(imgSize.width)?.heightIs(imgSize.height)
         _ = name.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(touxaing,5)?.widthIs(200)?.heightIs(20)
         
         _ = lable1.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(name,5)?.widthIs(ScreenW - 20)?.heightIs(20)
@@ -158,7 +158,7 @@ class resume_personInfoCell: UITableViewCell {
     }
     
     class func cellHeight()->CGFloat{
-        return 150
+        return cellH
     }
     
     

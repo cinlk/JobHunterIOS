@@ -58,6 +58,7 @@ class person_evaluateCell: UITableViewCell {
     }()
     
     
+    var cellHeight:CGFloat = 0
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -99,6 +100,7 @@ class person_evaluateCell: UITableViewCell {
         guard !content.isEmpty else{
             defaultView.isHidden = false
             contentLable.height = 0
+            cellHeight = 80
             return
         }
         contentLable.text = content
@@ -107,26 +109,11 @@ class person_evaluateCell: UITableViewCell {
             contentLable.frame = CGRect.init(x: 10, y: 35, width: contentHeight.width, height: contentHeight.height)
             self.height = 45 + contentHeight.height
             contentLable.sizeToFit()
-            return
+            
         }
         
-        contentLable.height = 0
-        self.height = 65
+        cellHeight = self.height
         
-    }
-    
-    
-    func caculateCellHeight(content: inout String)->CGFloat{
-        content = content.trimmingCharacters(in: CharacterSet.init(charactersIn: " "))
-        guard !content.isEmpty else {
-            return 65
-        }
-        
-        let contentHeight = content.getStringCGRect(size: CGSize.init(width: contentLable.width, height: 0), font: contentLable.font)
-        return 45 + contentHeight.height
-        
-        
-    
     }
     
     class func identity()->String{
