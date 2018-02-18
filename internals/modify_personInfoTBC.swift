@@ -329,7 +329,7 @@ extension modify_personInfoTBC: UIImagePickerControllerDelegate,UINavigationCont
         if let image:UIImage = info[UIImagePickerControllerOriginalImage] as? UIImage{
             picker.dismiss(animated: true, completion: nil)
             //  图片数据
-            let data =  UIImageJPEGRepresentation(image, 0.6)
+            let _ =  UIImageJPEGRepresentation(image, 0.6)
             // MARK 上传图片，生成存储url地址
             // 更新 data 的image 地址，刷新table
             //UIImageView.init(image: UIImage.init(data: data))

@@ -15,7 +15,6 @@ fileprivate let titleName = "投递记录"
 class deliveredHistory: UIViewController,UIScrollViewDelegate {
 
     
-    
     //MARK  data map json?
     private var data:Dictionary<String,[Dictionary<String,String>]> = [:]
     

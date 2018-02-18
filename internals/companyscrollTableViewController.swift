@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class companyscrollTableViewController: UIViewController {
     
@@ -221,6 +222,7 @@ extension companyscrollTableViewController{
         
     }
     private func addShareBarItem(){
+        // 分享
         let up =  UIImage.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "upload")
       
         let b1 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
@@ -229,7 +231,25 @@ extension companyscrollTableViewController{
         b1.setImage(up, for: .normal)
         b1.clipsToBounds = true
         
-        self.navigationItem.setRightBarButton(UIBarButtonItem.init(customView: b1), animated: false)
+        // 收藏
+        
+        let collected = UIImage.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "heart")
+        
+        let b2 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
+        b2.addTarget(self, action: #selector(collectedCompany(btn:)), for: .touchUpInside)
+        b2.setImage(collected, for: .normal)
+        
+        let selectedCollection = UIImage.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "selectedHeart")
+        
+        b2.setImage(selectedCollection, for: .selected)
+        
+        b2.clipsToBounds = true
+        
+        
+        
+        self.navigationItem.setRightBarButtonItems([UIBarButtonItem.init(customView: b1), UIBarButtonItem.init(customView: b2)], animated: false)
+        
+        
     }
     
     @objc func share(){
@@ -239,6 +259,31 @@ extension companyscrollTableViewController{
             
             self.shareapps.frame = CGRect(x: 0, y: UIScreen.main.bounds.height - 150, width: UIScreen.main.bounds.width, height: 150)
         }, completion: nil)
+        
+    }
+    
+    @objc func collectedCompany(btn:UIButton){
+        // MARK 修改公司状态 已经为收藏
+        
+        btn.isSelected = !btn.isSelected
+        
+        let json:[String:Any] = ["id":"123","icon":"sina","name":"sina","describe":"互联网老兵",
+                                 "address":"北京","staffs":"1000以上","industry":"互联网",
+                                 "tags":["标签1","标签2"]]
+        
+        
+        if btn.isSelected{
+            SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: "收藏成功")
+            jobManageRoot.addCompanyItem(item: comapnyInfo(JSON: json)!)
+        }else{
+            jobManageRoot.removeCollectedCompany(item: comapnyInfo(JSON: json)!)
+            SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: "取消收藏")
+        }
+       
+        SVProgressHUD.dismiss(withDelay: 0.5)
+        
+        
+        
         
     }
     

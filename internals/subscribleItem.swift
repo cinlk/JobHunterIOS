@@ -49,8 +49,8 @@ extension subscribleItem{
     
     private func setView(){
         
-        self.automaticallyAdjustsScrollViewInsets = false
-        
+        //self.automaticallyAdjustsScrollViewInsets = false
+        self.tableView.contentInsetAdjustmentBehavior = .never
         self.tableView.tableFooterView = UIView()
         self.tableView.register(UINib(nibName:"subjobitem", bundle:nil), forCellReuseIdentifier: subjobitem.identity())
         self.tableView.register(subscribeSectionHeaderView.self, forHeaderFooterViewReuseIdentifier: subscribeSectionHeaderView.identity())

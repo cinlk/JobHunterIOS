@@ -15,13 +15,14 @@ class publisherControllerView: UITableViewController {
     var infos:Dictionary<String,Any>?
     var publishJobs:[Dictionary<String,String>] = []
     
-    lazy var headerView:publishHeaderView = {
-        let h = publishHeaderView.init(frame: CGRect.zero)
+    lazy var headerView:personTableHeader = {
+        let h = personTableHeader.init(frame: CGRect.init(x: 0, y: 80, width: ScreenW, height: tHeaderHeight - 80))
+        h.isHR = true 
         return h
     }()
     
     lazy var navigationBack:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 64))
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 64))
         v.backgroundColor = UIColor.lightGray
         v.alpha = 0
         let title = UILabel.init(frame: CGRect.zero)
@@ -155,10 +156,10 @@ class publisherControllerView: UITableViewController {
 
 extension publisherControllerView{
     private func setHeader(){
-        headerView.avartImage.image = UIImage.init(named: "jodel")
-        headerView.username.text = "白飞翔"
-        headerView.position.text = "CXX"
-        headerView.frame =  CGRect.init(x: 0, y: 80, width: self.view.frame.width, height: tHeaderHeight - 80)
+        headerView.avatarImg.image = UIImage.init(named: "jodel")
+        headerView.nameTitle.text = "白飞翔"
+        headerView.introduce.text = "C公司@HR"
+        //headerView.frame =  CGRect.init(x: 0, y: 0, width: self.view.frame.width, height: tHeaderHeight - 80)
         let th = UIView.init(frame: CGRect.zero)
         th.backgroundColor = UIColor.clear
         self.tableView.tableHeaderView = th
@@ -213,51 +214,4 @@ extension publisherControllerView{
        
     }
 }
-
-class publishHeaderView: UIView {
-    
-    
-    // 圆形 image
-    lazy var avartImage:UIImageView = {
-        let img = UIImageView.init(frame: CGRect.init(origin: CGPoint.zero, size: CGSize.init(width: 50, height: 50)))
-        img.contentMode = .scaleAspectFit
-        img.clipsToBounds = true
-        img.backgroundColor = UIColor.clear
-        img.isUserInteractionEnabled = false
-        
-        return img
-    }()
-    
-    lazy var username:UILabel = {
-       let lable = UILabel.init(frame: CGRect.zero)
-       lable.font = UIFont.boldSystemFont(ofSize: 16)
-       lable.textAlignment = .center
-       lable.textColor = UIColor.white
-       return lable
-    }()
-    
-    lazy var position:UILabel = {
-        let lable = UILabel.init(frame: CGRect.zero)
-        lable.font = UIFont.systemFont(ofSize: 13)
-        lable.textAlignment = .center
-        lable.textColor = UIColor.white
-        return lable
-    }()
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.backgroundColor = UIColor.clear
-        self.addSubview(avartImage)
-        self.addSubview(username)
-        self.addSubview(position)
-        _ = avartImage.sd_layout().centerXEqualToView(self)?.topSpaceToView(self,10)
-        _ = username.sd_layout().topSpaceToView(avartImage,5)?.widthIs(100)?.centerXEqualToView(avartImage)?.heightIs(20)
-        _ = position.sd_layout().topSpaceToView(username,5)?.centerXEqualToView(username)?.widthIs(200)?.heightIs(15)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
 

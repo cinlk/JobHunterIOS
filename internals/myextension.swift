@@ -10,29 +10,34 @@ import Foundation
 
 
 
-
-private let  v = UIImage()
-private let grayimg = build_image(frame: CGRect.init(x: 0, y: 0, width: NAV_BAR_FRAME_WIDTH, height: NAV_BAR_FRAME_HEIGHT), color: UIColor.init(red: 0.5, green: 0.5, blue: 0.5, alpha: 1))
+private let  v =  UIImage.init()
+private let defaulImg = build_image(frame: CGRect.init(x: 0, y: 0, width: NAV_BAR_FRAME_WIDTH, height: NAV_BAR_FRAME_HEIGHT), color: UIColor.navigationBackgroudColor())
 //private let bm = build_image(size: CGSize.init(width: NAV_BAR_FRAME_WIDTH, height: NAV_BAR_FRAME_HEIGHT), alpha: 1)
 
 extension UINavigationBar{
     
     
+    
     // change to translucent
     func settranslucent(_ tag: Bool){
-       
+        
+        // MARK 如何保证 取消背景后的navigationbar，在恢复背景后 和以前效果一直。且
+        // translate 为透明
         // 显示 lable
-        self.tintColor  = UIColor.black
+        //self.tintColor  = UIColor.black
         if tag == true{
+            //self.settranslucent(<#T##tag: Bool##Bool#>)
             self.setBackgroundImage(v, for: .default)
             self.shadowImage = v
-            self.backgroundColor =  UIColor.clear
-            self.isTranslucent = true
+            //self.backgroundColor =  UIColor.clear
+            //self.isTranslucent = true
         }
         else{
-            // 背景image为灰色
-            self.setBackgroundImage(grayimg, for: .default)
-            self.isTranslucent = false
+            // 背景image为 navigationbar系统默认颜色？？
+            
+            self.setBackgroundImage(defaulImg, for: .default)
+            //self.shadowImage = self.shadowImage
+            //self.isTranslucent = false
             
             
         }

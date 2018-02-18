@@ -27,7 +27,7 @@ class pagetitleView: UIView {
     
     weak var delegate:pagetitleViewDelegate?
     
-        
+    //private var lineWidth:CGFloat = 30
     lazy var moveLine:UIView = {
        let v = UIView.init(frame: CGRect.zero)
        v.backgroundColor = UIColor.orange
@@ -69,6 +69,7 @@ extension pagetitleView{
         guard let firstLabel = labelTitles.first else {
             return
         }
+        
         moveLine.frame = CGRect.init(x: firstLabel.frame.origin.x, y: frame.height - kScrollLineH , width: firstLabel.frame.width, height: kScrollLineH)
         
         

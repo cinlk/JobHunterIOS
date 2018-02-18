@@ -415,7 +415,9 @@ class  personModelManager {
     
     //var modifyIndex:[Int] = [0,0,0]
     
-    private init(){}
+    private init(){
+        initialData()
+    }
     
     
     enum InfoType:String{
@@ -433,7 +435,7 @@ class  personModelManager {
         
         let education_infos:[person_education] = [person_education.init(startTime: "2017-10", endTime: "2018-02", colleage: "北大", degree: "本科", department: "土木工程", city: "北京"),person_education.init(startTime: "2017-10", endTime: "2018-02", colleage: "北大", degree: "本科", department: "土木工程", city: "北京")]
         
-        let project_infos:[person_projectInfo] = [person_projectInfo.init(company: "天下", role: "总监", startTime: "2017-11", endTime: "2018-02", content: "达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个 \n 打我的娃打我的\n 达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个 \n 等我大大", city: "北京"),person_projectInfo.init(company: "天下", role: "总监", startTime: "2017-11", endTime: "2018-02", content: "达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个 \n 打我的娃打我的\n 达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个打我打我的挖的我吊袜带挖打我多哇大无多无吊袜带挖 \n 等我大大达瓦大", city: "北京")]
+        let project_infos:[person_projectInfo] = [person_projectInfo.init(company: "天下", role: "总监", startTime: "2017-11", endTime: "2018-02", content: "达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个 \n 打我的娃打我的\n 达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个 \n 等我大大", city: "北京"),person_projectInfo.init(company: "天下", role: "总监", startTime: "2017-11", endTime: "2018-02", content: "达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个 \n 打我的娃打我的\n 达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个打我打我的挖的我吊袜带挖打我多哇大无多无吊袜带挖 \n 等我大大达瓦大", city: "北京"),person_projectInfo.init(company: "天下", role: "总监", startTime: "2017-11", endTime: "2018-02", content: "达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个 \n 打我的娃打我的\n 达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个打我打我的挖的我吊袜带挖打我多哇大无多无吊袜带挖 \n 等我大大达瓦大", city: "北京"),person_projectInfo.init(company: "天下", role: "总监", startTime: "2017-11", endTime: "2018-02", content: "达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个 \n 打我的娃打我的\n 达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个打我打我的挖的我吊袜带挖打我多哇大无多无吊袜带挖 \n 等我大大达瓦大", city: "北京"),person_projectInfo.init(company: "天下", role: "总监", startTime: "2017-11", endTime: "2018-02", content: "达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个 \n 打我的娃打我的\n 达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个打我打我的挖的我吊袜带挖打我多哇大无多无吊袜带挖 \n 等我大大达瓦大", city: "北京")]
         
         let skill_infos:[person_skills] = [person_skills.init(type: "职业技能", describe: "python"),person_skills.init(type: "职业技能", describe: "java 达瓦大哇多无 吊袜带挖达瓦大文的哇多无吊袜带挖多哇多吊袜带挖多哇多哇多哇多达瓦大多哇多哇多 \n 打我打我的"),
                                                    person_skills.init(type: "语言能力", describe: "英语6级 java 达瓦大哇多无 吊袜带挖达瓦大文的哇多无吊袜带挖多哇多吊袜带挖多哇多哇多哇\n 多达瓦大多哇多哇多 \n 达瓦大------43534dwad-  -dwadwadwddw")]

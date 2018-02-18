@@ -9,6 +9,7 @@
 import UIKit
 import CoreLocation
 import MapKit
+import SVProgressHUD
 
 //内置分享sdk
 import Social
@@ -256,7 +257,6 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     }
     
     
-     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {
         case 0:
@@ -276,13 +276,11 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         return UITableViewAutomaticDimension
     }
     
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         switch indexPath.section {
         
         case 0:
-            
             let cell  = table.dequeueReusableCell(withIdentifier: "companycell", for: indexPath) as! company
             cell.cimage.image = UIImage(named: "camera")
             cell.name.text = "vmware公司"
@@ -343,12 +341,29 @@ extension JobDetailViewController{
         
     }
    
-    @objc func collect(){
+    @objc func collect(btn:UIButton){
+        //TODO 职位收藏，改变收藏状态，界面显示已经收藏
+        
+       
+        
+        
+        btn.isSelected = !btn.isSelected
+        // 关注
+        if btn.isSelected{
+            SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: "收藏成功")
+           
+            jobManageRoot.addCollectedItem(item: CompuseRecruiteJobs(JSON: infos!)!)
+        }else{
+            SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: "取消收藏")
+            jobManageRoot.removeCollectedItem(item: CompuseRecruiteJobs(JSON: infos!)!)
+        }
+         SVProgressHUD.dismiss(withDelay: 0.5)
+        
         
     }
     
     @objc func sendResume(){
-        print("sendResume \(jobID)")
+        
         SendResumeJobIds.append(self.jobID)
         sendResumeBtn.setTitle("已经投递", for: .normal)
         sendResumeBtn.backgroundColor = UIColor.lightGray
@@ -437,11 +452,15 @@ extension JobDetailViewController{
         b2.clipsToBounds = true
         b2.setImage(wa, for: .normal)
         
+        // 收藏
         let collection = UIImage.barImage(size: size, offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "heart")
         let b3 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
-        b3.addTarget(self, action: #selector(collect), for: .touchUpInside)
+        b3.addTarget(self, action: #selector(collect(btn:)), for: .touchUpInside)
         b3.clipsToBounds = true
         b3.setImage(collection, for: .normal)
+        let selectedCollected = UIImage.barImage(size: size, offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "selectedHeart")
+        
+        b3.setImage(selectedCollected, for: .selected)
         self.navigationItem.setRightBarButtonItems([ UIBarButtonItem.init(customView: b3),UIBarButtonItem.init(customView: b1),UIBarButtonItem.init(customView: b2)], animated: false)
         
         

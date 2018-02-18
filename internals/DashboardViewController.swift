@@ -124,7 +124,8 @@ class DashboardViewController: UIViewController{
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        self.automaticallyAdjustsScrollViewInsets  = false
+        //self.automaticallyAdjustsScrollViewInsets  = false
+        self.tables.contentInsetAdjustmentBehavior = .never
         self.navigationController?.navigationBar.settranslucent(true)
         self.navigationController?.view.insertSubview(navigationView, at: 1)
         

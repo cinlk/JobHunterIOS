@@ -12,8 +12,7 @@ import UIKit
 
 fileprivate let SectionN = 2
 fileprivate let tableHeaderH:CGFloat = ScreenH / 3
-fileprivate let avatarW:CGFloat = 60
-fileprivate let avatarH:CGFloat = 60
+
 
 class PersonViewController: UIViewController {
 
@@ -30,6 +29,7 @@ class PersonViewController: UIViewController {
     
     private lazy var tableHeader: personTableHeader = {
         let v = personTableHeader.init(frame:CGRect.init(x: 0, y: 0, width: ScreenW, height: tableHeaderH))
+        v.isHR = false
         return v
         
     }()
@@ -119,60 +119,30 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         self.tabBarController?.tabBar.isHidden = true
-        switch indexPath.section {
-        case 0:
-            // MARK
+        if indexPath.section == 0 {
             let resumeView = personResumeTable(style: .plain)
             self.navigationController?.pushViewController(resumeView, animated: true)
+        }else{
             
-        case 1:
             let row = indexPath.row
-            
-        default:
-            break
-            
+            switch row{
+            case 0:
+                // 我的名片
+                let mycard = personCardVC()
+                self.navigationController?.pushViewController(mycard, animated: true)
+            case 2:
+                // 我的收藏
+                let mycollection = MyCollectionVC()
+                self.navigationController?.pushViewController(mycollection, animated: true)
+                
+            default:
+                break
+            }
         }
+      
     }
     
 }
 
 
-private class personTableHeader:UIView{
-    
-    lazy var avatarImg:UIImageView = { [unowned self] in
-        let img = UIImageView.init(frame: CGRect.init(x: (self.width - avatarW)/2, y: (self.height - avatarH)/2, width: avatarW, height: avatarH))
-        img.contentMode = .scaleToFill
-        return img
-    }()
-    
-    lazy var nameTitle:UILabel = {
-        let name = UILabel.init(frame: CGRect.zero)
-        name.textAlignment = .center
-        name.textColor = UIColor.white
-        name.font = UIFont.systemFont(ofSize: 16)
-        return name
-    }()
-    
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func layoutSubviews() {
-        self.backgroundColor = UIColor.orange
-        avatarImg.setCircle()
-        nameTitle.sizeToFit()
-        nameTitle.frame = CGRect.init(x: 10, y: avatarImg.origin.y + avatarImg.height + 10, width: ScreenW - 20, height: 30)
-        self.addSubview(avatarImg)
-        self.addSubview(nameTitle)
-        
-        
-        
-        
-        
-    }
-}
+
