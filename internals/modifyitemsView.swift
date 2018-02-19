@@ -399,8 +399,8 @@ extension modifyitemView: UITextViewDelegate{
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        let frame:CGRect = textView.frame
         
+        let frame:CGRect = textView.frame
         let offset:CGFloat = frame.origin.y + frame.height  -  (ScreenH -  KEYBOARD_HEIGHT)
         UIView.animate(withDuration: 0.3) {
             if offset > 0  {

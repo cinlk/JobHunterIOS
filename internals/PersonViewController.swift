@@ -34,7 +34,7 @@ class PersonViewController: UIViewController {
         
     }()
     
-    private var mode:[(image:UIImage, title:String)] = [(#imageLiteral(resourceName: "namecard"),"我的名片"),(#imageLiteral(resourceName: "settings"),"账号设置"),(#imageLiteral(resourceName: "collection"),"我的收藏"),(#imageLiteral(resourceName: "feedback"),"意见反馈")]
+    private var mode:[(image:UIImage, title:String)] = [(#imageLiteral(resourceName: "namecard"),"我的名片"),(#imageLiteral(resourceName: "settings"),"账号设置"),(#imageLiteral(resourceName: "collection"),"我的收藏"),(#imageLiteral(resourceName: "feedback"),"反馈与帮助")]
     
     
     
@@ -134,6 +134,10 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
                 // 我的收藏
                 let mycollection = MyCollectionVC()
                 self.navigationController?.pushViewController(mycollection, animated: true)
+            case 3:
+                // 目前只是反馈界面
+                let myfeedBAck = feedBackVC()
+                self.navigationController?.pushViewController(myfeedBAck, animated: true)
                 
             default:
                 break

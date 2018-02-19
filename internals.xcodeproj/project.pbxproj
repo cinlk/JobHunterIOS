@@ -19,6 +19,7 @@
 		4A22102E203869D3000BDC70 /* CompanyCollectedVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A22102D203869D3000BDC70 /* CompanyCollectedVC.swift */; };
 		4A221030203873AB000BDC70 /* collectedCompanyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A22102F203873AB000BDC70 /* collectedCompanyCell.swift */; };
 		4A2210322039463D000BDC70 /* extension+array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2210312039463D000BDC70 /* extension+array.swift */; };
+		4A2210372039BE88000BDC70 /* feedBackVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2210362039BE88000BDC70 /* feedBackVC.swift */; };
 		4A2A2D071F6578D800F42123 /* joblist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2A2D051F6578D800F42123 /* joblist.swift */; };
 		4A2A2D081F6578D800F42123 /* joblist.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A2A2D061F6578D800F42123 /* joblist.xib */; };
 		4A3224031F5160E50065A33F /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224021F5160E50065A33F /* Alamofire.framework */; settings = {ATTRIBUTES = (Required, ); }; };
@@ -238,6 +239,7 @@
 		4A22102D203869D3000BDC70 /* CompanyCollectedVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyCollectedVC.swift; sourceTree = "<group>"; };
 		4A22102F203873AB000BDC70 /* collectedCompanyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = collectedCompanyCell.swift; sourceTree = "<group>"; };
 		4A2210312039463D000BDC70 /* extension+array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+array.swift"; sourceTree = "<group>"; };
+		4A2210362039BE88000BDC70 /* feedBackVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = feedBackVC.swift; sourceTree = "<group>"; };
 		4A2A2D051F6578D800F42123 /* joblist.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = joblist.swift; sourceTree = "<group>"; };
 		4A2A2D061F6578D800F42123 /* joblist.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = joblist.xib; sourceTree = "<group>"; };
 		4A3224021F5160E50065A33F /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = "../../../../Library/Developer/Xcode/DerivedData/internals-fvfjoslaltdhlmclwrenlrxzczpm/Build/Products/Debug-iphonesimulator/Alamofire/Alamofire.framework"; sourceTree = "<group>"; };
@@ -509,6 +511,14 @@
 			name = dropViews;
 			sourceTree = "<group>";
 		};
+		4A2210332039BD1E000BDC70 /* 意见与帮助 */ = {
+			isa = PBXGroup;
+			children = (
+				4A2210362039BE88000BDC70 /* feedBackVC.swift */,
+			);
+			name = "意见与帮助";
+			sourceTree = "<group>";
+		};
 		4A444EC91F8A166A006AE83D /* protobuf */ = {
 			isa = PBXGroup;
 			children = (
@@ -635,6 +645,7 @@
 		4A82A0CC2026D88C00185E8B /* view+controller */ = {
 			isa = PBXGroup;
 			children = (
+				4A2210332039BD1E000BDC70 /* 意见与帮助 */,
 				4AFF9DC820381981000ADBAF /* 我的收藏 */,
 				4AFF9DC520381933000ADBAF /* 我的名片 */,
 				4A82A0D42026FD5500185E8B /* 简历 */,
@@ -1601,6 +1612,7 @@
 				4A9A0BDF200650A0008721F3 /* xiaomiTableCell.swift in Sources */,
 				4A406B651FA5772100277AA0 /* PickImageController.swift in Sources */,
 				4A2210322039463D000BDC70 /* extension+array.swift in Sources */,
+				4A2210372039BE88000BDC70 /* feedBackVC.swift in Sources */,
 				4AB0FED82014E23200932C02 /* ChatTimeCell.swift in Sources */,
 				4A8859101FF7EAD80009D73D /* extension+alert.swift in Sources */,
 				4A82A0DA202709B700185E8B /* person_resume.swift in Sources */,

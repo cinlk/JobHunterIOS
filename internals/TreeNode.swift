@@ -322,8 +322,17 @@ class SelectItemUtil {
         
     }
     // 专业
-    private func department(){
+    private func feedBack(){
+        let name = "反馈"
+        let tree = nodes.init()
+        let rootNode = component.init(type: .root, key: name, parent: "", item: [], point: (0,0))
+        tree.buildData(node: rootNode)
+        for (index, item) in ["产品建议","系统问题","其他"].enumerated(){
+            let node = component.init(type: .children, key: item, parent: rootNode.key, item: [], point: (rootNode.point.level + 1, index))
+            tree.buildData(node: node)
+        }
         
+        self.itemNode[name] = tree
     }
     
     
@@ -337,6 +346,8 @@ class SelectItemUtil {
         degress()
         birthDay()
         skills()
+        //
+        feedBack()
         
         
     }
