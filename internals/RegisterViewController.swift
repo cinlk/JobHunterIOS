@@ -91,7 +91,7 @@ class RegisterViewController: UIViewController{
     private var bottom:CALayer?
     private var bottom2:CALayer?
     private var bottom3:CALayer?
-    private weak var codeNumber:ValidateNumber?
+    private var codeNumber:ValidateNumber?
     private var registerVM:RegistryViewModel?
     private let disposebag = DisposeBag()
 

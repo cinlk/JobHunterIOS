@@ -132,6 +132,35 @@ class localData: NSObject {
     }
     
     
+    // greeting Msg
+    open func getGreetingMSG()->[String:Any]?{
+        
+        guard let greeting = pref.object(forKey: "greeting") as? [String:Any] else {
+            
+            let first:[String:Any] =  ["msg":"默认第一条","time":0.0,"isGreeting":true]
+            pref.set(first, forKey: "greeting")
+            return first
+        }
+        return greeting
+    }
+    
+    open func setGreetingNSG(msg:String, timeInterval:Float){
+        if var greeting = pref.object(forKey: "greeting") as? [String:Any] {
+            greeting["msg"] = msg
+            greeting["time"] = timeInterval
+            pref.set(greeting, forKey: "greeting")
+        }
+    }
+    
+    open func setOnGreeting(flag:Bool){
+        
+        if var greeting = pref.object(forKey: "greeting") as? [String:Any] {
+            greeting["isGreeting"] = flag
+            pref.set(greeting, forKey: "greeting")
+        }
+        
+    }
+    
 }
 
 class InitailData:NSObject{

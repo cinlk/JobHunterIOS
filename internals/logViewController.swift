@@ -47,6 +47,8 @@ class LogViewController: UIViewController {
         
         self.navigationItem.backBarButtonItem = UIBarButtonItem.init(title: "", style: .plain, target: self, action: nil)
         self.navigationController?.setNavigationBarHidden(true, animated: false)
+        self.phoneNumber.text = ""
+        self.password.text = ""
     }
     
     override func viewWillLayoutSubviews() {

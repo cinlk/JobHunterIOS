@@ -66,9 +66,14 @@ var talkedJobIds = [String]()
 var SendResumeJobIds = [String]()
 
 
+// global greeting msg
+var GreetingMsg:String = ""
+var IsGreeting:Bool = true 
 
 
 
+// tableCell offsetX
+let TableCellOffsetX:CGFloat = 16
 
 
 

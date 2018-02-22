@@ -15,11 +15,20 @@
 		4A18E1EB202CA03F00B1038E /* TreeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A18E1EA202CA03F00B1038E /* TreeNode.swift */; };
 		4A1E59A41FDEE065004DCF53 /* CompanySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1E59A31FDEE065004DCF53 /* CompanySelector.swift */; };
 		4A1E59A61FDEE0DB004DCF53 /* PositionSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1E59A51FDEE0DB004DCF53 /* PositionSelector.swift */; };
+		4A20EEEC203D97320021843B /* loading.gif in Resources */ = {isa = PBXBuildFile; fileRef = 4A20EEEB203D97320021843B /* loading.gif */; };
+		4A20EEEE203DA0090021843B /* notificationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A20EEED203DA0090021843B /* notificationVC.swift */; };
+		4A20EEF1203DA0750021843B /* UIswitchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A20EEF0203DA0750021843B /* UIswitchCell.swift */; };
+		4A20EEF3203E6AD50021843B /* myAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A20EEF2203E6AD50021843B /* myAccount.swift */; };
+		4A20EEF5203E70DF0021843B /* accountInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A20EEF4203E70DF0021843B /* accountInfo.swift */; };
 		4A22102C203869C3000BDC70 /* jobCollectedVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A22102B203869C3000BDC70 /* jobCollectedVC.swift */; };
 		4A22102E203869D3000BDC70 /* CompanyCollectedVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A22102D203869D3000BDC70 /* CompanyCollectedVC.swift */; };
 		4A221030203873AB000BDC70 /* collectedCompanyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A22102F203873AB000BDC70 /* collectedCompanyCell.swift */; };
 		4A2210322039463D000BDC70 /* extension+array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2210312039463D000BDC70 /* extension+array.swift */; };
 		4A2210372039BE88000BDC70 /* feedBackVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2210362039BE88000BDC70 /* feedBackVC.swift */; };
+		4A22103A203BFD0E000BDC70 /* SettingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A221039203BFD0E000BDC70 /* SettingVC.swift */; };
+		4A22103C203C374A000BDC70 /* aboutUS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A22103B203C374A000BDC70 /* aboutUS.swift */; };
+		4A22103E203C464D000BDC70 /* ServiceTerm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A22103D203C464D000BDC70 /* ServiceTerm.swift */; };
+		4A221040203D1B5E000BDC70 /* greetingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A22103F203D1B5E000BDC70 /* greetingVC.swift */; };
 		4A2A2D071F6578D800F42123 /* joblist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A2A2D051F6578D800F42123 /* joblist.swift */; };
 		4A2A2D081F6578D800F42123 /* joblist.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A2A2D061F6578D800F42123 /* joblist.xib */; };
 		4A3224031F5160E50065A33F /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224021F5160E50065A33F /* Alamofire.framework */; settings = {ATTRIBUTES = (Required, ); }; };
@@ -30,6 +39,8 @@
 		4A406B651FA5772100277AA0 /* PickImageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A406B641FA5772100277AA0 /* PickImageController.swift */; };
 		4A406B671FA5834F00277AA0 /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A406B661FA5834F00277AA0 /* ImageCell.swift */; };
 		4A406B691FA58BDC00277AA0 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A406B681FA58BDC00277AA0 /* Message.swift */; };
+		4A4254F7203EB5A30049B237 /* changePhoneVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4254F6203EB5A30049B237 /* changePhoneVC.swift */; };
+		4A4254F9203EB5B00049B237 /* changePassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4254F8203EB5B00049B237 /* changePassword.swift */; };
 		4A444ECB1F8A168B006AE83D /* searchRequest.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A444ECA1F8A168B006AE83D /* searchRequest.pb.swift */; };
 		4A444ED01F8E5789006AE83D /* contactlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A444ECE1F8E5789006AE83D /* contactlist.swift */; };
 		4A444ED11F8E5789006AE83D /* contactlist.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A444ECF1F8E5789006AE83D /* contactlist.xib */; };
@@ -235,11 +246,20 @@
 		4A1E59A31FDEE065004DCF53 /* CompanySelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanySelector.swift; sourceTree = "<group>"; };
 		4A1E59A51FDEE0DB004DCF53 /* PositionSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PositionSelector.swift; sourceTree = "<group>"; };
 		4A208D8F1FC16F2500C1AA0B /* RxDataSources.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RxDataSources.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4A20EEEB203D97320021843B /* loading.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = loading.gif; path = ../../../../../Downloads/loading.gif; sourceTree = "<group>"; };
+		4A20EEED203DA0090021843B /* notificationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = notificationVC.swift; sourceTree = "<group>"; };
+		4A20EEF0203DA0750021843B /* UIswitchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIswitchCell.swift; sourceTree = "<group>"; };
+		4A20EEF2203E6AD50021843B /* myAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = myAccount.swift; sourceTree = "<group>"; };
+		4A20EEF4203E70DF0021843B /* accountInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = accountInfo.swift; sourceTree = "<group>"; };
 		4A22102B203869C3000BDC70 /* jobCollectedVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = jobCollectedVC.swift; sourceTree = "<group>"; };
 		4A22102D203869D3000BDC70 /* CompanyCollectedVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyCollectedVC.swift; sourceTree = "<group>"; };
 		4A22102F203873AB000BDC70 /* collectedCompanyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = collectedCompanyCell.swift; sourceTree = "<group>"; };
 		4A2210312039463D000BDC70 /* extension+array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+array.swift"; sourceTree = "<group>"; };
 		4A2210362039BE88000BDC70 /* feedBackVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = feedBackVC.swift; sourceTree = "<group>"; };
+		4A221039203BFD0E000BDC70 /* SettingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingVC.swift; sourceTree = "<group>"; };
+		4A22103B203C374A000BDC70 /* aboutUS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = aboutUS.swift; sourceTree = "<group>"; };
+		4A22103D203C464D000BDC70 /* ServiceTerm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceTerm.swift; sourceTree = "<group>"; };
+		4A22103F203D1B5E000BDC70 /* greetingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = greetingVC.swift; sourceTree = "<group>"; };
 		4A2A2D051F6578D800F42123 /* joblist.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = joblist.swift; sourceTree = "<group>"; };
 		4A2A2D061F6578D800F42123 /* joblist.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = joblist.xib; sourceTree = "<group>"; };
 		4A3224021F5160E50065A33F /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = "../../../../Library/Developer/Xcode/DerivedData/internals-fvfjoslaltdhlmclwrenlrxzczpm/Build/Products/Debug-iphonesimulator/Alamofire/Alamofire.framework"; sourceTree = "<group>"; };
@@ -250,6 +270,8 @@
 		4A406B641FA5772100277AA0 /* PickImageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickImageController.swift; sourceTree = "<group>"; };
 		4A406B661FA5834F00277AA0 /* ImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCell.swift; sourceTree = "<group>"; };
 		4A406B681FA58BDC00277AA0 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		4A4254F6203EB5A30049B237 /* changePhoneVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = changePhoneVC.swift; sourceTree = "<group>"; };
+		4A4254F8203EB5B00049B237 /* changePassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = changePassword.swift; sourceTree = "<group>"; };
 		4A444ECA1F8A168B006AE83D /* searchRequest.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = searchRequest.pb.swift; path = ../../pbModel/searchRequest.pb.swift; sourceTree = "<group>"; };
 		4A444ECE1F8E5789006AE83D /* contactlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = contactlist.swift; sourceTree = "<group>"; };
 		4A444ECF1F8E5789006AE83D /* contactlist.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = contactlist.xib; sourceTree = "<group>"; };
@@ -511,12 +533,43 @@
 			name = dropViews;
 			sourceTree = "<group>";
 		};
+		4A20EEEA203D971C0021843B /* gifs */ = {
+			isa = PBXGroup;
+			children = (
+				4A20EEEB203D97320021843B /* loading.gif */,
+			);
+			name = gifs;
+			sourceTree = "<group>";
+		};
+		4A20EEEF203DA0610021843B /* cells */ = {
+			isa = PBXGroup;
+			children = (
+				4A20EEF0203DA0750021843B /* UIswitchCell.swift */,
+			);
+			name = cells;
+			sourceTree = "<group>";
+		};
 		4A2210332039BD1E000BDC70 /* 意见与帮助 */ = {
 			isa = PBXGroup;
 			children = (
 				4A2210362039BE88000BDC70 /* feedBackVC.swift */,
 			);
 			name = "意见与帮助";
+			sourceTree = "<group>";
+		};
+		4A221038203BBCBF000BDC70 /* 通用设置 */ = {
+			isa = PBXGroup;
+			children = (
+				4A221039203BFD0E000BDC70 /* SettingVC.swift */,
+				4A22103B203C374A000BDC70 /* aboutUS.swift */,
+				4A22103D203C464D000BDC70 /* ServiceTerm.swift */,
+				4A22103F203D1B5E000BDC70 /* greetingVC.swift */,
+				4A20EEED203DA0090021843B /* notificationVC.swift */,
+				4A20EEF2203E6AD50021843B /* myAccount.swift */,
+				4A4254F6203EB5A30049B237 /* changePhoneVC.swift */,
+				4A4254F8203EB5B00049B237 /* changePassword.swift */,
+			);
+			name = "通用设置";
 			sourceTree = "<group>";
 		};
 		4A444EC91F8A166A006AE83D /* protobuf */ = {
@@ -645,6 +698,7 @@
 		4A82A0CC2026D88C00185E8B /* view+controller */ = {
 			isa = PBXGroup;
 			children = (
+				4A221038203BBCBF000BDC70 /* 通用设置 */,
 				4A2210332039BD1E000BDC70 /* 意见与帮助 */,
 				4AFF9DC820381981000ADBAF /* 我的收藏 */,
 				4AFF9DC520381933000ADBAF /* 我的名片 */,
@@ -659,6 +713,7 @@
 			isa = PBXGroup;
 			children = (
 				4A82A0D9202709B700185E8B /* person_resume.swift */,
+				4A20EEF4203E70DF0021843B /* accountInfo.swift */,
 			);
 			name = model;
 			sourceTree = "<group>";
@@ -835,6 +890,7 @@
 		4A8D28B91FD195B600FA983F /* tools */ = {
 			isa = PBXGroup;
 			children = (
+				4A20EEEA203D971C0021843B /* gifs */,
 				4A93C2DB1F83574A0022E97B /* localData.swift */,
 				4A8D28BA1FD195C900FA983F /* utils.swift */,
 				4AB0FED9201630B000932C02 /* externals.swift */,
@@ -1048,6 +1104,7 @@
 		4AE0DEA21FFBC57700A16ED4 /* views */ = {
 			isa = PBXGroup;
 			children = (
+				4A20EEEF203DA0610021843B /* cells */,
 				4AFF91A61F5C238400FE189F /* JobHeaderView.swift */,
 				4AE0DEA31FFBC5AC00A16ED4 /* pagetitleView.swift */,
 				4AE0DEA51FFBC5CD00A16ED4 /* pageContentView.swift */,
@@ -1361,6 +1418,7 @@
 				4A5E3FB7202ECA57009C1A6B /* degrees.plist in Resources */,
 				4AFF91C21F5DC18000FE189F /* worklocate.xib in Resources */,
 				4AFF91E21F641AA900FE189F /* others.xib in Resources */,
+				4A20EEEC203D97320021843B /* loading.gif in Resources */,
 				4AFF91DA1F641A6200FE189F /* tagsTableViewCell.xib in Resources */,
 				4AFF91BA1F5DB8A900FE189F /* company.xib in Resources */,
 			);
@@ -1477,6 +1535,7 @@
 				4AF6C8031F571D1F0059496B /* CitysView.swift in Sources */,
 				4AE4AFC11F5131AE00B5F509 /* ForgetPasswordController.swift in Sources */,
 				4A6BC23B1FC92BA3002C17B6 /* mainPageViewModel.swift in Sources */,
+				4A4254F9203EB5B00049B237 /* changePassword.swift in Sources */,
 				4A8D28BB1FD195C900FA983F /* utils.swift in Sources */,
 				4A4523F21F5BABE1009D6B62 /* jobdetailCell.swift in Sources */,
 				4A8859141FF89A7D0009D73D /* extension+imge.swift in Sources */,
@@ -1512,6 +1571,7 @@
 				4AF6C80B1F5AEB880059496B /* mainRecommandCell.swift in Sources */,
 				4A93C2DE1F8359A20022E97B /* subconditions.swift in Sources */,
 				4A02614B1FD4360400747B30 /* SearchRecodeViewController.swift in Sources */,
+				4A22103E203C464D000BDC70 /* ServiceTerm.swift in Sources */,
 				4A8858FA1FE8076C0009D73D /* RecruiterCell.swift in Sources */,
 				4AFCCD621F9E490400E0E168 /* gifCell.swift in Sources */,
 				4A9CE36C1F716101002A8FD5 /* progressHUB.swift in Sources */,
@@ -1523,6 +1583,7 @@
 				4A93C2C61F8124930022E97B /* delivereddata.swift in Sources */,
 				4A82A0DE2027493E00185E8B /* person_projectCell.swift in Sources */,
 				4ADDDAB31F97ABA4001CB00F /* ChatEmotionView.swift in Sources */,
+				4A20EEF5203E70DF0021843B /* accountInfo.swift in Sources */,
 				4A8859051FED3D310009D73D /* companyscrollTableViewController.swift in Sources */,
 				4A8858F31FE550D40009D73D /* searchResultController.swift in Sources */,
 				4AFF91A91F5C338800FE189F /* JobDetailViewController.swift in Sources */,
@@ -1552,6 +1613,7 @@
 				4AE0DEA61FFBC5CD00A16ED4 /* pageContentView.swift in Sources */,
 				4ABFF5C01FE53B9600DCCD16 /* searchJobModel.swift in Sources */,
 				4A8859161FF8B5D10009D73D /* extension+uicolor.swift in Sources */,
+				4A22103C203C374A000BDC70 /* aboutUS.swift in Sources */,
 				4A5E3FD120329792009C1A6B /* AddItemCell.swift in Sources */,
 				4A6BC22E1FC711EB002C17B6 /* ChangePasswordModeView.swift in Sources */,
 				4AFF91C11F5DC18000FE189F /* worklocate.swift in Sources */,
@@ -1559,10 +1621,12 @@
 				4AC056311F93B46C00D5B739 /* ChatHorizontalLayout.swift in Sources */,
 				4AFF91E11F641AA900FE189F /* others.swift in Sources */,
 				4AF7DCDA200399DD009047F5 /* SysNotificationController.swift in Sources */,
+				4A20EEEE203DA0090021843B /* notificationVC.swift in Sources */,
 				4A6BC2371FC86453002C17B6 /* config.swift in Sources */,
 				4A88590C1FF12A950009D73D /* companyJobCell.swift in Sources */,
 				4AFF91C41F5EF40000FE189F /* mapApp.swift in Sources */,
 				4A22102E203869D3000BDC70 /* CompanyCollectedVC.swift in Sources */,
+				4A20EEF1203DA0750021843B /* UIswitchCell.swift in Sources */,
 				4ADDDADC1F9B40A8001CB00F /* ChatBarView.swift in Sources */,
 				4A6BC2301FC856D7002C17B6 /* PersonViewController.swift in Sources */,
 				4A8858FF1FEBE89A0009D73D /* JuBaoViewController.swift in Sources */,
@@ -1584,6 +1648,7 @@
 				4AB8FFE91FDEC0720020F026 /* searchViewModel.swift in Sources */,
 				4A93C2CC1F81FD330022E97B /* jobstatusView.swift in Sources */,
 				4AE4D6B3203581CA00BC87FE /* add_projectVC.swift in Sources */,
+				4A221040203D1B5E000BDC70 /* greetingVC.swift in Sources */,
 				4AE84EA41F5C108600649404 /* imageScroll.swift in Sources */,
 				4A9A0BDB20064EAA008721F3 /* XiaoMi.swift in Sources */,
 				4A1E59A41FDEE065004DCF53 /* CompanySelector.swift in Sources */,
@@ -1601,6 +1666,7 @@
 				4AFF9DCE20384103000ADBAF /* cardCell.swift in Sources */,
 				4AEDFE921FC06A3B0071F4D8 /* httpservers.swift in Sources */,
 				4A5E3FC120315664009C1A6B /* listItemsView.swift in Sources */,
+				4A4254F7203EB5A30049B237 /* changePhoneVC.swift in Sources */,
 				4A8D28BD1FD2734400FA983F /* extension+searchDelegate.swift in Sources */,
 				4ADCC7501F511DD3001A4E9F /* AppDelegate.swift in Sources */,
 				4A6BC23D1FC92C26002C17B6 /* mainPageHttpServer.swift in Sources */,
@@ -1616,6 +1682,7 @@
 				4AB0FED82014E23200932C02 /* ChatTimeCell.swift in Sources */,
 				4A8859101FF7EAD80009D73D /* extension+alert.swift in Sources */,
 				4A82A0DA202709B700185E8B /* person_resume.swift in Sources */,
+				4A20EEF3203E6AD50021843B /* myAccount.swift in Sources */,
 				4ADDDAE01F9B426C001CB00F /* ChatMoreView.swift in Sources */,
 				4ADCC7811F512880001A4E9F /* RegisterViewController.swift in Sources */,
 				4A9A0BE9200B164F008721F3 /* JobMessageCell.swift in Sources */,
@@ -1625,6 +1692,7 @@
 				4A5E3FCB2031E271009C1A6B /* singleButtonCell.swift in Sources */,
 				4A93C2D91F834F2E0022E97B /* subjobitem.swift in Sources */,
 				4A8859181FF8DD2D0009D73D /* extension+uiview.swift in Sources */,
+				4A22103A203BFD0E000BDC70 /* SettingVC.swift in Sources */,
 				4AEDFE8B1FBFF75D0071F4D8 /* Users.swift in Sources */,
 				4AE0DE9E1FFA783700A16ED4 /* conversationCell.swift in Sources */,
 			);

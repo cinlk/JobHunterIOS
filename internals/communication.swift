@@ -224,6 +224,8 @@ class communication: UIViewController {
             }
             table2Bottom = true
         }
+        
+        
     }
     
     // remove self when destroied
