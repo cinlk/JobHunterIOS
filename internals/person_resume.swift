@@ -520,12 +520,6 @@ class  personModelManager {
         }
     }
     
-
-    
-    
-    
-    
-    
     
 }
 

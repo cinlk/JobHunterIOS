@@ -30,7 +30,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ = InitailData.shareInstance
         //Contactlist.shared.removeAll()
        //localData.shared.clearSubscribeData()
+        //TODO 服务器获取greeting数据, 并与本地存储的数据来判断(最新的时间)
         
+        GreetingMsg = localData.shared.getGreetingMSG()!["msg"] as! String
         return true
     }
 

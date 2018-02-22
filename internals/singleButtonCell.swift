@@ -12,8 +12,10 @@ class singleButtonCell: UITableViewCell {
 
     
     enum type {
+        case none
         case add
         case delete
+        case logout
     }
     
     
@@ -37,6 +39,13 @@ class singleButtonCell: UITableViewCell {
             case .delete:
                 btn.setTitle("删除", for: .normal)
                 btn.setImage(#imageLiteral(resourceName: "delete"), for: .normal)
+            case .logout:
+                btn.setTitle("退出当前账号", for: .normal)
+                btn.setImage(UIImage.init(), for: .normal)
+                btn.setTitleColor(UIColor.blue, for: .normal)
+                
+            default:
+                break
             }
         }
     }
@@ -46,6 +55,8 @@ class singleButtonCell: UITableViewCell {
     
     var deleteItem:deleteCallBack?
     var addMoreItem:(()->Void)?
+    var logout:(()->Void)?
+    
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -89,11 +100,16 @@ class singleButtonCell: UITableViewCell {
 extension singleButtonCell{
     
     @objc func click(){
+        
         switch btnType {
         case .add:
             self.addMoreItem?()
         case .delete:
             self.deleteItem?()
+        case .logout:
+            self.logout?()
+        default:
+            break
         }
         
     }

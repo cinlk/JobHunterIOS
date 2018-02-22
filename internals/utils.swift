@@ -138,4 +138,19 @@ public func changeAppBages(number:Int){
 
 
 
+// open app
+func openApp(appURL: String, completion: @escaping ((_ success: Bool)->())) {
+    guard let url = URL(string: appURL) else {
+        completion(false)
+        return
+    }
+    guard #available(iOS 10, *) else {
+        completion(UIApplication.shared.openURL(url))
+        return
+    }
+    UIApplication.shared.open(url, options: [:], completionHandler: completion)
+}
+
+
+
 

@@ -10,14 +10,14 @@ import Foundation
 
 class ValidateNumber {
     
-    var b:UIButton?
+    weak var b:UIButton?
     
     var remainSeconds = 0{
         willSet{
             self.b?.setTitle("\(newValue)后重新获取", for: .normal)
             
             if newValue <= 0 {
-                self.b?.setTitle("重新获取验证码", for: .normal)
+                self.b?.setTitle("获取验证码", for: .normal)
                 isCounting = false
             }
         }

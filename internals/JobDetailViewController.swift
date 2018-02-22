@@ -59,7 +59,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         //放在最下方
         let view =  shareView(frame: CGRect(x: 0, y: ScreenH, width: ScreenW, height: 150))
         // 加入最外层窗口
-        view.sharedata = self.infos?["jobName"] ?? ""
+         view.sharedata = self.infos?["jobName"] ?? ""
          UIApplication.shared.windows.last?.addSubview(view)
          return view
      }()
@@ -375,13 +375,16 @@ extension JobDetailViewController{
         
         
         if !isTalked{
-            let Message = MessageBoby.init(content: "hr 你好，对贵公司该职位感兴趣，希望进一步沟通", time: Date.init().timeIntervalSince1970, sender: myself, target: hr)
+            let Message = MessageBoby.init(content: GreetingMsg, time: Date.init().timeIntervalSince1970, sender: myself, target: hr)
             
             let info = ["icon":"sina","jobName":"产品开发","company":"霹雳火","salary":"面议","tags":"北京|本科|校招"]
             if let  jobDetailMessage = JobDetailMessage.init(infos: info, time: Date.init().timeIntervalSince1970, sender: myself, target: hr){
                 Contactlist.shared.addUser(user: hr)
                 Contactlist.shared.usersMessage[hr.id]?.addMessageByMes(newMes: jobDetailMessage)
-                Contactlist.shared.usersMessage[hr.id]?.addMessageByMes(newMes: Message)
+                if IsGreeting{
+                        Contactlist.shared.usersMessage[hr.id]?.addMessageByMes(newMes: Message)
+                }
+                
                 talkedJobIds.append(self.jobID)
                 
             }

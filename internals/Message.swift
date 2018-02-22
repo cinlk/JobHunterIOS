@@ -47,6 +47,7 @@ class MessageBoby: NSObject, NSCoding{
     var target:FriendModel
     
     
+    
     init(content:String,time:TimeInterval, sender:FriendModel, target:FriendModel) {
         self.content = content
         self.time = time
