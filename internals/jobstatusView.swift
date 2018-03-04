@@ -31,8 +31,8 @@ class jobstatusView: UIViewController {
         tap.addTarget(self, action: #selector(self.choose(_:)))
         v.addGestureRecognizer(tap)
         
-        let j = JobItemInfoView.init(frame:  CGRect.init(x: 0, y: 0, width: v.frame.width, height: v.frame.height), isDelivery: true)
-        j.setTexts(icon: "sina", jobName: "sina", company: "sina", address: "bj", type: "社招", degree: "本科", internDay: "3-5天/周", create_time: "2017-09-24", salary: "200元/天")
+        let j = UIView.init(frame:  CGRect.init(x: 0, y: 0, width: v.frame.width, height: v.frame.height))
+        j.backgroundColor = UIColor.orange
         v.addSubview(j)
         
         return v

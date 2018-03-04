@@ -87,7 +87,9 @@ class aboutUS: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         initView()
-        
+        for btn in share.itemButtons!{
+            btn.addTarget(self, action: #selector(btnClick(_:)), for: .touchUpInside)
+        }
     }
     
 
@@ -239,6 +241,10 @@ extension aboutUS{
             self.navigationController?.view.willRemoveSubview(self.shareBackground)
             self.shareBackground.removeFromSuperview()
         }
+    }
+    
+    @objc func btnClick(_ btn:UIButton){
+        
     }
     
 }

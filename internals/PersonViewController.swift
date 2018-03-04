@@ -142,6 +142,10 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
                 // 目前只是反馈界面
                 //let myfeedBAck = feedBackVC()
                 //self.navigationController?.pushViewController(myfeedBAck, animated: true)
+                // 隐私设置
+                let privicy = PrivacySetting()
+                self.navigationController?.pushViewController(privicy, animated: true)
+                
                 break
             default:
                 break

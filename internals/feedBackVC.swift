@@ -72,6 +72,8 @@ class feedBackVC: UIViewController {
         text.textColor = UIColor.black
         text.font = UIFont.systemFont(ofSize: 16)
         text.textAlignment = .left
+        // 调整输入内容偏移
+        text.textContainerInset = UIEdgeInsetsMake(10, 8, 0, 0)
         text.delegate = self
         return text
     }()
@@ -111,6 +113,10 @@ class feedBackVC: UIViewController {
         field.textAlignment = .left
         field.font = UIFont.systemFont(ofSize: 16)
         field.delegate = self
+        // 左边留部分距离
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: 10, height: 30))
+        field.leftView = v
+        field.leftViewMode = .always
         field.placeholder = "手机或邮箱联系方式(选填)"
         return field
     }()
@@ -157,10 +163,9 @@ class feedBackVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor.orange
+        self.view.backgroundColor = UIColor.viewBackColor()
         pickViewOriginXY = pickView.origin
         setNavigationBtn()
-        
         keyboardEvent()
         
         

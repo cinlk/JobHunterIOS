@@ -39,18 +39,19 @@ class CompanyCollectedVC: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: collectedCompanyCell.identity(), for: indexPath) as! collectedCompanyCell
         let item = jobManageRoot.getCollections(type: .company)[indexPath.row] as! comapnyInfo
-        cell.mode = (img: item.icon!, name:item.name!, des: item.describe!)
-        
+        let mode = collectedCompanyModel.init(img: item.icon!, name: item.name!, des: item.describe!)
+        cell.mode = mode
         
         return cell
         
     }
     
     // 设置cell样式
-    
-    
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return collectedCompanyCell.cellHeight()
+        let item = jobManageRoot.getCollections(type: .company)[indexPath.row] as! comapnyInfo
+        let mode = collectedCompanyModel.init(img: item.icon!, name: item.name!, des: item.describe!)
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: collectedCompanyCell.self, contentViewWidth: ScreenW)
+        
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

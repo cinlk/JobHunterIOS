@@ -111,7 +111,7 @@ extension forumView{
             print(error)
         }
         
-
+         
     }
     
     @objc func connect(){

@@ -12,38 +12,44 @@ import Photos
 import SVProgressHUD
 
 
+fileprivate let VCtitle:String = "修改个人信息"
+fileprivate let pickViewH:CGFloat = 200
+
+// 通知主视图tableview刷新对应section
 protocol personResumeDelegate: class {
-    
     func refreshResumeInfo(_ section:Int)
 }
 
-class modify_personInfoTBC: UITableViewController {
 
-    
-    
+
+class modify_personInfoVC: UITableViewController {
+
+    // 记录item类型
     private var personAttr:[personBaseInfo] = []
+    // 记录pick 选择item的位置
     private var pickPosition:[personBaseInfo:[Int:Int]] = [:]
-    private var pManager:personModelManager = personModelManager.shared
-
+    
+    private let pManager:personModelManager = personModelManager.shared
+    
+    // 临时个人信息实例 需要拷贝？？
+    private var tmpInfo:person_base_info?
     
     var section = 0{
         didSet{
              personAttr = pManager.personBaseInfo!.getBaseNames()
+             tmpInfo = pManager.personBaseInfo
              self.tableView.reloadData()
         }
     }
-
- 
-    
-    private var selected:SelectItemUtil = SelectItemUtil.shared
+    // 构建picker选择的需要数据
+    private let selected:SelectItemUtil = SelectItemUtil.shared
     
     weak var delegate:personResumeDelegate?
     
     private var currentType:personBaseInfo = personBaseInfo.tx
-    //tmp
-    
     
     private lazy var backgroundView:UIView = { [unowned self] in
+        
         let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
         v.backgroundColor = UIColor.lightGray
         v.alpha = 0.5
@@ -57,8 +63,8 @@ class modify_personInfoTBC: UITableViewController {
     }()
     
 
-    private lazy var pickView:itemPickerView = {
-        let pick = itemPickerView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: 200))
+    private lazy var pickView:itemPickerView = { [unowned self] in
+        let pick = itemPickerView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: pickViewH))
         pick.backgroundColor = UIColor.white
         UIApplication.shared.windows.last?.addSubview(pick)
         pick.pickerDelegate = self
@@ -66,11 +72,34 @@ class modify_personInfoTBC: UITableViewController {
         
     }()
     
+    
+    private lazy var  choosePicture:UIAlertController = { [unowned self] in
+        
+        let choosePicture =  UIAlertController.init(title: "请选择", message: nil, preferredStyle: .actionSheet)
+        
+        let camera = UIAlertAction.init(title: "拍照", style: .default, handler: { (action) in
+            print(action)
+        })
+        choosePicture.addAction(camera)
+        
+        let pictures = UIAlertAction.init(title: "从图库选择", style: .default, handler: { (action) in
+            self.selectPic()
+        })
+        
+        choosePicture.addAction(pictures)
+        
+        let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
+        choosePicture.addAction(cancel)
+        
+        return choosePicture
+    }()
+    
+   
+    
     // 记录pickerView 最初的位置
     private lazy var pickViewOriginXY:CGPoint = CGPoint.init(x: 0, y: 0)
     
     
-   
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,26 +108,17 @@ class modify_personInfoTBC: UITableViewController {
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "保 存", style: .plain, target: self, action: #selector(save))
         
-        
-        
         self.tableView.register(modify_personInfoCell.self, forCellReuseIdentifier: modify_personInfoCell.identity())
         self.pickViewOriginXY = pickView.origin
         
-        // progressHUB 状态监听(全局的)
-//        NotificationCenter.default.addObserver(self, selector: #selector(hubdiss(handleNotification:)), name: NSNotification.Name.SVProgressHUDDidDisappear, object: nil)
-//
-        
     }
 
-//    deinit {
-//        NotificationCenter.default.removeObserver(self)
-//
-//    }
+
     
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationItem.title = "修改个人信息"
+        self.navigationItem.title = VCtitle
         
     }
     
@@ -118,7 +138,8 @@ class modify_personInfoTBC: UITableViewController {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: modify_personInfoCell.identity(), for: indexPath) as!
                     modify_personInfoCell
-        cell.mode = (type: personAttr[indexPath.row], value:pManager.personBaseInfo!.getValueByType(type: personAttr[indexPath.row]))
+        cell.mode = (type: personAttr[indexPath.row], value:tmpInfo!.getValueByType(type: personAttr[indexPath.row]))
+       
         cell.delegate = self
         
         return cell
@@ -126,7 +147,8 @@ class modify_personInfoTBC: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 45
+        
+        return modify_personInfoCell.cellHeight()
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -140,46 +162,17 @@ class modify_personInfoTBC: UITableViewController {
     // TODO 数据和Controllerview 应该解耦？？？ 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        
+        // MARK: 名字和treenode和plist和 struct是一致的
+
         currentType =  personAttr[indexPath.row]
-        ////名字和treenode和plist和 struct是一致的
         switch currentType {
         case .tx:
-            let choosePicture = UIAlertController.init(title: "请选择", message: nil, preferredStyle: .actionSheet)
-            
-            let camera = UIAlertAction.init(title: "拍照", style: .default, handler: { (action) in
-                print(action)
-            })
-            choosePicture.addAction(camera)
-            
-            let pictures = UIAlertAction.init(title: "从图库选择", style: .default, handler: { (action) in
-                self.selectPic()
-            })
-            
-            choosePicture.addAction(pictures)
-            
-            let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
-            choosePicture.addAction(cancel)
             self.present(choosePicture, animated: true, completion: nil)
-            
-        case .gender:
-            pickView.mode = (personBaseInfo.gender.rawValue,selected.getItems(name: personBaseInfo.gender.rawValue)!)
+        case .gender, .city, .degree, .birethday:
+            pickView.mode = (currentType.rawValue, selected.getItems(name: currentType.rawValue)!)
             pickView.setPosition(position: pickPosition[currentType])
-            //pickView.mode = (["性别"], selected.getItems(name: "性别")!)
             showPickView()
             
-        case .city:
-            pickView.mode = (personBaseInfo.city.rawValue,selected.getItems(name: personBaseInfo.city.rawValue)!)
-            pickView.setPosition(position: pickPosition[currentType])
-            showPickView()
-        case .degree:
-            pickView.mode = (personBaseInfo.degree.rawValue, selected.getItems(name: personBaseInfo.degree.rawValue)!)
-            pickView.setPosition(position: pickPosition[currentType])
-            showPickView()
-        case .birethday:
-            pickView.mode = (personBaseInfo.birethday.rawValue, selected.getItems(name: personBaseInfo.birethday.rawValue)!)
-            pickView.setPosition(position: pickPosition[currentType])
-            showPickView()
         default:
             break
         }
@@ -187,7 +180,7 @@ class modify_personInfoTBC: UITableViewController {
 }
 
 
-extension modify_personInfoTBC: changeDataDelegate{
+extension modify_personInfoVC: changeDataDelegate{
     
     func changeEducationInfo(viewType: resumeViewType, type: personBaseInfo, row: Int, value: String) {
         
@@ -195,13 +188,15 @@ extension modify_personInfoTBC: changeDataDelegate{
     
     
     func changeBaseInfo(type:personBaseInfo, value:String){
-        pManager.personBaseInfo?.changeByKey(type: type, value: value)
+        //pManager.personBaseInfo?.changeByKey(type: type, value: value)
+        tmpInfo?.changeByKey(type: type, value: value)
     }
 }
 
 
-extension modify_personInfoTBC{
+extension modify_personInfoVC{
     
+    // 影藏pickview
     @objc private func hiddenBackGround(){
         
         self.navigationController?.view.willRemoveSubview(backgroundView)
@@ -209,21 +204,17 @@ extension modify_personInfoTBC{
        
         UIView.animate(withDuration: 0.3, animations: {
             self.pickView.origin = self.pickViewOriginXY
-            
-        }) { (bool) in
-            
-        }
+        })
     
     }
     
+    // 显示pickerview
     private func showPickView(){
-        // 取消编辑，影藏键盘
+        // 先取消编辑 影藏键盘
         self.view.endEditing(true)
         self.navigationController?.view.addSubview(backgroundView)
         UIView.animate(withDuration: 0.3, animations: {
-            self.pickView.frame = CGRect.init(x: 0, y: ScreenH - 200, width: ScreenW, height: 200)
-        }, completion: { (bool) in
-            
+            self.pickView.frame = CGRect.init(x: 0, y: ScreenH - pickViewH, width: ScreenW, height: pickViewH)
         })
     }
     
@@ -231,8 +222,8 @@ extension modify_personInfoTBC{
    
 }
 
-// pickerviewdelegate
-extension modify_personInfoTBC:itemPickerDelegate{
+// pickerviewdelegate 协议
+extension modify_personInfoVC:itemPickerDelegate{
     
     func quitPickerView(_ picker: UIPickerView) {
         self.hiddenBackGround()
@@ -242,42 +233,47 @@ extension modify_personInfoTBC:itemPickerDelegate{
         // 记录新的picker位置
         if let row = personAttr.index(of: currentType){
             pickPosition[currentType] = position
-            pManager.personBaseInfo?.changeByKey(type: currentType, value: value)
+            //pManager.personBaseInfo?.changeByKey(type: currentType, value: value)
+            tmpInfo?.changeByKey(type: currentType, value: value)
             self.tableView.reloadRows(at: [IndexPath.init(item: row, section: 0)], with: .none)
-            self.hiddenBackGround()
         }
-       
+        
+       self.hiddenBackGround()
     }
     
+    // 保存修改
     @objc func save(){
         
-        // 返回 并显示提示
+        //MARK 修改远端服务器数据, 验证信息
+//        if let v = tmpInfo{
+//            pManager.personBaseInfo = v
+//        }
+        // 判断数据正确
+        
         
         SVProgressHUD.show(UIImage.init(named: "checkmark")!, status: "修改成功")
+        // 显示背景view 并禁止页面点击事件
         self.navigationController?.view.addSubview(backgroundView)
-        backgroundView.isUserInteractionEnabled = false
+        self.navigationController?.view.isUserInteractionEnabled = false
+        self.view.isUserInteractionEnabled = false
         SVProgressHUD.setBackgroundColor(UIColor.lightGray)
         SVProgressHUD.dismiss(withDelay: 2) {  [unowned self] in
             self.navigationController?.popViewController(animated: true)
+            // 主tableview刷新
             self.delegate?.refreshResumeInfo(self.section)
-            self.backgroundView.isUserInteractionEnabled = true
+            self.view.isUserInteractionEnabled = true
+            self.navigationController?.view.isUserInteractionEnabled = true
             self.navigationController?.view.willRemoveSubview(self.backgroundView)
             self.backgroundView.removeFromSuperview()
         }
         
     }
     
-    // 这里会执行2次?? SVProgressHUD  bug?
-//    @objc func hubdiss(handleNotification:Notification){
-//        print(handleNotification.userInfo)
-//    }
 }
 
 
 // 照片
-extension modify_personInfoTBC: UIImagePickerControllerDelegate,UINavigationControllerDelegate{
-    
-    
+extension modify_personInfoVC: UIImagePickerControllerDelegate,UINavigationControllerDelegate{
     
     private func getPhotoLibraryAuthorization() -> Bool {
         let authorizationStatus = PHPhotoLibrary.authorizationStatus()

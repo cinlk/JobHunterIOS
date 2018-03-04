@@ -35,14 +35,13 @@ class HelpsVC: UITableViewController {
     // cell selected
     private var selectedCellIndexPath:[IndexPath] = []
     
-    private var datas:[Int:[String:String]] = [0:["title":"啊哈哈哈","content":"达瓦大群多群无多无当前为多群无多"],1:["title":"吊袜带挖群多当前为多","content":"dwd迭代器我单独群无多当前为多群无多群无当前为多群无多群无当前为多群无多群无多当前为多群无多无当前为多群无多无"]]
+    private var datas:[Int:[String:String]] = [0:["title":"啊哈哈哈","content":"达瓦大群多群无多无当前为多群无多"],1:["title":"吊袜带挖群多当前为多","content":"dwd迭代器我单独群无多当前为多群无多群无当前为多群无多群无当前为多群无多群无多当前为多群无多无当前为多群无多无"],2:["title":"达瓦大群","content":"达瓦大群无多群无当前为多群无\n dwqd大青蛙  \n dqwdqw   dqwdwq 当前为多群无多无群多\n 当前为多群 \n"],3:["title":"当前为多群无多无群大青蛙 当前为多群无多群无 当前为多群无多？？ 当前为多群无","content":"当前为多群无多群无 当前为多群多  当前为多群多群 但钱当前无多群 \n 当前为多群无多群无 \n 当前为多群无多群无"]]
     
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         initView()
-        
         
     }
     
@@ -81,15 +80,17 @@ class HelpsVC: UITableViewController {
             
         }
         if let item = datas[indexPath.row]{
+            // 选中cell
             if selectedCellIndexPath.contains(indexPath){
-                cell?.mode = (title:item["title"]!, detail:item["content"]!, selected:true)
+                let mode = helpModel.init(title: item["title"]!, detail: item["content"]!, select: true)
+                cell?.mode = mode
+                
             }else{
-                cell?.mode = (title:item["title"]!, detail:item["content"]!, selected:false)
+                let mode = helpModel.init(title: item["title"]!, detail: item["content"]!, select: false)
+                cell?.mode = mode
             }
             
         }
-      
-        
         // 不显示遮挡部分
         cell?.layer.masksToBounds = true
         
@@ -106,8 +107,10 @@ class HelpsVC: UITableViewController {
         label.text = "常见问题"
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 14)
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         v.addSubview(label)
-        _ = label.sd_layout().leftSpaceToView(v,10)?.topSpaceToView(v,5)?.bottomSpaceToView(v,5)?.widthIs(200)
+        _ = label.sd_layout().leftSpaceToView(v,10)?.topSpaceToView(v,5)?.autoHeightRatio(0)
+        
         return v
     }
     
@@ -118,14 +121,20 @@ class HelpsVC: UITableViewController {
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
-        // 带cell内容高度
+        let item = datas[indexPath.row]!
+        // 显示已经选择cell 自适应高度
         if selectedCellIndexPath.contains(indexPath){
-            let str = datas[indexPath.row]!["content"]!
-            let strCGRect = str.getStringCGRect(size: CGSize.init(width: ScreenW - 20, height: 0), font: UIFont.systemFont(ofSize: 14))
-            return strCGRect.height +   50
+            
+            let mode = helpModel.init(title: item["title"]!, detail: item["content"]!, select: true)
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: expansionCell.self, contentViewWidth: ScreenW)
         }else{
-            return expansionCell.cellHeight()
+            // 未选择cell 高度
+            let mode = helpModel.init(title: item["title"]!, detail: item["content"]!, select: false)
+            
+             return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: expansionCell.self, contentViewWidth: ScreenW)
         }
+        
+       
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -165,6 +174,7 @@ extension HelpsVC{
 
 
 // 取消悬挂的sectionview, 检查滑动区间，设置contentInset值
+// 滑动不流畅？？？
 extension HelpsVC{
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         // 最低值

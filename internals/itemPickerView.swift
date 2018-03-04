@@ -16,7 +16,7 @@ protocol itemPickerDelegate: class {
     
 }
 
-
+// 选择器view
 class itemPickerView: UIView {
     
     private lazy var cancel:UIButton = { [unowned self] in
@@ -56,6 +56,7 @@ class itemPickerView: UIView {
     weak var pickerDelegate:itemPickerDelegate?
     
     
+    // 数据树结构
     private var root:nodes = nodes.init()
     private var name:String = ""
     private var count = 0
@@ -87,7 +88,6 @@ class itemPickerView: UIView {
         }
     }
     
-    // title 表示root 每层第一个名字（关联的component数据？）
      override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -96,7 +96,7 @@ class itemPickerView: UIView {
         self.addSubview(choose)
         
         _ = cancel.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(self,10)?.widthIs(50)?.heightIs(30)
-        _ = choose.sd_layout().rightSpaceToView(self,10)?.topSpaceToView(self,10)?.heightIs(30)?.widthIs(50)
+        _ = choose.sd_layout().rightSpaceToView(self,10)?.topSpaceToView(self,10)?.heightRatioToView(cancel,1)?.widthRatioToView(cancel,1)
         _ = pickView.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.bottomEqualToView(self)?.topSpaceToView(choose,5)
         
     }
@@ -132,6 +132,7 @@ extension itemPickerView{
                     self.pickView.reloadComponent(nextComponent)
                 }
             }
+            
             self.pickView.selectRow(row, inComponent: c, animated: false)
         }
         
@@ -160,6 +161,7 @@ extension itemPickerView: UIPickerViewDelegate, UIPickerViewDataSource{
         return 30
     }
     
+    
     func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
         return ScreenW / CGFloat(self.nodeComponents.count)  - 50
         
@@ -186,12 +188,6 @@ extension itemPickerView: UIPickerViewDelegate, UIPickerViewDataSource{
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
         
         
-//        pickerView.subviews.forEach { (view) in
-//            if view.frame.size.height < 1{
-//                view.backgroundColor = UIColor.black
-//            }
-//        }
-        
         let  label = UILabel.init()
         label.text = self.nodeComponents[component]![row].key
         label.textColor = UIColor.blue
@@ -215,7 +211,7 @@ extension itemPickerView{
         
         switch name {
         case "生日":
-            v = self.nodeComponents[0]![componentMatrix[0]!].key + "." +
+            v = self.nodeComponents[0]![componentMatrix[0]!].key + "-" +
                     self.nodeComponents[count-1]![componentMatrix[count-1]!].key
             
         default:

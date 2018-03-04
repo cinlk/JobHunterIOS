@@ -42,7 +42,7 @@ enum personBaseInfo:String{
     
 }
 
-struct person_base_info {
+class person_base_info: NSObject {
     
     var tx:String
     var name:String
@@ -68,7 +68,7 @@ struct person_base_info {
         self.email = email
     }
     
-    init() {
+   override init() {
         self.tx = deafualtTX
         self.name = ""
         self.sex = ""
@@ -79,10 +79,10 @@ struct person_base_info {
         self.email = ""
     }
     
-    mutating func setTX(tx:String){
+    func setTX(tx:String){
         self.tx = tx
     }
-    mutating func setAge(age:Int){
+    func setAge(age:Int){
         self.age = age
     }
     
@@ -120,7 +120,7 @@ struct person_base_info {
             ,personBaseInfo.email]
     }
     
-    mutating func changeByKey(type:personBaseInfo,value:String){
+    func changeByKey(type:personBaseInfo,value:String){
         
         switch type {
         case .tx:
@@ -416,7 +416,6 @@ class  personModelManager {
     //var modifyIndex:[Int] = [0,0,0]
     
     private init(){
-        initialData()
     }
     
     

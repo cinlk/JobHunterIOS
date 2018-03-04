@@ -57,7 +57,7 @@ extension searchResultController{
             RxTableViewSectionedReloadDataSource<searchJobSection>.init(configureCell: {
                 (_,tb,indexpath,element) in
                 let cell = tb.dequeueReusableCell(withIdentifier: jobdetailCell.identity(), for: indexpath) as! jobdetailCell
-                cell.createCells(items: element.toJSON())
+                cell.mode = element
                 return cell
             })
         

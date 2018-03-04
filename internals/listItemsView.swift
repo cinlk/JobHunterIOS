@@ -12,7 +12,6 @@ import UIKit
 protocol modofy_itemDelegate: class {
     
     func refreshItem(_ section:Int)
-    
 }
 
 // 刷新当前界面item 数据
@@ -38,16 +37,16 @@ class listItemsView: UITableViewController {
         }
     }
     
-
-    
     weak var delegate:modofy_itemDelegate?
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.separatorStyle = .none
-        self.tableView.backgroundColor = UIColor.orange
         
+        self.tableView.backgroundColor = UIColor.viewBackColor()
+        self.tableView.tableHeaderView = UIView.init()
+        self.tableView.tableFooterView  = UIView.init()
         self.tableView.register(ListItemCell.self, forCellReuseIdentifier: ListItemCell.identity())
         self.tableView.register(singleButtonCell.self, forCellReuseIdentifier: singleButtonCell.identity())
         
@@ -56,12 +55,12 @@ class listItemsView: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.tableView.tableHeaderView = UIView.init()
-        self.tableView.tableFooterView  = UIView.init()
-        
+        self.navigationItem.title = self.type.rawValue
+        self.tableView.scrollToRow(at: IndexPath.init(row: 0, section: 0), at: .top, animated: false)
     }
-
     
+    
+
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -107,17 +106,18 @@ class listItemsView: UITableViewController {
             
             let cell = tableView.dequeueReusableCell(withIdentifier: ListItemCell.identity(), for: indexPath) as!
             ListItemCell
-         
+            cell.setrow(type: self.type, row: row)
             switch self.type {
             case .education:
-                cell.mode = (type:self.type, obj:pManager.educationInfos[indexPath.row], row:row)
+                cell.mode = pManager.educationInfos[indexPath.row]
             case .project:
-                 cell.mode = (type:self.type, obj:pManager.projectInfo[indexPath.row], row:row)
+                 cell.mode = pManager.projectInfo[indexPath.row]
              case .skill:
-                cell.mode = (type:self.type, obj:pManager.skillInfos[indexPath.row], row:row)
+                cell.mode = pManager.skillInfos[indexPath.row]
              default:
                 break
             }
+            //cell.useCellFrameCache(with: indexPath, tableView: tableView)
             cell.modifyCall = self.modify
             return cell
         }
@@ -132,18 +132,17 @@ class listItemsView: UITableViewController {
         }
         switch self.type {
         case .education:
-            return 140
+            return tableView.cellHeight(for: indexPath, model: pManager.educationInfos[indexPath.row], keyPath: "mode", cellClass: ListItemCell.self, contentViewWidth: ScreenW)
+        // 自动布局无效？？手动设置值
         case .project:
             return 140
         case .skill:
-            return 70
+            return 80
         default:
-            return 45
+            return 0
         }
     }
     
-
-
 }
 
 
@@ -151,14 +150,11 @@ class listItemsView: UITableViewController {
 extension listItemsView{
     
     func modify(type:resumeViewType, row:Int){
-        
             
         let view = modifyitemView()
         view.delegate = self
         view.mode = (type,row)
         self.navigationController?.pushViewController(view, animated: true)
-     
-        
     }
     
     func addMore(){
@@ -169,37 +165,16 @@ extension listItemsView{
             self.navigationController?.pushViewController(view, animated: true)
         case .project:
             let view = add_projectVC()
-            
             view.delegate = self
             self.navigationController?.pushViewController(view, animated: true)
         case .skill:
-            let view =  addSkillVC()
+            let view = addSkillVC()
             view.delegate = self
             self.navigationController?.pushViewController(view, animated: true)
-
-            
         default:
             break
         }
     }
-//    func addMore(name:String){
-//       
-//        switch name {
-//        case "教育经历":
-//            let view = add_educations()
-//            view.delegate = self
-//            self.navigationController?.pushViewController(view, animated: true)
-//            
-//        case "项目经历":
-//            break
-//        case "技能":
-//            break
-//            
-//        default:
-//            break
-//        }
-//    }
-    
     
 }
 

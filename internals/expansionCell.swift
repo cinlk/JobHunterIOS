@@ -8,7 +8,19 @@
 
 import UIKit
 
-class expansionCell: UITableViewCell {
+
+class helpModel:NSObject{
+    var title:String
+    var detail:String
+    var selected:Bool
+    
+    init(title:String, detail:String, select:Bool) {
+        self.title = title
+        self.detail = detail
+        self.selected = select
+    }
+}
+@objcMembers class expansionCell: UITableViewCell {
 
     
   private lazy var title:UILabel = {
@@ -16,7 +28,7 @@ class expansionCell: UITableViewCell {
         label.textAlignment = .left
         label.textColor = UIColor.black
         label.font = UIFont.systemFont(ofSize: 16)
-        
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 30)
         return label
     }()
     
@@ -32,27 +44,40 @@ class expansionCell: UITableViewCell {
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = UIColor.lightGray
-        label.numberOfLines = 0
+        //label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-        
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20 )
         return label
     }()
     
-    var mode:(title:String, detail:String, selected:Bool)?{
+   dynamic var mode:helpModel?{
         didSet{
             self.title.text = mode?.title
-            setTextLabel(str: mode!.detail)
-            setSelectedCell(flag: mode!.selected)
+            if mode!.selected{
+                self.icon.image = UIImage.init(named: "arrow_xl")
+                self.title.textColor = UIColor.green
+                detailLabel.text = mode?.detail
+                self.setupAutoHeight(withBottomView: detailLabel, bottomMargin: 5)
+            }else{
+                self.title.textColor = UIColor.black
+                self.icon.image = UIImage.init(named: "arrow_mr")
+                self.setupAutoHeight(withBottomView: title, bottomMargin: 5)
+            }
+            
         }
     }
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.contentView.addSubview(title)
-        self.contentView.addSubview(icon)
-        self.contentView.addSubview(detailLabel)
-        _ = title.sd_layout().leftSpaceToView(self.contentView,16)?.topSpaceToView(self.contentView,10)?.rightSpaceToView(self.contentView,100)?.heightIs(20)
+        let views:[UIView] = [title, icon, detailLabel]
+        self.contentView.sd_addSubviews(views)
+        _ = title.sd_layout().leftSpaceToView(self.contentView,16)?.topSpaceToView(self.contentView,10)?.autoHeightRatio(0)
         _ = icon.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(title)?.widthIs(15)?.heightIs(10)
-        //_ = detailLabel.sd_layout().rightEqualToView(title)?.topSpaceToView(title,)
+        _ = detailLabel.sd_layout().leftEqualToView(title)?.topSpaceToView(title,10)?.autoHeightRatio(0)
+        
+        title.setMaxNumberOfLinesToShow(0)
+        detailLabel.setMaxNumberOfLinesToShow(0)
+        
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -62,32 +87,8 @@ class expansionCell: UITableViewCell {
     
     class func identity()->String{
         return "expansionCell"
-    }
-    
-    // 计算内容高度
-    private func setTextLabel(str:String){
         
-        let strCGRect = str.getStringCGRect(size: CGSize.init(width: ScreenW - 20, height: 0), font:  self.detailLabel.font)
-        
-        detailLabel.text = str
-        detailLabel.frame = CGRect.init(x: 16, y: 40, width: ScreenW  - 20, height: strCGRect.height)
     }
-    
-    // 是否选中 设置color
-    private func setSelectedCell(flag:Bool){
-        if flag{
 
-            self.icon.image = UIImage.init(named: "arrow_xl")
-            self.title.textColor = UIColor.green
-            
-        }else{
-            self.title.textColor = UIColor.black
-            self.icon.image = UIImage.init(named: "arrow_mr")
-        }
-    }
     
-    class func cellHeight()->CGFloat{
-        
-        return 40
-    }
 }

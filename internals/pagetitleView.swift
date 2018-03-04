@@ -104,9 +104,14 @@ extension pagetitleView{
     }
     
     @objc func labelClick(guest:UITapGestureRecognizer){
+        
+        
         guard let label = guest.view as? UILabel else {
             return
         }
+        
+       
+        
         
         let currentIndex = label.tag
         if currentIndex == startIndex {

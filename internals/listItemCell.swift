@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ListItemCell: UITableViewCell {
+@objcMembers class ListItemCell: UITableViewCell {
 
     
     private lazy var timedate:UILabel = {
@@ -16,6 +16,7 @@ class ListItemCell: UITableViewCell {
         label.textColor = UIColor.lightGray
         label.font = UIFont.systemFont(ofSize: 13)
         label.textAlignment = .left
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         return label
     }()
     
@@ -33,6 +34,8 @@ class ListItemCell: UITableViewCell {
         label.textColor = UIColor.black
         label.font = UIFont.systemFont(ofSize: 16)
         label.textAlignment = .left
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+
         return label
         
     }()
@@ -43,6 +46,8 @@ class ListItemCell: UITableViewCell {
         label.textColor = UIColor.black
         label.font = UIFont.systemFont(ofSize: 16)
         label.textAlignment = .left
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+
         return label
     }()
     
@@ -51,6 +56,8 @@ class ListItemCell: UITableViewCell {
         label.textColor = UIColor.black
         label.font = UIFont.systemFont(ofSize: 16)
         label.textAlignment = .left
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+
         return label
     }()
     
@@ -59,6 +66,8 @@ class ListItemCell: UITableViewCell {
         label.textColor = UIColor.black
         label.font = UIFont.systemFont(ofSize: 16)
         label.textAlignment = .left
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+
         return label
     }()
     
@@ -67,6 +76,8 @@ class ListItemCell: UITableViewCell {
         label.textColor = UIColor.black
         label.font = UIFont.systemFont(ofSize: 16)
         label.textAlignment = .left
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+
         return label
     }()
     
@@ -75,6 +86,8 @@ class ListItemCell: UITableViewCell {
         label.textColor = UIColor.black
         label.font = UIFont.systemFont(ofSize: 16)
         label.textAlignment = .left
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+
         return label
     }()
     
@@ -83,15 +96,33 @@ class ListItemCell: UITableViewCell {
         label.textColor = UIColor.black
         label.font = UIFont.systemFont(ofSize: 16)
         label.textAlignment = .left
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+
         return label
     }()
     
+    // project 内容
     lazy var content:UILabel = {
         let label = UILabel.init(frame: CGRect.zero)
         label.textColor = UIColor.black
         label.font = UIFont.systemFont(ofSize: 16)
         label.textAlignment = .left
         label.lineBreakMode = .byTruncatingTail
+        label.numberOfLines = 1
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20)
+        return label
+    }()
+    
+    // skill 内容
+    lazy var skillcontent:UILabel = {
+        let label = UILabel.init(frame: CGRect.zero)
+        label.textColor = UIColor.black
+        label.font = UIFont.systemFont(ofSize: 16)
+        label.textAlignment = .left
+        label.lineBreakMode = .byTruncatingTail
+        label.numberOfLines = 1
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20)
+
         return label
     }()
     
@@ -110,28 +141,31 @@ class ListItemCell: UITableViewCell {
     private var  type:resumeViewType = .education
     
     
-    var mode:(type:resumeViewType, obj:Any,row:Int)?{
+    dynamic var mode:Any?{
         
         didSet{
+            
+            
             self.contentView.subviews.forEach { (view) in
                 if view.isKind(of: UILabel.self){
+                    //view.sd_resetLayout()
+                    
                     view.removeFromSuperview()
                 }
             }
             
-            switch mode!.type {
+            // 根据类型 设置布局
+            switch self.type {
             case .education:
-                
-                buildEducationView(education: mode!.obj as? person_education)
+                buildEducationView(education: mode as? person_education)
             case .project:
-                buildProjectView(projectInfo: mode!.obj as? person_projectInfo)
+                buildProjectView(projectInfo: mode as? person_projectInfo)
             case .skill:
-                builSkillView(skill: mode!.obj as? person_skills)
+                builSkillView(skill: mode as? person_skills)
             default:
                 break
             }
-            self.type = mode!.type
-            self.row = mode!.row
+            
         }
     }
     
@@ -141,29 +175,30 @@ class ListItemCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
         
+        self.contentView.backgroundColor = UIColor.clear
+        self.contentView.addSubview(topView)
+        self.contentView.addSubview(modiftButton)
+        
+        _ = topView.sd_layout().topEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.leftEqualToView(self.contentView)?.heightIs(10)
+        _ = modiftButton.sd_layout().rightSpaceToView(self.contentView,10)?.topSpaceToView(topView,5)?.widthIs(40)?.heightIs(30)
+        
+        
     }
+    
+    
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     
-    override func layoutSubviews() {
-        
-        super.layoutSubviews()
-        self.contentView.backgroundColor = UIColor.clear
-        self.contentView.addSubview(topView)
-        self.contentView.addSubview(modiftButton)
-
-        
-        _ = topView.sd_layout().topEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.leftEqualToView(self.contentView)?.heightIs(10)
-        _ = modiftButton.sd_layout().rightSpaceToView(self.contentView,10)?.topSpaceToView(topView,5)?.widthIs(40)?.heightIs(30)
-
-    }
-  
-    
     class func identity()->String {
         return "ListItemCell"
+    }
+    
+    func setrow(type:resumeViewType, row:Int){
+        self.type = type
+        self.row = row
     }
 
    
@@ -178,11 +213,9 @@ extension ListItemCell {
     
     private func buildEducationView(education:person_education?){
         
-        self.contentView.addSubview(timedate)
-        self.contentView.addSubview(address)
-        self.contentView.addSubview(school)
-        self.contentView.addSubview(degree)
-        self.contentView.addSubview(department)
+        let views:[UIView] = [timedate, address, school, degree, department]
+        self.contentView.sd_addSubviews(views)
+        
         self.timedate.text = (education?.startTime ?? "") + "-" + (education?.endTime ?? "")
         self.address.text = education?.city
         self.school.text = education?.colleage
@@ -191,21 +224,21 @@ extension ListItemCell {
     
         
  
-        _ = timedate.sd_layout().leftSpaceToView(self.contentView,10)?.topEqualToView(modiftButton)?.rightSpaceToView(modiftButton,10)?.heightIs(20)
-        _ = address.sd_layout().leftEqualToView(timedate)?.topSpaceToView(timedate,5)?.rightEqualToView(timedate)?.heightIs(20)
-        _ = school.sd_layout().leftEqualToView(timedate)?.topSpaceToView(address,5)?.rightEqualToView(timedate)?.heightIs(20)
-        _ = degree.sd_layout().leftEqualToView(timedate)?.topSpaceToView(school,5)?.rightEqualToView(timedate)?.heightIs(20)
-        _ = department.sd_layout().leftEqualToView(timedate)?.topSpaceToView(degree,5)?.rightEqualToView(timedate)?.heightIs(20)
+        _ = timedate.sd_layout().leftSpaceToView(self.contentView,10)?.topEqualToView(modiftButton)?.autoHeightRatio(0)
+        _ = address.sd_layout().leftEqualToView(timedate)?.topSpaceToView(timedate,5)?.autoHeightRatio(0)
+        _ = school.sd_layout().leftEqualToView(timedate)?.topSpaceToView(address,5)?.autoHeightRatio(0)
+        _ = degree.sd_layout().leftEqualToView(timedate)?.topSpaceToView(school,5)?.autoHeightRatio(0)
+        _ = department.sd_layout().leftEqualToView(timedate)?.topSpaceToView(degree,5)?.autoHeightRatio(0)
         
+        self.setupAutoHeight(withBottomView: department, bottomMargin: 5)
         
     }
     
     private func buildProjectView(projectInfo:person_projectInfo?){
-        self.contentView.addSubview(timedate)
-         self.contentView.addSubview(address)
-        self.contentView.addSubview(company)
-        self.contentView.addSubview(position)
-        self.contentView.addSubview(content)
+        
+        let views:[UIView] = [timedate, address, company, position, content]
+        self.contentView.sd_addSubviews(views)
+        
         self.timedate.text = (projectInfo?.startTime ?? "") + "-" + (projectInfo?.endTime ?? "")
         self.address.text = projectInfo?.city
         self.company.text = projectInfo?.company
@@ -213,26 +246,32 @@ extension ListItemCell {
         self.content.text = projectInfo?.describe
         
         
-        _ = timedate.sd_layout().leftSpaceToView(self.contentView,10)?.topEqualToView(modiftButton)?.rightSpaceToView(modiftButton,10)?.heightIs(20)
-        _ = address.sd_layout().leftEqualToView(timedate)?.topSpaceToView(timedate,5)?.rightEqualToView(timedate)?.heightIs(20)
-        _ = company.sd_layout().leftEqualToView(timedate)?.topSpaceToView(address,5)?.rightEqualToView(timedate)?.heightIs(20)
-        _ = position.sd_layout().leftEqualToView(timedate)?.topSpaceToView(company,5)?.rightEqualToView(timedate)?.heightIs(20)
-        _ = content.sd_layout().leftEqualToView(timedate)?.topSpaceToView(position,5)?.rightEqualToView(timedate)?.heightIs(20)
-
+        _ = timedate.sd_layout().leftSpaceToView(self.contentView,10)?.topEqualToView(modiftButton)?.autoHeightRatio(0)
+        _ = address.sd_layout().leftEqualToView(timedate)?.topSpaceToView(timedate,5)?.autoHeightRatio(0)
+        _ = company.sd_layout().leftEqualToView(timedate)?.topSpaceToView(address,5)?.autoHeightRatio(0)
+        _ = position.sd_layout().leftEqualToView(timedate)?.topSpaceToView(company,5)?.autoHeightRatio(0)
+        _ = content.sd_layout().leftEqualToView(timedate)?.topSpaceToView(position,5)?.autoHeightRatio(0)
         
-        
+        content.setMaxNumberOfLinesToShow(1)
+        self.setupAutoHeight(withBottomView: content, bottomMargin: 5)
+    
     }
     
     private func builSkillView(skill:person_skills?){
+        
+        
         self.contentView.addSubview(skillType)
-        self.contentView.addSubview(content)
+        self.contentView.addSubview(skillcontent)
         self.skillType.text = skill?.skillType
-        self.content.text = skill?.describe
+        self.skillcontent.text = skill?.describe
         
-         _ = skillType.sd_layout().leftSpaceToView(self.contentView,10)?.topEqualToView(modiftButton)?.rightSpaceToView(modiftButton,10)?.heightIs(20)
+         _ = skillType.sd_layout().leftSpaceToView(self.contentView,10)?.topEqualToView(modiftButton)?.autoHeightRatio(0)
         
-        _ = content.sd_layout().leftEqualToView(skillType)?.topSpaceToView(skillType,5)?.rightEqualToView(skillType)?.heightIs(20)
+        _ = skillcontent.sd_layout().leftEqualToView(skillType)?.topSpaceToView(skillType,20)?.autoHeightRatio(0)
+        
+        skillcontent.setMaxNumberOfLinesToShow(1)
 
+        self.setupAutoHeight(withBottomView: skillcontent, bottomMargin: 5)
         
     }
 }

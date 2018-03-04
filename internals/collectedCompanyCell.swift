@@ -8,7 +8,23 @@
 
 import UIKit
 
-class collectedCompanyCell: UITableViewCell {
+
+
+class collectedCompanyModel:NSObject{
+    var img:String
+    var name:String
+    var des:String
+    
+    init(img:String, name:String, des:String) {
+        self.img = img
+        self.name = name
+        self.des = des
+    }
+}
+
+fileprivate let imgSize:CGSize = CGSize.init(width: 40, height: 45)
+
+@objcMembers  class collectedCompanyCell: UITableViewCell {
 
     
     private lazy var  icon:UIImageView = {
@@ -23,6 +39,7 @@ class collectedCompanyCell: UITableViewCell {
         name.font = UIFont.systemFont(ofSize: 15)
         name.textColor = UIColor.black
         name.textAlignment = .left
+        name.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
         return name
     }()
     
@@ -32,18 +49,34 @@ class collectedCompanyCell: UITableViewCell {
         des.textColor = UIColor.lightGray
         des.lineBreakMode = .byTruncatingTail
         des.textAlignment = .left
+        des.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
         return des
     }()
     
-    var mode:(img:String, name:String, des:String)?{
+   dynamic var mode:collectedCompanyModel?{
         didSet{
             self.icon.image = UIImage.init(named: (mode?.img)!)
             self.companyName.text = mode?.name
             self.describle.text = mode?.des
+            self.setupAutoHeight(withBottomViewsArray: [describle,icon], bottomMargin: 5)
+            //self.setupAutoHeight(withBottomView: describle, bottomMargin: 5)
+            
         }
     }
+    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        let views:[UIView] = [icon, companyName, describle]
+        self.contentView.sd_addSubviews(views)
+        
+        _ = icon.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.heightIs(imgSize.height)?.widthIs(imgSize.width)
+        _ = companyName.sd_layout().leftSpaceToView(icon,5)?.topEqualToView(icon)?.autoHeightRatio(0)
+        _ = describle.sd_layout().leftEqualToView(companyName)?.topSpaceToView(companyName,5)?.autoHeightRatio(0)
+        
+        companyName.setMaxNumberOfLinesToShow(1)
+        describle.setMaxNumberOfLinesToShow(3)
+        
         
     }
     
@@ -51,16 +84,6 @@ class collectedCompanyCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        self.contentView.addSubview(icon)
-        self.contentView.addSubview(companyName)
-        self.contentView.addSubview(describle)
-        
-        _ = icon.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.bottomSpaceToView(self.contentView,5)?.widthIs(40)
-        _ = companyName.sd_layout().leftSpaceToView(icon,5)?.topEqualToView(icon)?.rightSpaceToView(self.contentView,10)?.heightIs(20)
-        _ = describle.sd_layout().leftEqualToView(companyName)?.rightEqualToView(companyName)?.topSpaceToView(companyName,5)?.heightIs(20)
-    }
 
 }
 
@@ -71,9 +94,5 @@ extension collectedCompanyCell{
         return "collectedCompanyCell"
     }
     
-    class func cellHeight()->CGFloat{
-        
-        return 60
-    }
     
 }

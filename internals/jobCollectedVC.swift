@@ -45,17 +45,21 @@ class jobCollectedVC: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: jobdetailCell.identity(), for: indexPath) as! jobdetailCell
         let job = jobManageRoot.getCollections(type: .compus)[indexPath.row] as! CompuseRecruiteJobs
         
-        cell.createCells(items: job.toJSON())
+        cell.mode = job
+        cell.useCellFrameCache(with: indexPath, tableView: tableView)
         return cell
     }
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return  jobdetailCell.cellHeight()
+        let job = jobManageRoot.getCollections(type: .compus)[indexPath.row] as! CompuseRecruiteJobs
+
+        return  tableView.cellHeight(for: indexPath, model: job, keyPath: "mode", cellClass: jobdetailCell.self, contentViewWidth: ScreenW)
         
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        // 编辑状态 返回
         if tableView.isEditing{
             return
         }

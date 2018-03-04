@@ -9,7 +9,7 @@
 import UIKit
 import SVProgressHUD
 
-class modify_educationCell: UITableViewCell {
+class modify_ResumeItemCell: UITableViewCell {
 
     
     private lazy var leftTitle:UILabel = {
@@ -17,6 +17,7 @@ class modify_educationCell: UITableViewCell {
         title.textColor = UIColor.black
         title.font = UIFont.systemFont(ofSize: 14)
         title.textAlignment = .left
+        title.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         return title
         
     }()
@@ -25,7 +26,6 @@ class modify_educationCell: UITableViewCell {
         let title = UILabel.init(frame: CGRect.zero)
         title.textColor = UIColor.black
         title.font = UIFont.systemFont(ofSize: 14)
-        title.isHidden = true
         title.textAlignment = .right
         return title
     }()
@@ -35,12 +35,12 @@ class modify_educationCell: UITableViewCell {
         let textField = UITextField.init(frame: CGRect.zero)
         textField.borderStyle = UITextBorderStyle.none
         textField.placeholder = ""
+        textField.font = UIFont.systemFont(ofSize: 14)
         textField.textColor = UIColor.black
         textField.textAlignment = .right
         textField.adjustsFontSizeToFitWidth = false
         textField.clearButtonMode = .whileEditing
         textField.keyboardType = .default
-        textField.isHidden = true
         textField.delegate = self
         return textField
     }()
@@ -50,18 +50,20 @@ class modify_educationCell: UITableViewCell {
         let title = UILabel.init(frame: CGRect.zero)
         title.textColor = UIColor.black
         title.font = UIFont.systemFont(ofSize: 14)
-        title.isHidden = true
         title.textAlignment = .left
+        title.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         
         return title
     }()
     lazy var describeText:UITextView = {
         let texView = UITextView.init()
         texView.textAlignment = .left
+        texView.font = UIFont.systemFont(ofSize: 14)
         texView.textColor = UIColor.black
+        texView.backgroundColor = UIColor.white
         texView.backgroundColor = UIColor.lightGray
-        
-        texView.isScrollEnabled = true
+        texView.layer.masksToBounds = true
+        texView.layer.cornerRadius = 10
         return texView
     }()
     
@@ -71,7 +73,7 @@ class modify_educationCell: UITableViewCell {
         let toolBar:UIToolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: 35))
         toolBar.backgroundColor = UIColor.gray
         let spaceBtn = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let barBtn = UIBarButtonItem(title: "完成", style: .plain, target: self, action: #selector(doneNum))
+        let barBtn = UIBarButtonItem(title: "完成", style: .plain, target: self, action: #selector(endEdit))
         toolBar.items = [spaceBtn, barBtn]
         toolBar.sizeToFit()
         return toolBar
@@ -88,7 +90,7 @@ class modify_educationCell: UITableViewCell {
             self.contentView.subviews.forEach { (view) in
                 view.removeFromSuperview()
             }
-           
+            
             switch mode!.viewType {
             case .education:
                 buildEducationView(InfoType:mode!.InfoType,row: mode!.row)
@@ -104,30 +106,14 @@ class modify_educationCell: UITableViewCell {
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.selectionStyle = .none 
+        self.selectionStyle = .none
+        describeText.inputAccessoryView = doneButton
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        self.selectionStyle = .none
-        
-    }
-    
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
     
     class func identity()->String{
         return  "modify_educationCell"
@@ -135,7 +121,7 @@ class modify_educationCell: UITableViewCell {
 }
 
 
-extension modify_educationCell: UITextFieldDelegate{
+extension modify_ResumeItemCell: UITextFieldDelegate{
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         return true
@@ -163,21 +149,18 @@ extension modify_educationCell: UITextFieldDelegate{
     }
 }
 
-extension modify_educationCell{
+extension modify_ResumeItemCell{
     
-    @objc func doneNum() {
-        self.endEditing(true)
+    @objc func endEdit() {
+        self.describeText.endEditing(true)
     }
-    
 }
 
-extension modify_educationCell{
-    
+extension modify_ResumeItemCell{
     
     
     private func buildSkillsView(InfoType:personBaseInfo, row:Int){
         let value = pManager.skillInfos[row].getItemByType(type: InfoType)
-        print(value)
         
         switch InfoType {
             
@@ -199,18 +182,17 @@ extension modify_educationCell{
         default:
             break
         }
+        let views:[UIView] = [leftTitle, rightLabel, describeText, describeTitle]
+        self.contentView.sd_addSubviews(views)
+       
         
-        self.contentView.addSubview(leftTitle)
-        self.contentView.addSubview(rightLabel)
-        self.contentView.addSubview(describeText)
-        self.contentView.addSubview(describeTitle)
+        _ = leftTitle.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,15)?.bottomSpaceToView(self.contentView,15)?.autoHeightRatio(0)
         
-        _ = leftTitle.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,15)?.bottomSpaceToView(self.contentView,15)?.widthIs(100)
+        _ = rightLabel.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(leftTitle)?.leftSpaceToView(leftTitle,20)?.autoHeightRatio(0)
         
-        _ = rightLabel.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(leftTitle)?.bottomEqualToView(leftTitle)?.leftSpaceToView(leftTitle,20)
         
-        _ = describeTitle.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(200)?.heightIs(20)
-        _ = describeText.sd_layout().leftEqualToView(self.describeTitle)?.rightSpaceToView(self.contentView,10)?.topSpaceToView(describeTitle,5)?.bottomEqualToView(self.contentView)
+        _ = describeTitle.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.autoHeightRatio(0)
+        _ = describeText.sd_layout().leftEqualToView(self.describeTitle)?.rightSpaceToView(self.contentView,10)?.topSpaceToView(describeTitle,5)?.bottomSpaceToView(self.contentView,10)
         
         
         
@@ -231,14 +213,13 @@ extension modify_educationCell{
             self.leftTitle.text = InfoType.rawValue
             self.textView.text = value
         }
+        let views:[UIView] = [leftTitle, rightLabel, textView]
+        self.contentView.sd_addSubviews(views)
+       
         
-        self.contentView.addSubview(leftTitle)
-        self.contentView.addSubview(rightLabel)
-        self.contentView.addSubview(textView)
+        _ = leftTitle.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,15)?.autoHeightRatio(0)
         
-        _ = leftTitle.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,15)?.bottomSpaceToView(self.contentView,15)?.widthIs(100)
-        
-        _ = rightLabel.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(leftTitle)?.bottomEqualToView(leftTitle)?.leftSpaceToView(leftTitle,20)
+        _ = rightLabel.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(leftTitle)?.leftSpaceToView(leftTitle,20)?.autoHeightRatio(0)
         
         _ = textView.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(leftTitle)?.bottomEqualToView(leftTitle)?.leftSpaceToView(leftTitle,20)
         
@@ -277,21 +258,18 @@ extension modify_educationCell{
             self.leftTitle.text = InfoType.rawValue
             self.textView.text = value
         }
+        let views:[UIView] = [leftTitle, rightLabel, textView, describeText, describeTitle]
+        self.contentView.sd_addSubviews(views)
+
         
-        self.contentView.addSubview(leftTitle)
-        self.contentView.addSubview(rightLabel)
-        self.contentView.addSubview(textView)
-        self.contentView.addSubview(describeText)
-        self.contentView.addSubview(describeTitle)
+        _ = leftTitle.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,15)?.autoHeightRatio(0)
         
-        _ = leftTitle.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,15)?.bottomSpaceToView(self.contentView,15)?.widthIs(100)
-        
-        _ = rightLabel.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(leftTitle)?.bottomEqualToView(leftTitle)?.leftSpaceToView(leftTitle,20)
+        _ = rightLabel.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(leftTitle)?.leftSpaceToView(leftTitle,20)?.autoHeightRatio(0)
         
         _ = textView.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(leftTitle)?.bottomEqualToView(leftTitle)?.leftSpaceToView(leftTitle,20)
         
-        _ = describeTitle.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(200)?.heightIs(20)
-        _ = describeText.sd_layout().leftEqualToView(self.describeTitle)?.rightSpaceToView(self.contentView,10)?.topSpaceToView(describeTitle,5)?.bottomEqualToView(self.contentView)
+        _ = describeTitle.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.autoHeightRatio(0)
+        _ = describeText.sd_layout().leftEqualToView(self.describeTitle)?.rightSpaceToView(self.contentView,10)?.topSpaceToView(describeTitle,5)?.bottomSpaceToView(self.contentView,10)
         
         
     }

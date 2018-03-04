@@ -23,10 +23,11 @@ class modifyitemView: UIViewController {
         tb.tableFooterView = UIView.init()
         tb.delegate = self
         tb.dataSource = self
+        tb.backgroundColor = UIColor.viewBackColor()
         tb.separatorStyle = .singleLine
         tb.showsHorizontalScrollIndicator = false
         tb.register(singleButtonCell.self, forCellReuseIdentifier: singleButtonCell.identity())
-        tb.register(modify_educationCell.self, forCellReuseIdentifier: modify_educationCell.identity())
+        tb.register(modify_ResumeItemCell.self, forCellReuseIdentifier: modify_ResumeItemCell.identity())
          return tb
         
     }()
@@ -42,7 +43,6 @@ class modifyitemView: UIViewController {
         v.addGestureRecognizer(guest)
         v.isUserInteractionEnabled = true
         return v
-        
     }()
     
     private lazy var pickView:itemPickerView = {
@@ -98,17 +98,26 @@ class modifyitemView: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.pickViewOriginXY = pickView.origin
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "保存", style: .plain, target: self, action: #selector(save))
         
         // Do any additional setup after loading the view.
+    }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationItem.title = "修改" + self.type.rawValue
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+         self.navigationItem.title = ""
     }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         self.view.addSubview(table)
-        self.table.backgroundColor = UIColor.lightGray
-        self.pickViewOriginXY = pickView.origin
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "保存", style: .plain, target: self, action: #selector(save))
-        
         
         _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
         
@@ -139,38 +148,28 @@ extension modifyitemView: UITableViewDelegate, UITableViewDataSource{
             return cell
             
         }else{
-        
+            let cell = tableView.dequeueReusableCell(withIdentifier: modify_ResumeItemCell.identity(), for: indexPath) as! modify_ResumeItemCell
+            var itemType:personBaseInfo?
+            
             switch self.type{
             case .education:
-                let cell = tableView.dequeueReusableCell(withIdentifier: modify_educationCell.identity(), for: indexPath) as! modify_educationCell
-                
-                let itemType = pManager.educationInfos[row].getItemList()[indexPath.row]
-                
-                cell.mode = (viewType:self.type, InfoType:itemType, row:row)
-                cell.delegate = self
-                
-                return cell
+                itemType = pManager.educationInfos[row].getItemList()[indexPath.row]
             case .project:
-                let cell = tableView.dequeueReusableCell(withIdentifier: modify_educationCell.identity(), for: indexPath) as! modify_educationCell
-                let itemType = pManager.projectInfo[row].getItemList()[indexPath.row]
-                cell.mode = (viewType:self.type, InfoType:itemType, row:row)
-                cell.delegate = self
-                cell.describeText.delegate = self
-                return cell
+                itemType = pManager.projectInfo[row].getItemList()[indexPath.row]
             case .skill:
-                let cell = tableView.dequeueReusableCell(withIdentifier: modify_educationCell.identity(), for: indexPath) as! modify_educationCell
-                let itemType = pManager.skillInfos[row].getItemList()[indexPath.row]
-                cell.mode = (viewType:self.type, InfoType:itemType, row:row)
-                cell.delegate = self
-                cell.describeText.delegate = self
-                return cell
+                itemType = pManager.skillInfos[row].getItemList()[indexPath.row]
             default:
-                break
+                return UITableViewCell.init()
             
             }
+            
+            cell.mode = (viewType:self.type, InfoType: itemType!, row:row)
+            cell.delegate = self
+            cell.describeText.delegate = self 
+            return cell
 
         }
-        return UITableViewCell.init()
+        
         
     }
     
@@ -184,7 +183,7 @@ extension modifyitemView: UITableViewDelegate, UITableViewDataSource{
                 return 45
             case .project:
                 if indexPath.row == count - 2{
-                    return 160
+                    return 200
                 }
                 
             case .skill:
@@ -321,14 +320,37 @@ extension modifyitemView: itemPickerDelegate{
 
 extension modifyitemView {
     
+    private func setStatus(name:String){
+        
+        self.navigationController?.view.addSubview(backgroundView)
+        self.navigationController?.navigationBar.isUserInteractionEnabled = false
+        self.view.isUserInteractionEnabled = false
+        self.backgroundView.isUserInteractionEnabled = false
+        
+        SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: name)
+        SVProgressHUD.dismiss(withDelay: 2) {
+            self.backgroundView.removeFromSuperview()
+            self.navigationController?.view.willRemoveSubview(self.backgroundView)
+            self.navigationController?.popViewController(animated: true)
+            if name == "保存"{
+                self.delegate?.refreshModifiedData(index: self.row, name: self.type.rawValue)
+            }else{
+                self.delegate?.refreshNewData()
+            }
+            
+            self.navigationController?.navigationBar.isUserInteractionEnabled = true
+            self.view.isUserInteractionEnabled = true
+            self.backgroundView.isUserInteractionEnabled = true
+        }
+    }
+            
     @objc func save(){
         
+        // 判断数据
+        
         self.view.endEditing(true)
-        SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: "保存成功")
-        SVProgressHUD.dismiss(withDelay: 2) {
-            self.navigationController?.popViewController(animated: true)
-            self.delegate?.refreshModifiedData(index: self.row, name: self.type.rawValue)
-        }
+        setStatus(name:"保存")
+        
     }
     
     func deleteItem(){
@@ -345,13 +367,8 @@ extension modifyitemView {
             break
         }
        
-        
         // delegate主界面删除section 数据
-        SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: "删除成功")
-        SVProgressHUD.dismiss(withDelay: 2) {
-            self.navigationController?.popViewController(animated: true)
-            self.delegate?.refreshNewData()
-        }
+        setStatus(name:"删除")
         
     }
     
@@ -364,7 +381,6 @@ extension modifyitemView: changeDataDelegate{
             
         case .education:
             pManager.educationInfos[row].changeValue(pinfoType: type, value: value)
-           
         case .project:
             pManager.projectInfo[row].changeValue(pinfoType: type, value: value)
         case .skill:
@@ -399,9 +415,9 @@ extension modifyitemView: UITextViewDelegate{
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        
-        let frame:CGRect = textView.frame
-        let offset:CGFloat = frame.origin.y + frame.height  -  (ScreenH -  KEYBOARD_HEIGHT)
+        let cell = table.cellForRow(at: IndexPath.init(row: count - 1, section: 0))
+        let frame:CGRect = (cell?.frame)!
+        let offset:CGFloat = frame.origin.y + 120  -  (ScreenH -  KEYBOARD_HEIGHT - 35 )
         UIView.animate(withDuration: 0.3) {
             if offset > 0  {
                 self.view.frame = CGRect.init(x: 0, y: -offset, width: ScreenW, height: ScreenH)

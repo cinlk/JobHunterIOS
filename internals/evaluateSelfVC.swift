@@ -8,6 +8,8 @@
 
 import UIKit
 import SVProgressHUD
+fileprivate let placeHolder:String = "个人评价，500字以内"
+fileprivate let limitWords:Int = 500
 
 class evaluateSelfVC: UITableViewController {
 
@@ -41,7 +43,7 @@ class evaluateSelfVC: UITableViewController {
         self.tableView.tableFooterView = UIView.init()
         self.tableView.tableHeaderView = tbHeader
         self.tableView.backgroundColor = UIColor.white
-        
+        self.tableView.isScrollEnabled = false
         self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "保存", style: .plain, target: self, action: #selector(save))
         
         self.tableView.register(textViewCell.self, forCellReuseIdentifier: textViewCell.identity())
@@ -82,6 +84,7 @@ class evaluateSelfVC: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: textViewCell.identity(), for: indexPath) as!
             textViewCell
         cacheCell = cell
+        cell.placeHolderLabel.text = placeHolder
         cell.textView.delegate = self
         cell.textView.text = content
         cacheCell?.placeHolderLabel.isHidden = true
@@ -89,7 +92,7 @@ class evaluateSelfVC: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return  120
+        return textViewCell.cellHeight()
     }
     
     
@@ -105,12 +108,12 @@ extension evaluateSelfVC{
         self.navigationController?.view.addSubview(backgroundView)
         self.navigationController?.navigationBar.isUserInteractionEnabled = false
         //  禁止点击cell 不然导致hubview 下滑 
-        self.tableView.isUserInteractionEnabled = false
+        self.view.isUserInteractionEnabled = false
         if content.isEmpty{
             SVProgressHUD.show(#imageLiteral(resourceName: "error"), status: "输入为空")
             SVProgressHUD.dismiss(withDelay: 2, completion: {
                 self.navigationController?.navigationBar.isUserInteractionEnabled = true
-                self.tableView.isUserInteractionEnabled = true
+                self.view.isUserInteractionEnabled = true
                 self.navigationController?.view.willRemoveSubview(self.backgroundView)
                 self.backgroundView.removeFromSuperview()
             })
@@ -132,16 +135,26 @@ extension evaluateSelfVC{
 }
 extension evaluateSelfVC: UITextViewDelegate{
     
+    
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        cacheCell?.placeHolderLabel.isHidden = true
+    }
+    
     func textViewDidChange(_ textView: UITextView) {
-        if textView.text == nil || textView.text.isEmpty{
+        if textView.text.isEmpty{
             cacheCell?.placeHolderLabel.isHidden = false
         }else{
-            cacheCell?.placeHolderLabel.isHidden = true
+             cacheCell?.placeHolderLabel.isHidden = true
         }
     }
     
     
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        if textView.text.isEmpty{
+             cacheCell?.placeHolderLabel.isHidden = false
+        }
+        
         return true
     }
     
@@ -151,7 +164,13 @@ extension evaluateSelfVC: UITextViewDelegate{
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty{
+            cacheCell?.placeHolderLabel.isHidden = false
+            return
+        }
+        
         content = textView.text
+        
         self.tableView.reloadData()
     
         

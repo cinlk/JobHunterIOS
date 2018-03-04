@@ -234,7 +234,8 @@ extension DashboardViewController: UITableViewDelegate{
         else if indexPath.section == 1{
             return 100
         }
-        return jobdetailCell.cellHeight()
+        // MARK  todo rx 获取mode 值
+        return  100
     }
     
     
@@ -259,8 +260,7 @@ extension DashboardViewController: UITableViewDelegate{
                 let cell:jobdetailCell = table.dequeueReusableCell(withIdentifier: jobdetailCell.identity()) as!
                 jobdetailCell
                 
-                
-                cell.createCells(items: jobs.toJSON())
+                cell.mode = jobs
                 
                return cell
             }
@@ -577,8 +577,9 @@ extension DashboardViewController{
             }
             
             self.tables.deselectRow(at: indexpath, animated: true)
-            if  let cell = self.tables.cellForRow(at: indexpath) as? jobdetailCell, let data = cell.model{
-                self.showDetails(jobDetail: data )
+            if  let cell = self.tables.cellForRow(at: indexpath) as? jobdetailCell, let data = cell.mode?.toJSON(){
+                
+                self.showDetails(jobDetail: data as! [String : String] )
                 
             }
             
