@@ -164,10 +164,11 @@ class CityViewController:UICollectionViewController, UICollectionViewDelegateFlo
     
     // choose city
     @objc func click(button:UIButton){
-        let city = button.titleLabel?.text
+        let city = button.titleLabel?.text ?? "全国"
         self.navigationController?.popViewController(animated: true)
-        let main = self.navigationController?.topViewController as! DashboardViewController
-        main.dashLocateCity = city!
+        if let main = self.navigationController?.topViewController as? DashboardViewController{
+            main.currentCity = city
+        }
         
     }
     

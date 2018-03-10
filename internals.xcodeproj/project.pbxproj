@@ -196,6 +196,7 @@
 		4AF6C8031F571D1F0059496B /* CitysView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C8021F571D1F0059496B /* CitysView.swift */; };
 		4AF6C8051F5A98940059496B /* mainCatagoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C8041F5A98940059496B /* mainCatagoryCell.swift */; };
 		4AF6C80B1F5AEB880059496B /* mainRecommandCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C80A1F5AEB880059496B /* mainRecommandCell.swift */; };
+		4AF74432204D8C8A00BC52DB /* personRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF74431204D8C8A00BC52DB /* personRouter.swift */; };
 		4AF7DCDA200399DD009047F5 /* SysNotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF7DCD9200399DD009047F5 /* SysNotificationController.swift */; };
 		4AFCCD621F9E490400E0E168 /* gifCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFCCD611F9E490400E0E168 /* gifCell.swift */; };
 		4AFCCD6A1FA3837000E0E168 /* emotion3.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4AFCCD651FA37D8C00E0E168 /* emotion3.plist */; };
@@ -444,6 +445,7 @@
 		4AF6C8021F571D1F0059496B /* CitysView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CitysView.swift; sourceTree = "<group>"; };
 		4AF6C8041F5A98940059496B /* mainCatagoryCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = mainCatagoryCell.swift; sourceTree = "<group>"; };
 		4AF6C80A1F5AEB880059496B /* mainRecommandCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = mainRecommandCell.swift; sourceTree = "<group>"; };
+		4AF74431204D8C8A00BC52DB /* personRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = personRouter.swift; sourceTree = "<group>"; };
 		4AF7DCD9200399DD009047F5 /* SysNotificationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SysNotificationController.swift; sourceTree = "<group>"; };
 		4AFCCD611F9E490400E0E168 /* gifCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gifCell.swift; sourceTree = "<group>"; };
 		4AFCCD631FA37D7000E0E168 /* emotion3.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = emotion3.bundle; sourceTree = "<group>"; };
@@ -634,7 +636,6 @@
 			children = (
 				4A6BC2321FC86218002C17B6 /* View+Controller */,
 				4A6BC2331FC86233002C17B6 /* Model */,
-				4A6BC2341FC8623A002C17B6 /* ViewModel */,
 				4A8D28B41FD190FF00FA983F /* 搜索 */,
 				4A8858F41FE6A9CE0009D73D /* job信息界面 */,
 			);
@@ -662,6 +663,7 @@
 		4A5304E01F52A4770000F1E9 /* 个人主页 */ = {
 			isa = PBXGroup;
 			children = (
+				4AF74430204D8BA700BC52DB /* Router */,
 				4A82A0CE2026D8A700185E8B /* viewModel */,
 				4A82A0CD2026D89C00185E8B /* model */,
 				4A82A0CC2026D88C00185E8B /* view+controller */,
@@ -682,6 +684,7 @@
 		4A686A912049A34200571EB0 /* support */ = {
 			isa = PBXGroup;
 			children = (
+				4A0261401FD2EB2200747B30 /* citys.plist */,
 				4A5E3FB4202DF14D009C1A6B /* address.plist */,
 				4A5E3FB6202ECA57009C1A6B /* degrees.plist */,
 				4A5E3FB8202ECD86009C1A6B /* birthDate.plist */,
@@ -697,7 +700,6 @@
 				4AF6C8041F5A98940059496B /* mainCatagoryCell.swift */,
 				4AF6C8021F571D1F0059496B /* CitysView.swift */,
 				4A5304E71F52A7720000F1E9 /* DashboardViewController.swift */,
-				4A0261401FD2EB2200747B30 /* citys.plist */,
 			);
 			name = "View+Controller";
 			sourceTree = "<group>";
@@ -705,6 +707,7 @@
 		4A6BC2331FC86233002C17B6 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				4A6BC2341FC8623A002C17B6 /* ViewModel */,
 				4A6BC2381FC926C5002C17B6 /* Jobs.swift */,
 				4A6BC2421FCB12A3002C17B6 /* Exhibition.swift */,
 			);
@@ -1195,6 +1198,14 @@
 			name = ViewModels;
 			sourceTree = "<group>";
 		};
+		4AF74430204D8BA700BC52DB /* Router */ = {
+			isa = PBXGroup;
+			children = (
+				4AF74431204D8C8A00BC52DB /* personRouter.swift */,
+			);
+			name = Router;
+			sourceTree = "<group>";
+		};
 		4AF7DCD8200398C6009047F5 /* 系统通知 */ = {
 			isa = PBXGroup;
 			children = (
@@ -1577,6 +1588,7 @@
 				4AD03AB81F9B45270077C15B /* InputTextView.swift in Sources */,
 				4A406B691FA58BDC00277AA0 /* Message.swift in Sources */,
 				4A5E3FC72031D7AC009C1A6B /* modifyitemsView.swift in Sources */,
+				4AF74432204D8C8A00BC52DB /* personRouter.swift in Sources */,
 				4A444ED01F8E5789006AE83D /* contactlist.swift in Sources */,
 				4A93C2BD1F80CEAA0022E97B /* communication.swift in Sources */,
 				4A1E59A61FDEE0DB004DCF53 /* PositionSelector.swift in Sources */,

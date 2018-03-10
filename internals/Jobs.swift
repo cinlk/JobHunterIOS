@@ -225,8 +225,8 @@ enum MultiSecontions{
 }
 // items
 enum SectionItem{
-    case catagoryItem(imageNames:[String])
-    case recommandItem(imageNames:[String])
+    case catagoryItem(imageNames:[String:String])
+    case recommandItem(imageNames:[String:String])
     case campuseRecruite(job:CompuseRecruiteJobs)
     //case internRecruite(jobs:[InternshipJobs])
     

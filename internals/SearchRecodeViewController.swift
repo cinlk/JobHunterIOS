@@ -15,18 +15,25 @@ protocol SearchResultDelegate: class{
     
 }
 
+
+fileprivate let headerViewH:CGFloat = 200
+fileprivate let HeadeTitle:String = "热门搜索"
+
 class SearchRecodeViewController: UIViewController {
 
     private let userData = localData.shared
     
+    // 控制table的显示
     var ShowHistoryTable:Bool = true {
         willSet{
             if newValue{
                 HistoryTable.isHidden = false
                 FilterTable.isHidden = true
+                HistoryTable.reloadData()
             }else{
                 HistoryTable.isHidden = true
                 FilterTable.isHidden = false
+                FilterTable.reloadData()
             }
         }
     }
@@ -34,31 +41,41 @@ class SearchRecodeViewController: UIViewController {
     
     
     // 搜索历史
-    lazy var HistoryTable:UITableView = {
+    private lazy var HistoryTable:UITableView = {  [unowned self] in
         
         let HistoryTable = UITableView.init()
-        HistoryTable.backgroundColor = UIColor.lightGray
-        HistoryTable.isHidden = false
+        HistoryTable.backgroundColor = UIColor.viewBackColor()
         HistoryTable.tableFooterView = UIView.init()
         HistoryTable.register(HistoryRecordCell.self, forCellReuseIdentifier: HistoryRecordCell.identity())
         //HistoryTable.tableHeaderView =  RecordHeaderView()
+        HistoryTable.delegate = self
+        HistoryTable.dataSource = self
         return HistoryTable
     }()
     // 匹配搜索记录
-    lazy var FilterTable:UITableView = {
+   private lazy var FilterTable:UITableView = {  [unowned self] in
         let FilterTable = UITableView.init()
-        FilterTable.isHidden = true
-        FilterTable.backgroundColor = UIColor.white
+        FilterTable.backgroundColor = UIColor.viewBackColor()
         FilterTable.tableFooterView = UIView.init()
+        FilterTable.delegate = self
+        FilterTable.dataSource = self
         return FilterTable
     }()
        
+    // 热门搜索headerview
+    fileprivate lazy var searchHederView:TableViewHeader = { [unowned self] in
+            let h = TableViewHeader.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: headerViewH))
+            h.chooseItem = { (word) in
+                self.resultDelegate?.ShowSearchResults(word: word)
+            
+            }
+            return h
+    }()
     
-    
-    weak var delegate:UISearchRecordDelegatae?
     
     private var matchRecords:[String] = [""]
     
+    private var hotItem:[String] = []
     
     // delegate
     weak var resultDelegate:SearchResultDelegate?
@@ -79,31 +96,23 @@ class SearchRecodeViewController: UIViewController {
         userData.appendSearchHistories(value: "测试2")
         hcount  =  1 + (userData.getSearchHistories()?.count)!
         // 加载tags
-        let tags = ["咨询","设计","人事","IOS","法律","公关","财务","云计算","创业","python","地产","iphone"]
-        let vtag:UIView =  UIView.RecordHeaderView(tags: tags)
-        vtag.viewWithTag(1)?.subviews.forEach {  (v) in
-        
-            if v.isKind(of: UIButton.self){
-                (v as! UIButton).addTarget(self, action: #selector(chooseTag), for: .touchUpInside)
-            }
-        }
-        HistoryTable.tableHeaderView = vtag
+       
+        HistoryTable.tableHeaderView = searchHederView
+        loadItemData()
         self.view.backgroundColor = UIColor.lightGray
+        
         self.view.addSubview(HistoryTable)
         self.view.addSubview(FilterTable)
-        HistoryTable.delegate = self
-        HistoryTable.dataSource = self
-        FilterTable.delegate = self
-        FilterTable.dataSource = self
-
     }
 
     
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        ShowHistoryTable = true
         hcount  =  1 + (userData.getSearchHistories()?.count)!
+       
+        ShowHistoryTable = true
+        
        
         
         
@@ -121,6 +130,7 @@ class SearchRecodeViewController: UIViewController {
         _ = FilterTable.sd_layout().topEqualToView(self.view)?.bottomEqualToView(self.view)?.leftEqualToView(self.view)?.rightEqualToView(self.view)
         
         
+        
     }
 
 }
@@ -132,18 +142,11 @@ extension SearchRecodeViewController{
         // 显示 searchresultView
          self.resultDelegate?.ShowSearchResults(word: (sender.titleLabel?.text)!)
     }
-    
-    @objc func deleteRecord(_ sender:UIButton){
-        self.HistoryTable.beginUpdates()
-        let text =  (self.HistoryTable.cellForRow(at: IndexPath.init(row: sender.tag, section: 0)) as? HistoryRecordCell)?.item.text
-        userData.deleteSearcHistories(item: text ?? "")
-        hcount -= 1
-        self.HistoryTable.deleteRows(at: [IndexPath.init(row: sender.tag, section: 0)], with: .none)
-        self.HistoryTable.reloadData()
-        self.HistoryTable.endUpdates()
-       
-        
-        
+
+    private func loadItemData(){
+         hotItem = ["测试1", "测试2","测试带我当前为多群无多群去的", "测大豆纤维2", "测试2", "测试2", "测试2",
+        "测试2","测试2","测试2","测试大青蛙2","当前为多"]
+         searchHederView.mode = hotItem
     }
 }
 extension SearchRecodeViewController:UITableViewDelegate,UITableViewDataSource{
@@ -155,8 +158,9 @@ extension SearchRecodeViewController:UITableViewDelegate,UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
+        
         if tableView == self.HistoryTable{
-            return hcount
+            return hcount  
         }
             return matchRecords.count
         
@@ -167,18 +171,30 @@ extension SearchRecodeViewController:UITableViewDelegate,UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell =  UITableViewCell.init()
         if tableView == self.HistoryTable{
+            // 删除cell
             if  indexPath.row  == hcount - 1{
                 cell.textLabel?.text = "清除历史记录"
                 cell.textLabel?.textAlignment  = .center
+                // 只有一个cell  影藏当前cell
                 cell.isHidden =  hcount == 1 ? true:false
                 return cell
             }
            guard let  hcell = tableView.dequeueReusableCell(withIdentifier: HistoryRecordCell.identity()) as? HistoryRecordCell else{
                 return cell
             }
-            hcell.deleteIcon.tag = indexPath.row
-            hcell.deleteIcon.addTarget(self, action: #selector(deleteRecord), for: .touchUpInside)
-            hcell.item.text = userData.getSearchHistories()?[indexPath.row]
+           
+            hcell.mode = userData.getSearchHistories()?[indexPath.row]
+            hcell.deleteRow = { [weak self] (name) in
+                print(indexPath.row)
+                self?.HistoryTable.beginUpdates()
+                self?.hcount -= 1
+                self?.userData.deleteSearcHistories(item: name)
+                // 删除某个row，其他row值会改变，通过刷新reloadData 来更新row值
+                self?.HistoryTable.deleteRows(at: [IndexPath.init(row: indexPath.row, section: 0)], with: .none)
+                self?.HistoryTable.reloadData()
+                self?.HistoryTable.endUpdates()
+            }
+            hcell.useCellFrameCache(with: indexPath, tableView: tableView)
             return hcell
             
         }else{
@@ -187,6 +203,17 @@ extension SearchRecodeViewController:UITableViewDelegate,UITableViewDataSource{
         
         return cell
        
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat{
+        
+        if tableView == self.HistoryTable && (hcount-1 != indexPath.row){
+            let mode = userData.getSearchHistories()?[indexPath.row]
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: HistoryRecordCell.self, contentViewWidth: ScreenW)
+            
+        }else{
+            return 45
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -199,8 +226,7 @@ extension SearchRecodeViewController:UITableViewDelegate,UITableViewDataSource{
                 return
             }
             let cell = tableView.cellForRow(at: indexPath) as! HistoryRecordCell
-            word = cell.item.text ?? ""
-            cell.selectionStyle = .none
+            word = cell.mode!
         }else{
             let cell = tableView.cellForRow(at: indexPath)
             word  = cell?.textLabel?.text ?? ""
@@ -213,8 +239,9 @@ extension SearchRecodeViewController:UITableViewDelegate,UITableViewDataSource{
     
 }
 
-extension SearchRecodeViewController:UISearchRecordDelegatae{
+extension SearchRecodeViewController{
     
+    // 根据输入框调整 recordVC 显示view
     func showHistory(){
         ShowHistoryTable = true
         AddHistoryItem = true 
@@ -232,4 +259,135 @@ extension SearchRecodeViewController:UISearchRecordDelegatae{
         
         
     }
+}
+
+
+
+
+fileprivate class TableViewHeader:UIView{
+    
+    
+    private lazy var label:UILabel = {
+        let title = UILabel.init(frame: CGRect.zero)
+        title.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        title.textColor = UIColor.black
+        title.font = UIFont.systemFont(ofSize: 17)
+        title.textAlignment = .left
+        title.text = HeadeTitle
+        title.lineBreakMode = .byWordWrapping
+        return title
+    }()
+    
+    private lazy var collectionView:UICollectionView = {
+        let layout = UICollectionViewFlowLayout.init()
+        layout.minimumLineSpacing =  10
+        layout.minimumInteritemSpacing = 10
+        layout.itemSize = CGSize.init(width: (ScreenW - 60) / 3 , height: 25)
+        layout.sectionInset = UIEdgeInsetsMake(5, 0, 5, 0)
+    
+        let coll = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
+        coll.backgroundColor = UIColor.clear
+        coll.dataSource = self
+        coll.delegate = self
+        coll.isScrollEnabled  = true
+        coll.showsVerticalScrollIndicator = false
+        coll.register(labelCollectionCell.self, forCellWithReuseIdentifier: "cell")
+        return coll
+    }()
+    
+    
+    
+    var chooseItem:((_ word:String)->Void)?
+    
+    var mode:[String]?{
+        didSet{
+            self.collectionView.reloadData()
+        }
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.backgroundColor = UIColor.viewBackColor()
+        self.addSubview(label)
+        self.addSubview(collectionView)
+        
+        _ = label.sd_layout().leftSpaceToView(self,20)?.topSpaceToView(self,20)?.autoHeightRatio(0)
+        _ = collectionView.sd_layout().leftEqualToView(label)?.rightSpaceToView(self,20)?.topSpaceToView(label,5)?.bottomEqualToView(self)
+        
+       
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    
+    
+}
+
+extension TableViewHeader:UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UICollectionViewDelegate{
+    
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return mode?.count ?? 0
+    }
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! labelCollectionCell
+        if let mode = mode{
+            cell.label.text = mode[indexPath.row]
+        }
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+
+        if let word = mode?[indexPath.row]{
+            self.chooseItem?(word)
+        }
+    }
+    
+    
+    
+    
+}
+
+
+private class labelCollectionCell:UICollectionViewCell{
+    
+    fileprivate lazy var label:UILabel = {
+        let l = UILabel.init(frame: CGRect.zero)
+        l.font = UIFont.systemFont(ofSize: 16)
+        l.textAlignment = .center
+        l.setSingleLineAutoResizeWithMaxWidth((ScreenW - 60) / 3)
+        l.textColor = UIColor.blue
+        
+        
+        return l
+    }()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.contentView.backgroundColor = UIColor.white
+        self.layer.borderColor = UIColor.black.cgColor
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.contentView.addSubview(label)
+        _ = label.sd_layout().centerXEqualToView(self.contentView)?.centerYEqualToView(self.contentView)?.heightIs(25)
+        label.setMaxNumberOfLinesToShow(1)
+    }
+    
 }

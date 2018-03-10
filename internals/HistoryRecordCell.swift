@@ -8,51 +8,58 @@
 
 import UIKit
 
-class HistoryRecordCell: UITableViewCell {
+@objcMembers class HistoryRecordCell: UITableViewCell {
 
-    var leftImage:UIImageView!
-    var item:UILabel!
-    var deleteIcon:UIButton!
+    private lazy var leftImage:UIImageView = {
+        let leftImage = UIImageView.init()
+        leftImage.image = #imageLiteral(resourceName: "round")
+        leftImage.contentMode = .scaleAspectFit
+        leftImage.clipsToBounds = true
+        return leftImage
+        
+    }()
+    private lazy var item:UILabel = {
+        let item = UILabel.init()
+        item.textAlignment = .left
+        item.font = UIFont.systemFont(ofSize: 16)
+        item.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        item.textColor = UIColor.black
+        return item
+    }()
+    
+    private lazy var deleteIcon:UIButton = { [unowned self] in
+        let deleteIcon = UIButton.init(type: .custom)
+        deleteIcon.setBackgroundImage(#imageLiteral(resourceName: "delete"), for: .normal)
+        deleteIcon.backgroundColor = UIColor.clear
+        deleteIcon.clipsToBounds = true
+        deleteIcon.addTarget(self, action: #selector(deletItem), for: .touchUpInside)
+        return deleteIcon
+    }()
     
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    
+    dynamic var mode:String?{
+        didSet{
+            item.text = mode!
+            self.setupAutoHeight(withBottomView: item, bottomMargin: 15)
+        }
     }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
+    
+    
+    var deleteRow:((_ name:String)->Void)?
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        leftImage = UIImageView.init()
-        leftImage.image = #imageLiteral(resourceName: "clock")
-        leftImage.contentMode = .scaleAspectFit
-        leftImage.clipsToBounds = true
-        
-        item = UILabel.init()
-        item.text = ""
-        item.textColor = UIColor.black
-        
-        
-        deleteIcon = UIButton.init(type: .custom)
-        deleteIcon.setImage(UIImage.init(named: "cancel"), for: .normal)
-        deleteIcon.backgroundColor = UIColor.clear
         
         self.contentView.addSubview(leftImage)
         self.contentView.addSubview(item)
         self.contentView.addSubview(deleteIcon)
         
         
-        _ = leftImage.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.bottomSpaceToView(self.contentView,5)?.widthIs(20)
-        _ = item.sd_layout().leftSpaceToView(leftImage,20)?.topEqualToView(leftImage)?.bottomEqualToView(leftImage)?.widthIs(220)
+        _ = leftImage.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.heightIs(15)?.widthIs(15)
+        _ = item.sd_layout().leftSpaceToView(leftImage,20)?.topEqualToView(leftImage)?.autoHeightRatio(0)
         
-        _ = deleteIcon.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(leftImage)?.bottomEqualToView(leftImage)?.widthIs(20)
+        _ = deleteIcon.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(leftImage)?.bottomEqualToView(item)?.widthIs(20)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -61,13 +68,14 @@ class HistoryRecordCell: UITableViewCell {
     
     
     static func identity()->String{
-        return "recordName"
+        return "searchHistoryList"
     }
-    
-    static func Height()->CGFloat{
-        return 40
-    }
-    
     
 
+}
+
+extension HistoryRecordCell{
+    @objc private func deletItem(){
+        self.deleteRow?(self.mode!)
+    }
 }

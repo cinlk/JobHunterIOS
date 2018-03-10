@@ -10,19 +10,23 @@ import UIKit
 import YNDropDownMenu
 
 
+
+fileprivate let leftTableH:CGFloat = 100
+
+
 class JobArea:YNDropDownView,UITableViewDataSource,UITableViewDelegate{
     
         
-    var table1:UITableView?
-    var table2:UITableView?
+    private var table1:UITableView?
+    private var table2:UITableView?
     
     var passData: ((_ cond:[String:String]?) -> Void)?
     
     
-    var first = ["全部","IT互联网","电子电气","人事行政","传媒设计","杀掉无多哇多无多无多"]
-    var selected = "全部"
-    var all = ["全部"]
-    var seconds = ["IT互联网":["全部","软件及系统开发","算法/大数据","智能硬件","移动开发"],
+    private var first = ["全部","IT互联网","电子电气","人事行政","传媒设计","杀掉无多哇多无多无多"]
+    private var selected = "全部"
+    private var all = ["全部"]
+    private var seconds = ["IT互联网":["全部","软件及系统开发","算法/大数据","智能硬件","移动开发"],
                    "电子电气":["全部","电子/通信","嵌入式","电气工程"],
                    "人事行政":["全部","人事HR","猎头","行政"],
                    "传媒设计":["全部","广告","编辑","媒体","视频后期"],
@@ -33,8 +37,8 @@ class JobArea:YNDropDownView,UITableViewDataSource,UITableViewDelegate{
         super.init(frame: frame)
         
         table1 = UITableView()
-        table1?.backgroundColor = UIColor.gray
-        table1?.frame = CGRect(x: 0, y: 0, width: 100, height: self.frame.height)
+        table1?.backgroundColor = UIColor.lightGray
+        table1?.frame = CGRect(x: 0, y: 0, width: leftTableH, height: frame.height)
         table1?.delegate = self
         table1?.dataSource = self
         table1?.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
@@ -43,8 +47,8 @@ class JobArea:YNDropDownView,UITableViewDataSource,UITableViewDelegate{
         
         
         table2 = UITableView()
-        table2?.backgroundColor = UIColor.white
-        table2?.frame = CGRect(x: 100, y: 0, width: self.frame.width-100, height: self.frame.height)
+        table2?.backgroundColor = UIColor.viewBackColor()
+        table2?.frame = CGRect(x: leftTableH, y: 0, width: self.frame.width-leftTableH, height: frame.height)
         table2?.delegate = self
         table2?.dataSource = self
         table2?.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
@@ -86,7 +90,7 @@ class JobArea:YNDropDownView,UITableViewDataSource,UITableViewDelegate{
         if tableView == table1{
             cell.textLabel?.text = first[indexPath.row]
             
-            cell.backgroundColor = UIColor.gray
+            cell.backgroundColor = UIColor.lightGray
         }else{
             
             cell.subviews.filter({ (view) -> Bool in
@@ -94,7 +98,7 @@ class JobArea:YNDropDownView,UITableViewDataSource,UITableViewDelegate{
             }).forEach{
                 $0.removeFromSuperview()
             }
-            
+            cell.backgroundColor = UIColor.viewBackColor()
             cell.textLabel?.textColor = UIColor.black
             cell.textLabel?.text =  selected == "全部" ? "全部" : seconds[selected]?[indexPath.row]
             

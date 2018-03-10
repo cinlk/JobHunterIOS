@@ -136,12 +136,12 @@ class mainPageServer {
         return self.httpRequest.rx.request(Jobs.getCompuseJobs(limit: index)).asObservable().mapArray(CompuseRecruiteJobs.self,tag:"CompuseRecruiteJobs")
     }
     // MARK
-    public func getCatagories() -> Observable<[String]> {
-        return Observable.just(["money","money","money","money"])
+    public func getCatagories() -> Observable<[String:String]> {
+        return Observable.just(["car":"car","money":"money","sina":"sina","bell":"bell","qq":"qq","swift":"swift"])
     }
     // MARK
-    public func getRecommand() -> Observable<[String]> {
-        return Observable.just(["money","money","money","money"])
+    public func getRecommand() -> Observable<[String:String]> {
+        return Observable.just(["ali":"阿里","fly":"fly","google":"google","jodel":"jodel","volk":"volk"])
     }
     //MARK
     public func getImageBanners() -> Driver<[RotateImages]>{

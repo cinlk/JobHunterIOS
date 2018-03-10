@@ -89,10 +89,7 @@ class personResumeTable: UITableViewController {
             let cell = tableView.dequeueReusableCell(withIdentifier: resume_personInfoCell.identity()) as!
                 resume_personInfoCell
             cell.mode = pManager.personBaseInfo!
-            // 不需要cell frame缓存，内容大小会改变
-            //cell.useCellFrameCache(with: indexPath, tableView: tableView)
             return cell
-            
         case .education:
             let cell = tableView.dequeueReusableCell(withIdentifier: person_educationCell.identity(), for: indexPath) as!
                 person_educationCell
@@ -154,6 +151,9 @@ class personResumeTable: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let type = viewType[indexPath.section]
         switch type {
+            
+        // lk:personInfo:VC:/baseInfo/section=1  -> （person_infoView）
+
         case .baseInfo:
     
             person_infoView.section = indexPath.section

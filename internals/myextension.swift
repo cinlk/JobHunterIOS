@@ -11,7 +11,7 @@ import Foundation
 
 
 private let  v =  UIImage.init()
-private let defaulImg = build_image(frame: CGRect.init(x: 0, y: 0, width: NAV_BAR_FRAME_WIDTH, height: NAV_BAR_FRAME_HEIGHT), color: UIColor.navigationBackgroudColor())
+private let defaulImg = build_image(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH), color: UIColor.navigationBarColor())
 //private let bm = build_image(size: CGSize.init(width: NAV_BAR_FRAME_WIDTH, height: NAV_BAR_FRAME_HEIGHT), alpha: 1)
 
 extension UINavigationBar{
@@ -30,14 +30,14 @@ extension UINavigationBar{
             self.setBackgroundImage(v, for: .default)
             self.shadowImage = v
             //self.backgroundColor =  UIColor.clear
-            //self.isTranslucent = true
+            self.isTranslucent = true
         }
         else{
             // 背景image为 navigationbar系统默认颜色？？
             
             self.setBackgroundImage(defaulImg, for: .default)
             //self.shadowImage = self.shadowImage
-            //self.isTranslucent = false
+            self.isTranslucent = false
             
             
         }

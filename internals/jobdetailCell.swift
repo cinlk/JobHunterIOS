@@ -124,6 +124,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
             degree.text = mode?.education
             internDay.text = "0"
             salary.text = mode?.salary
+            create_time.text = mode?.create_time
             setLayout()
             self.setupAutoHeight(withBottomViewsArray: [address, type, degree], bottomMargin: 10)
             
@@ -181,8 +182,9 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
         create_time.setMaxNumberOfLinesToShow(1)
     }
     
-   
     
-    
+    class func cellHeight()->CGFloat{
+        return  65
+    }
 
 }

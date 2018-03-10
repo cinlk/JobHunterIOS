@@ -45,6 +45,12 @@ class searchResultController: UIViewController,UIScrollViewDelegate {
 }
 
 
+extension searchResultController:UITableViewDelegate{
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return jobdetailCell.cellHeight()
+    }
+}
 
 extension searchResultController{
     

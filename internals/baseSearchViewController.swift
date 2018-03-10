@@ -15,92 +15,63 @@ import SVProgressHUD
 import RxDataSources
 
 
-protocol baseSearchDelegate: class {
-    
-    func chooseCity()
-}
 
-private let leftDistance:CGFloat = 40
-private let dropmenus = ["公司筛选","职位筛选","行业领域"]
+fileprivate let leftDistance:CGFloat = 40
+fileprivate let dropViewH:CGFloat = 40
+fileprivate let dropmenus = ["公司筛选","职位筛选","行业领域"]
+fileprivate let SearchPlaceholder:String = "输入查询内容"
+fileprivate let defaultSearchCity:String = "全国"
+
+
 
 class baseSearchViewController: UISearchController{
 
-    // data
-    private var datas:[[String:String]] = []
-    
     
     private var searchField:UITextField!
     
-    weak var cityDelegate:baseSearchDelegate?
-    
-   
-    
     
     // nmenu view
-    lazy var menu1:YNDropDownView = { [unowned self] in
+    private lazy var menu1:YNDropDownView = { [unowned self] in
         
         let v1 = CompanySelector.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 160))
+        
+        // 条件数据 回调
         v1.passData = { (cond:[String:String]?) in
             
-            let table  = (self.searchResultsController as! searchResultController).table
+            let vm  = (self.searchResultsController as! searchResultController).vm
             // 过滤数据 测试
             // MARK 根据搜索条件查询 服务器数据
             // 在刷新tableview
-            self.datas.removeAll()
-            self.datas.append(["picture":"sina",
-                          "comapany":"sina",
-                          "jobName":"公司筛选",
-                          "address":"云计算研发",
-                          "salary":"10",
-                          "create_time":"2017-12-22",
-                          "education":"本科"])
-            table.reloadData()
-            return
+        
+            vm?.loadData.onNext("搜索")
         }
         return v1
         
     }()
     
-    lazy var menu2:YNDropDownView = {
+    private lazy var menu2:YNDropDownView = {
         let v1 = PositionSelector.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 160))
         v1.passData = { (cond:[String:[String]]?) in
-            let table  = (self.searchResultsController as! searchResultController).table
+            let vm  = (self.searchResultsController as! searchResultController).vm
             // 过滤数据 测试
             // MARK 根据搜索条件查询 服务器数据
             // 在刷新tableview
-            self.datas.removeAll()
-            self.datas.append(["picture":"sina",
-                               "comapany":"sina",
-                               "jobName":"职位筛选",
-                               "address":"云计算研发",
-                               "salary":"10",
-                               "create_time":"2017-12-22",
-                               "education":"本科"])
-            table.reloadData()
-            return
             
+            vm?.loadData.onNext("搜索")
         }
         return v1
         
     }()
     
-    lazy var menu3:YNDropDownView = {
+    private lazy var menu3:YNDropDownView = {
         let v1 = JobArea.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 60))
         v1.passData = { (cond:[String:String]?) in
-            let table  = (self.searchResultsController as! searchResultController).table
+            let vm  = (self.searchResultsController as! searchResultController).vm
             // 过滤数据 测试
             // MARK 根据搜索条件查询 服务器数据
             // 在刷新tableview
-            self.datas.removeAll()
-            self.datas.append(["picture":"sina",
-                               "comapany":"sina",
-                               "jobName":"行业领域",
-                               "address":"云计算研发",
-                               "salary":"10",
-                               "create_time":"2017-12-22",
-                               "education":"本科"])
-            table.reloadData()
-            return
+            
+            vm?.loadData.onNext("搜索")
         }
         return v1
         
@@ -108,13 +79,14 @@ class baseSearchViewController: UISearchController{
     
     
     
-    lazy var dropDownMenu:YNDropDownMenu = { [unowned self] in
+    // 下拉条件过滤菜单
+    private lazy var dropDownMenu:YNDropDownMenu = { [unowned self] in
         
         let items:[YNDropDownView] = [self.menu1,self.menu2,self.menu3]
-        let dropDownMenu = YNDropDownMenu(frame: CGRect(x:0,y:0,width:ScreenW,height:40) , dropDownViews: items, dropDownViewTitles: dropmenus)
+        let dropDownMenu = YNDropDownMenu(frame: CGRect(x:0,y:0,width:ScreenW,height:dropViewH) , dropDownViews: items, dropDownViewTitles: dropmenus)
         dropDownMenu.isHidden = true
-        
-        dropDownMenu.setImageWhen(normal: UIImage(named: "arrow_nor"), selected: UIImage(named: "arrow_sel"), disabled: UIImage(named: "arrow_dim"))
+        // 被选中iamge 方向向下，程序会自动翻转iamge
+        dropDownMenu.setImageWhen(normal: UIImage(named: "arrow_nor"), selected: UIImage(named: "arrow_xl"), disabled: UIImage(named: "arrow_dim"))
         dropDownMenu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
         dropDownMenu.setLabelFontWhen(normal: .systemFont(ofSize: 12), selected: .boldSystemFont(ofSize: 12), disabled: .systemFont(ofSize: 12))
         
@@ -130,25 +102,27 @@ class baseSearchViewController: UISearchController{
         
     }()
     
+    // 设置搜索bar 高度 并影藏textfield 背景img
     var height:CGFloat = 0 {
         willSet{
             self.searchBar.setSearchFieldBackgroundImage(build_image(frame: CGRect.init(x: 0, y: 0, width: 1, height: newValue), color: UIColor.clear), for: .normal)
         }
     }
     
-    // leftCityBuuton
-    lazy  private var cityButton:UIButton = {
-       var button = UIButton.init(title: ("全国", .normal), fontSize: 12, alignment: .center, bColor: UIColor.clear)
+    // leftCityBtn
+    private lazy  var cityButton:UIButton = {
+       var button = UIButton.init(title: (defaultSearchCity, .normal), fontSize: 12, alignment: .center, bColor: UIColor.clear)
         button.setTitleColor(UIColor.gray, for: .normal)
         button.titleLabel?.adjustsFontSizeToFitWidth = false
         button.autoresizesSubviews = true
+        button.frame = CGRect.init(x: 5, y: 4.5, width: 30, height: 20)
         button.addTarget(self, action: #selector(cityClick), for: .touchUpInside)
         return button
         
     }()
     
-    // 搜索历史viewcontroller
-    lazy  var serchRecordView:SearchRecodeViewController = {  [unowned self] in
+    // 搜索历史和搜索匹配展示VC
+    lazy  var serchRecordVC:SearchRecodeViewController = {  [unowned self] in
             let vc =  SearchRecodeViewController()
             vc.view.isHidden = true
             vc.resultDelegate = self
@@ -157,18 +131,19 @@ class baseSearchViewController: UISearchController{
     
     var  showRecordView:Bool = false{
         willSet{
-            self.serchRecordView.view.isHidden = !newValue
+            self.serchRecordVC.view.isHidden = !newValue
             self.dropDownMenu.isHidden = newValue
             self.dropDownMenu.hideMenu()
         }
     }
     
     
+    var chooseCity:(()->Void)?
+    
     
     override init(searchResultsController: UIViewController?) {
-       
+        
         super.init(searchResultsController: searchResultsController)
-       
         self.hidesNavigationBarDuringPresentation = false
         self.dimsBackgroundDuringPresentation = true
         
@@ -176,15 +151,14 @@ class baseSearchViewController: UISearchController{
         self.searchBar.showsCancelButton = false
         self.searchBar.showsBookmarkButton = false
         self.searchBar.searchBarStyle = .default
-        self.searchBar.placeholder = "输入查询内容"
+        self.searchBar.placeholder = SearchPlaceholder
         self.searchBar.tintColor = UIColor.blue
         self.searchBar.sizeToFit()
         
         
         //设置透明
-        self.searchBar.backgroundColor = UIColor.init(red: 0, green: 0, blue: 0, alpha: 0)
+        self.searchBar.backgroundColor = UIColor.clear
         self.searchBar.alpha = 0.7
-        //self.searchBar.setSearchFieldBackgroundImage(build_image(frame: CGRect.init(x: 0, y: 0, width: 1.0, height: 1.0), color: UIColor.clear), for: .normal)
         
         // 去掉背景上下黑线
         self.searchBar.backgroundImage = UIImage()
@@ -192,50 +166,39 @@ class baseSearchViewController: UISearchController{
         //设置边框和圆角 已经borderview 背景颜色
         searchField = self.searchBar.value(forKey: "searchField") as! UITextField
         searchField.layer.borderColor = UIColor.white.cgColor
-        searchField.layer.borderWidth = 1;
+        searchField.layer.borderWidth = 1
         searchField.layer.backgroundColor  = UIColor.white.cgColor
         searchField.backgroundColor = UIColor.clear
         searchField.layer.cornerRadius = 14.0
         searchField.borderStyle  = .roundedRect
         searchField.tintColor = UIColor.black
         searchField.layer.masksToBounds = true
-        
-        
+       
+        // 搜索框内左侧添加btn 调整位置
         searchField.addSubview(self.cityButton)
         searchBar.setPositionAdjustment(UIOffset.init(horizontal: leftDistance, vertical: 0), for: .search)
-        cityButton.frame = CGRect.init(x: 5, y: 4.5, width: 30, height: 20)
-        self.view.addSubview(self.serchRecordView.view)
+        // 必须把布局代码 放这里，才能初始化正常！！！！
+        self.view.addSubview(dropDownMenu)
+        self.view.addSubview(self.serchRecordVC.view)
+        // 搜索结果VC的view 布局
+        _ = self.searchResultsController?.view.sd_layout().topSpaceToView(dropDownMenu,0)?.bottomEqualToView(self.view)?.widthIs(ScreenW)
+        _ = self.serchRecordVC.view.sd_layout().topEqualToView(self.view)?.bottomEqualToView(self.view)?.rightEqualToView(self.view)?.leftEqualToView(self.view)
         
-        // 添加 搜索筛选view
-        self.createDropDown()
-    }
-   
-  
-    
-    override func viewWillLayoutSubviews() {
-       // self.resultTableView.tableView.mj_header.beginRefreshing()
-        _ = self.serchRecordView.view.sd_layout().topEqualToView(self.view)?.bottomEqualToView(self.view)?.widthIs(self.view.frame.width)?.leftEqualToView(self.view)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+        //不隐藏导航栏
+        self.navigationController?.navigationBar.settranslucent(false)
     }
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-    }
-    
-    
-    
-    func createDropDown(){
-        
-        
-        self.view.addSubview(dropDownMenu)
-        _ = self.searchResultsController?.view.sd_layout().topSpaceToView(dropDownMenu,0)?.bottomEqualToView(self.view)?.widthIs(self.view.frame.width)
         
     }
     
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+    }
     
+    // 选择城市，标签frame更新
     func changeCityTitle(title:String){
         
         // 计算city 字符串长度，改变button长度，和searchicon 偏移位置
@@ -258,7 +221,7 @@ class baseSearchViewController: UISearchController{
     
     
     @objc func cityClick(){
-        self.cityDelegate?.chooseCity()
+       self.chooseCity?()
     }
     
     
@@ -268,10 +231,11 @@ class baseSearchViewController: UISearchController{
 // 显示搜索结果
 extension baseSearchViewController:SearchResultDelegate,UISearchBarDelegate{
     
+
     func ShowSearchResults(word: String) {
         // 添加到搜索历史
         localData.shared.appendSearchHistories(value: word)
-        self.serchRecordView.AddHistoryItem = true 
+        self.serchRecordVC.AddHistoryItem = true
         // MARK
         let vm  = (self.searchResultsController as!  searchResultController).vm
         

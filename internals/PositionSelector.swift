@@ -12,19 +12,20 @@ import YNDropDownMenu
 class PositionSelector:YNDropDownView{
     
     
-    var data = ["学历要求":["大专","本科","硕士","博士","不要求"]
+    private var data = ["学历要求":["大专","本科","硕士","博士","不要求"]
         ,"工作性质":["全职","兼职","实习"]
         ]
     
     
-    var keys = ["学历要求", "工作性质"]
+    private var keys = ["学历要求", "工作性质"]
     
     // 传递的数据
-    var conditions:[String:[String]] = ["学历要求":[],"工作性质":[]]
+    private var conditions:[String:[String]] = ["学历要求":[],"工作性质":[]]
+    // 回调
     var passData: ((_ cond:[String:[String]]?) -> Void)?
     
     // confirm button
-    lazy var confirm:UIButton  = {
+    private lazy var confirm:UIButton  = {
         let btn = UIButton.init()
         btn.setTitle("确定", for: .normal)
         btn.setTitleColor(UIColor.white, for: .normal)
@@ -36,9 +37,8 @@ class PositionSelector:YNDropDownView{
         
     }()
     
-    var collectionView:UICollectionView!
     
-    lazy var layout:UICollectionViewFlowLayout = { [unowned self] in
+    private lazy var layout:UICollectionViewFlowLayout = { [unowned self] in
         
         let layout = UICollectionViewFlowLayout.init()
         layout.itemSize  = CGSize.init(width: 80, height: 20)
@@ -46,14 +46,13 @@ class PositionSelector:YNDropDownView{
         layout.minimumInteritemSpacing = 10
         layout.minimumLineSpacing  = 15
         layout.sectionInset  = UIEdgeInsets.init(top: 10, left: 5, bottom: 20, right: 10)
-        layout.headerReferenceSize   = CGSize.init(width: self.size.width, height: 20)
+        layout.headerReferenceSize   = CGSize.init(width: ScreenW, height: 20)
         return layout
         
         }()
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.backgroundColor = UIColor.white
-        collectionView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
+    
+    private lazy var collectionView:UICollectionView = { [unowned self] in
+        let collectionView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = UIColor.lightGray
@@ -62,10 +61,14 @@ class PositionSelector:YNDropDownView{
         collectionView.register(CompanySelectorCell.self, forCellWithReuseIdentifier: CompanySelectorCell.identity())
         collectionView.register(CompanySelectorHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: CompanySelectorHeader.identity())
         
+        return collectionView
         
+    }()
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.backgroundColor = UIColor.white
         self.addSubview(collectionView)
         _ = collectionView.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.topEqualToView(self)?.bottomEqualToView(self)
-        
         self.addSubview(confirm)
         _ = confirm.sd_layout().leftSpaceToView(self,20)?.rightSpaceToView(self,20)?.bottomSpaceToView(self,20)?.heightIs(30)
         
@@ -101,7 +104,8 @@ extension PositionSelector:UICollectionViewDelegate,UICollectionViewDataSource,U
             return cell
             
         }
-        let cell = CompanySelectorCell.init(frame: CGRect.init(x: 0, y: 0, width: 80, height: 20))
+        let cell = CompanySelectorCell()
+        cell.title.text = data[keys[indexPath.section]]?[indexPath.row]
         return cell
     }
     

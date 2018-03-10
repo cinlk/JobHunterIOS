@@ -12,20 +12,21 @@ import Foundation
 
 /* 定义全局的变量 */
 
-
-//  几何形状相关
-
-
-let NAV_BAR_FRAME_WIDTH:CGFloat = 320.0
-let NAV_BAR_FRAME_HEIGHT:CGFloat = 64.0
 let KEYBOARD_HEIGHT:CGFloat = 216.0
 
-
+// navigationbar 高度
 let NavBarH:CGFloat = 44
+// navigation View 高度
 let NavH:CGFloat = 64
 
+// 屏幕宽高
 let ScreenW:CGFloat = UIScreen.main.bounds.width
 let ScreenH:CGFloat = UIScreen.main.bounds.height
+
+
+// cell lable offsetx 偏移
+let TableCellOffsetX:CGFloat = 16
+
 
 // url
 let GITHUB_API_URL:String = "https://api.github.com"
@@ -52,7 +53,6 @@ let ChatInputBarH:CGFloat = 45.0
 let ChatKeyBoardH:CGFloat =  258.0
 
 // chat view
-
 let avatarSize:CGSize = CGSize.init(width: 45, height: 45)
 
 
@@ -72,8 +72,7 @@ var IsGreeting:Bool = true
 
 
 
-// tableCell offsetX
-let TableCellOffsetX:CGFloat = 16
+
 
 
 
