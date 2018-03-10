@@ -13,23 +13,22 @@ import YNDropDownMenu
 
 class CompanySelector: YNDropDownView{
     
-    var data = ["公司阶段":["不限","初创型","成长行","成熟性","已上市"],
+    private var data = ["公司阶段":["不限","初创型","成长行","成熟性","已上市"],
                 "企业性质":["不限","国企","民营","合资","外企","国家机关","事业单位"],
                 "公司规模":["不限","20以下","20-99人","100-499人","500-999人","1000人以上"]
                 ]
     
-    var keys = ["公司阶段", "企业性质", "公司规模"]
+    private var keys = ["公司阶段", "企业性质", "公司规模"]
     
     // 传递的数据
-    var conditions = ["公司阶段":"不限","企业性质":"不限","公司规模":"不限"]
-    var passData: ((_ cond:[String:String]?) -> Void)?
-    var collectionView:UICollectionView!
+    private var conditions = ["公司阶段":"不限","企业性质":"不限","公司规模":"不限"]
     
-    var initial = 3
+    var passData: ((_ cond:[String:String]?) -> Void)?
+    
     
     
     // confirm button
-    lazy var confirm:UIButton  = {
+    private lazy var confirm:UIButton  = {
        let btn = UIButton.init()
         btn.setTitle("确定", for: .normal)
         btn.setTitleColor(UIColor.white, for: .normal)
@@ -42,7 +41,7 @@ class CompanySelector: YNDropDownView{
     }()
     
     
-    lazy var layout:UICollectionViewFlowLayout = { [unowned self] in
+    private lazy var layout:UICollectionViewFlowLayout = { 
        
         let layout = UICollectionViewFlowLayout.init()
         layout.itemSize  = CGSize.init(width: 80, height: 20)
@@ -50,37 +49,37 @@ class CompanySelector: YNDropDownView{
         layout.minimumInteritemSpacing = 10
         layout.minimumLineSpacing  = 15
         layout.sectionInset  = UIEdgeInsets.init(top: 10, left: 5, bottom: 20, right: 10)
-        layout.headerReferenceSize   = CGSize.init(width: self.size.width, height: 20)
+        layout.headerReferenceSize   = CGSize.init(width: ScreenW, height: 20)
         return layout
         
     }()
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.backgroundColor = UIColor.white
-        collectionView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
+    
+    private lazy var collectionView:UICollectionView = { [unowned self] in
+       
+        let collectionView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = UIColor.lightGray
         collectionView.contentInset = UIEdgeInsets.init(top: 20, left: 10, bottom: 20, right: 0)
-        
         collectionView.allowsMultipleSelection = true
-        
         collectionView.register(CompanySelectorCell.self, forCellWithReuseIdentifier: CompanySelectorCell.identity())
         collectionView.register(CompanySelectorHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: CompanySelectorHeader.identity())
-      
-        
-        
-       
-        
+       return collectionView
+    }()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.backgroundColor = UIColor.white
         self.addSubview(collectionView)
-        _ = collectionView.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.topEqualToView(self)?.bottomEqualToView(self)
-        
         self.addSubview(confirm)
+        _ = collectionView.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.bottomEqualToView(self)?.topEqualToView(self)
         _ = confirm.sd_layout().leftSpaceToView(self,20)?.rightSpaceToView(self,20)?.bottomSpaceToView(self,20)?.heightIs(30)
         
     }
     
+    
 
+ 
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -109,18 +108,17 @@ extension CompanySelector: UICollectionViewDelegate, UICollectionViewDataSource,
         if let cell =  collectionView.dequeueReusableCell(withReuseIdentifier: CompanySelectorCell.identity(), for: indexPath) as? CompanySelectorCell{
             
             cell.title.text = data[keys[indexPath.section]]?[indexPath.row]
-            // 第一次加载 显示默认
-            if indexPath.row == 0  && initial > 0 {
+            // 第一次加载 选中每个section的 "不限"
+            if indexPath.row == 0{
                 cell.contentView.backgroundColor = UIColor.blue
-                initial  -= 1
-                //
                 collectionView.selectItem(at: indexPath, animated: false, scrollPosition: UICollectionViewScrollPosition.top)
             }
             return cell
             
             
         }
-        let cell = CompanySelectorCell.init(frame: CGRect.init(x: 0, y: 0, width: 80, height: 20))
+        let cell = CompanySelectorCell()
+        cell.title.text = data[keys[indexPath.section]]?[indexPath.row]
         //cell.button.setTitle(data[keys[indexPath.section]]?[indexPath.row], for: .normal)
         return cell
     }
@@ -147,7 +145,7 @@ extension CompanySelector: UICollectionViewDelegate, UICollectionViewDataSource,
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         for index in collectionView.indexPathsForSelectedItems!{
             if indexPath.section == index.section {
-                // 同section 不能多选
+                // 同section 不能多选, 取消之前被选择的cell
                 let oldcell = collectionView.cellForItem(at: index) as! CompanySelectorCell
                 oldcell.contentView.backgroundColor = UIColor.white
                 self.collectionView.deselectItem(at: index, animated: true)
@@ -166,6 +164,7 @@ extension CompanySelector: UICollectionViewDelegate, UICollectionViewDataSource,
     }
     
     
+    
 }
 
 extension CompanySelector{
@@ -177,7 +176,9 @@ extension CompanySelector{
                 conditions[keys[index.section]] =  cell.title.text
             })
         }
+        // 影藏当前dropview
         self.hideMenu()
+        print(conditions)
         // 闭包回传
         if let pass = passData{
             pass(conditions)
@@ -196,6 +197,7 @@ class CompanySelectorCell:UICollectionViewCell{
        lb.font = UIFont.systemFont(ofSize: 12)
        lb.textColor = UIColor.black
        lb.textAlignment = .center
+       lb.numberOfLines = 1
        return lb
     }()
     
@@ -204,6 +206,7 @@ class CompanySelectorCell:UICollectionViewCell{
         title.frame = self.contentView.frame
         self.contentView.backgroundColor = UIColor.white
         self.contentView.addSubview(title)
+        
         
     }
     
@@ -222,18 +225,18 @@ class CompanySelectorHeader: UICollectionReusableView{
     
     lazy var name:UILabel = {
         let name = UILabel.init()
-        name.translatesAutoresizingMaskIntoConstraints = false
-        name.textColor = UIColor.blue//
+        name.textColor = UIColor.blue
         name.textAlignment = .left
         name.font = UIFont.systemFont(ofSize: 12)
-        
+        name.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         return name
     }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = UIColor.lightGray
         self.addSubview(name)
-        _ = name.sd_layout().topSpaceToView(self,2.5)?.bottomSpaceToView(self,2.5)?.leftSpaceToView(self,5)?.widthIs(120)?.heightIs(15)
+        _ = name.sd_layout().topSpaceToView(self,2.5)?.bottomSpaceToView(self,2.5)?.leftSpaceToView(self,5)?.autoHeightRatio(0)
         
     }
     required init?(coder aDecoder: NSCoder) {

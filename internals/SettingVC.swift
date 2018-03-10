@@ -25,6 +25,8 @@ class SettingVC: UIViewController {
         case aboutUS = "关于我们"
         case evaluationUS = "给我们评价"
         case logout = "退出当前账号"
+        case feedBack = "问题反馈"
+        case help = "帮助"
     }
 
     private lazy var tableView:UITableView = { [unowned self] in
@@ -55,7 +57,7 @@ class SettingVC: UIViewController {
         return alertVC
     }()
     
-    private lazy var items:[Int:[SettingCellItem]] = [0:[.myAccount,.messageSetting,.greeting],1:[.clearCache,.aboutUS,.evaluationUS], 2:[.logout]]
+    private lazy var items:[Int:[SettingCellItem]] = [0:[.myAccount,.messageSetting,.greeting,.help,.feedBack],1:[.clearCache,.aboutUS,.evaluationUS], 2:[.logout]]
     
     private lazy var records:[SettingCellItem:(Int,Int)] = [:]
     
@@ -190,6 +192,12 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource{
             logoutAlertShow()
         case .evaluationUS:
             evaluationApp()
+        case .help:
+            let help = HelpsVC()
+            self.navigationController?.pushViewController(help, animated: true)
+        case .feedBack:
+            let problem = feedBackVC()
+            self.navigationController?.pushViewController(problem, animated: true)
         default:
             break
         }

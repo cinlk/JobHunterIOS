@@ -115,7 +115,7 @@ class RegisterViewController: UIViewController{
     
     override func viewWillLayoutSubviews() {
         
-        _ = phoneImage.sd_layout().leftSpaceToView(self.view,40)?.topSpaceToView(self.view,NAV_BAR_FRAME_HEIGHT + 20)?.widthIs(25)?.heightIs(30)
+        _ = phoneImage.sd_layout().leftSpaceToView(self.view,40)?.topSpaceToView(self.view,NavH + 20)?.widthIs(25)?.heightIs(30)
         
         _ = verifyButton.sd_layout().rightSpaceToView(self.view,30)?.bottomEqualToView(phoneImage)?.heightIs(30)?.widthIs(100)
         

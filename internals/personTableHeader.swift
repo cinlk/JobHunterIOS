@@ -27,6 +27,7 @@ class personTableHeader: UIView {
         name.textAlignment = .center
         name.textColor = UIColor.white
         name.font = UIFont.systemFont(ofSize: 16)
+        name.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         return name
     }()
     
@@ -38,6 +39,7 @@ class personTableHeader: UIView {
         intr.font = UIFont.systemFont(ofSize: 14)
         intr.text = ""
         intr.backgroundColor = UIColor.clear
+        intr.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         return intr
     }()
     
@@ -63,30 +65,21 @@ class personTableHeader: UIView {
     }
     
     private func hrlayout(){
+        
         self.backgroundColor = UIColor.clear
-        
         _ = avatarImg.sd_layout().centerXEqualToView(self)?.topSpaceToView(self,10)
-        _ = nameTitle.sd_layout().topSpaceToView(avatarImg,5)?.widthIs(100)?.centerXEqualToView(avatarImg)?.heightIs(20)
-        
-        //nameTitle.frame = CGRect.init(x: 10, y: avatarImg.origin.y + avatarImg.height + 10, width: ScreenW - 20, height: 30)
-        //introduce.frame = CGRect.init(x: 10, y: nameTitle.origin.y + , width: <#T##CGFloat#>, height: <#T##CGFloat#>)
-        _ = introduce.sd_layout().leftSpaceToView(self,10)?.rightSpaceToView(self,10)?.topSpaceToView(nameTitle,5)?.heightIs(25)?.centerXEqualToView(avatarImg)
+        _ = nameTitle.sd_layout().topSpaceToView(avatarImg,5)?.centerXEqualToView(avatarImg)?.autoHeightRatio(0)
+        _ = introduce.sd_layout().topSpaceToView(nameTitle,5)?.centerXEqualToView(avatarImg)?.autoHeightRatio(0)
         avatarImg.setCircle()
-        nameTitle.sizeToFit()
+
     }
 
     private func normallayout(){
+        
         self.backgroundColor = UIColor.orange
-      
-        
         _ = avatarImg.sd_layout().centerXEqualToView(self)?.centerYEqualToView(self)
-        _ = nameTitle.sd_layout().topSpaceToView(avatarImg,5)?.widthIs(100)?.centerXEqualToView(avatarImg)?.heightIs(15)
-        
-        //nameTitle.frame = CGRect.init(x: 10, y: avatarImg.origin.y + avatarImg.height + 10, width: ScreenW - 20, height: 30)
-        //introduce.frame = CGRect.init(x: 10, y: nameTitle.origin.y + , width: <#T##CGFloat#>, height: <#T##CGFloat#>)
-        _ = introduce.sd_layout().leftSpaceToView(self,10)?.rightSpaceToView(self,10)?.topSpaceToView(nameTitle,5)?.heightIs(20)?.centerXEqualToView(avatarImg)
-        
+        _ = nameTitle.sd_layout().topSpaceToView(avatarImg,5)?.centerXEqualToView(avatarImg)?.autoHeightRatio(0)
+        _ = introduce.sd_layout().topSpaceToView(nameTitle,5)?.centerXEqualToView(avatarImg)?.autoHeightRatio(0)
         avatarImg.setCircle()
-        nameTitle.sizeToFit()
     }
 }

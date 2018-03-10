@@ -8,50 +8,57 @@
 
 import UIKit
 
+
+fileprivate let titleStr:String = "技能/爱好"
+
 class person_skillCell: personBaseCell {
     
     
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.title.text = titleStr
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        self.title.text = "技能/爱好"
-    }
-    
-    
-    
-    func setContentV(items:[person_skills]){
-        
-        self.contentV.subviews.forEach { (view) in
-            if view.isKind(of: itemView.self){
-                view.removeFromSuperview()
+    override dynamic var mode: [Any]?{
+        didSet{
+            guard let items = mode as? [person_skills], items.count > 0 else {
+                defaultView.isHidden = false
+                contentV.isHidden = true
+                self.setupAutoHeight(withBottomView: defaultView, bottomMargin: 10)
+                return
             }
-        }
-        
-        guard items.count > 0  else {
-            defaultView.isHidden = false
-            contentV.height = 0
-            cellHeight = defaultViewHeight
-            return
-        }
-        
-        
-        var preHeight:CGFloat = 0
-        defaultView.isHidden = true
-        
-        for (_, item) in items.enumerated(){
-            let itemV = itemView.init(frame: CGRect.init(x: 0, y: preHeight + 5, width: ScreenW , height: 0))
-            itemV.mode = item
-            preHeight += itemV.height
-            self.contentV.addSubview(itemV)
             
-        }
-        contentV.height = preHeight
-        cellHeight = describeHeight + preHeight
+            
+            
+            contentV.isHidden = false
+            defaultView.isHidden = true
+            
+            // 去掉重复view，由于cell复用
+            self.contentV.subviews.forEach { (view) in
+                if view.isKind(of: itemView.self){
+                    view.removeFromSuperview()
+                }
+            }
+            
+            var tmp:[itemView] = []
+            for (_, item) in items.enumerated(){
+                let v = itemView.init()
+                v.mode = item
+                tmp.append(v)
+                self.contentV.addSubview(v)
+            }
+            
+            self.contentV.setupAutoWidthFlowItems(tmp, withPerRowItemsCount: 1, verticalMargin: 10, horizontalMargin: 0, verticalEdgeInset: 5, horizontalEdgeInset: 5)
+            self.setupAutoHeight(withBottomView: contentV, bottomMargin: 10)
         
+        }
     }
     
-    
+
     class func identity()-> String {
         return "person_skillCell"
     }
@@ -79,7 +86,7 @@ private class itemView:UIView{
     
     
     private lazy var describe:UILabel = {
-        let t = UILabel.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW - 20 , height: 0))
+        let t = UILabel.init(frame: CGRect.zero)
         t.textColor = UIColor.black
         t.lineBreakMode = .byWordWrapping
         t.numberOfLines = 0
@@ -89,26 +96,29 @@ private class itemView:UIView{
         
     }()
     
-    private var defaultH:CGFloat = 35
     
     var mode:person_skills?{
         didSet{
             type.text = mode!.skillType
             describe.text = mode!.describe
-            adjustDescribeHeight()
         }
     }
     
     override init(frame: CGRect) {
+        
         super.init(frame: frame)
+        let views:[UIView] = [doticon, type, describe]
+        self.sd_addSubviews(views)
         
-        self.addSubview(type)
-        self.addSubview(describe)
-        self.addSubview(doticon)
+        _ = doticon.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(self,5)?.widthIs(15)?.heightIs(15)
         
-        _ = doticon.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(self,5)?.widthIs(20)?.heightIs(20)
-        
-        _ = type.sd_layout().leftSpaceToView(doticon,10)?.topEqualToView(doticon)?.rightSpaceToView(self,10)?.heightIs(20)
+        _ = type.sd_layout().leftSpaceToView(doticon,10)?.topEqualToView(doticon)?.rightSpaceToView(self,10)?.autoHeightRatio(0)
+        _ = describe.sd_layout().leftEqualToView(type)?.rightSpaceToView(self,10)?.topSpaceToView(type,10)?.autoHeightRatio(0)
+
+        type.setMaxNumberOfLinesToShow(1)
+        describe.setMaxNumberOfLinesToShow(0)
+        self.setupAutoHeight(withBottomView: describe, bottomMargin: 10)
+
         
         
     }
@@ -116,23 +126,6 @@ private class itemView:UIView{
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-
-    
-    private func adjustDescribeHeight(){
-        if let textHeight = describe.text?.getStringCGRect(size: CGSize.init(width: ScreenW - 50 , height: 0), font: describe.font){
-            
-            describe.frame = CGRect.init(x: 40, y: 30, width: textHeight.width, height: textHeight.height)
-            self.height = describe.height + defaultH
-            describe.sizeToFit()
-            return
-        }
-        
-        describe.height = 0
-        self.height = defaultH
-        
-    }
-    
     
     
 }

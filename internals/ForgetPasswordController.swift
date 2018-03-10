@@ -141,7 +141,7 @@ class ForgetPasswordController: UIViewController {
     
     override func viewWillLayoutSubviews() {
         
-        _ = phoneImage.sd_layout().topSpaceToView(self.view,NAV_BAR_FRAME_HEIGHT + 20)?.leftSpaceToView(self.view,20)?.widthIs(25)?.heightIs(30)
+        _ = phoneImage.sd_layout().topSpaceToView(self.view,NavH + 20)?.leftSpaceToView(self.view,20)?.widthIs(25)?.heightIs(30)
         _ = verifyButton.sd_layout().rightSpaceToView(self.view,30)?.bottomEqualToView(phoneImage)?.widthIs(100)?.heightIs(30)
         _ = phoneText.sd_layout().leftSpaceToView(phoneImage,10)?.bottomEqualToView(phoneImage)?.rightSpaceToView(verifyButton,1)?.heightIs(30)
         

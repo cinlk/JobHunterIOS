@@ -45,6 +45,12 @@ class searchResultController: UIViewController,UIScrollViewDelegate {
 }
 
 
+extension searchResultController:UITableViewDelegate{
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return jobdetailCell.cellHeight()
+    }
+}
 
 extension searchResultController{
     
@@ -57,7 +63,7 @@ extension searchResultController{
             RxTableViewSectionedReloadDataSource<searchJobSection>.init(configureCell: {
                 (_,tb,indexpath,element) in
                 let cell = tb.dequeueReusableCell(withIdentifier: jobdetailCell.identity(), for: indexpath) as! jobdetailCell
-                cell.createCells(items: element.toJSON())
+                cell.mode = element
                 return cell
             })
         

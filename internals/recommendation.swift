@@ -50,7 +50,7 @@ extension recommendation: UITableViewDelegate,UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let  cell  =  table.dequeueReusableCell(withIdentifier: jobdetailCell.identity(), for: indexPath) as? jobdetailCell{
-            cell.createCells(items: data[indexPath.row])
+            cell.mode = CompuseRecruiteJobs(JSON: data[indexPath.row])
             cell.selectionStyle = .none
             return cell
         }
@@ -78,7 +78,8 @@ extension recommendation: UITableViewDelegate,UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return jobdetailCell.cellHeight()
+        let mode = CompuseRecruiteJobs(JSON: data[indexPath.row])
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: jobdetailCell.self, contentViewWidth: ScreenW)
     }
 }
 

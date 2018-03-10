@@ -9,7 +9,7 @@
 import UIKit
 import SVProgressHUD
 
-
+fileprivate let VCtitle:String = "添加教育经历"
 
 class add_educations: UITableViewController {
 
@@ -55,11 +55,15 @@ class add_educations: UITableViewController {
     
     private var pickPosition:[personBaseInfo:[Int:Int]] = [:]
     
+    private var currentField:UITextField?
+    
     
     override func viewDidLoad() {
         
         super.viewDidLoad()
         self.tableView.tableFooterView = UIView.init()
+        self.tableView.isScrollEnabled = false
+        self.tableView.backgroundColor = UIColor.viewBackColor()
         self.pickViewOriginXY = pickView.origin
         self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "保存", style: .plain, target: self, action: #selector(save))
         self.tableView.register(AddItemCell.self, forCellReuseIdentifier: AddItemCell.identity())
@@ -71,6 +75,14 @@ class add_educations: UITableViewController {
 
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationItem.title = VCtitle
+    }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+    }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
@@ -97,14 +109,15 @@ class add_educations: UITableViewController {
         return AddItemCell.cellHeight()
     }
 
-
-   
 }
 
 extension add_educations{
     
     @objc private func hiddenBackGround(){
         
+        let img = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 20, height: 20))
+        img.image = #imageLiteral(resourceName: "arrow_xl")
+        currentField?.rightView = img
         self.navigationController?.view.willRemoveSubview(backgroundView)
         backgroundView.removeFromSuperview()
         UIView.animate(withDuration: 0.3, animations: {
@@ -164,12 +177,14 @@ extension add_educations{
               //
               self.navigationController?.view.addSubview(backgroundView)
               backgroundView.isUserInteractionEnabled = false
+              self.view.isUserInteractionEnabled = false
               self.navigationController?.navigationBar.isUserInteractionEnabled = false
               SVProgressHUD.show(UIImage.init(named: "error")!, status: "请检查输入")
               SVProgressHUD.dismiss(withDelay: 3, completion: {  [unowned self] in
                 self.navigationController?.view.willRemoveSubview(self.backgroundView)
                 self.backgroundView.removeFromSuperview()
                 self.backgroundView.isUserInteractionEnabled = true
+                self.view.isUserInteractionEnabled = true
                 self.navigationController?.navigationBar.isUserInteractionEnabled = true
 
             })
@@ -185,13 +200,16 @@ extension add_educations: UITextFieldDelegate{
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         
         let currentName = textField.placeholder!
-       
+        let img = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 20, height: 20))
+        img.image = #imageLiteral(resourceName: "arrow_mr")
         //  pickerview 不显示键盘，记录当前的row和type
         switch  currentName {
             
         case "学位":
             pickView.mode = ("学位", selected.getItems(name: "学位")!)
             pickView.setPosition(position: pickPosition[.degree])
+            currentField = textField
+            currentField?.rightView = img
             showPickView()
             currentType = (typeName[currentName]?.0)!
             currentRow = (typeName[currentName]?.1)!
@@ -199,6 +217,8 @@ extension add_educations: UITextFieldDelegate{
         case "开始时间":
             pickView.mode = ("生日", selected.getItems(name: "生日")!)
             pickView.setPosition(position: pickPosition[.startTime])
+            currentField = textField
+            currentField?.rightView = img
             showPickView()
             currentType = (typeName[currentName]?.0)!
             currentRow = (typeName[currentName]?.1)!
@@ -206,11 +226,12 @@ extension add_educations: UITextFieldDelegate{
         case "结束时间":
             pickView.mode = ("生日", selected.getItems(name: "生日")!)
             pickView.setPosition(position: pickPosition[.endTime])
+            currentField = textField
+            currentField?.rightView = img
             showPickView()
             currentType = (typeName[currentName]?.0)!
             currentRow = (typeName[currentName]?.1)!
             return false
-            
         default:
             break
         }
@@ -233,10 +254,8 @@ extension add_educations: UITextFieldDelegate{
          if textField.placeholder == "专业" ||  textField.placeholder == "学校" || textField.placeholder == "城市"{
             education.changeValue(pinfoType: currentType, value: textField.text!)
             self.tableView.reloadRows(at: [IndexPath.init(row: currentRow, section: 0)], with: .none)
-            
         }
         
-       
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

@@ -8,162 +8,105 @@
 
 import UIKit
 
+fileprivate let cellHeightH:CGFloat = 80
+fileprivate let itemWitdh:CGFloat = ScreenW / 4
+
+
 class MainPageCatagoryCell: UITableViewCell,UIScrollViewDelegate{
 
     
     
-    var scrollView:UIScrollView?
-    var event:UIGestureRecognizer?
+    private lazy var scrollView:UIScrollView = {
+        let scrollView = UIScrollView.init(frame: self.contentView.frame)
+        scrollView.delegate = self
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.isUserInteractionEnabled = true
+        scrollView.bounces = true
+        scrollView.isPagingEnabled = false
+        scrollView.contentInset = UIEdgeInsetsMake(0, 5, 0, 5)
+        //scrollView?.height = self.frame.height
+        scrollView.canCancelContentTouches  = true
+        return scrollView
+        
+    }()
+    
+    private var event:UIGestureRecognizer?
+    
+    var chooseItem:((_ btn:UIButton)->Void)?
     
     
-    // 闭包回调传值
-    typealias myblock = (_ str: String) -> Void
+    private var itemBtn:[UIButton] = []
     
-    var callBack:myblock?
-    
-    
-    
+    // image url strings and title
+    var mode:[String:String]?{
+        didSet{
+            scrollView.subviews.forEach{$0.removeFromSuperview()}
+            guard let items = mode else {
+                return
+            }
+            itemBtn.removeAll()
+            
+            scrollView.contentSize = CGSize.init(width: CGFloat(items.count)*(itemWitdh+5) , height: scrollView.frame.height)
+            var index = 0
+            
+            // MARK 设置btn 效果
+            for (imageURL,title) in items{
+               
+                let btn = UIButton.init()
+                btn.frame = CGRect(x: CGFloat(index)*(itemWitdh+5), y: 10, width: itemWitdh, height: cellHeightH - CGFloat(10))
+                
+                btn.backgroundColor = UIColor.white
+                btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
+                btn.titleLabel?.textAlignment = .center
+                
+                //tagButton.tag = 100 + i
+                btn.setTitle(title, for: .normal)
+                btn.setTitleColor(UIColor.black, for: .normal)
+                //let img =
+                btn.setImage(UIImage.init(named: imageURL), for: .normal)
+            
+                //tagButton.addTarget(self, action: #selector(tag(button:)), for: .touchUpInside)
+                btn.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 20, 0)
+                btn.addTarget(self, action: #selector(chooseItem(_:)), for: .touchUpInside)
+                scrollView.addSubview(btn)
+                itemBtn.append(btn)
+                index += 1
+            }
+            
+        }
+    }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.build()
+        self.selectionStyle = .none
+        self.contentView.backgroundColor = UIColor.white
     }
     
-    func build(){
-        print("init cell")
-        scrollView = UIScrollView.init(frame: self.contentView.frame)
-        scrollView?.delegate = self
-        scrollView?.showsHorizontalScrollIndicator = false
-        
-        self.isUserInteractionEnabled = true
-        scrollView?.isUserInteractionEnabled = true
-        scrollView?.bounces = false
-        scrollView?.isPagingEnabled = false
-        //scrollView?.height = self.frame.height
-        scrollView?.canCancelContentTouches  = true
-        
-        self.contentView.addSubview(scrollView!)
-
-        
-
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.contentView.addSubview(scrollView)
+        _ = scrollView.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topEqualToView(self.contentView)?.bottomEqualToView(self.contentView)
     }
-    
-
-
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     
-    
-    
-    // create job tag button
-    func createJobTags(name:[String], width:Int){
-        scrollView?.subviews.forEach{$0.removeFromSuperview()}
-        
-        for  i in  0..<name.count{
-            let tagButton = UIButton.init()
-            tagButton.backgroundColor = UIColor.white
-            tagButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
-            //tagButton.tag = 100 + i
-            tagButton.setTitle(name[i], for: .normal)
-            tagButton.setTitleColor(UIColor.gray, for: .normal)
-            tagButton.setTitleColor(UIColor.white, for: .selected)
-            
-            tagButton.addTarget(self, action: #selector(tag(button:)), for: .touchUpInside)
-            tagButton.frame = CGRect(x: i*(width+5), y: 12, width: width, height: 20)
-            tagButton.layer.borderWidth = 0.5
-            if i == 0 {
-                // 全部button
-                tagButton.isSelected = true
-                tagButton.backgroundColor = UIColor.blue
-            }
-            scrollView?.addSubview(tagButton)
-        }
-        
-        scrollView?.contentInset = UIEdgeInsetsMake(0, 5, 0, 5)
-        self.backgroundColor = UIColor.lightGray
-        scrollView?.height  = self.contentView.frame.height
-        scrollView?.contentSize  = CGSize(width: name.count*(width+5), height: Int(self.frame.height))
-        
-    }
-    
-    //
-    func  SetCallBack(_ block: @escaping myblock){
-        
-            callBack = block
-    }
-    
-    @objc func tag(button:UIButton){
-        
-        print(button.titleLabel?.text ?? "")
-        for bu  in (self.scrollView?.subviews)!{
-            
-            if bu.isKind(of: UIButton.self){
-                if button ==  bu as! UIButton{
-                button.backgroundColor = UIColor.blue
-                button.isSelected = true
-                
-                    if callBack != nil{
-                        callBack!((button.titleLabel?.text)!)
-                    }
-                
-                }
-                else{
-                    (bu as! UIButton).backgroundColor = UIColor.white
-                    (bu as! UIButton).isSelected = false
-                }
-            }
-        }
-        
-    }
-   
-    
-    func createScroller(images:[String],width:Int){
-        
-        scrollView?.subviews.forEach{$0.removeFromSuperview()}
-        for i in 0..<images.count{
-            let button = UIButton(frame: CGRect(x: i*width, y: 0, width: width,height: Int(self.frame.height) - 35))
-            let label = UILabel()
-            scrollView?.addSubview(button)
-            scrollView?.addSubview(label)
-            _ = label.sd_layout().topSpaceToView(button,0.5)?.bottomSpaceToView(scrollView,10)?.widthIs(CGFloat(width))?.heightIs(20)?.centerXEqualToView(button)
-            
-            label.text = images[i]
-            label.font = UIFont(name: "Bobz Type", size: 10)
-            label.textAlignment = .center
-            label.textColor = UIColor.black
-            button.backgroundColor  = UIColor.white
-            button.setImage(UIImage(named:images[i]), for: .normal)
-            button.addTarget(self, action: #selector(demo(button:)), for: .touchUpInside)
-            button.titleLabel?.text = images[i]
-            
-            
-        }
-        
-        scrollView?.height  = self.contentView.frame.height
-        scrollView?.contentSize  = CGSize(width: images.count*width, height: Int(self.contentView.frame.height))
-    
-        
-        
-    }
-    @objc  
-    func demo(button:UIButton){
-        print("image \(button.titleLabel?.text ?? "")")
-        
-    }
-   
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        
-        
-        // Configure the view for the selected state
-    }
-    
-    
-    
 
+    class func cellHeight()->CGFloat{
+        return cellHeightH
+    }
 
+    class func identity()->String{
+        return "catagory"
+    }
 }
 
+
+extension MainPageCatagoryCell{
+    
+    @objc private func chooseItem(_ btn:UIButton){
+       self.chooseItem?(btn)
+    }
+}

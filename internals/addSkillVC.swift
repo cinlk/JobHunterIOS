@@ -9,6 +9,10 @@
 import UIKit
 import SVProgressHUD
 
+fileprivate let pickViewH:CGFloat = 200
+fileprivate let limitWord:Int = 100
+fileprivate let VCtitle:String = "添加技能/爱好"
+
 class addSkillVC: UITableViewController {
 
     
@@ -28,13 +32,15 @@ class addSkillVC: UITableViewController {
         }()
     
     private lazy var pickView:itemPickerView = {
-        let pick = itemPickerView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: 200))
+        let pick = itemPickerView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: pickViewH))
         pick.backgroundColor = UIColor.white
         UIApplication.shared.windows.last?.addSubview(pick)
         pick.pickerDelegate = self
         return pick
         
     }()
+  
+    
     
     private lazy var pickViewOriginXY:CGPoint = CGPoint.init(x: 0, y: 0)
     
@@ -55,28 +61,35 @@ class addSkillVC: UITableViewController {
     
     // cellCatch
     private var textViewCellCache:textViewCell?
+    private var currentTextFiled:UITextField?
+    
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.tableFooterView = UIView.init()
+        self.tableView.backgroundColor = UIColor.viewBackColor()
         self.pickViewOriginXY = pickView.origin
         self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "保存", style: .plain, target: self, action: #selector(save))
         self.tableView.register(AddItemCell.self, forCellReuseIdentifier: AddItemCell.identity())
         
         self.tableView.register(textViewCell.self, forCellReuseIdentifier: textViewCell.identity())
         
+    
         
         for (index,item) in skillData.getItemList().enumerated(){
             typeName[item.rawValue] = (item,index)
         }
     }
+    
+    
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationItem.title = VCtitle
     }
 
+    
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -146,6 +159,10 @@ extension addSkillVC {
     
     @objc private func hiddenBackGround(){
         
+        // 隐藏
+        let img = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 20, height: 20))
+        img.image = #imageLiteral(resourceName: "arrow_xl")
+        currentTextFiled?.rightView = img
         self.navigationController?.view.willRemoveSubview(backgroundView)
         backgroundView.removeFromSuperview()
         UIView.animate(withDuration: 0.3, animations: {
@@ -159,7 +176,8 @@ extension addSkillVC {
     
     private func showPickView(){
         
-        self.view.endEditing(true)
+        self.tableView.endEditing(true)
+        
         self.navigationController?.view.addSubview(backgroundView)
         UIView.animate(withDuration: 0.3, animations: {
             self.pickView.frame = CGRect.init(x: 0, y: ScreenH - 200, width: ScreenW, height: 200)
@@ -168,10 +186,13 @@ extension addSkillVC {
         })
     }
     
+
+    // 保存修改
     @objc func save(){
         
         self.view.endEditing(true)
-       
+        //MARK  验证数据
+        // 上传到服务器
         let res:(Bool,String) = skillData.isValidate()
         if res.0{
             //
@@ -180,15 +201,17 @@ extension addSkillVC {
             self.navigationController?.popViewController(animated: true)
             self.delegate?.refreshDataByType(.skill)
             
-            
+        // 错误提示
         }else{
             // 禁止navigationbar 点击
             self.navigationController?.view.addSubview(backgroundView)
             backgroundView.isUserInteractionEnabled = false
+            self.view.isUserInteractionEnabled = false
             self.navigationController?.navigationBar.isUserInteractionEnabled = false
             SVProgressHUD.show(UIImage.init(named: "error")!, status: "请检查输入")
             SVProgressHUD.dismiss(withDelay: 3, completion: {  [unowned self] in
                 self.backgroundView.isUserInteractionEnabled = true
+                self.view.isUserInteractionEnabled = true
                 self.backgroundView.removeFromSuperview()
                 self.navigationController?.view.willRemoveSubview(self.backgroundView)
                 self.navigationController?.navigationBar.isUserInteractionEnabled = true
@@ -208,10 +231,14 @@ extension addSkillVC: UITextFieldDelegate{
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         
         let currentName = textField.placeholder!
-        
+        currentTextFiled = textField
         //  pickerview 不显示键盘，记录当前的row和type
         switch  currentName {
         case personBaseInfo.skill.rawValue:
+            // textfield 右边image
+            let img = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 20, height: 20))
+            img.image = #imageLiteral(resourceName: "arrow_mr")
+            textField.rightView = img
             pickView.mode = ("技能", selected.getItems(name: "技能")!)
             pickView.setPosition(position: pickPosition[.startTime])
             showPickView()
@@ -259,6 +286,7 @@ extension addSkillVC: UITextFieldDelegate{
 extension addSkillVC: UITextViewDelegate{
     
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        textViewCellCache?.placeHolderLabel.isHidden = false
         return true
     }
     func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
@@ -266,21 +294,22 @@ extension addSkillVC: UITextViewDelegate{
         return true
     }
     func textViewDidBeginEditing(_ textView: UITextView) {
-        
+         textViewCellCache?.placeHolderLabel.isHidden = true
     }
     // 判断内容，设置placeholder label 显示
     func textViewDidChange(_ textView: UITextView) {
+       
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text == nil || textView.text.isEmpty{
             textViewCellCache?.placeHolderLabel.isHidden = false
         }else{
             textViewCellCache?.placeHolderLabel.isHidden = true
         }
-    }
-    
-    func textViewDidEndEditing(_ textView: UITextView) {
         
         skillData.changeValue(pinfoType: .describe, value: textView.text)
-        self.tableView.reloadRows(at: [IndexPath.init(item: skillData.getItemList().count-1, section: 0)], with: .none)
+//        self.tableView.reloadRows(at: [IndexPath.init(item: skillData.getItemList().count-1, section: 0)], with: .none)
         
     }
 }

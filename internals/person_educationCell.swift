@@ -9,55 +9,64 @@
 import UIKit
 
 
-// 一条内容的高度
-fileprivate let itemViewH:CGFloat = 80
+fileprivate let titleStr:String = "教育经历"
 
 class person_educationCell: personBaseCell {
 
     
-    private var contentVHeigh:CGFloat = 0
-    
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        self.title.text = "教育经历"
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.title.text = titleStr
+        
     }
     
-    // 设置内容view
-    open func setContentItemView(datas:[person_education]?){
-        
-        // 即使设置contetV 的高度为0,但是内部view 高度不为0 任然会显示出来
-        self.contentV.subviews.forEach { (view) in
-            if view.isKind(of: itemView.self){
-                view.removeFromSuperview()
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+   override dynamic var mode:[Any]?{
+        didSet{
+            guard let items = mode as? [person_education], items.count > 0  else {
+                defaultView.isHidden = false
+                contentV.isHidden = true
+                // cell 自适应高度
+                self.setupAutoHeight(withBottomView: defaultView, bottomMargin: 10)
+                return
             }
-        }
-        
-        // 没有数据显示defaultview
-        guard let items = datas, items.count > 0  else{
-            defaultView.isHidden = false
-            contentV.height = 0
-            cellHeight = defaultViewHeight
-            return
-        }
-        
-        // 显示数据
-        defaultView.isHidden = true
-        // 计算contentv 高度： 内容高度 加上 内容之间的间歇
-        contentVHeigh =  CGFloat(items.count)*itemViewH + CGFloat(5 * (items.count - 1))
-        
-        cellHeight = contentVHeigh + describeHeight
-        
-        contentV.height = contentVHeigh
-        
-        for (index,item) in items.enumerated(){
+
+            contentV.isHidden = false
+            defaultView.isHidden = true
             
-            let v = itemView.init(frame: CGRect.init(x: 0, y:  index*Int(itemViewH) + 5 , width: Int(ScreenW), height: Int(itemViewH)))
-            v.mode = item
-            self.contentV.addSubview(v)
+            self.contentV.subviews.forEach { (view) in
+                if view.isKind(of: itemView.self){
+                    view.removeFromSuperview()
+                }
+            }
+            
+            
+            var tmp:[itemView] = []
+            
+            for (_,item) in items.enumerated(){
+                
+                let v = itemView.init()
+                v.mode = item
+                tmp.append(v)
+                self.contentV.addSubview(v)
+            }
+            // contentV 设置元素布局
+            self.contentV.setupAutoWidthFlowItems(tmp, withPerRowItemsCount: 1, verticalMargin: 10, horizontalMargin: 0, verticalEdgeInset: 5, horizontalEdgeInset: 5)
+            // cell 高度自适应
+            
+            self.setupAutoHeight(withBottomView: contentV, bottomMargin: 10)
+           
             
         }
         
+    }
+   
+    override func layoutSubviews() {
+        super.layoutSubviews()
     }
     
     class func identity()->String{
@@ -93,17 +102,16 @@ private class itemView:UIView{
         t.textColor = UIColor.black
         t.font = UIFont.systemFont(ofSize: 15)
         t.textAlignment = .left
+
         return t
     }()
-    
-    
-    
-    //
+
     lazy private var combineLabel:UILabel = {
         let t = UILabel.init(frame: CGRect.zero)
         t.textColor = UIColor.black
         t.font = UIFont.systemFont(ofSize: 15)
         t.textAlignment = .left
+
         return t
     }()
     
@@ -121,31 +129,20 @@ private class itemView:UIView{
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = UIColor.white
-        self.addSubview(doticon)
-        self.addSubview(startEndTime)
-        self.addSubview(combineLabel)
-        self.addSubview(department)
+        let views:[UIView] = [doticon, startEndTime, combineLabel, department]
+        self.sd_addSubviews(views)
+        _ = doticon.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(self,10)?.widthIs(15)?.heightIs(15)
+        _ = startEndTime.sd_layout().leftSpaceToView(doticon,10)?.topEqualToView(doticon)?.rightSpaceToView(self,5)?.autoHeightRatio(0)
         
-        _ = doticon.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(self,10)?.widthIs(20)?.heightIs(20)
-        _ = startEndTime.sd_layout().leftSpaceToView(doticon,10)?.topEqualToView(doticon)?.rightSpaceToView(self,10)?.heightIs(20)
-        
-        _ = combineLabel.sd_layout().leftEqualToView(startEndTime)?.topSpaceToView(startEndTime,5)?.rightSpaceToView(self,10)?.heightIs(20)
-        _ = department.sd_layout().leftEqualToView(startEndTime)?.topSpaceToView(combineLabel,5)?.rightEqualToView(combineLabel)?.heightIs(20)
+        _ = combineLabel.sd_layout().leftEqualToView(startEndTime)?.topSpaceToView(startEndTime,5)?.rightSpaceToView(self,5)?.autoHeightRatio(0)
+        _ = department.sd_layout().leftEqualToView(startEndTime)?.topSpaceToView(combineLabel,5)?.rightSpaceToView(self,5)?.autoHeightRatio(0)
+        // 自动计算view 的高度
+        self.setupAutoHeight(withBottomView: department, bottomMargin: 5)
         
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    // 约束放在这里没有效果？？？
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-    }
-    
-    
-    
-    
     
 }

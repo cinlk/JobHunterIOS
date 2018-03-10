@@ -37,11 +37,12 @@ class shareView: UIView {
         return sk
     }()
     
-
-    private var  itemButtons:[UIButton]?
+    // 存储分享的btn
+    var  itemButtons:[UIButton]?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        itemButtons = []
         self.backgroundColor = UIColor.white
         self.addSubview(stackview)
         buildStackItemView(items: showItems, ItemRowNumbers: COLUME, mainStack: stackview, itemButtons: &itemButtons)

@@ -34,7 +34,7 @@ class JobManager{
             
             let json:[String:String] = ["picture":"chrome","company":"google","jobName":"研发",
                                         "address":"山上","salary":"100万","create_time":"2018-01-09","education":"本科"]
-            let cjson:[String:Any] = ["id":"678","icon":"sina","name":"新浪","describe":"大公司，有前景","staffs":"1000人以上","tags":["带我去的","地段"]]
+            let cjson:[String:Any] = ["id":"678","icon":"sina","name":"新浪带我去的群无多大青蛙  当前为多无群  当前为多群无  当前为多群无","describe":"大公司，有前景 当前的群 dqwdq 当前为多群无 当前为多群无多群无多无群 当前为多群多群多群多群无 当前为多群无多无前端去无 当前为多群无多群无多无群  带我去的","staffs":"1000人以上","tags":["带我去的","地段"]]
             
             collectedCompanys.append(comapnyInfo(JSON: cjson)!)
             
@@ -150,7 +150,7 @@ struct  comapnyInfo: Mappable, Comparable {
 
 
 // MARK 添加更多的属性，比如id，标签等？？
-struct CompuseRecruiteJobs :Mappable, Comparable{
+class CompuseRecruiteJobs :NSObject,Mappable, Comparable{
     
     static func <(lhs: CompuseRecruiteJobs, rhs: CompuseRecruiteJobs) -> Bool {
         return true
@@ -168,11 +168,11 @@ struct CompuseRecruiteJobs :Mappable, Comparable{
     var create_time:String?
     var education:String?
     
-    init?(map: Map) {
+    required init?(map: Map) {
         
     }
     
-    mutating func mapping(map: Map) {
+    func mapping(map: Map) {
         picture <- map["picture"]
         company <- map["company"]
         jobName <- map["jobName"]
@@ -181,7 +181,6 @@ struct CompuseRecruiteJobs :Mappable, Comparable{
         create_time <- map["create_time"]
         education <- map["education"]
     }
-    
     
     
 }
@@ -226,8 +225,8 @@ enum MultiSecontions{
 }
 // items
 enum SectionItem{
-    case catagoryItem(imageNames:[String])
-    case recommandItem(imageNames:[String])
+    case catagoryItem(imageNames:[String:String])
+    case recommandItem(imageNames:[String:String])
     case campuseRecruite(job:CompuseRecruiteJobs)
     //case internRecruite(jobs:[InternshipJobs])
     

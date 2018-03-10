@@ -8,6 +8,7 @@
 
 import UIKit
 
+fileprivate let VCtitle:String = "我的简历"
 
 enum resumeViewType:String {
     
@@ -22,27 +23,13 @@ enum resumeViewType:String {
 class personResumeTable: UITableViewController {
     
     
+    // 进入页面时 要刷新数据
     private var pManager:personModelManager = personModelManager.shared
-    
-  
-    
-    private var jsonData:[String:Any]?
-    
     private var viewType:[resumeViewType] = [.baseInfo,.education,.project,.skill,.evaluate]
-    
-
-    
-    private var cacahCell:person_educationCell?
-    private var projectCell:person_projectCell?
-    private var skillCell:person_skillCell?
-    private var evaluateCell:person_evaluateCell?
-    
-    
     // 跳转的界面
-    
-    private var listItem:listItemsView = listItemsView()
-    private var person_infoView:modify_personInfoTBC = modify_personInfoTBC()
-    private var estimateVC:evaluateSelfVC = evaluateSelfVC()
+    private lazy var listItem:listItemsView = listItemsView()
+    private lazy var person_infoView:modify_personInfoVC = modify_personInfoVC()
+    private lazy var estimateVC:evaluateSelfVC = evaluateSelfVC()
     
     
     override func viewDidLoad() {
@@ -57,22 +44,22 @@ class personResumeTable: UITableViewController {
         self.tableView.register(person_projectCell.self, forCellReuseIdentifier: person_projectCell.identity())
         self.tableView.register(person_skillCell.self, forCellReuseIdentifier: person_skillCell.identity())
         self.tableView.register(person_evaluateCell.self, forCellReuseIdentifier: person_evaluateCell.identity())
-        // 设置数据  如果扩展dictionary 加入下标获取值??
-        //jsonData = ["个人信息":myinfo,"教育经历":education_infos,"实习/项目经历":project_infos,"我的技能":skill_infos,"自我评价":evaluate]
+     
         listItem.delegate = self
         person_infoView.delegate = self
         estimateVC.delegate = self
         pManager.initialData()
         //navigationItem
         addBarItem()
-        
+        // loadData
+        loadData()
         
     }
 
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationItem.title = "我的简历"
+        self.navigationItem.title = VCtitle
         
     }
     
@@ -106,67 +93,75 @@ class personResumeTable: UITableViewController {
         case .education:
             let cell = tableView.dequeueReusableCell(withIdentifier: person_educationCell.identity(), for: indexPath) as!
                 person_educationCell
-            cell.setContentItemView(datas: pManager.educationInfos)
-            cacahCell = cell
+            cell.mode = pManager.educationInfos
+            //cell.useCellFrameCache(with: indexPath, tableView: tableView)
             return cell
         case .project:
             let cell = tableView.dequeueReusableCell(withIdentifier: person_projectCell.identity(), for: indexPath) as! person_projectCell
-            cell.setContentV(datas: pManager.projectInfo)
-            projectCell = cell
+            cell.mode = pManager.projectInfo
+            //cell.useCellFrameCache(with: indexPath, tableView: tableView)
             return cell
         case .skill:
             let cell = tableView.dequeueReusableCell(withIdentifier: person_skillCell.identity(), for: indexPath) as!
                 person_skillCell
-            cell.setContentV(items: pManager.skillInfos)
-            skillCell = cell
+            cell.mode = pManager.skillInfos
+            //cell.useCellFrameCache(with: indexPath, tableView: tableView)
             return cell
+            
         case .evaluate:
             let cell = tableView.dequeueReusableCell(withIdentifier: person_evaluateCell.identity(), for: indexPath) as!
                 person_evaluateCell
-            cell.setContentV(content: &pManager.estimate)
-            evaluateCell = cell
+            cell.mode = pManager.estimate
+            //cell.useCellFrameCache(with: indexPath, tableView: tableView)
             return cell
-        
         }
-        
-        
         
     }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
         switch viewType[indexPath.section] {
         case .baseInfo:
-            return resume_personInfoCell.cellHeight()
+            if let info = pManager.personBaseInfo{
+                
+                 return tableView.cellHeight(for: indexPath, model: info, keyPath: "mode", cellClass: resume_personInfoCell.self, contentViewWidth: ScreenW)
+            }
+            return 0
+           
         case .education:
-            return cacahCell?.cellHeight ??  0
+            
+            
+            return tableView.cellHeight(for: indexPath, model: pManager.educationInfos, keyPath: "mode", cellClass: person_educationCell.self, contentViewWidth: ScreenW)
+           
+            
         case .project:
-            return projectCell?.cellHeight ?? 0
+         
+            return tableView.cellHeight(for: indexPath, model: pManager.projectInfo, keyPath: "mode", cellClass: person_projectCell.self, contentViewWidth: ScreenW)
+           
         case .skill:
-            return skillCell?.cellHeight ?? 0
+            
+            return tableView.cellHeight(for: indexPath, model: pManager.skillInfos, keyPath: "mode", cellClass: person_skillCell.self, contentViewWidth: ScreenW)
+            
         case .evaluate:
-            return evaluateCell?.cellHeight ?? 0
+            return   tableView.cellHeight(for: indexPath, model: pManager.estimate, keyPath: "mode", cellClass: person_evaluateCell.self, contentViewWidth: ScreenW)
         }
         
     }
     
    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch viewType[indexPath.section] {
+        let type = viewType[indexPath.section]
+        switch type {
+            
+        // lk:personInfo:VC:/baseInfo/section=1  -> （person_infoView）
+
         case .baseInfo:
     
-        
             person_infoView.section = indexPath.section
             self.navigationController?.pushViewController(person_infoView, animated: true)
             
-        case .education:
+        case .education,.project, .skill:
             
-            listItem.mode = (type: .education, section: indexPath.section)
-            self.navigationController?.pushViewController(listItem, animated: true)
-        case .project:
-            listItem.mode = (type: .project, section: indexPath.section)
-            self.navigationController?.pushViewController(listItem, animated: true)
-        case .skill:
-            listItem.mode = (type: .skill, section: indexPath.section)
+            listItem.mode = (type: type, section: indexPath.section)
             self.navigationController?.pushViewController(listItem, animated: true)
         case .evaluate:
             estimateVC.section = indexPath.section
@@ -203,8 +198,8 @@ extension personResumeTable{
     
     // TODO: 显示pdf 格式的简历，然后提供分享链接！！
     @objc private func showResume(){
-        let myresume = myResumeViewController()
-        self.navigationController?.pushViewController(myresume, animated: true)
+//        let myresume = myResumeViewController()
+//        self.navigationController?.pushViewController(myresume, animated: true)
     }
     
 }
@@ -214,17 +209,26 @@ extension personResumeTable{
 
 extension personResumeTable: personResumeDelegate{
     func refreshResumeInfo(_ section:Int){
-        self.tableView.reloadSections([section], animationStyle: .none)
+        //self.tableView.reloadSections([section], animationStyle: .none)
+         //只有reload 方法 才能从新布局
+        self.tableView.reloadData()
     }
-
-
 }
-
 
 extension personResumeTable: modofy_itemDelegate{
 
     func refreshItem(_ section:Int){
-        self.tableView.reloadSections([section], animationStyle: .none)
         
+         //只有reload 方法 才能从新布局
+         self.tableView.reloadData()
+         self.tableView.scrollToRow(at: IndexPath.init(row: 0, section: section), at: .top, animated: false)
+    }
+}
+
+
+extension personResumeTable{
+    
+    private func loadData(){
+        pManager.initialData()
     }
 }

@@ -147,20 +147,15 @@ class MyCollectionVC: UIViewController, UIScrollViewDelegate {
         
     }
     
+    // 底部tool
     private func bottomToolBar(){
         self.view.addSubview(bottomBar)
     
-        //let preSpace =  UIBarButtonItem(barButtonSystemItem:.flexibleSpace,
-        //                                target:nil, action:nil)
-        
         let middleSpace =  UIBarButtonItem(barButtonSystemItem:.flexibleSpace,
                                            target:nil, action:nil)
         
-        //let postSpace =  UIBarButtonItem(barButtonSystemItem:.flexibleSpace,
-        //                                 target:nil, action:nil);
         
         bottomBar.setItems([UIBarButtonItem.init(customView: selectedAllBtn),middleSpace,UIBarButtonItem.init(customView: deletedBtn)], animated: false)
-        
         
     }
 

@@ -12,14 +12,15 @@ fileprivate let fontSize:CGFloat = 14
 fileprivate let textColort:UIColor = UIColor.black
 fileprivate let leftAlignment = NSTextAlignment.left
 fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
-fileprivate let cellH:CGFloat = 150.0
 
-class resume_personInfoCell: UITableViewCell {
+
+@objcMembers class resume_personInfoCell: UITableViewCell {
 
   
     private var touxaing:UIImageView = {
-        let tx = UIImageView.init()
+        let tx = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: imgSize.width, height: imgSize.height))
         tx.contentMode = .scaleToFill
+        tx.setCircle()
         return tx
     }()
     
@@ -28,6 +29,7 @@ class resume_personInfoCell: UITableViewCell {
         name.font = UIFont.boldSystemFont(ofSize: 14)
         name.textColor = textColort
         name.textAlignment = .center
+        name.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         return name
     }()
     
@@ -36,6 +38,7 @@ class resume_personInfoCell: UITableViewCell {
         sex.font = UIFont.systemFont(ofSize: fontSize)
         sex.textColor = textColort
         sex.textAlignment = leftAlignment
+        sex.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         return sex
     }()
     
@@ -44,6 +47,7 @@ class resume_personInfoCell: UITableViewCell {
         city.font = UIFont.systemFont(ofSize: fontSize)
         city.textColor = textColort
         city.textAlignment = leftAlignment
+        city.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         return city
     }()
     
@@ -52,6 +56,7 @@ class resume_personInfoCell: UITableViewCell {
         degree.font = UIFont.systemFont(ofSize: fontSize)
         degree.textColor = textColort
         degree.textAlignment = leftAlignment
+        degree.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         return degree
     }()
     
@@ -60,6 +65,7 @@ class resume_personInfoCell: UITableViewCell {
         birthday.font = UIFont.systemFont(ofSize: fontSize)
         birthday.textColor = textColort
         birthday.textAlignment = leftAlignment
+        birthday.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         return birthday
     }()
     
@@ -68,6 +74,7 @@ class resume_personInfoCell: UITableViewCell {
         phone.font = UIFont.systemFont(ofSize: fontSize)
         phone.textColor = textColort
         phone.textAlignment = leftAlignment
+        phone.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         return phone
     }()
     
@@ -76,6 +83,7 @@ class resume_personInfoCell: UITableViewCell {
         email.font = UIFont.systemFont(ofSize: fontSize)
         email.textColor = textColort
         email.textAlignment = leftAlignment
+        email.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         return email
     }()
     
@@ -86,6 +94,7 @@ class resume_personInfoCell: UITableViewCell {
         label.textColor = textColort
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         return label
     }()
     
@@ -95,14 +104,16 @@ class resume_personInfoCell: UITableViewCell {
         label.textColor = textColort
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+    
         return label
     }()
     
     
-    var mode:person_base_info?{
+    dynamic var mode:person_base_info?{
         
         didSet{
-            self.touxaing.image = UIImage.init(named:  mode!.tx)
+            touxaing.image = UIImage.init(named:  mode!.tx)
             name.text = mode!.name
             sex.text = mode!.sex
             city.text = mode!.city
@@ -112,13 +123,33 @@ class resume_personInfoCell: UITableViewCell {
             email.text = mode!.email
             lable1.text = mode!.sex + "|" + mode!.city + "|" + mode!.degree + "|" + mode!.birthday
             lable2.text = mode!.phone + "|" + mode!.email
+            
+            // cell 自适应高度
+            self.setupAutoHeight(withBottomView: lable2, bottomMargin: 10)
+
+           
         }
     }
     
     
+
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        let views:[UIView] = [touxaing, name, lable1, lable2]
+        self.contentView.sd_addSubviews(views)
+        
+        
+        _ = touxaing.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(self.contentView,20)?.autoHeightRatio(1)
+        
+        _ = name.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(touxaing,5)?.autoHeightRatio(0)
+        
+        _ = lable1.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(name,5)?.autoHeightRatio(0)
+        _ = lable2.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(lable1,5)?.autoHeightRatio(0)
+        // 布局之后设置
+        self.lable1.setMaxNumberOfLinesToShow(1)
+        self.lable2.setMaxNumberOfLinesToShow(1)
         
     }
     
@@ -131,35 +162,15 @@ class resume_personInfoCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
+    // 自动布局后不能放这里？？？
     override func layoutSubviews() {
-        
-        self.contentView.addSubview(touxaing)
-        self.contentView.addSubview(name)
-        self.contentView.addSubview(lable1)
-        self.contentView.addSubview(lable2)
-        name.sizeToFit()
-        lable1.sizeToFit()
-        lable2.sizeToFit()
-        
-        
-        _ = touxaing.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(self.contentView,10)?.widthIs(imgSize.width)?.heightIs(imgSize.height)
-        _ = name.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(touxaing,5)?.widthIs(200)?.heightIs(20)
-        
-        _ = lable1.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(name,5)?.widthIs(ScreenW - 20)?.heightIs(20)
-        _ = lable2.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(lable1,5)?.widthIs(ScreenW - 20)?.heightIs(20)
-        
-        touxaing.setCircle()
-        
-        
+        super.layoutSubviews()
     }
     
     class func identity()->String{
         return "resume_personInfoCell"
     }
     
-    class func cellHeight()->CGFloat{
-        return cellH
-    }
     
     
 }

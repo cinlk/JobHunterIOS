@@ -30,10 +30,10 @@ class mainPageViewMode {
     // 实习job数据
     var internJobItems = Variable<[InternshipJobs]>.init([])
     //MARK catagory数据
-    var catagory = Variable<[String]>.init([])
+    var catagory = Variable<[String:String]>.init([:])
     
     //MARK recommand 数据
-    var recommand = Variable<[String]>.init([])
+    var recommand = Variable<[String:String]>.init([:])
     
     // 刷新状态
     let refreshStatus = Variable<mainPageRefreshStatus>.init(.none)
@@ -71,7 +71,7 @@ class mainPageViewMode {
                 for i in compusejobs{
                     CampuseItems.append(SectionItem.campuseRecruite(job: i))
                 }
-                return [ MultiSecontions.CatagorySection(title: "", items:              [SectionItem.catagoryItem(imageNames: cts)]),
+                return [ MultiSecontions.CatagorySection(title: "", items: [SectionItem.catagoryItem(imageNames: cts)]),
                     MultiSecontions.RecommandSection(title: "", itmes: [SectionItem.recommandItem(imageNames: recommands)]),
                     MultiSecontions.CampuseRecruite(title: "校招", items: CampuseItems)]
             }

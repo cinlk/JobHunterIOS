@@ -11,14 +11,15 @@ import UIKit
 
 fileprivate let tableHeaderH:CGFloat = 200
 fileprivate let sectionTitle:[String] = ["实习/项目经历","教育经历"]
-fileprivate let sectionH:CGFloat = 50
-
-
+fileprivate let sectionH:CGFloat = 40
+fileprivate let shareViewH:CGFloat = 200
 
 class personCardVC: UITableViewController {
 
     
     private var pManager:personModelManager = personModelManager.shared
+    
+    // 头部view
     private lazy var tbHeader:personTableHeader  = {  [unowned self] in
         let th = personTableHeader.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: tableHeaderH))
         th.isHR = false
@@ -26,10 +27,10 @@ class personCardVC: UITableViewController {
         th.nameTitle.text = self.pManager.personBaseInfo?.name
         th.introduce.text = self.pManager.educationInfos[0].colleage + "-" +
                             self.pManager.educationInfos[0].department
-        
         return th
     }()
     
+    // 自定义barview
     private lazy var navBarTitleView:UIView = { [unowned self] in
         let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 64))
         v.backgroundColor = UIColor.orange
@@ -53,15 +54,37 @@ class personCardVC: UITableViewController {
         return share
     }()
     
-   
+    // 背景view
+    private lazy var backgroundView:UIView = {
+        let back = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
+        let tap = UITapGestureRecognizer.init()
+        tap.numberOfTapsRequired = 1
+        tap.addTarget(self, action: #selector(hiddenBackView(_:)))
+        back.backgroundColor = UIColor.init(r: 0.5, g: 0.5, b: 0.5, alpha: 0.5)
+        back.addGestureRecognizer(tap)
+        return back
+    }()
+   // 分享界面
+    private lazy var MyshareView:shareView = {
+        let s = shareView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: shareViewH))
+        UIApplication.shared.windows.last?.addSubview(s)
+        return s
+    }()
+    
+    private var shareOriginY:CGFloat = 0
+    
+    
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        loadData()
         setTableHeaderView()
         setNavigationView()
+        setShare()
         self.tableView.separatorStyle = .singleLine
         self.tableView.contentInset = UIEdgeInsets.init(top: 0, left: 0, bottom: 60, right: 0)
         self.tableView.register(cardCell.self, forCellReuseIdentifier: cardCell.identity())
+      
         
     }
     
@@ -76,7 +99,6 @@ class personCardVC: UITableViewController {
         super.viewWillDisappear(animated)
         self.navigationController?.navigationBar.settranslucent(false)
         navBarTitleView.removeFromSuperview()
-        print("disapear  card \(self.navigationController?.navigationBar.isTranslucent)")
         self.navigationController?.view.willRemoveSubview(navBarTitleView)
        
 
@@ -112,11 +134,15 @@ class personCardVC: UITableViewController {
         case 0:
             
             let item = pManager.projectInfo[indexPath.row]
-            cell.mode = (item.startTime + " 到 " + item.endTime, item.company, item.position)
+            let mode:cardModel =  cardModel.init(time: item.startTime + " 到 " + item.endTime, middle: item.company, bottom: item.position)
+            cell.mode = mode
+            cell.useCellFrameCache(with: indexPath, tableView: tableView)
             return cell
         case 1:
             let item = pManager.educationInfos[indexPath.row]
-            cell.mode = (item.startTime + " 到 " + item.endTime, item.colleage, item.department + "-" + item.degree)
+            let mode = cardModel.init(time: item.startTime + " 到 " + item.endTime, middle: item.colleage, bottom: item.department + "-" + item.degree)
+            cell.useCellFrameCache(with: indexPath, tableView: tableView)
+            cell.mode = mode
         default:
             break
         }
@@ -124,29 +150,45 @@ class personCardVC: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return cardCell.ceilHeight()
+        switch indexPath.section {
+        case 0:
+            let item = pManager.projectInfo[indexPath.row]
+            let mode:cardModel =  cardModel.init(time: item.startTime + " 到 " + item.endTime, middle: item.company, bottom: item.position)
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: cardCell.self, contentViewWidth: ScreenW)
+        case 1:
+            let item = pManager.educationInfos[indexPath.row]
+            let mode = cardModel.init(time: item.startTime + " 到 " + item.endTime, middle: item.colleage, bottom: item.department + "-" + item.degree)
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: cardCell.self, contentViewWidth: ScreenW)
+            
+        default:
+            return 0
+        }
+        
+       
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: sectionH))
+        let v = UIView.init(frame: CGRect.init(x: 10, y: 15, width: ScreenW, height: 0))
         v.backgroundColor = UIColor.white
         let title = UILabel.init(frame: CGRect.zero)
-        title.font = UIFont.systemFont(ofSize: 16)
+        title.font = UIFont.boldSystemFont(ofSize: 16)
         title.textColor = UIColor.black
+        title.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         title.text = sectionTitle[section]
         let underLine:UIView = UIView.init(frame: CGRect.zero)
         underLine.backgroundColor = UIColor.lightGray
         let backV:UIView = UIView.init(frame: CGRect.zero)
         backV.backgroundColor = UIColor.lightGray
+        
         v.addSubview(backV)
         _ = backV.sd_layout().leftEqualToView(v)?.rightEqualToView(v)?.topEqualToView(v)?.heightIs(5)
         title.sizeToFit()
         v.addSubview(title)
-        _ = title.sd_layout().leftSpaceToView(v,10)?.topSpaceToView(backV,5)?.bottomSpaceToView(v,5)?.rightSpaceToView(v,10)
+        _ = title.sd_layout().leftSpaceToView(v,10)?.topSpaceToView(backV,5)?.autoHeightRatio(0)
         v.addSubview(underLine)
         _ = underLine.sd_layout().leftEqualToView(v)?.rightEqualToView(v)?.bottomEqualToView(v)?.heightIs(1)
-        
+        v.setupAutoHeight(withBottomView: underLine, bottomMargin: 0)
         
         return v
     }
@@ -173,8 +215,35 @@ extension personCardVC{
         
         
     }
+    @objc func hiddenBackView(_ gest: UITapGestureRecognizer){
+        if gest.state == .ended{
+            backgroundView.removeFromSuperview()
+            self.navigationController?.view.willRemoveSubview(backgroundView)
+            UIView.animate(withDuration: 0.4, animations: {
+                self.MyshareView.origin.y = self.shareOriginY
+            })
+        }
+    }
     
+    
+    // 分享界面
     @objc func shared(){
+        
+        self.navigationController?.view.addSubview(backgroundView)
+        UIView.animate(withDuration: 0.4, animations: {
+            self.MyshareView.frame = CGRect.init(x: 0, y: ScreenH - shareViewH, width: ScreenW, height: shareViewH)
+        })
+    }
+    
+    @objc func sharedClick(_ btn:UIButton){
+        print(btn.tag)
+    }
+    
+    private func setShare(){
+        shareOriginY = MyshareView.origin.y
+        for btn in  MyshareView.itemButtons!{
+            btn.addTarget(self, action: #selector(sharedClick(_:)), for: .touchUpInside)
+        }
         
     }
 }
@@ -185,7 +254,7 @@ extension personCardVC{
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
         let offsetY = scrollView.contentOffset.y
-       
+        // 显示title
         if offsetY > tableHeaderH - 64{
             navBarTitleView.alpha = 1
         }else{
@@ -198,9 +267,15 @@ extension personCardVC{
        
     }
     
-    
+
 }
 
+extension personCardVC{
+    // 通过网络获取数据
+    private func loadData(){
+        pManager.initialData()
+    }
+}
 
 
 

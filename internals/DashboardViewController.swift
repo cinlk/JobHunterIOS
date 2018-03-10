@@ -16,11 +16,13 @@ import MJRefresh
 import SVProgressHUD
 
 
-private let tableSection = 3
-private let thresholds:CGFloat = -80
-private let searchBarH:CGFloat = 30
-private let tableBottomInset:CGFloat = 50
+fileprivate let tableSection = 3
+fileprivate let thresholds:CGFloat = -80
+fileprivate let searchBarH:CGFloat = 30
+fileprivate let tableBottomInset:CGFloat = 50
+fileprivate let tableViewH:CGFloat = 180
 
+//
 protocol UISearchRecordDelegatae : class {
     
     func showHistory()
@@ -29,51 +31,56 @@ protocol UISearchRecordDelegatae : class {
 }
 
 
+//  主页面板块
 class DashboardViewController: UIViewController{
 
     
+    
+    
     @IBOutlet weak var tables: UITableView!
     
-    var contentOffset:CGPoint = CGPoint(x: 0, y: 0)
-    
     //scrollview  偏移值
-    var marginTop:CGFloat = 0
-    var timer:Timer?
-    var startContentOffsetX:CGFloat = 0
-    var EndContentOffsetX:CGFloat = 0
-    var WillEndContentOffsetX:CGFloat = 0
+    private var marginTop:CGFloat = 0
+    private var timer:Timer?
+    private var startContentOffsetX:CGFloat = 0
+    private var EndContentOffsetX:CGFloat = 0
+    private var WillEndContentOffsetX:CGFloat = 0
     
     
     // 初始化 搜索内容
-    var searchString = ""
-    var searchLists:[Dictionary<String,String>] = []
+    private var searchString = ""
+    private var searchLists:[Dictionary<String,String>] = []
     
     
+    // 搜索控制视图
+    private weak var searchController:baseSearchViewController!
     
-    //  主页定位城市
-    var dashLocateCity = "全国"{
-        willSet{
-            self.refreshByCity(city: newValue)
+    
+    // 当前城市
+    var currentCity = ""{
+        didSet{
+            self.refreshByCity(city: currentCity)
         }
     }
     
     //
-    var flag = false
+    private var flag = false
+    // MVVM 释放内存
     let disposebag = DisposeBag.init()
     
     
-    //导航栏 背景view
-    lazy  var navigationView:UIView = {
+    //导航栏遮挡背景view
+    private lazy  var navigationView:UIView = {
         let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH))
-        v.backgroundColor = UIColor.init(red: 0.667, green: 0.667, blue: 0.667, alpha: 0)
+        v.backgroundColor = UIColor.clear
         return v
     }()
     
-    lazy  var imagescroller:UIScrollView = { [unowned self] in
-        // 轮播图
+    // 轮播图view
+    private lazy var imagescroller:UIScrollView = { [unowned self] in
+        
         let imagescroller =  UIScrollView()
         imagescroller.delegate = self
-        // 解决navigation 页面跳转后，scrollview content x 偏移差
         imagescroller.translatesAutoresizingMaskIntoConstraints = false
         imagescroller.bounces = false
         imagescroller.isPagingEnabled = true
@@ -84,31 +91,35 @@ class DashboardViewController: UIViewController{
         return imagescroller
     }()
     
-    lazy var  page:UIPageControl = {
+    private lazy var  page:UIPageControl = {
         let page = UIPageControl.init()
         page.backgroundColor = UIColor.clear
         page.isEnabled  = false
         page.pageIndicatorTintColor = UIColor.gray
-        page.currentPageIndicatorTintColor = UIColor.black
+        page.currentPageIndicatorTintColor = UIColor.blue
         return page
     }()
     
-    // searchview
-    private weak var searchController:baseSearchViewController?
+    // 搜索结果VC
+    private lazy var searchResultVC: searchResultController = {
+        let s = searchResultController()
+        return s
+    }()
     
-    lazy var searchBarContainer:UIView = {
+    // 搜索框外部view，滑动影藏搜索框
+    private lazy var searchBarContainer:UIView = {
         // 搜索框
-        let searchBarFrame = CGRect(x: 0, y:0, width: self.view.frame.width, height: searchBarH)
+        let searchBarFrame = CGRect(x: 0, y:0, width: ScreenW, height: searchBarH)
         let searchBarContainer = UIView(frame:searchBarFrame)
         searchBarContainer.backgroundColor = UIColor.clear
         return searchBarContainer
         
     }()
     
-    
-    weak var delegate:UISearchRecordDelegatae?
-    
-    
+    // 选择城市VC
+    private lazy var cityVC:CityViewController = CityViewController()
+     
+
     
     override func viewDidLoad() {
         
@@ -124,33 +135,28 @@ class DashboardViewController: UIViewController{
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        //self.automaticallyAdjustsScrollViewInsets  = false
-        self.tables.contentInsetAdjustmentBehavior = .never
+        
         self.navigationController?.navigationBar.settranslucent(true)
         self.navigationController?.view.insertSubview(navigationView, at: 1)
-        
-        
     }
     
     
     
     override func viewWillLayoutSubviews() {
         
-            // iso 11 设置位置偏移
+            // 自动调整布局
             if #available(iOS 11.0, *) {
                 self.tables.contentInsetAdjustmentBehavior = .never
                 self.imagescroller.contentInsetAdjustmentBehavior = .never
             } else {
-                // Fallback on earlier versions
-                
+                self.automaticallyAdjustsScrollViewInsets = false
             }
         
-        // 底部距离 50像素，保证滑动到底部cell
-        self.tables.contentInset = UIEdgeInsetsMake(0, 0, tableBottomInset, 0)
-        _ = self.tables.tableHeaderView?.sd_layout().leftEqualToView(self.tables)?.rightEqualToView(self.tables)?.heightIs(180)?.topEqualToView(self.tables)
+        
+        _ = self.tables.tableHeaderView?.sd_layout().leftEqualToView(self.tables)?.rightEqualToView(self.tables)?.heightIs(tableViewH)?.topEqualToView(self.tables)
         
         _ =  searchController?.searchBar.sd_layout().leftSpaceToView(searchBarContainer,10)?.topEqualToView(searchBarContainer)?.bottomEqualToView(searchBarContainer)?.rightSpaceToView(searchBarContainer,10)
-         // 这里设置page，imagescroller 的layout设置生效后
+         // 这里设置page的
          page.frame = CGRect(x: (self.view.centerX - 60), y: self.imagescroller.frame.height-20, width: 120, height: 10)
         
        
@@ -173,40 +179,43 @@ extension DashboardViewController{
     private func setViews(){
         /***** table *****/
         // MARK 需要修改 category
-        self.tables.register(MainPageCatagoryCell.self, forCellReuseIdentifier: "catagory")
-        self.tables.register(MainPageRecommandCell.self, forCellReuseIdentifier: "recommand")
+        self.tables.register(MainPageCatagoryCell.self, forCellReuseIdentifier: MainPageCatagoryCell.identity())
+        self.tables.register(MainPageRecommandCell.self, forCellReuseIdentifier: MainPageRecommandCell.identity())
         
         self.tables.register(jobdetailCell.self, forCellReuseIdentifier: jobdetailCell.identity())
         self.tables.tableHeaderView  = imagescroller
-        self.tables.tableHeaderView?.isHidden  = false
         self.tables.insertSubview(page, aboveSubview: self.tables.tableHeaderView!)
-        
+        self.tables.contentInset = UIEdgeInsetsMake(0, 0, tableBottomInset, 0)
         
         /***** search *****/
         // search 切到到另一个view后，search bar不保留
         self.definesPresentationContext  = true
-        searchController  = baseSearchViewController.init(searchResultsController: searchResultController())
         
-        //  历史记录代理
-        self.delegate = searchController?.serchRecordView
-        
+        searchController  = baseSearchViewController.init(searchResultsController: searchResultVC)
+        // 选择城市回调
+        searchController.chooseCity = { [weak self] in
+            
+            self?.hidesBottomBarWhenPushed = true
+            self?.navigationController?.pushViewController((self?.cityVC)!, animated: true)
+            self?.hidesBottomBarWhenPushed = false
+        }
+    
         searchController?.searchResultsUpdater = self
         searchController?.delegate =  self
         searchController?.searchBar.delegate = self
-     
-        searchController?.cityDelegate = self
+
+        //searchController?.cityDelegate = self
         searchController?.height = searchBarH
         searchBarContainer.addSubview((searchController?.searchBar)!)
+        
         self.navigationItem.titleView = searchBarContainer
     }
 }
 
-// table
+
 extension DashboardViewController: UITableViewDelegate{
     
-    
-    
-    
+
     func numberOfSections(in tableView: UITableView) -> Int {
         return  tableSection
     }
@@ -229,39 +238,46 @@ extension DashboardViewController: UITableViewDelegate{
         
         
         if indexPath.section == 0 {
-            return 80
+            return MainPageCatagoryCell.cellHeight()
         }
         else if indexPath.section == 1{
-            return 100
+            return MainPageRecommandCell.cellHeight()
         }
-        return jobdetailCell.cellHeight()
+        return  jobdetailCell.cellHeight()
     }
     
     
-    static func dataSource() -> RxTableViewSectionedReloadDataSource<MultiSecontions>{
+
+     func dataSource() -> RxTableViewSectionedReloadDataSource<MultiSecontions>{
+        
         return RxTableViewSectionedReloadDataSource<MultiSecontions>.init(configureCell: { (dataSource, table, idxPath, _) -> UITableViewCell in
            
             switch dataSource[idxPath]{
             case let .catagoryItem(imageNames):
                 
-                let cell:MainPageCatagoryCell = table.dequeueReusableCell(withIdentifier: "catagory") as! MainPageCatagoryCell
-                cell.createScroller(images: imageNames, width: 80)
-                
+                let cell:MainPageCatagoryCell = table.dequeueReusableCell(withIdentifier: MainPageCatagoryCell.identity()) as! MainPageCatagoryCell
+                cell.mode = imageNames
+                cell.chooseItem = { (btn) in
+                    print(btn.titleLabel?.text)
+                }
                 return cell
             case let .recommandItem(imageNames):
                 
-                let cell:MainPageRecommandCell = table.dequeueReusableCell(withIdentifier: "recommand") as!
+                let cell:MainPageRecommandCell = table.dequeueReusableCell(withIdentifier: MainPageRecommandCell.identity()) as!
                 MainPageRecommandCell
-                cell.createScroller(items: imageNames, width: 150)
+                cell.mode = imageNames
+                
+                cell.chooseItem = { (btn) in
+                    
+                    print(btn.titleLabel?.text)
+                }
+                
                 return cell
             case let .campuseRecruite(jobs):
                 
                 let cell:jobdetailCell = table.dequeueReusableCell(withIdentifier: jobdetailCell.identity()) as!
                 jobdetailCell
-                
-                
-                cell.createCells(items: jobs.toJSON())
-                
+                cell.mode = jobs
                return cell
             }
         },
@@ -281,15 +297,14 @@ extension DashboardViewController: UITableViewDelegate{
 // 与searchbar 交换
 extension DashboardViewController: UISearchResultsUpdating{
     
-    
     @available(iOS 8.0, *)
     func updateSearchResults(for searchController: UISearchController) {
         
         if  let text = searchController.searchBar.text, !text.isEmpty{
-           
-            self.delegate?.listRecords(word: text)
+            
+            self.searchController?.serchRecordVC.listRecords(word: text)
         }else{
-             self.delegate?.showHistory()
+             self.searchController?.serchRecordVC.showHistory()
         }
         self.searchController?.showRecordView = true
 
@@ -308,8 +323,9 @@ extension DashboardViewController: UISearchResultsUpdating{
         
         // 查找新的item 然后 重新加载table
         localData.shared.appendSearchHistories(value: searchBar.text!)
-        let vm = (self.searchController?.searchResultsController as! searchResultController).vm
-        vm?.loadData.onNext("test")
+        //let vm = (self.searchController?.searchResultsController as! searchResultController).vm
+        searchResultVC.vm.loadData.onNext("test")
+        //vm?.loadData.onNext("test")
         SVProgressHUD.show(withStatus: "加载数据")
         
     }
@@ -328,7 +344,7 @@ extension DashboardViewController: UISearchControllerDelegate{
         if let sc =  (searchController as? baseSearchViewController){
            
             sc.showRecordView = true
-            sc.serchRecordView.HistoryTable.reloadData()
+//            sc.serchRecordVC.HistoryTable.reloadData()
            
         }
         
@@ -372,9 +388,9 @@ extension DashboardViewController: UISearchBarDelegate{
         print("search bar text \(searchText)")
         // text 为空时 显示历史记录
         if searchText.isEmpty{
-            self.delegate?.showHistory()
+            self.searchController?.serchRecordVC.showHistory()
         }else{
-            self.delegate?.listRecords(word: searchText)
+            self.searchController?.serchRecordVC.listRecords(word: searchText)
         }
         // text 不为空 tableview 显示匹配搜索结果
         
@@ -383,28 +399,15 @@ extension DashboardViewController: UISearchBarDelegate{
     
 }
 
-extension DashboardViewController: baseSearchDelegate{
-    
-    // choose city
-    func chooseCity(){
-        let citylist = CityViewController.init()
-        // 影藏bottom item
-        self.hidesBottomBarWhenPushed = true
-        self.navigationController?.pushViewController(citylist, animated: true)
-        self.hidesBottomBarWhenPushed = false
-        
-        
-    }
-}
 
 
 extension DashboardViewController{
     
     
-    func refreshByCity(city:String){
+    // 刷新城市
+    private func refreshByCity(city:String){
         self.searchController?.changeCityTitle(title: city)
         //MARK refresh table
-        
     }
 
 }
@@ -421,7 +424,6 @@ extension DashboardViewController{
                 self.marginTop = scrollView.contentInset.top
             }
             
-            
             let offsetY = scrollView.contentOffset.y
             let newoffsetY = offsetY + self.marginTop
             //向下滑动 newoffsetY 小于0
@@ -430,11 +432,12 @@ extension DashboardViewController{
             // searchcontiner 透明度
             if (newoffsetY >= 0 && newoffsetY <= 64){
                 self.searchBarContainer.alpha = 1
-                self.navigationView.backgroundColor  = UIColor.init(red: 0.667, green: 0.667, blue: 0.667, alpha: newoffsetY/64)
+                self.navigationView.backgroundColor  = UIColor.init(r: 249, g: 249, b: 249, alpha: newoffsetY/64)
+                    
                 
             }
             else if ( newoffsetY > 64){
-                self.navigationView.backgroundColor  = UIColor.init(red: 0.667, green: 0.667, blue: 0.667, alpha: 1)
+                self.navigationView.backgroundColor  = UIColor.navigationBarColor()
                 
             }
             else {
@@ -445,7 +448,7 @@ extension DashboardViewController{
                     self.searchBarContainer.alpha =  apl
                 }
                 
-                self.navigationView.backgroundColor  = UIColor.init(red: 0.667, green: 0.667, blue: 0.667, alpha: 0)
+                self.navigationView.backgroundColor  = UIColor.clear
                 
             }
             if newoffsetY < 0 {
@@ -480,7 +483,7 @@ extension DashboardViewController{
             startContentOffsetX = scrollView.contentOffset.x
             // 取消轮播
             self.timer?.invalidate()
-            self.timer = nil
+            //self.timer = nil
             
         }
     }
@@ -568,7 +571,7 @@ extension DashboardViewController{
         let request = mainPageServer.shareInstance
         let vm = mainPageViewMode.init(request: request)
         
-        let dataSource = DashboardViewController.dataSource()
+        let dataSource = self.dataSource()
         self.tables.rx.setDelegate(self).disposed(by: disposebag)
         
         self.tables.rx.itemSelected.subscribe(onNext: { (indexpath) in
@@ -577,8 +580,9 @@ extension DashboardViewController{
             }
             
             self.tables.deselectRow(at: indexpath, animated: true)
-            if  let cell = self.tables.cellForRow(at: indexpath) as? jobdetailCell, let data = cell.model{
-                self.showDetails(jobDetail: data )
+            if  let cell = self.tables.cellForRow(at: indexpath) as? jobdetailCell, let data = cell.mode?.toJSON(){
+                
+                self.showDetails(jobDetail: data as! [String : String] )
                 
             }
             
@@ -685,4 +689,5 @@ extension DashboardViewController{
     }
     
 }
+
 

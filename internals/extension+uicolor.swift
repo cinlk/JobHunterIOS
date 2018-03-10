@@ -24,8 +24,12 @@ extension UIColor{
         return UIColor(red: 0.96, green: 0.96, blue: 0.96, alpha: 1.0)
     }
     
-    class func navigationBackgroudColor()->UIColor{
-        
-        return UIColor(red: 233, green: 233, blue: 233, alpha: 1.0)
+    class func navigationBarColor()->UIColor{
+        return UIColor.init(r: 249, g: 249, b: 249, alpha: 1)
     }
+    
+    class func viewBackColor()->UIColor{
+        return  UIColor.init(r: 234, g: 234, b: 234)
+    }
+   
 }

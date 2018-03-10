@@ -8,45 +8,96 @@
 
 import UIKit
 
+fileprivate let cellHeightH:CGFloat = 120
+fileprivate let itemWidth:CGFloat = ScreenW / 4
+
 class MainPageRecommandCell: UITableViewCell,UIScrollViewDelegate {
 
    
-    lazy var scroller:UIScrollView = {
+   private lazy var scroller:UIScrollView = { [unowned self] in
         
         let scroll = UIScrollView()
         scroll.showsHorizontalScrollIndicator =  false
         scroll.showsVerticalScrollIndicator = false
-        scroll.bounces = false
+        scroll.bounces = true
         scroll.isPagingEnabled = false
         scroll.clipsToBounds = true
-        scroll.isUserInteractionEnabled = true
+        scroll.delegate = self
         scroll.contentInset = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
         
         return scroll
     }()
     
-    lazy   var topView:UIView = {
+    private lazy var line:UIView = {
+        let view = UIView.init(frame: CGRect.zero)
+        view.backgroundColor = UIColor.lightGray
+        return view
+    }()
+    
+    private lazy  var topView:UIView = {
         
-        var uiview = UIView()
+        var uiview = UIView.init(frame: CGRect.zero)
         var label:UILabel  = UILabel()
         label.text = "热门推荐"
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         //label.font = UIFont(name: "Bobz Type", size: 5)
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor  =  0.5
-        label.font = UIFont.systemFont(ofSize: 10)
+        label.font = UIFont.systemFont(ofSize: 12)
         uiview.addSubview(label)
-        label.frame  = CGRect(x: 5, y: 1, width: 120, height: 10)
+        
+        let right = UIImageView.init(image: #imageLiteral(resourceName: "rightforward"))
+        right.clipsToBounds = true
+        uiview.addSubview(right)
+        
+        _ = label.sd_layout().leftSpaceToView(uiview,10)?.topSpaceToView(uiview,2.5)?.autoHeightRatio(0)
+        _ = right.sd_layout().rightSpaceToView(uiview,10)?.topEqualToView(label)?.widthIs(15)?.autoHeightRatio(3/2)
         return uiview
         
     }()
     
+    // call back
+    var  chooseItem:((_ btn:UIButton)->Void)?
+    
+    
+    var mode:[String:String]?{
+        didSet{
+            guard let items = mode  else {
+                return
+            }
+            
+            //stackview
+            scroller.subviews.forEach{$0.removeFromSuperview()}
+            scroller.contentSize = CGSize.init(width: CGFloat(items.count) * (itemWidth + 5), height: scroller.frame.height)
+            var index = 0
+            for (image,title) in items{
+                
+                
+                let button = UIButton(type: .custom)
+                button.frame = CGRect(x: CGFloat(index)*(itemWidth+5), y: 0, width: itemWidth, height: scroller.frame.height)
+                button.backgroundColor  = UIColor.clear
+                button.setImage(UIImage(named: image), for: .normal)
+                
+                button.imageView?.contentMode = .scaleAspectFill
+                button.imageView?.clipsToBounds = true
+                button.imageView?.alpha = 0.7
+                button.setTitle(title, for: .normal)
+                button.setTitleColor(UIColor.black, for: .normal)
+                button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+                button.addTarget(self, action: #selector(click(_:)), for: .touchUpInside)
+                
+                index += 1
+                scroller.addSubview(button)
+                
+                
+            }
+            
+        }
+    }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle  = .none
-        
-        self.build()
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -55,77 +106,33 @@ class MainPageRecommandCell: UITableViewCell,UIScrollViewDelegate {
     
     
     
-    private func  build(){
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.contentView.addSubview(topView)
+        self.contentView.addSubview(line)
+        self.contentView.addSubview(scroller)
         
-        self.addSubview(topView)
-        self.addSubview(scroller)
+        _ = topView.sd_layout().topEqualToView(self.contentView)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.heightIs(25)
+        
+        _ = line.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topSpaceToView(topView,1)?.heightIs(1)
+        _ = scroller.sd_layout().topSpaceToView(line,0)?.leftEqualToView(self.contentView)?.bottomEqualToView(self.contentView)?.rightEqualToView(self.contentView)
+        
+    }
+    
+    
+    class func cellHeight()->CGFloat {
+        return cellHeightH
+    }
+    
+    class func identity()->String{
+        return "recommand"
+    }
+    
+    
+}
 
-        
-        _ = topView.sd_layout().topEqualToView(self.contentView)?.leftEqualToView(self.contentView)?.widthRatioToView(self.contentView,1)?.heightIs(15)
-        
-        
-        
+extension MainPageRecommandCell{
+    @objc private func click(_ btn:UIButton){
+        self.chooseItem?(btn)
     }
-    
-    func createScroller(items:[String],width:CGFloat){
-     
-        //stackview
-        scroller.subviews.forEach{$0.removeFromSuperview()}
-        scroller.frame  = CGRect(x: 0, y: 15, width: self.contentView.frame.width-75, height: self.frame.height-10)
-        
-        
-        for i in 0..<items.count{
-            
-            //let stackview = UIView(frame: CGRect(x: CGFloat(i)*width, y: 0, width: width, height: self.frame.height-10))
-            
-            let pview =  UIView()
-            
-            let button = UIButton(type: .custom)
-            //imagebackgroud.frame = stackview.frame
-            //button.frame = CGRect(x: CGFloat(i)*width, y: 0, width: width-5, height: self.frame.height-10)
-            //imagebackgroud.image = UIImage(named: items[i])
-            //imagebackgroud.isUserInteractionEnabled = true
-            //imagebackgroud.contentMode = .scaleAspectFit
-            pview.frame  = CGRect(x: CGFloat(i)*width, y: 2, width: width-5, height: self.frame.height-10)
-            
-            button.backgroundColor  = UIColor.clear
-            button.setImage(UIImage(named: items[i]), for: .normal)
-            
-            button.imageView?.contentMode = .scaleAspectFill
-            button.imageView?.clipsToBounds = true
-            button.imageView?.alpha = 0.4
-            button.alpha = 0.5
-            button.isHidden  = false
-            button.addTarget(self, action: #selector(click(button:)), for: .touchUpInside)
-            
-            //imagebackgroud.alpha =  0.5
-             let label =  UILabel(frame: CGRect(x: 5, y: 5, width: 40, height: 20))
-             label.text = items[i]
-             label.font = UIFont.boldSystemFont(ofSize: 10)
-             label.textColor = UIColor.black
-             label.alpha = 1
-             pview.addSubview(button)
-             pview.addSubview(label)
-             _ = button.sd_layout().leftSpaceToView(pview,5)?.rightEqualToView(pview)?.heightRatioToView(pview,1)?.widthRatioToView(pview,1)
-            
-            
-            
-            
-             scroller.addSubview(pview)
-            
-            
-        }
-        
-        scroller.contentSize =  CGSize(width: CGFloat(items.count) * width, height: self.frame.height-10)
-        scroller.backgroundColor = UIColor.white
-        scroller.delegate  = self
-     
-        
-    }
-    
-    @objc func click(button:UIButton){
-        print("click")
-    }
-    
-    
 }

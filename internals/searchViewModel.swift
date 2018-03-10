@@ -80,7 +80,7 @@ class searchViewModel: NSObject {
         
         
         loadData.subscribe(onNext: { (word) in
-            mainPageServer.shareInstance.searchKeyByWord(word: "test").subscribe(onNext: { [unowned self] (jobs) in
+            mainPageServer.shareInstance.searchKeyByWord(word: word).subscribe(onNext: { [unowned self] (jobs) in
                 self.sectionJobData.value = jobs
                 
                 }, onError: { (error) in

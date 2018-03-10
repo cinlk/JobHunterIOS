@@ -8,7 +8,9 @@
 
 import UIKit
 
-class person_evaluateCell: UITableViewCell {
+fileprivate let defaultViewH:CGFloat = 40
+
+@objcMembers class person_evaluateCell: UITableViewCell {
 
     private  lazy var  title:UILabel = {
         let t = UILabel.init(frame: CGRect.zero)
@@ -32,6 +34,7 @@ class person_evaluateCell: UITableViewCell {
         title.text = "添加数据"
         title.textAlignment = .center
         title.font = UIFont.systemFont(ofSize: 16)
+        title.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         let icon:UIImageView = UIImageView.init(image: #imageLiteral(resourceName: "chatMore"))
         icon.clipsToBounds = true
         icon.contentMode = .scaleToFill
@@ -40,29 +43,60 @@ class person_evaluateCell: UITableViewCell {
         v.isHidden = true
         v.addSubview(title)
         v.addSubview(icon)
-        _ = icon.sd_layout().rightSpaceToView(v,10)?.topSpaceToView(v,5)?.bottomSpaceToView(v,5)?.widthIs(30)
-        _ = title.sd_layout().leftSpaceToView(v,10)?.rightSpaceToView(icon,20)?.topEqualToView(icon)?.bottomEqualToView(icon)
-        
+        _ = title.sd_layout().centerXEqualToView(v)?.centerYEqualToView(v)?.autoHeightRatio(0)
+        _ = icon.sd_layout().leftSpaceToView(title,5)?.topEqualToView(title)?.bottomEqualToView(title)?.widthIs(25)
         return v
         
     }()
     
     private lazy var contentLable:UILabel = {
-        let label = UILabel.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW - 20, height: 0))
+        let label = UILabel.init(frame: CGRect.zero)
         label.font = UIFont.systemFont(ofSize: 15)
         label.textAlignment = .left
         label.lineBreakMode = .byWordWrapping
-        label.numberOfLines = 0
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20)
         label.textColor = UIColor.black
         return label
     }()
     
     
-    var cellHeight:CGFloat = 0
+    
+    dynamic var mode:String?{
+        didSet{
+            
+            let content = mode?.trimmingCharacters(in: CharacterSet.init(charactersIn: " "))
+            
+            
+            guard content != nil,  !(content!.isEmpty) else{
+                defaultView.isHidden = false
+                contentLable.isHidden = true
+                self.setupAutoHeight(withBottomView: defaultView, bottomMargin: 10)
+                return
+            }
+            
+            contentLable.text = content
+            defaultView.isHidden = true
+            self.setupAutoHeight(withBottomView: contentLable, bottomMargin: 10)
+        }
+    }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
+        
+        let views:[UIView] = [title, line, defaultView, contentLable]
+        self.contentView.sd_addSubviews(views)
+        
+        _ = title.sd_layout().leftSpaceToView(self.contentView,10)?.rightSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.autoHeightRatio(0)
+        
+        _ = line.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topSpaceToView(title,5)?.heightIs(1)
+        
+        _ = defaultView.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topSpaceToView(line,5)?.heightIs(defaultViewH)
+        
+        _ = contentLable.sd_layout().leftEqualToView(title)?.topSpaceToView(line,5)?.autoHeightRatio(0)
+        
+        contentLable.setMaxNumberOfLinesToShow(0)
+        
         
     }
     
@@ -78,43 +112,7 @@ class person_evaluateCell: UITableViewCell {
     }
     
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        self.contentView.addSubview(title)
-        self.contentView.addSubview(line)
-        self.contentView.addSubview(defaultView)
-        self.contentView.addSubview(contentLable)
-        
-        _ = title.sd_layout().leftSpaceToView(self.contentView,10)?.rightSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.heightIs(20)
-        
-        _ = line.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topSpaceToView(title,5)?.heightIs(1)
-        
-        _ = defaultView.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topSpaceToView(line,5)?.heightIs(30)
-        
-        
-    }
     
-    func setContentV(content:inout String){
-        content = content.trimmingCharacters(in: CharacterSet.init(charactersIn: " "))
-        guard !content.isEmpty else{
-            defaultView.isHidden = false
-            contentLable.height = 0
-            cellHeight = 80
-            return
-        }
-        contentLable.text = content
-        defaultView.isHidden = true
-        if let contentHeight = contentLable.text?.getStringCGRect(size: CGSize.init(width: contentLable.width, height: 0), font: contentLable.font){
-            contentLable.frame = CGRect.init(x: 10, y: 35, width: contentHeight.width, height: contentHeight.height)
-            self.height = 45 + contentHeight.height
-            contentLable.sizeToFit()
-            
-        }
-        
-        cellHeight = self.height
-        
-    }
     
     class func identity()->String{
         return "person_evaluateCell"

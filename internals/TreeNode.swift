@@ -47,7 +47,8 @@ class component:CustomDebugStringConvertible{
 class nodes{
     
     // 多个树的集合，也可以存单个root（一个树）
-    var root:[component] = []
+    private var root:[component] = []
+    
     
     init() {}
     
@@ -211,16 +212,15 @@ class SelectItemUtil {
     static let shared:SelectItemUtil = SelectItemUtil.init()
     private init(){
         initialDatas()
-        
-        
     }
+    
     private var itemNode:[String:nodes] = [:]
     
     
-    
     //gender  名字和struct 和plist 是一致的
-    private func gender(name:String = "性别"){
+    private func gender(){
         
+        let name:String = "性别"
         let tree = nodes.init()
         let rootNode = component.init(type: .root, key: name, parent: "", item: [], point: (0,0))
         tree.buildData(node: rootNode)
@@ -233,8 +233,8 @@ class SelectItemUtil {
         
     }
     // 技能类型
-    private func skills(name:String = "技能"){
-        
+    private func skills(){
+        let name:String = "技能"
         let tree = nodes.init()
         let rootNode = component.init(type: .root, key: name, parent: "", item: [], point: (0,0))
         tree.buildData(node: rootNode)
@@ -247,7 +247,8 @@ class SelectItemUtil {
     }
     
     // address 从plist获取的字典数据是Any类型，需要手动一层一层解析数据类型。
-    private func address(name:String = "城市"){
+    private func address(){
+        let name:String = "城市"
         let tree = nodes.init()
         let path = Bundle.main.path(forResource: "address", ofType: "plist")
         let address =  NSDictionary(contentsOfFile: path!) as! Dictionary<String, Any>
@@ -273,7 +274,8 @@ class SelectItemUtil {
     }
     
     // 学历
-    private func degress(name:String = "学位"){
+    private func degress(){
+        let name:String = "学位"
         let path = Bundle.main.path(forResource: "degrees", ofType: "plist")
         let arr = NSArray.init(contentsOfFile: path!) as! Array<String>
         let tree = nodes.init()
@@ -336,20 +338,14 @@ class SelectItemUtil {
     }
     
     
-    
-    
-    
+    // 初始化数据
     private func initialDatas(){
-        //
         address()
         gender()
         degress()
         birthDay()
         skills()
-        //
         feedBack()
-        
-        
     }
     
     open func getItems(name:String)->nodes?{

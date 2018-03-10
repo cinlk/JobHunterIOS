@@ -21,15 +21,26 @@ class AddItemCell: UITableViewCell {
         textField.clearButtonMode = .whileEditing
         textField.keyboardType = .default
         textField.textAlignment = .left
+        textField.rightViewMode = UITextFieldViewMode.always
         return textField
     }()
     
- 
+    
+    
+    private let img = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 20, height: 20))
+   
+  
     var mode:(name:String,title:String)?{
         didSet{
             self.textFiled.placeholder = mode!.name
             self.textFiled.text = mode!.title
-            
+            if mode?.name == "能力/技能" || mode?.name == "开始时间" ||
+                mode?.name == "结束时间" || mode?.name == "学位"{
+                img.image = #imageLiteral(resourceName: "arrow_xl")
+                textFiled.rightView = img
+            }else{
+                textFiled.rightView = UIView.init()
+            }
         }
     }
     
@@ -45,7 +56,10 @@ class AddItemCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         self.contentView.addSubview(textFiled)
-        _ = textFiled.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,10)?.bottomSpaceToView(self.contentView,10)?.widthIs(200)
+        _ = textFiled.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,10)?.bottomSpaceToView(self.contentView,10)?.rightSpaceToView(self.contentView,20)
+        
+       
+        
         
         
     }

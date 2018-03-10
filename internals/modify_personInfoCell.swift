@@ -53,12 +53,14 @@ class modify_personInfoCell: UITableViewCell {
         textField.keyboardType = .default
         textField.isHidden = true
         textField.delegate = self
+        // 完成按钮
+        textField.inputAccessoryView = self.doneButton
         return textField
     }()
     
     
     private lazy var tx:UIImageView = {
-        let img = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: avatarSize.width, height: avatarSize.height))
+        let img = UIImageView.init(frame: CGRect.zero)
         img.clipsToBounds = true
         img.isHidden = true
         return img
@@ -69,20 +71,20 @@ class modify_personInfoCell: UITableViewCell {
         let toolBar:UIToolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: 35))
         toolBar.backgroundColor = UIColor.gray
         let spaceBtn = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let barBtn = UIBarButtonItem(title: "完成", style: .plain, target: self, action: #selector(doneNum))
+        let barBtn = UIBarButtonItem(title: "完成", style: .plain, target: self, action: #selector(endEdit))
         toolBar.items = [spaceBtn, barBtn]
         toolBar.sizeToFit()
         return toolBar
     }()
     
     
+    // 修改texfield 对应的数据
     weak var delegate:changeDataDelegate?
     
     // cell 数据
     var mode:(type:personBaseInfo,value:String)?{
         didSet{
             buildCell()
-            
         }
     }
     
@@ -90,6 +92,8 @@ class modify_personInfoCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
+        setlayout()
+        
         
     }
     
@@ -101,29 +105,26 @@ class modify_personInfoCell: UITableViewCell {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
-        // Configure the view for the selected state
     }
     
-    override func layoutSubviews() {
-        tx.setCircle()
-        self.contentView.addSubview(leftTitle)
-        self.contentView.addSubview(rightLabel)
-        self.contentView.addSubview(tx)
-        self.contentView.addSubview(textView)
+
+    private func setlayout(){
         
-        _ = leftTitle.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,15)?.bottomSpaceToView(self.contentView,15)?.widthIs(100)
+        let views:[UIView] = [leftTitle, rightLabel, tx, textView]
+        self.contentView.sd_addSubviews(views)
         
-        _ = rightLabel.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(leftTitle)?.bottomEqualToView(leftTitle)?.leftSpaceToView(leftTitle,20)
+        _ = leftTitle.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,15)?.bottomSpaceToView(self.contentView,15)
         
+        _ = rightLabel.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(leftTitle)?.bottomEqualToView(leftTitle)?.leftSpaceToView(leftTitle,10)
         _ = textView.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(leftTitle)?.bottomEqualToView(leftTitle)?.leftSpaceToView(leftTitle,20)
         
-        _ = tx.sd_layout().rightSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.bottomSpaceToView(self.contentView,5)?.widthIs(40)
+        _ = tx.sd_layout().rightSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.bottomSpaceToView(self.contentView,5)?.widthIs(30)?.autoHeightRatio(1)
         
-        
+        tx.setCircle()
+        leftTitle.setSingleLineAutoResizeWithMaxWidth(100)
         
         
     }
-
     
     private func buildCell(){
         
@@ -134,54 +135,48 @@ class modify_personInfoCell: UITableViewCell {
             tx.isHidden = false
             rightLabel.isHidden = true
             tx.image = UIImage.init(named: mode!.value)
-            
-        }else{
-            rightLabel.isEnabled = true 
-            tx.isHidden = true
-            if mode!.type  == personBaseInfo.name
-            || mode!.type == personBaseInfo.email{
-                textView.isHidden = false
-                textView.text = mode!.value
-                textView.inputAccessoryView?.removeFromSuperview()
-                
-            }else if mode!.type == personBaseInfo.phone{
-                textView.isHidden = false
-                textView.text = mode!.value
-                textView.keyboardType = .numberPad
-                textView.inputAccessoryView = doneButton
-                
-            }
-            else{
-                rightLabel.isHidden = false
-                rightLabel.text = mode!.value
-            }
+            return
         }
         
+        rightLabel.isEnabled = true
+        tx.isHidden = true
+        
+        if mode!.type  == .name
+        || mode!.type == .email || mode?.type == .phone{
+            textView.isHidden = false
+            textView.text = mode!.value
+            textView.keyboardType =  (mode?.type == .phone) ? .numberPad : .default
+        }
+        else{
+            rightLabel.isHidden = false
+            rightLabel.text = mode!.value
+        }
+    
     }
     
     class func identity()->String{
         return "modify_personInfoCell"
+    }
+    
+    class func cellHeight()->CGFloat{
+        return 45
     }
 }
 
 
 extension modify_personInfoCell {
     
-    
-    @objc func doneNum() {
+    // 结束编辑
+    @objc func endEdit() {
         self.endEditing(true)
     }
- 
 }
 
 extension modify_personInfoCell: UITextFieldDelegate{
     
-   
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-       
         return true
-        
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
