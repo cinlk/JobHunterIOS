@@ -70,7 +70,7 @@ extension recommendation: UITableViewDelegate,UITableViewDataSource {
         table.deselectRow(at: indexPath, animated: false)
         
         let detail =  JobDetailViewController()
-        detail.infos = data[indexPath.row]
+        //detail.infos = data[indexPath.row]
         self.navigationController?.pushViewController(detail, animated: true)
         
         

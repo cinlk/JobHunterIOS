@@ -88,7 +88,7 @@ class jobstatusView: UIViewController {
 extension jobstatusView{
     @objc func choose(_ gest:UITapGestureRecognizer){
         let  job = JobDetailViewController()
-        job.infos = ["JobName":"测试","address":"北京","salary":"50万"]
+        //job.infos = ["JobName":"测试","address":"北京","salary":"50万"]
         self.navigationController?.pushViewController(job, animated: true)
         
         

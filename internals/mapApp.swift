@@ -33,9 +33,9 @@ public enum PazNavigationApp {
     public var name: String {
         switch self {
         case .AppleMaps:
-            return "Apple Maps"
+            return "苹果地图"
         case .GoogleMaps:
-            return "Google Maps"
+            return "谷歌地图"
         case .Navigon:
             return "Navigon"
         case .TomTom:
@@ -154,7 +154,7 @@ public enum PazNavigationApp {
                 })
             }))
         }
-        directionsAlertView.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.cancel, handler: { (action) in
+        directionsAlertView.addAction(UIAlertAction(title: "取消", style: UIAlertActionStyle.cancel, handler: { (action) in
             completion?(false)
         }))
         return directionsAlertView

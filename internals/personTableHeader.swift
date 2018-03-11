@@ -15,9 +15,8 @@ class personTableHeader: UIView {
     
     lazy var avatarImg:UIImageView = { [unowned self] in
         
-        //let img = UIImageView.init(frame: CGRect.init(x: (self.width - avatarSize.width - 15)/2, y: (self.height - avatarSize.height - 15)/2, width: avatarSize.width + 15, height: avatarSize.height + 15))
+ 
         let img = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: avatarSize.width + 15, height: avatarSize.height + 15))
-        
         img.contentMode = .scaleToFill
         return img
         }()
@@ -25,7 +24,7 @@ class personTableHeader: UIView {
     lazy var nameTitle:UILabel = {
         let name = UILabel.init(frame: CGRect.zero)
         name.textAlignment = .center
-        name.textColor = UIColor.white
+        name.textColor = UIColor.black
         name.font = UIFont.systemFont(ofSize: 16)
         name.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         return name
@@ -35,7 +34,7 @@ class personTableHeader: UIView {
     lazy var introduce:UILabel = {
         let intr = UILabel.init(frame: CGRect.zero)
         intr.textAlignment = .center
-        intr.textColor = UIColor.white
+        intr.textColor = UIColor.black
         intr.font = UIFont.systemFont(ofSize: 14)
         intr.text = ""
         intr.backgroundColor = UIColor.clear
@@ -50,6 +49,13 @@ class personTableHeader: UIView {
             }else{
                 normallayout()
             }
+        }
+    }
+    var  mode:(image:String,name:String, introduce:String)?{
+        didSet{
+            self.avatarImg.image = UIImage.init(named: mode?.image ?? "")
+            self.nameTitle.text = mode?.name
+            self.introduce.text = mode?.introduce
         }
     }
     

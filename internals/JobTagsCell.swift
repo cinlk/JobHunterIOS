@@ -11,114 +11,83 @@ import UIKit
 
 fileprivate let ROWITEMS = 4
 
-class JobTagsCell: UITableViewCell {
+@objcMembers class JobTagsCell: UITableViewCell {
     
+    private var onece  = true
+    private var btns:[UIButton] = []
     
-    var sub:UIView!
+    private var currentSelectedBtn:UIButton?
     
-    var onece  = true
+    private lazy var btnView:UIView = UIView()
     
+    dynamic var mode:[String]?{
+        didSet{
+            btns.removeAll()
+            self.btnView.subviews.forEach{$0.removeFromSuperview()}
+            for (index, str) in  mode!.enumerated(){
+               
+                let btn = UIButton.init(frame: CGRect.zero)
+                btn.setTitle(str, for: .normal)
+                btn.setTitleColor(UIColor.black, for: .normal)
+                btn.setTitleColor(UIColor.white, for: .selected)
+                btn.titleLabel?.font = UIFont.systemFont(ofSize: 12)
+                btn.backgroundColor = UIColor.white
+                btn.titleLabel?.textAlignment = .center
+                if index == 0 {
+                    btn.isSelected = true
+                    btn.backgroundColor = UIColor.blue
+                    currentSelectedBtn = btn
+                }
+        
+                btn.addTarget(self, action: #selector(click(_:)), for: .touchUpInside)
+                btns.append(btn)
+                btnView.addSubview(btn)
+                
+                // 这里设置高宽比
+                _ = btn.sd_layout().autoHeightRatio(3/8)
+
+            }
+            // 这里设置width 浮动长度
+            self.btnView.setupAutoMarginFlowItems(btns, withPerRowItemsCount: ROWITEMS, itemWidth: 80, verticalMargin: 10, verticalEdgeInset: 5, horizontalEdgeInset: 5)        
+            self.setupAutoHeight(withBottomView: btnView, bottomMargin: 10)
+        }
+    }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
-        self.backgroundColor = UIColor.gray
-        
-       
+        self.backgroundColor = UIColor.lightGray
+        self.contentView.addSubview(btnView)
+        _ = btnView.sd_layout().leftSpaceToView(self.contentView,10)?.rightSpaceToView (self.contentView,10)?.topSpaceToView(self.contentView,10)?.heightIs(0)
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    class func identity()->String{
+        return "JobTagsCell"
+    }
 }
-
 
 extension JobTagsCell{
-    
-    // 保证 item 的左右上下与 contentview 间距一致
-    func  interTagView(_ tags:[String]?){
+    //
+    @objc private func click(_ btn:UIButton){
+        //改变btn 状态
+        currentSelectedBtn?.isSelected = false
+        currentSelectedBtn?.backgroundColor = UIColor.white
         
-        guard  onece  else {
-            return
-        }
-        guard tags != nil && !(tags!.isEmpty) else {
-            return
-        }
-        // cell 复用后，保存tag button 不变
-        onece = false
-        sub  = UIView.init()
-        sub.backgroundColor = UIColor.clear
-        self.contentView.addSubview(sub)
+        btn.isSelected = true
+        btn.backgroundColor = UIColor.blue
+        currentSelectedBtn = btn
         
-        _ = sub.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topEqualToView(self.contentView)?.bottomEqualToView(self.contentView)
-        
-        var res:CGFloat = 0
-        var row:CGFloat = 0
-        var x:CGFloat = 0
-        var y:CGFloat = 0
-        for (index, item) in (tags?.enumerated())!{
-            
-            if (index %  ROWITEMS == 0  && index != 0) {
-                row += 1
-            }
-            // 默认选择第一个
-            
-            let btn = UIButton.init(type: .custom)
-            btn.setTitle(item, for: .normal)
-            btn.backgroundColor = UIColor.white
-            btn.setTitleColor(UIColor.black, for: .normal)
-            btn.setTitleColor(UIColor.white, for: .selected)
-            btn.titleLabel?.font = UIFont.systemFont(ofSize: 12)
-            if index == 0{
-                btn.isSelected = true
-                btn.backgroundColor = UIColor.blue
-            }
-            btn.addTarget(self, action: #selector(chooseTag(sender:)), for: .touchUpInside)
-            res = CGFloat(index  % ROWITEMS)
-            switch res{
-            case 0:
-                x = 12.5
-            case 1:
-                x = 102.5
-            case 2:
-                x = 192.5
-            case 3:
-                x = 282.5
-            default:
-                break
-            }
-            y = row*35 + 10
-            btn.frame = CGRect.init(x: x, y: y, width: 80, height: 30)
-            sub.addSubview(btn)
-        }
-        
-       
-        
-        
-    }
-    
-    @objc func chooseTag(sender:UIButton){
-        self.sub.subviews.forEach { (view) in
-            if view.isKind(of: UIButton.self){
-                let btn = view as! UIButton
-                if  btn == sender{
-                    btn.isSelected = true
-                    btn.backgroundColor = UIColor.blue
-                }else{
-                    btn.isSelected = false
-                    btn.backgroundColor = UIColor.white
-                }
-            }
-        }
-        if let tag = sender.titleLabel?.text{
+        // 消息通知刷新tableview
+        if let tag = btn.titleLabel?.text{
             NotificationCenter.default.post(name: NSNotification.Name.init("whichTag"), object: tag)
         }
-      
+        
         
     }
-    
-    static func identity()->String{
-        return "jobtags"
-    }
 }
+
+

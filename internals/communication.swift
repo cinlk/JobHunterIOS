@@ -380,7 +380,7 @@ extension communication: UITableViewDelegate,UITableViewDataSource{
             switch mes.type{
             case .jobDetail:
                 let job = JobDetailViewController()
-                job.infos = (mes as! JobDetailMessage).toDict()
+                //job.infos = (mes as! JobDetailMessage).toDict()
                 job.jobID = "1"  // MARK
                 self.navigationController?.pushViewController(job, animated: true)
 

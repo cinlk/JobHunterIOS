@@ -8,59 +8,94 @@
 
 import UIKit
 
-class RecruiterCell: UITableViewCell {
+fileprivate let imgSize:CGSize = CGSize.init(width: 40, height: 40)
+
+@objcMembers class RecruiterCell: UITableViewCell {
 
     
-    @IBOutlet weak var contact: UILabel!
+    private lazy var title: UILabel = {
+        let label = UILabel.init()
+        label.textAlignment = .left
+        label.font = UIFont.boldSystemFont(ofSize: 18)
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
+        return label
+    }()
     
     
-    @IBOutlet weak var icon: UIImageView!
+    private lazy var icon: UIImageView = {
+        let img = UIImageView.init()
+        img.contentMode = .scaleAspectFit
+        img.clipsToBounds = true
+        return img
+    }()
     
-    @IBOutlet weak var name: UILabel!
+    private lazy var name: UILabel = {
+        let label = UILabel.init()
+        label.textAlignment = .left
+        label.font = UIFont.systemFont(ofSize: 16)
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
+        return label
+    }()
     
     
-    @IBOutlet weak var position: UILabel!
-    
-    
-    @IBOutlet weak var onlineTime: UILabel!
-    var line:UIView!
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
+    private lazy var position: UILabel = {
+        let label = UILabel.init()
+        label.textAlignment = .left
+        label.font = UIFont.systemFont(ofSize: 16)
         
-        // Initialization code
-        line = UIView.init()
-        line.backgroundColor = UIColor.lightGray
-        contact.text = "职位发布者"
-        contact.font = UIFont.systemFont(ofSize: 16)
-        name.font = UIFont.systemFont(ofSize: 10)
-        position.font = UIFont.systemFont(ofSize: 10)
-        onlineTime.font = UIFont.systemFont(ofSize: 10)
-        onlineTime.textAlignment = .left
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
+        return label
+    }()
+    
+    private lazy var onlineTime: UILabel = {
+        let label = UILabel.init()
+        label.textAlignment = .right
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.textColor = UIColor.lightGray
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
+        return label
+    }()
+    
+    private lazy var line:UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor.black
+        return v
+    }()
+    
+    
+    dynamic var mode:HRInfo?{
+        didSet{
+            title.text = "职位发布者"
+            icon.image = UIImage.init(named: mode?.icon ?? "chrome")
+            name.text = mode?.name
+            position.text = mode?.position
+            onlineTime.text = "最近活跃:" + (mode?.lastLogin ?? "0")
+            self.setupAutoHeight(withBottomViewsArray: [icon,position], bottomMargin: 10)
+        }
+    }
+    
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.selectionStyle = .none
+        let views:[UIView] = [line,title,icon,name,position,onlineTime]
+        self.contentView.sd_addSubviews(views)
         
-        self.contentView.addSubview(line)
-        _ = contact.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,2.5)?.widthIs(120)?.heightIs(20)
-        _ = line.sd_layout().topSpaceToView(contact,2)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.heightIs(1)
+        _ = title.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.autoHeightRatio(0)
         
+        _ = line.sd_layout().topSpaceToView(title,5)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.heightIs(1)
         
-        _ = icon.sd_layout().leftEqualToView(contact)?.topSpaceToView(line,5)?.widthIs(40)?.heightIs(45)
-        _ = name.sd_layout().leftSpaceToView(icon,10)?.topEqualToView(icon)?.widthIs(100)?.heightIs(15)
+        _ = icon.sd_layout().leftEqualToView(title)?.topSpaceToView(line,5)?.widthIs(imgSize.width)?.heightIs(imgSize.height)
+        _ = name.sd_layout().leftSpaceToView(icon,10)?.topEqualToView(icon)?.autoHeightRatio(0)
         
-        _ = position.sd_layout().leftEqualToView(name)?.topSpaceToView(name,5)?.widthIs(200)?.heightIs(15)
+        _ = position.sd_layout().leftEqualToView(name)?.topSpaceToView(name,5)?.autoHeightRatio(0)
         
-        _ = onlineTime.sd_layout().centerYIs(icon.centerY)?.rightSpaceToView(self.contentView,10)?.widthIs(100)?.heightIs(15)
-        
+        _ = onlineTime.sd_layout().centerYEqualToView(icon)?.rightSpaceToView(self.contentView,10)?.autoHeightRatio(0)
         
         
     }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
-    class func cellHeight()->CGFloat{
-        return 80.0
-    }
 }

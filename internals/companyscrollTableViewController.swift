@@ -9,25 +9,29 @@
 import UIKit
 import SVProgressHUD
 
+
+
+
+fileprivate let headerViewH:CGFloat =  100
+
+fileprivate var remainHeight:CGFloat = 10
+
 class companyscrollTableViewController: UIViewController {
     
     
     
     // 获取数据 MARK
-    var companyInfo:Dictionary<String,Any?>? = ["tags":["标签1","标签1测试","标签89我的打到我","好id多多多多多无多无多付付","有多长好长","没有嘛yiu哦郁闷yiu","标签1","标签12","标签1等我大大哇","分为发违法标签99"],
-        "introduce":"大哇多无多首先想到的肯定是结束减速的代理方法：scrollViewDscrollViewDidEndDecelerating代理方法的，如果做过用3个界面+scrollView实现循环滚动展示图片，那么基本上都会碰到这么问题。如何准确的监听翻页？我的解决的思路如下达瓦大文大无大无多无大无大无多哇大无多无飞啊飞分为飞飞飞达瓦大文大无大无多哇付达瓦大文大无付多无dwadwadadawdawde吊袜带挖多哇建外大街文档就frog忙不忙你有他们今天又摸排个人票买房可免费课时费\n个人个人，二哥，二\n吊袜带挖多，另外的码问了；吗\n",
-        "address":"北京市昌平区二拨子村甲13号"]
+  
     // 时间 今天 显示时间，其他显示 月和日
-    var joblistData:Dictionary<String,Any?>? = ["jobTag":["全部","研发","产品","市场","智能","AI","IOS","销售","实习","我看六个字的"],
-                                                "jobs":[["jobName":"在线讲师","address":"北京","type":"校招","degree":"不限","create_time":"09:45","salary":"面议","tag":"市场"],["jobName":"后期助理","address":"厦门","type":"实习","degree":"本科","create_time":"12-06","salary":"100-200/天","tag":"实习"],["jobName":"IOS开发","address":"北京","type":"校招","degree":"研究生","create_time":"12-24","salary":"15K-20K","tag":"研发"],["jobName":"在线讲师","address":"北京","type":"校招","degree":"不限","create_time":"09:45","salary":"面议","tag":"市场"]]
-                                                    ]
     
     
-    var filterJobs:[Dictionary<String,String>]?
+    private lazy var filterJobs:[CompuseRecruiteJobs]? = []
     
-    
+    private lazy var jobDetail: JobDetailViewController = JobDetailViewController()
 
-    lazy var headerView:CompanyHeaderView = {
+    
+    
+    private lazy var headerView:CompanyHeaderView = {
        let header = CompanyHeaderView.init(frame: CGRect.zero)
        header.backgroundColor = UIColor.white
        return header
@@ -35,25 +39,31 @@ class companyscrollTableViewController: UIViewController {
 
     
     
-    lazy var scrollerView:UIScrollView = {
+    private lazy var scrollerView:UIScrollView = {
        let sc = UIScrollView.init()
        sc.showsHorizontalScrollIndicator = false
        sc.showsVerticalScrollIndicator = false
        sc.backgroundColor = UIColor.clear
        sc.delegate = self
        sc.bounces = false
+       sc.contentInsetAdjustmentBehavior = .never
        sc.isPagingEnabled = true
        return sc
     }()
     
-    lazy var joblistTable:UITableView = {
-       let tb = UITableView.init(frame: CGRect.zero)
+    private lazy var joblistTable:UITableView = {
+       let tb = UITableView.init(frame: CGRect.init(x: ScreenW, y: 0, width: ScreenW, height: ScreenH))
        tb.tableFooterView = UIView.init()
-       tb.backgroundColor = UIColor.white
+       tb.backgroundColor = UIColor.viewBackColor()
        tb.delegate = self
        tb.dataSource = self
        tb.separatorStyle = .singleLine
-       tb.contentInset = UIEdgeInsets.init(top: 0, left: 0, bottom: 120, right: 0)
+       //tb.bounces = false
+       tb.contentInsetAdjustmentBehavior = .never
+       tb.contentInset = UIEdgeInsets.init(top: 0, left: 0, bottom: 60, right: 0)
+       let head = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: headerViewH + NavH))
+       head.backgroundColor = UIColor.viewBackColor()
+       tb.tableHeaderView = head
        //
        tb.register(JobTagsCell.self, forCellReuseIdentifier: JobTagsCell.identity())
        tb.register(companyJobCell.self, forCellReuseIdentifier: companyJobCell.identity())
@@ -61,45 +71,52 @@ class companyscrollTableViewController: UIViewController {
        return tb
     }()
     
-    lazy var detailTable:UITableView = {
-       let tb = UITableView.init(frame: CGRect.zero)
+    private lazy var detailTable:UITableView = {
+       
+       let tb = UITableView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
        tb.tableFooterView = UIView.init()
-       tb.backgroundColor = UIColor.white
+       tb.backgroundColor = UIColor.viewBackColor()
        tb.delegate = self
        tb.dataSource = self
-       tb.rowHeight = UITableViewAutomaticDimension
-       tb.estimatedRowHeight = 100
+       tb.contentInsetAdjustmentBehavior = .never
+       //tb.rowHeight = UITableViewAutomaticDimension
+       //tb.estimatedRowHeight = 100
        tb.separatorStyle = .none
-       // 底部内容距离底部高120，防止回弹底部内容被影藏
-       tb.contentInset = UIEdgeInsets.init(top: 0, left: 0, bottom: 120, right: 0)
+       // 底部内容距离底部高60，防止回弹底部内容被影藏
+       tb.contentInset = UIEdgeInsets.init(top: 0, left: 0, bottom: 60, right: 0)
+       let head = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: headerViewH + NavH))
+       head.backgroundColor = UIColor.viewBackColor()
+       tb.tableHeaderView = head
        // cell
-       tb.register(UINib.init(nibName: "tagsTableViewCell", bundle: nil), forCellReuseIdentifier: "tags")
-       tb.register(UINib.init(nibName: "introduction", bundle: nil), forCellReuseIdentifier: "introduce")
-       tb.register(UINib.init(nibName: "others", bundle: nil), forCellReuseIdentifier: "other")
-        
-        
+       tb.register(tagsTableViewCell.self, forCellReuseIdentifier: "tagsTableViewCell")
+       tb.register(introductionCell.self, forCellReuseIdentifier: "introductionCell")
+       tb.register(CompanyDetailCell.self, forCellReuseIdentifier: "CompanyDetailCell")
        return tb
+        
     }()
     
     
     // navigation 背景view
-    lazy var navigationBackView:UIView = {
+    private lazy var navigationBackView:UIView = {
        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 64))
-       v.backgroundColor = UIColor.lightGray
+       v.backgroundColor = UIColor.navigationBarColor()
        return v
     }()
     
+     private var ShareViewCenterY:CGFloat = 0
+    
     // 分享界面
-    lazy var shareapps:shareView = { [unowned self] in
+    private lazy var shareapps:shareView = { [unowned self] in
         //放在最下方
         let view =  shareView(frame: CGRect(x: 0, y: ScreenH, width: ScreenW, height: 150))
         // 加入最外层窗口
         //view.sharedata = self.infos?["jobName"] ?? ""
         UIApplication.shared.windows.last?.addSubview(view)
+        ShareViewCenterY = view.centerY
         return view
         }()
     
-    lazy var darkView :UIView = { [unowned self] in
+    private lazy var darkView :UIView = { [unowned self] in
         let darkView = UIView()
         darkView.frame = CGRect(x: 0, y: 0, width: ScreenW, height: ScreenH)
         darkView.backgroundColor = UIColor(red: 0 / 255.0, green: 0 / 255.0, blue: 0 / 255.0, alpha: 0.5) // 设置半透明颜色
@@ -111,73 +128,58 @@ class companyscrollTableViewController: UIViewController {
     }()
     
     
-    var centerY:CGFloat = 0
+   
     
-    var remainHeight:CGFloat = 10
-    var headerHeight:CGFloat = 100
-    
-    // 位置
-    var endScrollOffsetX:CGFloat = 0
-    var startScrollOffsetX:CGFloat = 0
-    var willEndOffsetX:CGFloat = 0
+    // scrollerview位置
+    private var endScrollOffsetX:CGFloat = 0
+    private var startScrollOffsetX:CGFloat = 0
+    private var willEndOffsetX:CGFloat = 0
     
     
+    var mode:String?{
+        didSet{
+            loadData()
+        }
+    }
+    
+    // 数据json
+    private lazy var json:[String:Any] = [:]
+    private var comp:CompanyDetail!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         
-        detailTable.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH)
-        joblistTable.frame = CGRect.init(x: ScreenW, y: 0, width: ScreenW, height: ScreenH)
+        //detailTable.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH)
+        //joblistTable.frame = CGRect.init(x: ScreenW, y: 0, width: ScreenW, height: ScreenH)
         
         scrollerView.addSubview(detailTable)
         scrollerView.addSubview(joblistTable)
-        scrollerView.contentSize = CGSize.init(width: ScreenW * 2, height: 0)
+        scrollerView.contentSize = CGSize.init(width: ScreenW * 2, height: ScreenH)
         
         self.view.addSubview(scrollerView)
         self.view.addSubview(headerView)
-        self.view.backgroundColor = UIColor.lightGray
-        //假headerview 和section
-        let h1 = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 100))
-        h1.backgroundColor = UIColor.lightGray
-        detailTable.tableHeaderView = h1
-        let h2 = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 100))
-        h2.backgroundColor = UIColor.lightGray
-        joblistTable.tableHeaderView = h2
+        self.view.backgroundColor = UIColor.viewBackColor()
         
-        headerView.icon.image = UIImage.init(named: "sina")
-        headerView.companyName.text = "新浪"
-        headerView.des.text = "新浪微博个性化"
-        headerView.tags.text = "北京 |2000人以上|互联网"
+        self.addShareBarItem()
+        
         headerView.btn1.addTarget(self, action: #selector(click(_:)), for: .touchUpInside)
         headerView.btn2.addTarget(self, action: #selector(click(_:)), for: .touchUpInside)
-        self.centerY = shareapps.centerY
 
-        self.addShareBarItem()
-        // MARK 获取数据 刷新table
-        // as 会转化成 不可修改类型
-        var tmp = self.joblistData?["jobs"] as? [Dictionary<String,String>]
-        for _ in 0..<10 {
-            tmp?.append(["jobName":"在线讲师","address":"北京","type":"校招","degree":"不限","create_time":"09:45","salary":"面议","tag":"市场"])
-        }
-        self.joblistData?["jobs"] = tmp
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [unowned self] in
-            self.filterJobs  = self.joblistData?["jobs"]  as? [Dictionary<String, String>]
-           
-            self.joblistTable.reloadSections([1], animationStyle: .none)
-        }
-        
-        // 监听tag 变化 刷新table
+        // 监听job 的tag 变化 刷新第二个table
         NotificationCenter.default.addObserver(self, selector: #selector(filterJoblist(notify:)), name: NSNotification.Name.init("whichTag"), object: nil)
         
         
+        // 加载数据
+        //loadData()
         
     }
     
    
     override func viewWillAppear(_ animated: Bool) {
         self.navigationItem.title = "公司详情"
+        self.tabBarController?.tabBar.isHidden = true
         self.navigationController?.view.insertSubview(navigationBackView, at: 1)
         
     }
@@ -189,10 +191,9 @@ class companyscrollTableViewController: UIViewController {
     }
     override func viewWillLayoutSubviews() {
         
-        _ = headerView.sd_layout().yIs(64)?.rightEqualToView(self.view)?.leftEqualToView(self.view)?.heightIs(remainHeight + headerHeight)
+        _ = headerView.sd_layout().yIs(NavH)?.rightEqualToView(self.view)?.leftEqualToView(self.view)?.heightIs(headerViewH)
         _ = scrollerView.sd_layout().topEqualToView(self.view)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
-        
-        // 不在headerview里设置layout约束, 不然动画时会被约束限制
+        // 不在headerview里设置layout约束, 不然第二个tableview 滑动时会被约束限制
         headerView.underLine.frame = CGRect.init(x: headerView.btn1.center.x + 15, y: headerView.frame.height - 1 , width: 30, height: 1)
         
         
@@ -213,14 +214,47 @@ extension companyscrollTableViewController{
             
             // tableview 在 navigationbar 下方
             self.adjustHeighTable()
-            self.scrollerView.setContentOffset(CGPoint.init(x: CGFloat(sender.tag - 1) * UIScreen.main.bounds.width , y: -64), animated: false)
+            self.scrollerView.setContentOffset(CGPoint.init(x: CGFloat(sender.tag - 1) * UIScreen.main.bounds.width , y: 0), animated: false)
             self.headerView.underLine.center.x = sender.center.x
             self.headerView.chooseBtn1 = sender.tag == 1 ? true : false
             
         })
         
-        
     }
+    
+    //  异步获取网络数据， UI 线程更新
+    private func loadData(){
+        json = ["address":"地址 北京 - 定位","webSite":"https://www.baidu.com","tags":["标签1","标签1测试","标签89我的打到我","好id多多多多多无多无多付付","有多长好长","没有嘛yiu哦郁闷yiu","标签1","标签12","标签1等我大大哇","分为发违法标签99"]
+            ,"name":"sina","describe":"大哇多无多首先想到的肯定是结束减速的代理方法：scrollViewDscrollViewDidEndDecelerating代理方法的，如果做过用3个界面+scrollView实现循环滚动展示图片，那么基本上都会碰到这么问题。如何准确的监听翻页？我的解决的思路如下达瓦大文大无大无多无大无大无多哇大无多无飞啊飞分为飞飞飞达瓦大文大无大无多哇付达瓦大文大无付多无dwadwadadawdawde吊袜带挖多哇建外大街文档就frog忙不忙你有他们今天又摸排个人票买房可免费课时费\n个人个人，二哥，二\n吊袜带挖多，另外的码问了；吗\n","simpleDes":"新浪微博个性化","simpleTag":["北京","2000人以上","互联网"],"iconURL":"sina","joblist":
+                ["jobtag":["全部","研发","产品","市场","智能","AI","IOS","销售","实习","我看六个字的"],
+                 "jobs":[["company":"sina","picture":"","jobName":"在线讲师","address":"北京","type":"compuse","education":"不限","create_time":"09:45","salary":"面议","tag":["市场"]],["company":"sina","picture":"","jobName":"后期助理","address":"厦门","type":"compuse","education":"本科","create_time":"12-06","salary":"100-200/天","tag":["实习"]],["company":"sina","picture":"","jobName":"IOS开发","address":"北京","type":"compuse","education":"研究生","create_time":"12-24","salary":"15K-20K","tag":["研发"]],["company":"sina","picture":"","jobName":"在线讲师","address":"北京","type":"compuse","education":"不限","create_time":"09:45","salary":"面议","tag":["市场"]],
+                ["company":"sina","picture":"","jobName":"在线讲师","address":"北京","type":"compuse","education":"不限","create_time":"09:45","salary":"面议","tag":["市场"]],
+                ["company":"sina","picture":"","jobName":"在线讲师","address":"北京","type":"compuse","education":"不限","create_time":"09:45","salary":"面议","tag":["市场"]],
+                ["company":"sina","picture":"","jobName":"在线讲师","address":"北京","type":"compuse","education":"不限","create_time":"09:45","salary":"面议","tag":["市场"]],
+                ["company":"sina","picture":"","jobName":"在线讲师","address":"北京","type":"compuse","education":"不限","create_time":"09:45","salary":"面议","tag":["市场"]],
+                ["company":"sina","picture":"","jobName":"在线讲师","address":"北京","type":"compuse","education":"不限","create_time":"09:45","salary":"面议","tag":["市场"]],
+                ["company":"sina","picture":"","jobName":"在线讲师","address":"北京","type":"compuse","education":"不限","create_time":"09:45","salary":"面议","tag":["市场","研发"]]]]]
+        
+        comp = CompanyDetail(JSON: json)
+        print(comp)
+        // 头部视图
+        headerView.mode = comp
+        if let  jobs =  self.comp?.joblist?.jobs{
+            self.filterJobs?.append(contentsOf: jobs)
+        }
+        print(self.filterJobs)
+        //self.detailTable.reloadData()
+        //self.joblistTable.reloadData()
+        
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//
+//        }
+        
+            //self.joblistTable.reloadSections([1], animationStyle: .none)
+    }
+    
+    
+    
     private func addShareBarItem(){
         // 分享
         let up =  UIImage.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "upload")
@@ -292,14 +326,14 @@ extension companyscrollTableViewController{
         darkView.removeFromSuperview()
         UIView.animate(withDuration: 0.5, animations: {
             
-            self.shareapps.centerY =  self.centerY
+            self.shareapps.centerY =  self.ShareViewCenterY
         }, completion: nil)
         
     }
     
 }
 
-extension companyscrollTableViewController: UIScrollViewDelegate,UITableViewDelegate,UITableViewDataSource{
+extension companyscrollTableViewController: UITableViewDelegate,UITableViewDataSource{
     
     
     
@@ -316,20 +350,22 @@ extension companyscrollTableViewController: UIScrollViewDelegate,UITableViewDele
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+       
         if tableView == detailTable{
             switch indexPath.section{
             case 0:
-                let cell  = tableView.dequeueReusableCell(withIdentifier: "tags", for: indexPath) as! tagsTableViewCell
-                cell.tags = companyInfo?["tags"] as? [String] ?? [""]
+                let cell  = tableView.dequeueReusableCell(withIdentifier: "tagsTableViewCell", for: indexPath) as! tagsTableViewCell
+                cell.tags = comp.tags  ?? [""]
                 return cell
             case 1:
-                let cell  = tableView.dequeueReusableCell(withIdentifier: "introduce", for: indexPath) as! introduction
-                cell.desc.text = companyInfo?["introduce"] as? String ?? ""
+                let cell  = tableView.dequeueReusableCell(withIdentifier: "introductionCell", for: indexPath) as! introductionCell
+                cell.des = comp.describe  ?? ""
                 return cell
             case 2:
-                let cell  = tableView.dequeueReusableCell(withIdentifier: "other", for: indexPath) as! others
-                cell.adressDetail.text = companyInfo?["address"] as? String ?? ""
+                //let comp = CompanyDetail(address: "地址 北京 - 定位", webSite: "https://www.baidu.com")
+
+                let cell  = tableView.dequeueReusableCell(withIdentifier: "CompanyDetailCell", for: indexPath) as! CompanyDetailCell
+                cell.comp = comp
                 return cell
             default:
                 let cell = UITableViewCell.init(style: .default, reuseIdentifier: "cell")
@@ -342,12 +378,11 @@ extension companyscrollTableViewController: UIScrollViewDelegate,UITableViewDele
             case 0:
                 print("refresh ")
                 let cell = tableView.dequeueReusableCell(withIdentifier: JobTagsCell.identity(), for: indexPath) as! JobTagsCell
-                cell.interTagView(joblistData?["jobTag"] as? [String])
-                
+                cell.mode = comp.joblist?.jobtag
                 return cell
             case 1:
                 let cell = tableView.dequeueReusableCell(withIdentifier: companyJobCell.identity(), for: indexPath) as! companyJobCell
-                cell.setLabel(item: filterJobs?[indexPath.row])
+                cell.mode = filterJobs?[indexPath.row]
                 return cell
             default:
                 return UITableViewCell.init()
@@ -357,127 +392,141 @@ extension companyscrollTableViewController: UIScrollViewDelegate,UITableViewDele
       
     }
     
+    // section 高度
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 20))
-        v.backgroundColor = UIColor.lightGray
-        return v
+        return UIView.init()
     }
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return remainHeight
     }
     
+
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if tableView == detailTable && indexPath.section == 0 {
-            if let count = (companyInfo?["tags"] as? [String])?.count{
-                return CGFloat((count/3) * 50 + 50)
-            }
-        }
-        else if tableView == joblistTable && indexPath.section == 0 {
-            if let count = (joblistData?["jobTag"] as? [String])?.count{
-                return CGFloat(count/4) * 40 + 40 
+        if tableView == detailTable{
+            if  indexPath.section == 0 {
+                let tags =  comp.tags ?? []
+                return tableView.cellHeight(for: indexPath, model: tags, keyPath: "tags", cellClass: tagsTableViewCell.self, contentViewWidth: ScreenW)
+            }else if indexPath.section == 1{
+                let des  = comp.describe ?? ""
+                return tableView.cellHeight(for: indexPath, model: des, keyPath: "des", cellClass: introductionCell.self, contentViewWidth: ScreenW)
             }else{
-                return 0
+                
+                return tableView.cellHeight(for: indexPath, model: comp, keyPath: "comp", cellClass: CompanyDetailCell.self, contentViewWidth: ScreenW)
             }
-        }else if tableView == joblistTable && indexPath.section == 1{
-            return companyJobCell.cellHeight()
+            
         }
-        return UITableViewAutomaticDimension
+        else if tableView == joblistTable {
+            if  indexPath.section == 0{
+               let mode =  comp.joblist?.jobtag
+               return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: JobTagsCell.self, contentViewWidth: ScreenW)
+            }else{
+                
+                let mode = filterJobs?[indexPath.row]
+                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: companyJobCell.self, contentViewWidth: ScreenW)
+            }
+           
+        }
+        
+        return 0 
         
     }
     
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        
-        return UITableViewAutomaticDimension
-    }
     
-    //selected cell
+    
+    //查看job
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
         if tableView == self.joblistTable && indexPath.section == 1{
             if let info =  filterJobs?[indexPath.row]{
-                let detail = JobDetailViewController()
-                detail.infos = info
-                self.navigationController?.pushViewController(detail, animated: true)
+                jobDetail.mode = info
+                self.navigationController?.pushViewController(jobDetail, animated: true)
             }
         }
         
     }
+    
+    
+}
+
+// 滑动
+extension  companyscrollTableViewController: UIScrollViewDelegate {
     
     
     
     // 内部tableview 滑动和同步偏移
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
-        let stopHeight =  headerHeight+remainHeight - 30
+        
+        let stopHeight =  headerViewH - 30
+        
         if scrollView.isKind(of: UITableView.self){
+            
             let offsetY = scrollView.contentOffset.y
+            // headerView 停止滑动
             if offsetY >= stopHeight {
-                 headerView.frame.origin.y = 64 -  stopHeight
+                headerView.frame.origin.y = 64 -  stopHeight
                 
             }
+                // 没有滑动
             else  if offsetY <= 0 {
+                // 恢复最初位置
                 headerView.frame.origin.y = 64
+                // tableview 保持同步
                 self.detailTable.contentOffset = scrollView.contentOffset
                 self.joblistTable.contentOffset = scrollView.contentOffset
+                // headerView 和tableview 一起滑动
             }else{
-                 headerView.frame.origin.y =  64 - offsetY
-                 self.detailTable.contentOffset = scrollView.contentOffset
-                 self.joblistTable.contentOffset = scrollView.contentOffset
+                headerView.frame.origin.y =  64 - offsetY
+                // tableview 保持同步
+                self.detailTable.contentOffset = scrollView.contentOffset
+                self.joblistTable.contentOffset = scrollView.contentOffset
                 
             }
-            
             
         }else  if  scrollView == self.scrollerView{
             //  线滑动进度progress
             var progress:CGFloat = 0
             let currentOffsetX = scrollView.contentOffset.x
-            let scroviewW = scrollerView.bounds.width
+            let scroviewW = ScreenW
             let left = self.headerView.btn1.center.x
             let right = self.headerView.btn2.center.x
             let btndistance  =  right -  left
-            var direction = false
-            
+            //print(startScrollOffsetX, endScrollOffsetX, willEndOffsetX,currentOffsetX)
             // 左滑动
-            if currentOffsetX > startScrollOffsetX {
-                progress = currentOffsetX / scroviewW - floor(currentOffsetX / scroviewW)
-
-                if currentOffsetX - startScrollOffsetX == scroviewW{
-                    progress = 1.0
-                }
-                direction = true
+            if  currentOffsetX > startScrollOffsetX {
+                
+                progress = currentOffsetX / scroviewW
+                moveLine(progress:progress,start:left, distance:btndistance)
                 
             }else{
-                progress = 1 - (currentOffsetX / scroviewW - floor(currentOffsetX / scroviewW))
-                if startScrollOffsetX - currentOffsetX == scroviewW{
-                    progress = 1
-                }
-                direction = false
-               
+                
+                progress =   (currentOffsetX / scroviewW) - 1
+                moveLine(progress:progress,start:right, distance:btndistance)
+                
             }
-            UIView.animate(withDuration: 0.2, animations: {
-                switch direction{
-                case false:
-                    UIView.animate(withDuration: 0.2, animations: {
-                        self.headerView.underLine.center.x =  right  -  btndistance * progress
-                        self.headerView.chooseBtn1 = true
-                    })
-                case true:
-                    UIView.animate(withDuration: 0.2, animations: {
-                        self.headerView.underLine.center.x =  left + btndistance * progress
-                        self.headerView.chooseBtn1 = false
-                    })
-                }
-            })
-           
             
         }
-       
+        
+    }
+    
+    // btn下划线滑动进度
+    private func moveLine(progress:CGFloat, start:CGFloat, distance:CGFloat){
+        
+        self.headerView.underLine.center.x =  start  +  distance * progress
+        
+        if progress == 1{
+            self.headerView.chooseBtn1 = false
+        }else if progress == -1{
+            self.headerView.chooseBtn1 = true
+        }
+        
         
     }
     
     
-    
+    // tableview offset 同步
     private func adjustHeighTable(){
-        let stopHeight = headerHeight+remainHeight - 30
+        let stopHeight = headerViewH - 30
         let maxOffsetY = max(self.detailTable.contentOffset.y, self.joblistTable.contentOffset.y)
         if maxOffsetY >= stopHeight{
             if self.detailTable.contentOffset.y < stopHeight{
@@ -492,18 +541,9 @@ extension companyscrollTableViewController: UIScrollViewDelegate,UITableViewDele
     
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        let stopHeight = headerHeight+remainHeight - 30
         if scrollView == self.scrollerView{
             startScrollOffsetX = scrollView.contentOffset.x
-            let maxOffsetY = max(self.detailTable.contentOffset.y, self.joblistTable.contentOffset.y)
-            if maxOffsetY >= stopHeight{
-                if self.detailTable.contentOffset.y < stopHeight{
-                    self.detailTable.contentOffset = CGPoint.init(x: 0, y: stopHeight)
-                }
-                if self.joblistTable.contentOffset.y < stopHeight{
-                    self.joblistTable.contentOffset = CGPoint.init(x: 0, y: stopHeight)
-                }
-            }
+            adjustHeighTable()
         }
         
         
@@ -516,7 +556,8 @@ extension companyscrollTableViewController: UIScrollViewDelegate,UITableViewDele
             endScrollOffsetX = scrollView.contentOffset.x
         }
     }
-   
+    
+    
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if scrollView == self.scrollerView{
@@ -524,22 +565,30 @@ extension companyscrollTableViewController: UIScrollViewDelegate,UITableViewDele
         }
         
     }
-    
-    
-    
 }
 
-
 extension companyscrollTableViewController{
+    // 刷新joblist
     @objc func filterJoblist(notify: Notification){
+        // tag 名字
         if let name = notify.object as? String {
-            
+            self.filterJobs?.removeAll()
             if name  == "全部"{
-                self.filterJobs  = self.joblistData?["jobs"]  as? [Dictionary<String, String>]
+                
+                if let jobs  = comp.joblist?.jobs{
+                    self.filterJobs?.append(contentsOf: jobs)
+                }
             }else{
-                self.filterJobs = (self.joblistData?["jobs"] as? [Dictionary<String, String>])?.filter({ (item) -> Bool in
-                    return (item["tag"]?.contains(name))!
-                })
+                // tag匹配的jobs
+                if let json =  (comp.joblist?.jobs)?.filter({ (item) -> Bool in
+                    
+                    return item.tag.contains(name)
+                }){
+                    for item in json{
+                        self.filterJobs?.append(item)
+                    }
+                }
+                
             }
             self.joblistTable.reloadSections([1], animationStyle: .none)
 
@@ -550,35 +599,40 @@ extension companyscrollTableViewController{
 }
 
 
-// companyHeader
-class CompanyHeaderView:UIView{
+// companyHeader view
+fileprivate class CompanyHeaderView:UIView{
     
-    lazy var icon:UIImageView = {
+    private lazy var icon:UIImageView = {
        let img = UIImageView.init()
        img.clipsToBounds = true
        img.contentMode = .scaleAspectFit
        return img
     }()
     
-    lazy var companyName:UILabel = {
+    private lazy var companyName:UILabel = {
         let label = UILabel.init()
         label.text = ""
-        
+        label.textAlignment = .left
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 60)
         label.font = UIFont.boldSystemFont(ofSize: 15)
         return label
     }()
     
-    lazy var des:UILabel = {
+    private lazy var des:UILabel = {
        let label = UILabel.init()
        label.text = ""
        label.font = UIFont.systemFont(ofSize: 12)
+       label.textAlignment = .left
+       label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 60)
        return label
     }()
     
-    lazy var tags:UILabel = {
+    private lazy var tags:UILabel = {
         let label = UILabel.init()
         label.text = ""
         label.font = UIFont.systemFont(ofSize: 12)
+        label.textAlignment = .left
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 60)
         return label
     }()
     
@@ -613,43 +667,50 @@ class CompanyHeaderView:UIView{
             btn2.isSelected = !newValue
         }
     }
-    lazy var bottomView:UIView = {
-        let v = UIView.init()
-        v.backgroundColor = UIColor.lightGray
-        return v
-    }()
+    // btn 下划线
     lazy var underLine:UIView = {  [unowned self] in
         let line = UIView.init(frame: CGRect.zero)
         line.backgroundColor = UIColor.blue
         return line
     }()
+    // 分割线
+    private let line = UIView.init()
     
-    let line = UIView.init()
-    
+    var mode:CompanyDetail?{
+        didSet{
+            self.icon.image = UIImage.init(named: mode?.iconURL ?? "")
+            self.companyName.text = mode?.name
+            self.des.text = mode?.simpleDes
+            var tags  = ""
+            for (index,item) in (mode!.simpleTag?.enumerated())!{
+                
+                tags += item +  (index == mode?.tags?.count ? "" : "|")
+            }
+            self.tags.text = tags
+            
+        }
+    }
     override init(frame: CGRect) {
         super.init(frame: frame)
         // MARK 修改
         //underLine.frame = CGRect.init(x: self.btn1.center.x, y: 109 , width: 30, height: 1)
-
-        self.addSubview(icon)
-        self.addSubview(companyName)
-        self.addSubview(des)
-        self.addSubview(tags)
-        self.addSubview(line)
-        self.addSubview(btn1)
-        self.addSubview(btn2)
-        self.addSubview(underLine)
-        //self.addSubview(bottomView)
+        let views:[UIView] = [icon, companyName,des,tags, line,btn1, btn2, underLine]
+        self.sd_addSubviews(views)
         
         line.backgroundColor = UIColor.lightGray
         
         _ = icon.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(self,5)?.widthIs(50)?.heightIs(60)
-        _ = companyName.sd_layout().leftSpaceToView(icon,10)?.topEqualToView(icon)?.widthIs(200)?.heightIs(25)
-        _ = des.sd_layout().leftEqualToView(companyName)?.topSpaceToView(companyName,2)?.rightEqualToView(self)?.heightIs(20)
-        _ = tags.sd_layout().leftEqualToView(companyName)?.topSpaceToView(des,2)?.rightEqualToView(self)?.heightIs(20)
-        _ = line.sd_layout().bottomSpaceToView(self,30)?.leftEqualToView(icon)?.rightEqualToView(self)?.heightIs(1)
+        _ = companyName.sd_layout().leftSpaceToView(icon,10)?.topEqualToView(icon)?.autoHeightRatio(0)
+        _ = des.sd_layout().leftEqualToView(companyName)?.topSpaceToView(companyName,2)?.autoHeightRatio(0)
+        _ = tags.sd_layout().leftEqualToView(companyName)?.topSpaceToView(des,2)?.autoHeightRatio(0)
+        _ = line.sd_layout().topSpaceToView(icon,5)?.leftEqualToView(icon)?.rightEqualToView(self)?.heightIs(1)
         _ = btn1.sd_layout().leftSpaceToView(self,30)?.topSpaceToView(line,5)?.widthIs(120)?.heightIs(20)
         _ = btn2.sd_layout().rightSpaceToView(self,30)?.topSpaceToView(line,5)?.widthIs(120)?.heightIs(20)
+        //_ = underLine.sd_layout().centerXEqualToView(btn1)?.widthIs(30)?.heightIs(1)?.bottomEqualToView(self)
+        companyName.setMaxNumberOfLinesToShow(1)
+        des.setMaxNumberOfLinesToShow(1)
+        tags.setMaxNumberOfLinesToShow(1)
+        //underLine.frame =  CGRect.init(x: btn1.center.x + 15, y: self.frame.height - 1 , width: 30, height: 1)
         // 约束关系，父类view frame 改变 会重新应用最初的约束关系
         //_ = underLine.sd_layout().bottomEqualToView(self)?.centerXEqualToView(btn1)?.widthIs(30)?.heightIs(1)
         

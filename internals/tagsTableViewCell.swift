@@ -8,55 +8,86 @@
 
 import UIKit
 
-class tagsTableViewCell: UITableViewCell,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout{
 
-    @IBOutlet weak var label: UILabel!
-    @IBOutlet weak var taggroup: UICollectionView!
+fileprivate let cellH:CGFloat = 30
+
+@objcMembers class tagsTableViewCell: UITableViewCell,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout{
+
+    private lazy var label: UILabel = {
+        let label = UILabel.init()
+        label.font = UIFont.boldSystemFont(ofSize: 18)
+        label.textAlignment = .left
+        label.text = "公司标签"
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        return label
+    }()
     
-    
-    var tags:[String] = []
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-        self.selectionStyle = .none
-        let line = UIView()
-        line.backgroundColor = UIColor.black
-        self.contentView.addSubview(line)
-        _ = label.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(120)?.heightIs(20)
-        _ = line.sd_layout().topSpaceToView(label,5)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.heightIs(1)
-        
+    // 标签collectionview
+    private lazy var taggroup: UICollectionView = { [unowned self] in
         
         let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = UICollectionViewScrollDirection.vertical  //滚动方向
         layout.sectionInset=UIEdgeInsetsMake(0, 10, 0, 10)
-        
         layout.estimatedItemSize = CGSize(width: 20, height: 20)
-        
-       
         layout.minimumInteritemSpacing = 10
         layout.minimumLineSpacing = 10
-      
-        
+        let taggroup = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
         taggroup.isUserInteractionEnabled = false
         taggroup.showsVerticalScrollIndicator = false
         taggroup.showsVerticalScrollIndicator = false
-        taggroup.autoresizesSubviews = false
-        taggroup.setCollectionViewLayout(layout, animated: false)
+        // 取消滚动，不然视图滑动错位
+        taggroup.isScrollEnabled = false
         taggroup.delegate = self
         taggroup.backgroundColor  = UIColor.white
         taggroup.dataSource  = self
         taggroup.register(MyTag.self, forCellWithReuseIdentifier: "mytag")
+        return taggroup
+        
+    }()
+    
+    private lazy var line:UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor.black
+        return v
+    }()
+    
+    dynamic var tags:[String]?{
+        didSet{
+            
+            // MARK 如何动态计算 collectionview 高度？？？？
+            let count = tags!.count
+            // 技巧，最小2个，大于3个的数 高度都能覆盖
+            self.taggroup.height = CGFloat((count/3) * 50 + 50)
+            self.taggroup.reloadData()
+            
+            self.setupAutoHeight(withBottomView: taggroup, bottomMargin: 10)
+        }
+    }
+    
+  
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        // Initialization code
+        self.selectionStyle = .none
+        let views:[UIView] = [line, label, taggroup]
+        self.contentView.sd_addSubviews(views)
+        
+        _ = label.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.autoHeightRatio(0)
+        
+        _ = line.sd_layout().topSpaceToView(label,5)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.heightIs(1)
+        
+        _ = taggroup.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topSpaceToView(line,5)
         
         
         
-     
-        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
    override func cellHeight(for indexPath: IndexPath!, cellContentViewWidth width: CGFloat, tableView: UITableView!) -> CGFloat {
         
-        return 30
+        return cellH
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -66,7 +97,7 @@ class tagsTableViewCell: UITableViewCell,UICollectionViewDelegate,UICollectionVi
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-            return tags.count
+            return tags?.count ?? 0
         
     }
     
@@ -80,7 +111,7 @@ class tagsTableViewCell: UITableViewCell,UICollectionViewDelegate,UICollectionVi
    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell  = collectionView.dequeueReusableCell(withReuseIdentifier: "mytag", for: indexPath) as! MyTag
-        let content =  tags[indexPath.row]
+        let content =  tags?[indexPath.row] ?? ""
         cell.lable.text = content
         cell.lable.textColor = UIColor.black
         cell.backgroundColor = UIColor.gray
@@ -90,7 +121,7 @@ class tagsTableViewCell: UITableViewCell,UICollectionViewDelegate,UICollectionVi
 }
 
 
-class MyTag:UICollectionViewCell{
+fileprivate  class MyTag:UICollectionViewCell{
     
     lazy var lable:UILabel = {
         let lable = UILabel.init()
@@ -99,7 +130,6 @@ class MyTag:UICollectionViewCell{
         lable.backgroundColor = UIColor.white
         lable.layer.borderWidth  = 1
         lable.adjustsFontSizeToFitWidth = true
-        
         lable.layer.borderColor = UIColor.black.cgColor
         lable.font = UIFont.systemFont(ofSize: 17)
        

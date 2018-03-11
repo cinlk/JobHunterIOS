@@ -67,7 +67,7 @@ class newVisitor: UITableViewController {
             
         }else{
             let jobView = JobDetailViewController()
-            jobView.infos = ["picture":"swift","company":"apple","jobName":"码农","address":"北京","salary":"150-190元/天","create_time":"09-01","education":"本科","type":"社招"]
+            //jobView.infos = ["picture":"swift","company":"apple","jobName":"码农","address":"北京","salary":"150-190元/天","create_time":"09-01","education":"本科","type":"社招"]
             self.navigationController?.pushViewController(jobView, animated: true)
         }
     }

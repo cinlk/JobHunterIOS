@@ -49,11 +49,7 @@ class closedJobView: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "recruiter", for: indexPath) as?  RecruiterCell{
             
-            cell.icon?.image = UIImage.init(named: "chrome")
-            cell.contact.text = "ddd"
-            cell.name.text = "HR"
-            cell.position.text = "position"
-            cell.onlineTime.text = "2018"
+            
             return cell
         }
         return UITableViewCell.init()
@@ -61,7 +57,7 @@ class closedJobView: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return RecruiterCell.cellHeight()
+        return 0
     }
 
 }

@@ -72,8 +72,6 @@ var IsGreeting:Bool = true
 
 
 
-// tableCell offsetX
-let TableCellOffsetX:CGFloat = 16
 
 
 

@@ -195,9 +195,9 @@ extension DashboardViewController{
         // 选择城市回调
         searchController.chooseCity = { [weak self] in
             
-            self?.hidesBottomBarWhenPushed = true
+            //self?.hidesBottomBarWhenPushed = true
             self?.navigationController?.pushViewController((self?.cityVC)!, animated: true)
-            self?.hidesBottomBarWhenPushed = false
+            //self?.hidesBottomBarWhenPushed = false
         }
     
         searchController?.searchResultsUpdater = self
@@ -258,7 +258,7 @@ extension DashboardViewController: UITableViewDelegate{
                 let cell:MainPageCatagoryCell = table.dequeueReusableCell(withIdentifier: MainPageCatagoryCell.identity()) as! MainPageCatagoryCell
                 cell.mode = imageNames
                 cell.chooseItem = { (btn) in
-                    print(btn.titleLabel?.text)
+                    //print(btn.titleLabel?.text)
                 }
                 return cell
             case let .recommandItem(imageNames):
@@ -269,7 +269,7 @@ extension DashboardViewController: UITableViewDelegate{
                 
                 cell.chooseItem = { (btn) in
                     
-                    print(btn.titleLabel?.text)
+                    //print(btn.titleLabel?.text)
                 }
                 
                 return cell
@@ -470,11 +470,7 @@ extension DashboardViewController{
             
         }
         
-        
     }
-    
-    
-    
     
     
     
@@ -580,9 +576,9 @@ extension DashboardViewController{
             }
             
             self.tables.deselectRow(at: indexpath, animated: true)
-            if  let cell = self.tables.cellForRow(at: indexpath) as? jobdetailCell, let data = cell.mode?.toJSON(){
+            if  let cell = self.tables.cellForRow(at: indexpath) as? jobdetailCell, let data = cell.mode{
                 
-                self.showDetails(jobDetail: data as! [String : String] )
+                self.showDetails(jobModel: data )
                 
             }
             
@@ -675,17 +671,16 @@ extension DashboardViewController{
     }
     
     // show details
-    private func showDetails(jobDetail:[String:String]){
+    private func showDetails(jobModel:CompuseRecruiteJobs){
         
         // test jobid MARK
         let detail = JobDetailViewController()
-        detail.infos = jobDetail
+        detail.mode = jobModel
         detail.jobID = String(arc4random() % 3)
-        print(detail.jobID)
         //
-        self.hidesBottomBarWhenPushed = true
+        //self.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(detail, animated: true)
-        self.hidesBottomBarWhenPushed = false
+        
     }
     
 }

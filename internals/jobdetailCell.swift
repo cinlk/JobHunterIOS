@@ -14,7 +14,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
 @objcMembers class jobdetailCell: UITableViewCell {
     
    
-    lazy var icon:UIImageView = {
+    private lazy var icon:UIImageView = {
         let image = UIImageView.init()
         image.contentMode = .scaleAspectFit
         image.clipsToBounds = true
@@ -22,7 +22,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
         return image
     }()
     
-    lazy var JobName:UILabel = {
+    private lazy var JobName:UILabel = {
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: 15)
         label.sizeToFit()
@@ -31,7 +31,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
         return label
     }()
     
-    lazy var company:UILabel = {
+    private lazy var company:UILabel = {
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: 10)
         label.textColor = UIColor.lightGray
@@ -42,7 +42,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
         
     }()
     
-    lazy var address:UILabel = {
+    private lazy var address:UILabel = {
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: 10)
         label.textColor = UIColor.lightGray
@@ -52,7 +52,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
         return label
     }()
     
-    lazy var type:UILabel = {
+    private lazy var type:UILabel = {
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: 10)
         label.textColor = UIColor.lightGray
@@ -62,7 +62,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
         return label
     }()
     
-    lazy var  degree:UILabel = {
+    private lazy var  degree:UILabel = {
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: 10)
         label.textColor = UIColor.lightGray
@@ -72,7 +72,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
         return label
     }()
     
-    lazy var  internDay:UILabel = {
+    private lazy var  internDay:UILabel = {
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: 10)
         label.textColor = UIColor.lightGray
@@ -83,7 +83,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     }()
     
     
-    lazy var  create_time:UILabel = {
+    private lazy var  create_time:UILabel = {
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: 10)
         label.textColor = UIColor.lightGray
@@ -93,7 +93,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
         return label
     }()
     
-    lazy var  salary:UILabel = {
+    private lazy var  salary:UILabel = {
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: 10)
         label.textColor = UIColor.red
@@ -106,7 +106,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     
     
     //
-    lazy var rightArrow:UIImageView = {
+    private lazy var rightArrow:UIImageView = {
         let right = UIImageView.init(image: #imageLiteral(resourceName: "rightforward") )
         right.clipsToBounds = true
         right.contentMode  = .scaleAspectFit
@@ -162,8 +162,8 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
         _ = type.sd_layout().topEqualToView(address)?.leftSpaceToView(address,5)?.autoHeightRatio(0)
         _ = degree.sd_layout().topEqualToView(type)?.leftSpaceToView(type,5)?.autoHeightRatio(0)
         _ = internDay.sd_layout().topEqualToView(degree)?.leftSpaceToView(degree,5)?.autoHeightRatio(0)
-        _ = salary.sd_layout().topSpaceToView(self.contentView,20)?.rightSpaceToView(self.contentView,10)?.autoHeightRatio(0)
-        _ = create_time.sd_layout().rightEqualToView(salary)?.topSpaceToView(salary,10)?.autoHeightRatio(0)
+        _ = salary.sd_layout().topEqualToView(JobName)?.rightSpaceToView(self.contentView,10)?.autoHeightRatio(0)
+        _ = create_time.sd_layout().rightEqualToView(salary)?.topSpaceToView(salary,15)?.autoHeightRatio(0)
         
         
         if deliver{

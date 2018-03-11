@@ -12,65 +12,65 @@ private let tHeaderHeight:CGFloat = 200
 
 class publisherControllerView: UITableViewController {
 
-    var infos:Dictionary<String,Any>?
-    var publishJobs:[Dictionary<String,String>] = []
+    // MARK:-  不同类型职位
+    private var publishJobs:[CompuseRecruiteJobs] = []
     
-    lazy var headerView:personTableHeader = {
+    private lazy var jd:JobDetailViewController = JobDetailViewController()
+    
+    private lazy var headerView:personTableHeader = {
         let h = personTableHeader.init(frame: CGRect.init(x: 0, y: 80, width: ScreenW, height: tHeaderHeight - 80))
         h.isHR = true 
         return h
     }()
     
-    lazy var navigationBack:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 64))
-        v.backgroundColor = UIColor.lightGray
+    private lazy var navigationBack:UIView = {
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH))
+        v.backgroundColor = UIColor.navigationBarColor()
         v.alpha = 0
         let title = UILabel.init(frame: CGRect.zero)
-        title.text = "吊袜带挖打我@吊袜带挖达到无"
+        title.text = ""
         title.textAlignment = .center
-        title.sizeToFit()
+        title.tag = 1
+        title.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         title.font = UIFont.boldSystemFont(ofSize: 16)
         v.addSubview(title)
-        _ = title.sd_layout().topSpaceToView(v,25)?.bottomSpaceToView(v,10)?.centerXEqualToView(v)
+        _ = title.sd_layout().topSpaceToView(v,25)?.bottomSpaceToView(v,10)?.centerXEqualToView(v)?.autoHeightRatio(0)
+        title.setMaxNumberOfLinesToShow(1)
         return v
     }()
     
-    // back img
-    lazy var bImg:UIImageView = {
-       let image = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: tHeaderHeight))
+    // header 图片背景
+    private lazy var bImg:UIImageView = {
+       let image = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: tHeaderHeight))
        image.clipsToBounds = true
        image.contentMode = .scaleAspectFill
        image.image = UIImage.init(named: "pbackimg")
        return image
     }()
+    // tableview 背景view
     private var  bview:UIView = UIView.init(frame: CGRect.zero)
     
     
-    
-    
-    override init(style: UITableViewStyle) {
-        super.init(style: style)
-        self.loadData()
-        
+    var mode:HRInfo?{
+        didSet{
+             headerView.mode = (image:mode?.icon ?? "", name: mode?.name ?? "", introduce: "C公司@HR")
+             loadJobsData()
+             (navigationBack.viewWithTag(1) as! UILabel).text = "C公司@HR"
+        }
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.delegate = self 
         self.tableView.dataSource = self
+        self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 60, 0)
         self.tableView.tableFooterView = UIView.init()
-        
-        self.tableView.register(UINib(nibName:"company", bundle:nil), forCellReuseIdentifier: "companycell")
+        self.tableView.register(UINib(nibName:"companyCell", bundle:nil), forCellReuseIdentifier: "companyCell")
         self.tableView.register(companyJobCell.self, forCellReuseIdentifier: companyJobCell.identity())
-        
-        self.navigationItem.title = ""
         self.setHeader()
- 
+        
        
     }
    
@@ -82,6 +82,7 @@ class publisherControllerView: UITableViewController {
         } else {
             self.automaticallyAdjustsScrollViewInsets = false
         }
+        self.navigationItem.title = ""
         self.navigationController?.view.insertSubview(navigationBack, at: 1)
     }
     
@@ -109,15 +110,14 @@ class publisherControllerView: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch  indexPath.section {
         case 0:
-             let cell = tableView.dequeueReusableCell(withIdentifier: "companycell", for: indexPath) as! company
-             cell.cimage.image = #imageLiteral(resourceName: "sina")
-             cell.name.text = "公司名称"
-             cell.infos.text = "行业|地点|人数"
+             let cell = tableView.dequeueReusableCell(withIdentifier: "companyCell", for: indexPath) as! companyCell
+             cell.mode = (image: "sina", companyName:"公司x", tags:"行业|地点|人数ring")
              return cell
         case 1:
 
             let cell = tableView.dequeueReusableCell(withIdentifier: companyJobCell.identity(), for: indexPath) as! companyJobCell
-            cell.setLabel(item: publishJobs[indexPath.row])
+            cell.mode =  publishJobs[indexPath.row]
+            cell.useCellFrameCache(with: indexPath, tableView: tableView)
             return cell
         default:
             return UITableViewCell.init()
@@ -125,12 +125,18 @@ class publisherControllerView: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return  indexPath.section == 0 ? company.cellHeight() : companyJobCell.cellHeight()
+        if   indexPath.section == 0 {
+            return  companyCell.cellHeight()
+        }
+        
+        let mode = publishJobs[indexPath.row]
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: companyJobCell.self, contentViewWidth: ScreenW)
+        
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: tableView.frame.width, height: 5))
-        v.backgroundColor = UIColor.lightGray
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 10))
+        v.backgroundColor = UIColor.viewBackColor()
         return v
     }
    
@@ -144,9 +150,9 @@ class publisherControllerView: UITableViewController {
             let comp = companyscrollTableViewController()
             self.navigationController?.pushViewController(comp, animated: true)
         case 1:
-            let job = JobDetailViewController()
-            job.infos = publishJobs[indexPath.row]
-            self.navigationController?.pushViewController(job, animated: true)
+            
+            jd.mode = publishJobs[indexPath.row]
+            self.navigationController?.pushViewController(jd, animated: true)
         default:
             break
         }
@@ -156,14 +162,11 @@ class publisherControllerView: UITableViewController {
 
 extension publisherControllerView{
     private func setHeader(){
-        headerView.avatarImg.image = UIImage.init(named: "jodel")
-        headerView.nameTitle.text = "白飞翔"
-        headerView.introduce.text = "C公司@HR"
-        //headerView.frame =  CGRect.init(x: 0, y: 0, width: self.view.frame.width, height: tHeaderHeight - 80)
+        
         let th = UIView.init(frame: CGRect.zero)
         th.backgroundColor = UIColor.clear
         self.tableView.tableHeaderView = th
-        
+        // 用bview来管理headerview，并根据滑动拉伸headerview
         bview.frame = self.view.frame
         bview.addSubview(bImg)
         bview.addSubview(headerView)
@@ -171,15 +174,22 @@ extension publisherControllerView{
     
     }
     
-    private func loadData(){
-        
-        for _ in 0..<20{
-            publishJobs.append(["jobName":"在线讲师","address":"北京","type":"校招","degree":"不限","create_time":"09:45","salary":"面议","tag":"市场"])
-        }
-       
-    }
 }
 
+
+extension publisherControllerView{
+    // MARK:
+    private func loadJobsData(){
+        for _ in 0..<20{
+            let json =  ["jobName":"在线讲师","address":"北京","picture":"sina","type":"compuse","degree":"不限","create_time":"09:45","salary":"面议","tag":"市场","education":"本科"]
+            
+            publishJobs.append(CompuseRecruiteJobs(JSON: json)!)
+            
+           
+        }
+        self.tableView.reloadData()
+    }
+}
 
 // 滑动效果
 extension publisherControllerView{
@@ -189,6 +199,7 @@ extension publisherControllerView{
         var frame = self.bImg.frame
         var hframe = self.headerView.frame
         
+        // 0 到 tHeaderHeight直接距离，headerview 向上移动
         if scrollView.contentOffset.y > 0 && scrollView.contentOffset.y < tHeaderHeight{
             hframe.origin.y = 80 - scrollView.contentOffset.y
             scrollView.contentInset = UIEdgeInsetsMake(-scrollView.contentOffset.y, 0, 0, 0)
@@ -202,11 +213,12 @@ extension publisherControllerView{
             // 取消header section 悬浮
             scrollView.contentInset = UIEdgeInsetsMake(-tHeaderHeight, 0, 0, 0)
         }
-            // 下拉 图片放大？
+            // 下拉 图片放大，固定y坐标
         else{
             frame.origin.y = 0
             frame.size.height = tHeaderHeight - scrollView.contentOffset.y
             navigationBack.alpha = 0
+            // 变化速度
             hframe.origin.y = 80 - scrollView.contentOffset.y / 2
         }
         self.bImg.frame = frame
