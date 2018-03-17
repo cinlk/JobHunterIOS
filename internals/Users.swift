@@ -9,21 +9,14 @@
 import UIKit
 import ObjectMapper
 
-class Users: Mappable {
+class UserModel: Mappable {
     
-    var phoneNumber:String?
+    var account:String?
     var password:String?
     var role:String?
     
     var validateNumber:String?
     
-    
-    init(_ phoneNumber:String, _ password:String) {
-        
-        self.phoneNumber = phoneNumber
-        self.password = password
-       
-    }
     
     required init?(map: Map) {
     
@@ -33,8 +26,9 @@ class Users: Mappable {
     //mapper
     
     public func mapping(map: Map) {
-    
-        phoneNumber <- map["phone"]
+        
+        password <- map["password"]
+        account <- map["account"]
         role <- map["role"]
         
     }

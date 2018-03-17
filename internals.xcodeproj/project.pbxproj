@@ -123,6 +123,8 @@
 		4A93C2E11F8369B10022E97B /* conditionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2DF1F8369B10022E97B /* conditionCell.swift */; };
 		4A93C2E21F8369B10022E97B /* conditionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A93C2E01F8369B10022E97B /* conditionCell.xib */; };
 		4A93C2E71F88B8E20022E97B /* client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2E61F88B8E20022E97B /* client.swift */; };
+		4A96B52F205C14CE0028C096 /* tableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A96B52E205C14CE0028C096 /* tableModel.swift */; };
+		4A96B533205CB7830028C096 /* extension+toolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A96B532205CB7830028C096 /* extension+toolBar.swift */; };
 		4A9A0BD32003BEA8008721F3 /* newVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9A0BD22003BEA8008721F3 /* newVisitor.swift */; };
 		4A9A0BD62003BFB3008721F3 /* visitorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9A0BD42003BFB3008721F3 /* visitorCell.swift */; };
 		4A9A0BD72003BFB3008721F3 /* visitorCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A9A0BD52003BFB3008721F3 /* visitorCell.xib */; };
@@ -158,6 +160,7 @@
 		4ACBD6F71F77DE6C00A5FD23 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ACBD6F61F77DE6C00A5FD23 /* Social.framework */; };
 		4ACBD6FC1F77E8F500A5FD23 /* shareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACBD6FB1F77E8F500A5FD23 /* shareView.swift */; };
 		4ACC6DAF2054023A00392252 /* jobDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACC6DAE2054023A00392252 /* jobDetails.swift */; };
+		4ACC6DB2205BF49100392252 /* SqliteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACC6DB1205BF49100392252 /* SqliteManager.swift */; };
 		4AD03AB81F9B45270077C15B /* InputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD03AB71F9B45270077C15B /* InputTextView.swift */; };
 		4AD03ABB1F9C7DD30077C15B /* GetChatEmotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD03ABA1F9C7DD30077C15B /* GetChatEmotion.swift */; };
 		4ADADAAB1FA4C09400134AAE /* quickReplyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADADAAA1FA4C09400134AAE /* quickReplyView.swift */; };
@@ -359,6 +362,8 @@
 		4A93C2DF1F8369B10022E97B /* conditionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = conditionCell.swift; sourceTree = "<group>"; };
 		4A93C2E01F8369B10022E97B /* conditionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = conditionCell.xib; sourceTree = "<group>"; };
 		4A93C2E61F88B8E20022E97B /* client.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = client.swift; sourceTree = "<group>"; };
+		4A96B52E205C14CE0028C096 /* tableModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tableModel.swift; sourceTree = "<group>"; };
+		4A96B532205CB7830028C096 /* extension+toolBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+toolBar.swift"; sourceTree = "<group>"; };
 		4A9A0BD22003BEA8008721F3 /* newVisitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = newVisitor.swift; sourceTree = "<group>"; };
 		4A9A0BD42003BFB3008721F3 /* visitorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = visitorCell.swift; sourceTree = "<group>"; };
 		4A9A0BD52003BFB3008721F3 /* visitorCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = visitorCell.xib; sourceTree = "<group>"; };
@@ -394,6 +399,7 @@
 		4ACBD6F61F77DE6C00A5FD23 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		4ACBD6FB1F77E8F500A5FD23 /* shareView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = shareView.swift; sourceTree = "<group>"; };
 		4ACC6DAE2054023A00392252 /* jobDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = jobDetails.swift; sourceTree = "<group>"; };
+		4ACC6DB1205BF49100392252 /* SqliteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SqliteManager.swift; sourceTree = "<group>"; };
 		4AD03AB71F9B45270077C15B /* InputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextView.swift; sourceTree = "<group>"; };
 		4AD03ABA1F9C7DD30077C15B /* GetChatEmotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetChatEmotion.swift; sourceTree = "<group>"; };
 		4ADADAAA1FA4C09400134AAE /* quickReplyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = quickReplyView.swift; sourceTree = "<group>"; };
@@ -992,6 +998,15 @@
 			name = ChatBar;
 			sourceTree = "<group>";
 		};
+		4ACC6DB0205BF3C400392252 /* database */ = {
+			isa = PBXGroup;
+			children = (
+				4ACC6DB1205BF49100392252 /* SqliteManager.swift */,
+				4A96B52E205C14CE0028C096 /* tableModel.swift */,
+			);
+			name = database;
+			sourceTree = "<group>";
+		};
 		4AD03AB91F9C7DA60077C15B /* help */ = {
 			isa = PBXGroup;
 			children = (
@@ -1026,6 +1041,7 @@
 		4ADCC74E1F511DD3001A4E9F /* internals */ = {
 			isa = PBXGroup;
 			children = (
+				4ACC6DB0205BF3C400392252 /* database */,
 				4A686A912049A34200571EB0 /* support */,
 				4AFF91AC1F5DAB8600FE189F /* nibs */,
 				4A8D28B91FD195B600FA983F /* tools */,
@@ -1157,6 +1173,7 @@
 				4A5E3FBC2031474B009C1A6B /* extension+dictonary.swift */,
 				4A2210312039463D000BDC70 /* extension+array.swift */,
 				4A686A8F2044526200571EB0 /* extension+tablecell.swift */,
+				4A96B532205CB7830028C096 /* extension+toolBar.swift */,
 			);
 			name = extension;
 			sourceTree = "<group>";
@@ -1513,6 +1530,7 @@
 				"${BUILT_PRODUCTS_DIR}/RxDataSources/RxDataSources.framework",
 				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/SDAutoLayout/SDAutoLayout.framework",
+				"${BUILT_PRODUCTS_DIR}/SQLite.swift/SQLite.framework",
 				"${BUILT_PRODUCTS_DIR}/SVProgressHUD/SVProgressHUD.framework",
 				"${BUILT_PRODUCTS_DIR}/SocketRocket/SocketRocket.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftDate/SwiftDate.framework",
@@ -1533,6 +1551,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxDataSources.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDAutoLayout.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLite.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SVProgressHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketRocket.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftDate.framework",
@@ -1617,6 +1636,7 @@
 				4A22102C203869C3000BDC70 /* jobCollectedVC.swift in Sources */,
 				4A8859121FF7F4930009D73D /* extension+button.swift in Sources */,
 				4AFF91A71F5C238400FE189F /* JobHeaderView.swift in Sources */,
+				4A96B533205CB7830028C096 /* extension+toolBar.swift in Sources */,
 				4ADDDAD51F98F9B3001CB00F /* ChatEmotionHelper.swift in Sources */,
 				4A82A0E42029D38B00185E8B /* modify_personInfoVC.swift in Sources */,
 				4A93C2BB1F80CE5F0022E97B /* deliveredHistory.swift in Sources */,
@@ -1659,6 +1679,7 @@
 				4A18E1EB202CA03F00B1038E /* TreeNode.swift in Sources */,
 				4AE0DEA41FFBC5AC00A16ED4 /* pagetitleView.swift in Sources */,
 				4A9A0BD62003BFB3008721F3 /* visitorCell.swift in Sources */,
+				4ACC6DB2205BF49100392252 /* SqliteManager.swift in Sources */,
 				4AE4D6B7203594AE00BC87FE /* addSkillVC.swift in Sources */,
 				4A82A0D12026DF4300185E8B /* personTableCell.swift in Sources */,
 				4A93C2B51F80AB900022E97B /* messageMainView.swift in Sources */,
@@ -1675,6 +1696,7 @@
 				4AE4D6B3203581CA00BC87FE /* add_projectVC.swift in Sources */,
 				4A221040203D1B5E000BDC70 /* greetingVC.swift in Sources */,
 				4A686A8820400C5F00571EB0 /* PrivacySetting.swift in Sources */,
+				4A96B52F205C14CE0028C096 /* tableModel.swift in Sources */,
 				4AE84EA41F5C108600649404 /* imageScroll.swift in Sources */,
 				4A9A0BDB20064EAA008721F3 /* XiaoMi.swift in Sources */,
 				4A1E59A41FDEE065004DCF53 /* CompanySelector.swift in Sources */,

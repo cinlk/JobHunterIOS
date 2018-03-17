@@ -12,6 +12,7 @@ extension UITextField{
     
     func scrollUpView(view:UIView?){
         
+        // textfield view
         let frame: CGRect = self.frame
         
         let offset: CGFloat = frame.origin.y + NavH/2 - (view!.frame.size.height - KEYBOARD_HEIGHT)

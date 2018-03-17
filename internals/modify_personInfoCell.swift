@@ -54,7 +54,8 @@ class modify_personInfoCell: UITableViewCell {
         textField.isHidden = true
         textField.delegate = self
         // 完成按钮
-        textField.inputAccessoryView = self.doneButton
+        
+        textField.inputAccessoryView = UIToolbar.NumberkeyBoardDone(title: "完成", view: self, selector: #selector(endEdit))
         return textField
     }()
     
@@ -65,17 +66,7 @@ class modify_personInfoCell: UITableViewCell {
         img.isHidden = true
         return img
     }()
-    // 数字键盘 的tabbutton
-    private lazy var doneButton:UIToolbar = { [unowned self] in
-        
-        let toolBar:UIToolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: 35))
-        toolBar.backgroundColor = UIColor.gray
-        let spaceBtn = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let barBtn = UIBarButtonItem(title: "完成", style: .plain, target: self, action: #selector(endEdit))
-        toolBar.items = [spaceBtn, barBtn]
-        toolBar.sizeToFit()
-        return toolBar
-    }()
+    
     
     
     // 修改texfield 对应的数据

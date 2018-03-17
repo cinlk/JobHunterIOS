@@ -254,7 +254,8 @@ extension SettingVC {
         
        
        let loginView =  UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "login") as! LogViewController
-        
+         // 禁止自动登录
+         SqliteManager.shared.setLoginAuto(auto: false)
          self.dismiss(animated: false, completion: {
                 self.present(loginView, animated: true, completion: nil)
         })

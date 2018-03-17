@@ -20,7 +20,7 @@ enum Result{
     case accountExist(messae:String)
     case error(message:String)
     case verifyCode(number:String)
-    case user(user:Users)
+    case user(user:UserModel)
     
 }
 
@@ -99,7 +99,7 @@ class loginVM{
         progressEnable = signInIndicator.asDriver()
         
         
-        validatePhone =  phoneNumberText.asObservable().flatMapLatest{ 
+        validatePhone =  phoneNumberText.asObservable().flatMapLatest{
             phone in
             return input.loginServer.validatePhone(phone: phone).observeOn(MainScheduler.instance)
             }.share(replay: 1)
@@ -127,7 +127,8 @@ class loginVM{
         loginProcess = input.loginTap.withLatestFrom(phoneAndpassword).flatMapLatest{
             phone,password in
             return input.loginServer.login(phone, password:
-                password).trackActivity(signInIndicator).asDriver(onErrorJustReturn: .error(message: "连接服务失败"))
+                password).trackActivity(signInIndicator).asDriver(onErrorJustReturn: Result.error(message: "发生错误"))
+            
         }
         
     }

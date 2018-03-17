@@ -8,13 +8,26 @@
 
 import UIKit
 import RxSwift
+import RxCocoa
 
 class LogViewController: UIViewController {
 
+    
+    
+    
     @IBOutlet weak var phoneNumber: UITextField!
     @IBOutlet weak var password: UITextField!
     @IBOutlet weak var loginButton: UIButton!
+    @IBOutlet weak var LogTitle: UILabel!
     
+    @IBOutlet weak var accountIcon: UIButton!
+    @IBOutlet weak var passwordIcon: UIButton!
+    
+    
+    @IBOutlet weak var registerBtn: UIButton!
+    @IBOutlet weak var forgetPasswordBtn: UIButton!
+    
+    // 登录进度
     lazy var activiyIndicator:UIActivityIndicatorView = {
         let  aIndicator = UIActivityIndicatorView.init()
         aIndicator.activityIndicatorViewStyle = .white
@@ -23,12 +36,25 @@ class LogViewController: UIViewController {
     }()
     
     
+    private lazy var startImage:UIImageView = { [unowned self] in
+        let image = UIImageView.init(image: UIImage.init(named: "QQStart"))
+        image.bounds = self.view.bounds
+        image.center = self.view.center
+//        image.animationImages = [UIImage.init(named: "QQStart")!, UIImage.init(named: "qq")!]
+//        image.animationDuration = 0.5
+       
+//        image.animationRepeatCount = LONG_MAX
+        image.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin]
+        return image
+    }()
     
     private let  disposeBag = DisposeBag.init()
     private let  loginServers = loginServer.shareInstance
+  
+    
     
     // 验证手机号结果label
-    lazy var validatPhone:UILabel = {
+    private lazy var validatPhone:UILabel = {
         let vphone = UILabel.init()
         vphone.font  = UIFont.systemFont(ofSize: 10)
         return vphone
@@ -37,18 +63,34 @@ class LogViewController: UIViewController {
     override func viewDidLoad() {
 
         super.viewDidLoad()
+        
         self.initViews()
         self.touchView()
         self.setVM()
         
+        //self.startImage.startAnimating()
+        
+        
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
         self.navigationItem.backBarButtonItem = UIBarButtonItem.init(title: "", style: .plain, target: self, action: nil)
         self.navigationController?.setNavigationBarHidden(true, animated: false)
-        self.phoneNumber.text = ""
-        self.password.text = ""
+
+    }
+    
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        fetchUserFromDB()
+    }
+    
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+       
     }
     
     override func viewWillLayoutSubviews() {
@@ -87,18 +129,83 @@ class LogViewController: UIViewController {
         
     }
     
-    
 }
 
+extension LogViewController{
+    
+    
+    
+    private func loadDataFinished(){
+        //self.startImage.stopAnimating()
+        self.startImage.isHidden = true
+        
+    }
+    
+    private func fetchUserFromDB(){
+        
+        
+        // 获取当前user 账号 和密码数据，判断自动登录
+        let (account, password, auto) = SqliteManager.shared.currentUser()
+        guard  !account.isEmpty, !password.isEmpty else{
+            
+            loadDataFinished()
+            return
+        }
+        
+       
+        guard auto else {
+            // texfield 显示账号 和密码
+            self.phoneNumber.text = account
+            self.password.text = password
+            // 通知rx 值改变
+            self.phoneNumber.sendActions(for: .valueChanged)
+            self.password.sendActions(for: .valueChanged)
+             loadDataFinished()
+            return
+        }
+        
+        
+        
+        // 登录判断
+        self.loginServers.login(account, password: password).subscribe(onNext: { [unowned self] (result) in
+            
+            switch result{
+            case let Result.success(account, _):
+                
+                self.showMainView(account,role: "admin")
+                
+                
+            // 测试 假设成功
+            case  let Result.error(message):
+                //showAlert(error: message, vc: self)
+                print(message)
+            default:
+                //showAlert(error: "未知错误", vc: self)
+                  print()
+            }
+            
+            self.loadDataFinished()
+
+            
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: disposeBag)
+        
+        
+    }
+}
 
 extension LogViewController{
+    
     private func  initViews(){
+        
+        
     
         
         self.view.addSubview(validatPhone)
         self.loginButton.addSubview(activiyIndicator)
         
-        
+        unowned let weakSelf = self
+        phoneNumber.inputAccessoryView = UIToolbar.NumberkeyBoardDone(title: "完成", vc: weakSelf, selector: #selector(closeKeyboard))
+        phoneNumber.placeholder = "输入账号"
         phoneNumber.delegate = self
         password.delegate = self
         phoneNumber.keyboardAppearance = .dark
@@ -109,11 +216,33 @@ extension LogViewController{
         password.returnKeyType = .done
         password.isSecureTextEntry = true
         
-        // 设置底部直线
+        registerBtn.titleLabel?.textAlignment = .left
+        forgetPasswordBtn.titleLabel?.textAlignment = .right
+        
+        LogTitle.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        
+        _  = LogTitle.sd_layout().centerXEqualToView(self.view)?.topSpaceToView(self.view,NavH + 30)?.autoHeightRatio(0)
+        _ = accountIcon.sd_layout().leftSpaceToView(self.view,60)?.widthIs(45)?.heightIs(45)?.topSpaceToView(LogTitle,80)
+        _ = phoneNumber.sd_layout().leftSpaceToView(accountIcon,10)?.bottomEqualToView(accountIcon)?.rightSpaceToView(self.view,60)?.heightIs(25)
+        
+        
+        _ = passwordIcon.sd_layout().topSpaceToView(accountIcon,20)?.leftEqualToView(accountIcon)?.widthIs(45)?.heightIs(45)
+        _ = password.sd_layout().bottomEqualToView(passwordIcon)?.leftEqualToView(phoneNumber)?.rightEqualToView(phoneNumber)?.heightIs(25)
+        
+        _ = loginButton.sd_layout().topSpaceToView(passwordIcon, 45)?.leftEqualToView(passwordIcon)?.rightEqualToView(password)?.heightIs(25)
+        
+        _ = registerBtn.sd_layout().leftEqualToView(loginButton)?.topSpaceToView(loginButton,40)?.widthIs(120)?.heightIs(30)
+        _ = forgetPasswordBtn.sd_layout().rightEqualToView(loginButton)?.topEqualToView(registerBtn)?.widthIs(120)?.heightIs(25)
+        
+        
+        
+        
+        
+        // 设置底部直线 距离和内部textfieldLabel 一样，（如何获取内部的lable??）
         let phoneBottomLine = CALayer()
         let passwordBottomLine = CALayer()
-        phoneBottomLine.frame = CGRect(x: 0, y: phoneNumber.frame.height-1, width: phoneNumber.frame.width-30, height: 1)
-        passwordBottomLine.frame = CGRect(x: 0, y: password.frame.height-1, width: password.frame.width-30, height: 1)
+        phoneBottomLine.frame = CGRect(x: 0, y: phoneNumber.frame.height, width: phoneNumber.frame.width - 27, height: 1)
+        passwordBottomLine.frame = CGRect(x: 0, y: password.frame.height, width: password.frame.width - 27, height: 1)
         
         phoneBottomLine.backgroundColor = UIColor.black.cgColor
         passwordBottomLine.backgroundColor = UIColor.black.cgColor
@@ -123,18 +252,24 @@ extension LogViewController{
         
         password.borderStyle = UITextBorderStyle.none
         password.layer.addSublayer(passwordBottomLine)
+        
+        
+        //UIApplication.shared.windows.last?.addSubview(startImage)
+        
+        // 开始动画
+        self.view.addSubview(startImage)
+        self.startImage.isHidden = false
+        //self.startImage.startAnimating()
     }
     
     // ViewModel
     private func setVM(){
         
         let vm =  loginVM(input: (self.loginButton.rx.tap.asDriver(),loginServer:self.loginServers))
-        
-        
         phoneNumber.rx.text.orEmpty.bind(to: vm.phoneNumberText).disposed(by: disposeBag)
         password.rx.text.orEmpty.bind(to: vm.passowordText).disposed(by: disposeBag)
         
-        
+    
         _ =  vm.validatePhone?.bind(to: self.validatPhone.rx.rxob)
         vm.loginbuttonEnable?.subscribe( onNext: {
             [unowned self ]  valid in
@@ -152,10 +287,13 @@ extension LogViewController{
             
             switch result{
             case let Result.success(account, _):
+                // 保存当前账号到数据库
+                SqliteManager.shared.insertUser(account: self.phoneNumber.text!, password: self.password.text!, auto:true)
+                // 跳转到主界面
                 self.showMainView(account,role: "admin")
             // 测试 假设成功
-            case Result.error(_):
-                self.showMainView("admin", role: "admin")
+            case  let Result.error(message):
+                showAlert(error: message, vc: self)
             default:
                 showAlert(error: "未知错误", vc: self)
             }
@@ -195,19 +333,17 @@ extension LogViewController {
 extension LogViewController: UITextFieldDelegate{
     
     
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        
-        self.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.height)
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        return true
     }
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        textField.scrollUpView(view: self.view)
-    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }
+    
+
     
 }
 

@@ -32,7 +32,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
        //localData.shared.clearSubscribeData()
         //TODO 服务器获取greeting数据, 并与本地存储的数据来判断(最新的时间)
         
+        // 数据库信息
+        let sqlite = SqliteManager.shared
+        
         GreetingMsg = localData.shared.getGreetingMSG()!["msg"] as! String
+        // root controller
+
         return true
     }
 

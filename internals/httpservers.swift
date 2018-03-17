@@ -26,6 +26,8 @@ enum UserMoyaType{
     case Verify(phone:String)
     case Registry(account:String, password:String, verifyCode:String)
     case ResetPassword(account:String,password:String, verifyCode:String)
+    case Login(account:String, password:String)
+    
     
     
 }
@@ -38,7 +40,7 @@ extension UserMoyaType: TargetType{
     
     
     var  baseURL:URL{
-        return URL.init(string: GITHUB_API_URL)!
+        return URL.init(string: APP_JOB_URL)!
     }
     
     
@@ -53,6 +55,9 @@ extension UserMoyaType: TargetType{
             return "/register"
         case .ResetPassword:
             return "/resetPassword"
+        case .Login:
+            return "/login"
+            
         
         }
     }
@@ -67,22 +72,13 @@ extension UserMoyaType: TargetType{
             return .post
         case .ResetPassword:
             return .post
+        case .Login:
+            return .post
+            
         }
     }
     
-    var parameters: [String: Any]? {
-        switch self {
-        case .SignIn:
-            return ["scopes": ["public_repo", "user"], "note": "RxSignInSignUp_demo (\(Date()))"]
-        case let .Verify(phone):
-            return ["phone":phone]
-        case  let .Registry(account, password, verifyCode):
-            return ["phone":account, "password": password, "verifyCode":verifyCode]
-        
-        case  let .ResetPassword(account, password, verifyCode):
-            return ["phone":account, "password":password, "verifyCode":verifyCode]
-        }
-    }
+    
     
     
     var sampleData: Data {
@@ -90,7 +86,27 @@ extension UserMoyaType: TargetType{
     }
     
     var task:  Task {
-        return .requestPlain
+        
+        switch self {
+        case .SignIn:
+            return  .requestPlain
+        case let .Verify(phone):
+            //  url 后缀参数
+            return  .requestParameters(parameters: ["phone":phone], encoding: URLEncoding.queryString)
+        case  let .Registry(account, password, verifyCode):
+            return  .requestParameters(parameters: ["account":account, "password": password, "verifyCode":verifyCode],encoding: JSONEncoding.default)
+            
+            
+            
+            
+        case  let .ResetPassword(account, password, verifyCode):
+            // post json body 数据
+            return  .requestParameters(parameters: ["phone":account, "password":password, "verifyCode":verifyCode], encoding: JSONEncoding.default)
+            
+        case let .Login(account, password):
+            return .requestParameters(parameters: ["account":account, "password": password], encoding: JSONEncoding.default)
+            
+        }
     }
     
     var validate: Bool {
@@ -108,13 +124,14 @@ extension UserMoyaType: TargetType{
 
 class BaseServer{
     
-    // 判断逻辑
+    // 判断phone 长度逻辑 （其他账号？？）
     func validatePhone(phone:String) -> Observable<Result>{
         guard phone != "", !phone.isEmpty else {
             return Observable<Result>.just(.none)
         }
         
-        guard  phone.count <= 11  else {
+        // 手机号 （其他账号）
+        guard  phone.count >= 6  else {
             return Observable<Result>.just(.wrongPhoneNumber(message: ""))
         }
         return Observable<Result>.just(.pass)
@@ -168,26 +185,29 @@ class  loginServer: BaseServer{
     let httpRequestHandler: MoyaProvider<UserMoyaType>?
 
    
-    var TestUser:Users?
+    var TestUser:UserModel?
     static let shareInstance:loginServer = loginServer()
     
     private override init() {
         
         //self.TestUser = Users.init("13718754627", "111111")
-        
-        self.TestUser = Users(JSONString: "{'user':'dwdaw','role':'ada'}")
+        self.TestUser =  UserModel(JSON: ["account":"name","password":"pas","role":""])
         
         
         let endpointClosure = { (target: UserMoyaType) -> Endpoint<UserMoyaType> in
             let url = target.baseURL.appendingPathComponent(target.path).absoluteString
-            let endpoint: Endpoint<UserMoyaType> = Endpoint(url: url, sampleResponseClosure: {.networkResponse(200, target.sampleData)}, method: target.method, task: target.task, httpHeaderFields: nil)
+            let endpoint: Endpoint<UserMoyaType> = Endpoint(url: url, sampleResponseClosure: {.networkResponse(200, target.sampleData)}, method: target.method, task: target.task,httpHeaderFields: nil)
             
-        
+            
+            
+            
+            
             
             switch target {
             case .SignIn(let account, let password):
                 let credentialData = "\(account):\(password)".data(using: String.Encoding.utf8)!
                 let base64Credentials = credentialData.base64EncodedString(options: [])
+                
                 return endpoint.adding(newHTTPHeaderFields:["Authorization": "Basic \(base64Credentials)"])
                 
             //.endpointByAddingParameterEncoding(JSONEncoding.default)
@@ -206,9 +226,24 @@ class  loginServer: BaseServer{
     
     // login request
     func login(_ account:String, password: String) -> Observable<Result>{
-        //MARK 模拟网络请求序列 延迟效果
+        //MARK 模拟网络请求序列 延迟效果 如果post 传递数据
+    
+     
+        
+        // 对产生的 res 事件 数据转换 和 可被监听
+        return (httpRequestHandler?.rx.request(.Login(account: account, password: password)).debug().map({ (res) -> Result in
+            switch res.statusCode{
+            case 401:
+                return Result.error(message: "权限错误")
+            case 200,201,202:
+                return Result.success(account: "admin", password: "role")
+            default:
+                return Result.none
+            }
+        }).asObservable())!
+        
 
-        //Thread.sleep(forTimeInterval: 3)
+        //Observable.just(Result.error(message: "<#T##String#>"))
         
 //        return (httpRequestHandler?.rx.request(.SignIn(account: "wowpandan@gmail.com", password: "s*#posix6u!")).debug().filterSuccessfulStatusCodes().mapJSON().map{
 //            json in
@@ -216,7 +251,7 @@ class  loginServer: BaseServer{
 //            return Result.success(account: "admin", password: "role")
 //            }.asObservable())!
         
-        return Observable.just(Result.success(account: "admin", password: "role"))
+        //return Observable.just(Result.success(account: "admin", password: "role"))
         
         
     }

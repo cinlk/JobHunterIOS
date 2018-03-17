@@ -20,6 +20,9 @@ PODS:
   - RxSwift (4.0.0)
   - SDAutoLayout (2.1.9)
   - SocketRocket (0.5.1)
+  - SQLite.swift (0.11.4):
+    - SQLite.swift/standard (= 0.11.4)
+  - SQLite.swift/standard (0.11.4)
   - SVProgressHUD (2.2.2)
   - SwiftDate (4.4.2)
   - SwiftProtobuf (0.9.905)
@@ -36,6 +39,7 @@ DEPENDENCIES:
   - RxSwift
   - SDAutoLayout (~> 2.1.3)
   - SocketRocket
+  - SQLite.swift (~> 0.11.4)
   - SVProgressHUD
   - SwiftDate
   - SwiftProtobuf (~> 0.9.905)
@@ -65,12 +69,13 @@ SPEC CHECKSUMS:
   RxSwift: fd680d75283beb5e2559486f3c0ff852f0d35334
   SDAutoLayout: 6b6f4db0d009dfc46cef14ef710dbb164e86616c
   SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
+  SQLite.swift: 3e3bee21da701b5b9f87c4a672cb54f233505692
   SVProgressHUD: 59b2d3dabacbd051576d21d32293ca7228dc18b0
   SwiftDate: 131cf2f09b390f0a07f0099e36005ffe2fbf4c7e
   SwiftProtobuf: 9dfa3d4109cf844241d5d055885d5c24cfa9ccdc
   SwiftyJSON: f57b2b44bc166617372d1c70773591fe9f0f5fd4
   YNDropDownMenu: 4f4b463ecbfd492dc886abaf18d73dead0e32133
 
-PODFILE CHECKSUM: 6bcc073bf5d3a7a45398a366aeff54eaefe30175
+PODFILE CHECKSUM: bac9e9e0871b7d43be68d18c45e465525c03684a
 
 COCOAPODS: 1.4.0
