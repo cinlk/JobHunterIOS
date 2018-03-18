@@ -18,17 +18,17 @@ fileprivate var remainHeight:CGFloat = 10
 
 class companyscrollTableViewController: UIViewController {
     
-    
-    
     // 获取数据 MARK
   
     // 时间 今天 显示时间，其他显示 月和日
     
-    
     private lazy var filterJobs:[CompuseRecruiteJobs]? = []
     
     private lazy var jobDetail: JobDetailViewController = JobDetailViewController()
-
+    
+    // 本地数据库 companytable
+    private lazy var companyTable = DBFactory.shared.getCompanyDB()
+    
     
     
     private lazy var headerView:CompanyHeaderView = {
@@ -135,12 +135,19 @@ class companyscrollTableViewController: UIViewController {
     private var startScrollOffsetX:CGFloat = 0
     private var willEndOffsetX:CGFloat = 0
     
-    
+    // 公司数据？？？
     var mode:String?{
         didSet{
+            CompanyID = mode!
+            isCollected = companyTable.isCollectedBy(id: CompanyID)
             loadData()
+            
         }
     }
+    
+    
+    private var isCollected:Bool = false
+    private var CompanyID:String = ""
     
     // 数据json
     private lazy var json:[String:Any] = [:]
@@ -279,6 +286,8 @@ extension companyscrollTableViewController{
         
         b2.clipsToBounds = true
         
+        b2.isSelected = isCollected
+        
         
         
         self.navigationItem.setRightBarButtonItems([UIBarButtonItem.init(customView: b1), UIBarButtonItem.init(customView: b2)], animated: false)
@@ -299,19 +308,24 @@ extension companyscrollTableViewController{
     @objc func collectedCompany(btn:UIButton){
         // MARK 修改公司状态 已经为收藏
         
-        btn.isSelected = !btn.isSelected
         
         let json:[String:Any] = ["id":"123","icon":"sina","name":"sina","describe":"互联网老兵",
                                  "address":"北京","staffs":"1000以上","industry":"互联网",
                                  "tags":["标签1","标签2"]]
         
         
-        if btn.isSelected{
+        if !isCollected{
             SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: "收藏成功")
             jobManageRoot.addCompanyItem(item: comapnyInfo(JSON: json)!)
+            isCollected = true
+            btn.isSelected = true
+            companyTable.setCollectedBy(id: CompanyID)
         }else{
             jobManageRoot.removeCollectedCompany(item: comapnyInfo(JSON: json)!)
             SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: "取消收藏")
+            isCollected = false
+            btn.isSelected = false
+            companyTable.unCollected(id: CompanyID)
         }
        
         SVProgressHUD.dismiss(withDelay: 0.5)

@@ -381,7 +381,7 @@ extension communication: UITableViewDelegate,UITableViewDataSource{
             case .jobDetail:
                 let job = JobDetailViewController()
                 //job.infos = (mes as! JobDetailMessage).toDict()
-                job.jobID = "1"  // MARK
+                //job.jobID = "1"  // MARK
                 self.navigationController?.pushViewController(job, animated: true)
 
             case .personCard:

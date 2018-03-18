@@ -50,7 +50,7 @@ class LogViewController: UIViewController {
     
     private let  disposeBag = DisposeBag.init()
     private let  loginServers = loginServer.shareInstance
-  
+    private let  userTable = DBFactory.shared.getUserDB()
     
     
     // 验证手机号结果label
@@ -145,7 +145,7 @@ extension LogViewController{
         
         
         // 获取当前user 账号 和密码数据，判断自动登录
-        let (account, password, auto) = SqliteManager.shared.currentUser()
+        let (account, password, auto) = userTable.currentUser()
         guard  !account.isEmpty, !password.isEmpty else{
             
             loadDataFinished()
@@ -288,7 +288,7 @@ extension LogViewController{
             switch result{
             case let Result.success(account, _):
                 // 保存当前账号到数据库
-                SqliteManager.shared.insertUser(account: self.phoneNumber.text!, password: self.password.text!, auto:true)
+                self.userTable.insertUser(account: self.phoneNumber.text!, password: self.password.text!, auto:true)
                 // 跳转到主界面
                 self.showMainView(account,role: "admin")
             // 测试 假设成功

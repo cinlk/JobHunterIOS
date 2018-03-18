@@ -83,6 +83,7 @@ class CompanyDetail: NSObject, Mappable {
    
     
     // MARK:
+    var id:String?
     var address:String?
     var webSite:String?
     var tags:[String]?
@@ -126,6 +127,7 @@ class CompanyDetail: NSObject, Mappable {
      }
     **/
     func mapping(map: Map) {
+        id <- map["id"]
         address <- map["address"]
         webSite <- map["webSite"]
         tags <- map["tags"]

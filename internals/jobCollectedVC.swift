@@ -12,6 +12,8 @@ class jobCollectedVC: UITableViewController {
 
     
     
+    // MARK: 收藏职位
+    private  lazy var jobTable  = DBFactory.shared.getJobDB()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,6 +25,15 @@ class jobCollectedVC: UITableViewController {
    
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        //jobTable = DBFactory.shared.getJobDB()
+        // 获取服务器数据 根据收藏的jobs
+        print(jobTable.getCollectedIDs())
+        
+        
+    }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

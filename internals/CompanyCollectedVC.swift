@@ -10,6 +10,10 @@ import UIKit
 
 class CompanyCollectedVC: UITableViewController {
 
+    
+    // 本地数据表company
+    private lazy var companyTable = DBFactory.shared.getCompanyDB()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tableView.tableFooterView = UIView.init()
@@ -19,6 +23,11 @@ class CompanyCollectedVC: UITableViewController {
         self.tableView.allowsMultipleSelectionDuringEditing = true
         self.tableView.register(collectedCompanyCell.self, forCellReuseIdentifier: collectedCompanyCell.identity())
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        print(companyTable.allCollectedByIDs())
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

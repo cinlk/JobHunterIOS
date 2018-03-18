@@ -11,11 +11,13 @@ import SQLite
 
 fileprivate let dbName = "app.db"
 
+fileprivate let startDate = Date(timeIntervalSince1970: 0)
+
 // singleton model
 class  SqliteManager{
     fileprivate let fileManager = FileManager.default
     static let shared:SqliteManager = SqliteManager()
-    fileprivate var db:Connection?
+    var db:Connection?
     
     private init() {
     
@@ -28,7 +30,6 @@ class  SqliteManager{
         
         let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
         let dbPath = url.last?.appendingPathComponent(dbName)
-        print(dbPath?.path)
         let exist = fileManager.fileExists(atPath: dbPath!.path)
         if !exist{
             fileManager.createFile(atPath: dbPath!.path, contents: nil, attributes: nil)
@@ -57,7 +58,9 @@ class  SqliteManager{
         
         // test table
         createUserTable()
-        
+        createSearchTable()
+        createJobTable()
+        createCompanyTable()
     }
     
     
@@ -68,8 +71,7 @@ class  SqliteManager{
 extension SqliteManager{
     open func createUserTable(){
         do {
-            try db?.run( UserTable.user.create(temporary: false, ifNotExists: false, withoutRowid: false, block: { (t) in
-                
+            try db?.run( UserTable.user.create(temporary: false, ifNotExists: true, withoutRowid: false, block: { (t) in
                 t.column(UserTable.id, primaryKey: PrimaryKey.autoincrement)
                 //t.column(UserTable.id, primaryKey: true)
                 t.column(UserTable.password, check: UserTable.password.length>=6, defaultValue: "")
@@ -85,66 +87,65 @@ extension SqliteManager{
         }
     }
     
-    
-    open func currentUser()->(account:String, password:String, auto:Bool){
-        
-        do{
-           // 选择第一行
-            if let user = try db?.pluck(UserTable.user){
-                return (user[UserTable.account], user[UserTable.password], user[UserTable.auto])
-            }
-        }catch{
-            print(error)
-        }
-        
-        return ("", "", false)
-    }
-    
-    open func insertUser(account:String, password:String, auto:Bool){
-        
-        
-        
-        do{
-            try db?.transaction {
-                try db?.run(UserTable.user.delete())
-                try db?.run(UserTable.user.insert(UserTable.account <- account, UserTable.password <- password,
-                                                  UserTable.auto <- auto))
-            }
-            
-        }catch{
-            print(error)
-        }
-    }
-    
-    open func deleteUser(){
-        do{
-            try db?.run(UserTable.user.delete())
-        }catch{
-            print(error)
-        }
-    }
-    
-    
-    open func setLoginAuto(auto:Bool){
-        do{
-            try db?.run(UserTable.user.update(UserTable.auto <- auto))
-        }catch{
-            print(error)
-        }
-    }
-    
-    open func selectRows(){
-        do{
-            
-            for user in  (try db?.prepare(UserTable.user))!{
-                //print(user[UserTable.id], user[UserTable.name])
-            }
-            
-        }catch let error {
-            print(error)
-        }
-    }
-   
 }
 
+
+// 搜索历史 表
+extension SqliteManager{
+    
+    private func createSearchTable(){
+        
+        do{
+            try db?.run(SearchHistory.search.create(temporary: false, ifNotExists: true, withoutRowid: false, block: { (t) in
+                t.column(SearchHistory.name, primaryKey: true)
+                // 不是空字符串
+                //t.check(SearchHistory.name.trim().length > 0)
+                t.column(SearchHistory.ctime, defaultValue: startDate)
+
+            }))
+          
+        }catch{
+            print(error)
+        }
+    }
+    
+}
+
+//  job 表
+extension SqliteManager{
+    
+    private func  createJobTable(){
+        do{
+            try db?.run(JobTable.job.create(temporary: false, ifNotExists: true, withoutRowid: false, block: { (t) in
+                t.column(JobTable.jobID, primaryKey: true, check: JobTable.jobID.length > 6)
+                t.column(JobTable.collected, defaultValue: false)
+                t.column(JobTable.sendedResume, defaultValue: false)
+                t.column(JobTable.validate, defaultValue: true)
+                t.column(JobTable.talked, defaultValue: false)
+            }))
+            
+        }catch{
+            print(error)
+        }
+    }
+}
+
+
+// compay 表
+extension SqliteManager{
+    
+    private func createCompanyTable(){
+        do{
+            try db?.run(CompanyTable.company.create(temporary: false, ifNotExists: true, withoutRowid: false, block: { (t) in
+                t.column(CompanyTable.companyID, primaryKey: true, check: CompanyTable.companyID.length > 6)
+                t.column(CompanyTable.Iscollected, defaultValue: false)
+                t.column(CompanyTable.validated, defaultValue: true)
+                
+            }))
+            
+        }catch{
+            print(error)
+        }
+    }
+}
 

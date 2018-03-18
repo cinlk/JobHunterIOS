@@ -148,6 +148,7 @@ class publisherControllerView: UITableViewController {
         switch  indexPath.section {
         case 0:
             let comp = companyscrollTableViewController()
+            comp.mode = "公司id"
             self.navigationController?.pushViewController(comp, animated: true)
         case 1:
             

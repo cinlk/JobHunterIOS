@@ -21,7 +21,11 @@ fileprivate let HeadeTitle:String = "热门搜索"
 
 class SearchRecodeViewController: UIViewController {
 
-    private let userData = localData.shared
+    //private let userData = localData.shared
+    // 搜索数据库 数据
+    private let searchTable = DBFactory.shared.getSearchDB()
+    private lazy var searchItems:[String]  = searchTable.getSearches()
+    
     
     // 控制table的显示
     var ShowHistoryTable:Bool = true {
@@ -80,21 +84,21 @@ class SearchRecodeViewController: UIViewController {
     // delegate
     weak var resultDelegate:SearchResultDelegate?
     
+    // 添加值
     var AddHistoryItem = false{
         willSet{
-            hcount  = newValue ? (userData.getSearchHistories()?.count)! + 1: (userData.getSearchHistories()?.count)! - 1
+            searchItems = searchTable.getSearches()
             self.HistoryTable.reloadData()
         }
     }
     
-    private var hcount  = 0
+    //private var hcount  = 0
     
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        userData.appendSearchHistories(value: "测试1")
-        userData.appendSearchHistories(value: "测试2")
-        hcount  =  1 + (userData.getSearchHistories()?.count)!
+       
+        //hcount  =  1 +  SqliteManager.shared.getSearches().count
         // 加载tags
        
         HistoryTable.tableHeaderView = searchHederView
@@ -109,8 +113,6 @@ class SearchRecodeViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        hcount  =  1 + (userData.getSearchHistories()?.count)!
-       
         ShowHistoryTable = true
         
        
@@ -119,7 +121,7 @@ class SearchRecodeViewController: UIViewController {
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        ShowHistoryTable = true 
+        //ShowHistoryTable = true
         
         
     }
@@ -160,7 +162,7 @@ extension SearchRecodeViewController:UITableViewDelegate,UITableViewDataSource{
         
         
         if tableView == self.HistoryTable{
-            return hcount  
+            return 1 +  searchItems.count
         }
             return matchRecords.count
         
@@ -172,23 +174,23 @@ extension SearchRecodeViewController:UITableViewDelegate,UITableViewDataSource{
         let cell =  UITableViewCell.init()
         if tableView == self.HistoryTable{
             // 删除cell
-            if  indexPath.row  == hcount - 1{
+            if  indexPath.row  == searchItems.count{
                 cell.textLabel?.text = "清除历史记录"
                 cell.textLabel?.textAlignment  = .center
                 // 只有一个cell  影藏当前cell
-                cell.isHidden =  hcount == 1 ? true:false
+                cell.isHidden =  searchItems.count == 0 ? true:false
                 return cell
             }
            guard let  hcell = tableView.dequeueReusableCell(withIdentifier: HistoryRecordCell.identity()) as? HistoryRecordCell else{
                 return cell
             }
            
-            hcell.mode = userData.getSearchHistories()?[indexPath.row]
+            hcell.mode = searchItems[indexPath.row]
             hcell.deleteRow = { [weak self] (name) in
-                print(indexPath.row)
+                
                 self?.HistoryTable.beginUpdates()
-                self?.hcount -= 1
-                self?.userData.deleteSearcHistories(item: name)
+                self?.searchTable.deleteSearch(name: name)
+                self?.searchItems = (self?.searchTable.getSearches())!
                 // 删除某个row，其他row值会改变，通过刷新reloadData 来更新row值
                 self?.HistoryTable.deleteRows(at: [IndexPath.init(row: indexPath.row, section: 0)], with: .none)
                 self?.HistoryTable.reloadData()
@@ -207,8 +209,8 @@ extension SearchRecodeViewController:UITableViewDelegate,UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat{
         
-        if tableView == self.HistoryTable && (hcount-1 != indexPath.row){
-            let mode = userData.getSearchHistories()?[indexPath.row]
+        if tableView == self.HistoryTable && (searchItems.count != indexPath.row){
+            let mode = searchItems[indexPath.row]
             return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: HistoryRecordCell.self, contentViewWidth: ScreenW)
             
         }else{
@@ -219,9 +221,10 @@ extension SearchRecodeViewController:UITableViewDelegate,UITableViewDataSource{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         var word = ""
         if tableView == self.HistoryTable{
-            if indexPath.row == hcount  - 1 {
-                userData.removeAllHistory()
-                hcount = 1
+            if indexPath.row == searchItems.count  {
+                //userData.removeAllHistory()
+                searchItems.removeAll()
+                searchTable.removeAllSearchItem()
                 tableView.reloadData()
                 return
             }

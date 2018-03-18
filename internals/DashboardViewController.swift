@@ -312,17 +312,18 @@ extension DashboardViewController: UISearchResultsUpdating{
     }
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         // 显示搜索resultview
-        guard let str = searchBar.text else {
+        guard let searchItem = searchBar.text else {
             return
         }
-        guard !str.isEmpty else {
+        guard !searchItem.isEmpty else {
             return
         }
         //self.searchController.serchRecordView.view.isHidden = true
         self.searchController?.showRecordView = false
         
         // 查找新的item 然后 重新加载table
-        localData.shared.appendSearchHistories(value: searchBar.text!)
+        DBFactory.shared.getSearchDB().insertSearch(name: searchItem)
+        //localData.shared.appendSearchHistories(value: searchBar.text!)
         //let vm = (self.searchController?.searchResultsController as! searchResultController).vm
         searchResultVC.vm.loadData.onNext("test")
         //vm?.loadData.onNext("test")
@@ -676,7 +677,6 @@ extension DashboardViewController{
         // test jobid MARK
         let detail = JobDetailViewController()
         detail.mode = jobModel
-        detail.jobID = String(arc4random() % 3)
         //
         //self.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(detail, animated: true)

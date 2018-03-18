@@ -160,6 +160,7 @@ class CompuseRecruiteJobs :NSObject,Mappable, Comparable{
          return lhs.jobName  ==  rhs.jobName
     }
     
+    var id:String?
     var type:String = "compuse"
     var tag:[String] = [""]
     var picture:String?
@@ -176,6 +177,7 @@ class CompuseRecruiteJobs :NSObject,Mappable, Comparable{
     
     
     func mapping(map: Map) {
+        id <- map["id"]
         tag <- map["tag"]
         type <-  map["type"]
         picture <- map["picture"]
@@ -192,6 +194,7 @@ class CompuseRecruiteJobs :NSObject,Mappable, Comparable{
 
 
 struct InternshipJobs: Mappable{
+    var id:String?
     var picture:String?
     var company:String?
     var jobName:String?
@@ -205,6 +208,7 @@ struct InternshipJobs: Mappable{
     
     
     init?(map: Map) {
+        id <- map["id"]
         picture <- map["picture"]
         company <- map["company"]
         jobName <- map["jobName"]

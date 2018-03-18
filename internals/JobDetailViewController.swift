@@ -26,8 +26,20 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     var mode:CompuseRecruiteJobs?{
         didSet{
             jobheader.mode = mode!
+            jobID = mode!.id!
+            isCollected = jobTable.isCollectedBy(id: jobID)
+            
         }
     }
+    
+    
+    // job id
+    private var jobID:String = ""
+    private var isCollected:Bool = false
+    
+    
+    // job table
+    private let jobTable = DBFactory.shared.getJobDB()
     
     
     private lazy var jobheader:JobDetailHeader = { [unowned self] in
@@ -107,8 +119,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     
     private var talkTitle =  "和TA聊聊"
     private var resumeTitle = "投递简历"
-    private var isTalked = false
-    private var isSendResume = false
+   
     
     let hr:FriendModel = FriendModel.init(name: "hr", avart: "hr", companyName: "霹雳", id: "2")
     
@@ -126,7 +137,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         sendResume.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         sendResume.layer.borderWidth = 0.5
         sendResume.tag = 0
-        sendResume.isUserInteractionEnabled = !self.isSendResume
+        sendResume.isUserInteractionEnabled = true
         sendResume.layer.borderColor = UIColor.green.cgColor
         sendResume.addTarget(self, action: #selector(self.sendResume), for: .touchUpInside)
         let talk = self.talkBtn
@@ -146,11 +157,8 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         
     }()
     
-    
-    
-    // test job id
-    var jobID:String = ""
-    
+    // 举报vc
+    private  lazy var WarnViewController = JuBaoViewController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -159,30 +167,29 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         self.view.addSubview(table)
         self.view.addSubview(bottomView)
         
-        if SendResumeJobIds.contains(self.jobID){
-            isSendResume = true
-        }
-        if talkedJobIds.contains(self.jobID){
-            isTalked = true
-        }
+//        if SendResumeJobIds.contains(self.jobID){
+//            isSendResume = true
+//        }
+//        if talkedJobIds.contains(self.jobID){
+//            isTalked = true
+//        }
        
         
     }
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
+
+ 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = "职位详情"
         self.tabBarController?.tabBar.isHidden = true
         // 加入背景view
         self.navigationController?.view.insertSubview(nBackView, at: 1)
-        self.talkTitle =  isTalked ? "继续聊天" : "和TA聊聊"
-        if isSendResume{
+        self.talkTitle =  jobTable.isTalked(id: jobID) ? "继续聊天" : "和TA聊聊"
+        if jobTable.isSendedResume(id: jobID){
             self.resumeTitle = "已经投递"
             sendResumeBtn.setTitle(self.resumeTitle, for: .normal)
             sendResumeBtn.backgroundColor = UIColor.lightGray
-            sendResumeBtn.isUserInteractionEnabled = !self.isSendResume
+            sendResumeBtn.isUserInteractionEnabled =  false
          }
         
         self.talkBtn.setTitle(self.talkTitle, for: .normal)
@@ -245,7 +252,8 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         switch indexPath.section {
         case 0:
             
-            companyVC.mode = "公司id"
+            // MARK 临时给 jobid
+            companyVC.mode =  jobID
             self.navigationController?.pushViewController(companyVC, animated: true)
         case 2:
             let address = "北京市融科资讯中心"
@@ -349,9 +357,9 @@ extension JobDetailViewController{
     }
     // 举报
     @objc func warn(){
-        let report = JuBaoViewController()
-        //self.hidesBottomBarWhenPushed = true
-        self.navigationController?.pushViewController(report, animated: true)
+        
+        self.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(WarnViewController, animated: true)
         
         
     }
@@ -360,24 +368,28 @@ extension JobDetailViewController{
         //TODO 职位收藏，改变收藏状态，界面显示已经收藏
         
        
-        btn.isSelected = !btn.isSelected
         // 关注
-        if btn.isSelected{
+        if !isCollected{
             SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: "收藏成功")
-           
+            jobTable.collectedJobBy(id: jobID)
             //jobManageRoot.addCollectedItem(item: CompuseRecruiteJobs(JSON: infos!)!)
+            isCollected = true
         }else{
             SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: "取消收藏")
-            //jobManageRoot.removeCollectedItem(item: CompuseRecruiteJobs(JSON: infos!)!)
+            jobTable.uncollectedJobBy(id: jobID)
+            isCollected = false
         }
          SVProgressHUD.dismiss(withDelay: 0.5)
-        
+         btn.isSelected = isCollected
         
     }
     
     @objc func sendResume(){
         
-        SendResumeJobIds.append(self.jobID)
+        //
+        jobTable.sendResumeJob(id: jobID)
+        
+        //SendResumeJobIds.append(self.jobID)
         sendResumeBtn.setTitle("已经投递", for: .normal)
         sendResumeBtn.backgroundColor = UIColor.lightGray
         sendResumeBtn.isUserInteractionEnabled = false
@@ -387,7 +399,7 @@ extension JobDetailViewController{
     @objc func talk(){
         
         
-        if !isTalked{
+        if jobTable.isTalked(id: jobID) == false{
             let Message = MessageBoby.init(content: GreetingMsg, time: Date.init().timeIntervalSince1970, sender: myself, target: hr)
             
             let info = ["icon":"sina","jobName":"产品开发","company":"霹雳火","salary":"面议","tags":"北京|本科|校招"]
@@ -398,7 +410,8 @@ extension JobDetailViewController{
                         Contactlist.shared.usersMessage[hr.id]?.addMessageByMes(newMes: Message)
                 }
                 
-                talkedJobIds.append(self.jobID)
+                jobTable.talkedBy(id: jobID)
+                //talkedJobIds.append(self.jobID)
                 
             }
         }
@@ -477,6 +490,9 @@ extension JobDetailViewController{
         
         b3.setImage(selectedCollected, for: .selected)
         self.navigationItem.setRightBarButtonItems([ UIBarButtonItem.init(customView: b3),UIBarButtonItem.init(customView: b1),UIBarButtonItem.init(customView: b2)], animated: false)
+        // btn显示被收藏
+        b3.isSelected = isCollected
+        
         
         
     }

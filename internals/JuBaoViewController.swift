@@ -8,25 +8,25 @@
 
 import UIKit
 
+
+fileprivate let resonse = ["薪资不符合","职位描述不匹配","公司信息不真实","HR无法联系","工作地方不符合"]
+
+
 class JuBaoViewController: UIViewController {
 
-    
-    let resonse = ["薪资不符合","要求不真实","公司信息不真实","HR无法联系","工作地方不符合","其他"]
     //  举报那个job
     var jobId:String?
     
-    lazy var table:UITableView = {
+    private lazy var table:UITableView = {  [unowned self] in
        var table = UITableView.init()
-       table.backgroundColor = UIColor.white
+       table.backgroundColor = UIColor.viewBackColor()
        table.delegate = self
        table.dataSource = self
-        
-       
        return table
         
     }()
     
-    lazy var comfirm:UIButton = {
+    private lazy var comfirm:UIButton = {  [unowned self] in
         
         let btn = UIButton.init(frame: CGRect.zero)
         btn.backgroundColor = UIColor.blue
@@ -36,15 +36,17 @@ class JuBaoViewController: UIViewController {
     
     }()
     
-    let bv = UIView.init(frame: CGRect.init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50))
+    private let bv = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 80))
 
     
-    lazy var tableheader:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 30))
+    private lazy var tableheader:UIView = {
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 30))
         v.backgroundColor = UIColor.lightGray
-        let label = UILabel.init(frame: CGRect.init(x: 10, y: 2, width: 120, height: 30))
-        v.addSubview(label)
+        let label = UILabel.init()
         label.text =  "请选择原因"
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        v.addSubview(label)
+        _ = label.sd_layout().leftSpaceToView(v,10)?.topSpaceToView(v,5)?.autoHeightRatio(0)
         label.font = UIFont.systemFont(ofSize: 12)
         return v
         
@@ -54,20 +56,25 @@ class JuBaoViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor.white
+        
         self.view.addSubview(table)
-        self.table.tableFooterView = bv
         self.table.tableHeaderView = tableheader
+        self.table.tableFooterView = bv 
         bv.addSubview(comfirm)
         
         
-        
-        
-        
-        
-        // Do any additional setup after loading the view.
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationItem.title = "举报界面"
+        self.tabBarController?.tabBar.isHidden = true 
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.navigationItem.title = ""
+    }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -75,7 +82,7 @@ class JuBaoViewController: UIViewController {
     
     override func viewWillLayoutSubviews() {
         _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
-        _  = comfirm.sd_layout().leftSpaceToView(bv,10)?.rightSpaceToView(bv,10)?.topSpaceToView(bv,20)?.bottomSpaceToView(bv,5)
+        _  = comfirm.sd_layout().leftSpaceToView(bv,10)?.rightSpaceToView(bv,10)?.topSpaceToView(bv,30)?.bottomSpaceToView(bv,20)
     }
     
     

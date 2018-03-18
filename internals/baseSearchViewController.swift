@@ -234,7 +234,12 @@ extension baseSearchViewController:SearchResultDelegate,UISearchBarDelegate{
 
     func ShowSearchResults(word: String) {
         // 添加到搜索历史
-        localData.shared.appendSearchHistories(value: word)
+        guard !word.isEmpty else {
+            return
+        }
+        
+        DBFactory.shared.getSearchDB().insertSearch(name: word)
+        //localData.shared.appendSearchHistories(value: word)
         self.serchRecordVC.AddHistoryItem = true
         // MARK
         let vm  = (self.searchResultsController as!  searchResultController).vm
