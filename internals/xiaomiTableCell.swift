@@ -8,72 +8,66 @@
 
 import UIKit
 
-class xiaomiTableCell: UITableViewCell {
+@objcMembers class xiaomiTableCell: UITableViewCell {
 
     
-    lazy var timeButton:UIButton = {
-       let btn = UIButton.init(frame: CGRect.zero)
-       btn.sizeToFit()
-       btn.setTitle("时间", for: .normal)
-       btn.backgroundColor = UIColor.lightGray
-       btn.alpha = 0.7
-       btn.setTitleColor(UIColor.white, for: .normal)
-       btn.isUserInteractionEnabled = false
-       return btn
-        
+   private lazy var timeLabel:UILabel = {
+       let label = UILabel()
+       label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+       label.font = UIFont.systemFont(ofSize: 16)
+       label.textColor = UIColor.black
+       label.textAlignment = .center
+       //label.backgroundColor = UIColor.clear
+       return label
     }()
     
     
-    
-    fileprivate lazy var v:innerCell = {  [unowned self] in
-        let v = innerCell.init(frame: CGRect.zero)
+    private lazy var inner:innerView = {  [unowned self] in
+        let v = innerView.init()
         v.backgroundColor = UIColor.white
         v.layer.cornerRadius = 8
         v.layer.masksToBounds = true
+        v.clipsToBounds = true
         return v
     }()
     
+
     
-    // 包裹views
-    lazy var innerView:UIView = {
-       let v = UIView.init(frame: CGRect.zero)
-       v.backgroundColor = UIColor.lightGray
-       v.layer.cornerRadius = 8
-       return v
-    }()
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        self.contentView.backgroundColor = UIColor.lightGray
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.contentView.backgroundColor = UIColor.clear
+        self.backgroundColor = UIColor.clear
         self.selectionStyle = .none
-        self.innerView.clipsToBounds = true
         self.setViews()
-        // Initialization code
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+        
     }
     
+    private lazy var dd:UIView = {
+        let v = UIView()
+        return v
+    }()
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+   dynamic var mode:xiaomiNewsModel?{
+        didSet{
+            timeLabel.text = mode?.create_time
+            inner.mode = mode
+            self.setupAutoHeight(withBottomView: inner, bottomMargin: 0)
+        }
+    }
     
     private func setViews(){
-        self.contentView.addSubview(innerView)
-        self.innerView.addSubview(timeButton)
-        self.innerView.addSubview(v)
+        //self.contentView.
+        self.contentView.sd_addSubviews([timeLabel, inner])
         
-        _ = innerView.sd_layout().leftSpaceToView(self.contentView,5)?.rightSpaceToView(self.contentView,5)?.topSpaceToView(self.contentView,5)?.bottomSpaceToView(self.contentView,5)
+        _ = timeLabel.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(self.contentView,2.5)?.autoHeightRatio(0)
+        _ = inner.sd_layout().leftSpaceToView(self.contentView,5)?.rightSpaceToView(self.contentView,5)?.topSpaceToView(self.timeLabel, 10)
         
-        _ = timeButton.sd_layout().centerXEqualToView(innerView)?.topSpaceToView(innerView,5)?.widthIs(120)?.heightIs(15)
-        _ = v.sd_layout().leftEqualToView(innerView)?.bottomEqualToView(innerView)?.rightEqualToView(innerView)?.topSpaceToView(timeButton,5)
-
     }
     
     
-    class func cellHeight()->CGFloat{
-        return 180.0
-    }
     class func identity()->String{
         return "xiaomiTableCell"
     }
@@ -82,54 +76,64 @@ class xiaomiTableCell: UITableViewCell {
 
 
 
-private class innerCell:UIView {
+ @objcMembers private class innerView:UIView {
     
-    lazy var line:UIView = {
+    
+    // 分割线
+    private lazy var line:UIView = {
         let v = UIView.init()
-        v.backgroundColor = UIColor.lightGray
+        v.backgroundColor = UIColor.init(r: 0.5, g: 0.5, b: 0.5, alpha: 0.5)
         return v
     }()
-    lazy var read:UILabel = {
+    
+    // 阅读全文
+    private lazy var read:UILabel = {
         let read = UILabel.init()
         read.text = "阅读全文"
         read.textColor = UIColor.darkGray
-        read.sizeToFit()
+        read.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         read.font = UIFont.systemFont(ofSize: 12)
         return read
     }()
     
-    // 如何换行？？
-    lazy var title:UILabel = {
+    private lazy var title:UILabel = {
         let title = UILabel.init()
         title.textColor = UIColor.black
-        title.sizeToFit()
-        title.text = "吊袜带挖多另外的没胃口大达瓦大文多多无多哇大无多哇多哇多无"
-        title.numberOfLines = 0
-        title.lineBreakMode = .byWordWrapping
+        title.setSingleLineAutoResizeWithMaxWidth(ScreenW - 15)
         title.font = UIFont.systemFont(ofSize: 14)
         return title
     }()
     
     
-    lazy var arrow:UIImageView = {
+    private lazy var arrow:UIImageView = {
         let arrow = UIImageView.init(image: UIImage.init(named: "rightforward"))
-        arrow.contentMode = .scaleAspectFit
+        arrow.contentMode = .scaleAspectFill
         arrow.clipsToBounds = true
         return arrow
     }()
     
-    lazy var mainPictur:UIImageView = {
+    private lazy var coverPictur:UIImageView = {
         let img = UIImageView.init(frame: CGRect.zero)
         img.clipsToBounds = true
-        img.contentMode = .scaleAspectFill
-        img.image = UIImage.init(named: "b3")
-        
+        img.contentMode = .scaleToFill
+        // 默认图片
+        //img.image = UIImage.init(named: "b3")
         return img
     }()
+    
+    
+   dynamic var mode:xiaomiNewsModel?{
+        didSet{
+            title.text = mode?.describetion
+            coverPictur.image = UIImage.init(named: mode?.coverPicture ?? "xiaomiDefault")
+            self.setupAutoHeight(withBottomView: read, bottomMargin: 5)
+        }
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.setViews()
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -137,23 +141,32 @@ private class innerCell:UIView {
     }
     
     private func setViews(){
-        self.addSubview(line)
-        self.addSubview(read)
-        self.addSubview(arrow)
-        self.addSubview(mainPictur)
-        self.addSubview(title)
+        self.backgroundColor = UIColor.white
+        let views:[UIView] = [line, read, arrow, coverPictur, title]
+        self.sd_addSubviews(views)
         
-        let size = self.title.text?.getStringCGRect(size: CGSize.init(width: ScreenW - 20 , height: 0), font: UIFont.systemFont(ofSize: 14))
-        
-        _ = line.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.bottomSpaceToView(self,20)?.heightIs(1)
-        _ = read.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(line,5)?.bottomSpaceToView(self,5)?.widthIs(120)
-        _ = arrow.sd_layout().rightSpaceToView(self,10)?.topEqualToView(read)?.widthIs(20)?.bottomEqualToView(read)
-        _ = title.sd_layout().leftSpaceToView(self,10)?.rightSpaceToView(self,10)?.heightIs((size?.height)!)?.bottomSpaceToView(line,0)
-        _ = mainPictur.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.topEqualToView(self)?.bottomSpaceToView(title,0)
-        
+        //let heightImg:CGFloat = CGFloat(Int(arc4random_uniform(UInt32(300 - 10 + 1))))
+        _ = coverPictur.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.topEqualToView(self)?.heightIs(170)
+        _ = title.sd_layout().topSpaceToView(coverPictur,2.5)?.leftEqualToView(self)?.rightEqualToView(self)?.autoHeightRatio(0)
+        _ = read.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(title,5)?.autoHeightRatio(0)
+        _ = arrow.sd_layout().rightSpaceToView(self, 10)?.topEqualToView(read)?.widthIs(20)?.bottomEqualToView(read)
+        _ = line.sd_layout().bottomSpaceToView(read,5)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(1)
        
+    }
+}
+
+
+extension xiaomiTableCell{
+    
+    // inner view 响应点击事件
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        
+        let newp = self.contentView.convert(point, to: inner)
+        if inner.point(inside: newp, with: event){
+            // 继续找到switchOff 的某个子view来响应事件
+            return super.hitTest(point, with: event)
+        }
+        return  nil
         
     }
-    
-   
 }

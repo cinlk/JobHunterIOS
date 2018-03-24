@@ -12,7 +12,6 @@ import UIKit
 fileprivate let tableHeaderH:CGFloat = 200
 fileprivate let sectionTitle:[String] = ["实习/项目经历","教育经历"]
 fileprivate let sectionH:CGFloat = 40
-fileprivate let shareViewH:CGFloat = 200
 
 class personCardVC: UITableViewController {
 

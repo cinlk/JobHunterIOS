@@ -17,30 +17,31 @@ class subscribleItem: UITableViewController {
 
     
     // 数据保持在本地(校招,实习)
+    private lazy var internData:[subscribeConditionModel]  = []
+    private lazy var compuseData:[subscribeConditionModel] = []
+    
+    
 
-    var interndata:[Dictionary<String,String>]?
-    var campusdata:[Dictionary<String,String>]?
-    
-    
-    
-    //条件数据
-    lazy var data = localData.shared
-
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.setView()
-        
+        self.loadData()
     }
 
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = "我的订阅"
-        self.loadData()
+        self.navigationController?.insertCustomerView()
+        //self.loadData()
        
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.removeCustomerView()
+        self.navigationItem.title = ""
     }
  
 }
@@ -49,27 +50,40 @@ extension subscribleItem{
     
     private func setView(){
         
-        //self.automaticallyAdjustsScrollViewInsets = false
-        self.tableView.contentInsetAdjustmentBehavior = .never
-        self.tableView.tableFooterView = UIView()
-        self.tableView.register(UINib(nibName:"subjobitem", bundle:nil), forCellReuseIdentifier: subjobitem.identity())
-        self.tableView.register(subscribeSectionHeaderView.self, forHeaderFooterViewReuseIdentifier: subscribeSectionHeaderView.identity())
-        //self.tableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0)
+        self.tableView.backgroundColor = UIColor.viewBackColor()
+        self.tableView.tableHeaderView = UIView.init()
+        self.tableView.tableFooterView = UIView.init()
+        self.tableView.register(subjobitemCell.self, forCellReuseIdentifier: subjobitemCell.identity())
+        // sectionCell
+        self.tableView.register(sectionCellView.self, forCellReuseIdentifier: sectionCellView.identity())
+        
+        
         let size = CGSize.init(width: 25, height: 25)
         let add = UIImage.barImage(size: size, offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "plus")
         self.navigationItem.rightBarButtonItem =  UIBarButtonItem.init(image: add, style: .plain, target: self, action: #selector(addItem))
         
     }
     
+    // 加载数据
     private func loadData(){
-        campusdata  =  data.getSubscribeByType(type: campus)
-        interndata  = data.getSubscribeByType(type: intern)
-       
+        
+        internData.removeAll()
+        compuseData.removeAll()
+        
+        internData.append(subscribeConditionModel(JSON: ["type":"实习","des":["后台开发","IOS研发"],"locate":"成都","internSalary":"200/天","business":"计算机","internDay":"4天/周","internMonth":"半年", "degree":"大专"])!)
+        
+        compuseData.append(subscribeConditionModel(JSON: ["type":"校招","des":["产品经理","产品设计"],"locate":"北京","salary":"10-12K/月","business":"人工智能","degree":"本科"])!)
+        compuseData.append(subscribeConditionModel(JSON: ["type":"校招","des":["运维","推广"],
+                                                          "locate":"北京","salary":"20-30K/月","business":"学前教育", "degree":"硕士"])!)
+        
         self.tableView.reloadData()
         
     }
+    
+    
     @objc func addItem(){
-        let condition =  subconditions()
+        let condition:subconditions = subconditions()
+        condition.delegate = self
         self.present(condition, animated: true, completion: nil)
         
     }
@@ -88,103 +102,81 @@ extension subscribleItem{
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        if section == 0 {
-            return campusdata?.count ?? 0
+        
+        if section == 0{
+            return  compuseData.count > 0 ?  1 + compuseData.count : 0
+        }else{
+            return  internData.count > 0 ?  1 + internData.count : 0
         }
-        return interndata?.count  ?? 0
     }
     
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        if let cell = tableView.dequeueReusableCell(withIdentifier: subjobitem.identity(), for: indexPath) as? subjobitem{
             switch indexPath.section{
             case 0:
-                if let item = campusdata?[indexPath.row]{
-                    cell.category.text  = item["职位类别"]
-                    cell.locate.text = item["工作城市"]
-                    cell.salary.text = item["薪资范围"]
-                    cell.business.text = item["从事行业"]
-                    //学历
-                    cell.internDay.isHidden = true
-                    cell.interdayIcon.isHidden = true
+                if indexPath.row == 0 {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: sectionCellView.identity(), for: indexPath) as! sectionCellView
+                    cell.mode = "校招"
+                    return cell
                 }
+                
+                let cell = tableView.dequeueReusableCell(withIdentifier: subjobitemCell.identity(), for: indexPath) as! subjobitemCell
+                
+                let data = compuseData[indexPath.row - 1]
+                cell.mode = data
                 return cell
+                
             case 1:
-                if let item = interndata?[indexPath.row]{
-                    cell.category.text = item["职位类别"]
-                    cell.locate.text = item["实习城市"]
-                    cell.salary.text = item["实习薪水"]
-                    cell.business.text = item["从事行业"]
-                    cell.internDay.text = item["实习天数"]
-                    cell.internDay.isHidden = false
-                    cell.interdayIcon.isHidden = false
+                if indexPath.row == 0 {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: sectionCellView.identity(), for: indexPath) as! sectionCellView
+                    cell.mode = "实习"
+                    return cell
                 }
+                let cell = tableView.dequeueReusableCell(withIdentifier: subjobitemCell.identity(), for: indexPath) as! subjobitemCell
+                let data = internData[indexPath.row - 1]
+                cell.mode = data
                 return cell
             default:
                 break
             }
             
-        }
-        return UITableViewCell.init()
-    }
-    
-    
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        
-        
-        if  let view = tableView.dequeueReusableHeaderFooterView(withIdentifier: subscribeSectionHeaderView.identity()) as? subscribeSectionHeaderView{
-            switch section{
-            case 0:
-                if let data =  self.campusdata, !data.isEmpty{
-                    view.label.text = "校招"
-                    return view
-                }
-            case 1:
-                if let data =  self.interndata, !data.isEmpty{
-                    view.label.text = "实习"
-                    return view
-                }
-            default:
-                break
-            }
-            
-        }
-        
-        return UIView.init()
+        return UITableViewCell()
         
     }
-  
     
-    
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if section == 0 {
-            if  let data =  self.campusdata, !data.isEmpty {
-                return subscribeSectionHeaderView.sectionHeight()
-            }
-            
-        }else{
-            if let data =  self.interndata, !data.isEmpty{
-                return subscribeSectionHeaderView.sectionHeight()
-            }
-        }
-        return  0
-    }
-    
+
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return subjobitem.cellHeight()
+       
+        if indexPath.section == 0 {
+            
+            if indexPath.row == 0 {
+                let mode = "校招"
+                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: sectionCellView.self, contentViewWidth: ScreenW)
+            }
+            let mode = compuseData[indexPath.row - 1]
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: subjobitemCell.self, contentViewWidth: ScreenW)
+        }else{
+            
+            if indexPath.row == 0 {
+                let mode = "实习"
+                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: sectionCellView.self, contentViewWidth: ScreenW)
+            }
+            
+            let mode = internData[indexPath.row - 1]
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: subjobitemCell.self, contentViewWidth: ScreenW)
+        }
+       
+        
     }
     
-    
-    
-    // cell 编辑
-//    override func setEditing(_ editing: Bool, animated: Bool) {
-//        super.setEditing(editing, animated: animated)
-//        self.tableView.setEditing(editing, animated: animated)
-//    }
-//
+ 
+    // edit cell
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return true
+        if indexPath.row != 0 {
+            return true
+        }
+        return false
     }
     
     
@@ -201,23 +193,22 @@ extension subscribleItem{
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]?{
         
         
-        
-       
-        
         let edit = UITableViewRowAction(style: .normal, title: "edit") { action, index in
             
-            var editView:subconditions
+            let editView:subconditions = subconditions.init(row: indexPath.row - 1)
+            editView.delegate = self
+            self.present(editView, animated: true, completion: nil)
             
             if indexPath.section  == 0 {
-                let data = self.campusdata?[indexPath.row]
-                editView = subconditions.init(modifyData: data, row: indexPath.row)
+                let data = self.compuseData[indexPath.row - 1]
+                editView.editData = data
              
             }else{
-                let data = self.interndata?[indexPath.row]
-                editView = subconditions.init(modifyData: data, row: indexPath.row)
+                let data = self.internData[indexPath.row - 1]
+                editView.editData = data
                 
             }
-            self.present(editView, animated: true, completion: nil)
+            
         }
         
         edit.backgroundColor = UIColor.orange
@@ -226,15 +217,18 @@ extension subscribleItem{
 
             
             if indexPath.section == 0{
-                self.campusdata?.remove(at: indexPath.row)
-                self.data.deleteSubscribeByIndex(type: campus, indexPath.row)
+                self.compuseData.remove(at: indexPath.row - 1)
+                //tableView.reloadSections([0], animationStyle: UITableViewRowAnimation.automatic)
             }else{
-                self.interndata?.remove(at: indexPath.row)
-                self.data.deleteSubscribeByIndex(type: intern, indexPath.row)
+                self.internData.remove(at: indexPath.row - 1)
+                //tableView.reloadSections([0], animationStyle: UITableViewRowAnimation.automatic)
             }
-            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.fade)
+            
+            tableView.reloadData()
+            //tableView.deleteRows(at: [IndexPath.init(row: indexPath.row - 1, section: indexPath.section)], with: UITableViewRowAnimation.fade)
             
         }
+        
         delete.backgroundColor = UIColor.blue
         
         return [edit,delete]
@@ -248,30 +242,36 @@ extension subscribleItem{
         let deleteAction = UIContextualAction.init(style: UIContextualAction.Style.destructive, title: "delete", handler: { (action, view, completion) in
             //TODO: Delete
             if indexPath.section == 0{
-                self.campusdata?.remove(at: indexPath.row)
-                self.data.deleteSubscribeByIndex(type: campus, indexPath.row)
+                self.compuseData.remove(at: indexPath.row - 1)
+                //tableView.reloadSections([0], animationStyle: UITableViewRowAnimation.automatic)
             }else{
-                self.interndata?.remove(at: indexPath.row)
-                self.data.deleteSubscribeByIndex(type: intern, indexPath.row)
+                self.internData.remove(at: indexPath.row - 1)
+                //tableView.reloadSections([1], animationStyle: UITableViewRowAnimation.automatic)
             }
-            view.backgroundColor = UIColor.orange
+            tableView.reloadData()
             completion(true)
         })
         
-        let editAction = UIContextualAction.init(style: UIContextualAction.Style.normal, title: "edit", handler: { (action, view, completion) in
-            //TODO: Edit
-            var editView:subconditions
-            
+        
+        let editView:subconditions = subconditions.init(row: indexPath.row - 1)
+        editView.delegate = self
+        
+        let editAction = UIContextualAction.init(style: UIContextualAction.Style.normal, title: "edit", handler: { [unowned self]  (action, view, completion) in
+            print("ios 11")
+            // present 放在前面  subconditions的table可以刷新数据
+            self.present(editView, animated: true, completion: nil)
+
             if indexPath.section  == 0 {
-                let data = self.campusdata?[indexPath.row]
-                editView = subconditions.init(modifyData: data, row: indexPath.row)
+                let data = self.compuseData[indexPath.row - 1]
+                editView.editData = data
                 
             }else{
-                let data = self.interndata?[indexPath.row]
-                editView = subconditions.init(modifyData: data, row: indexPath.row)
+                let data = self.internData[indexPath.row - 1]
+                editView.editData = data
+            
                 
             }
-            self.present(editView, animated: true, completion: nil)
+            
             completion(true)
         })
         
@@ -286,44 +286,48 @@ extension subscribleItem{
 }
 
 
-extension subscribleItem{
-    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        //var contentOffSetY = scrollView.contentOffset.y
+// delegate
+
+extension subscribleItem: subconditionDelegate{
+    
+    func modifyCondition(row: Int, item: subscribeConditionModel) {
+        if item.type == "校招"{
+            compuseData.remove(at: row)
+            compuseData.insert(item, at: row)
+            
+            //self.tableView.reloadSections([0], animationStyle: .automatic)
+            //self.tableView.layoutSubviews()
+            // 这个不刷新？ 上面可以刷新
+            //self.tableView.reloadRows(at: [IndexPath.init(row: row, section: 0)], with: .automatic)
+        }else{
+            internData.remove(at: row)
+            internData.insert(item, at: row)
+           
+            //self.tableView.reloadSections([1], animationStyle: .automatic)
+            //self.tableView.layoutSubviews()
+            // 这个不刷新？ 上面可以刷新
+            //self.tableView.reloadRows(at: [IndexPath.init(row: row, section: 1)], with: .automatic)
+
+            
+         }
+         // 用这个 cell的autolayout 才有效
+         self.tableView.reloadData()
         
-      
     }
     
     
-   
+    func addNewConditionItem(item: subscribeConditionModel) {
+        
+        if item.type == "校招"{
+            compuseData.append(item)
+        }else{
+            internData.append(item)
+        }
+        self.tableView.reloadData()
+    }
+    
+    
+    
+    
 }
 
-private class  subscribeSectionHeaderView: UITableViewHeaderFooterView{
-    
-    lazy var label:UILabel = {
-       let l = UILabel.init()
-       l.font = UIFont.systemFont(ofSize: 15)
-       l.textAlignment = .left
-       return l
-    }()
-    
-    override init(reuseIdentifier: String?) {
-        super.init(reuseIdentifier: reuseIdentifier)
-        self.contentView.addSubview(label)
-        
-        _ = label.sd_layout().leftSpaceToView(self.contentView,10)?.centerYEqualToView(self.contentView)?.widthIs(80)?.heightIs(15)
-        
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    class func identity()->String{
-        return "subscribeSectionHeaderView"
-    }
-    
-    class func sectionHeight()->CGFloat{
-        return 20
-    }
-    
-}

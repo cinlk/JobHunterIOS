@@ -53,7 +53,7 @@ class personTableHeader: UIView {
     }
     var  mode:(image:String,name:String, introduce:String)?{
         didSet{
-            self.avatarImg.image = UIImage.init(named: mode?.image ?? "")
+            self.avatarImg.image = UIImage.init(named: mode?.image ?? "default")
             self.nameTitle.text = mode?.name
             self.introduce.text = mode?.introduce
         }

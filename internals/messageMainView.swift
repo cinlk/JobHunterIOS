@@ -9,33 +9,44 @@
 import UIKit
 import PPBadgeViewSwift
 
+
+
+
+fileprivate let tableHeaderViewH:CGFloat = 160
+fileprivate let itemCGSize:CGSize = CGSize.init(width: ScreenW / 3 - 40, height: tableHeaderViewH / 2 - 20)
+
+
 enum messageItemType:Int {
     case result = 0
-    case forum
-    case notification
+    case forum = 1
+    case notification = 2
     //case message  = "消息"
-    case recommend
-    case careertak
+    case recommend = 3
+    case careertak = 4
     case others
 }
+
+
 
 class messageMain: UITableViewController {
 
     // history message  record items
-    lazy var ContactManger = Contactlist.shared
+    private lazy var ContactManger = Contactlist.shared
     
-    lazy var ChatPeople:[FriendModel]? = {
+    private lazy var ChatPeople:[FriendModel]? = {
         return ContactManger.getUsers()
     }()
     
+    
     private lazy var navigationBackView:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 64))
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH))
         // naviagtionbar 默认颜色
-        v.backgroundColor = UIColor.init(r: 245, g: 245, b: 245)
+        v.backgroundColor = UIColor.navigationBarColor()
+        
         return v
     }()
     
-    
+    // table 头部显示 item
     fileprivate var showItems:[showitem] = [showitem.init(name: "投递记录", image: "delivery", bubbles: 1),
                                 showitem.init(name: "论坛动态", image: "forum", bubbles: 1),
                                 showitem.init(name: "系统通知", image: "bell", bubbles: 1),
@@ -45,47 +56,54 @@ class messageMain: UITableViewController {
     
     
     
-    lazy var headerView:MessageMainHeaderView = {
-        let v = MessageMainHeaderView.init(frame: CGRect.zero)
+    private lazy var headerView:HeaderCollectionView = { [unowned self] in
+        let v = HeaderCollectionView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: tableHeaderViewH), itemSize: itemCGSize)
+        v.delegate = self
         return v
     }()
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // 聊天会话cell
         self.tableView.register(UINib.init(nibName: "conversationCell", bundle: nil), forCellReuseIdentifier: conversationCell.identity())
-        buildStackItemView(items: showItems, ItemRowNumbers: 3, mainStack: headerView.mainStack, itemButtons: &headerView.itemButtons)
-        headerView.itemButtons?.forEach { [unowned self] (btn) in
-            btn.addTarget(self, action: #selector(chooseSub(btn:)), for: .touchUpInside)
-        }
+        // 数据
+        headerView.mode = showItems
         
         self.tableView.tableHeaderView = headerView
-        // badges test
-        headerView.itemButtons![0].showBadges(x:30)
+
         self.tableView.tableFooterView = UIView()
         // set naviagation
-       
-        self.navigationController?.navigationBar.shadowImage = UIImage.init()
-        self.navigationController?.navigationBar.setBackgroundImage(UIImage.init(), for: .default)
+        self.navigationController?.navigationBar.settranslucent(true)
+        // 对话界面刷新监听
         NotificationCenter.default.addObserver(self, selector: #selector(refresh), name: NSNotification.Name.init("refreshChat"), object: nil)
+        
+        
+       
+        //self.hidesBottomBarWhenPushed = true 
         
      }
 
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         self.navigationItem.title = "消息记录"
-        self.tabBarController?.tabBar.isHidden = false
         self.navigationController?.view.insertSubview(navigationBackView, at: 1)
         
-        //self.refresh()
-    
+        //self.tabBarController?.tabBar.isHidden = false
+
         
      }
     
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         // 设置为空，不然子view，backbutton显示title
         self.navigationItem.title = ""
         navigationBackView.removeFromSuperview()
         self.navigationController?.view.willRemoveSubview(navigationBackView)
+        //self.tabBarController?.tabBar.isHidden = true
+
     }
     
     
@@ -96,8 +114,6 @@ class messageMain: UITableViewController {
     
     override func viewWillLayoutSubviews() {
        super.viewDidLayoutSubviews()
-        
-        _ = self.tableView.tableHeaderView?.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.heightIs(150)
         
         
     }
@@ -128,7 +144,7 @@ class messageMain: UITableViewController {
         
         
        
-        
+        // MARK 修改 mode 类型
         //print(user,ContactManger.usersMessage[user.id]?.messages.count)
         if let messageContent =  ContactManger.getLasteMessageForUser(user: user){
             switch messageContent.type {
@@ -153,6 +169,9 @@ class messageMain: UITableViewController {
                 break
             }
         }
+        //cell.mode =
+        
+        
         
         return UITableViewCell.init()
        
@@ -165,7 +184,6 @@ class messageMain: UITableViewController {
 
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         
         tableView.deselectRow(at: indexPath, animated: true)
         let user = ChatPeople![indexPath.row]
@@ -238,27 +256,29 @@ class messageMain: UITableViewController {
 
 }
 
-extension messageMain{
+// 子界面
+extension messageMain: headerCollectionViewDelegate{
     
-    @objc func chooseSub(btn:UIButton){
-        // 影藏底部baritem
-        self.tabBarController?.tabBar.isHidden = true
-        //self.hidesBottomBarWhenPushed = true
-        switch btn.tag {
+    func chooseItem(index: Int) {
+        
+        switch index {
         case  messageItemType.result.rawValue:
             let view =  deliveredHistory()
-            
+            view.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(view, animated: true)
-        
+            
         case messageItemType.notification.rawValue:
             let view = SysNotificationController()
+            view.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(view, animated: true)
             
         case messageItemType.forum.rawValue:
             let view = UIViewController.init()
+            view.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(view, animated: true)
         case messageItemType.recommend.rawValue:
             let view = recommendation()
+            view.hidesBottomBarWhenPushed = true 
             self.navigationController?.pushViewController(view, animated: true)
             
         default:
@@ -266,6 +286,10 @@ extension messageMain{
         }
         
     }
+    
+    
+    
+  
 }
 
 extension messageMain{
@@ -277,47 +301,3 @@ extension messageMain{
 }
 
 
-
-class MessageMainHeaderView: UIView {
-    
-    
-    lazy var mainStack:UIStackView = { [unowned self] in
-       let s = UIStackView.init(frame: CGRect.zero)
-       s.contentMode = .scaleAspectFit
-       s.axis = .vertical
-       s.distribution = .fillEqually
-       s.tag = 1
-       s.spacing = 10
-       return s
-        
-    }()
-    
-    lazy var bottomView:UIView = {
-       let v = UIView.init()
-       v.backgroundColor = UIColor.init(r: 234, g: 234, b: 234)
-       return v
-    }()
-    
-    var itemButtons:[UIButton]?
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.addSubview(mainStack)
-        self.addSubview(bottomView)
-        self.itemButtons = []
-        self.backgroundColor = UIColor.white
-        
-        
-        _ = bottomView.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.bottomEqualToView(self)?.heightIs(10)
-        _ = mainStack.sd_layout().leftEqualToView(self)?.bottomSpaceToView(self,10)?.rightEqualToView(self)?.topEqualToView(self)
-        
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    
- 
-    
-}

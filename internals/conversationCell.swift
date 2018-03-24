@@ -18,6 +18,13 @@ class conversationCell: UITableViewCell {
     
     @IBOutlet weak var touxiang: UIImageView!
     
+    
+    
+    var mode:ListPersonModel?{
+        didSet{
+            
+        }
+    }
    
     override func awakeFromNib() {
         super.awakeFromNib()

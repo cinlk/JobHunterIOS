@@ -36,7 +36,7 @@ class pagetitleView: UIView {
     
     lazy var subline:UIView = { [unowned self] in
         let v = UIView.init(frame: CGRect.init(x: 0, y: self.bounds.height-1, width: ScreenW, height: 1))
-        v.backgroundColor = UIColor.black
+        v.backgroundColor = UIColor.init(r: 100, g: 100, b: 100, alpha: 0.5)
         return v
     }()
     
@@ -45,6 +45,7 @@ class pagetitleView: UIView {
         super.init(frame: frame)
         self.titles = titles
         self.setViews()
+        
         
     }
     
@@ -64,6 +65,7 @@ extension pagetitleView{
         self.backgroundColor = UIColor.white
         
         self.creatLabels()
+        self.layoutSubviews()
         self.addSubview(moveLine)
         self.addSubview(subline)
         guard let firstLabel = labelTitles.first else {
@@ -80,21 +82,37 @@ extension pagetitleView{
             return
         }
         let count = labels.count
-        let width:CGFloat = ScreenW / CGFloat(count)
+        // 以4为单位
+       
+        //let width:CGFloat = ScreenW / CGFloat(count)
+        
+        var labelsView:[UILabel] = []
         
         for (index, item) in  labels.enumerated() {
-            let label = UILabel.init(frame: CGRect.init(x: CGFloat(index)*width, y: 5, width: width, height: self.bounds.height - 5))
+           // let label = UILabel.init(frame: CGRect.init(x: CGFloat(index)*width, y: 5, width: width, height: self.bounds.height - 5))
+            let label = UILabel.init(frame: CGRect.init(x: 0, y: 0, width: 0, height: self.bounds.height - 5))
             label.font = UIFont.systemFont(ofSize: 16)
             label.textColor = index == 0 ? UIColor.orange : UIColor.lightGray
             label.text = item
             label.tag = index
+            //label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
             self.addGuesture(label: label)
             //label.sizeToFit()
             label.textAlignment = .center
             self.labelTitles.append(label)
-            self.addSubview(label)
+            labelsView.append(label)
+            //self.addSubview(label)
+            
         }
-        
+        self.sd_addSubviews(labelsView)
+        if count >= 4{
+            self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: (ScreenW - 20) / CGFloat(count)  , verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: 5)
+        }else{
+             let diff = 4 - count
+             // horizoneEdge 与最近父view的边距
+             self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: (ScreenW - 20) / CGFloat(4)  , verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: CGFloat(diff*30))
+        }
+            
     }
     private func addGuesture(label:UILabel){
         label.isUserInteractionEnabled = true

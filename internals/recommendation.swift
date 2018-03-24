@@ -11,7 +11,11 @@ import UIKit
 class recommendation: UIViewController {
 
     
-    private var data:[Dictionary<String,String>]!
+    private lazy var data:[CompuseRecruiteJobs] = []
+    private lazy var detail:JobDetailViewController = JobDetailViewController()
+    private lazy var subscribleView = subscribleItem()
+    
+    
     
     lazy var table:UITableView = { [unowned self] in
         let table = UITableView.init(frame: self.view.bounds, style: .plain)
@@ -19,26 +23,30 @@ class recommendation: UIViewController {
         table.tableFooterView = UIView()
         table.delegate = self
         table.dataSource = self
+        table.backgroundColor = UIColor.viewBackColor()
         table.register(jobdetailCell.self, forCellReuseIdentifier: jobdetailCell.identity())
         return table
     }()
     
     
     override func viewDidLoad() {
-        super.viewDidLoad()
         
+        super.viewDidLoad()
         self.setViews()
+        loadData()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title =  "推荐职位"
+        self.navigationController?.insertCustomerView()
 
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationItem.title =  ""
+        self.navigationController?.removeCustomerView()
         
     }
 
@@ -49,12 +57,10 @@ class recommendation: UIViewController {
 extension recommendation: UITableViewDelegate,UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let  cell  =  table.dequeueReusableCell(withIdentifier: jobdetailCell.identity(), for: indexPath) as? jobdetailCell{
-            cell.mode = CompuseRecruiteJobs(JSON: data[indexPath.row])
-            cell.selectionStyle = .none
-            return cell
-        }
-        return UITableViewCell.init()
+        
+        let cell  =  table.dequeueReusableCell(withIdentifier: jobdetailCell.identity(), for: indexPath) as! jobdetailCell
+        cell.mode = data[indexPath.row]
+        return cell
     }
     
     
@@ -67,18 +73,16 @@ extension recommendation: UITableViewDelegate,UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         table.deselectRow(at: indexPath, animated: false)
-        
-        let detail =  JobDetailViewController()
-        //detail.infos = data[indexPath.row]
+        detail.mode = data[indexPath.row]
         self.navigationController?.pushViewController(detail, animated: true)
-        
-        
         
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let mode = CompuseRecruiteJobs(JSON: data[indexPath.row])
+        
+        let mode = data[indexPath.row]
         return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: jobdetailCell.self, contentViewWidth: ScreenW)
     }
 }
@@ -89,33 +93,36 @@ extension recommendation {
     
     private func setViews(){
         
-        
-        let sub =  UIBarButtonItem.init(title: "我的订阅", style: .plain, target: self, action: #selector(addSub))
-        sub.setTitleTextAttributes([NSAttributedStringKey.foregroundColor:UIColor.blue,
-                                    NSAttributedStringKey.font : UIFont.systemFont(ofSize: 14)], for: .normal)
-        self.navigationItem.rightBarButtonItem  = sub
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 70, height: 25))
+        btn.addTarget(self, action: #selector(addSub), for: .touchUpInside)
+        btn.setTitle("我的订阅", for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        btn.setTitleColor(UIColor.blue, for: .normal)
+        self.navigationItem.rightBarButtonItem  = UIBarButtonItem.init(customView: btn)
         self.view.addSubview(table)
-        data = self.loadJobs()
-        self.table.reloadData()
         
     }
     
     
-    private func loadJobs()->[Dictionary<String,String>]{
-        
-        let datas = [["picture":"swift","company":"apple","jobName":"码农","address":"北京","salary":"150-190元/天","create_time":"09-01","education":"本科","type":"社招"],
-                     ["picture":"swift","company":"apple","jobName":"码农","address":"北京","salary":"150-190元/天","create_time":"09-01","education":"本科","type":"社招"],
-                     ["picture":"swift","company":"apple","jobName":"码农","address":"北京","salary":"150-190元/天","create_time":"09-01","education":"本科","type":"社招"],
-            
-        ]
-        
-        return datas
-    }
     
     @objc func addSub(){
         
-        let subscribleView = subscribleItem()
         self.navigationController?.pushViewController(subscribleView, animated: true)
+        
+    }
+}
+
+
+extension recommendation{
+    
+    private func loadData(){
+        
+        data.append(CompuseRecruiteJobs(JSON: ["id":"dwqdqwd","picture":"swift","company":"apple","jobName":"码农","address":"北京","salary":"150-190元/天","create_time":"09-01","education":"本科","type":"校招"])!)
+        data.append(CompuseRecruiteJobs(JSON: ["id":"dwqdqwd","picture":"swift","company":"apple","jobName":"码农","address":"北京","salary":"150-190元/天","create_time":"09-01","education":"本科","type":"校招"])!)
+        data.append(CompuseRecruiteJobs(JSON: ["id":"dwqdqwd","picture":"swift","company":"apple","jobName":"码农","address":"北京","salary":"150-190元/天","create_time":"09-01","education":"本科","type":"校招"])!)
+        
+        self.table.reloadData()
+        
         
     }
 }

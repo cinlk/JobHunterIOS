@@ -45,7 +45,8 @@ class shareView: UIView {
         itemButtons = []
         self.backgroundColor = UIColor.white
         self.addSubview(stackview)
-        buildStackItemView(items: showItems, ItemRowNumbers: COLUME, mainStack: stackview, itemButtons: &itemButtons)
+        // MARK  替换 collectionView
+        //buildStackItemView(items: showItems, ItemRowNumbers: COLUME, mainStack: stackview, itemButtons: &itemButtons)
         _ = stackview.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.bottomEqualToView(self)?.topEqualToView(self)
         
 

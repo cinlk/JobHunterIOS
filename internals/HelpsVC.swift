@@ -9,15 +9,16 @@
 import UIKit
 
 fileprivate let headerH:CGFloat = 160
-fileprivate let rowItem:Int = 2
+fileprivate let itemCGSize:CGSize = CGSize.init(width: ScreenW / 2 - 40 , height: headerH / 2 - 20)
 fileprivate let sectionH:CGFloat = 25
+
 
 class HelpsVC: UITableViewController {
 
     
     
-    private lazy var  headerView:MessageMainHeaderView = {  [unowned self] in
-        let v = MessageMainHeaderView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: headerH))
+    private lazy var  headerView:HeaderCollectionView = {  [unowned self] in
+        let v = HeaderCollectionView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: headerH), itemSize: itemCGSize)
         v.backgroundColor = UIColor.brown
         return v
     }()
@@ -154,11 +155,12 @@ extension HelpsVC{
     private func initView(){
         self.tableView.tableFooterView = UIView.init()
         
-         buildStackItemView(items: guideItem, ItemRowNumbers: rowItem, mainStack: headerView.mainStack, itemButtons: &headerView.itemButtons)
-        headerView.itemButtons?.forEach { [unowned self] (btn) in
+        // buildStackItemView(items: guideItem, ItemRowNumbers: rowItem, mainStack: headerView.mainStack, itemButtons: &headerView.itemButtons)
+        /*headerView.itemButtons?.forEach { [unowned self] (btn) in
             btn.addTarget(self, action: #selector(chooseSub(btn:)), for: .touchUpInside)
-        }
+        }*/
         
+        headerView.mode = guideItem
         self.tableView.tableHeaderView = headerView
         self.tableView.register(expansionCell.self, forCellReuseIdentifier: expansionCell.identity())
         

@@ -11,6 +11,30 @@ import Foundation
 
 private let contacts = "contacts"
 
+
+
+// 聊天列表显示model
+class ListPersonModel:NSObject{
+    
+    private var name:String
+    private var content:String
+    private var time:String
+    private var iconURL:String
+    private var bubbles:Int = 0
+    
+    private var chatMore:MessageBoby?
+    
+    
+    init(name:String, content:String, time:String, iconURL:String, bubbles:Int = 0) {
+        self.name = name
+        self.content = content
+        self.time = time
+        self.iconURL = iconURL
+        self.bubbles = bubbles
+    }
+}
+
+
 class Contactlist:NSObject{
     
     

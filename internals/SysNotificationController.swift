@@ -44,15 +44,15 @@ class SysNotificationController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = "通知消息"
+        self.navigationController?.insertCustomerView()
         
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationItem.title = ""
+        self.navigationController?.removeCustomerView()
         
     }
-    
-    
     
 
 }
@@ -62,7 +62,7 @@ extension SysNotificationController{
     
     private  func setViews(){
         
-        self.view.backgroundColor = UIColor.white
+        self.view.backgroundColor = UIColor.viewBackColor()
         self.view.addSubview(headerTitleView)
         self.view.addSubview(contentView)
         
@@ -75,7 +75,6 @@ extension SysNotificationController: pagetitleViewDelegate{
     func ScrollContentAtIndex(index: Int, _ titleView: pagetitleView) {
         self.contentView.moveToIndex(index)
     }
-    
     
 }
 

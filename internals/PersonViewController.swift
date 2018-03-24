@@ -47,15 +47,17 @@ class PersonViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.tabBarController?.tabBar.isHidden = false
+        
+        //self.tabBarController?.tabBar.isHidden = false
         self.table.contentInsetAdjustmentBehavior = .never
         self.navigationController?.navigationBar.isHidden = true
     }
    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationController?.navigationBar.isHidden = false
+        //self.navigationController?.navigationBar.isHidden = false
         self.navigationItem.title = ""
+        //self.tabBarController?.tabBar.isHidden = true
     }
     
     override func viewWillLayoutSubviews() {

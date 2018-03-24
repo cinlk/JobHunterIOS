@@ -692,7 +692,7 @@ fileprivate class CompanyHeaderView:UIView{
     
     var mode:CompanyDetail?{
         didSet{
-            self.icon.image = UIImage.init(named: mode?.iconURL ?? "")
+            self.icon.image = UIImage.init(named: mode?.iconURL ?? "default")
             self.companyName.text = mode?.name
             self.des.text = mode?.simpleDes
             var tags  = ""

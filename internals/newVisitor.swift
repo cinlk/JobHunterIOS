@@ -10,13 +10,8 @@ import UIKit
 
 class newVisitor: UITableViewController {
 
-    lazy var data:[[String:String]] = {
-        var res:[[String:String]] = []
-        for i in 0..<10{
-            res.append(["avartar":"avartar","comapny_title":"食品保护 HR","visite_time":"2017-12-27","jobName":"销售经理"])
-        }
-        return res
-    }()
+    var mode:[VisitorHRModel] = []
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,37 +34,27 @@ class newVisitor: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return self.data.count
+        return self.mode.count 
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: visitorCell.identity(), for: indexPath) as? visitorCell{
-            cell.avartar.image = UIImage.init(named: data[indexPath.row]["avartar"]!)
-            cell.company_title.text = data[indexPath.row]["comapny_title"]
-            cell.visite_time.text = data[indexPath.row]["visite_time"]
-            cell.jobName.text = data[indexPath.row]["jobName"]
+            cell.mode = mode[indexPath.row]
             return cell
         }
         return UITableViewCell.init()
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return visitorCell.cellHeight()
+        
+        return tableView.cellHeight(for: indexPath, model: mode[indexPath.row], keyPath: "mode", cellClass: visitorCell.self, contentViewWidth: ScreenW)
     }
   
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         tableView.deselectRow(at: indexPath, animated: false)
-        // test
-        if indexPath.row == 0 {
-            let closeView = closedJobView.init(style: .plain)
-            self.navigationController?.pushViewController(closeView, animated: true)
-            
-        }else{
-            let jobView = JobDetailViewController()
-            //jobView.infos = ["picture":"swift","company":"apple","jobName":"码农","address":"北京","salary":"150-190元/天","create_time":"09-01","education":"本科","type":"社招"]
-            self.navigationController?.pushViewController(jobView, animated: true)
-        }
+        let hrVC = publisherControllerView()
+        //hrVC.mode = 
     }
     
     
@@ -77,13 +62,19 @@ class newVisitor: UITableViewController {
 }
 
 extension newVisitor{
+    
     private func loadData(){
         //self.data
+        
+        for _ in 0..<10{
+            mode.append(VisitorHRModel(JSON: ["iconURL":"avartar","company":"小公司","position":"HRBP","visit_time":"2017-12-27","jobName":"销售经理","tag":"招聘"])!)
+        }
+        
     }
     
     private func setView(){
-        
+        self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.tableFooterView = UIView.init()
-        self.tableView.register(UINib.init(nibName: "visitorCell", bundle: nil), forCellReuseIdentifier: visitorCell.identity())
+        self.tableView.register(visitorCell.self, forCellReuseIdentifier: visitorCell.identity())
     }
 }

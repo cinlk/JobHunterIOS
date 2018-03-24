@@ -14,13 +14,14 @@ import UIKit
 class deliveryCategoryView: UITableViewController {
 
     
-    fileprivate var ResultDataSet:[Dictionary<String,String>]?
+    fileprivate var ResultDataSet:DeliveredJobsResults?
     
     
-    init(style: UITableViewStyle, datas:[Dictionary<String,String>]?) {
+    init(style: UITableViewStyle, datas:DeliveredJobsResults) {
         
         super.init(style: style)
         self.ResultDataSet = datas
+       
     }
     
     
@@ -31,11 +32,11 @@ class deliveryCategoryView: UITableViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        
-        self.tableView.register(UINib.init(nibName: "deliveryItemCell", bundle: nil), forCellReuseIdentifier: deliveryItemCell.identity())
+        self.tableView.register(deliveryItemCell.self, forCellReuseIdentifier: deliveryItemCell.identity())
         self.tableView.tableFooterView = UIView.init()
         
     }
+    
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -51,28 +52,31 @@ class deliveryCategoryView: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return ResultDataSet?.count ?? 0
+        guard  let results = ResultDataSet else {
+            return 0
+        }
+        return results.jobs?.count ?? 0
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return deliveryItemCell.cellHeight()
+        
+        guard  let mode = ResultDataSet?.jobs?[indexPath.row] else {
+            return 0
+        }
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: deliveryItemCell.self, contentViewWidth: ScreenW)
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        guard let item = ResultDataSet?[indexPath.row] else {
+        guard  let results = ResultDataSet else {
+            return UITableViewCell.init()
+        }
+        
+        guard let item = results.jobs?[indexPath.row] else {
             return UITableViewCell.init()
         }
         if let cell = tableView.dequeueReusableCell(withIdentifier: deliveryItemCell.identity(), for: indexPath)  as? deliveryItemCell{
-            cell.imageView?.image  = UIImage.init(named: item["icon"]!)
-            cell.jobName.text = item["jobName"]
-            cell.address.text = item["address"]
-            cell.company.text = item["company"]
-            cell.type.text = item["type"]
-            cell.create_time.text = item["create_time"]
-            cell.resulte.text = "【" + item["resulte"]! + "】"
-            // test color
-            cell.icon.pp.addDot(color: UIColor.red)
+            cell.mode  = item
             return cell
         }
         return UITableViewCell.init()
@@ -83,17 +87,10 @@ class deliveryCategoryView: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //let cell = tableView.cellForRow(at: indexPath) as! deliveryItemCell
         tableView.deselectRow(at: indexPath, animated: false)
-        if let jobInfo = ResultDataSet?[indexPath.row] {
-            let status = jobstatusView()
-            status.jobDetail = ["picture":jobInfo["icon"]!, "jobName":jobInfo["jobName"]!,
-                                "company":jobInfo["company"]!,"address":jobInfo["address"]!,
-                                "education":"本科","salary":"面议","create_time":jobInfo["create_time"]!
-                                ]
-            status.current = ["status":"投递成功","response":"没啥东西"]
-            let  s =  [["投递成功","2017-9-12: 16:08"],["被查看","2017-9-13: 08:21"],
-                  ["待沟通","2017-9-13: 08:25"]]
+        if let jobInfo = ResultDataSet?.jobs?[indexPath.row] {
             
-            status.status = s.reversed()
+            let status = jobstatusView()
+            status.mode = jobInfo
             self.navigationController?.pushViewController(status, animated: true)
             
             

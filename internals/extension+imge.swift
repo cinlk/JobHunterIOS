@@ -157,12 +157,18 @@ extension UIImage{
     }
     
     
-   
- 
- 
-    
 }
 
+// 翻转图片
+extension UIImage{
+    
+    class func flipImage(image:UIImage,orientation:UIImageOrientation)->UIImage{
+        return UIImage(cgImage: image.cgImage!, scale: image.scale, orientation: orientation)
+    }
+    
+   
+    
+}
 
 extension UIImageView{
     

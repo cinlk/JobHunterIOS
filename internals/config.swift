@@ -64,6 +64,8 @@ var GreetingMsg:String = ""
 var IsGreeting:Bool = true 
 
 
+//shareView Height
+let shareViewH:CGFloat = 200
 
 
 

@@ -157,7 +157,7 @@ class CompuseRecruiteJobs :NSObject,Mappable, Comparable{
     }
     
     static func ==(lhs: CompuseRecruiteJobs, rhs: CompuseRecruiteJobs) -> Bool {
-         return lhs.jobName  ==  rhs.jobName
+         return lhs.id  ==  rhs.id
     }
     
     var id:String?

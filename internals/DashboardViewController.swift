@@ -132,12 +132,16 @@ class DashboardViewController: UIViewController{
         // 加载数据
         self.tables.mj_header.beginRefreshing()
         
+        //self.hidesBottomBarWhenPushed = true 
+        
     }
 
     override func viewWillAppear(_ animated: Bool) {
         
+        //self.tabBarController?.tabBar.isHidden = false
         self.navigationController?.navigationBar.settranslucent(true)
         self.navigationController?.view.insertSubview(navigationView, at: 1)
+        
     }
     
     
@@ -166,6 +170,7 @@ class DashboardViewController: UIViewController{
     override func viewWillDisappear(_ animated: Bool) {
         self.navigationView.removeFromSuperview()
         self.navigationController?.view.willRemoveSubview(navigationView)
+         
         
     }
     

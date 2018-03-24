@@ -122,7 +122,13 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
             address.text = mode?.address
             type.text = "校招"
             degree.text = mode?.education
-            internDay.text = "0"
+            if type.text == "校招"{
+                internDay.isHidden = true
+            }
+            else{
+                internDay.isHidden = false
+                internDay.text = "0"
+            }
             salary.text = mode?.salary
             create_time.text = mode?.create_time
             setLayout()
