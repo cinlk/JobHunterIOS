@@ -97,6 +97,9 @@ func openApp(appURL: String, completion: @escaping ((_ success: Bool)->())) {
     UIApplication.shared.open(url, options: [:], completionHandler: completion)
 }
 
-
+// 生成uuid
+func  getUUID()->String{
+    return UUID().uuidString.lowercased()
+}
 
 

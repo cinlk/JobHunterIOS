@@ -88,6 +88,7 @@ extension UILabel{
 extension UITextView {
     // MARK:- 获取textView属性字符串,换成对应的表情字符串
     func getEmotionString() -> String {
+        
         let attrMStr = NSMutableAttributedString(attributedString: attributedText)
         
         let range = NSRange(location: 0, length: attrMStr.length)

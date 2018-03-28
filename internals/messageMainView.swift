@@ -30,12 +30,12 @@ enum messageItemType:Int {
 
 class messageMain: UITableViewController {
 
-    // history message  record items
-    private lazy var ContactManger = Contactlist.shared
     
-    private lazy var ChatPeople:[FriendModel]? = {
-        return ContactManger.getUsers()
-    }()
+    // 数据库
+    private lazy var cManager:ConversationManager = ConversationManager.shared
+    
+    // 和那些人聊天
+    private lazy var cModel:[conversationModel] = []
     
     
     private lazy var navigationBackView:UIView = {
@@ -67,22 +67,10 @@ class messageMain: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // 聊天会话cell
-        self.tableView.register(UINib.init(nibName: "conversationCell", bundle: nil), forCellReuseIdentifier: conversationCell.identity())
-        // 数据
-        headerView.mode = showItems
+        setViews()
+        loadData()
         
-        self.tableView.tableHeaderView = headerView
-
-        self.tableView.tableFooterView = UIView()
-        // set naviagation
-        self.navigationController?.navigationBar.settranslucent(true)
-        // 对话界面刷新监听
-        NotificationCenter.default.addObserver(self, selector: #selector(refresh), name: NSNotification.Name.init("refreshChat"), object: nil)
-        
-        
-       
-        //self.hidesBottomBarWhenPushed = true 
+    
         
      }
 
@@ -91,18 +79,13 @@ class messageMain: UITableViewController {
         self.navigationItem.title = "消息记录"
         self.navigationController?.view.insertSubview(navigationBackView, at: 1)
         
-        //self.tabBarController?.tabBar.isHidden = false
-
-        
      }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        // 设置为空，不然子view，backbutton显示title
         self.navigationItem.title = ""
         navigationBackView.removeFromSuperview()
         self.navigationController?.view.willRemoveSubview(navigationBackView)
-        //self.tabBarController?.tabBar.isHidden = true
 
     }
     
@@ -126,72 +109,39 @@ class messageMain: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return ChatPeople?.count ?? 0
+        return cModel.count
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: conversationCell.identity(), for: indexPath) as! conversationCell
-        let user = ChatPeople![indexPath.row]
+        let user = cModel[indexPath.row]
         
-        
-        cell.touxiang.image = UIImage.init(named: user.avart)
-        cell.name.text = user.name + " " + user.companyName
-        cell.touxiang.pp.addBadge(number: 10)
-        
-        
-       
-        // MARK 修改 mode 类型
-        //print(user,ContactManger.usersMessage[user.id]?.messages.count)
-        if let messageContent =  ContactManger.getLasteMessageForUser(user: user){
-            switch messageContent.type {
-            case .bigGif, .smallGif:
-                cell.content.text = messageContent.content
-                cell.time.text = LXFChatMsgTimeHelper.shared.chatTimeString(with: messageContent.time)
-                return cell
-            case .picture:
-                cell.content.text = "[图片]"
-                cell.time.text = LXFChatMsgTimeHelper.shared.chatTimeString(with: messageContent.time)
-            // 图文并排
-            case .text:
-                cell.content.attributedText = GetChatEmotion.shared.findAttrStr(text: messageContent.content, font: UIFont.systemFont(ofSize: 12))
-                cell.time.text = LXFChatMsgTimeHelper.shared.chatTimeString(with: messageContent.time)
-                return cell
-            case .personCard:
-                cell.content.text = "[个人名片]"
-                cell.time.text = LXFChatMsgTimeHelper.shared.chatTimeString(with: messageContent.time)  
-                return cell
-                
-            default:
-                break
-            }
-        }
-        //cell.mode =
-        
-        
-        
-        return UITableViewCell.init()
+        cell.mode = user
+        return cell 
+
        
         
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return conversationCell.cellHeight()
+        let mode = cModel[indexPath.row]
+        
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: conversationCell.self, contentViewWidth: ScreenW)
     }
 
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         tableView.deselectRow(at: indexPath, animated: true)
-        let user = ChatPeople![indexPath.row]
-        // MARK 从communication 界面返回后刷新？
-        let chatView = communication(hr: user,index: indexPath ,parent: self)
-        self.tabBarController?.tabBar.isHidden = true
-        self.navigationController?.pushViewController(chatView, animated: true)
+        let user = cModel[indexPath.row]
         
+        //var weakSelf d = sef
+        let chatView = CommunicationChatView(hr: user.user!, index: indexPath, parent:  self)
+        chatView.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(chatView, animated: true)
         
     }
 
@@ -217,10 +167,11 @@ class messageMain: UITableViewController {
         edit.accessibilityFrame  = CGRect.init(x: 0, y: 0, width: 30, height: 30)
         
         let delete = UITableViewRowAction.init(style: .normal, title: "删除") { [unowned self] (action, index) in
-            let user = self.ChatPeople![index.row]
-            self.ChatPeople?.remove(at: index.row)
-            self.ContactManger.removeUser(user: user, index: index.row)
-            tableView.deleteRows(at: [index], with: .none)
+            let user = self.cModel[index.row]
+            self.cModel.remove(at: index.row)
+            
+            self.cManager.removeConversationBy(userID: user.userID!)
+            tableView.reloadData()
         }
         delete.backgroundColor = UIColor.blue
         delete.accessibilityFrame = CGRect.init(x: 0, y: 0, width: 30, height: 30)
@@ -235,11 +186,11 @@ class messageMain: UITableViewController {
         
        
         let deleteAction = UIContextualAction.init(style: UIContextualAction.Style.destructive, title: "delete", handler: { (action, view, completion) in
-            //TODO: Delete
-            let user = self.ChatPeople![indexPath.row]
-            self.ChatPeople?.remove(at: indexPath.row)
-            self.ContactManger.removeUser(user: user, index: indexPath.row)
-            //tableView.deleteRows(at: [indexPath], with: .fade)
+            //TODO 删除提醒界面！
+            let user = self.cModel[indexPath.row]
+            self.cModel.remove(at: indexPath.row)
+            self.cManager.removeConversationBy(userID: user.userID!)
+            tableView.reloadData()
             completion(true)
         })
         
@@ -249,22 +200,52 @@ class messageMain: UITableViewController {
         })
         
         let config = UISwipeActionsConfiguration(actions: [deleteAction, editAction])
-        // 禁止 full swipe 触发action
+        // 禁止滑动过多 删除cell
         config.performsFirstActionWithFullSwipe = false
         return config
     }
 
 }
 
+extension messageMain {
+    
+    private func setViews(){
+        // 聊天会话cell
+        self.tableView.register(conversationCell.self, forCellReuseIdentifier: conversationCell.identity())
+        //self.tableView.register(UINib.init(nibName: "conversationCell", bundle: nil), forCellReuseIdentifier: conversationCell.identity())
+        // 数据
+        headerView.mode = showItems
+        
+        self.tableView.tableHeaderView = headerView
+        self.tableView.separatorStyle = .singleLine
+        self.tableView.backgroundColor = UIColor.viewBackColor()
+        
+        self.tableView.tableFooterView = UIView()
+        // set naviagation
+        self.navigationController?.navigationBar.settranslucent(true)
+        
+        // 监听新的对话message
+        NotificationCenter.default.addObserver(self, selector: #selector(refresh), name: NSNotification.Name.init("refreshChat"), object: nil)
+        
+    }
+    
+    private func loadData(){
+       // 历史聊天对象
+       cModel = cManager.getConversaions()
+        
+        
+    }
+}
 // 子界面
 extension messageMain: headerCollectionViewDelegate{
     
     func chooseItem(index: Int) {
+       
         
         switch index {
         case  messageItemType.result.rawValue:
             let view =  deliveredHistory()
-            view.hidesBottomBarWhenPushed = true
+             view.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(view, animated: true)
             
         case messageItemType.notification.rawValue:
@@ -278,7 +259,7 @@ extension messageMain: headerCollectionViewDelegate{
             self.navigationController?.pushViewController(view, animated: true)
         case messageItemType.recommend.rawValue:
             let view = recommendation()
-            view.hidesBottomBarWhenPushed = true 
+            view.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(view, animated: true)
             
         default:
@@ -295,8 +276,11 @@ extension messageMain: headerCollectionViewDelegate{
 extension messageMain{
     
     @objc private func refresh(){
-        ChatPeople = ContactManger.getUsers()
-        self.tableView.reloadData()
+          
+          cModel = cManager.getConversaions()
+          self.tableView.reloadData()
+//        ChatPeople = ContactManger.getUsers()
+//        self.tableView.reloadData()
     }
 }
 

@@ -9,7 +9,7 @@
 import UIKit
 import ObjectMapper
 
-class UserModel: Mappable {
+class LoginUserModel: Mappable {
     
     var account:String?
     var password:String?

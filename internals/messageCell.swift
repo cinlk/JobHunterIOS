@@ -73,7 +73,11 @@ class messageCell: UITableViewCell {
     
     class func heightForCell(messageInfo:MessageBoby)->CGFloat{
         
-        let labelSize:CGSize = UILabel.sizeOfString(string: messageInfo.content as NSString, font: UIFont.systemFont(ofSize: 16), maxWidth: ScreenW-10-20-avatarSize.width * 2)
+        guard let content = messageInfo.content else { return 0 }
+        guard let strs = String.init(data:  content, encoding: String.Encoding.utf8) else { return  0 }
+        
+        let labelSize:CGSize = UILabel.sizeOfString(string: strs as! NSString, font: UIFont.systemFont(ofSize: 16), maxWidth: ScreenW-10-20-avatarSize.width * 2)
+        
         
         
         if labelSize.height < avatarSize.height + 10{
@@ -85,10 +89,15 @@ class messageCell: UITableViewCell {
     
     // picture message setup
     // text message setup
-    func setupMessageCell(messageInfo:MessageBoby,user:FriendModel){
+    
+    func setupMessageCell(messageInfo:MessageBoby,chatUser:PersonModel){
         
+        guard let content = messageInfo.content else { return }
         
-        self.messageLabel.attributedText = GetChatEmotion.shared.findAttrStr(text: messageInfo.content, font: messageLabel.font)
+        guard let strs = String.init(data: content, encoding: String.Encoding.utf8) else { return   }
+        
+        self.messageLabel.attributedText = GetChatEmotion.shared.findAttrStr(text: strs, font: messageLabel.font)
+        
         let labelSize = messageLabel.sizeThatFits(CGSize(width: ScreenW-10-20-avatarSize.width * 2, height: CGFloat(Float.greatestFiniteMagnitude)))
         
        
@@ -112,9 +121,16 @@ class messageCell: UITableViewCell {
         let bubleSize:CGSize = CGSize.init(width: labelSize.width + 20 + 5, height: h + 10)
 
         // 自己发的消息
-        if messageInfo.sender.id  ==  user.id{
+        if messageInfo.sender?.userID  ==  myself.userID{
             
-            self.avatar.image = UIImage.init(named: messageInfo.sender.avart)
+            //guard let icon = user.icon else { return }
+            if let icon = myself.icon {
+                self.avatar.image = UIImage.init(data: icon)
+            }else{
+                // default 头像
+                self.avatar.image =  #imageLiteral(resourceName: "default")
+            }
+            
             self.avatar.frame = CGRect.init(x: ScreenW-avatarSize.width-5 , y: 0, width: avatarSize.width, height: avatarSize.height)
            
             
@@ -126,10 +142,16 @@ class messageCell: UITableViewCell {
             self.messageLabel.frame = CGRect.init(x: ScreenW-5-self.avatar.frame.width-5-bubleSize.width + 10 , y: y, width: labelSize.width, height: labelSize.height)
             
         }
-        // 别人发的消息
+        // 别人发的消息 chatUserID
+            
         else{
             
-            self.avatar.image = UIImage.init(named: messageInfo.sender.avart)
+            if let icon = chatUser.icon {
+                self.avatar.image = UIImage.init(data: icon)
+            }else{
+                // default 头像
+                self.avatar.image =  #imageLiteral(resourceName: "default")
+            }
             self.avatar.frame = CGRect.init(x: 5, y: 0, width: avatarSize.width, height: avatarSize.height)
             
             
@@ -139,17 +161,9 @@ class messageCell: UITableViewCell {
             self.bubleBackGround.frame = CGRect.init(x: 5 + self.avatar.frame.width + 5, y: 0, width: bubleSize.width, height: bubleSize.height)
             self.messageLabel.frame = CGRect.init(x: 5 + self.avatar.frame.width + 5 + 10, y: y, width: labelSize.width, height: labelSize.height)
             
-            
-            
         }
         
-     
-
-       
-        
-        
     }
-    
     
 
 }

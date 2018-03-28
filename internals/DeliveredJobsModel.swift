@@ -54,6 +54,7 @@ class DeliveredJobsModel: NSObject, Mappable, Comparable {
         checkStatus <- map["checkStatus"]
         response <- map["response"]
         records <- map["records"]
+        
     }
     
     

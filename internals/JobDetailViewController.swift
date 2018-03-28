@@ -10,7 +10,7 @@ import UIKit
 import CoreLocation
 import MapKit
 import SVProgressHUD
-
+import SwiftyJSON
 //内置分享sdk
 import Social
 
@@ -32,6 +32,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         }
     }
     
+    //
     
     // job id
     private var jobID:String = ""
@@ -40,6 +41,8 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     
     // job table
     private let jobTable = DBFactory.shared.getJobDB()
+    // 数据库
+    private let conversationManager = ConversationManager.shared
     
     
     private lazy var jobheader:JobDetailHeader = { [unowned self] in
@@ -76,10 +79,15 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     private var address = "北京海淀区-"+"-北四环-" + "海淀北二街"
     
     
+    // 获取hr 信息
+    private var HRuserID:String = "654321"
     private var HRname:String = "lucy"
-    private var Hricon:String = "sina"
+    private var Hricon:UIImage = #imageLiteral(resourceName: "sina")
     private var HRposition:String = "hr manager"
     private var HRtime:String = "2小时前"
+    private var HRCompany:String = "㝵橘"
+    private var HRRole:String = "admin"
+    
     
     // 公司界面VC
     private lazy var companyVC:companyscrollTableViewController =  companyscrollTableViewController()
@@ -121,7 +129,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     private var resumeTitle = "投递简历"
    
     
-    let hr:FriendModel = FriendModel.init(name: "hr", avart: "hr", companyName: "霹雳", id: "2")
+    var hr:PersonModel?
     
     // bottom viwe
     private var sendResumeBtn = UIButton.init(frame: CGRect.zero)
@@ -167,13 +175,11 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         self.view.addSubview(table)
         self.view.addSubview(bottomView)
         
-//        if SendResumeJobIds.contains(self.jobID){
-//            isSendResume = true
-//        }
-//        if talkedJobIds.contains(self.jobID){
-//            isTalked = true
-//        }
-       
+        
+        // 初始hr信息
+        hr = HRPersonModel(JSON: ["userID":HRuserID,"name":HRname,"company":HRCompany,"icon":Hricon.toBase64String(),
+                                  "role":HRRole,"isShield":false,"ontime":Date.init().timeIntervalSinceReferenceDate,
+                                  "position":HRposition])
         
     }
 
@@ -272,7 +278,8 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
             }
                 
         case 3:
-                let mode = HRInfo.init(name: HRname, position: HRposition, lastLogin: HRtime, icon: Hricon)
+                // mode 修改 MARK
+                let mode = HRInfo.init(name: HRname, position: HRposition, lastLogin: HRtime, icon: "sina")
                 HRVC.mode = mode
                 self.navigationController?.pushViewController(HRVC, animated: true)
             
@@ -297,7 +304,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
 
             return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: worklocateCell.self, contentViewWidth: ScreenW)
         case 3:
-            let mode = HRInfo.init(name: HRname, position: HRposition, lastLogin: HRtime, icon: Hricon)
+            let mode = HRInfo.init(name: HRname, position: HRposition, lastLogin: HRtime, icon: "sina")
             return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: RecruiterCell.self, contentViewWidth: ScreenW)
             
         default:
@@ -329,7 +336,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
             return cell
         case 3:
             let cell = table.dequeueReusableCell(withIdentifier: "RecruiterCell", for: indexPath) as! RecruiterCell
-            let mode = HRInfo.init(name: HRname, position: HRposition, lastLogin: HRtime, icon: Hricon)
+            let mode = HRInfo.init(name: HRname, position: HRposition, lastLogin: HRtime, icon: "sina")
             cell.mode = mode 
             return cell
         default:
@@ -396,30 +403,63 @@ extension JobDetailViewController{
         
     }
     
+    
+    // 和hr 交流该职位
     @objc func talk(){
         
-        
+        // 查看数据库， 如果之前没有交流过则发送jobdescribe message
         if jobTable.isTalked(id: jobID) == false{
-            let Message = MessageBoby.init(content: GreetingMsg, time: Date.init().timeIntervalSince1970, sender: myself, target: hr)
-            
-            let info = ["icon":"sina","jobName":"产品开发","company":"霹雳火","salary":"面议","tags":"北京|本科|校招"]
-            if let  jobDetailMessage = JobDetailMessage.init(infos: info, time: Date.init().timeIntervalSince1970, sender: myself, target: hr){
-                Contactlist.shared.addUser(user: hr)
-                Contactlist.shared.usersMessage[hr.id]?.addMessageByMes(newMes: jobDetailMessage)
-                if IsGreeting{
-                        Contactlist.shared.usersMessage[hr.id]?.addMessageByMes(newMes: Message)
+            // 本地自己发送的消息 总是read的
+            // 打招呼消息
+           
+            do{
+               
+                let contentData = try  JSON.init(["jobID":getUUID(),"icon": #imageLiteral(resourceName: "sina").toBase64String() ,"jobName":"产品开发","company":"霹雳火","salary":"面议","tags":["北京","本科","校招","户口"]]).rawData().base64EncodedString()
+                
+                if let  jobDescribeMessage = JobDescriptionlMessage(JSON: ["messageID":getUUID(),"creat_time":Date.init().timeIntervalSince1970,"type":MessgeType.jobDescribe.rawValue,"sender":myself,"receiver":hr!,"content":contentData,"isRead":true]){
+                    jobDescribeMessage.sender = myself
+                    jobDescribeMessage.receiver = hr
+                    
+                    
+                    // 打招呼消息
+                    let greetingMessage = MessageBoby(JSON: ["messageID":getUUID(),"content": GreetingMsg.data(using: String.Encoding.utf8)?.base64EncodedString(),
+                                                             "isRead":true,"creat_time":Date.init().timeIntervalSince1970,
+                                                             "type":MessgeType.text.rawValue,"sender":myself,"receiver":hr!])
+                    
+                    greetingMessage?.sender = myself
+                    greetingMessage?.receiver = hr
+                    
+                    var messages:[MessageBoby] = []
+                    
+                    //
+                    // 允许带招呼用语
+                    if IsGreeting{
+                        messages.append(jobDescribeMessage)
+                        messages.append(greetingMessage!)
+                        
+                        
+                    }else{
+                        messages.append(jobDescribeMessage)
+                    }
+                    conversationManager.firstChatWith(person: hr!, messages: messages)
+                    jobTable.talkedBy(id: jobID)
+                    
                 }
                 
-                jobTable.talkedBy(id: jobID)
-                //talkedJobIds.append(self.jobID)
-                
+            }catch{
+                print(error)
+                return
             }
+            
+  
         }
         
+        // 跳转到和hr的聊天界面
+        let chatView = CommunicationChatView(hr: hr!)
         
-        let chatView = communication(hr: hr)
-        // chatView.chatWith(friend:, jobCard: nil)
-        //self.hidesBottomBarWhenPushed = true
+        chatView.hidesBottomBarWhenPushed = true
+        
+        // 发送刷新 会话界面 新的消息？
         NotificationCenter.default.post(name: NSNotification.Name.init("refreshChat"), object: nil)
         
         self.navigationController?.pushViewController(chatView, animated: true)

@@ -48,7 +48,7 @@ class gifCell: UITableViewCell {
     }
     
     class func heightForCell(messageInfo:MessageBoby)->CGFloat{
-        if messageInfo.type == .bigGif{
+        if messageInfo.messageType == .bigGif{
             return  120
         }
         return 80
@@ -59,23 +59,23 @@ class gifCell: UITableViewCell {
         return "gifCell"
     }
     
-    func setupPictureCell(messageInfo:imageMessageBody, user:FriendModel){
+    func setupPictureCell(messageInfo:GigImageMessageBody, user:PersonModel){
         
         
  
         // image path file
-        let path  = messageInfo.imgPath
+        guard  let path  = messageInfo.localGifPath else { return }
         let data = NSData.init(contentsOf: NSURL.init(fileURLWithPath: path) as URL)
         // 动态图
         let animationImage = UIImage.animationImageWithData(data: data)
         gif.image = animationImage
         
-        if user.id  == messageInfo.sender.id{
+        if user.userID  == messageInfo.sender?.userID{
             
             
-            self.avatar.image = UIImage.init(named:  messageInfo.sender.avart)
+            //self.avatar.image = UIImage.init(named:  messageInfo.sender?.iconURL ?? "default")
             self.avatar.frame = CGRect.init(x: UIScreen.main.bounds.width-avatarSize.width-5 , y: 5, width: avatarSize.width, height: avatarSize.height)
-            if messageInfo.type == .bigGif{
+            if messageInfo.type == MessgeType.bigGif.rawValue{
                 self.gif.frame = CGRect.init(x: UIScreen.main.bounds.width-5-self.avatar.frame.width-5-110, y: 15, width: 100, height: 100)
             }else{
                 self.gif.frame = CGRect.init(x: UIScreen.main.bounds.width-5-self.avatar.frame.width-5-70, y: 15, width: 60, height: 60)
@@ -83,9 +83,9 @@ class gifCell: UITableViewCell {
             
             
         }else{
-            self.avatar.image = UIImage.init(named: messageInfo.sender.avart)
+            //self.avatar.image = UIImage.init(named: messageInfo.sender?.iconURL  ?? "default")
             self.avatar.frame = CGRect.init(x: 5, y: 5, width: avatarSize.width, height: avatarSize.height)
-            if messageInfo.type == .bigGif{
+            if messageInfo.type == MessgeType.bigGif.rawValue{
                 self.gif.frame = CGRect.init(x: self.avatar.frame.width+5+10, y: 15, width: 100, height: 100)
             }else{
                 self.gif.frame = CGRect.init(x: self.avatar.frame.width+5+10, y: 15, width: 60, height: 60)

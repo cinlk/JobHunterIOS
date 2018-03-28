@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 fileprivate let desText:String = "你刚刚投递了这个职位"
 
@@ -60,15 +61,24 @@ class JobMessageCell: UITableViewCell {
         }
     }
     
-    var info:(icon:String,jobName:String, company:String, tags:String, salary:String)? {
-        
+    var mode:JSON?{
         didSet{
-            self.icon.image = UIImage.init(named: info!.icon)
-            self.company.text = info!.company
-            self.jobName.text = info!.jobName
-            self.tags.text = info!.tags
-            self.salary.text = info!.salary
-            
+            do{
+                // 二进制数据
+                self.icon.image = UIImage.init(data:   Data.init(base64Encoded: mode!["icon"].stringValue)!)
+                self.company.text = mode!["company"].string
+                self.jobName.text = mode!["jobName"].string
+                // 数组数据
+                let tags:[String] =  mode!["tags"].arrayObject as! [String]
+                self.tags.text = tags.joined(separator: " ")
+                self.salary.text = mode!["salary"].string
+                
+            }catch{
+                
+                print(error)
+                
+            }
+           
         }
     }
     

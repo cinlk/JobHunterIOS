@@ -51,6 +51,7 @@ class LogViewController: UIViewController {
     private let  disposeBag = DisposeBag.init()
     private let  loginServers = loginServer.shareInstance
     private let  userTable = DBFactory.shared.getUserDB()
+    private let  personTable = DBFactory.shared.getPersonDB()
     
     
     // 验证手机号结果label
@@ -143,7 +144,6 @@ extension LogViewController{
     
     private func fetchUserFromDB(){
         
-        
         // 获取当前user 账号 和密码数据，判断自动登录
         let (account, password, auto) = userTable.currentUser()
         guard  !account.isEmpty, !password.isEmpty else{
@@ -196,9 +196,6 @@ extension LogViewController{
 extension LogViewController{
     
     private func  initViews(){
-        
-        
-    
         
         self.view.addSubview(validatPhone)
         self.loginButton.addSubview(activiyIndicator)
@@ -287,8 +284,11 @@ extension LogViewController{
             
             switch result{
             case let Result.success(account, _):
+                // 数据库操作 应该绑定Wie原子操作！！ MARK
                 // 保存当前账号到数据库
                 self.userTable.insertUser(account: self.phoneNumber.text!, password: self.password.text!, auto:true)
+                // 个人信息存入person 表
+                self.personTable.insertPerson(person: myself)
                 // 跳转到主界面
                 self.showMainView(account,role: "admin")
             // 测试 假设成功

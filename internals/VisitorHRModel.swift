@@ -11,6 +11,7 @@ import ObjectMapper
 
 class VisitorHRModel: NSObject, Mappable {
     
+    var userID:String?
     var iconURL:String?
     var position:String?
     var company:String?
@@ -25,6 +26,7 @@ class VisitorHRModel: NSObject, Mappable {
     }
     
     func mapping(map: Map) {
+        userID <- map["userID"]
         iconURL <- map["iconURL"]
         position <- map["position"]
         company <- map["company"]

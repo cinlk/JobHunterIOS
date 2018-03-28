@@ -8,196 +8,94 @@
 
 
 import Foundation
+import ObjectMapper
 
 private let contacts = "contacts"
 
 
 
-// 聊天列表显示model
-class ListPersonModel:NSObject{
+// 会话model
+class conversationModel:NSObject, Mappable{
     
-    private var name:String
-    private var content:String
-    private var time:String
-    private var iconURL:String
-    private var bubbles:Int = 0
+    // 聊天对象
+    var user:PersonModel?
+    var userID:String?
+    // last message
+    var message:MessageBoby?
+    var messageID:String?
+    var unReadCount:Int?
     
-    private var chatMore:MessageBoby?
+    // 是否置顶会话
+    var isUP:Bool?
+    var upTime:Date?
     
-    
-    init(name:String, content:String, time:String, iconURL:String, bubbles:Int = 0) {
-        self.name = name
-        self.content = content
-        self.time = time
-        self.iconURL = iconURL
-        self.bubbles = bubbles
-    }
-}
-
-
-class Contactlist:NSObject{
-    
-    
-    var pref:UserDefaults!
-    // userid 和ChatRecord 关联
-    var  usersMessage:Dictionary<String,messageRecords>
-    private  var users:[FriendModel]
-    
-    static let shared:Contactlist = Contactlist()
-    
-    public override init() {
-        
-        pref = UserDefaults.standard
-        self.usersMessage = [:]
-        self.users = []
-        super.init()
-        self.setUsers()
-    }
-    
-    
-    
-    open func getUsers() -> [FriendModel] {
-        return users
-    }
-    
-    open func removeAll(){
-        if let col = pref.object(forKey: contacts) as? [Data]{
-            for item in col{
-                let user:FriendModel = NSKeyedUnarchiver.unarchiveObject(with: item) as!  FriendModel
-                messageRecords.init(id: user.id).deleteAllByMes()
-            }
-        }
-        pref.removeObject(forKey: contacts)
+    required init?(map: Map) {
         
     }
     
-    private func setUsers(){
+    func mapping(map: Map) {
         
-        if let col =   pref.object(forKey: contacts) as? [Data]{
-            for item in col{
-                let user:FriendModel = NSKeyedUnarchiver.unarchiveObject(with: item) as!  FriendModel
-                usersMessage[user.id] = messageRecords.init(id: user.id)
-                users.append(user)
-            }
-        }
+        user <- map["user"]
+        userID <- map["userID"]
+        messageID <- map["messageID"]
+        message <- map["message"]
+        unReadCount <- map["unReadCount"]
+        isUP <- map["isUP"]
+        upTime <- (map["upTime"], DateTransform())
     }
-    
-    func addUser(user:FriendModel){
-        if users.contains(user){
-            return
-        }
-        
-        let data = NSKeyedArchiver.archivedData(withRootObject: user)
-        if var col = pref.object(forKey: contacts) as? [Data]{
-            col.append(data)
-            pref.set(col, forKey: contacts)
-
-        }else{
-            var col:[Data] = []
-            col.append(data)
-            pref.set(col, forKey: contacts)
-        }
-        users.append(user)
-        usersMessage[user.id] = messageRecords.init(id: user.id)
-    }
-    
-//    func setTopUser(index:Int){
-//
-//        if var col = pref.object(forKey: contacts) as? [Data]{
-//            let item = col.remove(at: index)
-//            col.insert(item, at: 0)
-//            pref.set(col, forKey: contacts)
-//            //
-//            let u =  users.remove(at: index)
-//            users.insert(u, at: 0)
-//        }
-//
-//
-//    }
-    func removeUser(user:FriendModel, index:Int){
-        if users.contains(user){
-            if var col = pref.object(forKey: contacts) as? [Data]{
-                col.remove(at: index)
-                pref.set(col, forKey: contacts)
-                // 清理message 数据
-                usersMessage[user.id]?.deleteAllByMes()
-                users.remove(at: index)
-                usersMessage.removeValue(forKey: user.id)
-                
-            }
-            
-        }
-        
-    }
-    
-    
-    open func getLasteMessageForUser(user:FriendModel)-> MessageBoby?{
-        return  usersMessage[user.id]?.messages.last
-    }
-    
-    // job id
-    open func getTalkedJobsById(user:FriendModel, jobId:String)->(Bool,Dictionary<String,String>?){
-        
-        
-        return (false, nil)
-    }
-    
-    
-    
     
     
 }
 
+// 代表会话个人信息model
+class PersonModel:NSObject, Mappable{
+    
+    var userID:String?
+    var name:String?
+    var company:String?
+    // 
+    var icon:Data?
+    // 求职者 还是 职位发布者，还是其他
+    var role:String?
+    // 屏蔽 不接受和发送信息
+    var isShield:Bool?
+    // 用户是否存在
+    var isExist:Bool?
+    
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        
+        userID <- map["userID"]
+        name <- map["name"]
+        company <- map["company"]
+        //base64 转换为data
+        icon <- (map["icon"], DataTransformBase64())
+        role <- map["role"]
+        isShield <- map["isShield"]
+        
+    }
+    
+}
 
-class FriendModel:NSObject,NSCoding{
+class HRPersonModel: PersonModel {
+    
+    var ontime:Date?
+    var position:String?
     
     
-    var companyName:String
-    var name:String
-    // 唯一号
-    var id:String
-    var avart:String
-    // 消息聊天 是否置顶
-    //var isFocus:Bool
-    
-    
-    init(name:String,avart:String, companyName:String,id:String) {
-        self.name = name
-        self.avart = avart
-        self.companyName = companyName
-        self.id = id
-        //self.isFocus = false
-        
+    required init?(map: Map) {
+        super.init(map: map)
     }
     
-    func encode(with aCoder: NSCoder) {
-        aCoder.encode(name, forKey: "name")
-        aCoder.encode(avart, forKey: "avatar")
-        aCoder.encode(companyName, forKey: "companyName")
-        aCoder.encode(id, forKey: "id")
-        //aCoder.encode(isFocus, forKey: "isFocus")
+    override func mapping(map: Map) {
+        super.mapping(map: map)
         
-        
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        
-        self.name =  aDecoder.decodeObject(forKey: "name") as! String
-        self.avart = aDecoder.decodeObject(forKey: "avatar") as! String
-        self.companyName = aDecoder.decodeObject(forKey: "companyName") as! String
-        self.id = aDecoder.decodeObject(forKey: "id") as! String
-        
-        //self.isFocus = aDecoder.decodeBool(forKey: "isFocus")
-        
-    }
-   
-    
-    // equal object  TODO
-    override func isEqual(_ object: Any?) -> Bool {
-        if let other = object as? FriendModel{
-            return  self.id == other.id
-        }
-        return false
+        ontime <- (map["ontime"], DateTransform())
+        position <- map["position"]
     }
     
     
@@ -205,83 +103,26 @@ class FriendModel:NSObject,NSCoding{
     
 }
 
-class messageRecords:NSObject{
+// 聊天列表显示的model
+class ListPersonModel:NSObject, Mappable{
     
-    private var pre:UserDefaults
-    private var prefix:String
-    private var id:String
-    var messages:[MessageBoby] = []
- 
-    init(id:String) {
-        self.id = id
-        pre = UserDefaults.standard
-        prefix = "mes_" + id
-        super.init()
-        _ = self.GetAllMes()
- 
-    }
+    var person:PersonModel?
+    var messages:MessageBoby?
     
     
-    //
-    open func GetAllMes() -> [MessageBoby]?{
-        
-        if let mes =   pre.object(forKey: prefix) as? [Data]{
-            for item in mes {
-                messages.append(NSKeyedUnarchiver.unarchiveObject(with: item) as! MessageBoby)
-            }
-           
-            return messages
-        }
-        return nil 
-        
-    }
-   
-    
-    
-    
-    open func addMessageByMes(newMes:MessageBoby){
-        
-        let data = NSKeyedArchiver.archivedData(withRootObject: newMes)
-        var mes:[Data] = []
-        if let res =   pre.object(forKey: prefix) as? [Data]{
-            mes = res
-            mes.append(data)
-        }else{
-            mes.append(data)
-        }
-        messages.append(newMes)
-        pre.set(mes, forKey: prefix)
+    required init?(map: Map) {
         
     }
     
     
-    open func deleteMessageByMes(oldMes:MessageBoby, index:Int) -> Error?{
-        
-       
-        if  messages.contains(oldMes){
-            if var res  =   pre.object(forKey: prefix) as? [Data]{
-                 res.remove(at: index)
-                //res.remove(at: res.index(of: data)!)
-                 pre.set(res, forKey: prefix)
-            }
-            messages.remove(at: index)
-            return nil
-        }
-        // mark todo
-        return nil
-        
-    }
-    
-    open func deleteAllByMes(){
-        if var res = pre.object(forKey: prefix) as? [Data]{
-            messages.removeAll()
-            res.removeAll()
-            pre.set(res, forKey: prefix)
-            pre.removeObject(forKey: prefix)
-        }
+    func mapping(map: Map) {
+        person <- map["person"]
+        messages <- map["messages"]
     }
     
     
 }
+
+
 
 

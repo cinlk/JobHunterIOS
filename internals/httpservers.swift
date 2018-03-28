@@ -185,13 +185,13 @@ class  loginServer: BaseServer{
     let httpRequestHandler: MoyaProvider<UserMoyaType>?
 
    
-    var TestUser:UserModel?
+    var TestUser:LoginUserModel?
     static let shareInstance:loginServer = loginServer()
     
     private override init() {
         
         //self.TestUser = Users.init("13718754627", "111111")
-        self.TestUser =  UserModel(JSON: ["account":"name","password":"pas","role":""])
+        self.TestUser =  LoginUserModel(JSON: ["account":"name","password":"pas","role":""])
         
         
         let endpointClosure = { (target: UserMoyaType) -> Endpoint<UserMoyaType> in

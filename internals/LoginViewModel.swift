@@ -20,7 +20,7 @@ enum Result{
     case accountExist(messae:String)
     case error(message:String)
     case verifyCode(number:String)
-    case user(user:UserModel)
+    case user(user:LoginUserModel)
     
 }
 

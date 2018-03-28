@@ -55,9 +55,10 @@ class PersonViewController: UIViewController {
    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        //self.navigationController?.navigationBar.isHidden = false
+        self.navigationController?.navigationBar.isHidden = false
         self.navigationItem.title = ""
         //self.tabBarController?.tabBar.isHidden = true
+        
     }
     
     override func viewWillLayoutSubviews() {
@@ -120,9 +121,10 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        self.tabBarController?.tabBar.isHidden = true
+       
         if indexPath.section == 0 {
             let resumeView = personResumeTable(style: .plain)
+            resumeView.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(resumeView, animated: true)
         }else{
             
@@ -131,14 +133,17 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
             case 0:
                 // 我的名片
                 let mycard = personCardVC()
+                mycard.hidesBottomBarWhenPushed = true
                 self.navigationController?.pushViewController(mycard, animated: true)
             case 1:
                 // 通用设置
                 let setting  = SettingVC()
+                setting.hidesBottomBarWhenPushed = true
                 self.navigationController?.pushViewController(setting, animated: true)
             case 2:
                 // 我的收藏
                 let mycollection = MyCollectionVC()
+                mycollection.hidesBottomBarWhenPushed = true
                 self.navigationController?.pushViewController(mycollection, animated: true)
             case 3:
                 // 目前只是反馈界面
@@ -146,6 +151,7 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
                 //self.navigationController?.pushViewController(myfeedBAck, animated: true)
                 // 隐私设置
                 let privicy = PrivacySetting()
+                privicy.hidesBottomBarWhenPushed = true
                 self.navigationController?.pushViewController(privicy, animated: true)
                 
                 break

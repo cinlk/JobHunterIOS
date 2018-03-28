@@ -48,7 +48,7 @@ class contactlist: UITableViewCell {
     }
     
     
-    func setupFriendCell(user:FriendModel){
+    func setupFriendCell(user:PersonModel){
       
     }
     

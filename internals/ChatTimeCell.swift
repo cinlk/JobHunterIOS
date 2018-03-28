@@ -11,7 +11,7 @@ import UIKit
 class ChatTimeCell: UITableViewCell {
 
     
-    var model: TimeMessageBody?{
+    var model: TimeBody?{
         didSet{
             setModel()
         }

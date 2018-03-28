@@ -16,27 +16,52 @@ class  DBFactory{
         case user
         case search
         case job
+        case cmessage
+        case cuser
+        
     }
     
     private let dbManager:SqliteManager = SqliteManager.shared
     
-    private let userTable:UserTable
+    private let userTable:LoginUserTable
     private let searchTable:SearchHistory
     private let jobTable:JobTable
     private let companyTable:CompanyTable
     
+    // 消息
+    private let personTable:PersonTable
+    private let messageTable:MessageTable
+    private let conversationTable:ConversationTable
+    
     static let shared:DBFactory = DBFactory()
     
     private  init() {
-        userTable = UserTable.init(dbManager: self.dbManager)
+        userTable = LoginUserTable.init(dbManager: self.dbManager)
         searchTable = SearchHistory.init(dbManager: self.dbManager)
         jobTable = JobTable.init(dbManager: self.dbManager)
         companyTable = CompanyTable.init(dbManage: self.dbManager)
+        personTable = PersonTable.init(dbManage: self.dbManager)
+        messageTable = MessageTable.init(dbManage: self.dbManager)
+        conversationTable = ConversationTable.init(dbManage: self.dbManager)
     }
     
     
     
-    open func getUserDB()->UserTable{
+    open func proxy(type:DBName) -> Any{
+        switch type {
+        case .cmessage:
+            return messageTable
+        case .user:
+            return personTable
+        case .cuser:
+            return conversationTable
+        default:
+            break
+        }
+        return ""
+    }
+    
+    open func getUserDB()->LoginUserTable{
         return self.userTable
     }
     
@@ -52,13 +77,23 @@ class  DBFactory{
         return self.companyTable
     }
     
+    open func getPersonDB()->PersonTable{
+        return self.personTable
+    }
+    open func getMessageDB()->MessageTable{
+        return self.messageTable
+    }
+    open func getConversationDB()->ConversationTable{
+        return self.conversationTable
+    }
+    
     
     
 }
 
 
 // version 0.1
-struct UserTable{
+struct LoginUserTable{
     
     static let user = Table("user")
     static let id = Expression<Int64>("id")
@@ -78,8 +113,8 @@ struct UserTable{
         
         do{
             // 选择第一行
-            if let user = try dbManager.db?.pluck(UserTable.user){
-                return (user[UserTable.account], user[UserTable.password], user[UserTable.auto])
+            if let user = try dbManager.db?.pluck(LoginUserTable.user){
+                return (user[LoginUserTable.account], user[LoginUserTable.password], user[LoginUserTable.auto])
             }
         }catch{
             print(error)
@@ -94,9 +129,8 @@ struct UserTable{
         
         do{
             try dbManager.db?.transaction {
-                try dbManager.db?.run(UserTable.user.delete())
-                try dbManager.db?.run(UserTable.user.insert(UserTable.account <- account, UserTable.password <- password,
-                                                  UserTable.auto <- auto))
+                try dbManager.db?.run(LoginUserTable.user.delete())
+                try dbManager.db?.run(LoginUserTable.user.insert(LoginUserTable.account <- account, LoginUserTable.password <- password,LoginUserTable.auto <- auto))
             }
             
         }catch{
@@ -106,7 +140,7 @@ struct UserTable{
     
     func deleteUser(){
         do{
-            try dbManager.db?.run(UserTable.user.delete())
+            try dbManager.db?.run(LoginUserTable.user.delete())
         }catch{
             print(error)
         }
@@ -115,7 +149,7 @@ struct UserTable{
     
     func setLoginAuto(auto:Bool){
         do{
-            try dbManager.db?.run(UserTable.user.update(UserTable.auto <- auto))
+            try dbManager.db?.run(LoginUserTable.user.update(LoginUserTable.auto <- auto))
         }catch{
             print(error)
         }
@@ -287,7 +321,7 @@ struct SearchHistory {
     
     private let dbManager:SqliteManager
     
-    init(dbManager:SqliteManager) {
+    fileprivate init(dbManager:SqliteManager) {
         self.dbManager = dbManager
     }
     
@@ -358,7 +392,7 @@ struct CompanyTable {
     
     private let dbManage: SqliteManager
     
-    init(dbManage:SqliteManager) {
+    fileprivate init(dbManage:SqliteManager) {
         self.dbManage = dbManage
     }
     
@@ -423,6 +457,422 @@ struct CompanyTable {
         }
         return []
     }
+    
+    
+}
+
+
+// ********************************** //
+
+// 聊天记录表
+
+//  聊天个人信息表
+
+
+struct PersonTable {
+    
+    
+    static let person =  Table("person")
+    static let personID = Expression<String>("id")
+    static let personName = Expression<String>("name")
+    static let company = Expression<String>("company")
+    static let icon = Expression<Data?>("icon")
+    static let role = Expression<String>("role")
+    
+    //屏蔽
+    static let isShield = Expression<Bool>("isShield")
+    // 是否存在
+    static let isExist = Expression<Bool>("isExist")
+    
+    
+    
+    private let dbManage: SqliteManager
+    
+    fileprivate init(dbManage:SqliteManager) {
+        self.dbManage = dbManage
+    }
+    
+    
+    func GetUserById(userId:String) -> PersonModel?{
+        do{
+            let target = PersonTable.person.filter(PersonTable.personID == userId)
+            if let item = try dbManage.db?.pluck(target){
+                // data 转为base64string
+                let iconString = item[PersonTable.icon]?.base64EncodedString()
+                return  PersonModel(JSON: ["userID":item[PersonTable.personID],
+                                           "name":item[PersonTable.personName],
+                                           "company":item[PersonTable.company],
+                                           "icon":iconString,
+                                           "role":item[PersonTable.role],
+                                           "isShield":item[PersonTable.isShield],
+                                           "isExist":item[PersonTable.isExist]])
+                
+            }
+        }catch{
+            print(error)
+        }
+        
+        return nil
+    }
+    
+    // 更新
+    func updatePerson(){
+        
+    }
+    
+    
+    // 什么时候跟新 会调用??
+    func updatePerson(person: PersonModel?){
+        guard let person = person else { return }
+        
+        do{
+            let target = PersonTable.person.filter(PersonTable.personID == person.userID!)
+            try dbManage.db?.run(target.update(PersonTable.company <- person.company ?? "", PersonTable.personName <- person.name!,PersonTable.icon <- person.icon ?? UIImagePNGRepresentation(#imageLiteral(resourceName: "default"))!, PersonTable.isExist <- person.isExist!))
+            
+            
+        }catch{
+            print(error)
+        }
+    }
+    
+    func insertPerson(person:PersonModel?){
+        
+        guard let Person = person else { return }
+        
+        do{
+            //insert 或 replace（可能头像会更新)??? 
+            
+            let target = PersonTable.person.filter(PersonTable.personID == Person.userID!)
+            // 存在
+            if let _ = try dbManage.db?.pluck(target){
+                return
+            }
+            
+            try dbManage.db?.run(PersonTable.person.insert(PersonTable.personID <- Person.userID!, PersonTable.company <- Person.company ?? "", PersonTable.personName <- Person.name!,
+                PersonTable.icon <- Person.icon ?? UIImagePNGRepresentation(#imageLiteral(resourceName: "default"))!, PersonTable.role <- Person.role!))
+            
+        }catch{
+            print(error)
+        }
+    }
+    
+    func deletePersonBy(userID:String){
+        
+        do{
+            let target = PersonTable.person.filter(PersonTable.personID == userID)
+            try? self.dbManage.db?.run(target.delete())
+            
+        }catch{
+            print(error)
+        }
+        
+        
+        
+    }
+    // 获取所有的usemodel
+    
+    func selecteAll()->[PersonModel]{
+        var persons:[PersonModel] = []
+        do{
+            for item in try dbManage.db!.prepare(PersonTable.person){
+                persons.append(PersonModel(JSON: ["personID":item[PersonTable.personID], "name":item[PersonTable.personName], "company":item[PersonTable.company],
+                    "role":item[PersonTable.role],
+                    "iconURL":item[PersonTable.icon]!])!)
+            }
+            
+            return persons
+            
+        }catch{
+            print(error)
+        }
+        
+        return []
+    }
+    
+    
+}
+
+
+// 消息数据库表
+
+struct MessageTable {
+    
+    static let message =  Table("Mesage")
+    // 自增的消息id 主键
+    static let id = Expression<Int64>("id")
+    // 唯一约束 索引
+    static let messageID = Expression<String>("messageID")
+    static let type = Expression<String>("type")
+    // 根据不同类型解析不同类型数据
+    static let content = Expression<Data?>("content")
+    static let create_time = Expression<Date>("create_time")
+    static let read_time = Expression<Date>("read_time")
+    
+    static let isRead = Expression<Bool>("isRead")
+    static let senderID = Expression<String>("senderID")
+    static let receiverID = Expression<String>("receiverID")
+    
+    private let dbManager:SqliteManager
+    
+    fileprivate init(dbManage:SqliteManager) {
+        self.dbManager = dbManage
+    }
+    
+    
+    
+    func insertProxy(message:Any, type:MessgeType){
+        switch type {
+        case .text, .personCard:
+            self.insertBaseMessage(message: message as! MessageBoby)
+        case .jobDescribe:
+            self.insertJobMessage(message: message as! JobDescriptionlMessage)
+        case .bigGif,.smallGif:
+            self.insertGifMessage(message: message as! GigImageMessageBody)
+        case .picture:
+            self.insertPictureMessage(message: message as! PicutreMessage)
+            
+        default:
+            break
+        }
+    }
+    
+    
+    
+    // 获取某条消息
+    func getMessageByID(msgID:String) -> MessageBoby?{
+        
+        do{
+            let one = MessageTable.message.filter(MessageTable.messageID == msgID)
+            if let item =  try self.dbManager.db?.pluck(one){
+                let contentString = item[MessageTable.content]?.base64EncodedString()
+                return MessageBoby(JSON: ["messageID":item[MessageTable.messageID],
+                                          "type":item[MessageTable.type],
+                                          "content": contentString,
+                                          "isRead":item[MessageTable.isRead],
+                                          "creat_time":item[MessageTable.create_time]])
+                
+            }
+        }catch{
+            print(error)
+        }
+        
+        return nil
+    }
+    
+    // 从最后向前查询 （sender 给我发的消息， 我给sender 发送的消息）
+    func getMessages(chatWith:PersonModel, start:Int, limit:Int)->[MessageBoby]{
+        var res:[MessageBoby] = []
+        
+        do{
+            // 查找 发给我的消息 好 我发给ta的消息
+            let query = MessageTable.message.select([MessageTable.messageID,MessageTable.type,MessageTable.content, MessageTable.isRead,MessageTable.senderID, MessageTable.create_time]).filter((MessageTable.senderID == chatWith.userID! && MessageTable.receiverID == myself.userID!)||(MessageTable.senderID == myself.userID! && MessageTable.receiverID == chatWith.userID!)).order(MessageTable.create_time.desc, MessageTable.id.desc).limit(limit, offset: start)
+            
+            for item in try self.dbManager.db!.prepare(query){
+                let contentStr = item[MessageTable.content]?.base64EncodedString()
+                let mb =  MessageBoby(JSON: ["messageID":item[MessageTable.messageID],
+                                             "type":item[MessageTable.type],
+                                             "content":contentStr!,
+                                             "isRead":item[MessageTable.isRead],
+                                             "creat_time": item[MessageTable.create_time].timeIntervalSince1970])!
+                
+                
+            
+                
+                if item[MessageTable.senderID]  == chatWith.userID {
+                    mb.sender = chatWith
+                    mb.receiver = myself
+                    
+                }else if item[MessageTable.senderID] == myself.userID{
+                    mb.sender = myself
+                    mb.receiver = chatWith
+                }
+               
+                res.append(mb)
+                
+            }
+            // 翻转排序，从时间低到高顺序
+            return res.reversed()
+        }catch{
+            print(error)
+        }
+        return []
+    }
+    
+    
+func insertBaseMessage(message:MessageBoby){
+        do{
+            guard let sender = message.sender else {
+                return
+            }
+            guard  let receiver = message.receiver else {
+                return
+            }
+            
+           try self.dbManager.db?.run(MessageTable.message.insert(MessageTable.messageID <- message.messageID!,MessageTable.senderID <- sender.userID!,
+                MessageTable.content <-  message.content ?? Data(),
+                MessageTable.create_time <- message.creat_time!,
+                MessageTable.isRead <- message.isRead!, MessageTable.type <- message.type!,
+                MessageTable.receiverID <- receiver.userID!, MessageTable.read_time <- Date.init(timeIntervalSince1970: 0)))
+            
+            
+        }catch{
+            print(error)
+        }
+    }
+    
+    private func insertJobMessage(message:JobDescriptionlMessage){
+        do{
+            guard let sender = message.sender else {
+                return
+            }
+            guard  let receiver = message.receiver else {
+                return
+            }
+            
+            
+            // json 数据
+            guard  let content =  message.JsonContentToDate()  else { return }
+            
+            try self.dbManager.db?.run(MessageTable.message.insert(MessageTable.senderID <- sender.userID!,
+                                        MessageTable.content <- content,
+                                        MessageTable.create_time <-  message.creat_time!,
+                                        MessageTable.isRead <- message.isRead!, MessageTable.type <- message.type!,
+                                        MessageTable.receiverID <- receiver.userID!, MessageTable.read_time <- Date()))
+            
+        }catch{
+            print(error)
+        }
+    }
+    
+    private func insertGifMessage(message:GigImageMessageBody){
+        do{
+            guard let sender = message.sender else {
+                return
+            }
+            guard  let receiver = message.receiver else {
+                return
+            }
+            
+            
+            let content = message.localGifPath
+            
+            guard let data = content?.data(using: String.Encoding.utf8, allowLossyConversion: false) else { return }
+            
+            try self.dbManager.db?.run(MessageTable.message.insert(MessageTable.senderID <- sender.userID!,
+                                    MessageTable.content <- data,
+                                    MessageTable.create_time <- message.creat_time!,
+                                    MessageTable.isRead <- message.isRead!, MessageTable.type <- message.type!,
+                                    MessageTable.receiverID <- receiver.userID!, MessageTable.read_time <- Date()))
+        }catch{
+            print(error)
+        }
+    }
+    
+    private func insertPictureMessage(message: PicutreMessage){
+        do{
+            guard let sender = message.sender else {
+                return
+            }
+            guard  let receiver = message.receiver else {
+                return
+            }
+            // 文件路径
+            guard let imgPath = message.imageFilePath else { return }
+            guard let data =  imgPath.data(using: String.Encoding.utf8, allowLossyConversion: false) else {return}
+            
+            try self.dbManager.db?.run(MessageTable.message.insert(MessageTable.senderID <- sender.userID!,
+                                    MessageTable.content <- data,
+                                    MessageTable.create_time <- message.creat_time!,
+                                    MessageTable.isRead <- message.isRead!, MessageTable.type <- message.type!,
+                                    MessageTable.receiverID <- receiver.userID!, MessageTable.read_time <- Date()))
+            
+        }catch{
+            print(error)
+        }
+    }
+    
+    
+}
+
+// 会话表
+struct  ConversationTable {
+    
+    static let conversation = Table("conversation")
+    
+    // 主机 自增id
+    static let id = Expression<Int64>("id")
+    // 主键（被交流对象）
+    static let userID = Expression<String>("userID")
+    // others??
+    
+    // 最后一条消息 (可以为空)
+    static let messageID = Expression<String>("messageID")
+    
+    // 置顶
+    static let isUP = Expression<Bool>("isUP")
+    static let upTime = Expression<Date>("upTime")
+    
+    private let dbManager:SqliteManager
+    
+    fileprivate init(dbManage:SqliteManager) {
+        self.dbManager = dbManage
+    }
+    
+    // 结果根据置顶 时间从大到小排序, 第二id 从小到大（保证为置顶的数据保持原来位置）
+    func getAllConversations() -> [[String:Any]]?{
+        do{
+            
+            var res = [[String:Any]]()
+            
+            for item in try self.dbManager.db!.prepare(ConversationTable.conversation.order(ConversationTable.upTime.desc, ConversationTable.id.asc)) {
+                res.append(["userID":item[ConversationTable.userID], "messageID":item[ConversationTable.messageID],
+                            "isUP":item[ConversationTable.isUP], "upTime":item[ConversationTable.upTime]])
+            }
+            
+            return res
+            
+        }catch{
+            print(error)
+        }
+        
+        return nil
+    }
+    
+    // 更新会话 如果 isUP 为true 则最新事件 ，否则为最小时间
+    func upDateConversationData(userID:String, messageID:String, isUP:Bool){
+        do{
+            var date:Date?
+            if isUP == true{
+                date = Date()
+                
+            }else{
+                date =  Date.init(timeIntervalSince1970: 0)
+            }
+            let target = ConversationTable.conversation.filter(ConversationTable.userID == userID)
+            if try (self.dbManager.db?.run(target.update(ConversationTable.isUP <- isUP,ConversationTable.upTime <- date!,ConversationTable.messageID <- messageID)))! > 0 {
+                return
+            }else{
+                // 插入数据
+                try self.dbManager.db?.run(ConversationTable.conversation.insert(ConversationTable.userID <- userID,
+                                                                             ConversationTable.messageID <- messageID,
+                                                                             ConversationTable.isUP <- false))
+            }
+        }catch{
+            print(error)
+        }
+    }
+    
+    // 删除会话
+    func deleteConversationBy(userID:String){
+        do{
+            let target = ConversationTable.conversation.filter(ConversationTable.userID == userID)
+            try self.dbManager.db?.run(target.delete())
+            
+        }catch{
+            print(error)
+        }
+    }
+    
     
     
 }

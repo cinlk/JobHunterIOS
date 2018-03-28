@@ -467,10 +467,8 @@ extension DashboardViewController{
                 })
             }
             
-            
-            
-            
         }
+            
         else if scrollView  == self.imagescroller{
             
             

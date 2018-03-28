@@ -20,6 +20,7 @@ struct RotateImages:Mappable {
     var imageURL:String?
     var body:String?
     
+    
     init?(map: Map) {
         
     }

@@ -29,12 +29,12 @@ class LXFChatMsgTimeHelper: NSObject {
 // MARK:- 是否需要添加分钟模型
 extension LXFChatMsgTimeHelper {
     func needAddMinuteModel(preModel: MessageBoby, curModel: MessageBoby) -> Bool {
-        let preTime = preModel.time
-        let curTime = curModel.time
+        let preTime = preModel.creat_time!
+        let curTime = curModel.creat_time!
         
-        let preDate = Date(timeIntervalSince1970: preTime)
+        let preDate = preTime
         let preInRome = DateInRegion(absoluteDate: preDate)
-        let curDate = Date(timeIntervalSince1970: curTime)
+        let curDate = curTime
         let curInRome = DateInRegion(absoluteDate: curDate)
         
         let yesr = curInRome.year - preInRome.year

@@ -26,7 +26,7 @@ protocol ChatEmotionViewDelegate: class {
     // 发送emotion
     func chatEmotionViewSend(emotionView: ChatEmotionView)
     // 发送gif 图片
-    func chatEmotionGifSend(emotionView: ChatEmotionView, didSelectedEmotion emotion: MChatEmotion, type:messgeType)
+    func chatEmotionGifSend(emotionView: ChatEmotionView, didSelectedEmotion emotion: MChatEmotion, type:MessgeType)
     
 }
 

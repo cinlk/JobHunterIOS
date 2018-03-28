@@ -7,15 +7,17 @@
 //
 
 import Foundation
+import ObjectMapper
+import SwiftyJSON
 
-
-enum messgeType:String {
+enum MessgeType:String {
+    case none = "none"
     case text = "text"
     case picture = "picture"
     case smallGif =  "smallGif"
     case bigGif = "bigGif"
     case voice = "voice"
-    case jobDetail = "jobDetail"
+    case jobDescribe = "jobDescribe"
     case personCard = "personCard"
     case time = "time"
     
@@ -30,248 +32,239 @@ enum MessageStatus{
 
 
 
-//baseMessage 继承  nsobject 和  nscoding
-class MessageBoby: NSObject, NSCoding{
-    
-    var messageID:Int?
-    var url:String?
-    var content:String
-    var time:TimeInterval
-    var type:messgeType = .text
-    
-    var messageStatus:MessageStatus = MessageStatus.unKnow
-    
-    //    var senderId:String
-    //    var targetId:String
-    var sender:FriendModel
-    var target:FriendModel
-    
-    
-    
-    init(content:String,time:TimeInterval, sender:FriendModel, target:FriendModel) {
-        self.content = content
-        self.time = time
-        self.sender = sender
-        self.target = target
-        self.type = .text
-        
-        
-    }
-    
-    
-    func encode(with aCoder: NSCoder) {
-        aCoder.encode(content, forKey: "content")
-        aCoder.encode(time, forKey: "time")
-        aCoder.encode(sender, forKey: "sender")
-        aCoder.encode(target, forKey: "target")
-        aCoder.encode(type.rawValue, forKey: "type")
-        
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        self.content =  aDecoder.decodeObject(forKey: "content") as! String
-        self.time = aDecoder.decodeDouble(forKey: "time")
-        
-        //self.time = aDecoder.decodeDouble(forKey: "time")
-        if let t = aDecoder.decodeObject(forKey: "type")  as? String{
-            self.type = messgeType.init(rawValue: t)!
+// 消息结构
+class MessageBoby: NSObject, Mappable{
+   
+    // 时间措和 客户端id 生成 唯一
+    var messageID:String?
+    //var url:String?
+    var type:String?{
+        didSet{
+            messageType = MessgeType.init(rawValue: type!) ?? .none
         }
-        self.target = aDecoder.decodeObject(forKey: "target") as! FriendModel
-        self.sender = aDecoder.decodeObject(forKey: "sender") as! FriendModel
+    }
+    // data 转base64的string
+    // 不同类型message可能是json 转data转base64或 文件路径转data 转base64
+    //
+    var content:Data?
+    // Double 转Date
+    var creat_time:Date?
+    var isRead:Bool?
+    
+    var sender:PersonModel?
+    var receiver:PersonModel?
+    
+    var messageType:MessgeType = .none
+    
+
+    required init?(map: Map) {
+       
+    }
+    
+    func mapping(map: Map) {
+        
+        messageID <- map["messageID"]
+        type <- map["type"]
+        content <- (map["content"], DataTransformBase64())
+        // double 数据转Date
+        creat_time <- (map["creat_time"], DateTransform())
+        isRead <- map["isRead"]
+        
+        // not work??
+        //sender <- map["sender"]
+        //receiver <- map["receiver"]
+       
+    }
+    
+    // MARK 处理异常返回 ？？
+    func getContent(isConversion:Bool) -> Any{
+        // 可能是图片 json 数据，或string
+        
+         guard let data = content else { return "" }
+        
+        switch messageType {
+            
+        case .jobDescribe:
+           
+            return  isConversion == true ? "[职位]" : JSON(data: data)
+        case .text:
+            return  String.init(data: data, encoding: String.Encoding.utf8)
+        case .picture:
+           let url =  URL.init(dataRepresentation: data, relativeTo: nil)
+           return isConversion == true ? "[图片]" :  url
+        default:
+            break
+        }
+        
+        return ""
+    }
+    
+    // 对job message，获取job描述内容
+    func contentToJson() ->JSON?{
+        
+        return JSON.init(data:  content!)
     }
     
     
 }
-
+// 显示输出内容
 extension MessageBoby{
     override var description: String{
-        return self.content + ":" + self.type.rawValue
+        guard  let content = self.content, let type = self.type else {
+          return ""
+        }
+        // 公共方法
+        let dateformat = DateFormatter()
+        dateformat.locale = Locale.current
+        dateformat.dateFormat  = "yyyy-MM-dd HH:mm:ss"
+        
+        //let contents = String.init(data: content, encoding: String.Encoding.utf8)
+        //let timeString  = creat_time?.string(custom: dateformat.dateFormat)
+        
+        let resutl:[String] = [messageID!, type]
+        return resutl.joined(separator: " : ")
+        
+        
+    
     }
 }
-// copy 实现 ？
 
-class  JobDetailMessage:MessageBoby{
+// 投递职位信息 在聊天界面最上方
+class  JobDescriptionlMessage:MessageBoby{
     
-    var icon:String
-    var jobName: String
-    var company:String
-    var salary:String
-    var tags:String
+    var jobID:String?
+    // 照片 base64String
+    var icon:String?
+    var jobName: String?
+    var company:String?
+    var salary:String?
+    var tags:[String]?
     
-    init?(infos:[String:String]?,time:TimeInterval,sender:FriendModel,target:FriendModel) {
-        
-        
-        
-        guard let icon = infos?["icon"] else {
-            return nil
-        }
-        guard let jobName = infos?["jobName"] else {
-            return nil
-        }
-        
-        guard let company = infos?["company"] else {
-            return nil
-        }
-        guard  let salary = infos?["salary"] else {
-            return nil
-        }
-        guard let tags = infos?["tags"] else {
-            return nil
-        }
-        self.icon = icon
-        self.jobName = jobName
-        self.company = company
-        self.salary = salary
-        self.tags = tags
-        super.init(content: "", time: time, sender: sender, target: target)
-        type = .jobDetail
-        
-        
+  
+    required init?(map: Map) {
+        super.init(map: map)
     }
     
-    override func encode(with aCoder: NSCoder) {
-        super.encode(with: aCoder)
-        aCoder.encode(icon, forKey: "icon")
-        aCoder.encode(jobName, forKey: "jobName")
-        aCoder.encode(company, forKey: "company")
-        aCoder.encode(salary, forKey: "salary")
-        aCoder.encode(tags, forKey: "tags")
-        
-        
+    override func mapping(map: Map) {
+        super.mapping(map: map)
+        jobID <- map["jobID"]
+        icon <- map["icon"]
+        jobName <- map["jobName"]
+        company <- map["company"]
+        salary <- map["salary"]
+        tags <- map["tags"]
     }
-    
-    required init?(coder aDecoder: NSCoder) {
-        self.icon =  aDecoder.decodeObject(forKey: "icon") as! String
-        self.jobName =  aDecoder.decodeObject(forKey: "jobName") as! String 
-        self.company =  aDecoder.decodeObject(forKey: "company") as! String
-        self.salary =  aDecoder.decodeObject(forKey: "salary") as! String
-        self.tags =  aDecoder.decodeObject(forKey: "tags") as! String
-        super.init(coder: aDecoder)
-        
-    }
-    
-    open func toDict()->Dictionary<String,String>{
-        return ["icon": self.icon , "jobName": self.jobName, "company": self.company, "salary":self.salary,
-                "tags": self.tags]
-    }
+
+
     
     override var description: String{
-        return self.icon  + ":" + self.jobName
+        let s1 =  super.description
+        guard let jobName = self.jobName, let company = self.company else {
+            return s1
+        }
+        return s1  + " < " + jobName + company + " > "
+       
+    }
+    
+    // job描述内容 转换为字典
+//    func contentToJson() ->JSON?{
+//
+//        return JSON.init(data: Data.init(base64Encoded: content!)!)
+//    }
+    
+    func JsonContentToDate()->Data?{
+        
+       
+        let jsonStr:JSON =  ["jobID":self.jobID!, "icon":self.icon!,"jobName":self.jobName!,
+                             "company":self.company!, "salary":self.salary!, "tags": self.tags!]
+        if  let jsonData =  try? jsonStr.rawData(){
+            return jsonData
+        }
+        return nil
     }
 }
 
 
-//  gif image message
+//  gif image消息
 
-class  imageMessageBody:MessageBoby{
+class  GigImageMessageBody:MessageBoby{
+    // 用本地的gif 图片？？还是data 数据
+    var localGifPath:String?
     
-    var imgPath:String
-    
-    init(time:TimeInterval, path:String,content:String,sender:FriendModel, target:FriendModel, type:messgeType) {
-        imgPath = path
-        super.init(content: content, time: time, sender: sender , target: target)
-        self.type = type
-        
-        
+    required init?(map: Map) {
+         super.init(map: map)
     }
     
-    override func encode(with aCoder: NSCoder) {
-        super.encode(with: aCoder)
-        aCoder.encode(imgPath, forKey: "imgPath")
-        
+    override func mapping(map: Map) {
+        super.mapping(map: map)
+        localGifPath <- map["localGifPath"]
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        
-        self.imgPath = aDecoder.decodeObject(forKey: "imgPath") as! String
-        super.init(coder: aDecoder)
-        
-    }
+
 }
 
-extension imageMessageBody{
+extension GigImageMessageBody{
+    
     override var description: String{
-        return self.imgPath + ":" + self.type.rawValue
+        
+        let s1 =  super.description
+        guard let gifPath = self.localGifPath else {
+            return s1
+        }
+        return s1  + " < " + gifPath  + " > "
+        
     }
 }
 
 
-class TimeMessageBody: MessageBoby{
-    
-    
-    var timeStr:String?
-    
-    init(time: TimeInterval, sender: FriendModel, target: FriendModel) {
-        super.init(content: "", time: time, sender: sender, target: target)
-        self.type = .time
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    
-}
 
-
+// 个人名片消息
 class PersonCardMessage:MessageBoby{
     
     
-    var name:String
-    var image:String
-    
-    init(name:String,image:String,time:TimeInterval, sender:FriendModel, target:FriendModel) {
-        self.name = name
-        self.image = image
-        super.init(content: "", time: time, sender: sender, target: target)
-        self.type = .personCard
+    required init?(map: Map) {
+        super.init(map: map)
     }
     
+    override func mapping(map: Map) {
+        super.mapping(map: map)
+    }
+
     
+}
+
+
+// 时间消息 单独抽取显示cell
+class TimeBody: MessageBoby{
     
-    override func encode(with aCoder: NSCoder) {
-        super.encode(with: aCoder)
-        aCoder.encode(name, forKey: "name")
-        aCoder.encode(image, forKey: "image")
-        
+    var timeStr:String?
+    required init?(map: Map) {
+        super.init(map: map)
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        
-        self.name = aDecoder.decodeObject(forKey: "name") as! String
-        self.image = aDecoder.decodeObject(forKey: "image") as! String
-        super.init(coder: aDecoder)
+    override func mapping(map: Map) {
+        super.mapping(map: map)
+        timeStr <- map["timeStr"]
     }
     
 }
 
 
+// 图片消息
+class PicutreMessage:MessageBoby{
+    
+    // 存储文件路径
+    var imageFilePath:String?
+    
+    required init?(map: Map) {
+        super.init(map: map)
+    }
+    
+    override func mapping(map: Map) {
+        super.mapping(map: map)
+        imageFilePath <- map["imageFilePath"]
+    }
 
-class CameraImageMessage:MessageBoby{
-    
-    var imageData:NSData
-    
-    
-    init(imageData:NSData, time:TimeInterval, sender:FriendModel, target:FriendModel){
-        
-        self.imageData = imageData
-        super.init(content: "", time: time, sender: sender, target: target)
-        self.type = .picture
-    }
-    
-    override func encode(with aCoder: NSCoder) {
-        super.encode(with: aCoder)
-        aCoder.encode(imageData, forKey: "imageData")
-        
-        
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        self.imageData = aDecoder.decodeObject(forKey: "imageData") as! NSData
-        super.init(coder: aDecoder)
-    }
-    
-    
     
 }
 

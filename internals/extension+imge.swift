@@ -182,3 +182,23 @@ extension UIImageView{
     
     
 }
+
+
+// tobase64
+extension UIImage{
+    
+    func toBase64String()->String{
+        
+        if let data =  UIImagePNGRepresentation(self) {
+            return data.base64EncodedString()
+        }
+        if let data = UIImageJPEGRepresentation(self, 0){
+            return data.base64EncodedString()
+        }
+        
+        // 判断为空的情况
+        return ""
+    }
+    
+}
+

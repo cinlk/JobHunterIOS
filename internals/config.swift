@@ -30,7 +30,7 @@ let TableCellOffsetX:CGFloat = 16
 
 // url
 let GITHUB_API_URL:String = "https://api.github.com"
-let APP_JOB_URL:String = "http://192.168.1.125:8080"
+let APP_JOB_URL:String = "http://127.0.0.1:8080"
 
 
 
@@ -55,8 +55,8 @@ let ChatKeyBoardH:CGFloat =  258.0
 // chat view
 let avatarSize:CGSize = CGSize.init(width: 45, height: 45)
 
-
-let myself:FriendModel = FriendModel.init(name: "lk", avart: "lk", companyName: "", id: "1")
+// 本地 登录后自己的信息 （用于测试）
+let myself:PersonModel = PersonModel(JSON: ["userID":"123456","name":"来自地球","role":"求职","icon": #imageLiteral(resourceName: "evil").toBase64String()])!
 
 
 // global greeting msg
