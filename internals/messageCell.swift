@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class messageCell: UITableViewCell {
 
@@ -90,6 +91,7 @@ class messageCell: UITableViewCell {
     // picture message setup
     // text message setup
     
+    
     func setupMessageCell(messageInfo:MessageBoby,chatUser:PersonModel){
         
         guard let content = messageInfo.content else { return }
@@ -123,7 +125,6 @@ class messageCell: UITableViewCell {
         // 自己发的消息
         if messageInfo.sender?.userID  ==  myself.userID{
             
-            //guard let icon = user.icon else { return }
             if let icon = myself.icon {
                 self.avatar.image = UIImage.init(data: icon)
             }else{
@@ -132,10 +133,9 @@ class messageCell: UITableViewCell {
             }
             
             self.avatar.frame = CGRect.init(x: ScreenW-avatarSize.width-5 , y: 0, width: avatarSize.width, height: avatarSize.height)
-           
             
            
-            //self.bubleBackGround.image = UIImage.resizeableImage(name: "rightmessage")
+            // 图片左边15 不拉伸 上25不拉伸，其他部分拉伸
             self.bubleBackGround.image = UIImage.init(named: "mebubble")?.stretchableImage(withLeftCapWidth: 15, topCapHeight: 25)
             
             self.bubleBackGround.frame = CGRect.init(x: ScreenW-5-self.avatar.frame.width-5-bubleSize.width, y: 0, width: bubleSize.width, height: bubleSize.height)
@@ -157,7 +157,7 @@ class messageCell: UITableViewCell {
             
             //self.bubleBackGround.image = UIImage.resizeableImage(name: "leftmessage")
             
-            self.bubleBackGround.image = UIImage.init(named: "yoububble")?.stretchableImage(withLeftCapWidth: 21, topCapHeight: 25)
+            self.bubleBackGround.image = UIImage.init(named: "yoububble")?.stretchableImage(withLeftCapWidth: 15, topCapHeight: 25)
             self.bubleBackGround.frame = CGRect.init(x: 5 + self.avatar.frame.width + 5, y: 0, width: bubleSize.width, height: bubleSize.height)
             self.messageLabel.frame = CGRect.init(x: 5 + self.avatar.frame.width + 5 + 10, y: y, width: labelSize.width, height: labelSize.height)
             
@@ -190,7 +190,7 @@ fileprivate class MessageLabel:UILabel{
     
     private func addGesture(){
         isUserInteractionEnabled = true
-        let gesture = UILongPressGestureRecognizer.init(target: self, action: #selector(clickLable))
+        let gesture = UILongPressGestureRecognizer.init(target: self, action: #selector(copyText))
         gesture.minimumPressDuration = 3
         gesture.numberOfTouchesRequired = 1
         
@@ -199,10 +199,9 @@ fileprivate class MessageLabel:UILabel{
 
      @objc private  func clickLable(){
         
+        // 这里会 影藏键盘？？ 怎么禁止影藏？
         becomeFirstResponder()
-        
         let menu = UIMenuController.shared
-        
         let copy = UIMenuItem.init(title: "复制", action: #selector(copyText))
         menu.menuItems = [copy]
         menu.setTargetRect(bounds, in: self)
@@ -214,9 +213,16 @@ fileprivate class MessageLabel:UILabel{
     
     @objc private func copyText(){
         
-        UIPasteboard.general.string = self.text
+        // 长按自动复制 文本
+        
+        // 复制富文 表情用[xxx] 表示的表情消息
+        UIPasteboard.general.string = self.getEmotionString()
+        SVProgressHUD.showSuccess(withStatus: "已复制到剪切板")
+        SVProgressHUD.dismiss(withDelay: 2)
+        //GetChatEmotion.shared.findAttrStr(text: self.text, font: self.font)
         
     }
+    
     
     // 除了复制功能以外 其他交换禁止
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {

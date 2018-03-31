@@ -9,11 +9,11 @@
 import UIKit
 
 
+// 快捷恢复代理
 protocol ReplyMessageDelegate: class {
     func didSelectedMessage(view:UITableView, message:String)
     
 }
-
 
 
 fileprivate let sourceFileName = "replylist"
@@ -31,24 +31,26 @@ class quickReplyView: UIView {
     weak var delegate:ReplyMessageDelegate?
     
     
-    // banner
+    // 顶部 view
     lazy var banner:UIView = {
-        var v =  UIView.init()
+        var v =  UIView.init(frame: CGRect.zero)
         
         v.backgroundColor = UIColor.blue
         var label = UILabel.init()
         label.text = "请选择快捷回复"
         label.textColor = UIColor.white
         label.font = UIFont.systemFont(ofSize: 10)
-        
+        label.textAlignment = .center
+        label.setSingleLineAutoResizeWithMaxWidth(120)
         v.addSubview(label)
-        _ = label.sd_layout().leftSpaceToView(v,10)?.topSpaceToView(v,5)?.bottomSpaceToView(v,5)?.widthIs(160)
+        _ = label.sd_layout().centerXEqualToView(v)?.centerYEqualToView(v)?.autoHeightRatio(0)
         return v
         
     }()
     
     lazy var replyTable: UITableView = { [unowned self ] in
         var table = UITableView.init()
+        table.backgroundColor = UIColor.viewBackColor()
         table.delegate = self
         table.dataSource = self
         table.tableFooterView = UIView.init()
@@ -88,6 +90,9 @@ extension quickReplyView: UITableViewDelegate,UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
+        let cell = tableView.cellForRow(at: indexPath)
+        cell?.accessoryType = .checkmark
         delegate?.didSelectedMessage(view: tableView, message: datasource[indexPath.row])
     }
     
@@ -100,7 +105,7 @@ extension quickReplyView: UITableViewDelegate,UITableViewDataSource {
         cell.editingAccessoryType = .none
         cell.textLabel?.textColor = UIColor.gray
         cell.textLabel?.text = datasource[indexPath.row]
-        cell.textLabel?.font = UIFont.systemFont(ofSize: 10)
+        cell.textLabel?.font = UIFont.systemFont(ofSize: 14)
         
         return cell
         
@@ -115,7 +120,8 @@ extension quickReplyView: UITableViewDelegate,UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: false)
+        let cell = tableView.cellForRow(at: indexPath)
+        cell?.accessoryType = .none
     }
     
 }

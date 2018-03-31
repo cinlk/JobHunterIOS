@@ -30,7 +30,7 @@ let TableCellOffsetX:CGFloat = 16
 
 // url
 let GITHUB_API_URL:String = "https://api.github.com"
-let APP_JOB_URL:String = "http://127.0.0.1:8080"
+let APP_JOB_URL:String = "http://192.168.1.125:8080"
 
 
 

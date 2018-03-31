@@ -8,11 +8,12 @@
 
 import UIKit
 
-//  item元素 排列
+// 表情符
 fileprivate let kEmotionCellNumberOfOneRow = 8
 fileprivate let kEmotionCellRow = 3
 fileprivate let kEmotionCellNumberOfOnePage = kEmotionCellRow * kEmotionCellNumberOfOneRow
 
+// gif 图
 fileprivate let MEmotionCellNumberOfOneRow = 4
 fileprivate let MEmotionCellRow = 2
 fileprivate let MEmotionCellNumberOfOnePage  = MEmotionCellRow * MEmotionCellNumberOfOneRow
@@ -41,18 +42,18 @@ enum emotionType:Int {
 class ChatEmotionView: UIView {
 
     // emotion model
-    lazy var emotions:[MChatEmotion] = {
+    private lazy var emotions:[MChatEmotion] = {
        
         return ChatEmotionHelper.getAllEmotions()
     }()
     
-    // emotion model 2
-    lazy var emotion2: [MChatEmotion] = {
+    // 第一个gif 图
+    private lazy var emotion2: [MChatEmotion] = {
         return ChatEmotionHelper.getAllEmotion2(emotionName:"emotion2", type: ".gif")
     }()
     
-    // emotion model 3
-    lazy var emotion3: [MChatEmotion] = {
+    // 第二个gif图
+    private lazy var emotion3: [MChatEmotion] = {
         return ChatEmotionHelper.getAllEmotion2(emotionName: "emotion3", type: ".gif")
     }()
     // MARK 代理
@@ -61,7 +62,7 @@ class ChatEmotionView: UIView {
     
 
     
-    lazy var sendButton: UIButton = { [unowned self] in
+    private lazy var sendButton: UIButton = { [unowned self] in
         let sendBtn = UIButton(type: .custom)
         sendBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14.0)
         sendBtn.backgroundColor = UIColor(red:0.13, green:0.41, blue:0.79, alpha:1.00)
@@ -70,7 +71,7 @@ class ChatEmotionView: UIView {
         return sendBtn
         }()
     
-    lazy var emotionButton: UIButton = { [unowned self] in
+    private lazy var emotionButton: UIButton = { [unowned self] in
         let emotionBtn = UIButton(type: .custom)
         emotionBtn.backgroundColor = UIColor.white
         emotionBtn.addTarget(self, action: #selector(emotionBtnClick(_:)), for: .touchUpInside)
@@ -80,7 +81,7 @@ class ChatEmotionView: UIView {
         
         return emotionBtn
     }()
-    lazy var santaButton:UIButton = { [unowned self] in
+    private lazy var santaButton:UIButton = { [unowned self] in
         let santa = UIButton.init(type: UIButtonType.custom)
         santa.backgroundColor = UIColor.white
         santa.addTarget(self, action: #selector(santaBtnClick(_:)), for: .touchUpInside)
@@ -91,7 +92,7 @@ class ChatEmotionView: UIView {
         
     }()
     
-    lazy var chickenButton:UIButton = { [unowned self ] in
+    private lazy var chickenButton:UIButton = { [unowned self ] in
         let cb = UIButton.init(type: UIButtonType.custom)
         cb.backgroundColor = UIColor.white
         cb.addTarget(self, action: #selector(chickenBtnClick(_:)), for: .touchUpInside)
@@ -101,7 +102,7 @@ class ChatEmotionView: UIView {
         
     }()
     
-    lazy var moneyButton:UIButton = { [unowned self] in
+    private lazy var moneyButton:UIButton = { [unowned self] in
         let money = UIButton.init(type: UIButtonType.custom)
         money.backgroundColor = UIColor.white
         money.setImage(#imageLiteral(resourceName: "jing"), for: .normal)
@@ -112,7 +113,7 @@ class ChatEmotionView: UIView {
         
     }()
     
-    lazy var bottomView:UIView = { [unowned self] in
+    private lazy var bottomView:UIView = { [unowned self] in
         let bottom = UIView.init()
         bottom.backgroundColor = UIColor.white
         bottom.addSubview(self.sendButton)
@@ -125,7 +126,7 @@ class ChatEmotionView: UIView {
         }()
     
     // first emotionView
-    lazy var emotionView: UICollectionView = { [unowned self] in
+    private lazy var emotionView: UICollectionView = { [unowned self] in
         let collectV = UICollectionView(frame: CGRect.zero, collectionViewLayout: ChatHorizontalLayout(column: kEmotionCellNumberOfOneRow, row: kEmotionCellRow))
         collectV.backgroundColor = UIColor.backGroundColor()
         collectV.isPagingEnabled = true
@@ -137,8 +138,9 @@ class ChatEmotionView: UIView {
         return collectV
         }()
     // second emotionView
-    lazy var emotion2View: UICollectionView = { [unowned self] in
+    private lazy var emotion2View: UICollectionView = { [unowned self] in
         let collectV = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: ChatHorizontalLayout(column: MEmotionCellNumberOfOneRow, row: MEmotionCellRow))
+        
         collectV.backgroundColor  = UIColor.backGroundColor()
         collectV.isPagingEnabled = true
         collectV.delegate  = self
@@ -151,7 +153,7 @@ class ChatEmotionView: UIView {
     }()
     
     // third emotionView
-    lazy var emootion3View: UICollectionView = { [unowned self] in
+    private lazy var emootion3View: UICollectionView = { [unowned self] in
         let collectV = UICollectionView.init(frame: CGRect.zero, collectionViewLayout:
         ChatHorizontalLayout(column: MEmotionCellNumberOfOneRow, row: MEmotionCellRow))
         
@@ -212,9 +214,11 @@ class ChatEmotionView: UIView {
 
 
 extension ChatEmotionView {
+    
     func addBtnClick(_ btn: UIButton) {
         
     }
+    
     @objc func emotionBtnClick(_ btn: UIButton) {
         self.changeCollectionCell(type: .emotion)
     }
@@ -248,8 +252,10 @@ extension ChatEmotionView {
             self.emootion3View.isHidden = true
             self.emotionView.isHidden = false
             
+            self.emotionView.contentOffset.x = 0
             
             self.pageControl.numberOfPages = self.emotions.count / kEmotionCellNumberOfOnePage + (self.emotions.count % kEmotionCellNumberOfOnePage == 0 ? 0 : 1)
+            self.pageControl.currentPage = 0
             
             UIView.animate(withDuration: 0.3, animations: {
                 self.sendButton.frame = CGRect.init(x: self.bottomView.frame.width-53, y: 0, width: 53, height: self.bottomView.frame.height)
@@ -261,13 +267,15 @@ extension ChatEmotionView {
             self.emotion2View.isHidden = false
             self.emotionView.isHidden = true
             self.emootion3View.isHidden = true
-
+            
+            self.emotion2View.contentOffset.x = 0
             
             UIView.animate(withDuration: 0.3, animations: {
 
                 self.sendButton.frame = CGRect.init(x: self.bottomView.frame.width, y: 0, width: 53, height: self.bottomView.frame.height)
             })
             self.pageControl.numberOfPages = self.emotion2.count /  MEmotionCellNumberOfOnePage + (self.emotion2.count % MEmotionCellNumberOfOnePage == 0 ? 0 : 1)
+            self.pageControl.currentPage = 0
             
         case .chick:
             self.chickenButton.backgroundColor = UIColor.backGroundColor()
@@ -275,11 +283,13 @@ extension ChatEmotionView {
             self.emotion2View.isHidden = true
             self.emootion3View.isHidden = false
             
-           
+            self.emootion3View.contentOffset.x = 0
+            
             UIView.animate(withDuration: 0.3, animations: {
                 self.sendButton.frame = CGRect.init(x: self.bottomView.frame.width, y: 0, width: 53, height: self.bottomView.frame.height)
             })
             self.pageControl.numberOfPages  = self.emotion3.count /  MEmotionCellNumberOfOnePage + (self.emotion3.count % MEmotionCellNumberOfOnePage == 0 ? 0 : 1)
+            self.pageControl.currentPage = 0
             
             
         case .money:
@@ -297,13 +307,14 @@ extension ChatEmotionView: UICollectionViewDelegate,UICollectionViewDataSource{
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
         if collectionView == emotionView{
             return emotions.count
         }else if collectionView == emotion2View{
             //
-            return  emotion2.count
+            return emotion2.count
         }else if collectionView == emootion3View{
-            return  emotion3.count
+            return emotion3.count
         }else{
             return 0
         }
@@ -340,6 +351,7 @@ extension ChatEmotionView: UICollectionViewDelegate,UICollectionViewDataSource{
         if collectionView  == emotionView{
             let emo = emotions[indexPath.row]
             delegate?.chatEmotionView(emotionView: self, didSelectedEmotion: emo)
+            
         }else if collectionView == emotion2View{
             let emo  = emotion2[indexPath.row]
             delegate?.chatEmotionGifSend(emotionView: self, didSelectedEmotion: emo, type:.smallGif)

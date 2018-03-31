@@ -73,60 +73,6 @@ extension UIView{
 }
 
 
-extension UILabel{
-    class func sizeOfString(string:NSString,font:UIFont,maxWidth:CGFloat)->CGSize{
-        
-        let size = string.boundingRect(with: CGSize.init(width: maxWidth, height: 1200), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font:font], context: nil).size
-        // 与边框的距离
-        return CGSize.init(width: size.width + 15, height: size.height + 20)
-        
-    }
-}
 
-//  MARK 图文混排?
 
-extension UITextView {
-    // MARK:- 获取textView属性字符串,换成对应的表情字符串
-    func getEmotionString() -> String {
-        
-        let attrMStr = NSMutableAttributedString(attributedString: attributedText)
-        
-        let range = NSRange(location: 0, length: attrMStr.length)
-        attrMStr.enumerateAttributes(in: range, options: []) { (dict, range, _) in
-            if let attachment = dict[NSAttributedStringKey.attachment] as? ChatEmotionAttachment {
-                attrMStr.replaceCharacters(in: range, with: attachment.text!)
-            }
-        }
-        
-        return attrMStr.string
-    }
-    
-    func insertEmotion(emotion: MChatEmotion) {
-        // 空白
-        if emotion.isEmpty {
-            return
-        }
-        
-        // 删除表情
-        if emotion.isRemove {
-            deleteBackward()
-            return
-        }
-        
-        // 表情
-        let attachment = ChatEmotionAttachment()
-        attachment.text = emotion.text
-        attachment.image = UIImage(contentsOfFile: emotion.imgPath!)
-        let font = self.font!
-        attachment.bounds = CGRect(x: 0, y: -4, width: font.lineHeight, height: font.lineHeight)
-        let attrImageStr = NSAttributedString(attachment: attachment)
-        
-        let attrMStr = NSMutableAttributedString(attributedString: attributedText)
-        let range = selectedRange
-        attrMStr.replaceCharacters(in: range, with: attrImageStr)
-        attributedText = attrMStr
-        self.font = font
-        selectedRange = NSRange(location: range.location + 1, length: 0)
-    }
-}
 

@@ -69,10 +69,6 @@ class MessageBoby: NSObject, Mappable{
         // double 数据转Date
         creat_time <- (map["creat_time"], DateTransform())
         isRead <- map["isRead"]
-        
-        // not work??
-        //sender <- map["sender"]
-        //receiver <- map["receiver"]
        
     }
     
@@ -85,13 +81,18 @@ class MessageBoby: NSObject, Mappable{
         switch messageType {
             
         case .jobDescribe:
-           
             return  isConversion == true ? "[职位]" : JSON(data: data)
         case .text:
-            return  String.init(data: data, encoding: String.Encoding.utf8)
+            return  String.init(data: data, encoding: String.Encoding.utf8) ?? ""
         case .picture:
            let url =  URL.init(dataRepresentation: data, relativeTo: nil)
-           return isConversion == true ? "[图片]" :  url
+           return  "[图片]"
+        case .smallGif,.bigGif:
+            return String.init(data: data, encoding: String.Encoding.utf8) ?? ""
+            
+        case .personCard:
+            return "[个人名片]"
+            
         default:
             break
         }

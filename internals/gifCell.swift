@@ -12,25 +12,20 @@ class gifCell: UITableViewCell {
 
     
     private var avatar:UIImageView = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: avatarSize.width, height: avatarSize.height))
+    
     private lazy var gif:UIImageView =  {
         let img = UIImageView.init(frame: CGRect.zero)
         img.backgroundColor = UIColor.clear
         img.clipsToBounds = true
+        img.isUserInteractionEnabled = true
+        
         return img
     }()
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
+    
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         avatar.setCircle()
-        
         
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
@@ -59,18 +54,37 @@ class gifCell: UITableViewCell {
         return "gifCell"
     }
     
-    func setupPictureCell(messageInfo:GigImageMessageBody, user:PersonModel){
+    func setupPictureCell(messageInfo:MessageBoby, chatUser:PersonModel){
         
+        guard let gifName = String.init(data: messageInfo.content!, encoding: String.Encoding.utf8) else {
+            return
+        }
         
- 
-        // image path file
-        guard  let path  = messageInfo.localGifPath else { return }
+        var gifPath:String?
+        // 根据名字 找到 gifImage 路径
+        if messageInfo.messageType == .smallGif{
+                gifPath = GetChatEmotion.shared.findGifImage(gifName: gifName, type: .smallGif)
+            
+        }else if messageInfo.messageType == .bigGif{
+                gifPath = GetChatEmotion.shared.findGifImage(gifName: gifName, type: .bigGif)
+        }
+        guard let path = gifPath else {
+            return
+        }
+   
         let data = NSData.init(contentsOf: NSURL.init(fileURLWithPath: path) as URL)
         // 动态图
         let animationImage = UIImage.animationImageWithData(data: data)
         gif.image = animationImage
         
-        if user.userID  == messageInfo.sender?.userID{
+        // 自己
+        if myself.userID  == messageInfo.sender?.userID{
+            if let icon = myself.icon {
+                self.avatar.image = UIImage.init(data: icon)
+            }else{
+                // default 头像
+                self.avatar.image =  #imageLiteral(resourceName: "default")
+            }
             
             
             //self.avatar.image = UIImage.init(named:  messageInfo.sender?.iconURL ?? "default")
@@ -83,6 +97,13 @@ class gifCell: UITableViewCell {
             
             
         }else{
+            if let icon = chatUser.icon {
+                self.avatar.image = UIImage.init(data: icon)
+            }else{
+                // default 头像
+                self.avatar.image =  #imageLiteral(resourceName: "default")
+            }
+            
             //self.avatar.image = UIImage.init(named: messageInfo.sender?.iconURL  ?? "default")
             self.avatar.frame = CGRect.init(x: 5, y: 5, width: avatarSize.width, height: avatarSize.height)
             if messageInfo.type == MessgeType.bigGif.rawValue{

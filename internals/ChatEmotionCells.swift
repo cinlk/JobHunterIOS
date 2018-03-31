@@ -30,7 +30,7 @@ class StaticChatEmotionCell: UICollectionViewCell {
     }
     
     // MARK:- 懒加载
-    lazy var emotionImageView: UIImageView = {
+    private lazy var emotionImageView: UIImageView = {
         return UIImageView()
     }()
     
@@ -38,6 +38,7 @@ class StaticChatEmotionCell: UICollectionViewCell {
         super.layoutSubviews()
         
         self.contentView.addSubview(emotionImageView)
+        //emotionImageView.frame = self.contentView.frame
         _ = emotionImageView.sd_layout().topSpaceToView(self.contentView,2.5)?.centerXEqualToView(self.contentView)?.widthIs(32)?.heightIs(32)
         
         }
@@ -58,15 +59,17 @@ class DynamicChatEmotionCell: UICollectionViewCell {
             guard let label = emo.text else {return }
             
             emotionImageView.image = UIImage.init(contentsOfFile: imgPath)
+            // 去除 括号[]，保留字符
             let characterSet = CharacterSet.init(charactersIn: "[]")
             name.text  = label.trimmingCharacters(in: characterSet)
         }
     }
     
-    lazy var emotionImageView: UIImageView = {
+    private lazy var emotionImageView: UIImageView = {
        return UIImageView()
     }()
-    lazy var name: UILabel = {
+    
+    private lazy var name: UILabel = {
        var lb = UILabel.init()
         lb.font = UIFont.systemFont(ofSize: 10)
         lb.textColor = UIColor.black

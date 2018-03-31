@@ -15,6 +15,7 @@ fileprivate let startDate = Date(timeIntervalSince1970: 0)
 
 // singleton model
 class  SqliteManager{
+    
     fileprivate let fileManager = FileManager.default
     static let shared:SqliteManager = SqliteManager()
     var db:Connection?

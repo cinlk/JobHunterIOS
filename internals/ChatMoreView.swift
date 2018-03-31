@@ -31,7 +31,7 @@ class ChatMoreView: UIView {
     
     weak var delegate: ChatMoreViewDelegate?
     
-    lazy var moreView:UICollectionView = { [unowned self] in
+    private lazy var moreView:UICollectionView = { [unowned self] in
         let collectView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: ChatHorizontalLayout(
             column: cellNumbeOfOneRow, row:CellRow))
         collectView.backgroundColor = UIColor.backGroundColor()
@@ -42,19 +42,14 @@ class ChatMoreView: UIView {
         collectView.showsHorizontalScrollIndicator = false
         collectView.isPagingEnabled = false
         return collectView
-        
     }()
     
     
-    lazy var moreDataSource: [(name:String, icon:UIImage, type:ChatMoreType)] = {
-        return [
-            ("照片",#imageLiteral(resourceName: "picture"), ChatMoreType.pic),
-            ("相机",#imageLiteral(resourceName: "camera"), ChatMoreType.camera),
-            ("个人名片",#imageLiteral(resourceName: "mycard"),  ChatMoreType.mycard),
-            ("快捷回复",#imageLiteral(resourceName: "autoMessage"), ChatMoreType.feedback)
-        ]
-        
-    }()
+    var moreDataSource: [(name:String, icon:UIImage, type:ChatMoreType)]? {
+        didSet{
+            self.moreView.reloadData()
+        }
+    }
     
     
     
@@ -64,7 +59,7 @@ class ChatMoreView: UIView {
         
         self.addSubview(moreView)
         _ = moreView.sd_layout().leftEqualToView(self)?.topEqualToView(self)?.rightEqualToView(self)?.heightIs(self.frame.height)
-        moreView.contentSize = CGSize.init(width: UIScreen.main.bounds.width, height: moreView.height)
+        moreView.contentSize = CGSize.init(width: ScreenW, height: moreView.height)
         
         
         
@@ -75,24 +70,25 @@ class ChatMoreView: UIView {
 extension ChatMoreView: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return moreDataSource.count
+        return moreDataSource?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let moreModel = moreDataSource[indexPath.item]
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChatMoreCell.identity(), for: indexPath) as? ChatMoreCell
+        if let moreModel = moreDataSource?[indexPath.item], let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ChatMoreCell.identity(), for: indexPath) as? ChatMoreCell{
+            
+            cell.model = moreModel
+            return cell
+        }
         
-        cell?.model = moreModel
-        return cell!
+        return  UICollectionViewCell()
         
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let moreModel = moreDataSource[indexPath.item]
-        self.delegate?.chatMoreView(moreView: self, didSelectedType: moreModel.type)
+        if let moreModel = moreDataSource?[indexPath.item]{
+            self.delegate?.chatMoreView(moreView: self, didSelectedType: moreModel.type)
+        }
     }
-    
-    
     
     
 }

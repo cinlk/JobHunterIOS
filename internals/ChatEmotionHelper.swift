@@ -9,10 +9,18 @@
 import UIKit
 
 class ChatEmotionHelper: NSObject {
+    
+    
+    // 占时存储 emotion images
+    
+   
+    
     // MARK:- 获取表情模型数组
     class func getAllEmotions() -> [MChatEmotion] {
+        
         var emotions: [MChatEmotion] = [MChatEmotion]()
         
+        //
         let plistPath = Bundle.main.path(forResource: "test", ofType: "plist")
         let array = NSArray(contentsOfFile: plistPath!) as! [[String : String]]
         
@@ -57,19 +65,19 @@ class ChatEmotionHelper: NSObject {
         //MARK
         return Bundle.main.bundlePath + "/test.bundle/" + emotionName! + ".png"
     }
+    
     // emotion2
     class func getAllEmotion2(emotionName:String, type:String)-> [MChatEmotion]{
+        
+        
         var emotions: [MChatEmotion] = [MChatEmotion]()
         let plistPath = Bundle.main.path(forResource: emotionName, ofType: "plist")
-        
-        
         
         let array = NSArray(contentsOfFile: plistPath!) as! [[String : String]]
         for dict in array{
             
             let bundle = emotionName+".bundle"
-            let item  = MChatEmotion(dict: dict,bundle:bundle,type:type)
-           
+            let item  = MChatEmotion(dict: dict, bundle:bundle, type:type)
             emotions.append(item)
             
         }

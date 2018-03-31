@@ -31,6 +31,29 @@ class ConversationManager: NSObject {
         }
     }
     
+    
+    
+    // 更新某个会话
+    open func updateConversationBy(usrID:String)->conversationModel?{
+        
+        guard let one = conversationTable.getOneConversation(userID: usrID) else {
+            return nil
+        }
+        guard let mes = messageTable.getMessageByID(msgID: one.messageID!) else {
+            return nil
+        }
+        
+        guard let user = personTable.GetUserById(userId: usrID) else {
+            return nil
+        }
+        
+        one.message = mes
+        one.user = user
+        
+        return one
+        
+    }
+    // 获取全部会话
     open func getConversaions()->[conversationModel]{
         var conversationModes:[conversationModel] = []
 
@@ -70,6 +93,9 @@ class ConversationManager: NSObject {
             // person 表级联删除数据
         personTable.deletePersonBy(userID: userID)
         
+        // 删除对话存储的images
+        AppFileManager.shared.deleteDirBy(userID: userID)
+        
     }
     
     // 置顶会话
@@ -99,11 +125,16 @@ class ConversationManager: NSObject {
     }
     
     // 插入消息表
-    open func insertMessageItem(items:[MessageBoby]){
+    open func  insertMessageItem(items:[MessageBoby]) throws {
         guard items.count > 0 else {
             return
         }
-        items.forEach{messageTable.insertBaseMessage(message: $0)}
+        do{
+            // ??
+            try items.forEach{ try messageTable.insertBaseMessage(message: $0)}
+        }catch{
+            throw error
+        }
     }
     
     
@@ -115,7 +146,7 @@ class ConversationManager: NSObject {
            
            try SqliteManager.shared.db?.transaction(block: {
                 self.insertPerson(person: person)
-                self.insertMessageItem(items: messages)
+                try self.insertMessageItem(items: messages)
             self.insertConversationItem(messageID: (messages.last?.messageID!)!, userID: person.userID!)
             
             

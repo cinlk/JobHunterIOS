@@ -8,10 +8,15 @@
 
 import UIKit
 
-class ImageCell: UITableViewCell {
 
+
+fileprivate let imageSize:CGSize = CGSize.init(width: 100, height: 100)
+
+@objcMembers class ImageCell: UITableViewCell {
+
+    private let appFileManger = AppFileManager.shared
     
-    lazy var avartar:UIImageView = {
+    private lazy var avartar:UIImageView = {
         var v = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: avatarSize.width, height: avatarSize.height))
         v.contentMode = .scaleAspectFit
         v.clipsToBounds = true
@@ -19,25 +24,34 @@ class ImageCell: UITableViewCell {
         
     }()
     
-    lazy var imageV:UIImageView = {
+    // 图片 切角，和 可点击放大 （拉钩的效果）？？？
+    private lazy var imageV:UIImageView = {
         var v = UIImageView()
-        v.contentMode = .scaleAspectFill
+        v.contentMode = .scaleToFill
         v.clipsToBounds = true
         return v
     }()
     
     
-    var mode:(avartarStr:String, imageData:NSData)? {
+   dynamic  var mode:MessageBoby? {
         didSet{
-            self.avartar.image = UIImage.init(named: mode!.avartarStr)
-            self.imageV.image = UIImage.init(data: mode!.imageData as Data)
+            guard let mode = mode  else {
+                return
+            }
+            guard let imageName = String.init(data: mode.content!, encoding: String.Encoding.utf8) else {
+                return
+            }
+            self.avartar.image = UIImage.init(data: mode.sender!.icon!)
+    
+            // 获取images
+            if let imageData =  appFileManger.getImageDataBy(userID: (mode.receiver?.userID)!, fileName: imageName){
+                self.imageV.image = UIImage.init(data: imageData)
+            }
+            self.setupAutoHeight(withBottomView: imageV, bottomMargin: 10)
+            
         }
     }
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
 
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
@@ -49,7 +63,7 @@ class ImageCell: UITableViewCell {
         avartar.setCircle()
         avartar.frame = CGRect.init(x: ScreenW - 45 - 5, y: 5, width: 45, height: 45)
         
-        _ = imageV.sd_layout().rightSpaceToView(avartar,10)?.topSpaceToView(self.contentView,10)?.widthIs(75)?.heightIs(80)
+        _ = imageV.sd_layout().rightSpaceToView(avartar,10)?.topSpaceToView(self.contentView,20)?.widthIs(imageSize.width)?.autoHeightRatio(4/3)
         
 
     }
@@ -59,15 +73,6 @@ class ImageCell: UITableViewCell {
     }
     
     
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-    
-    class func cellHeight()->CGFloat{
-        return 100
-    }
 
     class func reuseIdentify()->String{
         return "imageCell"
@@ -75,8 +80,5 @@ class ImageCell: UITableViewCell {
     
     
 }
-
-
-// image operations
 
 

@@ -83,6 +83,7 @@ class  DBFactory{
     open func getMessageDB()->MessageTable{
         return self.messageTable
     }
+    
     open func getConversationDB()->ConversationTable{
         return self.conversationTable
     }
@@ -623,7 +624,7 @@ struct MessageTable {
     func insertProxy(message:Any, type:MessgeType){
         switch type {
         case .text, .personCard:
-            self.insertBaseMessage(message: message as! MessageBoby)
+            try? self.insertBaseMessage(message: message as! MessageBoby)
         case .jobDescribe:
             self.insertJobMessage(message: message as! JobDescriptionlMessage)
         case .bigGif,.smallGif:
@@ -699,7 +700,7 @@ struct MessageTable {
     }
     
     
-func insertBaseMessage(message:MessageBoby){
+func insertBaseMessage(message:MessageBoby) throws{
         do{
             guard let sender = message.sender else {
                 return
@@ -716,6 +717,8 @@ func insertBaseMessage(message:MessageBoby){
             
             
         }catch{
+            // 抛出异常
+            throw error
             print(error)
         }
     }
@@ -838,6 +841,21 @@ struct  ConversationTable {
         return nil
     }
     
+    // 获取某个会话
+    func getOneConversation(userID:String)-> conversationModel?{
+        do{
+            let target = ConversationTable.conversation.filter(ConversationTable.userID == userID)
+            if let row = try self.dbManager.db?.pluck(target){
+                return   conversationModel(JSON:["userID":row[ConversationTable.userID],"messageID":row[ConversationTable.messageID],"isUP":row[ConversationTable.isUP],"upTime":row[ConversationTable.upTime]])
+                
+            }
+            
+        }catch{
+            print(error)
+        }
+        
+        return nil
+    }
     // 更新会话 如果 isUP 为true 则最新事件 ，否则为最小时间
     func upDateConversationData(userID:String, messageID:String, isUP:Bool){
         do{

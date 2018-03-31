@@ -25,7 +25,7 @@ enum ShowType:Int {
 
 
 // 聊天对话 界面
-class CommunicationChatView: UIViewController {
+class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
 
     
     
@@ -40,7 +40,7 @@ class CommunicationChatView: UIViewController {
         tb.showsVerticalScrollIndicator = false
         tb.tableFooterView = UIView.init()
         tb.register(messageCell.self, forCellReuseIdentifier: messageCell.reuseidentify())
-        tb.register(UINib.init(nibName: "JobMessageCell", bundle: nil), forCellReuseIdentifier: JobMessageCell.identitiy())
+        tb.register(JobMessageCell.self, forCellReuseIdentifier: JobMessageCell.identitiy())
         tb.register(gifCell.self, forCellReuseIdentifier: gifCell.reuseidentify())
         tb.register(PersonCardCell.self, forCellReuseIdentifier: PersonCardCell.reuseidentity())
         tb.register(ImageCell.self, forCellReuseIdentifier: ImageCell.reuseIdentify())
@@ -50,6 +50,16 @@ class CommunicationChatView: UIViewController {
         // 点击table 影藏输入界面
         let gest = UITapGestureRecognizer.init(target: self, action: #selector(hiddenChatBarView(sender:)))
         tb.addGestureRecognizer(gest)
+        // 向上 向下滑动手势
+        let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(invokeSwipe(sender:)))
+        swipeGesture.delegate = self
+        swipeGesture.direction = .up
+        tb.addGestureRecognizer(swipeGesture)
+        
+        let swipeGestureDown = UISwipeGestureRecognizer(target: self, action: #selector(invokeSwipe(sender:)))
+        swipeGestureDown.delegate = self
+        swipeGestureDown.direction = .down
+        tb.addGestureRecognizer(swipeGestureDown)
         return tb
     }()
     
@@ -70,8 +80,9 @@ class CommunicationChatView: UIViewController {
     private lazy var moreView:ChatMoreView  = { [unowned self] in
         let moreV = ChatMoreView()
         moreV.delegate = self
+        
         return moreV
-        }()
+    }()
     
     // emotion
     private lazy var emotion:ChatEmotionView = {
@@ -91,17 +102,15 @@ class CommunicationChatView: UIViewController {
     
     
     //backgroudView
-    private lazy var darkView:UIView = {
+    private lazy var darkView:UIView = { [unowned self] in
         var  v = UIView()
         v.frame = CGRect(x: 0, y: 0, width:UIScreen.main.bounds.size.width, height:UIScreen.main.bounds.size.height)
         v.backgroundColor = UIColor(red: 0 / 255.0, green: 0 / 255.0, blue: 0 / 255.0, alpha: 0.5) // 设置半透明颜色
         
         v.isUserInteractionEnabled = true // 打开用户交互
         
-        let singTap = UITapGestureRecognizer(target: self, action:#selector(self.handleSingleTapGesture)) // 添加点击事件
-        
+        let singTap = UITapGestureRecognizer(target: self, action:#selector(handleReplyView)) // 添加点击事件
         singTap.numberOfTouchesRequired = 1
-        
         v.addGestureRecognizer(singTap)
         return v
         
@@ -164,15 +173,20 @@ class CommunicationChatView: UIViewController {
     
     private var startMessageIndex:Int = 0
     private var limit:Int = 10
-    // 父类视图？
-    private weak var parentView: UIViewController?
+    private var firstLoadView:Bool = true
+    
+    // image文件操作
+    fileprivate let appImageManager = AppFileManager.shared
+    
+    
     private var currentIndexPath:IndexPath?
     
-    init(hr:PersonModel, index:IndexPath? = nil   ,parent: UIViewController? = nil ) {
+    init(hr:PersonModel, index:IndexPath? = nil) {
        
+        // 父类视图 对话cell 对应的row
         self.currentIndexPath = index
         self.hr = hr
-        self.parentView = parent
+       
         // 父类初始化
         super.init(nibName: nil, bundle: nil)
         self.chatRecordLoad()
@@ -188,15 +202,24 @@ class CommunicationChatView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setViews()
+        // more view 数据
+        moreView.moreDataSource = [
+            (name: "照片",icon: #imageLiteral(resourceName: "picture"), type: ChatMoreType.pic),
+            (name: "相机",icon: #imageLiteral(resourceName: "camera"), type: ChatMoreType.camera),
+            (name: "个人名片",icon: #imageLiteral(resourceName: "mycard"), type: ChatMoreType.mycard),
+            (name: "快捷回复",icon: #imageLiteral(resourceName: "autoMessage"), type: ChatMoreType.feedback)
+        ]
+        
+        
+        
     }
 
    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         self.hidesBottomBarWhenPushed = true
-  
+        self.navigationController?.delegate = self
     }
     
     
@@ -204,38 +227,11 @@ class CommunicationChatView: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
-        // 刷新cell 的message
-        guard let mg = self.parentView as? messageMain else {
-            return
-        }
-        guard let index = self.currentIndexPath else {
-            return
-        }
-       
-        mg.tableView.reloadRows(at: [index], with: .none)
         self.navigationItem.title = ""
 
-        
     }
     
    
-
- 
-    override func viewDidLayoutSubviews() {
-        
-        super.viewDidLayoutSubviews()
-        // 界面显示后 tableview 滑动到底部
-//        if !table2Bottom{
-//            DispatchQueue.main.async {
-//                self.tableView.scrollToRow(at: IndexPath.init(row: self.tableSource.count - 1, section: 0), at: .bottom, animated: false)
-//            }
-//            table2Bottom = true
-//        }
-       // self.tableView.scrollToRow(at: IndexPath.init(row: self.tableSource.count - 1, section: 0), at: .bottom, animated: false)
-        
-        
-    }
     
     // remove self when destroied
     deinit {
@@ -245,6 +241,18 @@ class CommunicationChatView: UIViewController {
     
 }
 
+// navigation delegate
+extension CommunicationChatView {
+
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        // 刷新 会话cell
+        if let vc = viewController as? messageMain{
+            vc.refreshRow(indexPath: self.currentIndexPath!, userID: self.hr.userID!)
+            
+        }
+        
+    }
+}
 extension CommunicationChatView {
     
     
@@ -319,24 +327,20 @@ extension CommunicationChatView: UITableViewDelegate,UITableViewDataSource{
                 
             case .smallGif, .bigGif:
                 let cell = tableView.dequeueReusableCell(withIdentifier: gifCell.reuseidentify(), for: indexPath) as! gifCell
-                cell.setupPictureCell(messageInfo: message as! GigImageMessageBody , user: myself)
+                cell.setupPictureCell(messageInfo: message , chatUser: hr)
                 return cell
                 
             case .jobDescribe:
                 let cell = tableView.dequeueReusableCell(withIdentifier: JobMessageCell.identitiy(), for: indexPath) as! JobMessageCell
-                
-                cell.mode = message.contentToJson()
+                cell.mode = message
                 return cell
             case .personCard:
                 let cell = tableView.dequeueReusableCell(withIdentifier: PersonCardCell.reuseidentity(), for: indexPath) as! PersonCardCell
-                let mes = message as! PersonCardMessage
-                //cell.mode = (name: mes.sender?.name, image: mes.sender?.iconURL)
+                cell.mode = message
                 return cell
             case .picture:
                 let cell = tableView.dequeueReusableCell(withIdentifier: ImageCell.reuseIdentify(), for: indexPath) as! ImageCell
-                let mes = message as! PicutreMessage
-                //cell.mode = (mes.sender?.iconURL, mes.imageData)
-                
+                cell.mode = message
                 return cell
             case .time:
                 let cell = tableView.dequeueReusableCell(withIdentifier: ChatTimeCell.identity(), for: indexPath) as! ChatTimeCell
@@ -353,6 +357,7 @@ extension CommunicationChatView: UITableViewDelegate,UITableViewDataSource{
         
     }
     
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
         if let message:MessageBoby  = self.tableSource.object(at: indexPath.row) as? MessageBoby{
@@ -364,12 +369,17 @@ extension CommunicationChatView: UITableViewDelegate,UITableViewDataSource{
             case .smallGif,.bigGif:
                 return gifCell.heightForCell(messageInfo: message)
             case .personCard:
-                return PersonCardCell.heightForCell()
+                let message = self.tableSource.object(at: indexPath.row) as! MessageBoby
+                return  tableView.cellHeight(for: indexPath, model: message, keyPath: "mode", cellClass: PersonCardCell.self, contentViewWidth: ScreenW)
             case .picture:
-                 return ImageCell.cellHeight()
+                let message = self.tableSource.object(at: indexPath.row) as! MessageBoby
+                 return tableView.cellHeight(for: indexPath, model: message, keyPath: "mode", cellClass: ImageCell.self, contentViewWidth: ScreenW)
+                
             case .jobDescribe:
-                return JobMessageCell.cellHeight()
-            case .time:
+                let message = self.tableSource.object(at: indexPath.row) as! MessageBoby
+                return tableView.cellHeight(for: indexPath, model: message, keyPath: "mode", cellClass: JobMessageCell.self, contentViewWidth: ScreenW)
+                
+             case .time:
                 return ChatTimeCell.cellHeight()
             default:
                 break
@@ -402,6 +412,24 @@ extension CommunicationChatView: UITableViewDelegate,UITableViewDataSource{
         }
         
     }
+    
+    // 判断 tableview 加载完成
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row == tableView.indexPathsForVisibleRows?.last?.row && firstLoadView{
+            
+            firstLoadView = false
+            DispatchQueue.main.async(execute: {
+            
+                tableView.scrollToRow(at: IndexPath.init(row: self.tableSource.count - 1, section: 0), at: .bottom, animated: false)
+            })
+        }
+        
+        
+    }
+    
+    
+    
 }
 
 extension CommunicationChatView{
@@ -416,17 +444,6 @@ extension CommunicationChatView{
             // 添加time 消息
             let after = addTimeMsg(mes:mes)
             for item in after{
-
-                // 图片路径 Bundle.main.bundlePath 每次会变化
-                if item.type == MessgeType.picture.rawValue || item.type == MessgeType.bigGif.rawValue{
-                    let subs = item as! PicutreMessage
-
-//                    let imageName = mes.imgPath.imageSubString(st: "/")
-//                    mes.imgPath = Bundle.main.bundlePath + imageName
-//                    self.tableSource.add(mes)
-                    continue
-                }
-                
                 self.tableSource.add(item)
             }
             
@@ -480,6 +497,22 @@ extension CommunicationChatView{
         
     }
     
+    // 滑动手势 向上 向下 滑动 影藏输入栏（不顺滑？？）
+    @objc func invokeSwipe(sender: UISwipeGestureRecognizer){
+        
+        switch sender.direction {
+        case UISwipeGestureRecognizerDirection.up:
+            hiddenChatBarView(sender: UITapGestureRecognizer())
+            
+        case UISwipeGestureRecognizerDirection.down:
+            hiddenChatBarView(sender: UITapGestureRecognizer())
+            
+        default:
+            break
+        }
+        
+        
+    }
     //
     @objc func moreButton(){
         
@@ -499,12 +532,10 @@ extension CommunicationChatView: ChatMoreViewDelegate{
         case .pic:
             
             if self.getPhotoLibraryAuthorization(){
-                //self.present(imgPickerVC, animated: true, completion: nil)
+                
                 if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
                     //初始化图片控制器
                     let picker = UIImagePickerController()
-                    //picker.navigationItem.rightBarButtonItem?.title = "取消"
-                    //picker.navigationItem.title = "相机胶卷"
                     
                     //设置代理
                     picker.delegate = self
@@ -600,62 +631,99 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
 
     func sendMessage(){
         
-        // 获取text 消息
+        // 获取富文本  消息
         var message = self.chatBarView.inputText.getEmotionString()
+        
         message = message.trimmingCharacters(in: CharacterSet.init(charactersIn: " "))
         guard !message.isEmpty else {
             return
         }
         // 清理inputview
         self.chatBarView.inputText.text = ""
-        //let messagebody:MessageBoby = MessageBoby.init(content: message, time: Date.init().timeIntervalSince1970, sender: myself, target: self.hr!)
+        let messagebody:MessageBoby = MessageBoby(JSON: ["messageID":getUUID(), "type":MessgeType.text.rawValue,"content":message.data(using:String.Encoding.utf8)!.base64EncodedString(),"creat_time":Date.init().timeIntervalSince1970,"isRead":true])!
         
-        //self.reloads(mes: messagebody)
+        messagebody.sender = myself
+        messagebody.receiver = self.hr
+        
+        
+        self.reloads(mes: messagebody)
         
     }
     
     //   gif 图片
     func sendGifMessage(emotion: MChatEmotion, type:MessgeType){
         
-        
-//        let messageBody:imageMessageBody  = imageMessageBody.init(time: Date.init().timeIntervalSince1970, path: emotion.imgPath!, content: emotion.text!,sender: myself, target: self.hr!, type: type)
-//        self.reloads(mes: messageBody)
-        
+        if  let message = MessageBoby(JSON: ["messageID":getUUID(), "type":type.rawValue,"content":emotion.text?.data(using: String.Encoding.utf8, allowLossyConversion: false)?.base64EncodedString() ,"creat_time":Date.init().timeIntervalSince1970,"isRead":true]){
+            message.sender = myself
+            message.receiver = self.hr
+            self.reloads(mes: message)
+            
+        }
         
     }
     // 快捷回复
     func sendReply(content:String){
         
-//        let messagebody:MessageBoby = MessageBoby.init(content: content, time: Date.init().timeIntervalSince1970, sender: myself, target: self.hr!)
-//        self.reloads(mes: messagebody)
+        if let message = MessageBoby(JSON: ["messageID":getUUID(), "type":MessgeType.text.rawValue,"content":content.data(using:String.Encoding.utf8)!.base64EncodedString(),"creat_time":Date.init().timeIntervalSince1970,"isRead":true]){
+            message.sender = myself
+            message.receiver = self.hr
+            self.reloads(mes: message)
+        }
+        
 
     }
     
     // 个人名片
     func sendPersonCard(){
         
-//        let personCard:PersonCardMessage = PersonCardMessage.init(name: myself.name, image: myself.avart, time: Date.init().timeIntervalSince1970, sender: myself, target: self.hr!)
-//        self.reloads(mes: personCard)
+        if let message = MessageBoby(JSON: ["messageID":getUUID(), "type": MessgeType.personCard.rawValue,
+                                            "creat_time": Date.init().timeIntervalSince1970, "isRead": true]){
+            message.sender = myself
+            message.receiver = self.hr
+            self.reloads(mes: message)
+        }
+
     }
 
-    // 照片
-    func sendImage(image:NSData, avartar: UIImage){
-//
-//        let Cameraimage:CameraImageMessage = CameraImageMessage.init(imageData: image, time: Date.init().timeIntervalSince1970, sender: myself, target: self.hr!)
-//        self.reloads(mes: Cameraimage)
+    // 发送照片
+    
+    func sendImage(Data:Data, imageName: String){
+        // 数据发送到服务器
+        // 本地存储 占时
+        if let message = MessageBoby(JSON: ["messageID":getUUID(),"type":MessgeType.picture.rawValue,
+                                            "creat_time":Date.init().timeIntervalSince1970,
+                                            "isRead":true,"content":imageName.data(using: String.Encoding.utf8)?.base64EncodedString()]){
+            message.sender = myself
+            message.receiver = self.hr
+            self.reloads(mes: message)
+            
+        }
+        
     }
     
     private func  reloads(mes: MessageBoby){
         
-        
-        if LXFChatMsgTimeHelper.shared.needAddMinuteModel(preModel: self.tableSource.lastObject as! MessageBoby, curModel: mes){
-            self.tableSource.add(createTimeMsg(msg: mes))
+        // 0  刷新table 和 存入数据库,
+        // 1 数据要在 tableview，根据网络 判断发送状态（sended??）并刷新显示发送失败状态
+        // 2 是否可以删除发送失败的数据？
+        do{
+            try self.conversationManager.insertMessageItem(items: [mes])
+            self.conversationManager.insertConversationItem(messageID: mes.messageID!, userID: self.hr!.userID!)
+            
+            if LXFChatMsgTimeHelper.shared.needAddMinuteModel(preModel: self.tableSource.lastObject as! MessageBoby, curModel: mes){
+                self.tableSource.add(createTimeMsg(msg: mes))
+            }
+            self.tableSource.add(mes)
+            
+            self.tableView.reloadData()
+            let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
+            self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)
+            //3  数据插入本地数据库 后通知更新 converation 会话界面，显示内容
+            
+        }catch{
+            print(error)
         }
-        self.tableSource.add(mes)
         
-        self.tableView.reloadData()
-        let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
-        self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)
         // 存入本地
         //Contactlist.shared.usersMessage[(hr?.id)!]?.addMessageByMes(newMes: mes)
     }
@@ -710,7 +778,6 @@ extension CommunicationChatView: ChatBarViewDelegate{
     func chatBarSendMessage() {
         self.sendMessage()
         // MARK sdk sendmessage
-
         
     }
     
@@ -746,6 +813,8 @@ extension CommunicationChatView{
     
     @objc func keyboardhidden(sender:NSNotification){
         
+        
+        //print(sender.userInfo,sender.name, sender.object)
         keyboardFrame = CGRect.zero
         if chatBarView.keyboardType == .emotion || chatBarView.keyboardType == .more{
             return
@@ -768,13 +837,9 @@ extension CommunicationChatView{
         
     }
     
-    
-//    func hiddens(){
-//        self.emotion.frame = CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: 216)
-//        self.moreView.frame = CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: 216)
-//    }
 
-    @objc func handleSingleTapGesture(){
+
+    @objc func handleReplyView(){
         self.darkView.removeFromSuperview()
         self.replyView.removeFromSuperview()
         self.navigationController?.view.willRemoveSubview(darkView)
@@ -806,13 +871,29 @@ extension CommunicationChatView{
 
 
 
+// 手势代理
+extension CommunicationChatView: UIGestureRecognizerDelegate{
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        return true
+    }
+    
+    // 允许 tableview 上多个手势执行
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        if (otherGestureRecognizer.view?.isKind(of: UITableView.self))!{
+            return true
+        }
+        return false
+    }
+    
+}
 
 
 // reply delegate
 extension CommunicationChatView: ReplyMessageDelegate{
     
     func didSelectedMessage(view: UITableView, message: String) {
-        self.handleSingleTapGesture()
+        self.handleReplyView()
         self.sendReply(content: message)
     }
 }
@@ -820,31 +901,62 @@ extension CommunicationChatView: ReplyMessageDelegate{
 
 
 // camera 照片
-extension CommunicationChatView: UIImagePickerControllerDelegate,UINavigationControllerDelegate{
+extension CommunicationChatView: UIImagePickerControllerDelegate{
+    
+    
+
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         //查看info对象
         
+        var imageData:Data?
+        var imageName = ""
+        var imagePathURL:URL?
         
-        let image:UIImage!
-        image = info[UIImagePickerControllerOriginalImage] as? UIImage
-        //图片控制器退出
-        picker.dismiss(animated: true, completion: {
-            () -> Void in
-        })
         
-        print("choose image \(image)")
-        
-        var icon:UIImage?
-        
-        if let img = myself.icon {
-            icon = UIImage.init(data: img)
-        }else{
-            // default 头像
-            icon =  #imageLiteral(resourceName: "default")
+        if let image:UIImage = info[UIImagePickerControllerOriginalImage] as? UIImage{
+            picker.dismiss(animated: true, completion: nil)
+            if picker.sourceType == .camera{
+                // 照相的照片 默认是jpeg 格式
+                // 生成时间戳 和 扩展名的 图片名称
+               
+                let DateFormat = DateFormatter.init()
+                // 
+                DateFormat.dateFormat = "yyyy-MM-dd HH.mm.ss"
+                imageName = DateFormat.string(from: Date()) + ".jpeg"
+                imageData = UIImageJPEGRepresentation(image, 0)
+                
+                
+            }else if picker.sourceType == .photoLibrary{
+                // 照片库
+                // 获取名称
+                
+                imagePathURL = info[UIImagePickerControllerImageURL] as! URL
+                imageName = imagePathURL!.lastPathComponent
+                // 文件扩展类型
+                let fileType =  imageName.components(separatedBy: ".").last!
+                if fileType.lowercased() == "jpeg"{
+                    imageData = UIImageJPEGRepresentation(image, 0)
+                }else{
+                    imageData = UIImagePNGRepresentation(image)
+                }
+               
+            }
+            
+            do{
+                // 交谈得对象 创建对应images目录
+                try  appImageManager.createImageFile(userID: self.hr.userID!,fileName: imageName, image: imageData!)
+                self.sendImage(Data: imageData!, imageName: imageName)
+                
+            }catch{
+                print(error)
+                return
+            }
+            
+            
         }
         
-        self.sendImage(image: UIImageJPEGRepresentation(image, 1.0)! as NSData, avartar: icon!)
+        
         
     }
     

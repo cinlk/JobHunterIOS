@@ -192,13 +192,14 @@ extension ChatBarView: UITextViewDelegate{
         return true
     }
     
+    
    
     func textViewDidChange(_ textView: UITextView) {
         
         
         var height =  textView.sizeThatFits(CGSize.init(width: textView.width, height: CGFloat(Float.greatestFiniteMagnitude))).height
        
-        height =  height > inputTextHeight ? height : inputTextHeight
+        height = height > inputTextHeight ? height : inputTextHeight
         
         height = height < inputTextMaxHeight ? height : inputTextMaxHeight
         
@@ -216,8 +217,12 @@ extension ChatBarView: UITextViewDelegate{
             delegate?.chatBarSendMessage()
             return false
         }
+        
         return true
     }
+
+    
+    
     // 监听text高度变化
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         // 滚动到最底层

@@ -130,7 +130,6 @@
 		4A9A0BDB20064EAA008721F3 /* XiaoMi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9A0BDA20064EAA008721F3 /* XiaoMi.swift */; };
 		4A9A0BDF200650A0008721F3 /* xiaomiTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9A0BDD200650A0008721F3 /* xiaomiTableCell.swift */; };
 		4A9A0BE9200B164F008721F3 /* JobMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9A0BE7200B164F008721F3 /* JobMessageCell.swift */; };
-		4A9A0BEA200B164F008721F3 /* JobMessageCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A9A0BE8200B164F008721F3 /* JobMessageCell.xib */; };
 		4A9CE3641F715B30002A8FD5 /* historyAndCatagoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9CE3631F715B30002A8FD5 /* historyAndCatagoryView.swift */; };
 		4A9CE3681F715F1D002A8FD5 /* JobArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9CE3671F715F1D002A8FD5 /* JobArea.swift */; };
 		4A9CE36A1F715F6E002A8FD5 /* internCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9CE3691F715F6E002A8FD5 /* internCondition.swift */; };
@@ -161,6 +160,9 @@
 		4ACC6DB2205BF49100392252 /* SqliteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACC6DB1205BF49100392252 /* SqliteManager.swift */; };
 		4AD03AB81F9B45270077C15B /* InputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD03AB71F9B45270077C15B /* InputTextView.swift */; };
 		4AD03ABB1F9C7DD30077C15B /* GetChatEmotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD03ABA1F9C7DD30077C15B /* GetChatEmotion.swift */; };
+		4AD8F751206E6CA4003969ED /* extension+UITextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD8F750206E6CA4003969ED /* extension+UITextView.swift */; };
+		4AD8F753206E874C003969ED /* extension+UIlabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD8F752206E874C003969ED /* extension+UIlabel.swift */; };
+		4AD8F755206FC6EC003969ED /* AppFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD8F754206FC6EC003969ED /* AppFileManager.swift */; };
 		4ADADAAB1FA4C09400134AAE /* quickReplyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADADAAA1FA4C09400134AAE /* quickReplyView.swift */; };
 		4ADCC7501F511DD3001A4E9F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADCC74F1F511DD3001A4E9F /* AppDelegate.swift */; };
 		4ADCC7521F511DD3001A4E9F /* logViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ADCC7511F511DD3001A4E9F /* logViewController.swift */; };
@@ -375,7 +377,6 @@
 		4A9A0BDA20064EAA008721F3 /* XiaoMi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiaoMi.swift; sourceTree = "<group>"; };
 		4A9A0BDD200650A0008721F3 /* xiaomiTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = xiaomiTableCell.swift; sourceTree = "<group>"; };
 		4A9A0BE7200B164F008721F3 /* JobMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobMessageCell.swift; sourceTree = "<group>"; };
-		4A9A0BE8200B164F008721F3 /* JobMessageCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = JobMessageCell.xib; sourceTree = "<group>"; };
 		4A9CE3631F715B30002A8FD5 /* historyAndCatagoryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = historyAndCatagoryView.swift; sourceTree = "<group>"; };
 		4A9CE3671F715F1D002A8FD5 /* JobArea.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobArea.swift; sourceTree = "<group>"; };
 		4A9CE3691F715F6E002A8FD5 /* internCondition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = internCondition.swift; sourceTree = "<group>"; };
@@ -406,6 +407,9 @@
 		4ACC6DB1205BF49100392252 /* SqliteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SqliteManager.swift; sourceTree = "<group>"; };
 		4AD03AB71F9B45270077C15B /* InputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextView.swift; sourceTree = "<group>"; };
 		4AD03ABA1F9C7DD30077C15B /* GetChatEmotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetChatEmotion.swift; sourceTree = "<group>"; };
+		4AD8F750206E6CA4003969ED /* extension+UITextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+UITextView.swift"; sourceTree = "<group>"; };
+		4AD8F752206E874C003969ED /* extension+UIlabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+UIlabel.swift"; sourceTree = "<group>"; };
+		4AD8F754206FC6EC003969ED /* AppFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFileManager.swift; sourceTree = "<group>"; };
 		4ADADAAA1FA4C09400134AAE /* quickReplyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = quickReplyView.swift; sourceTree = "<group>"; };
 		4ADCC74C1F511DD3001A4E9F /* internals.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = internals.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4ADCC74F1F511DD3001A4E9F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -941,6 +945,7 @@
 				4A8D28BA1FD195C900FA983F /* utils.swift */,
 				4AB0FED9201630B000932C02 /* externals.swift */,
 				4A18E1EA202CA03F00B1038E /* TreeNode.swift */,
+				4AD8F754206FC6EC003969ED /* AppFileManager.swift */,
 			);
 			name = tools;
 			sourceTree = "<group>";
@@ -979,7 +984,6 @@
 				4A406B661FA5834F00277AA0 /* ImageCell.swift */,
 				4AFCCD611F9E490400E0E168 /* gifCell.swift */,
 				4A9A0BE7200B164F008721F3 /* JobMessageCell.swift */,
-				4A9A0BE8200B164F008721F3 /* JobMessageCell.xib */,
 				4AB0FED72014E23200932C02 /* ChatTimeCell.swift */,
 			);
 			name = CommunicationCells;
@@ -1196,6 +1200,8 @@
 				4AF3D355205EB2760012EB6E /* extension+navigation.swift */,
 				4AA6376320674FAD00DAE9A9 /* extension+sqlite.swift */,
 				4AA63767206A11F800DAE9A9 /* extension+objectMapper.swift */,
+				4AD8F750206E6CA4003969ED /* extension+UITextView.swift */,
+				4AD8F752206E874C003969ED /* extension+UIlabel.swift */,
 			);
 			name = extension;
 			sourceTree = "<group>";
@@ -1450,7 +1456,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A9A0BEA200B164F008721F3 /* JobMessageCell.xib in Resources */,
 				4AFCCD6A1FA3837000E0E168 /* emotion3.plist in Resources */,
 				4AFCCD6B1FA3837000E0E168 /* emotion3.bundle in Resources */,
 				4ABB987B1F9CDE8E00DD9AAB /* test.plist in Resources */,
@@ -1653,6 +1658,7 @@
 				4ADDDAD51F98F9B3001CB00F /* ChatEmotionHelper.swift in Sources */,
 				4A82A0E42029D38B00185E8B /* modify_personInfoVC.swift in Sources */,
 				4A93C2BB1F80CE5F0022E97B /* deliveredHistory.swift in Sources */,
+				4AD8F751206E6CA4003969ED /* extension+UITextView.swift in Sources */,
 				4A6BC2431FCB12A3002C17B6 /* Exhibition.swift in Sources */,
 				4A82A0E62029D7BF00185E8B /* modify_personInfoCell.swift in Sources */,
 				4ADADAAB1FA4C09400134AAE /* quickReplyView.swift in Sources */,
@@ -1710,6 +1716,7 @@
 				4A9A0BD92004F03F008721F3 /* closedJobView.swift in Sources */,
 				4AA6376420674FAD00DAE9A9 /* extension+sqlite.swift in Sources */,
 				4A5304E41F52A6ED0000F1E9 /* MainTabBarViewController.swift in Sources */,
+				4AD8F753206E874C003969ED /* extension+UIlabel.swift in Sources */,
 				4AF3D3602062B7C10012EB6E /* sectionCellView.swift in Sources */,
 				4AF6C8051F5A98940059496B /* mainCatagoryCell.swift in Sources */,
 				4AE4D6B520358E0D00BC87FE /* textViewCell.swift in Sources */,
@@ -1760,6 +1767,7 @@
 				4A93C2B81F80AC590022E97B /* messageItemCell.swift in Sources */,
 				4A5304E81F52A7720000F1E9 /* DashboardViewController.swift in Sources */,
 				4A6BC2391FC926C5002C17B6 /* Jobs.swift in Sources */,
+				4AD8F755206FC6EC003969ED /* AppFileManager.swift in Sources */,
 				4A5E3FCB2031E271009C1A6B /* singleButtonCell.swift in Sources */,
 				4A93C2D91F834F2E0022E97B /* subjobitemCell.swift in Sources */,
 				4A686A902044526200571EB0 /* extension+tablecell.swift in Sources */,

@@ -139,7 +139,8 @@ class messageMain: UITableViewController {
         let user = cModel[indexPath.row]
         
         //var weakSelf d = sef
-        let chatView = CommunicationChatView(hr: user.user!, index: indexPath, parent:  self)
+        let chatView = CommunicationChatView(hr: user.user!, index: indexPath)
+        
         chatView.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(chatView, animated: true)
         
@@ -215,11 +216,9 @@ extension messageMain {
         //self.tableView.register(UINib.init(nibName: "conversationCell", bundle: nil), forCellReuseIdentifier: conversationCell.identity())
         // 数据
         headerView.mode = showItems
-        
         self.tableView.tableHeaderView = headerView
         self.tableView.separatorStyle = .singleLine
         self.tableView.backgroundColor = UIColor.viewBackColor()
-        
         self.tableView.tableFooterView = UIView()
         // set naviagation
         self.navigationController?.navigationBar.settranslucent(true)
@@ -240,7 +239,6 @@ extension messageMain {
 extension messageMain: headerCollectionViewDelegate{
     
     func chooseItem(index: Int) {
-       
         
         switch index {
         case  messageItemType.result.rawValue:
@@ -275,6 +273,7 @@ extension messageMain: headerCollectionViewDelegate{
 
 extension messageMain{
     
+    // 刷新数据
     @objc private func refresh(){
           
           cModel = cManager.getConversaions()
@@ -282,6 +281,17 @@ extension messageMain{
 //        ChatPeople = ContactManger.getUsers()
 //        self.tableView.reloadData()
     }
+    // 刷新某行数据
+    func refreshRow(indexPath: IndexPath, userID:String){
+        
+        if let new = cManager.updateConversationBy(usrID: userID){
+            cModel[indexPath.row] = new
+            self.tableView.reloadRows(at: [indexPath], with: .none)
+        }
+        
+        
+    }
+    
 }
 
 

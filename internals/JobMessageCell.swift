@@ -10,25 +10,61 @@ import UIKit
 import SwiftyJSON
 
 fileprivate let desText:String = "你刚刚投递了这个职位"
+fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
 
-class JobMessageCell: UITableViewCell {
+@objcMembers class JobMessageCell: UITableViewCell {
 
     
-    @IBOutlet weak var icon: UIImageView!
+    private lazy var icon: UIImageView = {
+        let icon = UIImageView()
+        icon.clipsToBounds = true
+        icon.contentMode = .scaleAspectFill
+        return icon
+    }()
     
-    @IBOutlet weak var jobName: UILabel!
+    private lazy var jobName: UILabel = {
+        let jobName = UILabel()
+        jobName.setSingleLineAutoResizeWithMaxWidth(ScreenW - 45 - 30)
+        jobName.textAlignment = .left
+        jobName.font = UIFont.systemFont(ofSize: 18)
+        return jobName
+    }()
     
-    @IBOutlet weak var company: UILabel!
+    private lazy var company: UILabel = {
+        let companyLabel = UILabel()
+        companyLabel.setSingleLineAutoResizeWithMaxWidth(ScreenW - 45 - 30)
+        companyLabel.textAlignment = .left
+        companyLabel.font = UIFont.systemFont(ofSize: 14)
+        return companyLabel
+    }()
     
-    @IBOutlet weak var tags: UILabel!
+    private lazy var tags: UILabel = {
+        let tags = UILabel()
+        tags.setSingleLineAutoResizeWithMaxWidth(ScreenW - 45 - 30)
+        tags.textAlignment = .left
+        tags.font = UIFont.systemFont(ofSize: 14)
+        return tags
+        
+    }()
     
-    @IBOutlet weak var salary: UILabel!
+    
+    
+    private lazy var salary: UILabel = {
+        let salary = UILabel()
+        salary.setSingleLineAutoResizeWithMaxWidth(ScreenW - 45 - 30)
+        salary.textAlignment = .center
+        salary.font = UIFont.systemFont(ofSize: 14)
+        return salary
+    }()
+    
     
     private lazy var desTilte:UILabel = {
         let lb = UILabel.init(frame: CGRect.zero)
         lb.backgroundColor = UIColor.clear
         lb.font = UIFont.systemFont(ofSize: 12)
         lb.textColor = UIColor.black
+        lb.setSingleLineAutoResizeWithMaxWidth(180)
+        lb.textAlignment = .center
         lb.text = desText
         return lb
     }()
@@ -42,8 +78,9 @@ class JobMessageCell: UITableViewCell {
         
     }()
     
+    // info 背景view
     private lazy var infoV:UIView = {
-        let v = UIView.init(frame: CGRect.zero)
+        let v = UIView()
         v.backgroundColor = UIColor.white
         return v
     }()
@@ -61,60 +98,57 @@ class JobMessageCell: UITableViewCell {
         }
     }
     
-    var mode:JSON?{
+   dynamic  var mode:MessageBoby?{
         didSet{
-            do{
-                // 二进制数据
-                self.icon.image = UIImage.init(data:   Data.init(base64Encoded: mode!["icon"].stringValue)!)
-                self.company.text = mode!["company"].string
-                self.jobName.text = mode!["jobName"].string
-                // 数组数据
-                let tags:[String] =  mode!["tags"].arrayObject as! [String]
-                self.tags.text = tags.joined(separator: " ")
-                self.salary.text = mode!["salary"].string
-                
-            }catch{
-                
-                print(error)
-                
+        
+            guard let json = mode?.contentToJson() else {
+                return
             }
+            
+            // 二进制数据
+            self.icon.image = UIImage.init(data:   Data.init(base64Encoded: json["icon"].stringValue)!)
+            self.company.text = json["company"].string
+            self.jobName.text = json["jobName"].string
+            // 数组数据
+            let tags:[String] =  json["tags"].arrayObject as! [String]
+            self.tags.text = tags.joined(separator: " ")
+            self.salary.text = json["salary"].string
+            
+            self.setupAutoHeight(withBottomView: self.tags, bottomMargin: 20)
+       
            
         }
     }
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
+    
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
         self.backgroundColor = UIColor.clear
-        self.contentView.insertSubview(infoV, at: 0)
-        self.contentView.addSubview(titleBackV)
-        self.titleBackV.addSubview(desTilte)
-        self.desTilte.sizeToFit()
-//        self.infoV.addSubview(icon)
-//        self.infoV.addSubview(jobName)
-//        self.infoV.addSubview(company)
-//        self.infoV.addSubview(tags)
-//        self.infoV.addSubview(salary)
+        let views:[UIView] =  [infoV, icon, jobName, company, tags, salary, titleBackV]
         
-    }
-    
-    override func layoutSubviews() {
+        self.contentView.sd_addSubviews(views)
+        self.titleBackV.addSubview(desTilte)
+        
         
         
         _ = self.titleBackV.sd_layout().topSpaceToView(self.contentView,5)?.centerXEqualToView(self.contentView)?.widthIs(desTilte.width + 10)?.heightIs(desTilte.height + 10)
-        _ = self.desTilte.sd_layout().centerXEqualToView(titleBackV)?.centerYEqualToView(titleBackV)?.widthIs(desTilte.width)?.heightIs(desTilte.height)
+        _ = self.desTilte.sd_layout().centerXEqualToView(titleBackV)?.centerYEqualToView(titleBackV)?.autoHeightRatio(0)
         
-        _  = self.infoV.sd_layout().topSpaceToView(self.titleBackV,2)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.bottomEqualToView(self.contentView)
+         _  = self.infoV.sd_layout().topSpaceToView(self.titleBackV,2)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.bottomEqualToView(self.contentView)
         
         
-        _ = self.icon.sd_layout().topSpaceToView(self.titleBackV,5)?.leftEqualToView(self.contentView)?.widthIs(40)?.heightIs(30)
-        _ = self.jobName.sd_layout().topEqualToView(icon)?.leftSpaceToView(icon,5)?.widthIs(200)?.heightIs(20)
-        _ = self.company.sd_layout().leftEqualToView(jobName)?.topSpaceToView(jobName,2.5)?.widthIs(120)?.heightIs(15)
-        _ = self.tags.sd_layout().leftEqualToView(company)?.topSpaceToView(company,2.5)?.widthIs(200)?.heightIs(15)
-        _ = salary.sd_layout().topEqualToView(icon)?.rightSpaceToView(self.contentView,5)?.widthIs(100)?.heightIs(15)
+        _ = self.icon.sd_layout().topSpaceToView(self.titleBackV,10)?.leftSpaceToView (self.contentView,5)?.widthIs(iconSize.width)?.autoHeightRatio(1)
         
+        _ = self.jobName.sd_layout().topEqualToView(icon)?.leftSpaceToView(icon,5)?.autoHeightRatio(0)
+        _ = self.company.sd_layout().leftEqualToView(jobName)?.topSpaceToView(jobName,2.5)?.autoHeightRatio(0)
+        _ = self.tags.sd_layout().leftEqualToView(company)?.topSpaceToView(company,2.5)?.autoHeightRatio(0)
+        _ = self.salary.sd_layout().topEqualToView(icon)?.rightSpaceToView(self.contentView,10)?.autoHeightRatio(0)
+        
+    }
     
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     
@@ -122,15 +156,5 @@ class JobMessageCell: UITableViewCell {
         return "jobMessageCard"
     }
     
-    class func cellHeight()->CGFloat{
-        return 120.0
-    }
-    
-    
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
     
 }

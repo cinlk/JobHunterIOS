@@ -15,7 +15,6 @@ import UIKit
         
         didSet {
             imgPath = Bundle.main.bundlePath + "/"+bundle+"/" + image! + imageType
-           
         }
     }
     dynamic var text: String?     // 表情对应的文字
@@ -33,11 +32,11 @@ import UIKit
         super.init()
     }
     
-    convenience init(dict: [String : String],bundle:String,type:String) {
+    convenience init(dict: [String : String], bundle:String, type:String) {
         self.init()
         self.bundle = bundle
         self.imageType = type
-        
+        // KVC
         setValuesForKeys(dict)
     }
     

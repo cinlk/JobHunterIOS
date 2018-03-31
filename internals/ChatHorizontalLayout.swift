@@ -30,7 +30,7 @@ class ChatHorizontalLayout: UICollectionViewFlowLayout {
         super.prepare()
         
         
-        let itemW: CGFloat = UIScreen.main.bounds.width / CGFloat(col)
+        let itemW: CGFloat = ScreenW / CGFloat(col)
         let itemH: CGFloat = (collectionView?.bounds.height)! / CGFloat(row)
         // 设置itemSize
         itemSize = CGSize(width: itemW, height: itemH)
@@ -46,6 +46,7 @@ class ChatHorizontalLayout: UICollectionViewFlowLayout {
         collectionView?.contentInset = UIEdgeInsetsMake(0, 0, 0, 0)
         
         
+        // 计算每个cell 布局
         var page = 0
         let itemsCount = collectionView?.numberOfItems(inSection: 0) ?? 0
         for itemIndex in 0..<itemsCount {
@@ -54,15 +55,16 @@ class ChatHorizontalLayout: UICollectionViewFlowLayout {
             
             page = itemIndex / (col * row)
             // 通过一系列计算, 得到x, y值
-            let x = itemSize.width * CGFloat(itemIndex % Int(col)) + (CGFloat(page) * UIScreen.main.bounds.width)
+            let x = itemSize.width * CGFloat(itemIndex % Int(col)) + (CGFloat(page) * ScreenW)
             let y = itemSize.height * CGFloat((itemIndex - page * row * col) / col)
             
             attributes.frame = CGRect(x: x, y: y, width: itemSize.width, height: itemSize.height)
-            // 把每一个新的属性保存起来
+            //
             attributesArr.append(attributes)
         }
         
     }
+    
     
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var rectAttributes: [UICollectionViewLayoutAttributes] = []
@@ -74,6 +76,7 @@ class ChatHorizontalLayout: UICollectionViewFlowLayout {
         return rectAttributes
     }
     
+    //
     override var collectionViewContentSize: CGSize {
         let size: CGSize = super.collectionViewContentSize
         let collectionViewWidth: CGFloat = self.collectionView!.frame.size.width
