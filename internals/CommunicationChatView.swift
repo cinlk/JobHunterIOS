@@ -8,7 +8,9 @@
 
 import UIKit
 import MobileCoreServices
+import SVProgressHUD
 import Photos
+
 
 enum  cellType:String {
     case card = "card"
@@ -37,7 +39,7 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
         tb.dataSource = self
         //tb.estimatedRowHeight = UITableViewAutomaticDimension
         tb.showsHorizontalScrollIndicator = false
-        tb.showsVerticalScrollIndicator = false
+        tb.showsVerticalScrollIndicator = true
         tb.tableFooterView = UIView.init()
         tb.register(messageCell.self, forCellReuseIdentifier: messageCell.reuseidentify())
         tb.register(JobMessageCell.self, forCellReuseIdentifier: JobMessageCell.identitiy())
@@ -47,9 +49,10 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
         tb.register(ChatTimeCell.self, forCellReuseIdentifier: ChatTimeCell.identity())
         tb.separatorStyle = .none
         tb.backgroundColor = UIColor.viewBackColor()
-        // 点击table 影藏输入界面
-        let gest = UITapGestureRecognizer.init(target: self, action: #selector(hiddenChatBarView(sender:)))
-        tb.addGestureRecognizer(gest)
+        // 点击table 影藏输入界面 与cell 点击冲突？？
+        let tap = UITapGestureRecognizer.init(target: self, action: #selector(hiddenChatBarView(sender: complete:)))
+        tap.delegate = self
+        //tb.addGestureRecognizer(tap)
         // 向上 向下滑动手势
         let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(invokeSwipe(sender:)))
         swipeGesture.delegate = self
@@ -126,7 +129,7 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
             
         }))
         alertView.addAction(UIAlertAction.init(title: "预览个人名片", style: .default, handler: { (action) in
-            print(action)
+            self.showPersonCard()
         }))
         alertView.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: { (action) in
             print(action)
@@ -142,11 +145,14 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
         //let actions =
         alertV.addAction(UIAlertAction.init(title: "查看TA的名片", style: UIAlertActionStyle.default, handler: { (action) in
             // MARK
+            let pubHR = publisherControllerView()
             
-            self.navigationController?.pushViewController(publisherControllerView.init(style: .plain), animated: true)
+            pubHR.userID = self.hr.userID!
+            self.navigationController?.pushViewController(pubHR, animated: true)
         }))
         alertV.addAction(UIAlertAction.init(title: "屏蔽TA", style: .default, handler: { (action) in
             print("屏蔽TA")
+            
         }))
         alertV.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: { (action) in
             print("取消")
@@ -219,6 +225,7 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.hidesBottomBarWhenPushed = true
+        //self.navigationController?.insertCustomerView()
         self.navigationController?.delegate = self
     }
     
@@ -228,6 +235,7 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationItem.title = ""
+        //self.navigationController?.removeCustomerView()
 
     }
     
@@ -249,6 +257,12 @@ extension CommunicationChatView {
         if let vc = viewController as? messageMain{
             vc.refreshRow(indexPath: self.currentIndexPath!, userID: self.hr.userID!)
             
+        }
+        // 影藏底部tabbar
+        if let vc = viewController as? messageMain{
+            self.tabBarController?.tabBar.isHidden = false
+        }else{
+            self.tabBarController?.tabBar.isHidden = true
         }
         
     }
@@ -328,23 +342,31 @@ extension CommunicationChatView: UITableViewDelegate,UITableViewDataSource{
             case .smallGif, .bigGif:
                 let cell = tableView.dequeueReusableCell(withIdentifier: gifCell.reuseidentify(), for: indexPath) as! gifCell
                 cell.setupPictureCell(messageInfo: message , chatUser: hr)
+                //cell.useCellFrameCache(with: indexPath, tableView: tableView)
                 return cell
                 
             case .jobDescribe:
                 let cell = tableView.dequeueReusableCell(withIdentifier: JobMessageCell.identitiy(), for: indexPath) as! JobMessageCell
                 cell.mode = message
+                //cell.useCellFrameCache(with: indexPath, tableView: tableView)
                 return cell
             case .personCard:
                 let cell = tableView.dequeueReusableCell(withIdentifier: PersonCardCell.reuseidentity(), for: indexPath) as! PersonCardCell
                 cell.mode = message
+                //cell.useCellFrameCache(with: indexPath, tableView: tableView)
                 return cell
+                
             case .picture:
                 let cell = tableView.dequeueReusableCell(withIdentifier: ImageCell.reuseIdentify(), for: indexPath) as! ImageCell
                 cell.mode = message
+                cell.storeImage = storeImageFromCell
+                // 缓存图片高度
+                //cell.useCellFrameCache(with: indexPath, tableView: tableView)
                 return cell
             case .time:
                 let cell = tableView.dequeueReusableCell(withIdentifier: ChatTimeCell.identity(), for: indexPath) as! ChatTimeCell
                 cell.model = message as! TimeBody
+                //cell.useCellFrameCache(with: indexPath, tableView: tableView)
                 return cell
             default:
                 break
@@ -396,13 +418,10 @@ extension CommunicationChatView: UITableViewDelegate,UITableViewDataSource{
             
             switch mes.type!{
             case MessgeType.jobDescribe.rawValue:
-                let job = JobDetailViewController()
-                //job.infos = (mes as! JobDetailMessage).toDict()
-                //job.jobID = "1"  // MARK
-                self.navigationController?.pushViewController(job, animated: true)
+                showJobView(mes: mes)
 
             case MessgeType.personCard.rawValue:
-                print("show personcard")
+                showPersonCard()
                 
             case MessgeType.text.rawValue:
                 break
@@ -420,8 +439,8 @@ extension CommunicationChatView: UITableViewDelegate,UITableViewDataSource{
             
             firstLoadView = false
             DispatchQueue.main.async(execute: {
-            
-                tableView.scrollToRow(at: IndexPath.init(row: self.tableSource.count - 1, section: 0), at: .bottom, animated: false)
+                tableView.scrollToRow(at: IndexPath.init(row: self.tableSource.count - 1, section: 0), at: .bottom, animated: true)
+
             })
         }
         
@@ -479,20 +498,17 @@ extension CommunicationChatView{
         
     }
     
-    @objc func hiddenChatBarView(sender: UITapGestureRecognizer){
+    @objc func hiddenChatBarView(sender: UITapGestureRecognizer, complete:(()->Void)? = nil ){
         
-
        // 影藏textfield的 keyboard
         self.chatBarView.inputText.resignFirstResponder()
         
         // 影藏 emotion 和 more 输入view
         if self.chatBarView.keyboardType == .emotion || self.chatBarView.keyboardType == .more{
-            self.moveBar(distance: 0)
-            
+            self.moveBar(distance: 0, complete: complete)
         }
         
         self.chatBarView.keyboardType = .none
-        
         sender.cancelsTouchesInView = false
         
     }
@@ -516,11 +532,68 @@ extension CommunicationChatView{
     //
     @objc func moreButton(){
         
+        // 隐藏键盘
+        self.hiddenChatBarView(sender: UITapGestureRecognizer())
         self.present(alertView, animated: true, completion: nil)
     }
     
     
+    // 显示个人名片
+    private func showPersonCard(){
+        
+        
+        self.chatBarView.inputText.resignFirstResponder()
+        
+        // 影藏 emotion 和 more 输入view
+        if self.chatBarView.keyboardType == .emotion || self.chatBarView.keyboardType == .more{
+            self.moveBar(distance: 0){
+                let personCardview = personCardVC()
+                personCardview.hidesBottomBarWhenPushed = true
+                self.navigationController?.pushViewController(personCardview, animated: true)
+            }
+        }
+        else{
+            let personCardview = personCardVC()
+            personCardview.hidesBottomBarWhenPushed = true
+            self.navigationController?.pushViewController(personCardview, animated: true)
+        }
+        
+        self.chatBarView.keyboardType = .none
+        
+        
+       
+    }
+    
+    // 显示jod详细界面
+    
+    private func showJobView(mes:MessageBoby){
+        
+        self.chatBarView.inputText.resignFirstResponder()
+        
+        // 影藏 emotion 和 more 输入view
+        if self.chatBarView.keyboardType == .emotion || self.chatBarView.keyboardType == .more{
+            self.moveBar(distance: 0){
+                let job = JobDetailViewController()
+                job.jobID = mes.contentToJson()!["jobID"].string!
+                job.hidesBottomBarWhenPushed = true
+                self.navigationController?.pushViewController(job, animated: true)
+            }
+        }
+        else{
+            let job = JobDetailViewController()
+            job.jobID = mes.contentToJson()!["jobID"].string!
+            job.hidesBottomBarWhenPushed = true
+            self.navigationController?.pushViewController(job, animated: true)
+        }
+        
+        self.chatBarView.keyboardType = .none
+        
+    }
+    
+    
 }
+
+
 
 
 extension CommunicationChatView: ChatMoreViewDelegate{
@@ -587,12 +660,15 @@ extension CommunicationChatView: ChatMoreViewDelegate{
                 picker.sourceType = UIImagePickerControllerSourceType.camera
                 
                 //设置镜头 front:前置摄像头  Rear:后置摄像头
-                if UIImagePickerController.isCameraDeviceAvailable(UIImagePickerControllerCameraDevice.front) {
+                if UIImagePickerController.isCameraDeviceAvailable(UIImagePickerControllerCameraDevice.rear) {
+                    picker.cameraDevice = UIImagePickerControllerCameraDevice.rear
+                }else if UIImagePickerController.isCameraDeviceAvailable(UIImagePickerControllerCameraDevice.front){
                     picker.cameraDevice = UIImagePickerControllerCameraDevice.front
                 }
                 
+                
                 //设置闪光灯(On:开、Off:关、Auto:自动)
-                picker.cameraFlashMode = UIImagePickerControllerCameraFlashMode.on
+                picker.cameraFlashMode = UIImagePickerControllerCameraFlashMode.auto
                 
                 //允许编辑
                 picker.allowsEditing = true
@@ -787,7 +863,7 @@ extension CommunicationChatView: ChatBarViewDelegate{
 extension CommunicationChatView{
     
     // 
-    func moveBar(distance: CGFloat) {
+    func moveBar(distance: CGFloat, complete:(()->Void)? = nil ) {
         
         //一起移动 inputview 和emotion 和 moreview 和 tableview 的位置
 
@@ -807,7 +883,11 @@ extension CommunicationChatView{
                 self.tableView.scrollToRow(at: path, at: .bottom, animated: true)
             }
  
+        }, completion: {  bool in
+             complete?()
         })
+        
+    
         
     }
     
@@ -874,10 +954,14 @@ extension CommunicationChatView{
 // 手势代理
 extension CommunicationChatView: UIGestureRecognizerDelegate{
     
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        return true
-    }
-    
+    // cell 点击不拦截，但是效果不明显
+//    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+//        if NSStringFromClass((touch.view?.classForCoder)!) == "UITableViewCellContentView" {
+//            return false
+//        }
+//        return true
+//    }
+
     // 允许 tableview 上多个手势执行
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         if (otherGestureRecognizer.view?.isKind(of: UITableView.self))!{
@@ -885,6 +969,8 @@ extension CommunicationChatView: UIGestureRecognizerDelegate{
         }
         return false
     }
+    
+    
     
 }
 
@@ -930,7 +1016,6 @@ extension CommunicationChatView: UIImagePickerControllerDelegate{
             }else if picker.sourceType == .photoLibrary{
                 // 照片库
                 // 获取名称
-                
                 imagePathURL = info[UIImagePickerControllerImageURL] as! URL
                 imageName = imagePathURL!.lastPathComponent
                 // 文件扩展类型
@@ -963,3 +1048,36 @@ extension CommunicationChatView: UIImagePickerControllerDelegate{
 }
 
 
+// 保存图片 alert
+
+extension CommunicationChatView{
+    
+    func  storeImageFromCell(image:UIImage){
+        let AlertVC = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
+        let store = UIAlertAction.init(title: "保存", style: .default) { (action) in
+            UIImageWriteToSavedPhotosAlbum(image, self, #selector(self.saveImage(image:didFinishSavingWithError:contextInfo:)), nil)
+        }
+        
+        AlertVC.addAction(cancel)
+        AlertVC.addAction(store)
+        
+        
+        self.present(AlertVC, animated: true, completion: nil)
+        
+    }
+    
+    // 方法必须是这样
+    @objc  private func saveImage(image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: AnyObject){
+        if error != nil{
+            SVProgressHUD.showError(withStatus: "保存失败")
+            SVProgressHUD.setDefaultMaskType(.black)
+            SVProgressHUD.dismiss(withDelay: 1)
+        }else{
+            SVProgressHUD.showSuccess(withStatus: "保存成功")
+            SVProgressHUD.setDefaultMaskType(.black)
+            SVProgressHUD.dismiss(withDelay: 1)
+        }
+    }
+}

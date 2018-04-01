@@ -26,6 +26,7 @@ import UIKit
         
         var bubble = UIImageView.init()
         bubble.image =  UIImage.resizeableImage(name: "rightmessage")
+        bubble.isUserInteractionEnabled = true 
         return bubble
     }()
     
@@ -122,4 +123,16 @@ import UIKit
 
     
     
+}
+
+
+// bubble view 能点击
+extension PersonCardCell{
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let bubbleCGRect = self.contentView.convert(point, to: bubbleBackGround)
+        if self.bubbleBackGround.point(inside: bubbleCGRect, with: event){
+            return super.hitTest(point, with: event)
+        }
+        return nil
+    }
 }

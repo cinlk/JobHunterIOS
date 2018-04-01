@@ -283,6 +283,7 @@ extension DashboardViewController: UITableViewDelegate{
                 let cell:jobdetailCell = table.dequeueReusableCell(withIdentifier: jobdetailCell.identity()) as!
                 jobdetailCell
                 cell.mode = jobs
+                cell.useCellFrameCache(with: idxPath, tableView: table)
                return cell
             }
         },

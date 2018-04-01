@@ -90,13 +90,13 @@ class personCardVC: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
          self.tableView.contentInsetAdjustmentBehavior = .never
-         self.navigationController?.navigationBar.settranslucent(true)
+         //self.navigationController?.navigationBar.settranslucent(true)
  
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationController?.navigationBar.settranslucent(false)
+        //self.navigationController?.navigationBar.settranslucent(false)
         navBarTitleView.removeFromSuperview()
         self.navigationController?.view.willRemoveSubview(navBarTitleView)
        

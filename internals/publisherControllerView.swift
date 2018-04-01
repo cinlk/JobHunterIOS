@@ -59,6 +59,15 @@ class publisherControllerView: UITableViewController {
         }
     }
     
+    var userID:String = ""{
+        didSet{
+            // 根据id 查询用户信息
+            // 异步刷新界面
+            mode = HRInfo(name: "测试---", position: "测试---", lastLogin: "02-21号", icon: "jodel")
+            
+        }
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()

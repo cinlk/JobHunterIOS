@@ -26,7 +26,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     var mode:CompuseRecruiteJobs?{
         didSet{
             jobheader.mode = mode!
-            jobID = mode!.id!
+            //jobID = mode!.id!
             isCollected = jobTable.isCollectedBy(id: jobID)
             
         }
@@ -35,7 +35,12 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     //
     
     // job id
-    private var jobID:String = ""
+    var jobID:String = ""{
+        didSet{
+            loadData()
+        }
+    }
+    
     private var isCollected:Bool = false
     
     
@@ -174,6 +179,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         self.addBarItems()
         self.view.addSubview(table)
         self.view.addSubview(bottomView)
+        
         
         
         // 初始hr信息
@@ -347,6 +353,28 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     }
     
 
+}
+
+
+extension JobDetailViewController{
+    
+    private func loadData(){
+        // 根据job id 查询 job 信息，获取job数据 赋值给mode
+//        DispatchQueue(label: "dwqd", qos: .default, attributes: .concurrent, autoreleaseFrequency: .inherit, target: nil).async {
+//            // 请求数据
+//            // 刷新主线程
+//            DispatchQueue.main.async(execute: {
+//
+//            })
+//
+//
+//        }
+        
+        mode =  CompuseRecruiteJobs(JSON: ["id":self.jobID,"type":"compuse","tag":["福利好","休息多"],
+                                           "picture":"sina","company":"新浪工商所","jobName":"助理","address":"北京海淀","salary":"10-20K","create_time":Date.init().string(),"education":"本科"])
+        
+        
+    }
 }
 
 extension JobDetailViewController{

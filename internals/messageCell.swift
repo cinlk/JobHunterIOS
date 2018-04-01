@@ -34,6 +34,8 @@ class messageCell: UITableViewCell {
        
         self.selectionStyle = .none
         self.backgroundColor = UIColor.clear
+        
+        
 
     
     }
@@ -49,24 +51,13 @@ class messageCell: UITableViewCell {
         avatar.layer.removeAllAnimations()
         messageLabel.layer.removeAllAnimations()
         bubleBackGround.layer.removeAllAnimations()
+        bubleBackGround.isUserInteractionEnabled = true
      }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    // nib 初始化
-    override func awakeFromNib() {
-        super.awakeFromNib()
-      
-        // Initialization code
-    }
 
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        
-        // Configure the view for the selected state
-    }
-    
     
     class func reuseidentify()->String{
         return "messageCell"
@@ -235,3 +226,13 @@ fileprivate class MessageLabel:UILabel{
 
 
 
+extension messageCell{
+    // bubble view 能点击
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let bubbleCGRect = self.contentView.convert(point, to: bubleBackGround)
+        if self.bubleBackGround.point(inside: bubbleCGRect, with: event){
+            return super.hitTest(point, with: event)
+        }
+        return nil
+    }
+}

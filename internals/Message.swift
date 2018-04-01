@@ -102,7 +102,7 @@ class MessageBoby: NSObject, Mappable{
     
     // 对job message，获取job描述内容
     func contentToJson() ->JSON?{
-        
+    
         return JSON.init(data:  content!)
     }
     
