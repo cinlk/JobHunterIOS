@@ -41,23 +41,22 @@ class addSkillVC: UITableViewController {
     }()
   
     
-    
+    weak var delegate:addResumeItenDelegate?
+
     private lazy var pickViewOriginXY:CGPoint = CGPoint.init(x: 0, y: 0)
     
     private var selected:SelectItemUtil = SelectItemUtil.shared
     
     private var pManager:personModelManager = personModelManager.shared
     
-    private var skillData:person_skills = person_skills.init()
+    private var skillData:personSkillInfo = personSkillInfo(JSON: [:])!
     
-    private var currentType:personBaseInfo  = .none
+    private var currentType:ResumeInfoType  = .none
     private var currentRow:Int = 0
     
-    private var typeName:[String:(personBaseInfo,Int)] = [:]
-    
-    weak var delegate:refreshResumeItem?
-    
-    private var pickPosition:[personBaseInfo:[Int:Int]] = [:]
+    private var typeName:[String:(ResumeInfoType,Int)] = [:]
+        
+    private var pickPosition:[ResumeInfoType:[Int:Int]] = [:]
     
     // cellCatch
     private var textViewCellCache:textViewCell?
@@ -146,7 +145,7 @@ extension addSkillVC: itemPickerDelegate{
     
     func changeItemValue(_ picker: UIPickerView, value: String, position: [Int : Int]) {
         
-        skillData.changeValue(pinfoType: currentType, value: value)
+        skillData.changeValue(type: currentType, value: value)
         pickPosition[currentType] = position
         self.tableView.reloadRows(at: [IndexPath.init(row: currentRow, section: 0)], with: .none)
         self.hiddenBackGround()
@@ -197,10 +196,9 @@ extension addSkillVC {
         if res.0{
             //
         
-            pManager.skillInfos.append(skillData)
+            pManager.mode?.skills.append(skillData)
             self.navigationController?.popViewController(animated: true)
-            self.delegate?.refreshDataByType(.skill)
-            
+            self.delegate?.addNewItem(type: .skill)
         // 错误提示
         }else{
             // 禁止navigationbar 点击
@@ -234,7 +232,7 @@ extension addSkillVC: UITextFieldDelegate{
         currentTextFiled = textField
         //  pickerview 不显示键盘，记录当前的row和type
         switch  currentName {
-        case personBaseInfo.skill.rawValue:
+        case ResumeInfoType.skill.rawValue:
             // textfield 右边image
             let img = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 20, height: 20))
             img.image = #imageLiteral(resourceName: "arrow_mr")
@@ -269,7 +267,7 @@ extension addSkillVC: UITextFieldDelegate{
     func textFieldDidEndEditing(_ textField: UITextField) {
         
         if  typeName.keys.contains(textField.placeholder!){
-            skillData.changeValue(pinfoType: currentType, value: textField.text!)
+            skillData.changeValue(type: currentType, value: textField.text!)
             self.tableView.reloadRows(at: [IndexPath.init(row: currentRow, section: 0)], with: .none)
             
         }
@@ -308,7 +306,7 @@ extension addSkillVC: UITextViewDelegate{
             textViewCellCache?.placeHolderLabel.isHidden = true
         }
         
-        skillData.changeValue(pinfoType: .describe, value: textView.text)
+        skillData.changeValue(type: .describe, value: textView.text)
 //        self.tableView.reloadRows(at: [IndexPath.init(item: skillData.getItemList().count-1, section: 0)], with: .none)
         
     }

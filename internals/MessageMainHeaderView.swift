@@ -42,7 +42,7 @@ class HeaderCollectionView:UIView{
     private var itemWidth:CGFloat = 0
     private var itemHeight:CGFloat = 0
     
-    var mode:[showitem]?{
+    var mode:[ShareItem]?{
         didSet{
            
             collectionView.reloadData()

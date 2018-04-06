@@ -9,6 +9,10 @@
 import UIKit
 import SVProgressHUD
 
+
+
+
+
 fileprivate let VCtitle:String = "添加教育经历"
 
 class add_educations: UITableViewController {
@@ -43,17 +47,18 @@ class add_educations: UITableViewController {
     private var selected:SelectItemUtil = SelectItemUtil.shared
     
     private var pManager:personModelManager = personModelManager.shared
+
+    private var education:personEducationInfo = personEducationInfo(JSON: [:])!
     
-    private var education:person_education = person_education.init()
-    
-    private var currentType:personBaseInfo  = .none
+    private var currentType:ResumeInfoType  = .none
     private var currentRow:Int = 0
     
-    private var typeName:[String:(personBaseInfo,Int)] = [:]
+    private var typeName:[String:(ResumeInfoType,Int)] = [:]
     
-    weak var delegate:refreshResumeItem?
+    weak var delegate:addResumeItenDelegate?
     
-    private var pickPosition:[personBaseInfo:[Int:Int]] = [:]
+    
+    private var pickPosition:[ResumeInfoType:[Int:Int]] = [:]
     
     private var currentField:UITextField?
     
@@ -151,7 +156,7 @@ extension add_educations: itemPickerDelegate{
     
     func changeItemValue(_ picker: UIPickerView, value: String, position: [Int : Int]) {
         
-           education.changeValue(pinfoType: currentType, value: value)
+           education.changeValue(type: currentType, value: value)
            pickPosition[currentType] = position
            self.tableView.reloadRows(at: [IndexPath.init(row: currentRow, section: 0)], with: .none)
            self.hiddenBackGround()
@@ -168,10 +173,10 @@ extension add_educations{
         let res:(Bool,String) = education.isValidate()
         if res.0{
             //
-              pManager.educationInfos.append(education)
+              pManager.mode?.educationInfo.append(education)
               self.navigationController?.popViewController(animated: true)
-              self.delegate?.refreshDataByType(.education)
-            
+              //self.delegate?.refreshDataByType(.education)
+              self.delegate?.addNewItem(type: .education)
             
         }else{
               //
@@ -252,7 +257,7 @@ extension add_educations: UITextFieldDelegate{
     func textFieldDidEndEditing(_ textField: UITextField) {
         
          if textField.placeholder == "专业" ||  textField.placeholder == "学校" || textField.placeholder == "城市"{
-            education.changeValue(pinfoType: currentType, value: textField.text!)
+            education.changeValue(type: currentType, value: textField.text!)
             self.tableView.reloadRows(at: [IndexPath.init(row: currentRow, section: 0)], with: .none)
         }
         

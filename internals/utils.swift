@@ -28,11 +28,14 @@ public func  build_image(frame: CGRect, color:UIColor)->UIImage{
 }
 
 // 
-struct showitem {
+struct ShareItem {
     
     var name:String?
     var image:String?
+    var type:UMSocialPlatformType?
     var bubbles:Int?
+    
+    
     
 }
 

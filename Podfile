@@ -20,5 +20,11 @@ target 'internals' do
 	pod 'SwiftDate'
 	#pod 'BadgeSwift'
 	pod 'PPBadgeViewSwift'
+	# umeng
+	pod 'UMCCommon'
+	pod 'UMCSecurityPlugins'
+        pod 'UMCShare/Social/WeChat'	
+	pod 'UMCShare/Social/QQ'
+	pod 'UMCShare/Social/Sina'
 
 end

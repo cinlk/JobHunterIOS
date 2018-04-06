@@ -157,11 +157,11 @@ import UIKit
             // 根据类型 设置布局
             switch self.type {
             case .education:
-                buildEducationView(education: mode as? person_education)
-            case .project:
-                buildProjectView(projectInfo: mode as? person_projectInfo)
+                buildEducationView(education: mode as? personEducationInfo)
+            case .intern:
+                buildInternView(projectInfo: mode as? personInternInfo)
             case .skill:
-                builSkillView(skill: mode as? person_skills)
+                builSkillView(skill: mode as? personSkillInfo)
             default:
                 break
             }
@@ -211,12 +211,13 @@ extension ListItemCell {
         
     }
     
-    private func buildEducationView(education:person_education?){
+    private func buildEducationView(education:personEducationInfo?){
         
         let views:[UIView] = [timedate, address, school, degree, department]
         self.contentView.sd_addSubviews(views)
         
-        self.timedate.text = (education?.startTime ?? "") + "-" + (education?.endTime ?? "")
+        
+        self.timedate.text = (education?.startTimeString ?? "")  + "-" + (education?.endTimeString ?? "")
         self.address.text = education?.city
         self.school.text = education?.colleage
         self.degree.text = education?.degree
@@ -234,12 +235,12 @@ extension ListItemCell {
         
     }
     
-    private func buildProjectView(projectInfo:person_projectInfo?){
+    private func buildInternView(projectInfo:personInternInfo?){
         
         let views:[UIView] = [timedate, address, company, position, content]
         self.contentView.sd_addSubviews(views)
         
-        self.timedate.text = (projectInfo?.startTime ?? "") + "-" + (projectInfo?.endTime ?? "")
+        self.timedate.text = (projectInfo?.startTimeString ?? "") + "-" + (projectInfo?.endTimeString ?? "")
         self.address.text = projectInfo?.city
         self.company.text = projectInfo?.company
         self.position.text = projectInfo?.position
@@ -257,7 +258,7 @@ extension ListItemCell {
     
     }
     
-    private func builSkillView(skill:person_skills?){
+    private func builSkillView(skill:personSkillInfo?){
         
         
         self.contentView.addSubview(skillType)

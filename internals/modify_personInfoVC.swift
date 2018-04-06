@@ -15,38 +15,36 @@ import SVProgressHUD
 fileprivate let VCtitle:String = "修改个人信息"
 fileprivate let pickViewH:CGFloat = 200
 
-// 通知主视图tableview刷新对应section
-protocol personResumeDelegate: class {
-    func refreshResumeInfo(_ section:Int)
-}
 
 
 
 class modify_personInfoVC: UITableViewController {
 
     // 记录item类型
-    private var personAttr:[personBaseInfo] = []
+    private var personAttr:[ResumeInfoType] = []
     // 记录pick 选择item的位置
-    private var pickPosition:[personBaseInfo:[Int:Int]] = [:]
+    private var pickPosition:[ResumeInfoType:[Int:Int]] = [:]
     
     private let pManager:personModelManager = personModelManager.shared
     
     // 临时个人信息实例 需要拷贝？？
-    private var tmpInfo:person_base_info?
+    private var tmpInfo:personBasicInfo?
     
     var section = 0{
         didSet{
-             personAttr = pManager.personBaseInfo!.getBaseNames()
-             tmpInfo = pManager.personBaseInfo
+             personAttr = pManager.mode!.basicinfo!.getBaseNames()
+             tmpInfo = pManager.mode!.basicinfo
+            
              self.tableView.reloadData()
         }
     }
     // 构建picker选择的需要数据
     private let selected:SelectItemUtil = SelectItemUtil.shared
     
-    weak var delegate:personResumeDelegate?
+    // 修改数据 代理
+    weak var delegate:modifyItemDelegate?
     
-    private var currentType:personBaseInfo = personBaseInfo.tx
+    private var currentType:ResumeInfoType = ResumeInfoType.tx
     
     private lazy var backgroundView:UIView = { [unowned self] in
         
@@ -138,11 +136,14 @@ class modify_personInfoVC: UITableViewController {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: modify_personInfoCell.identity(), for: indexPath) as!
                     modify_personInfoCell
-        cell.mode = (type: personAttr[indexPath.row], value:tmpInfo!.getValueByType(type: personAttr[indexPath.row]))
-       
-        cell.delegate = self
+        if let value =  tmpInfo?.getItemByType(type: personAttr[indexPath.row]){
+            cell.mode = (type: personAttr[indexPath.row], value:value)
+            cell.delegate = self
+            return cell
+        }
         
-        return cell
+        return UITableViewCell()
+        
     
     }
 
@@ -182,15 +183,17 @@ class modify_personInfoVC: UITableViewController {
 
 extension modify_personInfoVC: changeDataDelegate{
     
-    func changeEducationInfo(viewType: resumeViewType, type: personBaseInfo, row: Int, value: String) {
+    func changeOtherInfo(viewType: resumeViewType, type: ResumeInfoType, value: String) {
         
     }
     
     
-    func changeBaseInfo(type:personBaseInfo, value:String){
-        //pManager.personBaseInfo?.changeByKey(type: type, value: value)
-        tmpInfo?.changeByKey(type: type, value: value)
+    func changeBasicInfo(type: ResumeInfoType, value: String) {
+        tmpInfo?.changeValue(type: type, value: value)
     }
+    
+
+ 
 }
 
 
@@ -233,8 +236,9 @@ extension modify_personInfoVC:itemPickerDelegate{
         // 记录新的picker位置
         if let row = personAttr.index(of: currentType){
             pickPosition[currentType] = position
+            
             //pManager.personBaseInfo?.changeByKey(type: currentType, value: value)
-            tmpInfo?.changeByKey(type: currentType, value: value)
+            tmpInfo?.changeValue(type: currentType, value: value)
             self.tableView.reloadRows(at: [IndexPath.init(item: row, section: 0)], with: .none)
         }
         
@@ -260,7 +264,8 @@ extension modify_personInfoVC:itemPickerDelegate{
         SVProgressHUD.dismiss(withDelay: 2) {  [unowned self] in
             self.navigationController?.popViewController(animated: true)
             // 主tableview刷新
-            self.delegate?.refreshResumeInfo(self.section)
+            self.delegate?.modifiedItem(indexPath: IndexPath.init(row: 0, section: self.section))
+            
             self.view.isUserInteractionEnabled = true
             self.navigationController?.view.isUserInteractionEnabled = true
             self.navigationController?.view.willRemoveSubview(self.backgroundView)
@@ -329,7 +334,8 @@ extension modify_personInfoVC: UIImagePickerControllerDelegate,UINavigationContr
             // MARK 上传图片，生成存储url地址
             // 更新 data 的image 地址，刷新table
             //UIImageView.init(image: UIImage.init(data: data))
-            pManager.personBaseInfo?.setTX(tx: "chicken")
+            // test
+            pManager.mode?.basicinfo?.tx = "sina"
             self.tableView.beginUpdates()
             self.tableView.reloadRows(at: [IndexPath.init(row: 0, section: 0)], with: .none)
             self.tableView.endUpdates()

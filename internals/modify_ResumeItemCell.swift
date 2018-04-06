@@ -83,8 +83,8 @@ class modify_ResumeItemCell: UITableViewCell {
 
     weak var delegate:changeDataDelegate?
 
-    
-    var mode:(viewType:resumeViewType, InfoType:personBaseInfo, row:Int)?{
+    // 根据视图类型 和 简历基本元素 展示不同元素
+    var mode:(viewType:resumeViewType, InfoType:ResumeInfoType, item:Any)?{
         didSet{
             
             self.contentView.subviews.forEach { (view) in
@@ -93,11 +93,14 @@ class modify_ResumeItemCell: UITableViewCell {
             
             switch mode!.viewType {
             case .education:
-                buildEducationView(InfoType:mode!.InfoType,row: mode!.row)
-            case .project:
-                buildProjectView(InfoType: mode!.InfoType, row: mode!.row)
+                guard let item = mode?.item as? personEducationInfo else { return }
+                buildEducationView(InfoType:mode!.InfoType, item: item)
+            case .intern:
+                guard let item = mode?.item as? personInternInfo else { return }
+                buildInternView(InfoType: mode!.InfoType, item: item)
             case .skill:
-                buildSkillsView(InfoType: mode!.InfoType, row: mode!.row)
+                guard let item = mode?.item as? personSkillInfo else { return }
+                buildSkillsView(InfoType: mode!.InfoType, item: item)
             default:
                 break
             }
@@ -138,7 +141,8 @@ extension modify_ResumeItemCell: UITextFieldDelegate{
     func textFieldDidEndEditing(_ textField: UITextField) {
         if let text = textField.text{
             //self.delegate?.changeDataByName!(name: self.title, value: text)
-            self.delegate?.changeEducationInfo(viewType: mode!.viewType, type: mode!.InfoType, row: mode!.row, value: text)
+            // 保存修改textfiled的值
+            self.delegate?.changeOtherInfo(viewType: mode!.viewType, type: mode!.InfoType, value: text)
         }
         
     }
@@ -159,8 +163,9 @@ extension modify_ResumeItemCell{
 extension modify_ResumeItemCell{
     
     
-    private func buildSkillsView(InfoType:personBaseInfo, row:Int){
-        let value = pManager.skillInfos[row].getItemByType(type: InfoType)
+    private func buildSkillsView(InfoType:ResumeInfoType, item: personSkillInfo){
+        
+        let value = item.getItemByType(type: InfoType)
         
         switch InfoType {
             
@@ -182,13 +187,14 @@ extension modify_ResumeItemCell{
         default:
             break
         }
+        
         let views:[UIView] = [leftTitle, rightLabel, describeText, describeTitle]
         self.contentView.sd_addSubviews(views)
        
         
-        _ = leftTitle.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,15)?.bottomSpaceToView(self.contentView,15)?.autoHeightRatio(0)
+        _ = leftTitle.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,15)?.autoHeightRatio(0)
         
-        _ = rightLabel.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(leftTitle)?.leftSpaceToView(leftTitle,20)?.autoHeightRatio(0)
+        _ = rightLabel.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(leftTitle)?.autoHeightRatio(0)
         
         
         _ = describeTitle.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.autoHeightRatio(0)
@@ -198,21 +204,23 @@ extension modify_ResumeItemCell{
         
     }
     
-    private func buildEducationView(InfoType:personBaseInfo, row:Int){
+    private func buildEducationView(InfoType:ResumeInfoType, item:personEducationInfo){
         
-        let value =  pManager.educationInfos[row].getItemByType(type: InfoType)
+        let value =  item.getItemByType(type: InfoType)
         switch InfoType {
-        case .startTime,.endTime,.degree:
-            self.textView.isHidden = true
-            self.rightLabel.isHidden = false
-            self.leftTitle.text = InfoType.rawValue
-            self.rightLabel.text = value
-        default:
-            self.textView.isHidden = false
-            self.rightLabel.isHidden = true
-            self.leftTitle.text = InfoType.rawValue
-            self.textView.text = value
+            case .startTime,.endTime,.degree:
+                self.textView.isHidden = true
+                self.rightLabel.isHidden = false
+                self.leftTitle.text = InfoType.rawValue
+                self.rightLabel.text = value
+            
+            default:
+                self.textView.isHidden = false
+                self.rightLabel.isHidden = true
+                self.leftTitle.text = InfoType.rawValue
+                self.textView.text = value
         }
+        
         let views:[UIView] = [leftTitle, rightLabel, textView]
         self.contentView.sd_addSubviews(views)
        
@@ -229,8 +237,9 @@ extension modify_ResumeItemCell{
         
     }
     
-    private func buildProjectView(InfoType:personBaseInfo, row:Int){
-        let value =  pManager.projectInfo[row].getItemByType(type: InfoType)
+    private func buildInternView(InfoType:ResumeInfoType, item: personInternInfo){
+        
+        let value =  item.getItemByType(type: InfoType)
         
         switch InfoType {
         case .startTime,.endTime:
@@ -240,6 +249,7 @@ extension modify_ResumeItemCell{
             describeTitle.isHidden = true
             self.leftTitle.text = InfoType.rawValue
             self.rightLabel.text = value
+            
         case .describe:
             
             self.describeText.isHidden = false
@@ -248,7 +258,7 @@ extension modify_ResumeItemCell{
             self.leftTitle.isHidden = true
             describeTitle.isHidden = false
             self.describeText.text = value
-            describeTitle.text = "实习/项目经历描述"
+            describeTitle.text = "实习经历描述"
         default:
             self.textView.isHidden = false
             self.rightLabel.isHidden = true

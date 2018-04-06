@@ -47,12 +47,12 @@ class messageMain: UITableViewController {
     }()
     
     // table 头部显示 item
-    fileprivate var showItems:[showitem] = [showitem.init(name: "投递记录", image: "delivery", bubbles: 1),
-                                showitem.init(name: "论坛动态", image: "forum", bubbles: 1),
-                                showitem.init(name: "系统通知", image: "bell", bubbles: 1),
-                                showitem.init(name: "推荐职位", image: "jobs", bubbles: 1),
-                                showitem.init(name: "宣讲会", image: "voice", bubbles: 1),
-                                showitem.init(name: "", image: "", bubbles: 1)]
+    fileprivate var showItems:[ShareItem] = [ShareItem.init(name: "投递记录", image: "delivery",type:nil, bubbles: 1),
+        ShareItem.init(name: "论坛动态", image: "forum", type:nil,bubbles: 1),
+        ShareItem.init(name: "系统通知", image: "bell", type:nil, bubbles: 1),
+        ShareItem.init(name: "推荐职位", image: "jobs", type:nil, bubbles: 1),
+        ShareItem.init(name: "宣讲会", image: "voice", type:nil, bubbles: 1),
+        ShareItem.init(name: "", image: "", type:nil,  bubbles: 1)]
     
     
     

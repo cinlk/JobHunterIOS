@@ -19,7 +19,7 @@ class singleButtonCell: UITableViewCell {
     }
     
     
-    private lazy var btn:UIButton = {  [unowned self] in
+    lazy var btn:UIButton = {  [unowned self] in
         let btn = UIButton.init(frame: CGRect.zero)
         btn.setTitleColor(UIColor.white, for: .normal)
         btn.addTarget(self, action: #selector(click), for: .touchUpInside)
@@ -29,10 +29,6 @@ class singleButtonCell: UITableViewCell {
     var btnType:singleButtonCell.type = .delete{
         didSet{
             switch btnType {
-            case .add:
-                btn.setTitle("添加", for: .normal)
-                btn.backgroundColor = UIColor.orange
-                btn.setImage(UIImage.barImage(size: CGSize.init(width: btnImgSize.width, height: btnImgSize.height), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "plus"), for: .normal)
             case .delete:
                 btn.setTitle("删除", for: .normal)
                 btn.backgroundColor = UIColor.red
@@ -42,6 +38,12 @@ class singleButtonCell: UITableViewCell {
                 btn.backgroundColor = UIColor.blue
                 btn.setImage(UIImage.init(), for: .normal)
                 btn.setTitleColor(UIColor.blue, for: .normal)
+            case .add:
+                btn.backgroundColor = UIColor.clear
+                btn.setImage(UIImage.barImage(size: CGSize.init(width: btnImgSize.width, height: btnImgSize.height), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "plus"), for: .normal)
+                btn.setTitleColor(UIColor.blue, for: .normal)
+                self.contentView.backgroundColor = UIColor.white
+                
             default:
                 break
             }
@@ -59,7 +61,8 @@ class singleButtonCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle  = .none
-        
+        self.backgroundColor = UIColor.clear
+        self.contentView.backgroundColor = UIColor.clear
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -69,8 +72,7 @@ class singleButtonCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         self.contentView.addSubview(btn)
-        self.backgroundColor = UIColor.clear
-        self.contentView.backgroundColor = UIColor.clear
+       
         _ = btn.sd_layout().centerXEqualToView(self.contentView)?.centerYEqualToView(self.contentView)?.widthIs(200)?.heightIs(30)
         
         
@@ -99,6 +101,7 @@ extension singleButtonCell{
         
         switch btnType {
         case .add:
+            print("add ")
             self.addMoreItem?()
         case .delete:
             self.deleteItem?()

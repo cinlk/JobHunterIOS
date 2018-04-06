@@ -7,13 +7,13 @@
 //
 
 import Foundation
+import ObjectMapper
 import SwiftDate
 import SwiftyJSON
 
 
-fileprivate let deafualtTX:String = "jing"
-
-enum personBaseInfo:String{
+// 所有简历基本元素
+enum ResumeInfoType:String{
     
     case none = "none"
     case tx = "头像"
@@ -42,295 +42,323 @@ enum personBaseInfo:String{
     
 }
 
-class person_base_info: NSObject {
+class personBasicInfo: NSObject, Mappable {
     
-    var tx:String
-    var name:String
-    var sex:String
-    var city:String
-    var degree:String
-    var birthday:String
-    var age:Int = 0
-    var phone:String
-    var email:String
-    let nowYear = DateInRegion().year
-    
-    init(tx:String? = nil,name:String,sex:String,city:String,degree:String,birthday:String,
-         phone:String,email:String) {
+    var tx:String = "default"
+    var name:String = ""
+    var gender:String = ""
+    var city:String = ""
+    var degree:String = ""
+    var birthday:Date = Date.init(timeIntervalSince1970: 0)
+    var phone:String = ""
+    var email:String = ""
+    var birthDayString:String{
+        get {
+            let dateFormat = DateFormatter()
+            dateFormat.locale = Locale.current
+            dateFormat.dateFormat = "yyyy-MM"
+            
+            let str = dateFormat.string(from: birthday)
+            if str == "1970-01"{
+                return ""
+            }else{
+                return str
+            }
+        }
+    }
+    required init?(map: Map) {
         
-        self.tx =  tx == nil ? deafualtTX : tx!
-        self.name = name
-        self.sex = sex
-        self.city = city
-        self.degree = degree
-        self.birthday = birthday
-        self.phone = phone
-        self.email = email
     }
     
-   override init() {
-        self.tx = deafualtTX
-        self.name = ""
-        self.sex = ""
-        self.city = ""
-        self.degree = ""
-        self.birthday = ""
-        self.phone = ""
-        self.email = ""
-    }
-    
-    func setTX(tx:String){
-        self.tx = tx
-    }
-    func setAge(age:Int){
-        self.age = age
-    }
-    
-    func getValueByType(type:personBaseInfo)->String{
+    func mapping(map: Map) {
+        tx <- map["tx"]
+        name <- map["name"]
+        gender <- map["gender"]
+        city <- map["city"]
+        degree <- map["degree"]
+        birthday <- (map["birthday"], YearMonthtDateTransform())
+        phone <- map["phone"]
+        email <- map["email"]
         
+    }
+    
+    func getBaseNames()->[ResumeInfoType]{
+        
+        return [ResumeInfoType.tx,ResumeInfoType.name,ResumeInfoType.gender,ResumeInfoType.city
+            ,ResumeInfoType.degree, ResumeInfoType.birethday,ResumeInfoType.phone
+            ,ResumeInfoType.email]
+    }
+    
+    
+    func changeValue(type: ResumeInfoType, value:String) {
         switch type {
-        
-        case .tx:
-            return self.tx
+            
         case .birethday:
-            return self.birthday
+            let format = DateFormatter()
+            format.dateFormat = "yyyy-MM"
+            
+            self.birthday =  format.date(from: value)!
+        case .email:
+            self.email = value
+        case .phone:
+            self.phone = value
+        case .tx:
+            self.tx =  value
         case .city:
-            return self.city
+            self.city = value
+        case .name:
+            self.name = value
+        case .gender:
+            self.gender = value
         case .degree:
-            return self.degree
+            self.degree = value
+        default:
+            break
+        }
+    }
+    
+    
+    func getItemByType(type: ResumeInfoType) -> String?{
+        switch type {
         case .email:
             return self.email
-        case .gender:
-            return self.sex
-        case .phone:
-            return self.phone
+        case .degree:
+            return self.degree
+        case .birethday:
+            return self.birthDayString
+        case .city:
+            return self.city
         case .name:
             return self.name
+        case .tx:
+            return self.tx
+        case .gender:
+            return self.gender
+        case .phone:
+            return self.phone
+            
         default:
             return ""
         }
-        
-      
     }
-    
-    func getBaseNames()->[personBaseInfo]{
-        
-        return [personBaseInfo.tx,personBaseInfo.name,personBaseInfo.gender,personBaseInfo.city
-            ,personBaseInfo.degree, personBaseInfo.birethday,personBaseInfo.phone
-            ,personBaseInfo.email]
-    }
-    
-    func changeByKey(type:personBaseInfo,value:String){
-        
-        switch type {
-        case .tx:
-            self.tx = value
-        case .gender:
-            self.sex = value
-        case .city:
-            self.city = value
-        case .birethday:
-            self.birthday = value
-            let year = String.init(value.split(separator: ".")[0])
-            self.age = nowYear - (Int(year) ?? 0)
-        case .degree:
-            self.degree = value
-        case .email:
-            self.email = value
-        case .name:
-            self.name = value
-        case .phone:
-            self.phone = value
-        default:
-            return 
-        }
-    }
-    
     
     
     
 }
 
-struct person_education {
+class personEducationInfo: NSObject,Mappable {
     
-    var startTime:String
-    var endTime:String
-    var colleage:String
-    var degree:String
-    var department:String
-    var city:String
+    var startTime:Date = Date.init(timeIntervalSince1970: 0)
+    var endTime:Date = Date.init(timeIntervalSince1970: 0)
+    var colleage:String = ""
+    var degree:String = ""
+    var department:String = ""
+    var city:String = ""
     
-    init(startTime:String, endTime:String, colleage:String, degree:String, department:String,
-         city:String) {
-        self.startTime = startTime
-        self.endTime = endTime
-        self.degree = degree
-        self.colleage = colleage
-        self.department = department
-        self.city = city
+    var startTimeString:String{
+        get {
+            let dateFormat = DateFormatter()
+            dateFormat.locale = Locale.current
+            dateFormat.dateFormat = "yyyy-MM"
+            
+            let str = dateFormat.string(from: startTime)
+            if str == "1970-01"{
+                return ""
+            }else{
+                return str
+            }
+        }
+    }
+    var endTimeString:String{
+        get {
+            let dateFormat = DateFormatter()
+            dateFormat.locale = Locale.current
+            dateFormat.dateFormat = "yyyy-MM"
+            
+            let str = dateFormat.string(from: endTime)
+            if str == "1970-01"{
+                return ""
+            }else{
+                return str
+            }
+        }
+    }
+
+    required init?(map: Map) {
+        
     }
     
-    init() {
-        self.startTime = ""
-        self.endTime = ""
-        self.department = ""
-        self.degree = ""
-        self.colleage = ""
-        self.city = ""
-    }
-    
-    mutating func changeCity(city:String){
-        self.city = city
-    }
-    
-    func getTimes(c:String = "至")->String{
-        return self.startTime + c + self.endTime
-    }
-    
-    func getItemByType(type:personBaseInfo)->String{
+    func getItemByType(type: ResumeInfoType) -> String{
         switch type {
-        case .startTime:
-            return self.startTime
-        case .endTime:
-            return self.endTime
-        case .degree:
-            return self.degree
-        case .city:
-            return self.city
-        case .department:
-            return self.department
         case .colleage:
             return self.colleage
-        default:
-            break
-        }
-        
-        return ""
-    }
-    func getItemList()->[personBaseInfo]{
-        return [personBaseInfo.startTime,personBaseInfo.endTime,personBaseInfo.colleage,
-                personBaseInfo.department,personBaseInfo.city,personBaseInfo.degree]
-    }
-    
-    
-    
-    mutating func changeValue(pinfoType:personBaseInfo,value:String){
-        switch pinfoType {
-        case .startTime:
-            self.startTime = value
-        case .endTime:
-            self.endTime = value
         case .degree:
-            self.degree = value
-        case .colleage:
-            self.colleage = value
+            return self.degree
+        case .startTime:
+            return self.startTimeString
+        case .endTime:
+            return self.endTimeString
         case .department:
-            self.department = value
+            return self.department
+        case .city:
+            return self.city
+            
+        default:
+            return ""
+        }
+    }
+    
+    func changeValue(type: ResumeInfoType, value:String) {
+        switch type {
+        case .startTime:
+            let format = DateFormatter()
+            format.dateFormat = "yyyy-MM"
+            self.startTime =  format.date(from: value)!
+        case .endTime:
+            let format = DateFormatter()
+            format.dateFormat = "yyyy-MM"
+            self.endTime =  format.date(from: value)!
         case .city:
             self.city = value
+        case .department:
+            self.department = value
+        case .colleage:
+            self.colleage = value
+        case .degree:
+            self.degree = value
         default:
             break
         }
     }
-    // MARK replace by error type
-    func isValidate()->(Bool,String){
-        if self.startTime == "" || self.endTime == "" || self.degree == "" || self.colleage == ""
-        || self.department == "" {
-            return (false,"请检查输入")
-        }
+    
+    func mapping(map: Map) {
+        startTime <- (map["startTime"], YearMonthtDateTransform())
+        endTime <- (map["endTime"], YearMonthtDateTransform())
+        colleage <- map["colleage"]
+        degree <- map["degree"]
+        department <- map["department"]
+        city <- map["city"]
+    }
+    
+    func getItemList()->[ResumeInfoType]{
+        return [ResumeInfoType.startTime,ResumeInfoType.endTime,ResumeInfoType.colleage,
+                ResumeInfoType.department,ResumeInfoType.city,ResumeInfoType.degree]
+    }
+   
+    
+    func isValidate()->(Bool, String){
         return (true,"")
-        
     }
     
 }
 
-struct person_projectInfo {
+class personInternInfo: NSObject, Mappable {
     
-    var company:String
-    var position:String
-    var startTime:String
-    var endTime:String
-    var describe:String
-    var city:String
+    var company:String = ""
+    var position:String = ""
+    var startTime:Date = Date.init(timeIntervalSince1970: 0)
+    var endTime:Date = Date.init(timeIntervalSince1970: 0)
+    var describe:String = ""
+    var city:String = ""
     
-    init(company:String, role:String, startTime:String, endTime:String, content:String,
-         city:String) {
-        self.company = company
-        self.position = role
-        self.startTime = startTime
-        self.endTime = endTime
-        self.describe = content
-        self.city = city
-    }
-    init() {
-        self.company = ""
-        self.position = ""
-        self.startTime = ""
-        self.endTime = ""
-        self.describe = ""
-        self.city = ""
-        
-    }
-    
-    func getTimes(c:String = "至")->String{
-        return self.startTime + c + self.endTime
-    }
-    
-    func getOthers()->String{
-        return self.company + "|" + self.position + "|" + self.city
-    }
-    
-    func isValidate()->(Bool,String){
-        if self.startTime == "" || self.endTime == "" || self.company == "" || self.position == ""
-            || self.city == "" {
-            return (false,"请检查输入")
+    var startTimeString:String{
+        get {
+            let dateFormat = DateFormatter()
+            dateFormat.locale = Locale.current
+            dateFormat.dateFormat = "yyyy-MM"
+            
+            let str = dateFormat.string(from: startTime)
+            if str == "1970-01"{
+                return ""
+            }else{
+                return str
+            }
         }
-        return (true,"")
+    }
+    
+    var endTimeString:String{
+        get {
+            let dateFormat = DateFormatter()
+            dateFormat.locale = Locale.current
+            dateFormat.dateFormat = "yyyy-MM"
+            
+            let str = dateFormat.string(from: endTime)
+            if str == "1970-01"{
+                return ""
+            }else{
+                return str
+            }
+        }
+    }
+
+    
+    required init?(map: Map) {
         
     }
     
-    func getItemByType(type:personBaseInfo)->String{
+    func getItemByType(type: ResumeInfoType) -> String{
         switch type {
-        case .startTime:
-            return self.startTime
-        case .endTime:
-            return self.endTime
         case .company:
             return self.company
-        case .city:
-            return self.city
         case .position:
             return self.position
+        case .startTime:
+            return self.startTimeString
+        case .endTime:
+            return self.endTimeString
         case .describe:
             return self.describe
+        case .city:
+            return self.city
+            
         default:
-            break
+            return ""
         }
-        
-        return ""
     }
     
-    func getItemList()->[personBaseInfo]{
-        return [personBaseInfo.startTime,personBaseInfo.endTime,personBaseInfo.city,
-                personBaseInfo.company,personBaseInfo.position,personBaseInfo.describe]
-    }
-    mutating func changeValue(pinfoType:personBaseInfo,value:String){
-        switch pinfoType {
+    func changeValue(type: ResumeInfoType, value:String) {
+        switch type {
         case .startTime:
-            self.startTime = value
+            let format = DateFormatter()
+            format.dateFormat = "yyyy-MM"
+            self.startTime =  format.date(from: value)!
         case .endTime:
-            self.endTime = value
+            let format = DateFormatter()
+            format.dateFormat = "yyyy-MM"
+            self.endTime =  format.date(from: value)!
+        case .city:
+            self.city = value
+        case .describe:
+            self.describe = value
         case .position:
             self.position = value
         case .company:
             self.company = value
-        case .describe:
-            self.describe = value
-        case .city:
-            self.city = value
         default:
             break
         }
+    }
+    
+    
+    func mapping(map: Map) {
+        
+        company <- map["company"]
+        position <- map["position"]
+        startTime <- (map["startTime"], YearMonthtDateTransform())
+        endTime <- (map["endTime"], YearMonthtDateTransform())
+        describe <- map["describe"]
+        city <- map["city"]
+        
+    }
+
+    func getItemList()->[ResumeInfoType]{
+        return [ResumeInfoType.startTime,ResumeInfoType.endTime,ResumeInfoType.city,
+                ResumeInfoType.company,ResumeInfoType.position,ResumeInfoType.describe]
+    }
+    
+    func isValidate()->(Bool, String){
+        
+        return (true,"")
     }
     
 }
@@ -338,42 +366,23 @@ struct person_projectInfo {
 
 
 
-struct person_skills {
-    
-//    enum skillType:String {
-//        case professional = "职业技能"
-//        case language = "语言能力"
-//        case other = "其他"
-//    }
+class personSkillInfo: NSObject, Mappable{
     
     
-    var skillType:String
-    var describe:String
+    var skillType:String = ""
+    var describe:String = ""
     
-    
-    init(type:String, describe:String) {
-        self.skillType = type
-        self.describe = describe
-    }
-    
-    init() {
-        self.skillType = ""
-        self.describe = ""
-    }
-    
-    func isValidate()->(Bool,String){
-        if self.skillType == "" || self.describe == "" {
-            return (false,"请检查输入")
-        }
-        return (true,"")
+    required init?(map: Map) {
         
     }
     
-    func getItemList()->[personBaseInfo]{
-        return [personBaseInfo.skill,personBaseInfo.describe]
+    func mapping(map: Map) {
+        skillType <- map["skillType"]
+        describe <- map["describe"]
     }
     
-    func getItemByType(type:personBaseInfo)->String{
+    
+    func getItemByType(type: ResumeInfoType) -> String{
         switch type {
         case .skill:
             return self.skillType
@@ -384,8 +393,9 @@ struct person_skills {
         }
     }
     
-    mutating func changeValue(pinfoType:personBaseInfo,value:String){
-        switch pinfoType {
+    func changeValue(type: ResumeInfoType, value:String) {
+        
+        switch type {
         case .skill:
             self.skillType = value
         case .describe:
@@ -395,130 +405,39 @@ struct person_skills {
         }
     }
     
+    func getItemList()->[ResumeInfoType]{
+        return [ResumeInfoType.skill,ResumeInfoType.describe]
+    }
+    
+    func isValidate()->(Bool, String){
+        return (true,"")
+    }
+    
+    
 }
 
-
-
-class  personModelManager {
+class  ResumeMode:NSObject, Mappable{
     
+    var basicinfo:personBasicInfo?
+    var educationInfo:[personEducationInfo] = []
+    var internInfo:[personInternInfo] = []
+    var skills:[personSkillInfo] = []
+    // 个人评价
+    var estimate:String?
     
-    var personBaseInfo:person_base_info?
-    
-    var educationInfos:[person_education] = []
-    
-    var projectInfo:[person_projectInfo] = []
-    
-    var skillInfos:[person_skills] = []
-    var estimate = ""
-    
-    static let shared: personModelManager = personModelManager()
-    
-    //var modifyIndex:[Int] = [0,0,0]
-    
-    private init(){
-    }
-    
-    
-    enum InfoType:String{
-        case education = "教育经历"
-        case project = "项目经历"
-        case skill = "技能"
-        
+    required init?(map: Map) {
         
     }
     
-    open func initialData(){
-        
-         let myinfo:person_base_info = person_base_info.init(name: "lk", sex: "男", city: "北京", degree: "硕士", birthday: "1988-10", phone: "13718754627", email: "kdwad@163.comdqwdq")
-        
-        
-        let education_infos:[person_education] = [person_education.init(startTime: "2017-10", endTime: "2018-02", colleage: "北大", degree: "本科", department: "土木工程", city: "北京"),person_education.init(startTime: "2017-10", endTime: "2018-02", colleage: "北大", degree: "本科", department: "土木工程", city: "北京")]
-        
-        let project_infos:[person_projectInfo] = [person_projectInfo.init(company: "天下", role: "总监", startTime: "2017-11", endTime: "2018-02", content: "达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个 \n 打我的娃打我的\n 达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个 \n 等我大大", city: "北京"),person_projectInfo.init(company: "天下", role: "总监", startTime: "2017-11", endTime: "2018-02", content: "达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个 \n 打我的娃打我的\n 达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个打我打我的挖的我吊袜带挖打我多哇大无多无吊袜带挖 \n 等我大大达瓦大", city: "北京"),person_projectInfo.init(company: "天下", role: "总监", startTime: "2017-11", endTime: "2018-02", content: "达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个 \n 打我的娃打我的\n 达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个打我打我的挖的我吊袜带挖打我多哇大无多无吊袜带挖 \n 等我大大达瓦大", city: "北京"),person_projectInfo.init(company: "天下", role: "总监", startTime: "2017-11", endTime: "2018-02", content: "达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个 \n 打我的娃打我的\n 达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个打我打我的挖的我吊袜带挖打我多哇大无多无吊袜带挖 \n 等我大大达瓦大", city: "北京"),person_projectInfo.init(company: "天下", role: "总监", startTime: "2017-11", endTime: "2018-02", content: "达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个 \n 打我的娃打我的\n 达瓦大大哇吊袜带挖打我分分个人个人个人个人个人各个打我打我的挖的我吊袜带挖打我多哇大无多无吊袜带挖 \n 等我大大达瓦大", city: "北京")]
-        
-        let skill_infos:[person_skills] = [person_skills.init(type: "职业技能", describe: "python"),person_skills.init(type: "职业技能", describe: "java 达瓦大哇多无 吊袜带挖达瓦大文的哇多无吊袜带挖多哇多吊袜带挖多哇多哇多哇多达瓦大多哇多哇多 \n 打我打我的"),
-                                                   person_skills.init(type: "语言能力", describe: "英语6级 java 达瓦大哇多无 吊袜带挖达瓦大文的哇多无吊袜带挖多哇多吊袜带挖多哇多哇多哇\n 多达瓦大多哇多哇多 \n 达瓦大------43534dwad-  -dwadwadwddw")]
-        
-        let  evaluate:String = " 吊袜带挖达瓦大文的哇的伟大哇打我的娃吊袜带挖达瓦大文大大的挖的我达瓦的达瓦达瓦的达瓦大吊袜带挖达瓦大文打我打我的达瓦大哇多无  "
-        
-        personBaseInfo = myinfo
-        estimate = evaluate
-        self.educationInfos.removeAll()
-        self.projectInfo.removeAll()
-        self.skillInfos.removeAll()
-        for item in education_infos{
-            
-            self.educationInfos.append(item)
-        }
-        for item in project_infos{
-            self.projectInfo.append(item)
-        }
-        
-        for item in skill_infos{
-            self.skillInfos.append(item)
-        }
+    func mapping(map: Map) {
+        basicinfo <- map["basicinfo"]
+        educationInfo <- map["educationInfo"]
+        internInfo <- map["educationInfo"]
+        skills <- map["skills"]
+        estimate <- map["estimate"]
         
         
     }
-    
-    
-    
-    //private var infoCollections:Dictionary<InfoType,[Any]> = [:]
-
-    
-    open  func add(type:InfoType, item:Any){
-        switch type {
-        case .education:
-            if let data = item as? person_education{
-                self.educationInfos.append(data)
-            }
-        case .project:
-            if let data = item as? person_projectInfo{
-                self.projectInfo.append(data)
-            }
-        case .skill:
-            if let data = item as? person_skills{
-                self.skillInfos.append(data)
-            }
-        
-        }
-    }
-    
-    open func modify(type:InfoType, item:Any, index:Int){
-        switch type {
-        case .education:
-            if let data = item as? person_education{
-                self.educationInfos[index] = data
-            }
-        case .project:
-            if let data = item as? person_projectInfo{
-                self.projectInfo[index] = data
-            }
-        case .skill:
-            if let data = item as? person_skills{
-                self.skillInfos[index] = data
-            }
-            
-        }
-    }
-    
-    open func delete(type:InfoType,index:Int){
-        switch type {
-        case .education:
-            if self.educationInfos.count > index && index >= 0 {
-                self.educationInfos.remove(at: index)
-            }
-        case .project:
-            if self.projectInfo.count > index && index >= 0 {
-                self.projectInfo.remove(at: index)
-            }
-        case .skill:
-            if self.skillInfos.count > index && index >= 0 {
-                self.skillInfos.remove(at: index)
-            }
-        }
-    }
-    
     
 }
 

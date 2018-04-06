@@ -9,10 +9,19 @@
 import UIKit
 import SVProgressHUD
 
-protocol educationModifyDelegate: class {
+// 修改和删除
+protocol modifyItemDelegate: class {
     
-    func refreshModifiedData(index:Int, name:String)
-    func refreshNewData()
+    func modifiedItem(indexPath:IndexPath)
+    func deleteItem(indexPath: IndexPath)
+}
+
+
+// 添加
+protocol addResumeItenDelegate: class {
+    
+    func addNewItem(type:resumeViewType)
+    
 }
 
 class modifyitemView: UIViewController {
@@ -60,33 +69,33 @@ class modifyitemView: UIViewController {
     
     private var selected:SelectItemUtil = SelectItemUtil.shared
     
-    private var pickPosition:[personBaseInfo:[Int:Int]] = [:]
+    private var pickPosition:[ResumeInfoType:[Int:Int]] = [:]
 
     
     private var count = 0
     private var type:resumeViewType = .baseInfo
     private var row:Int = 0
     private var currentRow:Int = 0
-    weak var delegate:educationModifyDelegate?
+    weak var delegate:modifyItemDelegate?
+    
+    // eatch row
+   
     
     private var infosDict:Dictionary<resumeViewType,[Any]> = [:]
     
-    var mode:(viewType:resumeViewType, row:Int)?{
+    var mode:(viewType:resumeViewType, indexPath:IndexPath)?{
         didSet{
             
             self.type = mode!.viewType
-            self.row = mode!.row
+            self.row = mode!.indexPath.row
             
             switch mode!.viewType {
             case .education:
-                //infosDict[.education] = pManager.educationInfos
-                self.count = pManager.educationInfos[mode!.row].getItemList().count + 1
-                
-            
-            case .project:
-                self.count = pManager.projectInfo[mode!.row].getItemList().count + 1
+                self.count = (pManager.mode?.educationInfo[self.row].getItemList().count ?? 0)  + 1
+            case .intern:
+                self.count = (pManager.mode?.internInfo[self.row].getItemList().count ?? 0)  + 1
             case .skill:
-                self.count = pManager.skillInfos[mode!.row].getItemList().count + 1
+                self.count = (pManager.mode?.skills[self.row].getItemList().count ?? 0) + 1
                 
             default:
                 break
@@ -149,22 +158,35 @@ extension modifyitemView: UITableViewDelegate, UITableViewDataSource{
             
         }else{
             let cell = tableView.dequeueReusableCell(withIdentifier: modify_ResumeItemCell.identity(), for: indexPath) as! modify_ResumeItemCell
-            var itemType:personBaseInfo?
+            // 具体的简历元素类型
+            var itemType:ResumeInfoType?
             
             switch self.type{
             case .education:
-                itemType = pManager.educationInfos[row].getItemList()[indexPath.row]
-            case .project:
-                itemType = pManager.projectInfo[row].getItemList()[indexPath.row]
-            case .skill:
-                itemType = pManager.skillInfos[row].getItemList()[indexPath.row]
-            default:
+                 guard let item = pManager.mode?.educationInfo[row]  else { return UITableViewCell() }
+                 //ceducationRow = indexPath.row
+                 itemType = item.getItemList()[indexPath.row]
+                 cell.mode = (viewType:self.type, InfoType: itemType!, item: item)
+             case .intern:
+                guard let item = pManager.mode?.internInfo[row]  else { return UITableViewCell() }
+                //cInternRow = indexPath.row
+                itemType = item.getItemList()[indexPath.row]
+                cell.mode = (viewType:self.type, InfoType: itemType!, item: item)
+
+             case .skill:
+                guard let item = pManager.mode?.skills[row]  else { return UITableViewCell() }
+                //cSkillRow = indexPath.row
+                itemType = item.getItemList()[indexPath.row]
+                cell.mode = (viewType:self.type, InfoType: itemType!, item: item)
+
+             default:
                 return UITableViewCell.init()
             
             }
             
-            cell.mode = (viewType:self.type, InfoType: itemType!, row:row)
+           
             cell.delegate = self
+            // textView的代理
             cell.describeText.delegate = self 
             return cell
 
@@ -181,7 +203,7 @@ extension modifyitemView: UITableViewDelegate, UITableViewDataSource{
             switch self.type{
             case .education:
                 return 45
-            case .project:
+            case .intern:
                 if indexPath.row == count - 2{
                     return 200
                 }
@@ -211,37 +233,40 @@ extension modifyitemView: UITableViewDelegate, UITableViewDataSource{
         switch self.type {
         
         case .education:
-            let item = pManager.educationInfos[row].getItemList()[indexPath.row]
-            switch item{
+            guard let item = pManager.mode?.educationInfo[row] else { return }
+            let type = item.getItemList()[indexPath.row]
+            switch type{
             case .startTime, .endTime:
                 // 需要用生日！！！
                 pickView.mode = ("生日", selected.getItems(name: "生日")!)
-                pickView.setPosition(position: pickPosition[item])
+                pickView.setPosition(position: pickPosition[type])
                 showPickView()
             case .degree:
-                pickView.mode = (item.rawValue, selected.getItems(name: item.rawValue)!)
-                pickView.setPosition(position: pickPosition[item])
+                pickView.mode = (type.rawValue, selected.getItems(name: type.rawValue)!)
+                pickView.setPosition(position: pickPosition[type])
                 showPickView()
             default:
                 break
                 
             }
-        case .project:
-            let item = pManager.projectInfo[row].getItemList()[indexPath.row]
-            switch item{
+        case .intern:
+            guard let item = pManager.mode?.internInfo[row] else { return }
+            let type = item.getItemList()[indexPath.row]
+            switch type{
             case  .startTime, .endTime:
                 pickView.mode = ("生日", selected.getItems(name: "生日")!)
-                pickView.setPosition(position: pickPosition[item])
+                pickView.setPosition(position: pickPosition[type])
                 showPickView()
             default:
                 break
             }
         case .skill:
-            let item = pManager.skillInfos[row].getItemList()[indexPath.row]
-            switch item{
+            guard let item = pManager.mode?.skills[row] else { return }
+            let type = item.getItemList()[indexPath.row]
+            switch type{
             case .skill:
                 pickView.mode = ("技能", selected.getItems(name: "技能")!)
-                pickView.setPosition(position: pickPosition[item])
+                pickView.setPosition(position: pickPosition[type])
                 showPickView()
             default:
                 break
@@ -290,20 +315,24 @@ extension modifyitemView: itemPickerDelegate{
         
     }
     
+    // 改变对应值 和 更新pick的位置
     func changeItemValue(_ picker: UIPickerView, value: String, position: [Int : Int]) {
         switch  self.type {
         case .education:
-            let item = pManager.educationInfos[row].getItemList()[currentRow]
-            pManager.educationInfos[row].changeValue(pinfoType: item, value: value)
-            pickPosition[item] = position
-        case .project:
-            let item = pManager.projectInfo[row].getItemList()[currentRow]
-            pManager.projectInfo[row].changeValue(pinfoType: item, value: value)
-            pickPosition[item] = position
+            guard let mode = pManager.mode?.educationInfo[row] else { return }
+            let type = mode.getItemList()[currentRow]
+            mode.changeValue(type: type, value: value)
+            pickPosition[type] = position
+        case .intern:
+            guard let mode = pManager.mode?.internInfo[row] else { return }
+            let type = mode.getItemList()[currentRow]
+            mode.changeValue(type: type, value: value)
+            pickPosition[type] = position
         case .skill:
-            let item = pManager.skillInfos[row].getItemList()[currentRow]
-            pManager.skillInfos[row].changeValue(pinfoType: item, value: value)
-            pickPosition[item] = position
+            guard let mode = pManager.mode?.skills[row] else { return }
+            let type = mode.getItemList()[currentRow]
+            mode.changeValue(type: type, value: value)
+            pickPosition[type] = position
             
         default:
             break
@@ -326,16 +355,18 @@ extension modifyitemView {
         self.navigationController?.navigationBar.isUserInteractionEnabled = false
         self.view.isUserInteractionEnabled = false
         self.backgroundView.isUserInteractionEnabled = false
-        
+        let indexPath = IndexPath.init(row: self.mode!.indexPath.row + 1, section:self.mode!.indexPath.section)
         SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: name)
         SVProgressHUD.dismiss(withDelay: 2) {
             self.backgroundView.removeFromSuperview()
             self.navigationController?.view.willRemoveSubview(self.backgroundView)
             self.navigationController?.popViewController(animated: true)
             if name == "保存"{
-                self.delegate?.refreshModifiedData(index: self.row, name: self.type.rawValue)
+               
+                self.delegate?.modifiedItem(indexPath: indexPath)
             }else{
-                self.delegate?.refreshNewData()
+                // 删除
+                self.delegate?.deleteItem(indexPath: indexPath)
             }
             
             self.navigationController?.navigationBar.isUserInteractionEnabled = true
@@ -358,11 +389,11 @@ extension modifyitemView {
         //pManager.delete(type: .education, index: self.index)
         switch  self.type {
         case .education:
-             pManager.educationInfos.remove(at: self.row)
-        case .project:
-            pManager.projectInfo.remove(at: self.row)
+             pManager.mode?.educationInfo.remove(at: self.row)
+        case .intern:
+             pManager.mode?.internInfo.remove(at: self.row)
         case .skill:
-            pManager.skillInfos.remove(at: self.row)
+            pManager.mode?.skills.remove(at: self.row)
         default:
             break
         }
@@ -375,28 +406,30 @@ extension modifyitemView {
 }
 
 extension modifyitemView: changeDataDelegate{
-    
-    func changeEducationInfo(viewType: resumeViewType, type: personBaseInfo, row: Int, value: String) {
+    // 改变某item的值
+    func changeOtherInfo(viewType: resumeViewType, type: ResumeInfoType, value: String) {
         switch viewType {
-            
-        case .education:
-            pManager.educationInfos[row].changeValue(pinfoType: type, value: value)
-        case .project:
-            pManager.projectInfo[row].changeValue(pinfoType: type, value: value)
-        case .skill:
-            pManager.skillInfos[row].changeValue(pinfoType: type, value: value)
-            break
-        default:
-            break
-        }
+            case .education:
+                    print(type,value)
+                    pManager.mode?.educationInfo[row].changeValue(type: type, value: value)
+            case .intern:
+                    pManager.mode?.internInfo[row].changeValue(type: type, value: value)
+            case .skill:
+                    pManager.mode?.skills[row].changeValue(type: type, value: value)
+                    break
+            default:
+                    break
+            }
         
-         self.table.reloadData()
+        self.table.reloadData()
     }
     
     
-    func changeBaseInfo(type: personBaseInfo, value: String) {
+    func changeBasicInfo(type: ResumeInfoType, value: String) {
         
     }
+    
+    
     
 }
 
@@ -433,10 +466,10 @@ extension modifyitemView: UITextViewDelegate{
              self.view.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH)
         }
         switch self.type {
-        case .project:
-            pManager.projectInfo[row].changeValue(pinfoType: .describe, value: textView.text)
+        case .intern:
+            pManager.mode?.internInfo[row].changeValue(type: .describe, value: textView.text)
         case .skill:
-            pManager.skillInfos[row].changeValue(pinfoType: .describe, value: textView.text)
+            pManager.mode?.skills[row].changeValue(type: .describe, value: textView.text)
             break
         default:
             break

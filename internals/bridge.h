@@ -11,5 +11,9 @@
 
 #import <SDAutoLayout/SDAutoLayout.h>
 #import <SocketRocket/SocketRocket.h>
-
+#import <UMShare/UMShare.h>
+#import <UMCommon/UMCommon.h>
 #endif /* bridge_h */
+
+
+

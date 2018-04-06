@@ -194,9 +194,9 @@ class  loginServer: BaseServer{
         self.TestUser =  LoginUserModel(JSON: ["account":"name","password":"pas","role":""])
         
         
-        let endpointClosure = { (target: UserMoyaType) -> Endpoint<UserMoyaType> in
+        let endpointClosure = { (target: UserMoyaType) -> Endpoint in
             let url = target.baseURL.appendingPathComponent(target.path).absoluteString
-            let endpoint: Endpoint<UserMoyaType> = Endpoint(url: url, sampleResponseClosure: {.networkResponse(200, target.sampleData)}, method: target.method, task: target.task,httpHeaderFields: nil)
+            let endpoint: Endpoint = Endpoint(url: url, sampleResponseClosure: {.networkResponse(200, target.sampleData)}, method: target.method, task: target.task,httpHeaderFields: nil)
             
             
             

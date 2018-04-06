@@ -30,7 +30,7 @@ class CollectionItemsCell: UICollectionViewCell {
     }()
     
     
-    var mode:showitem?{
+    var mode:ShareItem?{
         didSet{
             titleLabel.text = mode?.name
             iconImage.image = UIImage.init(named: mode?.image ?? "default")

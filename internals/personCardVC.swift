@@ -10,7 +10,7 @@ import UIKit
 
 
 fileprivate let tableHeaderH:CGFloat = 200
-fileprivate let sectionTitle:[String] = ["实习/项目经历","教育经历"]
+fileprivate let sectionTitle:[String] = ["实习经历","教育经历"]
 fileprivate let sectionH:CGFloat = 40
 
 class personCardVC: UITableViewController {
@@ -22,10 +22,6 @@ class personCardVC: UITableViewController {
     private lazy var tbHeader:personTableHeader  = {  [unowned self] in
         let th = personTableHeader.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: tableHeaderH))
         th.isHR = false
-        th.avatarImg.image = UIImage.init(named: (self.pManager.personBaseInfo?.tx)!)
-        th.nameTitle.text = self.pManager.personBaseInfo?.name
-        th.introduce.text = self.pManager.educationInfos[0].colleage + "-" +
-                            self.pManager.educationInfos[0].department
         return th
     }()
     
@@ -36,7 +32,7 @@ class personCardVC: UITableViewController {
         v.alpha = 0
         let title = UILabel.init(frame: CGRect.zero)
         title.textAlignment = .center
-        title.text = self.pManager.personBaseInfo?.name
+        title.text = self.pManager.mode?.basicinfo?.name
         title.font = UIFont.systemFont(ofSize: 16)
         title.sizeToFit()
         v.addSubview(title)
@@ -58,7 +54,7 @@ class personCardVC: UITableViewController {
         let back = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
         let tap = UITapGestureRecognizer.init()
         tap.numberOfTapsRequired = 1
-        tap.addTarget(self, action: #selector(hiddenBackView(_:)))
+        tap.addTarget(self, action: #selector(hiddenBackView))
         back.backgroundColor = UIColor.init(r: 0.5, g: 0.5, b: 0.5, alpha: 0.5)
         back.addGestureRecognizer(tap)
         return back
@@ -67,6 +63,8 @@ class personCardVC: UITableViewController {
     private lazy var MyshareView:shareView = {
         let s = shareView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: shareViewH))
         UIApplication.shared.windows.last?.addSubview(s)
+        s.delegate = self
+        s.viewController = self 
         return s
     }()
     
@@ -76,7 +74,7 @@ class personCardVC: UITableViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        loadData()
+        
         setTableHeaderView()
         setNavigationView()
         setShare()
@@ -84,6 +82,7 @@ class personCardVC: UITableViewController {
         self.tableView.contentInset = UIEdgeInsets.init(top: 0, left: 0, bottom: 60, right: 0)
         self.tableView.register(cardCell.self, forCellReuseIdentifier: cardCell.identity())
       
+        loadData()
         
     }
     
@@ -119,9 +118,9 @@ class personCardVC: UITableViewController {
        
         switch section {
         case 0:
-            return pManager.projectInfo.count
+            return pManager.mode?.internInfo.count ?? 0
         case 1:
-            return pManager.educationInfos.count
+            return pManager.mode?.educationInfo.count ?? 0
         default:
             return 0
         }
@@ -132,37 +131,44 @@ class personCardVC: UITableViewController {
         switch indexPath.section {
         case 0:
             
-            let item = pManager.projectInfo[indexPath.row]
-            let mode:cardModel =  cardModel.init(time: item.startTime + " 到 " + item.endTime, middle: item.company, bottom: item.position)
-            cell.mode = mode
-            cell.useCellFrameCache(with: indexPath, tableView: tableView)
-            return cell
+            if  let item = pManager.mode?.internInfo[indexPath.row]{
+                let mode:cardModel =  cardModel.init(time: item.startTimeString + " 到 " + item.endTimeString, middle: item.company, bottom: item.position)
+                cell.mode = mode
+                cell.useCellFrameCache(with: indexPath, tableView: tableView)
+                return cell
+            }
         case 1:
-            let item = pManager.educationInfos[indexPath.row]
-            let mode = cardModel.init(time: item.startTime + " 到 " + item.endTime, middle: item.colleage, bottom: item.department + "-" + item.degree)
-            cell.useCellFrameCache(with: indexPath, tableView: tableView)
-            cell.mode = mode
+            if let item = pManager.mode?.educationInfo[indexPath.row]{
+                let mode = cardModel.init(time: item.startTimeString + " 到 " + item.endTimeString, middle: item.colleage, bottom: item.department + "-" + item.degree)
+                cell.useCellFrameCache(with: indexPath, tableView: tableView)
+                cell.mode = mode
+                return cell
+            }
         default:
             break
         }
-        return cell
+        
+        return UITableViewCell()
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {
         case 0:
-            let item = pManager.projectInfo[indexPath.row]
-            let mode:cardModel =  cardModel.init(time: item.startTime + " 到 " + item.endTime, middle: item.company, bottom: item.position)
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: cardCell.self, contentViewWidth: ScreenW)
+            if  let item = pManager.mode?.internInfo[indexPath.row] {
+                let mode:cardModel =  cardModel.init(time: item.startTimeString + " 到 " + item.endTimeString, middle: item.company, bottom: item.position)
+                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: cardCell.self, contentViewWidth: ScreenW)
+            }
         case 1:
-            let item = pManager.educationInfos[indexPath.row]
-            let mode = cardModel.init(time: item.startTime + " 到 " + item.endTime, middle: item.colleage, bottom: item.department + "-" + item.degree)
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: cardCell.self, contentViewWidth: ScreenW)
+            if let item = pManager.mode?.educationInfo[indexPath.row]{
+                let mode = cardModel.init(time: item.startTimeString + " 到 " + item.endTimeString, middle: item.colleage, bottom: item.department + "-" + item.degree)
+                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: cardCell.self, contentViewWidth: ScreenW)
+            }
             
         default:
-            return 0
+            break
         }
         
+        return 0 
        
     }
     
@@ -193,6 +199,12 @@ class personCardVC: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        guard  let mode = pManager.mode else {
+            return 0
+        }
+        if mode.internInfo.count == 0 && section == 0 {
+            return 0
+        }
         return sectionH
     }
 }
@@ -214,14 +226,13 @@ extension personCardVC{
         
         
     }
-    @objc func hiddenBackView(_ gest: UITapGestureRecognizer){
-        if gest.state == .ended{
+    @objc func hiddenBackView(){
+        
             backgroundView.removeFromSuperview()
             self.navigationController?.view.willRemoveSubview(backgroundView)
             UIView.animate(withDuration: 0.4, animations: {
                 self.MyshareView.origin.y = self.shareOriginY
             })
-        }
     }
     
     
@@ -234,15 +245,11 @@ extension personCardVC{
         })
     }
     
-    @objc func sharedClick(_ btn:UIButton){
-        print(btn.tag)
-    }
+   
     
     private func setShare(){
         shareOriginY = MyshareView.origin.y
-        for btn in  MyshareView.itemButtons!{
-            btn.addTarget(self, action: #selector(sharedClick(_:)), for: .touchUpInside)
-        }
+        
         
     }
 }
@@ -273,8 +280,26 @@ extension personCardVC{
     // 通过网络获取数据
     private func loadData(){
         pManager.initialData()
+        if let pInfo = pManager.mode?.basicinfo{
+            tbHeader.mode = (image:pInfo.tx,name:pInfo.name, introduce:pInfo.degree)
+        }
+        
     }
 }
+
+//shareView 代理
+
+extension personCardVC:shareViewDelegate{
+    func hiddenShareView(view:UIView){
+        if view == self.MyshareView{
+            hiddenBackView()
+        }
+    }
+      
+    
+    
+}
+
 
 
 

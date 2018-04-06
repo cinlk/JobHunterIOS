@@ -66,3 +66,36 @@ open class DataTransformBase64: TransformType {
    
 
 }
+
+// YYYY-MM 日期转换
+open class YearMonthtDateTransform: TransformType {
+    
+    public typealias Object = Date
+    public typealias JSON = String
+    let dateformat = DateFormatter()
+
+    public func transformFromJSON(_ value: Any?) -> Date? {
+        if let YearAnMonth = value as? String{
+            dateformat.locale = Locale.current
+            dateformat.dateFormat = "YYYY-MM"
+            
+            return  dateformat.date(from: YearAnMonth)
+        }
+        return nil
+    }
+    
+    public func transformToJSON(_ value: Date?) -> String? {
+        if let date = value{
+            dateformat.locale = Locale.current
+            dateformat.dateFormat = "YYYY-MM"
+            return dateformat.string(from: date)
+        }
+        return nil
+    }
+    
+    
+}
+
+
+
+

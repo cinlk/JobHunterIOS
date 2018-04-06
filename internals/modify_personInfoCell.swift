@@ -12,8 +12,8 @@ import UIKit
 
 protocol changeDataDelegate:class {
     
-    func changeBaseInfo(type:personBaseInfo, value:String)
-    func changeEducationInfo(viewType:resumeViewType,type:personBaseInfo, row:Int, value:String)
+    func changeBasicInfo(type:ResumeInfoType, value:String)
+    func changeOtherInfo(viewType:resumeViewType,type:ResumeInfoType, value:String)
     
     
     //@objc optional func changeDataByName(name:String, value:String)
@@ -73,7 +73,7 @@ class modify_personInfoCell: UITableViewCell {
     weak var delegate:changeDataDelegate?
     
     // cell 数据
-    var mode:(type:personBaseInfo,value:String)?{
+    var mode:(type:ResumeInfoType, value:String)?{
         didSet{
             buildCell()
         }
@@ -122,7 +122,7 @@ class modify_personInfoCell: UITableViewCell {
         
         leftTitle.text = mode!.type.rawValue
         
-        if mode!.type == personBaseInfo.tx{
+        if mode!.type == .tx{
             tx.isHidden = false
             rightLabel.isHidden = true
             tx.image = UIImage.init(named: mode!.value)
@@ -178,7 +178,7 @@ extension modify_personInfoCell: UITextFieldDelegate{
     }
     func textFieldDidEndEditing(_ textField: UITextField) {
         if let text = textField.text{
-            self.delegate?.changeBaseInfo(type: mode!.type, value: text)
+            self.delegate?.changeBasicInfo(type: mode!.type, value: text)
         }
     }
     

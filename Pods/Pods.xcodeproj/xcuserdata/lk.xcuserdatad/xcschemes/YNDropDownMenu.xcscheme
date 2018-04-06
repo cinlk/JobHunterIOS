@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0700"
+   LastUpgradeVersion = "0930"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -13,11 +13,11 @@
             buildForProfiling = "YES"
             buildForArchiving = "YES">
             <BuildableReference
-               BuildableIdentifier = 'primary'
-               BlueprintIdentifier = 'DD040EE926B9B2FC991F344C56D866DE'
-               BlueprintName = 'YNDropDownMenu'
-               ReferencedContainer = 'container:Pods.xcodeproj'
-               BuildableName = 'YNDropDownMenu.framework'>
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "DD040EE926B9B2FC991F344C56D866DE"
+               BlueprintName = "YNDropDownMenu"
+               ReferencedContainer = "container:Pods.xcodeproj"
+               BuildableName = "YNDropDownMenu.framework">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

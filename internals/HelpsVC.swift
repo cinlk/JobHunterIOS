@@ -24,10 +24,10 @@ class HelpsVC: UITableViewController {
     }()
     
     
-    private var guideItem:[showitem] = [showitem.init(name: "指导1", image: "bell", bubbles: 0),
-                                        showitem.init(name: "指导2", image: "bell", bubbles: 0),
-                                        showitem.init(name: "指导3", image: "bell", bubbles: 0),
-                                        showitem.init(name: "指导4", image: "bell", bubbles: 0)]
+    private var guideItem:[ShareItem] = [ShareItem.init(name: "指导1", image: "bell", type: nil, bubbles: 0),
+                                         ShareItem.init(name: "指导2", image: "bell", type: nil, bubbles: 0),
+                                         ShareItem.init(name: "指导3", image: "bell", type:nil ,bubbles: 0),
+                                         ShareItem.init(name: "指导4", image: "bell", type:nil, bubbles: 0)]
     
     
     

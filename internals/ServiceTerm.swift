@@ -84,21 +84,11 @@ extension ServiceTerm: WKNavigationDelegate{
     // 获取进度值 设置progress
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == keyStr{
-            let newp = change?[NSKeyValueChangeKey.newKey] as! Float
-            let oldp = change?[NSKeyValueChangeKey.oldKey] as? Float ?? 0.0
-            if newp < oldp{
-                return
-            }
-            if newp == 1{
-                progressView.isHidden = true
-                progressView.setProgress(0, animated: false)
-            }else{
-                progressView.isHidden = false
-                progressView.setProgress(Float(newp), animated: true)
-            }
-            
+            progressView.isHidden =  webView.estimatedProgress == 1
+            progressView.setProgress(Float(webView.estimatedProgress), animated: false)
         }
     }
+     
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         progressView.isHidden = true

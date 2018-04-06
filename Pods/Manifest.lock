@@ -1,33 +1,58 @@
 PODS:
-  - Alamofire (4.5.1)
-  - Differentiator (3.0.1)
-  - MJRefresh (3.1.15)
-  - Moya/Core (10.0.0):
+  - Alamofire (4.7.1)
+  - Differentiator (3.0.2)
+  - MJRefresh (3.1.15.3)
+  - Moya/Core (11.0.2):
     - Alamofire (~> 4.1)
     - Result (~> 3.0)
-  - Moya/RxSwift (10.0.0):
+  - Moya/RxSwift (11.0.2):
     - Moya/Core
     - RxSwift (~> 4.0)
-  - ObjectMapper (3.0.0)
+  - ObjectMapper (3.1.0)
   - PPBadgeViewSwift (2.0.0)
   - Result (3.2.4)
-  - RxCocoa (4.0.0):
+  - RxCocoa (4.1.2):
     - RxSwift (~> 4.0)
-  - RxDataSources (3.0.1):
+  - RxDataSources (3.0.2):
     - Differentiator (~> 3.0)
     - RxCocoa (~> 4.0)
     - RxSwift (~> 4.0)
-  - RxSwift (4.0.0)
+  - RxSwift (4.1.2)
   - SDAutoLayout (2.1.9)
   - SocketRocket (0.5.1)
   - SQLite.swift (0.11.4):
     - SQLite.swift/standard (= 0.11.4)
   - SQLite.swift/standard (0.11.4)
-  - SVProgressHUD (2.2.2)
-  - SwiftDate (4.4.2)
+  - SVProgressHUD (2.2.5)
+  - SwiftDate (4.5.1)
   - SwiftProtobuf (0.9.905)
   - SwiftyJSON (3.0.0)
-  - YNDropDownMenu (2.3.4)
+  - UMCCommon (1.5.0)
+  - UMCSecurityPlugins (1.0.6)
+  - UMCShare/Core (6.9.0):
+    - UMCCommon
+  - UMCShare/Social/QQ (6.9.0):
+    - UMCCommon
+    - UMCShare/Core
+    - UMCShare/Social/ReducedQQ
+  - UMCShare/Social/ReducedQQ (6.9.0):
+    - UMCCommon
+    - UMCShare/Core
+  - UMCShare/Social/ReducedSina (6.9.0):
+    - UMCCommon
+    - UMCShare/Core
+  - UMCShare/Social/ReducedWeChat (6.9.0):
+    - UMCCommon
+    - UMCShare/Core
+  - UMCShare/Social/Sina (6.9.0):
+    - UMCCommon
+    - UMCShare/Core
+    - UMCShare/Social/ReducedSina
+  - UMCShare/Social/WeChat (6.9.0):
+    - UMCCommon
+    - UMCShare/Core
+    - UMCShare/Social/ReducedWeChat
+  - YNDropDownMenu (3.0.2)
 
 DEPENDENCIES:
   - MJRefresh
@@ -44,6 +69,11 @@ DEPENDENCIES:
   - SwiftDate
   - SwiftProtobuf (~> 0.9.905)
   - SwiftyJSON (from `https://github.com/appsailor/SwiftyJSON.git`, branch `swift3`)
+  - UMCCommon
+  - UMCSecurityPlugins
+  - UMCShare/Social/QQ
+  - UMCShare/Social/Sina
+  - UMCShare/Social/WeChat
   - YNDropDownMenu
 
 EXTERNAL SOURCES:
@@ -57,25 +87,28 @@ CHECKOUT OPTIONS:
     :git: https://github.com/appsailor/SwiftyJSON.git
 
 SPEC CHECKSUMS:
-  Alamofire: 2d95912bf4c34f164fdfc335872e8c312acaea4a
-  Differentiator: ffe513ce1ea4e7198b89fac94d6e281c673055a9
-  MJRefresh: 9af70f5f9327a2cf87f0fb5929f35fcc2fa638ea
-  Moya: adb58b0f4e58430db43cc6e2f6ebab1836501186
-  ObjectMapper: 92230db59bf8f341a5c3a3cf0b9fbdde3cf0d87f
+  Alamofire: 68d7d521118d49c615a8d2214d87cdf525599d30
+  Differentiator: a87be69eba49ec4ab460c7671143ee3a9eececfd
+  MJRefresh: b48380ae2b927b46c4ef000de9adb8dc748e1df7
+  Moya: a725035953bc1c0eb1be505ab903984501d82440
+  ObjectMapper: 20505058f54e5c3ca69e1d6de9897d152a5369a6
   PPBadgeViewSwift: dc520c183e11d87fbe19bdb223e8b47d158f3c6b
   Result: d2d07204ce72856f1fd9130bbe42c35a7b0fea10
-  RxCocoa: d62846ca96495d862fa4c59ea7d87e5031d7340e
-  RxDataSources: 098b7e62b6316313b14d6bf594e3f4f4f62a238a
-  RxSwift: fd680d75283beb5e2559486f3c0ff852f0d35334
+  RxCocoa: d88ba0f1f6abf040011a9eb4b539324fc426843a
+  RxDataSources: cb7c31e652a87ebb919da45f716bbb87b3765f6b
+  RxSwift: e49536837d9901277638493ea537394d4b55f570
   SDAutoLayout: 6b6f4db0d009dfc46cef14ef710dbb164e86616c
   SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
   SQLite.swift: 3e3bee21da701b5b9f87c4a672cb54f233505692
-  SVProgressHUD: 59b2d3dabacbd051576d21d32293ca7228dc18b0
-  SwiftDate: 131cf2f09b390f0a07f0099e36005ffe2fbf4c7e
+  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
+  SwiftDate: 7b56d42a221f582047287deb256b23fc5ed49a60
   SwiftProtobuf: 9dfa3d4109cf844241d5d055885d5c24cfa9ccdc
   SwiftyJSON: f57b2b44bc166617372d1c70773591fe9f0f5fd4
-  YNDropDownMenu: 4f4b463ecbfd492dc886abaf18d73dead0e32133
+  UMCCommon: 82d21f4bb9532a5472cc533bbd8ed48aff376a14
+  UMCSecurityPlugins: 0831a08f3988f3cea9f1d3a7626cd9bee4fef150
+  UMCShare: 0c406a22c874fe6c9c97784a71db349e7fcea0eb
+  YNDropDownMenu: 9421eb9c144448415d90141344a2cdbbaf11fc3c
 
-PODFILE CHECKSUM: bac9e9e0871b7d43be68d18c45e465525c03684a
+PODFILE CHECKSUM: 2199f6e020c2909776ce221eedad911863476a02
 
 COCOAPODS: 1.4.0

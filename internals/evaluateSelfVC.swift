@@ -35,7 +35,7 @@ class evaluateSelfVC: UITableViewController {
     var section:Int = 0
     private var content:String = ""
     
-    weak var delegate:personResumeDelegate?
+    weak var delegate:modifyItemDelegate?
     
     
     override func viewDidLoad() {
@@ -53,7 +53,7 @@ class evaluateSelfVC: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = "修改个人评价"
-        content = pManager.estimate
+        content = pManager.mode?.estimate ?? ""
         
     }
     override func viewDidDisappear(_ animated: Bool) {
@@ -118,14 +118,14 @@ extension evaluateSelfVC{
                 self.backgroundView.removeFromSuperview()
             })
         }else{
-            pManager.estimate = content
+            pManager.mode?.estimate = content
             SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: "保存成功")
             SVProgressHUD.dismiss(withDelay: 2, completion: {
                 self.navigationController?.navigationBar.isUserInteractionEnabled = true
                 self.tableView.isUserInteractionEnabled = true
                 self.navigationController?.view.willRemoveSubview(self.backgroundView)
                 self.backgroundView.removeFromSuperview()
-                self.delegate?.refreshResumeInfo(self.section)
+                self.delegate?.modifiedItem(indexPath: IndexPath.init(row: 0, section: self.section))
                 self.navigationController?.popViewController(animated: true)
             })
            

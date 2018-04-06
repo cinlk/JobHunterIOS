@@ -22,7 +22,7 @@ class PersonViewController: UIViewController {
         table.tableFooterView = UIView.init()
         table.delegate = self
         table.dataSource = self
-         table.register(personTableCell.self, forCellReuseIdentifier: personTableCell.identity())
+        table.register(personTableCell.self, forCellReuseIdentifier: personTableCell.identity())
         return table
     }()
     
@@ -50,6 +50,7 @@ class PersonViewController: UIViewController {
         
         //self.tabBarController?.tabBar.isHidden = false
         self.table.contentInsetAdjustmentBehavior = .never
+        self.navigationController?.navigationBar.settranslucent(true)
         self.navigationController?.navigationBar.isHidden = true
     }
    

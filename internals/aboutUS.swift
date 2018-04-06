@@ -88,9 +88,7 @@ class aboutUS: UITableViewController {
         super.viewDidLoad()
         initView()
         
-        for btn in share.itemButtons!{
-            btn.addTarget(self, action: #selector(btnClick(_:)), for: .touchUpInside)
-        }
+      
     }
     
 
@@ -244,9 +242,7 @@ extension aboutUS{
         }
     }
     
-    @objc func btnClick(_ btn:UIButton){
-        
-    }
+    
     
 }
 

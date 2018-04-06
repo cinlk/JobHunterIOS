@@ -18,7 +18,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
 
   
     private var touxaing:UIImageView = {
-        let tx = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: imgSize.width, height: imgSize.height))
+        let tx = UIImageView.init(frame: CGRect.zero)
         tx.contentMode = .scaleToFill
         tx.setCircle()
         return tx
@@ -110,23 +110,26 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
     }()
     
     
-    dynamic var mode:person_base_info?{
+    dynamic var mode:personBasicInfo?{
         
         didSet{
             touxaing.image = UIImage.init(named:  mode!.tx)
+            
+            
             name.text = mode!.name
-            sex.text = mode!.sex
+            sex.text = mode!.gender
             city.text = mode!.city
             phone.text = mode!.phone
             degree.text = mode!.degree
-            birthday.text = mode!.birthday
+            
+            birthday.text = mode!.birthDayString
             email.text = mode!.email
-            lable1.text = mode!.sex + "|" + mode!.city + "|" + mode!.degree + "|" + mode!.birthday
+            
+            lable1.text = mode!.gender + "|" + mode!.city + "|" + mode!.degree + "|" + mode!.birthDayString
             lable2.text = mode!.phone + "|" + mode!.email
             
             // cell 自适应高度
-            self.setupAutoHeight(withBottomView: lable2, bottomMargin: 10)
-
+            self.setupAutoHeight(withBottomViewsArray: [touxaing,lable1,lable2], bottomMargin: 10)
            
         }
     }
@@ -140,8 +143,9 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
         let views:[UIView] = [touxaing, name, lable1, lable2]
         self.contentView.sd_addSubviews(views)
         
+       
+        _ = touxaing.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(self.contentView,20)?.widthIs(imgSize.width)?.heightIs(imgSize.height)
         
-        _ = touxaing.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(self.contentView,20)?.autoHeightRatio(1)
         
         _ = name.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(touxaing,5)?.autoHeightRatio(0)
         
@@ -150,6 +154,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
         // 布局之后设置
         self.lable1.setMaxNumberOfLinesToShow(1)
         self.lable2.setMaxNumberOfLinesToShow(1)
+        touxaing.sd_cornerRadiusFromWidthRatio = 0.5
         
     }
     
