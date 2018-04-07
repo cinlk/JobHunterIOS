@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import SVProgressHUD
+
 
 
 fileprivate let campus = "campus"
@@ -341,13 +341,13 @@ extension subconditions{
         
         
         if  restMapData["职位类别"] == "(必选)请选择" || restMapData["职位类别"]!.isEmpty{
-            SVProgressHUD.showError(withStatus: "职位类别不能为空")
-            SVProgressHUD.dismiss(withDelay: 2)
+            //SVProgressHUD.showError(withStatus: "职位类别不能为空")
+            //SVProgressHUD.dismiss(withDelay: 2)
             return
         }
         if restMapData["城市"] == "(必选)请选择" || restMapData["城市"]!.isEmpty{
-            SVProgressHUD.showError(withStatus: "城市不能为空")
-            SVProgressHUD.dismiss(withDelay: 2)
+            //SVProgressHUD.showError(withStatus: "城市不能为空")
+            //SVProgressHUD.dismiss(withDelay: 2)
             return
         }
         

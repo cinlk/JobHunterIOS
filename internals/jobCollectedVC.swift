@@ -13,7 +13,8 @@ class jobCollectedVC: UITableViewController {
     
     
     // MARK: 收藏职位
-    private  lazy var jobTable  = DBFactory.shared.getJobDB()
+    
+    private lazy var jobManageRoot:JobManager = JobManager.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,6 +23,7 @@ class jobCollectedVC: UITableViewController {
         self.tableView.separatorStyle = .singleLine
         self.tableView.allowsMultipleSelectionDuringEditing = true
         self.tableView.register(jobdetailCell.self, forCellReuseIdentifier: jobdetailCell.identity())
+        
    
     }
     
@@ -30,7 +32,6 @@ class jobCollectedVC: UITableViewController {
         
         //jobTable = DBFactory.shared.getJobDB()
         // 获取服务器数据 根据收藏的jobs
-        print(jobTable.getCollectedIDs())
         
         
     }

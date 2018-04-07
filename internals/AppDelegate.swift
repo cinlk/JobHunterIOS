@@ -35,7 +35,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // 数据库信息
         let sqlite = SqliteManager.shared
         
-        GreetingMsg = localData.shared.getGreetingMSG()!["msg"] as! String
+        // 从服务器获取打招呼语句
+        GreetingMsg = "默认第一条"
         // root controller
         // 友盟初始化
         
@@ -78,9 +79,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // 例如: 你的新浪微博的AppKey为: 123456789, 那么这个值就是: wb123456789
         if url.scheme == "URL Schemes" {
             // 新浪微博 的回调
-            print("-----")
-            
-            return true
+           
+            return UMSocialManager.default().handleOpen(url)
         }
         
         return true

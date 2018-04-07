@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import SVProgressHUD
+
 
 fileprivate let des:String = "当前绑定手机号"
 fileprivate let inputPhone:String = "请输入新手机号"

@@ -19,6 +19,8 @@ enum mainPageRefreshStatus{
     case beginFooterRefresh
     case endFooterRefresh
     case NoMoreData
+    // MARK 需要细化错误类型？
+    case error
 }
 
 
@@ -84,6 +86,8 @@ class mainPageViewMode {
             self.index = IsPullDown ? 0 : self.index + 1
             if IsPullDown{
                
+                // 分 3次请求拉取数据，合并一次请求？？？
+                // 得到所有数据才展示界面
                 _ = self.request.getCatagories().subscribe(onNext: { (names) in
                     self.catagory.value = names
                 })
@@ -92,13 +96,21 @@ class mainPageViewMode {
                 }, onError: {
                     error in
                     print(error)
+                    // 处理错误
+                    self.refreshStatus.value = .error
                 }
                 )
+                
                 _ = self.request.getCompuseJobs(index: self.index).subscribe(onNext: { (compuseJobs) in
                     self.compuseJobItems.value = IsPullDown ? compuseJobs : (self.compuseJobItems.value) + compuseJobs
                 }, onError: { error in
+                    // 处理错误
+                    //Thread.sleep(forTimeInterval: 2)
+                    print(error)
                     self.compuseJobItems.value = []
+                    self.refreshStatus.value = .error
                 }, onCompleted: {
+                    // 正常结束
                     self.moreData = true
                     self.refreshStatus.value = IsPullDown ? .endHeaderRefresh : .endFooterRefresh
                 }, onDisposed: nil)
@@ -124,7 +136,13 @@ class mainPageViewMode {
                     }
                 }).disposed(by: self.disposebag)
             }
-            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: disposebag)
+            }, onError: { error in
+                print(error)
+                self.refreshStatus.value = .error
+                
+        }, onCompleted: {
+            print("获取数据完成")
+        }, onDisposed: nil).disposed(by: disposebag)
         
     }
     

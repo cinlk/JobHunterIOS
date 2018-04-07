@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import SVProgressHUD
+
 
 
 fileprivate let headerViewH:CGFloat = 50

@@ -10,6 +10,8 @@ import UIKit
 import RxSwift
 import RxCocoa
 
+fileprivate let bottomH:CGFloat = 120
+
 class LogViewController: UIViewController {
 
     
@@ -26,6 +28,12 @@ class LogViewController: UIViewController {
     
     @IBOutlet weak var registerBtn: UIButton!
     @IBOutlet weak var forgetPasswordBtn: UIButton!
+    
+    // 第三方登录
+    
+    private lazy var tLogin:ThirdPartLoginView =  ThirdPartLoginView(frame: CGRect.init(x: 0, y: ScreenH-bottomH, width: ScreenW, height: bottomH))
+    
+    
     
     // 登录进度
     lazy var activiyIndicator:UIActivityIndicatorView = {
@@ -64,7 +72,7 @@ class LogViewController: UIViewController {
     override func viewDidLoad() {
 
         super.viewDidLoad()
-        
+        tLogin.delegate = self
         self.initViews()
         self.touchView()
         self.setVM()
@@ -197,6 +205,7 @@ extension LogViewController{
     
     private func  initViews(){
         
+        self.view.addSubview(tLogin)
         self.view.addSubview(validatPhone)
         self.loginButton.addSubview(activiyIndicator)
         
@@ -347,3 +356,22 @@ extension LogViewController: UITextFieldDelegate{
     
 }
 
+
+// 第三方登录代理
+extension LogViewController:thirdPartLoginDelegate{
+    
+    func verifyLoggable(view:UIView, type: UMSocialPlatformType, respons:UMSocialUserInfoResponse){
+        // 与服务器交互，判断是否关联了 注册的手机号， 如果是就登录
+        
+        // 否则弹出界面 关联手机号，在登录
+        // test
+        let bindPhone = BindAccountVC()
+        self.navigationController?.pushViewController(bindPhone, animated: true)
+    }
+    func showError(view:UIView,message:String){
+        //let alertVC = UIAlertController.init(title: "test", message: nil, preferredStyle: .alert)
+        
+        //self.present(alertVC, animated: true, completion: nil)
+    }
+    
+}

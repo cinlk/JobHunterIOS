@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import SVProgressHUD
+
 
 
 fileprivate let sections:Int = 2
@@ -16,20 +16,13 @@ fileprivate let openGreeting:String = "启动打招呼用语"
 class greetingVC: UITableViewController {
 
     
-    // 网络加载数据
-    private var datas:[String] = ["默认第一条","语句1", "语句2", "语句3", "语句4", "语句5", "语句6"]
-    //private var isShow:Bool = true
+    private var data:greetingModel?
     
-    private var currentChooseRow:Int = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
         initView()
-        let currentMsg  = localData.shared.getGreetingMSG()!["msg"] as! String
-        IsGreeting = (localData.shared.getGreetingMSG()!["isGreeting"] as? Bool) ?? true
-        
-        currentChooseRow =  datas.index(of: currentMsg) ?? 0 
-        
+        loadGreetings()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -60,31 +53,32 @@ class greetingVC: UITableViewController {
         if section == 0 {
             return 1
         }
-        if IsGreeting{
-            return datas.count
-        }else{
-            return 0
+        //
+        if let data = data{
+            return  data.isOn ? data.des.count : 0
         }
+        return 0 
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: switchCell.identity(), for: indexPath) as! switchCell
             cell.leftLabel.text = openGreeting
-            cell.switchOff.isOn = IsGreeting
+            cell.switchOff.isOn = data?.isOn ?? false
             cell.switchOff.addTarget(self, action: #selector(switchBtn(sender:)), for: .valueChanged)
             
             return cell
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentity, for: indexPath)
         
-        if indexPath.row == currentChooseRow{
+        if indexPath.row == data?.currentIndex{
             cell.accessoryType = .checkmark
             tableView.selectRow(at: indexPath, animated: false, scrollPosition: .top)
         }else{
             cell.accessoryType = .none
         }
-        cell.textLabel?.text = datas[indexPath.row]
+        cell.textLabel?.text = data?.des[indexPath.row]
         return cell
         
     }
@@ -95,7 +89,7 @@ class greetingVC: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if indexPath.section == 1{
-                currentChooseRow = indexPath.row
+                data?.currentIndex = indexPath.row
                 let cell = tableView.cellForRow(at: indexPath)
                 cell?.accessoryType = .checkmark
                 updateGreeting()
@@ -136,7 +130,7 @@ class greetingVC: UITableViewController {
         if section == 0 {
             return 10
         }
-        if IsGreeting{
+        if data?.isOn ?? false{
             return 20
         }else{
             return 0
@@ -160,24 +154,49 @@ extension greetingVC{
 extension greetingVC{
     @objc func switchBtn(sender: UISwitch){
         IsGreeting = sender.isOn
-        localData.shared.setOnGreeting(flag: IsGreeting)
+        data?.isOn = sender.isOn
+        // 服务器更新数据
         self.tableView.reloadSections([1], animationStyle: .none)
         
         //print(tableView.indexPathsForSelectedRows)
     }
     
     private func updateGreeting(){
-        let msg = datas[currentChooseRow]
-        let time = Float(Date().timeIntervalSince1970)
+        // 服务器更新数据
+        let msg = data!.des[data!.currentIndex]
         GreetingMsg = msg
         let loading = Bundle.main.url(forResource: "loading", withExtension: "gif")
-        SVProgressHUD.show( UIImage.animationImageWithData(data: NSData.init(contentsOf: loading!)), status: "加载")
-        SVProgressHUD.dismiss(withDelay: 1, completion: nil)
-        // 上传数据(数据同步问题？？ 本地一份，远端一份 比较时间)
-        localData.shared.setGreetingNSG(msg: msg, timeInterval: time)
+        
+        
+        var hub = showProgressHun(message: "加载数据", view: self.view)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            hub.hide(animated: true)
+            
+        }
+        
+        
+        
+       
     }
 }
 
+
+// 异步获取数据
+extension greetingVC{
+    private func loadGreetings(){
+        
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+           
+            
+            Thread.sleep(forTimeInterval: 3)
+            self?.data = greetingModel(JSON: ["isOn":true,"des":["默认第一条","第二条","第三条","第四条","第五条"],"currentIndex":0])
+            DispatchQueue.main.async(execute: {
+                self?.tableView.reloadData()
+            })
+        }
+        
+    }
+}
 
 
 

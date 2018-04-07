@@ -32,4 +32,7 @@ extension UIColor{
         return  UIColor.init(r: 234, g: 234, b: 234)
     }
    
+    class func backAlphaColor() -> UIColor{
+        return UIColor.init(r: 34, g: 34, b: 34, alpha: 0.8)
+    }
 }

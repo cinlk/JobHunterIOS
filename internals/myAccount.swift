@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import SVProgressHUD
+
 
 
 fileprivate let cellIdentity:String = "cell"
@@ -17,7 +17,8 @@ fileprivate let sectionStr:[String] = ["账号安全设置","账号绑定"]
 class myAccount: UITableViewController {
 
     
-    private lazy var datas:[String:[AccountBase]] = [:]
+    private lazy var datas:[AccountBinds] = []
+    private lazy var phoneNumber = "13718754627"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,24 +50,31 @@ class myAccount: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
          // #warning Incomplete implementation, return the number of rows
-         return (datas[sectionStr[section]]?.count)!
+         //return (datas[sectionStr[section]]?.count)!
+        if section == 0 {
+            return 2
+        }
+        return datas.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
        // let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentity, for: indexPath)
         let cell = UITableViewCell.init(style: .value1, reuseIdentifier: cellIdentity)
-        let item  = datas[sectionStr[indexPath.section]]![indexPath.row]
+        let item  = datas[indexPath.row]
         cell.textLabel?.textAlignment = .left
-        cell.imageView?.image = UIImage.barImage(size: CGSize.init(width: 30, height: 30), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: item.imageName!)
-        cell.textLabel?.text = item.name
+       
+        
         
         if indexPath.section == 0{
-            let sec =   (item as! AccountSecurity)
-            if (sec.extra?.isEmpty)!{
+            // 修改密码
+            if indexPath.row == 1{
                 cell.accessoryType = .disclosureIndicator
+                cell.textLabel?.text = "修改密码"
+                cell.imageView?.image = UIImage.barImage(size: CGSize.init(width: 30, height: 30), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "password")
             }else{
-            
-                cell.detailTextLabel?.text = sec.extra!
+                // 修改手机号
+                cell.textLabel?.text = "修改手机号"
+                cell.detailTextLabel?.text = phoneNumber
                 let label = UILabel.init(frame: CGRect.zero)
                 label.textColor = UIColor.blue
                 label.font = UIFont.systemFont(ofSize: 16)
@@ -75,13 +83,16 @@ class myAccount: UITableViewController {
                 label.textAlignment = .right
                 label.sizeToFit()
                 cell.accessoryView = label
+                cell.imageView?.image = UIImage.barImage(size: CGSize.init(width: 30, height: 30), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "iPhoneIcon")
             }
             
         }else{
-            let bind = (item as! AccountBinds)
-            if bind.isBind!{
+             cell.imageView?.image = UIImage.barImage(size: CGSize.init(width: 30, height: 30), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: item.imageName!)
+            cell.textLabel?.text = item.apptype?.des
+            if item.isBind!{
                 cell.detailTextLabel?.text = "解除绑定"
                 cell.detailTextLabel?.textColor = UIColor.blue
+                
             }else{
                 cell.accessoryType = .disclosureIndicator
             }
@@ -97,20 +108,22 @@ class myAccount: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
-        if  let name =  datas[sectionStr[indexPath.section]]?[indexPath.row].name{
-            switch name{
-            case "手机号":
+        if indexPath.section == 0 {
+            if indexPath.row == 0{
                 let changePhone = changePhoneVC()
-                changePhone.currentPhoneLabel.text = "13718754627"
+                changePhone.currentPhoneLabel.text = phoneNumber
                 self.navigationController?.pushViewController(changePhone, animated: true)
-            case "修改密码":
+            }else{
                 let ps  = changePassword()
                 self.navigationController?.pushViewController(ps, animated: true)
-            // MARK TODO 微信，微博，qq 第三方接入 绑定
-            default:
-                break
             }
+        }else{
+            let item = datas[indexPath.row]
+            self.operationApp(type: item.apptype!, bind: item.isBind!, row: indexPath.row)
         }
+        
+        
+        
         
     }
     
@@ -138,22 +151,88 @@ class myAccount: UITableViewController {
     
 }
 
+extension myAccount{
+    
+    // 绑定或解绑app
+    private func operationApp(type: appType, bind:Bool, row:Int ){
+        
+        switch type{
+        case .qq:
+            if bind{
+                // 解绑
+                self.datas[row].isBind = false
+                self.tableView.reloadSections([1], animationStyle: .automatic)
+                
+            }else{
+                // 绑定
+                UMSocialManager.default().getUserInfo(with: .QQ, currentViewController: self) { (resp, error) in
+                    if error != nil{
+                        print("授权失败, 不能绑定")
+                    }else{
+                        if let response = resp as? UMSocialUserInfoResponse{
+                            
+                            // 得到uid 存入服务器
+                            print("绑定成功")
+                            // 刷新界面
+                            self.datas[row].isBind = true
+                            self.tableView.reloadSections([1], animationStyle: .automatic)
+                        }
+                    }
+                }
+            }
+        case  .weixin:
+            if bind{
+                
+                self.datas[row].isBind = false
+                self.tableView.reloadSections([1], animationStyle: .automatic)
+            }else{
+                
+                UMSocialManager.default().getUserInfo(with: .wechatSession, currentViewController: self) { (resp, error) in
+                    if error != nil{
+                        print("授权失败\(error), 不能绑定")
+                    }else{
+                        if let response = resp as? UMSocialUserInfoResponse{
+                            
+                            // 得到uid 存入服务器 提示进度
+                            print("绑定成功")
+                            // 刷新界面
+                            self.datas[row].isBind = true
+                            self.tableView.reloadSections([1], animationStyle: .automatic)
+                        }
+                    }
+                }
+                
+            }
+        case .weibo:
+            if bind{
+                
+                self.datas[row].isBind = false
+                self.tableView.reloadSections([1], animationStyle: .automatic)
+                
+            }else{
+                
+            }
+            
+        default:
+            break
+        }
+    }
+}
 
 extension myAccount{
     
     
     private func loadData(){
         
-        let phone =  AccountSecurity(JSON: ["imageName":"iPhoneIcon","name":"手机号","extra":"13718754627"])
-        let secutiy = AccountSecurity(JSON: ["imageName":"private","name":"修改密码","extra":""])
-        let first:[AccountSecurity]  = [phone!, secutiy!]
-        datas["账号安全设置"] = first
-        let second:[AccountBinds] = [AccountBinds(JSON: ["imageName":"qq","name":"绑定QQ账号","isBind": false])!,
-                                     AccountBinds(JSON: ["imageName":"sina","name":"绑定微博账号","isBind": true])!,
-                                     AccountBinds(JSON: ["imageName":"wechat","name":"绑定微信账号","isBind": false])!]
+        // 获取手机号
+        
+        // 获取bindApps
+        let bindApps:[AccountBinds] = [AccountBinds(JSON: ["imageName":"qq","type":"qq","isBind": false])!,
+                                     AccountBinds(JSON: ["imageName":"sina","type":"weibo","isBind": true])!,
+                                     AccountBinds(JSON: ["imageName":"wechat","type":"weixin","isBind": false])!]
         
         
-        datas["账号绑定"] = second
+        datas = bindApps
     }
     
     private func initView(){

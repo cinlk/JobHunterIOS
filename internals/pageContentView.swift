@@ -51,6 +51,7 @@ class pageContentView: UIView {
         self.childVCs = childVCs
         self.pVC = pVC
         for vc in childVCs{
+            
             self.pVC?.addChildViewController(vc)
             vc.didMove(toParentViewController: self.pVC)
         }
@@ -84,6 +85,7 @@ extension pageContentView: UICollectionViewDataSource{
             view.removeFromSuperview()
         }
         
+        // 把子vc 的view 放入cell
         let cVC = childVCs![indexPath.row]
         cVC.view.frame = cell.contentView.bounds
         cell.contentView.addSubview(cVC.view)

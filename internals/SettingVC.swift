@@ -7,14 +7,12 @@
 //
 
 import UIKit
-import SVProgressHUD
+
 
 fileprivate let cellIdentifier:String = "default"
 
 
 class SettingVC: UIViewController {
-    
-    
     
     enum SettingCellItem:String{
         case none
@@ -59,7 +57,6 @@ class SettingVC: UIViewController {
     
     private lazy var items:[Int:[SettingCellItem]] = [0:[.myAccount,.messageSetting,.greeting,.help,.feedBack],1:[.clearCache,.aboutUS,.evaluationUS], 2:[.logout]]
     
-    private lazy var records:[SettingCellItem:(Int,Int)] = [:]
     
     private lazy var label:UILabel = {
         let label = UILabel.init(frame: CGRect.zero)
@@ -170,7 +167,6 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let itemType:SettingCellItem = items[indexPath.section]![indexPath.row]
-        records[itemType] = (indexPath.section, indexPath.row)
         
         switch  itemType {
             
@@ -225,17 +221,16 @@ extension SettingVC: UIScrollViewDelegate{
 
 extension SettingVC {
     
+    // 清理缓存
     private func clearCache(){
         
-        SVProgressHUD.showSuccess(withStatus: "清理完成")
-        SVProgressHUD.dismiss(withDelay: 3) {
-            self.cacheSize = ""
-            self.tableView.reloadData()
-        }
         
-        // MARK bug ???
-        //self.tableView.reloadRows(at: [IndexPath.init(row: 0, section: 1)], with: .none)
-    
+          
+          showOnlyTextHub(message: "清楚完成", view: self.view)
+          self.cacheSize = ""
+          //self.tableView.reloadSections([1], animationStyle: .automatic)
+          self.tableView.reloadData()
+
     }
     
     // 评价app
@@ -250,9 +245,10 @@ extension SettingVC {
     private func logoutAlertShow(){
         self.present(logoutView, animated: true, completion: nil)
     }
+    
+    
     private func logout(){
         
-       
        let loginView =  UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "login") as! LogViewController
          // 禁止自动登录
          DBFactory.shared.getUserDB().setLoginAuto(auto: false)

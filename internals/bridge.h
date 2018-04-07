@@ -13,6 +13,7 @@
 #import <SocketRocket/SocketRocket.h>
 #import <UMShare/UMShare.h>
 #import <UMCommon/UMCommon.h>
+#import <MBProgressHUD/MBProgressHUD.h>
 #endif /* bridge_h */
 
 

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+
 private let tsection = 2
 private let tHeaderHeight:CGFloat = 200
 
@@ -161,7 +162,7 @@ class publisherControllerView: UITableViewController {
             self.navigationController?.pushViewController(comp, animated: true)
         case 1:
             
-            jd.mode = publishJobs[indexPath.row]
+            jd.jobID = publishJobs[indexPath.row].id!
             self.navigationController?.pushViewController(jd, animated: true)
         default:
             break

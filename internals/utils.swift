@@ -10,6 +10,7 @@ import Foundation
 import SwiftDate
 import UserNotifications
 
+
 //
 public func  build_image(frame: CGRect, color:UIColor)->UIImage{
     
@@ -35,9 +36,21 @@ struct ShareItem {
     var type:UMSocialPlatformType?
     var bubbles:Int?
     
+    init(name:String?,image:String?, type:UMSocialPlatformType? = nil, bubbles:Int? = nil) {
+        self.name = name
+        self.image = image
+        self.type = type
+        self.bubbles = bubbles
+    }
     
     
 }
+
+// 第三方验证
+
+
+
+
 
 
 public func getCitys(filename:String)->[String:[String]]{
@@ -104,5 +117,8 @@ func openApp(appURL: String, completion: @escaping ((_ success: Bool)->())) {
 func  getUUID()->String{
     return UUID().uuidString.lowercased()
 }
+
+
+
 
 

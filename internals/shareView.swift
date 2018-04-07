@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import SVProgressHUD
+
 
 fileprivate var ROWNUMBERS = 2
 fileprivate let COLUME = 4
@@ -144,7 +144,7 @@ extension shareView{
             return
         }
         if type.rawValue == 1001{
-            SVProgressHUD.showSuccess(withStatus: "复制成功")
+            //SVProgressHUD.showSuccess(withStatus: "复制成功")
             return
         }
         

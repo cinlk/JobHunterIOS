@@ -11,7 +11,7 @@ import RxCocoa
 import RxSwift
 import RxDataSources
 import MJRefresh
-import SVProgressHUD
+
 
 class searchResultController: UIViewController,UIScrollViewDelegate {
 
@@ -95,7 +95,7 @@ extension searchResultController{
                 
                 print("end ")
             }
-            SVProgressHUD.dismiss()
+            //SVProgressHUD.dismiss()
             
         }, onCompleted: nil, onDisposed: nil).disposed(by: disposebag)
         

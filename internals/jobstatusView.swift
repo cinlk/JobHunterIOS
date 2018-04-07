@@ -195,7 +195,7 @@ extension jobstatusView{
     // 跳转job详细界面
     @objc func showJob(){
         let jobV = JobDetailViewController()
-        jobV.mode = CompuseRecruiteJobs(JSON: mode!.toJSON())
+        jobV.jobID = (mode?.id)!
         self.navigationController?.pushViewController(jobV, animated: true)
     }
 }

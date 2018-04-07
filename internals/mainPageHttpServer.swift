@@ -40,6 +40,7 @@ extension Jobs: TargetType{
         switch self {
         case  let .getInternshipJobs(limit):
             return "/intershipJobs/\(limit)"
+        // test
         case let .getCompuseJobs(limit):
             return "/compuseJobs/\(limit)"
         case .getCatagoryItem:

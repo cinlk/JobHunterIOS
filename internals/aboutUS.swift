@@ -7,7 +7,8 @@
 //
 
 import UIKit
-import SVProgressHUD
+import MBProgressHUD
+
 
 fileprivate let headerViewH:CGFloat = 160
 fileprivate let cellIdentiy:String = "default"
@@ -15,45 +16,30 @@ fileprivate let cellH:CGFloat = 45
 fileprivate let cellItem:[String] = ["服务条款","关注微信公众号","关注微博","客服电话","分享我们"]
 fileprivate let footViewH:CGFloat = ScreenH - headerViewH - (CGFloat(cellItem.count) * cellH) - NavH
 fileprivate let CelloffsetX:CGFloat = 16.0
-fileprivate let sharedViewH:CGFloat = 150.0
-// 从服务器获取数据
-fileprivate let wechatAccount:String = "wechat12345"
-fileprivate let ServicePhone = "400-546-6754"
-fileprivate let appDowloadLink:String = "https://下载链接/"
-
-
-// header
-fileprivate let icon:UIImage = #imageLiteral(resourceName: "evil")
-fileprivate let name:String = "校招"
-fileprivate let describe:String = "中国最好的校招平台"
-
-// footer
-fileprivate let companyName:String = "xxxxx 版权所有"
-fileprivate let versionName:String = "Version 1.1.0"
-fileprivate let copoyright:String = "xxx.com @CopyRight 2018 "
 
 
 class aboutUS: UITableViewController {
 
     
+    // mode
+    private var mode:AboutUsModel?
+    
     // header
     private lazy var header:aboutUSHeaderView = {
         let v = aboutUSHeaderView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: headerViewH))
         v.backgroundColor = UIColor.lightGray
-        v.mode = (icon:icon,name:name,desc:describe)
         return v
     }()
     // footer
     private lazy var footer:aboutUSFootView = {
         let v = aboutUSFootView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: footViewH))
         v.backgroundColor = UIColor.lightGray
-        v.mode = (companyName, versionName, copoyright)
         return v
     }()
     
     //phone call Alert
     private lazy var phoneAlert:UIAlertController = { [unowned self] in
-        let alert = UIAlertController.init(title: "呼叫电话 \(ServicePhone)", message: nil, preferredStyle: .alert)
+        let alert = UIAlertController.init(title: "呼叫电话 \(self.mode?.servicePhone)", message: nil, preferredStyle: .alert)
         let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
         let call = UIAlertAction.init(title: "呼叫", style: .default, handler: { (action) in
             self.callPhone()
@@ -65,7 +51,7 @@ class aboutUS: UITableViewController {
     
     // sharedView
     private lazy var share:shareView = {
-        let v = shareView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: sharedViewH))
+        let v = shareView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: shareViewH))
         UIApplication.shared.windows.last?.addSubview(v)
         return v
     }()
@@ -84,10 +70,12 @@ class aboutUS: UITableViewController {
         return shareBackground
     }()
     
+   
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         initView()
-        
+        loadData()
       
     }
     
@@ -119,6 +107,7 @@ class aboutUS: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     
         let name = cellItem[indexPath.row]
+        
         if name == "关注微信公众号" || name == "客服电话"{
             let cell = UITableViewCell.init(style: .value1, reuseIdentifier: "cell")
             cell.accessoryType = .disclosureIndicator
@@ -126,16 +115,16 @@ class aboutUS: UITableViewController {
             cell.textLabel?.translatesAutoresizingMaskIntoConstraints = false
             cell.textLabel?.text = name
             if name == "关注微信公众号"{
-                cell.detailTextLabel?.text =  wechatAccount
+                cell.detailTextLabel?.text =  mode?.wecaht ?? ""
             }else{
-                cell.detailTextLabel?.text =  ServicePhone
+                cell.detailTextLabel?.text =  mode?.servicePhone ?? ""
             }
             cell.detailTextLabel?.textAlignment = .right
             cell.detailTextLabel?.textColor = UIColor.lightGray
             cell.detailTextLabel?.font = UIFont.systemFont(ofSize: 16)
-            _ = cell.textLabel?.sd_layout().leftSpaceToView(cell.contentView,CelloffsetX)?.widthIs(150)
+            //_ = cell.textLabel?.sd_layout().leftSpaceToView(cell.contentView,CelloffsetX)?.widthIs(150)
             _ = cell.detailTextLabel?.sd_layout().rightEqualToView(cell.contentView)?.widthIs(200)
-            
+            print(cell)
             return cell
         }
         
@@ -157,6 +146,8 @@ class aboutUS: UITableViewController {
         switch name {
         case "服务条款":
             let serviceTerm = ServiceTerm()
+            serviceTerm.serviceURL = mode?.serviceRuleURL ?? ""
+            
             self.navigationController?.pushViewController(serviceTerm, animated: true)
         case "关注微信公众号":
             wechat()
@@ -191,18 +182,65 @@ extension aboutUS {
     }
 }
 
+
+// 异步加载数据
+extension aboutUS{
+    private func loadData(){
+     
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            Thread.sleep(forTimeInterval: 3)
+            
+            self?.mode = AboutUsModel(JSON: ["wecaht":"wechat12345","servicePhone":"400-546-6754","appId":"1234566","appIcon":"evil",
+                                             "appName":"校招","appDes":"中国最好的校招平台","company":"xxxxx 版权所有","version":"Version 1.1.0","copyRight":"xxx.com @CopyRight 2018 ","serviceRuleURL":"http://www.baidu.com"])
+            
+            DispatchQueue.main.async(execute: {
+                self?.header.mode = (icon: UIImage.init(named: (self?.mode?.appIcon)!)! ,name:self?.mode?.appName ?? "" ,desc:self?.mode?.appDes ?? "")
+                self?.footer.mode =  (company:self?.mode?.company ?? "",version: self?.mode?.version ?? "", copyRight:self?.mode?.copyRight ?? "")
+                
+                self?.tableView.reloadData()
+            })
+            
+        }
+    }
+    
+}
+
+extension aboutUS: MBProgressHUDDelegate{
+    
+    func hudWasHidden(_ hud: MBProgressHUD) {
+        print(hud.customView)
+    }
+}
 extension aboutUS{
     private func wechat(){
         // 复制到粘贴版
+       
+        
+         // 使用tableview  和 view 点击后 cell frame 错误?
+        // 换成 self.navigationController?.view 没问题
+        let hub = MBProgressHUD.showAdded(to: (self.navigationController?.view)!, animated: false)
+        hub.mode = .text
+        hub.delegate = self
+        hub.label.text = "微信账号已经复制, 跳转到微信"
+        // 黑色半透明
+        hub.bezelView.backgroundColor = UIColor.backAlphaColor()
+        hub.margin = 5
+        hub.label.textColor = UIColor.white
+        hub.removeFromSuperViewOnHide = true
+
+        hub.hide(animated: false, afterDelay: 2)
+        
+        
         let paste = UIPasteboard.general
-        paste.string = wechatAccount
-        SVProgressHUD.showSuccess(withStatus: "微信账号已经复制, 跳转到微信")
-        SVProgressHUD.dismiss(withDelay: 3) {
-            // 打开微信app
-            openApp(appURL: "weixin://") { (res) in
+        paste.string = mode?.wecaht ?? ""
+        //showOnlyTextHub(message: "微信账号已经复制, 跳转到微信", view: self.tableView, second: 2)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+             openApp(appURL: "weixin://") { (res) in
                 print("打开微信应用 \(res)")
+                hub.hide(animated: true)
             }
         }
+
     }
     
     // 浏览器打开微博
@@ -215,7 +253,8 @@ extension aboutUS{
     
     // 客服电话拨打
     private func callPhone(){
-        let phoneNumber = ServicePhone.replacingOccurrences(of: "-", with: "")
+        guard let phone = mode?.servicePhone else {return}
+        let phoneNumber =  phone.replacingOccurrences(of: "-", with: "")
         let phoneStr = "tel://" + phoneNumber
         
         openApp(appURL: phoneStr) { (bool) in
@@ -227,7 +266,7 @@ extension aboutUS{
         // navigation最外层
         self.navigationController?.view.addSubview(shareBackground)
         UIView.animate(withDuration: 0.3, animations: {
-            self.share.frame.origin.y = ScreenH - sharedViewH
+            self.share.frame.origin.y = ScreenH - shareViewH
         }, completion: nil)
         
     }

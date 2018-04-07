@@ -15,45 +15,40 @@ fileprivate let sectionH:CGFloat = 25
 
 class HelpsVC: UITableViewController {
 
-    
-    
     private lazy var  headerView:HeaderCollectionView = {  [unowned self] in
         let v = HeaderCollectionView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: headerH), itemSize: itemCGSize)
-        v.backgroundColor = UIColor.brown
+        v.backgroundColor = UIColor.clear
+        v.delegate = self
         return v
     }()
+
     
-    
-    private var guideItem:[ShareItem] = [ShareItem.init(name: "指导1", image: "bell", type: nil, bubbles: 0),
-                                         ShareItem.init(name: "指导2", image: "bell", type: nil, bubbles: 0),
-                                         ShareItem.init(name: "指导3", image: "bell", type:nil ,bubbles: 0),
-                                         ShareItem.init(name: "指导4", image: "bell", type:nil, bubbles: 0)]
-    
-    
-    
-    
-    
-    // cell selected
+    // 选中的cell
     private var selectedCellIndexPath:[IndexPath] = []
     
-    private var datas:[Int:[String:String]] = [0:["title":"啊哈哈哈","content":"达瓦大群多群无多无当前为多群无多"],1:["title":"吊袜带挖群多当前为多","content":"dwd迭代器我单独群无多当前为多群无多群无当前为多群无多群无当前为多群无多群无多当前为多群无多无当前为多群无多无"],2:["title":"达瓦大群","content":"达瓦大群无多群无当前为多群无\n dwqd大青蛙  \n dqwdqw   dqwdwq 当前为多群无多无群多\n 当前为多群 \n"],3:["title":"当前为多群无多无群大青蛙 当前为多群无多群无 当前为多群无多？？ 当前为多群无","content":"当前为多群无多群无 当前为多群多  当前为多群多群 但钱当前无多群 \n 当前为多群无多群无 \n 当前为多群无多群无"]]
+    private var mode:HelpAskModel?
+    // 兼容
+    private var shareItems:[ShareItem] = []
     
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         initView()
+        loadData()
         
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = "帮助"
+        self.navigationController?.insertCustomerView()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationItem.title = ""
+        self.navigationController?.removeCustomerView()
     }
     
 
@@ -71,23 +66,24 @@ class HelpsVC: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return datas.keys.count
+        return  (mode?.items.count ?? 0)
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+
         var cell = tableView.dequeueReusableCell(withIdentifier: expansionCell.identity(), for: indexPath) as? expansionCell
         if cell == nil{
             cell = expansionCell.init(style: .default, reuseIdentifier: expansionCell.identity())
             
         }
-        if let item = datas[indexPath.row]{
+        if let item = mode?.items[indexPath.row]{
             // 选中cell
             if selectedCellIndexPath.contains(indexPath){
-                let mode = helpModel.init(title: item["title"]!, detail: item["content"]!, select: true)
+                let mode = helpModel.init(title: item.title ?? "", detail: item.content ?? "", select: true)
                 cell?.mode = mode
                 
             }else{
-                let mode = helpModel.init(title: item["title"]!, detail: item["content"]!, select: false)
+                let mode = helpModel.init(title: item.title ?? "", detail: item.content ?? "", select: false)
                 cell?.mode = mode
             }
             
@@ -98,23 +94,12 @@ class HelpsVC: UITableViewController {
         return cell!
         
     }
+
     
-    
-    // secion
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let v = UIView.init(frame: CGRect.zero)
-        v.backgroundColor = UIColor.init(r: 234, g: 234, b: 234)
-        let label = UILabel.init(frame: CGRect.zero)
-        label.text = "常见问题"
-        label.textAlignment = .left
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
-        v.addSubview(label)
-        _ = label.sd_layout().leftSpaceToView(v,10)?.topSpaceToView(v,5)?.autoHeightRatio(0)
-        
-        return v
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "常见问题"
     }
-    
+
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return sectionH
     }
@@ -122,15 +107,15 @@ class HelpsVC: UITableViewController {
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
-        let item = datas[indexPath.row]!
+        guard let item = mode?.items[indexPath.row] else { return 0}
         // 显示已经选择cell 自适应高度
         if selectedCellIndexPath.contains(indexPath){
             
-            let mode = helpModel.init(title: item["title"]!, detail: item["content"]!, select: true)
+            let mode = helpModel.init(title: item.title ?? "", detail: item.content ?? "", select: true)
             return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: expansionCell.self, contentViewWidth: ScreenW)
         }else{
             // 未选择cell 高度
-            let mode = helpModel.init(title: item["title"]!, detail: item["content"]!, select: false)
+            let mode = helpModel.init(title: item.title ?? "", detail: item.content ?? "", select: false)
             
              return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: expansionCell.self, contentViewWidth: ScreenW)
         }
@@ -155,42 +140,57 @@ extension HelpsVC{
     private func initView(){
         self.tableView.tableFooterView = UIView.init()
         
-        // buildStackItemView(items: guideItem, ItemRowNumbers: rowItem, mainStack: headerView.mainStack, itemButtons: &headerView.itemButtons)
-        /*headerView.itemButtons?.forEach { [unowned self] (btn) in
-            btn.addTarget(self, action: #selector(chooseSub(btn:)), for: .touchUpInside)
-        }*/
-        
-        headerView.mode = guideItem
+        //headerView.mode = guideItem
         self.tableView.tableHeaderView = headerView
         self.tableView.register(expansionCell.self, forCellReuseIdentifier: expansionCell.identity())
         
     }
-}
-
-
-extension HelpsVC{
-    @objc private func chooseSub(btn:UIButton){
-        print(btn)
+    
+    // 异步获取数据
+    private func loadData(){
+        
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let items = [HelpItemsModel(JSON: ["title":"问题2","content":"当前的无群多群无多群无多放弃而放弃我"])!, HelpItemsModel(JSON: ["title":"问题1","content":"当前的无群多群无多群无多dqwd 当前为多\n放弃而放弃我"])!, HelpItemsModel(JSON: ["title":"问题3","content":"当前的无群多群无多群无多dqwdq放弃而  \n dqwdq-dadwq 放弃我\n dqwdqwd "])!,
+                HelpItemsModel(JSON: ["title":"问题4","content":"当前的无群多群无多群无多dqwdq放弃而  \n dqwdq-dadwq 放弃我\n dqwdqwd "])!
+                ]
+            
+            let guide:[HelpGuidModel] = [HelpGuidModel(JSON: ["name":"指导1","image":"bell"])!, HelpGuidModel(JSON: ["name":"指导2","image":"bell"])!,
+                HelpGuidModel(JSON: ["name":"指导3","image":"bell"])!,HelpGuidModel(JSON: ["name":"指导4","image":"bell"])!]
+            
+            guide.forEach{
+                
+                self?.shareItems.append(ShareItem.init(name:$0.name!,image:$0.image!))
+            }
+            
+            
+            Thread.sleep(forTimeInterval: 3)
+            
+            self?.mode = HelpAskModel(JSON: [:])
+            self?.mode?.items = items
+            self?.mode?.guide = guide
+            
+           
+            DispatchQueue.main.async(execute: {
+                self?.headerView.mode = self?.shareItems
+                self?.tableView.reloadData()
+            })
+        }
+        
     }
 }
 
-
-// 取消悬挂的sectionview, 检查滑动区间，设置contentInset值
-// 滑动不流畅？？？
-extension HelpsVC{
-    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        // 最低值
-        let threhold:CGFloat = headerH - NavH
-        
-        if scrollView == self.tableView{
-            let offsetY = scrollView.contentOffset.y
-            if offsetY >= threhold && offsetY < threhold + sectionH{
-                scrollView.contentInset = UIEdgeInsetsMake(threhold - offsetY, 0, 0, 0)
-            }else if offsetY >= threhold + sectionH{
-                scrollView.contentInset = UIEdgeInsetsMake(-sectionH, 0, 0, 0)
-            }else{
-                 scrollView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0)
-            }
+// 选中头部图 进入指导
+extension HelpsVC:headerCollectionViewDelegate{
+    
+    func chooseItem(index: Int) {
+        if let item = self.mode?.guide[index]{
+            print(item)
+            self.navigationController?.pushViewController(HelpGuideViewController(), animated: true)
         }
     }
+    
+    
+    
 }
+
+

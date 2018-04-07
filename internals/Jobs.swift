@@ -12,106 +12,9 @@ import RxDataSources
 
 
 
+// 公司数据model
 
-class JobManager{
-    
-    enum jobType {
-        case compus
-        case intern
-        case company
-        case none 
-    }
-    
-    static let shared:JobManager = JobManager.init()
-    private init(){
-        initialData()
-    }
-    
-    
-    
-    private func initialData(){
-        for _ in 0..<5{
-            
-            let json:[String:String] = ["picture":"chrome","company":"google","jobName":"研发",
-                                        "address":"山上","salary":"100万","create_time":"2018-01-09","education":"本科"]
-            let cjson:[String:Any] = ["id":"678","icon":"sina","name":"新浪带我去的群无多大青蛙  当前为多无群  当前为多群无  当前为多群无","describe":"大公司，有前景 当前的群 dqwdq 当前为多群无 当前为多群无多群无多无群 当前为多群多群多群多群无 当前为多群无多无前端去无 当前为多群无多群无多无群  带我去的","staffs":"1000人以上","tags":["带我去的","地段"]]
-            
-            collectedCompanys.append(comapnyInfo(JSON: cjson)!)
-            
-            collectedJobs.append(CompuseRecruiteJobs(JSON: json)!)
-        }
-        
-    }
-    
-    //TODO  合并 实习和社招被收藏的job 条目 ？？
-    private var collectedJobs:[CompuseRecruiteJobs] = []
-    private var collectedInternJobs:[InternshipJobs] = []
-    
-    // 收藏的公司信息
-    private var collectedCompanys:[comapnyInfo] = []
-    
-    open func  addCollectedItem(item:CompuseRecruiteJobs){
-        if collectedJobs.contains(item){
-            return
-        }
-        
-        collectedJobs.append(item)
-    }
-    
-    open func removeCollectedByIndex(type:jobType,row:[Int]){
-        switch type {
-        case .compus:
-            
-            self.collectedJobs.remove(indexes: row)
-        case .company:
-            self.collectedCompanys.remove(indexes: row)
-        default:
-            break
-        }
-    }
-    
-    open func removeCollectedItem(item:CompuseRecruiteJobs){
-        if let index =   collectedJobs.index(of: item){
-            collectedJobs.remove(at: index)
-        }
-    }
-    
-    open func addCompanyItem(item: comapnyInfo){
-        if collectedCompanys.contains(item){
-            return
-        }
-        
-        collectedCompanys.append(item)
-    }
-    
-    open func removeCollectedCompany(item: comapnyInfo){
-        if let index = collectedCompanys.index(of: item){
-            collectedCompanys.remove(at: index)
-        }
-    
-    }
-    
-    open func getCollections(type:jobType)->[Any]{
-        switch type {
-            
-        case .compus:
-            return collectedJobs
-        case .intern:
-            return collectedInternJobs
-        case .company:
-            return collectedCompanys
-        default:
-            return [Int]()
-        }
-    }
-    
-}
-// 单列
-let jobManageRoot:JobManager = JobManager.shared
-
-// 公司数据
-
-struct  comapnyInfo: Mappable, Comparable {
+class  comapnyInfo: NSObject, Mappable, Comparable {
     
     static func < (lhs: comapnyInfo, rhs: comapnyInfo) -> Bool {
         return true
@@ -131,11 +34,11 @@ struct  comapnyInfo: Mappable, Comparable {
     var tags:[String]?
     
     
-    init?(map: Map) {
+    required init?(map: Map) {
         
     }
     
-    mutating func mapping(map: Map) {
+    func mapping(map: Map) {
         id <- map["id"]
         icon <- map["icon"]
         name <- map["name"]

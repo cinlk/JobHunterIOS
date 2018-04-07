@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import SVProgressHUD
+
 
 
 
@@ -30,7 +30,7 @@ class companyscrollTableViewController: UIViewController {
     private lazy var companyTable = DBFactory.shared.getCompanyDB()
     
     
-    
+        
     private lazy var headerView:CompanyHeaderView = {
        let header = CompanyHeaderView.init(frame: CGRect.zero)
        header.backgroundColor = UIColor.white
@@ -315,20 +315,19 @@ extension companyscrollTableViewController{
         
         
         if !isCollected{
-            SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: "收藏成功")
-            jobManageRoot.addCompanyItem(item: comapnyInfo(JSON: json)!)
+            showOnlyTextHub(message: "收藏成功", view: self.view)
+            //jobManageRoot.addCompanyItem(item: comapnyInfo(JSON: json)!)
             isCollected = true
             btn.isSelected = true
             companyTable.setCollectedBy(id: CompanyID)
         }else{
-            jobManageRoot.removeCollectedCompany(item: comapnyInfo(JSON: json)!)
-            SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: "取消收藏")
+            //jobManageRoot.removeCollectedCompany(item: comapnyInfo(JSON: json)!)
+            showOnlyTextHub(message: "取消收藏", view: self.view)
             isCollected = false
             btn.isSelected = false
             companyTable.unCollected(id: CompanyID)
         }
        
-        SVProgressHUD.dismiss(withDelay: 0.5)
         
         
         
@@ -452,7 +451,7 @@ extension companyscrollTableViewController: UITableViewDelegate,UITableViewDataS
         tableView.deselectRow(at: indexPath, animated: false)
         if tableView == self.joblistTable && indexPath.section == 1{
             if let info =  filterJobs?[indexPath.row]{
-                jobDetail.mode = info
+                jobDetail.jobID = info.id!
                 self.navigationController?.pushViewController(jobDetail, animated: true)
             }
         }

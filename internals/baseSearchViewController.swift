@@ -11,7 +11,7 @@ import YNDropDownMenu
 import MJRefresh
 import RxSwift
 import RxCocoa
-import SVProgressHUD
+
 import RxDataSources
 
 
@@ -244,7 +244,7 @@ extension baseSearchViewController:SearchResultDelegate,UISearchBarDelegate{
         // MARK
         let vm  = (self.searchResultsController as!  searchResultController).vm
         
-        SVProgressHUD.show(withStatus: "加载数据")
+        //SVProgressHUD.show(withStatus: "加载数据")
         vm?.loadData.onNext("load")
         
         

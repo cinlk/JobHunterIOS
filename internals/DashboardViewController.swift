@@ -13,7 +13,8 @@ import RxCocoa
 import RxSwift
 import RxDataSources
 import MJRefresh
-import SVProgressHUD
+import MBProgressHUD
+
 
 
 fileprivate let tableSection = 3
@@ -66,7 +67,22 @@ class DashboardViewController: UIViewController{
     //
     private var flag = false
     // MVVM 释放内存
-    let disposebag = DisposeBag.init()
+    private let disposebag = DisposeBag.init()
+    // viewModel
+    private var vm:mainPageViewMode!
+    
+    
+    // 消息提示框
+    private lazy var hub:MBProgressHUD = { [unowned self] in
+        
+        let  hub = MBProgressHUD.showAdded(to: (self.navigationController?.view!)!, animated: true)
+        hub.mode = .indeterminate
+        hub.label.text = "加载数据"
+        hub.removeFromSuperViewOnHide = false
+        hub.margin = 10
+        hub.label.textColor = UIColor.black
+        return hub
+    }()
     
     
     //导航栏遮挡背景view
@@ -116,6 +132,15 @@ class DashboardViewController: UIViewController{
         
     }()
     
+    //错误显示界面
+    private lazy var  errorView:ErrorPageView = {  [unowned self] in
+        let eView = ErrorPageView.init(frame: self.view.bounds)
+        eView.isHidden = true
+        // 再次刷新
+        eView.reload = reload
+        return eView
+    }()
+    
     // 选择城市VC
     private lazy var cityVC:CityViewController = CityViewController()
      
@@ -130,7 +155,7 @@ class DashboardViewController: UIViewController{
         // viewmodel
         self.loadViewModel()
         // 加载数据
-        self.tables.mj_header.beginRefreshing()
+        loadData()
         
         //self.hidesBottomBarWhenPushed = true 
         
@@ -214,6 +239,36 @@ extension DashboardViewController{
         searchBarContainer.addSubview((searchController?.searchBar)!)
         
         self.navigationItem.titleView = searchBarContainer
+        
+        
+        // 添加错误显示界面
+        self.view.insertSubview(errorView, at: 0)
+        
+        // 显示加载界面
+        self.hub.show(animated: true)
+        
+        self.tables.isHidden =  true
+        self.searchBarContainer.isHidden = true
+        
+    }
+    
+    // 加载数据
+    private func loadData(){
+        //
+        self.tables.mj_header.beginRefreshing()
+        
+    }
+    
+    // 再次加载
+    private func reload(){
+        
+        self.hub.show(animated: true)
+        //self.errorView.isHidden = true
+        
+        //self.tables.mj_header.beginRefreshing()
+        vm.refreshData.onNext(true)
+        //beginRefreshingCompletionBlock
+        
     }
 }
 
@@ -333,7 +388,9 @@ extension DashboardViewController: UISearchResultsUpdating{
         //let vm = (self.searchController?.searchResultsController as! searchResultController).vm
         searchResultVC.vm.loadData.onNext("test")
         //vm?.loadData.onNext("test")
-        SVProgressHUD.show(withStatus: "加载数据")
+        //SVProgressHUD.show(withStatus: "加载数据")
+        showOnlyTextHub(message: "加载数据", view: self.view)
+        
         
     }
     
@@ -570,7 +627,8 @@ extension DashboardViewController{
     private func loadViewModel(){
         
         let request = mainPageServer.shareInstance
-        let vm = mainPageViewMode.init(request: request)
+        
+        vm = mainPageViewMode.init(request: request)
         
         let dataSource = self.dataSource()
         self.tables.rx.setDelegate(self).disposed(by: disposebag)
@@ -602,13 +660,28 @@ extension DashboardViewController{
                 self?.tables.mj_header.beginRefreshing()
             case .endHeaderRefresh:
                 self?.tables.mj_footer.resetNoMoreData()
-                self?.tables.mj_header.endRefreshing()
+                //正常结束刷新后，显示界面
+                self?.tables.mj_header.endRefreshing(completionBlock: {
+                    self?.tables.isHidden = false
+                    self?.searchBarContainer.isHidden = false
+                    self?.errorView.isHidden = true
+                    self?.hub.hide(animated: true)
+                })
+                //self?.tables.mj_header.endRefreshing()
             case .beginFooterRefresh:
                 self?.tables.mj_footer.beginRefreshing()
             case .endFooterRefresh:
                 self?.tables.mj_footer.endRefreshing()
             case .NoMoreData:
                 self?.tables.mj_footer.endRefreshingWithNoMoreData()
+            
+            case .error:
+                //self?.hub.label.text = "网络异常"
+                //self?.hub.hide(animated: true, afterDelay: 2)
+                self?.hub.hide(animated: true)
+                // 显示错误界面
+                self?.errorView.isHidden = false
+                
                 
             default:
                 break
@@ -617,8 +690,11 @@ extension DashboardViewController{
         
         
         
-        self.tables.mj_header  = MJRefreshNormalHeader.init {
-            vm.refreshData.onNext(true)
+        //self.tables.mj_header.beginRefreshing(completionBlock: <#T##(() -> Void)!##(() -> Void)!##() -> Void#>)
+        self.tables.mj_header  = MJRefreshNormalHeader.init { [weak self] in
+            // 只执行一次？？
+            print(" 下拉刷新 -----")
+            self?.vm.refreshData.onNext(true)
         }
         
         (self.tables.mj_header as! MJRefreshNormalHeader).lastUpdatedTimeLabel.isHidden = true
@@ -626,8 +702,9 @@ extension DashboardViewController{
         (self.tables.mj_header as! MJRefreshNormalHeader).setTitle("开始刷新", for: .pulling)
         (self.tables.mj_header as! MJRefreshNormalHeader).setTitle("刷新 ...", for: .refreshing)
         
-        self.tables.mj_footer = MJRefreshAutoNormalFooter.init(refreshingBlock: {
-            vm.refreshData.onNext(false)
+        self.tables.mj_footer = MJRefreshAutoNormalFooter.init(refreshingBlock: { [weak self] in
+            print("上拉 刷新 ----")
+            self?.vm.refreshData.onNext(false)
         })
         
         (self.tables.mj_footer as! MJRefreshAutoNormalFooter).setTitle("上拉刷新", for: .idle)
@@ -678,11 +755,9 @@ extension DashboardViewController{
     // show details
     private func showDetails(jobModel:CompuseRecruiteJobs){
         
-        // test jobid MARK
+        // 传递jobid  查询job 具体信息
         let detail = JobDetailViewController()
-        detail.mode = jobModel
-        //
-        //self.hidesBottomBarWhenPushed = true
+        detail.jobID = jobModel.id!
         self.navigationController?.pushViewController(detail, animated: true)
         
     }

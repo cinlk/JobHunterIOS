@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import SVProgressHUD
+
 
 
 fileprivate let placeholder:String = "输入实习经历,500子以内"
@@ -195,19 +195,23 @@ extension add_internVC {
             
             
         }else{
+            
             //
+            let hub = MBProgressHUD.showAdded(to: self.tableView, animated: true)
+            hub.mode = .customView
+            hub.customView = UIImageView.init(image: #imageLiteral(resourceName: "error").changesize(size: CGSize.init(width: 25, height: 25)))
+            hub.label.text = "错误原因"
+            hub.margin = 10
+            hub.label.textColor = UIColor.white
+            hub.bezelView.backgroundColor = UIColor.backAlphaColor()
+            hub.removeFromSuperViewOnHide = true
+            
             self.navigationController?.navigationBar.isUserInteractionEnabled = false
-            self.view.isUserInteractionEnabled = false
-            self.navigationController?.view.addSubview(backgroundView)
-            backgroundView.isUserInteractionEnabled = false
-            SVProgressHUD.show(UIImage.init(named: "error")!, status: "请检查输入")
-            SVProgressHUD.dismiss(withDelay: 3, completion: {  [unowned self] in
-                self.backgroundView.isUserInteractionEnabled = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                
+                hub.hide(animated: true)
                 self.navigationController?.navigationBar.isUserInteractionEnabled = true
-                self.view.isUserInteractionEnabled = true
-                self.backgroundView.removeFromSuperview()
-                self.navigationController?.view.willRemoveSubview(self.backgroundView)
-            })
+            }
             
         }
         

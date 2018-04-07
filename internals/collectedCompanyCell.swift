@@ -10,17 +10,6 @@ import UIKit
 
 
 
-class collectedCompanyModel:NSObject{
-    var img:String
-    var name:String
-    var des:String
-    
-    init(img:String, name:String, des:String) {
-        self.img = img
-        self.name = name
-        self.des = des
-    }
-}
 
 fileprivate let imgSize:CGSize = CGSize.init(width: 40, height: 45)
 
@@ -49,17 +38,16 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 40, height: 45)
         des.textColor = UIColor.lightGray
         des.lineBreakMode = .byTruncatingTail
         des.textAlignment = .left
-        des.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
+        des.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 65)
         return des
     }()
     
-   dynamic var mode:collectedCompanyModel?{
+   dynamic var mode:comapnyInfo?{
         didSet{
-            self.icon.image = UIImage.init(named: (mode?.img)!)
+            self.icon.image = UIImage.init(named: (mode?.icon)!)
             self.companyName.text = mode?.name
-            self.describle.text = mode?.des
+            self.describle.text = mode?.describe
             self.setupAutoHeight(withBottomViewsArray: [describle,icon], bottomMargin: 5)
-            //self.setupAutoHeight(withBottomView: describle, bottomMargin: 5)
             
         }
     }

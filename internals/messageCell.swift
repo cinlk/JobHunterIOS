@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import SVProgressHUD
+
 
 class messageCell: UITableViewCell {
 
@@ -208,10 +208,10 @@ fileprivate class MessageLabel:UILabel{
         
         // 复制富文 表情用[xxx] 表示的表情消息
         UIPasteboard.general.string = self.getEmotionString()
-        SVProgressHUD.showSuccess(withStatus: "已复制到剪切板")
-        SVProgressHUD.dismiss(withDelay: 2)
-        //GetChatEmotion.shared.findAttrStr(text: self.text, font: self.font)
-        
+        // label 所在的viewController
+        if let view = self.getParentViewController()?.view{
+            showOnlyTextHub(message: "已复制到剪切板", view: view)
+        }
     }
     
     

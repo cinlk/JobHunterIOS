@@ -9,7 +9,7 @@
 import UIKit
 import CoreLocation
 import MapKit
-import SVProgressHUD
+import MBProgressHUD
 import SwiftyJSON
 //内置分享sdk
 import Social
@@ -23,10 +23,9 @@ fileprivate let bottomViewH:CGFloat = 50
 
 class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewDataSource {
     
-    var mode:CompuseRecruiteJobs?{
+    private var mode:CompuseRecruiteJobs?{
         didSet{
             jobheader.mode = mode!
-            //jobID = mode!.id!
             isCollected = jobTable.isCollectedBy(id: jobID)
             
         }
@@ -42,7 +41,6 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     }
     
     private var isCollected:Bool = false
-    
     
     // job table
     private let jobTable = DBFactory.shared.getJobDB()
@@ -358,24 +356,30 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
 
 extension JobDetailViewController{
     
+    // 获取数据后 在设置界面
     private func loadData(){
-        // 根据job id 查询 job 信息，获取job数据 赋值给mode
-//        DispatchQueue(label: "dwqd", qos: .default, attributes: .concurrent, autoreleaseFrequency: .inherit, target: nil).async {
-//            // 请求数据
-//            // 刷新主线程
-//            DispatchQueue.main.async(execute: {
-//
-//            })
-//
-//
-//        }
         
-        mode =  CompuseRecruiteJobs(JSON: ["id":self.jobID,"type":"compuse","tag":["福利好","休息多"],
-                                           "picture":"sina","company":"新浪工商所","jobName":"助理","address":"北京海淀","salary":"10-20K","create_time":Date.init().string(),"education":"本科"])
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            
+            Thread.sleep(forTimeInterval: 3)
+            
+            
+            
+            
+            DispatchQueue.main.async(execute: {
+                
+                // 这有ui操作
+                self?.mode =  CompuseRecruiteJobs(JSON: ["id":self?.jobID,"type":"compuse","tag":["福利好","休息多"],
+                                                         "picture":"sina","company":"新浪工商所","jobName":"助理","address":"北京海淀","salary":"10-20K","create_time":Date.init().string(),"education":"本科"])
         
+                self?.table.reloadData()
+            })
+        }
         
     }
 }
+
+
 
 extension JobDetailViewController{
     
@@ -399,32 +403,45 @@ extension JobDetailViewController{
         
     }
    
+    
+    // 收藏
     @objc func collect(btn:UIButton){
-        //TODO 职位收藏，改变收藏状态，界面显示已经收藏
         
        
         // 关注
         if !isCollected{
-            SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: "收藏成功")
+            
+            // 更新服务器数据
+            // 本地数据库更新
+            
+            
             jobTable.collectedJobBy(id: jobID)
-            //jobManageRoot.addCollectedItem(item: CompuseRecruiteJobs(JSON: infos!)!)
+            showOnlyTextHub(message: "已经关注", view: self.view)            
             isCollected = true
         }else{
-            SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: "取消收藏")
+            // 更新服务器数据
+           
+            // 本地数据库更新
             jobTable.uncollectedJobBy(id: jobID)
+            showOnlyTextHub(message: "取消关注", view: self.view)
+
             isCollected = false
         }
-         SVProgressHUD.dismiss(withDelay: 0.5)
+        
          btn.isSelected = isCollected
         
     }
     
     @objc func sendResume(){
         
-        //
+        // 更新服务器数据
+//        DispatchQueue.global(qos: .userInitiated).async {
+//
+//        }
         jobTable.sendResumeJob(id: jobID)
         
-        //SendResumeJobIds.append(self.jobID)
+        showCustomerImageHub(message: "投递简历成功", view: self.view, image: #imageLiteral(resourceName: "checkmark").withRenderingMode(.alwaysTemplate))
+        
         sendResumeBtn.setTitle("已经投递", for: .normal)
         sendResumeBtn.backgroundColor = UIColor.lightGray
         sendResumeBtn.isUserInteractionEnabled = false
@@ -565,3 +582,4 @@ extension JobDetailViewController{
         
     }
 }
+

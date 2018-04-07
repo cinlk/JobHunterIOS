@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import SVProgressHUD
+
 fileprivate let placeHolder:String = "个人评价，500字以内"
 fileprivate let limitWords:Int = 500
 
@@ -105,30 +105,28 @@ extension evaluateSelfVC{
     
     @objc func save(){
         self.view.endEditing(true)
-        self.navigationController?.view.addSubview(backgroundView)
-        self.navigationController?.navigationBar.isUserInteractionEnabled = false
-        //  禁止点击cell 不然导致hubview 下滑 
-        self.view.isUserInteractionEnabled = false
+       
         if content.isEmpty{
-            SVProgressHUD.show(#imageLiteral(resourceName: "error"), status: "输入为空")
-            SVProgressHUD.dismiss(withDelay: 2, completion: {
+            self.navigationController?.navigationBar.isUserInteractionEnabled = false
+
+            let hub = MBProgressHUD.showAdded(to: self.view, animated: true)
+            hub.mode = .customView
+            hub.customView = UIImageView.init(image: #imageLiteral(resourceName: "error").changesize(size: CGSize.init(width: 25, height: 25)))
+            hub.label.text = "错误原因"
+            hub.margin = 10
+            hub.label.textColor = UIColor.white
+            hub.bezelView.backgroundColor = UIColor.backAlphaColor()
+            hub.removeFromSuperViewOnHide = true
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                
+                hub.hide(animated: true)
                 self.navigationController?.navigationBar.isUserInteractionEnabled = true
-                self.view.isUserInteractionEnabled = true
-                self.navigationController?.view.willRemoveSubview(self.backgroundView)
-                self.backgroundView.removeFromSuperview()
-            })
+            }
         }else{
             pManager.mode?.estimate = content
-            SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: "保存成功")
-            SVProgressHUD.dismiss(withDelay: 2, completion: {
-                self.navigationController?.navigationBar.isUserInteractionEnabled = true
-                self.tableView.isUserInteractionEnabled = true
-                self.navigationController?.view.willRemoveSubview(self.backgroundView)
-                self.backgroundView.removeFromSuperview()
-                self.delegate?.modifiedItem(indexPath: IndexPath.init(row: 0, section: self.section))
-                self.navigationController?.popViewController(animated: true)
-            })
-           
+            self.delegate?.modifiedItem(indexPath: IndexPath.init(row: 0, section: self.section))
+            self.navigationController?.popViewController(animated: true)
         }
         
     }

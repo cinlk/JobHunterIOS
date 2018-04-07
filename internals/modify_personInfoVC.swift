@@ -9,7 +9,7 @@
 import UIKit
 import MobileCoreServices
 import Photos
-import SVProgressHUD
+import MBProgressHUD
 
 
 fileprivate let VCtitle:String = "修改个人信息"
@@ -255,21 +255,21 @@ extension modify_personInfoVC:itemPickerDelegate{
         // 判断数据正确
         
         
-        SVProgressHUD.show(UIImage.init(named: "checkmark")!, status: "修改成功")
-        // 显示背景view 并禁止页面点击事件
-        self.navigationController?.view.addSubview(backgroundView)
+        let hub = MBProgressHUD.showAdded(to: self.tableView, animated: true)
+        hub.mode = .customView
+        hub.customView = UIImageView.init(image: #imageLiteral(resourceName: "checkmark").changesize(size: CGSize.init(width: 25, height: 25)))
+        hub.label.text = "修改成功"
+        hub.margin = 10
+        hub.label.textColor = UIColor.white
+        hub.bezelView.backgroundColor = UIColor.backAlphaColor()
+        hub.removeFromSuperViewOnHide = true
         self.navigationController?.view.isUserInteractionEnabled = false
-        self.view.isUserInteractionEnabled = false
-        SVProgressHUD.setBackgroundColor(UIColor.lightGray)
-        SVProgressHUD.dismiss(withDelay: 2) {  [unowned self] in
-            self.navigationController?.popViewController(animated: true)
-            // 主tableview刷新
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             self.delegate?.modifiedItem(indexPath: IndexPath.init(row: 0, section: self.section))
-            
-            self.view.isUserInteractionEnabled = true
+            self.navigationController?.popViewController(animated: true)
             self.navigationController?.view.isUserInteractionEnabled = true
-            self.navigationController?.view.willRemoveSubview(self.backgroundView)
-            self.backgroundView.removeFromSuperview()
+            hub.hide(animated: true)
         }
         
     }

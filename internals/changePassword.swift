@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import SVProgressHUD
 
 
 fileprivate let oldPW:String = "请输入原密码"

@@ -9,7 +9,6 @@
 import UIKit
 import WebKit
 
-fileprivate let urlStr:String = "https://codeday.me/bug/20171028/90322.html"
 fileprivate let keyStr:String = "estimatedProgress"
 class ServiceTerm: UIViewController {
 
@@ -50,6 +49,8 @@ class ServiceTerm: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    var serviceURL:String = ""
+    
     deinit {
         webView.removeObserver(self, forKeyPath: keyStr)
         webView.navigationDelegate = nil
@@ -70,7 +71,7 @@ extension ServiceTerm {
         
     }
     private func loadData(){
-        if let url = URL.init(string: urlStr){
+        if let url = URL.init(string: serviceURL){
             let request = URLRequest.init(url: url)
             webView.load(request)
         }

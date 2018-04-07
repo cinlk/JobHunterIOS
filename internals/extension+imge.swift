@@ -144,10 +144,20 @@ extension UIImage{
         
     }
     
+    // 改变图片大小
+    func changesize(size:CGSize) -> UIImage{
+        
+        UIGraphicsBeginImageContextWithOptions(size, false, 0)
+        self.draw(in: CGRect.init(x: 0, y: 0, width: size.width, height: size.height))
+        
+        let newImage:UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        return newImage
+    }
+    
     //拉伸图片
     class func resizeableImage(name:String)->UIImage{
         
-        let image = UIImage.init(named: name)
+        let image = UIImage.init(named: name)?.withRenderingMode(.alwaysTemplate)
         let top = (image?.size.height)! * 0.6
         let bottom = (image?.size.height)! * 0.5
         let lr = (image?.size.height)! * 0.5

@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import SVProgressHUD
+
 
 
 fileprivate let cellIdentity:String = "cell"
@@ -328,8 +328,8 @@ extension SelectedThreeTableView{
             
         }else{
             if results.count >= 5{
-                SVProgressHUD.show(#imageLiteral(resourceName: "warn"), status: "最多选择5个")
-                SVProgressHUD.dismiss(withDelay: 2)
+                //SVProgressHUD.show(#imageLiteral(resourceName: "warn"), status: "最多选择5个")
+                //SVProgressHUD.dismiss(withDelay: 2)
                 return
             }
             

@@ -8,7 +8,6 @@
 
 import UIKit
 import MobileCoreServices
-import SVProgressHUD
 import Photos
 
 
@@ -1071,13 +1070,13 @@ extension CommunicationChatView{
     // 方法必须是这样
     @objc  private func saveImage(image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: AnyObject){
         if error != nil{
-            SVProgressHUD.showError(withStatus: "保存失败")
-            SVProgressHUD.setDefaultMaskType(.black)
-            SVProgressHUD.dismiss(withDelay: 1)
+//            SVProgressHUD.showError(withStatus: "保存失败")
+//            SVProgressHUD.setDefaultMaskType(.black)
+//            SVProgressHUD.dismiss(withDelay: 1)
         }else{
-            SVProgressHUD.showSuccess(withStatus: "保存成功")
-            SVProgressHUD.setDefaultMaskType(.black)
-            SVProgressHUD.dismiss(withDelay: 1)
+//            SVProgressHUD.showSuccess(withStatus: "保存成功")
+//            SVProgressHUD.setDefaultMaskType(.black)
+//            SVProgressHUD.dismiss(withDelay: 1)
         }
     }
 }

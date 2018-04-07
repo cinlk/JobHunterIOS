@@ -51,6 +51,7 @@ class CityViewController:UICollectionViewController, UICollectionViewDelegateFlo
     
     
     
+    //
     var localCity:String = "" {
         willSet{
             locatcityButton.setTitle(newValue, for: .normal)
@@ -78,7 +79,7 @@ class CityViewController:UICollectionViewController, UICollectionViewDelegateFlo
         self.collectionView?.register(MyCityCell.self, forCellWithReuseIdentifier: "city")
         self.collectionView?.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "localCity")
         self.collectionView?.register(headerView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "header")
-        self.collectionView?.register(footerView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, withReuseIdentifier: "footer")
+       
      
         activiyIndicator.activityIndicatorViewStyle = .gray
         //activiyIndicator.color = UIColor.blue  # 这里有BUG?
@@ -94,9 +95,9 @@ class CityViewController:UICollectionViewController, UICollectionViewDelegateFlo
         layout.scrollDirection = UICollectionViewScrollDirection.vertical  //滚动方向
         layout.sectionInset=UIEdgeInsetsMake(10, 10, 10, 10)
         // 一行放置元素长度计算 =  （元素个数*widht + miniSpace*num）
-        layout.itemSize = CGSize(width: (UIScreen.main.bounds.width - 4*10)/3 , height: 30)
+        layout.itemSize = CGSize(width: (ScreenW - 4*10 - 40)/3 , height: 30)
         layout.minimumInteritemSpacing = 10
-        layout.minimumLineSpacing = 20
+        layout.minimumLineSpacing = 10
         super.init(collectionViewLayout: layout)
     }
  
@@ -249,7 +250,7 @@ extension CityViewController: CLLocationManagerDelegate{
 
 
 
-class MyCityCell:UICollectionViewCell{
+private class MyCityCell:UICollectionViewCell{
     
     lazy var name:UIButton = {
         let name = UIButton.init()
@@ -259,16 +260,18 @@ class MyCityCell:UICollectionViewCell{
         name.setTitleColor(UIColor.black, for: .normal)
         name.layer.borderWidth = 0.7
         name.layer.cornerRadius = 10.0
+        name.titleLabel?.lineBreakMode = .byTruncatingTail
         name.layer.borderColor = UIColor.gray.cgColor
         name.layer.masksToBounds = true
-        
         return name
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        name.frame = self.contentView.frame
-        self.addSubview(name)
+        self.contentView.addSubview(name)
+        _ = name.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topEqualToView(self.contentView)?.bottomEqualToView(self.contentView)
+        name.titleLabel?.setSingleLineAutoResizeWithMaxWidth(self.contentView.frame.width)
+
         
     }
     
@@ -277,21 +280,10 @@ class MyCityCell:UICollectionViewCell{
     }
 }
 
-class footerView: UICollectionReusableView {
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.backgroundColor = UIColor.white
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
 
 
 
-
-class headerView: UICollectionReusableView {
+private class headerView: UICollectionReusableView {
     
     lazy var name:UILabel = {
         let name = UILabel.init()

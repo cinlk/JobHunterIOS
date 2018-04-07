@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import SVProgressHUD
 
 // 修改和删除
 protocol modifyItemDelegate: class {
@@ -351,27 +350,35 @@ extension modifyitemView {
     
     private func setStatus(name:String){
         
-        self.navigationController?.view.addSubview(backgroundView)
+        //self.navigationController?.view.addSubview(backgroundView)
         self.navigationController?.navigationBar.isUserInteractionEnabled = false
-        self.view.isUserInteractionEnabled = false
-        self.backgroundView.isUserInteractionEnabled = false
+        //self.view.isUserInteractionEnabled = false
+        //self.backgroundView.isUserInteractionEnabled = false
         let indexPath = IndexPath.init(row: self.mode!.indexPath.row + 1, section:self.mode!.indexPath.section)
-        SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: name)
-        SVProgressHUD.dismiss(withDelay: 2) {
-            self.backgroundView.removeFromSuperview()
-            self.navigationController?.view.willRemoveSubview(self.backgroundView)
-            self.navigationController?.popViewController(animated: true)
+        
+        
+        // 修改
+        let hub = MBProgressHUD.showAdded(to: self.table, animated: true)
+        hub.mode = .customView
+        hub.customView = UIImageView.init(image: #imageLiteral(resourceName: "checkmark").changesize(size: CGSize.init(width: 25, height: 25)))
+        hub.label.text = name + "成功"
+        hub.margin = 10
+        hub.label.textColor = UIColor.white
+        hub.bezelView.backgroundColor = UIColor.backAlphaColor()
+        hub.removeFromSuperViewOnHide = true
+        
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            
             if name == "保存"{
-               
                 self.delegate?.modifiedItem(indexPath: indexPath)
             }else{
-                // 删除
                 self.delegate?.deleteItem(indexPath: indexPath)
             }
-            
             self.navigationController?.navigationBar.isUserInteractionEnabled = true
-            self.view.isUserInteractionEnabled = true
-            self.backgroundView.isUserInteractionEnabled = true
+            hub.hide(animated: true)
+            self.navigationController?.popViewController(animated: true)
+
         }
     }
             
@@ -486,8 +493,10 @@ extension modifyitemView: UITextViewDelegate{
 //        }
 //        if range.location >= 600 {
 //            SVProgressHUD.showError(withStatus: "超过字数限制")
+        
 //            return false
 //        }
+        
         return true
     }
     

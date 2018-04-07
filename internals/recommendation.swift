@@ -75,7 +75,7 @@ extension recommendation: UITableViewDelegate,UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         table.deselectRow(at: indexPath, animated: false)
-        detail.mode = data[indexPath.row]
+        detail.jobID = data[indexPath.row].id!
         self.navigationController?.pushViewController(detail, animated: true)
         
     }

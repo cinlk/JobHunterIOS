@@ -13,12 +13,14 @@ import UIKit
 class notificationVC: UITableViewController {
 
     
-    private lazy var items:[Int:[String]] = [0:["投递反馈","订阅职位","其他"], 1:["夜间免打扰"]]
+    private lazy var items:[Int:[notifyMesModel]] = [:]
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         initView()
-  
+        loadNotifys()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -44,14 +46,19 @@ class notificationVC: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return (items[section]?.count)!
+        return items[section]?.count ?? 0
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: switchCell.identity(), for: indexPath) as! switchCell
-        cell.switchOff.tag = indexPath.section * 10 + indexPath.row
-        cell.leftLabel.text = items[indexPath.section]?[indexPath.row]
-        cell.switchOff.addTarget(self, action: #selector(onMsg(_:)), for: .valueChanged)
+        // 映射到数字
+        if let item = items[indexPath.section]?[indexPath.row]{
+            cell.switchOff.isOn = item.isOn ?? false
+            cell.switchOff.tag = indexPath.section * 10 + indexPath.row
+            cell.leftLabel.text = item.name ?? ""
+            cell.switchOff.addTarget(self, action: #selector(onMsg(_:)), for: .valueChanged)
+        }
+      
         return cell
     }
     // head section
@@ -96,13 +103,47 @@ extension notificationVC {
         self.tableView.register(switchCell.self, forCellReuseIdentifier: switchCell.identity())
         
     }
+    
+    // 获取数据
+    private func loadNotifys(){
+        
+        
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            // 异步网络请求
+            let res = [notifyMesModel(JSON: ["name":"投递反馈","isOn":false,"sectionTag":0]), notifyMesModel(JSON: ["name":"订阅职位","isOn":false,"sectionTag":0]),notifyMesModel(JSON: ["name":"其他","isOn":false,"sectionTag":0]),notifyMesModel(JSON: ["name":"夜间免打扰","isOn":false,"sectionTag":1])]
+            
+                Thread.sleep(forTimeInterval: 3)
+                res.forEach{
+                    if let tag = $0?.sectionTag{
+                        if self?.items[tag] == nil{
+                            // 初始化空数组
+                            self?.items[tag] = []
+                        }
+                    self?.items[tag]?.append($0!)
+                    }
+                }
+            
+        
+            DispatchQueue.main.async(execute: {
+                self?.tableView.reloadData()
+            })
+            
+        }
+        
+       
+       
+        
+    }
 }
 
 extension notificationVC{
+    // 得到某个item
     @objc func onMsg(_ sender: UISwitch){
         let tag = sender.tag
         let section = tag / 10
         let row = tag % 10
-        print( items[section]![row],sender.isOn)
+        print(items[section]![row].name,sender.isOn)
     }
 }
+
+

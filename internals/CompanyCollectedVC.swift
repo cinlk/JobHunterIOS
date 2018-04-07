@@ -11,8 +11,9 @@ import UIKit
 class CompanyCollectedVC: UITableViewController {
 
     
-    // 本地数据表company
-    private lazy var companyTable = DBFactory.shared.getCompanyDB()
+    // 收藏的公司数据
+    private lazy var jobManageRoot:JobManager = JobManager.shared
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,7 +28,7 @@ class CompanyCollectedVC: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print(companyTable.allCollectedByIDs())
+        
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -48,9 +49,7 @@ class CompanyCollectedVC: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: collectedCompanyCell.identity(), for: indexPath) as! collectedCompanyCell
         let item = jobManageRoot.getCollections(type: .company)[indexPath.row] as! comapnyInfo
-        let mode = collectedCompanyModel.init(img: item.icon!, name: item.name!, des: item.describe!)
-        cell.mode = mode
-        
+        cell.mode = item
         return cell
         
     }
@@ -58,8 +57,8 @@ class CompanyCollectedVC: UITableViewController {
     // 设置cell样式
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let item = jobManageRoot.getCollections(type: .company)[indexPath.row] as! comapnyInfo
-        let mode = collectedCompanyModel.init(img: item.icon!, name: item.name!, des: item.describe!)
-        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: collectedCompanyCell.self, contentViewWidth: ScreenW)
+      
+        return tableView.cellHeight(for: indexPath, model: item, keyPath: "mode", cellClass: collectedCompanyCell.self, contentViewWidth: ScreenW)
         
     }
     

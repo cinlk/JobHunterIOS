@@ -7,11 +7,12 @@
 //
 
 import UIKit
-import SVProgressHUD
+
 
 fileprivate let typeTitle:String = "请选择意见类型"
 fileprivate let content:String = "反馈内容"
 fileprivate let contact:String = "你的联系方式"
+fileprivate let typeDefault:String = "产品建议"
 fileprivate let textPlaceHolder:String = "请填写内容，最多500字。"
 
 
@@ -49,6 +50,7 @@ class feedBackVC: UIViewController {
         label.font = UIFont.systemFont(ofSize: 20)
         label.sizeToFit()
         label.textAlignment = .center
+        label.text = typeDefault
         return label
     }()
     
@@ -179,11 +181,13 @@ class feedBackVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = "反馈意见"
+        self.navigationController?.insertCustomerView()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationItem.title = ""
+        self.navigationController?.removeCustomerView()
         
     }
     override func viewWillLayoutSubviews() {
@@ -217,12 +221,8 @@ extension feedBackVC{
         }else if (contactField.text?.isEmpty)!{
             
         }
-        SVProgressHUD.show(#imageLiteral(resourceName: "checkmark"), status: "发送成功")
-        self.navigationController?.navigationBar.isUserInteractionEnabled = false
-        SVProgressHUD.dismiss(withDelay: 2) {
-             self.navigationController?.navigationBar.isUserInteractionEnabled = true
-        }
-        //print("类型 \(typeLabel.text) 内容 \(textView.text)  联系方式 \(contactField.text)")
+        // 服务器
+        showOnlyTextHub(message: "发送成功", view: self.view)
         
     }
     
@@ -251,7 +251,7 @@ extension feedBackVC{
         
         _ = contactTitle.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(textView,0)?.heightIs(30)
         
-        _ = wrapperContactField.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(contactTitle,0)?.heightIs(30)
+        _ = wrapperContactField.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(contactTitle,0)?.heightIs(50)
         _ = contactField.sd_layout().leftEqualToView(wrapperContactField)?.rightEqualToView(wrapperContactField)?.topEqualToView(wrapperContactField)?.bottomEqualToView(wrapperContactField)
         
         

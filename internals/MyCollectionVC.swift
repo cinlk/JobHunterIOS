@@ -19,6 +19,9 @@ class MyCollectionVC: UIViewController, UIScrollViewDelegate {
     
     private var jobType:JobManager.jobType = .none
     
+    // viewmodel
+    private  lazy var jobManageRoot:JobManager = JobManager.shared
+    
     private var currentContent:Int? {
         didSet{
             // 切换tableview时，取消编辑状态
@@ -93,7 +96,7 @@ class MyCollectionVC: UIViewController, UIScrollViewDelegate {
     private lazy var  selectedAllBtn:UIButton = { [unowned self] in
         let selectedAllBtn = UIButton.init(type: .custom)
         selectedAllBtn.setTitleColor(UIColor.blue, for: .normal)
-        selectedAllBtn.setTitleColor(UIColor.white, for: .selected)
+        selectedAllBtn.setTitleColor(UIColor.red, for: .selected)
         selectedAllBtn.addTarget(self, action: #selector(selectedAll(btn:)), for: .touchUpInside)
         selectedAllBtn.setTitle("全选", for: .normal)
         selectedAllBtn.setTitle("取消", for: .selected)
@@ -124,6 +127,7 @@ class MyCollectionVC: UIViewController, UIScrollViewDelegate {
         bottomToolBar()
         // 默认第一个tableview
         currentContent = 0
+        loadData()
         
         
     }
@@ -197,7 +201,7 @@ extension MyCollectionVC{
                 currentTableView?.selectRow(at: IndexPath.init(row: index, section: 0), animated: true, scrollPosition: .top)
                 
             }
-            btn.backgroundColor = UIColor.blue
+            //btn.backgroundColor = UIColor.blue
         }
         btn.isSelected = !btn.isSelected
        
@@ -212,9 +216,13 @@ extension MyCollectionVC{
             for indexPath in selectedItem{
                 selectedRow.append(indexPath.row)
             }
+            // 服务器删除 如果失败显示提示
+            showOnlyTextHub(message: "删除成功", view: self.currentTableView!)
+            
             // 删除多个记录
             jobManageRoot.removeCollectedByIndex(type: jobType, row: selectedRow)
             currentTableView?.reloadData()
+            
             
         }
         // 取消编辑状态
@@ -241,4 +249,36 @@ extension MyCollectionVC: PageContentViewScrollDelegate{
         self.currentContent = targetIndex
          self.pageTitleView.changeTitleWithProgress(progress, sourceIndex: sourcIndex, targetIndex: targetIndex)
     }
+}
+
+
+// 异步加载 收藏的公司和职位数据
+extension MyCollectionVC{
+    
+    private func loadData(){
+        
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            
+            
+            Thread.sleep(forTimeInterval: 3)
+            for _ in 0..<5{
+                
+                let json:[String:String] = ["picture":"chrome","company":"google","jobName":"研发",
+                                            "address":"山上","salary":"100万","create_time":"2018-01-09","education":"本科"]
+                let cjson:[String:Any] = ["id":"678","icon":"sina","name":"新浪带我去的群无多大青蛙  当前为多无群  当前为多群无  当前为多群无","describe":"大公司，有前景 当前的群 dqwdq 当前为多群无 当前为多群无多群无多无群 当前为多群多群多群多群无 当前为多群无多无前端去无 当前为多群无多群无多无群  带我去的","staffs":"1000人以上","tags":["带我去的","地段"]]
+                
+                self?.jobManageRoot.addCompanyItem(item: comapnyInfo(JSON: cjson)!)
+                
+                self?.jobManageRoot.addCollectedItem(item: CompuseRecruiteJobs(JSON: json)!)
+            }
+            
+           
+            DispatchQueue.main.async(execute: {
+                self?.currentTableView?.reloadData()
+            })
+            
+        }
+        
+    }
+    
 }
