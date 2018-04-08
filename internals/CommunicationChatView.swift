@@ -48,22 +48,16 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
         tb.register(ChatTimeCell.self, forCellReuseIdentifier: ChatTimeCell.identity())
         tb.separatorStyle = .none
         tb.backgroundColor = UIColor.viewBackColor()
-        // 点击table 影藏输入界面 与cell 点击冲突？？
-        let tap = UITapGestureRecognizer.init(target: self, action: #selector(hiddenChatBarView(sender: complete:)))
-        tap.delegate = self
-        //tb.addGestureRecognizer(tap)
-        // 向上 向下滑动手势
-        let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(invokeSwipe(sender:)))
-        swipeGesture.delegate = self
-        swipeGesture.direction = .up
-        tb.addGestureRecognizer(swipeGesture)
         
-        let swipeGestureDown = UISwipeGestureRecognizer(target: self, action: #selector(invokeSwipe(sender:)))
-        swipeGestureDown.delegate = self
-        swipeGestureDown.direction = .down
-        tb.addGestureRecognizer(swipeGestureDown)
+        // 滑动tableview 影藏键盘
+        tb.keyboardDismissMode = .onDrag
+        
         return tb
     }()
+    
+    // 是否drag
+    private var isDrag = false
+    
     
     // 第一次进入页面tableview滚动到底部
     private var table2Bottom = false
@@ -497,42 +491,24 @@ extension CommunicationChatView{
         
     }
     
-    @objc func hiddenChatBarView(sender: UITapGestureRecognizer, complete:(()->Void)? = nil ){
-        
+    // 影藏所有的输入面板
+    private func hiddenChatBarView(complete:(()->Void)? = nil ){
+
        // 影藏textfield的 keyboard
         self.chatBarView.inputText.resignFirstResponder()
-        
+
         // 影藏 emotion 和 more 输入view
         if self.chatBarView.keyboardType == .emotion || self.chatBarView.keyboardType == .more{
             self.moveBar(distance: 0, complete: complete)
         }
         
         self.chatBarView.keyboardType = .none
-        sender.cancelsTouchesInView = false
-        
-    }
-    
-    // 滑动手势 向上 向下 滑动 影藏输入栏（不顺滑？？）
-    @objc func invokeSwipe(sender: UISwipeGestureRecognizer){
-        
-        switch sender.direction {
-        case UISwipeGestureRecognizerDirection.up:
-            hiddenChatBarView(sender: UITapGestureRecognizer())
-            
-        case UISwipeGestureRecognizerDirection.down:
-            hiddenChatBarView(sender: UITapGestureRecognizer())
-            
-        default:
-            break
-        }
-        
-        
     }
     //
     @objc func moreButton(){
         
         // 隐藏键盘
-        self.hiddenChatBarView(sender: UITapGestureRecognizer())
+        self.hiddenChatBarView()
         self.present(alertView, animated: true, completion: nil)
     }
     
@@ -890,11 +866,13 @@ extension CommunicationChatView{
         
     }
     
+    
+    
+    
     @objc func keyboardhidden(sender:NSNotification){
         
-        
-        //print(sender.userInfo,sender.name, sender.object)
         keyboardFrame = CGRect.zero
+        
         if chatBarView.keyboardType == .emotion || chatBarView.keyboardType == .more{
             return
         }
@@ -949,6 +927,24 @@ extension CommunicationChatView{
 }
 
 
+extension CommunicationChatView {
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+    }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        
+        if self.chatBarView.keyboardType != .none{
+            self.hiddenChatBarView()
+        }
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        
+    }
+    
+}
 
 // 手势代理
 extension CommunicationChatView: UIGestureRecognizerDelegate{
@@ -1070,10 +1066,13 @@ extension CommunicationChatView{
     // 方法必须是这样
     @objc  private func saveImage(image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: AnyObject){
         if error != nil{
+              showOnlyTextHub(message: "保存失败", view: self.tableView)
 //            SVProgressHUD.showError(withStatus: "保存失败")
 //            SVProgressHUD.setDefaultMaskType(.black)
 //            SVProgressHUD.dismiss(withDelay: 1)
         }else{
+            showOnlyTextHub(message: "保存成功", view: self.tableView)
+
 //            SVProgressHUD.showSuccess(withStatus: "保存成功")
 //            SVProgressHUD.setDefaultMaskType(.black)
 //            SVProgressHUD.dismiss(withDelay: 1)
