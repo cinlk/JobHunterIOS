@@ -23,10 +23,9 @@ extension UINavigationController{
     }
     
     func removeCustomerView(){
-        
-        let view = self.view.subviews[1]
+        let view = self.view.viewWithTag(10)
        // print(view.tag)
-        view.removeFromSuperview()
-        self.view.willRemoveSubview(view)
+        view!.removeFromSuperview()
+        self.view.willRemoveSubview(view!)
     }
 }

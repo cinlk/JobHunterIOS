@@ -72,7 +72,7 @@ fileprivate let website:String = "公司网址:"
         return v
     }()
   
-   dynamic var comp:CompanyDetail?{
+   dynamic var comp:CompanyDetailModel?{
         didSet{
             adressDetail.text = comp?.address
             webAddressDetail.text = comp?.webSite

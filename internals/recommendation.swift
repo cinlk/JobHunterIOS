@@ -8,12 +8,12 @@
 
 import UIKit
 
-class recommendation: UIViewController {
+class recommendation: BaseViewController {
 
     
     private lazy var data:[CompuseRecruiteJobs] = []
     private lazy var detail:JobDetailViewController = JobDetailViewController()
-    private lazy var subscribleView = subscribleItem()
+//    private lazy var subscribleView = subscribleItem()
     
     
     
@@ -50,6 +50,31 @@ class recommendation: UIViewController {
         
     }
 
+    
+    override func setViews() {
+        
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 70, height: 25))
+        btn.addTarget(self, action: #selector(addSub), for: .touchUpInside)
+        btn.setTitle("我的订阅", for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        btn.setTitleColor(UIColor.blue, for: .normal)
+        self.navigationItem.rightBarButtonItem  = UIBarButtonItem.init(customView: btn)
+        self.view.addSubview(table)
+        self.handleViews.append(table)
+        super.setViews()
+    }
+    
+    override func didFinishloadData() {
+      
+        self.table.reloadData()
+        super.didFinishloadData()
+        
+    }
+    
+    override func reload() {
+        super.reload()
+        self.loadData()
+    }
 }
 
 
@@ -90,23 +115,9 @@ extension recommendation: UITableViewDelegate,UITableViewDataSource {
 
 extension recommendation {
     
-    
-    private func setViews(){
-        
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 70, height: 25))
-        btn.addTarget(self, action: #selector(addSub), for: .touchUpInside)
-        btn.setTitle("我的订阅", for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-        btn.setTitleColor(UIColor.blue, for: .normal)
-        self.navigationItem.rightBarButtonItem  = UIBarButtonItem.init(customView: btn)
-        self.view.addSubview(table)
-        
-    }
-    
-    
-    
     @objc func addSub(){
         
+        var subscribleView = subscribleItem()
         self.navigationController?.pushViewController(subscribleView, animated: true)
         
     }
@@ -117,11 +128,22 @@ extension recommendation{
     
     private func loadData(){
         
-        data.append(CompuseRecruiteJobs(JSON: ["id":"dwqdqwd","picture":"swift","company":"apple","jobName":"码农","address":"北京","salary":"150-190元/天","create_time":"09-01","education":"本科","type":"校招"])!)
-        data.append(CompuseRecruiteJobs(JSON: ["id":"dwqdqwd","picture":"swift","company":"apple","jobName":"码农","address":"北京","salary":"150-190元/天","create_time":"09-01","education":"本科","type":"校招"])!)
-        data.append(CompuseRecruiteJobs(JSON: ["id":"dwqdqwd","picture":"swift","company":"apple","jobName":"码农","address":"北京","salary":"150-190元/天","create_time":"09-01","education":"本科","type":"校招"])!)
-        
-        self.table.reloadData()
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            
+            Thread.sleep(forTimeInterval: 3)
+            
+            self?.data.append(CompuseRecruiteJobs(JSON: ["id":"dwqdqwd","picture":"swift","company":"apple","jobName":"码农","address":"北京","salary":"150-190元/天","create_time":"09-01","education":"本科","type":"校招"])!)
+            self?.data.append(CompuseRecruiteJobs(JSON: ["id":"dwqdqwd","picture":"swift","company":"apple","jobName":"码农","address":"北京","salary":"150-190元/天","create_time":"09-01","education":"本科","type":"校招"])!)
+            self?.data.append(CompuseRecruiteJobs(JSON: ["id":"dwqdqwd","picture":"swift","company":"apple","jobName":"码农","address":"北京","salary":"150-190元/天","create_time":"09-01","education":"本科","type":"校招"])!)
+            
+            DispatchQueue.main.async(execute: {
+                self?.didFinishloadData()
+                
+                // 错误
+                //self?.showError()
+            })
+        }
+   
         
         
     }

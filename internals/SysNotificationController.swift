@@ -54,20 +54,18 @@ class SysNotificationController: UIViewController {
         
     }
     
-
-}
-
-
-extension SysNotificationController{
-    
-    private  func setViews(){
+    private func setViews(){
         
         self.view.backgroundColor = UIColor.viewBackColor()
-        self.view.addSubview(headerTitleView)
         self.view.addSubview(contentView)
+        self.view.addSubview(headerTitleView)
+        
         
     }
+    
+
 }
+
 
 
 extension SysNotificationController: pagetitleViewDelegate{

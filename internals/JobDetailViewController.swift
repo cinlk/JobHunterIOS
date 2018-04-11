@@ -17,21 +17,20 @@ import Social
 
 fileprivate let tableViewHeaderH:CGFloat  = 148
 fileprivate let sections:Int = 4
-fileprivate let sharedViewH:CGFloat = 150
 fileprivate let bottomViewH:CGFloat = 50
 
 
-class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewDataSource {
+class JobDetailViewController: BaseViewController,UITableViewDelegate,UITableViewDataSource {
     
     private var mode:CompuseRecruiteJobs?{
         didSet{
             jobheader.mode = mode!
             isCollected = jobTable.isCollectedBy(id: jobID)
             
+            
         }
     }
     
-    //
     
     // job id
     var jobID:String = ""{
@@ -91,13 +90,10 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     private var HRCompany:String = "㝵橘"
     private var HRRole:String = "admin"
     
-    
-    // 公司界面VC
-    private lazy var companyVC:companyscrollTableViewController =  companyscrollTableViewController()
     // 分享界面
     private lazy var shareapps:shareView = { [unowned self] in
         //放在最下方
-        let view =  shareView(frame: CGRect(x: 0, y: ScreenH, width: ScreenW, height: sharedViewH))
+        let view =  shareView(frame: CGRect(x: 0, y: ScreenH, width: ScreenW, height: shareViewH))
         // 加入最外层窗口
          UIApplication.shared.windows.last?.addSubview(view)
          ShareOriginY = view.origin.y
@@ -124,7 +120,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
        return v
     }()
     // hr VC
-    private lazy var HRVC:publisherControllerView = publisherControllerView()
+    //private lazy var HRVC:publisherControllerView = publisherControllerView()
     
  
     
@@ -171,12 +167,14 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     // 举报vc
     private  lazy var WarnViewController = JuBaoViewController()
     
+    // navigationBarItems
+    private lazy var barBtnitems:[UIButton] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         self.view.backgroundColor = UIColor.viewBackColor()
-        self.addBarItems()
-        self.view.addSubview(table)
-        self.view.addSubview(bottomView)
+        self.setViews()
         
         
         
@@ -188,22 +186,14 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     }
 
  
+    
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = "职位详情"
         self.tabBarController?.tabBar.isHidden = true
         // 加入背景view
         self.navigationController?.view.insertSubview(nBackView, at: 1)
-        self.talkTitle =  jobTable.isTalked(id: jobID) ? "继续聊天" : "和TA聊聊"
-        if jobTable.isSendedResume(id: jobID){
-            self.resumeTitle = "已经投递"
-            sendResumeBtn.setTitle(self.resumeTitle, for: .normal)
-            sendResumeBtn.backgroundColor = UIColor.lightGray
-            sendResumeBtn.isUserInteractionEnabled =  false
-         }
-        
-        self.talkBtn.setTitle(self.talkTitle, for: .normal)
-        
         
         
  
@@ -219,10 +209,6 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
     }
     
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
 
     override func viewWillLayoutSubviews() {
@@ -233,8 +219,61 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         _ = self.bottomView.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)?.heightIs(bottomViewH)
         
         
+    }
+    
+    
+    override func setViews() {
+        self.addBarItems()
+        self.view.addSubview(table)
+        self.view.addSubview(bottomView)
+        self.handleViews.append(table)
+        self.handleViews.append(bottomView)
+        barBtnitems.forEach{
+           self.handleViews.append($0)
+        }
+        
+        
+        
+        
+        super.setViews()
+    }
+    
+    
+    override func didFinishloadData() {
+        super.didFinishloadData()
+        self.table.reloadData()
+        // 是否关注
+        barBtnitems.last?.isSelected = isCollected
+        // 是否已经投递简历
+        self.talkTitle =  jobTable.isTalked(id: jobID) ? "继续聊天" : "和TA聊聊"
+        if jobTable.isSendedResume(id: jobID){
+            self.resumeTitle = "已经投递"
+            sendResumeBtn.setTitle(self.resumeTitle, for: .normal)
+            sendResumeBtn.backgroundColor = UIColor.lightGray
+            sendResumeBtn.isUserInteractionEnabled =  false
+        }
+        
+        self.talkBtn.setTitle(self.talkTitle, for: .normal)
         
     }
+    
+//    override func showError() {
+//        super.showError()
+//
+//    }
+    
+    override func reload() {
+        super.reload()
+        loadData()
+    }
+    
+
+}
+
+
+// table
+
+extension JobDetailViewController{
     
     // table
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -255,7 +294,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         return  section == 0 ? 0: 10
     }
     
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         
@@ -263,8 +302,11 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         case 0:
             
             // MARK 临时给 jobid
-            companyVC.mode =  jobID
+            let companyVC =  CompanyMainVC()
+            companyVC.hidesBottomBarWhenPushed = true 
+            companyVC.companyID = jobID
             self.navigationController?.pushViewController(companyVC, animated: true)
+            
         case 2:
             let address = "北京市融科资讯中心"
             let geocoder = CLGeocoder()
@@ -280,18 +322,20 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
                 let alert  =  PazNavigationApp.directionsAlertController(coordinate: place!, name: address, title: "选择地图", message: nil)
                 self.present(alert, animated: true, completion: nil)
             }
-                
+            
         case 3:
-                // mode 修改 MARK
-                let mode = HRInfo.init(name: HRname, position: HRposition, lastLogin: HRtime, icon: "sina")
-                HRVC.mode = mode
-                self.navigationController?.pushViewController(HRVC, animated: true)
+            // mode 修改 MARK
+            let hrvc = publisherControllerView()
+            hrvc.hidesBottomBarWhenPushed = true 
+            //let mode = HRInfo.init(name: HRname, position: HRposition, lastLogin: HRtime, icon: "sina")
+            hrvc.userID  = "test-23123"
+            self.navigationController?.pushViewController(hrvc, animated: true)
             
         default:
             break
         }
-       
-     
+        
+        
     }
     
     
@@ -305,7 +349,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
             
         case 2:
             let mode = jobDetails.init(jobDescribe: desc, jobCondition: needed, address: address)
-
+            
             return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: worklocateCell.self, contentViewWidth: ScreenW)
         case 3:
             let mode = HRInfo.init(name: HRname, position: HRposition, lastLogin: HRtime, icon: "sina")
@@ -341,7 +385,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         case 3:
             let cell = table.dequeueReusableCell(withIdentifier: "RecruiterCell", for: indexPath) as! RecruiterCell
             let mode = HRInfo.init(name: HRname, position: HRposition, lastLogin: HRtime, icon: "sina")
-            cell.mode = mode 
+            cell.mode = mode
             return cell
         default:
             return  UITableViewCell()
@@ -349,10 +393,7 @@ class JobDetailViewController: UIViewController,UITableViewDelegate,UITableViewD
         }
         
     }
-    
-
 }
-
 
 extension JobDetailViewController{
     
@@ -364,15 +405,17 @@ extension JobDetailViewController{
             Thread.sleep(forTimeInterval: 3)
             
             
-            
-            
             DispatchQueue.main.async(execute: {
                 
                 // 这有ui操作
                 self?.mode =  CompuseRecruiteJobs(JSON: ["id":self?.jobID,"type":"compuse","tag":["福利好","休息多"],
                                                          "picture":"sina","company":"新浪工商所","jobName":"助理","address":"北京海淀","salary":"10-20K","create_time":Date.init().string(),"education":"本科"])
         
-                self?.table.reloadData()
+                // 获取数据成功
+                self?.didFinishloadData()
+                // 获取数据失败
+                //self?.showError()
+               
             })
         }
         
@@ -386,18 +429,18 @@ extension JobDetailViewController{
     // 分享
     @objc func share(){    
     self.navigationController?.view.addSubview(darkView)
-    //self.view.addSubview(darkView)
-        UIView.animate(withDuration: 0.5, animations: {
-            
-            self.shareapps.frame = CGRect(x: 0, y: ScreenH - sharedViewH, width: ScreenW, height: sharedViewH)
-        }, completion: nil)
         
+        UIView.animate(withDuration: 0.3, animations: {
+            self.shareapps.frame = CGRect(x: 0, y: ScreenH - shareViewH, width: ScreenW, height: shareViewH)
+        }, completion: nil)
         
     }
     // 举报
     @objc func warn(){
         
         self.hidesBottomBarWhenPushed = true
+        // test
+        WarnViewController.jobId = "dwqdq"
         self.navigationController?.pushViewController(WarnViewController, animated: true)
         
         
@@ -577,6 +620,10 @@ extension JobDetailViewController{
         self.navigationItem.setRightBarButtonItems([ UIBarButtonItem.init(customView: b3),UIBarButtonItem.init(customView: b1),UIBarButtonItem.init(customView: b2)], animated: false)
         // btn显示被收藏
         b3.isSelected = isCollected
+        
+        barBtnitems.append(b1)
+        barBtnitems.append(b2)
+        barBtnitems.append(b3)
         
         
         

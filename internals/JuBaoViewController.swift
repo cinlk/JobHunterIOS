@@ -9,13 +9,19 @@
 import UIKit
 
 
-fileprivate let resonse = ["薪资不符合","职位描述不匹配","公司信息不真实","HR无法联系","工作地方不符合"]
 
 
-class JuBaoViewController: UIViewController {
+class JuBaoViewController: BaseViewController {
 
     //  举报那个job
-    var jobId:String?
+    var jobId:String?{
+        didSet{
+            loadData()
+        }
+    }
+    
+    // 数据
+    private var resonse:[String]?
     
     private lazy var table:UITableView = {  [unowned self] in
        var table = UITableView.init()
@@ -56,11 +62,7 @@ class JuBaoViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.view.addSubview(table)
-        self.table.tableHeaderView = tableheader
-        self.table.tableFooterView = bv 
-        bv.addSubview(comfirm)
+        self.setViews()
         
         
     }
@@ -75,18 +77,55 @@ class JuBaoViewController: UIViewController {
         super.viewDidDisappear(animated)
         self.navigationItem.title = ""
     }
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
+  
     override func viewWillLayoutSubviews() {
         _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
         _  = comfirm.sd_layout().leftSpaceToView(bv,10)?.rightSpaceToView(bv,10)?.topSpaceToView(bv,30)?.bottomSpaceToView(bv,20)
     }
     
     
+    
+    override func setViews() {
+        self.view.addSubview(table)
+        self.table.tableHeaderView = tableheader
+        self.table.tableFooterView = bv
+        bv.addSubview(comfirm)
+        self.handleViews.append(table)
+        super.setViews()
+        
+    }
+    
+    override func didFinishloadData() {
+        super.didFinishloadData()
+        self.table.reloadData()
 
+    }
+
+    
+    override func reload() {
+        super.reload()
+        self.loadData()
+    }
+
+}
+
+
+extension JuBaoViewController{
+    
+    private func loadData(){
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+         
+            Thread.sleep(forTimeInterval: 3)
+            // 获取数据
+            DispatchQueue.main.async(execute: {
+                 self?.resonse =  ["薪资不符合","职位描述不匹配","公司信息不真实","HR无法联系","工作地方不符合"]
+                 self?.didFinishloadData()
+                 // 错误
+                 // showError()
+            })
+        }
+       
+    }
 }
 
 extension JuBaoViewController:UITableViewDelegate,UITableViewDataSource{
@@ -95,14 +134,16 @@ extension JuBaoViewController:UITableViewDelegate,UITableViewDataSource{
         return 1
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return resonse.count
+        return resonse?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell.init(style: .default, reuseIdentifier: "cell")
-        cell.textLabel?.text = resonse[indexPath.row]
-        cell.textLabel?.textAlignment = .left
-        cell.selectionStyle = .none
+        if let text = resonse?[indexPath.row]{
+            cell.textLabel?.text = text
+            cell.textLabel?.textAlignment = .left
+            cell.selectionStyle = .none
+        }
         return cell
     }
     

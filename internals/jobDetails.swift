@@ -40,31 +40,13 @@ class HRInfo:NSObject {
 }
 
 
-class MapJoblist:NSObject, Mappable{
+//
+class CompanyJoblistModel:NSObject, Mappable{
     
     
     var jobtag:[String]?
     var jobs:[CompuseRecruiteJobs]?
     
-    
-    override var description: String{
-        get{
-            var tags = ""
-            if let t = jobtag{
-                for item in t{
-                    tags += " " + item
-                }
-                
-            }
-            if let j = jobs {
-                for item in j{
-                    tags += "" + (item.jobName ?? "")
-                }
-            }
-            
-            return tags
-        }
-    }
     
     required init?(map: Map) {
         
@@ -78,7 +60,7 @@ class MapJoblist:NSObject, Mappable{
     
 }
 
-class CompanyDetail: NSObject, Mappable {
+class CompanyDetailModel: NSObject, Mappable {
     
    
     
@@ -93,39 +75,12 @@ class CompanyDetail: NSObject, Mappable {
     var iconURL:String?
     var simpleTag:[String]?
     // 招聘职位
-    var joblist:MapJoblist?
-    
-    
-    //
-    override var description: String{
-        get{
-        
-            return self.name! + ":" + (self.joblist?.description ?? "")
-        }
-    }
+    //var joblist:MapJoblist?
+
     required init?(map: Map) {
         
     }
     
-    
-//    init(address:String, webSite:String,) {
-//        self.address = address
-//        self.webSite = webSite
-//
-//    }
-    /**
-     {
-     "address":"",
-     "iconURL":"",
-     ....,
-     "joblist":{
-     "jobs":[{},{},{}],
-     "jobtag":["","",""]
-     
-     }
-     
-     }
-    **/
     func mapping(map: Map) {
         id <- map["id"]
         address <- map["address"]
@@ -136,7 +91,7 @@ class CompanyDetail: NSObject, Mappable {
         simpleDes <- map["simpleDes"]
         iconURL <- map["iconURL"]
         simpleTag <- map["simpleTag"]
-        joblist <- map["joblist"]
+        //joblist <- map["joblist"]
         
     }
 }

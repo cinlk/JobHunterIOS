@@ -15,6 +15,10 @@ import RxCocoa
 import RxDataSources
 
 
+protocol baseSearchViewControllerDelegate: class {
+    func startSearch(word:String)
+    
+}
 
 fileprivate let leftDistance:CGFloat = 40
 fileprivate let dropViewH:CGFloat = 40
@@ -29,21 +33,22 @@ class baseSearchViewController: UISearchController{
     
     private var searchField:UITextField!
     
+    // 搜索结果显示控制组件
+    private var searchShowVC:searchResultController?
     
-    // nmenu view
+    //搜索代理
+    weak var resultDelegate:baseSearchViewControllerDelegate?
+    
+    
+    //
     private lazy var menu1:YNDropDownView = { [unowned self] in
         
         let v1 = CompanySelector.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 160))
         
-        // 条件数据 回调
+        // 搜索条件 回调
         v1.passData = { (cond:[String:String]?) in
             
-            let vm  = (self.searchResultsController as! searchResultController).vm
-            // 过滤数据 测试
-            // MARK 根据搜索条件查询 服务器数据
-            // 在刷新tableview
-        
-            vm?.loadData.onNext("搜索")
+            self.resultDelegate?.startSearch(word: "搜索")
         }
         return v1
         
@@ -52,12 +57,7 @@ class baseSearchViewController: UISearchController{
     private lazy var menu2:YNDropDownView = {
         let v1 = PositionSelector.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 160))
         v1.passData = { (cond:[String:[String]]?) in
-            let vm  = (self.searchResultsController as! searchResultController).vm
-            // 过滤数据 测试
-            // MARK 根据搜索条件查询 服务器数据
-            // 在刷新tableview
-            
-            vm?.loadData.onNext("搜索")
+           self.resultDelegate?.startSearch(word: "搜索")
         }
         return v1
         
@@ -66,16 +66,13 @@ class baseSearchViewController: UISearchController{
     private lazy var menu3:YNDropDownView = {
         let v1 = JobArea.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 60))
         v1.passData = { (cond:[String:String]?) in
-            let vm  = (self.searchResultsController as! searchResultController).vm
-            // 过滤数据 测试
-            // MARK 根据搜索条件查询 服务器数据
-            // 在刷新tableview
-            
-            vm?.loadData.onNext("搜索")
+            self.resultDelegate?.startSearch(word: "搜索")
         }
+        
         return v1
         
     }()
+    
     
     
     
@@ -144,6 +141,10 @@ class baseSearchViewController: UISearchController{
     override init(searchResultsController: UIViewController?) {
         
         super.init(searchResultsController: searchResultsController)
+        
+        self.searchShowVC = searchResultsController as? searchResultController
+        self.resultDelegate = self.searchShowVC
+        
         self.hidesNavigationBarDuringPresentation = false
         self.dimsBackgroundDuringPresentation = true
         
@@ -228,7 +229,7 @@ class baseSearchViewController: UISearchController{
 }
 
 
-// 显示搜索结果
+// 搜索记录 代理实现
 extension baseSearchViewController:SearchResultDelegate,UISearchBarDelegate{
     
 
@@ -241,11 +242,9 @@ extension baseSearchViewController:SearchResultDelegate,UISearchBarDelegate{
         DBFactory.shared.getSearchDB().insertSearch(name: word)
         //localData.shared.appendSearchHistories(value: word)
         self.serchRecordVC.AddHistoryItem = true
-        // MARK
-        let vm  = (self.searchResultsController as!  searchResultController).vm
         
-        //SVProgressHUD.show(withStatus: "加载数据")
-        vm?.loadData.onNext("load")
+        // MARK 什么时候执行这个？？
+        self.resultDelegate?.startSearch(word: "load")
         
         
         self.searchBar.text = word

@@ -68,7 +68,8 @@ class CompanyCollectedVC: UITableViewController {
         }
         let item = jobManageRoot.getCollections(type: .company)[indexPath.row] as! comapnyInfo
         // MARK TODO company数据给界面展示
-        let vc = companyscrollTableViewController()
+        let vc = CompanyMainVC()
+        vc.companyID =  item.id
         self.navigationController?.pushViewController(vc, animated: true)
         
     }

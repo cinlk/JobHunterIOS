@@ -33,7 +33,7 @@ class pageContentView: UIView {
         layout.scrollDirection = .horizontal
         
         let collv = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
-        collv.autoresizingMask  = [.flexibleWidth,.flexibleWidth]
+        collv.autoresizingMask  = [.flexibleWidth,.flexibleHeight]
         collv.register(UICollectionViewCell.self, forCellWithReuseIdentifier: CollectionCellID)
         collv.showsVerticalScrollIndicator = false
         collv.showsHorizontalScrollIndicator = false

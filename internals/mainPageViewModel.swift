@@ -19,8 +19,10 @@ enum mainPageRefreshStatus{
     case beginFooterRefresh
     case endFooterRefresh
     case NoMoreData
+    case end
     // MARK 需要细化错误类型？
     case error
+    
 }
 
 

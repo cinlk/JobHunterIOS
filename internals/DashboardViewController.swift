@@ -33,7 +33,7 @@ protocol UISearchRecordDelegatae : class {
 
 
 //  主页面板块
-class DashboardViewController: UIViewController{
+class DashboardViewController: BaseViewController{
 
     
     
@@ -53,8 +53,8 @@ class DashboardViewController: UIViewController{
     private var searchLists:[Dictionary<String,String>] = []
     
     
-    // 搜索控制视图
-    private weak var searchController:baseSearchViewController!
+    // 搜索控制组件
+    private weak var searchController:baseSearchViewController?
     
     
     // 当前城市
@@ -71,19 +71,7 @@ class DashboardViewController: UIViewController{
     // viewModel
     private var vm:mainPageViewMode!
     
-    
-    // 消息提示框
-    private lazy var hub:MBProgressHUD = { [unowned self] in
-        
-        let  hub = MBProgressHUD.showAdded(to: (self.navigationController?.view!)!, animated: true)
-        hub.mode = .indeterminate
-        hub.label.text = "加载数据"
-        hub.removeFromSuperViewOnHide = false
-        hub.margin = 10
-        hub.label.textColor = UIColor.black
-        return hub
-    }()
-    
+
     
     //导航栏遮挡背景view
     private lazy  var navigationView:UIView = {
@@ -117,10 +105,10 @@ class DashboardViewController: UIViewController{
     }()
     
     // 搜索结果VC
-    private lazy var searchResultVC: searchResultController = {
-        let s = searchResultController()
-        return s
-    }()
+//    private lazy var searchResultVC: searchResultController = {
+//        let s = searchResultController()
+//        return s
+//    }()
     
     // 搜索框外部view，滑动影藏搜索框
     private lazy var searchBarContainer:UIView = {
@@ -132,15 +120,7 @@ class DashboardViewController: UIViewController{
         
     }()
     
-    //错误显示界面
-    private lazy var  errorView:ErrorPageView = {  [unowned self] in
-        let eView = ErrorPageView.init(frame: self.view.bounds)
-        eView.isHidden = true
-        // 再次刷新
-        eView.reload = reload
-        return eView
-    }()
-    
+
     // 选择城市VC
     private lazy var cityVC:CityViewController = CityViewController()
      
@@ -200,13 +180,7 @@ class DashboardViewController: UIViewController{
     }
     
     
-}
-
-
-
-extension DashboardViewController{
-    
-    private func setViews(){
+    override func setViews(){
         /***** table *****/
         // MARK 需要修改 category
         self.tables.register(MainPageCatagoryCell.self, forCellReuseIdentifier: MainPageCatagoryCell.identity())
@@ -221,36 +195,56 @@ extension DashboardViewController{
         // search 切到到另一个view后，search bar不保留
         self.definesPresentationContext  = true
         
-        searchController  = baseSearchViewController.init(searchResultsController: searchResultVC)
+        searchController  = baseSearchViewController.init(searchResultsController: searchResultController())
         // 选择城市回调
-        searchController.chooseCity = { [weak self] in
+        searchController?.chooseCity = { [weak self] in
             
             //self?.hidesBottomBarWhenPushed = true
             self?.navigationController?.pushViewController((self?.cityVC)!, animated: true)
             //self?.hidesBottomBarWhenPushed = false
         }
-    
+        
         searchController?.searchResultsUpdater = self
         searchController?.delegate =  self
         searchController?.searchBar.delegate = self
-
+        
         //searchController?.cityDelegate = self
         searchController?.height = searchBarH
         searchBarContainer.addSubview((searchController?.searchBar)!)
         
         self.navigationItem.titleView = searchBarContainer
         
+
         
-        // 添加错误显示界面
-        self.view.insertSubview(errorView, at: 0)
+        self.handleViews.append(tables)
+        self.handleViews.append(searchBarContainer)
+        super.setViews()
+    }
+    
+    
+    override func didFinishloadData(){
         
-        // 显示加载界面
-        self.hub.show(animated: true)
-        
-        self.tables.isHidden =  true
-        self.searchBarContainer.isHidden = true
+        super.didFinishloadData()
+    }
+    
+    override func showError(){
+        super.showError()
+    }
+    // 再次加载
+    override func reload(){
+        //
+        vm.refreshData.onNext(true)
+        super.reload()
         
     }
+    
+    
+}
+
+
+
+extension DashboardViewController{
+    
     
     // 加载数据
     private func loadData(){
@@ -259,17 +253,6 @@ extension DashboardViewController{
         
     }
     
-    // 再次加载
-    private func reload(){
-        
-        self.hub.show(animated: true)
-        //self.errorView.isHidden = true
-        
-        //self.tables.mj_header.beginRefreshing()
-        vm.refreshData.onNext(true)
-        //beginRefreshingCompletionBlock
-        
-    }
 }
 
 
@@ -371,6 +354,7 @@ extension DashboardViewController: UISearchResultsUpdating{
 
         
     }
+    // 搜索框结束输入，开始搜索
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         // 显示搜索resultview
         guard let searchItem = searchBar.text else {
@@ -384,13 +368,7 @@ extension DashboardViewController: UISearchResultsUpdating{
         
         // 查找新的item 然后 重新加载table
         DBFactory.shared.getSearchDB().insertSearch(name: searchItem)
-        //localData.shared.appendSearchHistories(value: searchBar.text!)
-        //let vm = (self.searchController?.searchResultsController as! searchResultController).vm
-        searchResultVC.vm.loadData.onNext("test")
-        //vm?.loadData.onNext("test")
-        //SVProgressHUD.show(withStatus: "加载数据")
-        showOnlyTextHub(message: "加载数据", view: self.view)
-        
+        searchController?.resultDelegate?.startSearch(word: "test")
         
     }
     
@@ -662,10 +640,7 @@ extension DashboardViewController{
                 self?.tables.mj_footer.resetNoMoreData()
                 //正常结束刷新后，显示界面
                 self?.tables.mj_header.endRefreshing(completionBlock: {
-                    self?.tables.isHidden = false
-                    self?.searchBarContainer.isHidden = false
-                    self?.errorView.isHidden = true
-                    self?.hub.hide(animated: true)
+                    self?.didFinishloadData()
                 })
                 //self?.tables.mj_header.endRefreshing()
             case .beginFooterRefresh:
@@ -678,9 +653,7 @@ extension DashboardViewController{
             case .error:
                 //self?.hub.label.text = "网络异常"
                 //self?.hub.hide(animated: true, afterDelay: 2)
-                self?.hub.hide(animated: true)
-                // 显示错误界面
-                self?.errorView.isHidden = false
+                self?.showError()
                 
                 
             default:
@@ -690,9 +663,7 @@ extension DashboardViewController{
         
         
         
-        //self.tables.mj_header.beginRefreshing(completionBlock: <#T##(() -> Void)!##(() -> Void)!##() -> Void#>)
         self.tables.mj_header  = MJRefreshNormalHeader.init { [weak self] in
-            // 只执行一次？？
             print(" 下拉刷新 -----")
             self?.vm.refreshData.onNext(true)
         }
@@ -703,7 +674,6 @@ extension DashboardViewController{
         (self.tables.mj_header as! MJRefreshNormalHeader).setTitle("刷新 ...", for: .refreshing)
         
         self.tables.mj_footer = MJRefreshAutoNormalFooter.init(refreshingBlock: { [weak self] in
-            print("上拉 刷新 ----")
             self?.vm.refreshData.onNext(false)
         })
         

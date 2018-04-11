@@ -10,7 +10,39 @@ import UIKit
 
 class newVisitor: UITableViewController {
 
-    var mode:[VisitorHRModel] = []
+    private var mode:[VisitorHRModel] = []
+    
+    private lazy var  errorView:ErrorPageView = {  [unowned self] in
+        let eView = ErrorPageView.init(frame: self.view.bounds)
+        eView.isHidden = true
+        // 再次刷新
+        eView.reload = reload
+        
+        return eView
+    }()
+    
+    
+    private lazy var hub:MBProgressHUD = { [unowned self] in
+        
+        let  hub = MBProgressHUD.showAdded(to: self.backHubView, animated: true)
+        hub.mode = .indeterminate
+        hub.label.text = "加载数据"
+        hub.removeFromSuperViewOnHide = false
+        hub.margin = 10
+        hub.label.textColor = UIColor.black
+        return hub
+        
+    }()
+    
+    
+    // tableview 是第一个view，不能直接使用为hub的背景view
+    private lazy var backHubView:UIView = { [unowned self] in
+        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
+        view.backgroundColor = UIColor.white
+        self.navigationController?.view.insertSubview(view, at: 1)
+        view.isHidden = true
+        return view
+    }()
     
     
     override func viewDidLoad() {
@@ -22,6 +54,10 @@ class newVisitor: UITableViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         self.navigationItem.title = ""
+        
+        // 
+        backHubView.removeFromSuperview()
+        hub.removeFromSuperview()
     }
     
 
@@ -61,20 +97,67 @@ class newVisitor: UITableViewController {
 
 }
 
+
 extension newVisitor{
     
-    private func loadData(){
-        //self.data
-        
-        for _ in 0..<10{
-            mode.append(VisitorHRModel(JSON: ["iconURL":"avartar","company":"小公司","position":"HRBP","visit_time":"2017-12-27","jobName":"销售经理","tag":"招聘"])!)
-        }
-        
-    }
+    
     
     private func setView(){
         self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.tableFooterView = UIView.init()
         self.tableView.register(visitorCell.self, forCellReuseIdentifier: visitorCell.identity())
+        
+        hub.show(animated: true)
+        self.tableView.isHidden = true
+        backHubView.isHidden = false
     }
+    
+    private func didFinishloadData(){
+        hub.hide(animated: true)
+        backHubView.isHidden = true
+        self.tableView.isHidden = false
+        errorView.isHidden = true
+        hub.removeFromSuperview()
+        self.tableView.reloadData()
+    }
+    
+    private func showError(){
+        hub.hide(animated: true)
+        errorView.isHidden = false
+        backHubView.isHidden = false
+    }
+    
+    private func reload(){
+        
+        hub.show(animated: true)
+        backHubView.isHidden = false
+        self.errorView.isHidden = true
+        self.loadData()
+        
+    }
+    
+    
+}
+extension newVisitor{
+    
+    private func loadData(){
+        //self.data
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            
+            Thread.sleep(forTimeInterval: 3)
+            
+            for _ in 0..<10{
+                self?.mode.append(VisitorHRModel(JSON: ["iconURL":"avartar","company":"小公司","position":"HRBP","visit_time":"2017-12-27","jobName":"销售经理","tag":"招聘"])!)
+            }
+            
+            DispatchQueue.main.async(execute: {
+                self?.didFinishloadData()
+            })
+            
+        }
+       
+        
+    }
+    
+ 
 }

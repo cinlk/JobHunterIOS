@@ -15,9 +15,9 @@ import CoreLocation
 class CityViewController:UICollectionViewController, UICollectionViewDelegateFlowLayout{
     
     // 定位
-    var activiyIndicator = UIActivityIndicatorView.init()
+    private var activiyIndicator = UIActivityIndicatorView.init()
     
-    lazy var locatcityButton:UIButton = {
+    private lazy var locatcityButton:UIButton = {
         let button = UIButton.init(type: UIButtonType.custom)
         button.backgroundColor = UIColor.white
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
@@ -33,7 +33,7 @@ class CityViewController:UICollectionViewController, UICollectionViewDelegateFlo
         return button
     }()
 
-    lazy var locationM: CLLocationManager = {
+    private lazy var locationM: CLLocationManager = {
         let locationM = CLLocationManager()
         locationM.delegate = self
         locationM.desiredAccuracy = kCLLocationAccuracyBest
@@ -45,11 +45,31 @@ class CityViewController:UICollectionViewController, UICollectionViewDelegateFlo
         return locationM
     }()
     
-    lazy var geoCoder: CLGeocoder = {
+    private lazy var geoCoder: CLGeocoder = {
         return CLGeocoder()
     }()
     
     
+    
+    lazy var  errorView:ErrorPageView = {  [unowned self] in
+        let eView = ErrorPageView.init(frame: self.view.bounds)
+        eView.isHidden = true
+        // 再次刷新
+        eView.reload = reload
+        return eView
+    }()
+    
+    lazy var hub:MBProgressHUD = { [unowned self] in
+        
+        let  hub = MBProgressHUD.showAdded(to: self.view, animated: true)
+        hub.mode = .indeterminate
+        hub.label.text = "加载数据"
+        hub.removeFromSuperViewOnHide = false
+        hub.margin = 10
+        hub.label.textColor = UIColor.black
+        return hub
+        
+    }()
     
     //
     var localCity:String = "" {
@@ -58,10 +78,10 @@ class CityViewController:UICollectionViewController, UICollectionViewDelegateFlo
         }
     }
     
-    var currentLocation:CLLocation!
+   private var currentLocation:CLLocation!
     
-    var indexs:[String] = []
-    var citys:[String:[String]] = [:] {
+   private var indexs:[String] = []
+   private var citys:[String:[String]] = [:] {
         willSet{
             indexs = newValue.keys.sorted().reversed()
         }
@@ -72,7 +92,7 @@ class CityViewController:UICollectionViewController, UICollectionViewDelegateFlo
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = "选择城市"
-        
+        self.view.backgroundColor = UIColor.white
         self.collectionView?.backgroundColor = UIColor.white
         self.collectionView?.isScrollEnabled = true
         self.collectionView?.isMultipleTouchEnabled = false
@@ -84,7 +104,10 @@ class CityViewController:UICollectionViewController, UICollectionViewDelegateFlo
         activiyIndicator.activityIndicatorViewStyle = .gray
         //activiyIndicator.color = UIColor.blue  # 这里有BUG?
         activiyIndicator.hidesWhenStopped = true
-        citys =  getCitys(filename: CITYS)
+        //citys =  getCitys(filename: CITYS)
+        self.hub.show(animated: true)
+        self.collectionView?.isHidden = true
+        self.loadData()
         
         
     
@@ -109,9 +132,6 @@ class CityViewController:UICollectionViewController, UICollectionViewDelegateFlo
     override func viewWillAppear(_ animated: Bool) {
         
         // start fetching location
-        activiyIndicator.startAnimating()
-        localCity = "正在定位"
-        self.locationCity()
         
     }
     
@@ -207,6 +227,49 @@ class CityViewController:UICollectionViewController, UICollectionViewDelegateFlo
         
     }
     
+}
+
+
+extension CityViewController{
+    
+    private func loadData(){
+        
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            
+            Thread.sleep(forTimeInterval: 3)
+            self?.citys = ["GHIJ": ["桂林", "广州", "合肥", "呼和浩特", "海口", "杭州", "湖州", "济南", "济宁", "嘉兴", "江阴"], "热门城市": ["全国", "西安", "深圳", "武汉", "长沙", "苏州", "南京", "上海", "成都", "广州", "杭州", "北京"], "ABCDEF": ["鞍山", "安阳", "保定", "北京", "成都", "重庆", "长沙", "常州", "大连", "东营", "德州", "佛山", "福州"], "KLMN": ["特别长特别长特比长", "昆明", "昆山", "聊城", "廊坊", "洛阳", "连云港", "兰州", "绵阳", "宁波", "南京", "南宁", "南通"]]
+            
+            DispatchQueue.main.async(execute: {
+                // 如果出现错出错
+                // showError()
+                
+                self?.didFinisheLoadData()
+            })
+        }
+        
+    }
+    
+    private func didFinisheLoadData(){
+        self.hub.hide(animated: true)
+        self.collectionView?.isHidden = false
+        self.collectionView?.reloadData()
+        
+        // 定位城市
+        activiyIndicator.startAnimating()
+        localCity = "正在定位"
+        self.locationCity()
+    }
+    
+    private func showError(){
+        self.hub.hide(animated: true)
+        self.errorView.isHidden = false
+        self.collectionView?.isHidden = true
+    }
+    
+    private func reload(){
+        self.hub.show(animated: true)
+        self.collectionView?.isHidden = true
+    }
 }
 
 extension CityViewController: CLLocationManagerDelegate{

@@ -243,7 +243,7 @@ extension messageMain: headerCollectionViewDelegate{
         switch index {
         case  messageItemType.result.rawValue:
             let view =  deliveredHistory()
-             view.hidesBottomBarWhenPushed = true
+            view.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(view, animated: true)
             
         case messageItemType.notification.rawValue:
@@ -252,7 +252,7 @@ extension messageMain: headerCollectionViewDelegate{
             self.navigationController?.pushViewController(view, animated: true)
             
         case messageItemType.forum.rawValue:
-            let view = UIViewController.init()
+            let view = ForumViewController()
             view.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(view, animated: true)
         case messageItemType.recommend.rawValue:

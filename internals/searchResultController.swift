@@ -13,7 +13,8 @@ import RxDataSources
 import MJRefresh
 
 
-class searchResultController: UIViewController,UIScrollViewDelegate {
+
+class searchResultController: BaseViewController,UIScrollViewDelegate {
 
     lazy var table:UITableView = {
        let tb = UITableView.init()
@@ -28,20 +29,51 @@ class searchResultController: UIViewController,UIScrollViewDelegate {
     var vm:searchViewModel!
     
     
+    // MARK 保留搜索条件
+    var currentKey = "搜索"
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.addSubview(self.table)
-        self.searchModeView()
+        
+        self.setViews()
         
     }
 
+    
     override func viewWillLayoutSubviews() {
         _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
     }
   
+    override func setViews() {
+        self.view.addSubview(self.table)
+        self.searchModeView()
+        self.handleViews.append(table)
+        super.setViews()
+    }
+    
+    override func showError() {
+        super.showError()
+    }
+    
+    override func reload() {
+        super.reload()
+        //
+        self.vm.loadData.onNext(currentKey)
+    }
+    
+    override func didFinishloadData() {
+        super.didFinishloadData()
+    }
+    
+    
+    // 刷新数据
+    private func refresh(){
+        super.setViews()
+        self.vm.loadData.onNext(currentKey)
+    }
 
 
+    
 }
 
 
@@ -83,13 +115,19 @@ extension searchResultController{
         }
         
 
-        vm.refreshStatus.asDriver().drive(onNext: { [unowned self]  (state) in
+        
+        vm.refreshStatus.asDriver().drive(onNext: { [weak self]  (state) in
             switch state{
             case .endFooterRefresh:
-                self.table.mj_footer.endRefreshing()
+                self?.table.mj_footer.endRefreshing()
                 
             case .NoMoreData:
-                self.table.mj_footer.endRefreshingWithNoMoreData()
+                self?.table.mj_footer.endRefreshingWithNoMoreData()
+            case .end:
+                self?.didFinishloadData()
+                
+            case .error:
+                self?.showError()
                 
             default:
                 
@@ -103,3 +141,11 @@ extension searchResultController{
     
 }
 
+
+extension searchResultController:baseSearchViewControllerDelegate{
+    func startSearch(word: String) {
+        // MARK test
+        self.currentKey = word
+        self.refresh()
+    }
+}

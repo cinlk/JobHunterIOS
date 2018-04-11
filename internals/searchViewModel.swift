@@ -36,7 +36,7 @@ class searchViewModel: NSObject {
 
     // 刷新数据
     var refresh:Variable<filterCondtionss> = Variable.init(filterCondtionss.init())
-    // 加载数据
+    // 搜索框 加载数据
     var loadData:PublishSubject<String> = PublishSubject<String>.init()
     
     var companyType:Variable<[String:[String]]> = Variable.init(["":[]])
@@ -80,14 +80,16 @@ class searchViewModel: NSObject {
         
         
         loadData.subscribe(onNext: { (word) in
+            // 搜索的word
             mainPageServer.shareInstance.searchKeyByWord(word: word).subscribe(onNext: { [unowned self] (jobs) in
                 self.sectionJobData.value = jobs
                 
                 }, onError: { (error) in
                     self.sectionJobData.value = []
+                    self.refreshStatus.value = .error
             }, onCompleted: {
-                
-                self.refreshStatus.value = .endFooterRefresh
+                //self.refreshStatus.value = .endFooterRefresh
+                self.refreshStatus.value = .end
                 
             }, onDisposed: nil).disposed(by: self.disposeBag)
             

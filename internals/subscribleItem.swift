@@ -16,15 +16,47 @@ fileprivate let section = 2
 class subscribleItem: UITableViewController {
 
     
-    // 数据保持在本地(校招,实习)
+    // 数据保持在本地(校招,实习) 还是服务器？
     private lazy var internData:[subscribeConditionModel]  = []
     private lazy var compuseData:[subscribeConditionModel] = []
     
     
+    
+    private lazy var  errorView:ErrorPageView = {  [unowned self] in
+        let eView = ErrorPageView.init(frame: self.view.bounds)
+        eView.isHidden = true
+        // 再次刷新
+        eView.reload = reload
+        
+        return eView
+        
+    }()
+    
+    
+    private lazy var hub:MBProgressHUD = { [unowned self] in
+        
+        let  hub = MBProgressHUD.showAdded(to: self.backHubView, animated: true)
+        hub.mode = .indeterminate
+        hub.label.text = "加载数据"
+        hub.removeFromSuperViewOnHide = false
+        hub.margin = 10
+        hub.label.textColor = UIColor.black
+        return hub
+        
+    }()
+    
+    
+    // tableview 是第一个view，不能直接使用为hub的背景view
+    private lazy var backHubView:UIView = { [unowned self] in
+        let view = UIView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: ScreenH - NavH))
+        view.backgroundColor = UIColor.white
+        self.navigationController?.view.insertSubview(view, at: 1)
+        view.isHidden = true
+        return view
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.setView()
         self.loadData()
     }
@@ -42,6 +74,9 @@ class subscribleItem: UITableViewController {
         super.viewWillDisappear(animated)
         self.navigationController?.removeCustomerView()
         self.navigationItem.title = ""
+        //
+        backHubView.removeFromSuperview()
+        hub.removeFromSuperview()
     }
  
 }
@@ -49,7 +84,8 @@ class subscribleItem: UITableViewController {
 extension subscribleItem{
     
     private func setView(){
-        
+        //self.navigationController?.view.backgroundColor = UIColor.white
+
         self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.tableHeaderView = UIView.init()
         self.tableView.tableFooterView = UIView.init()
@@ -62,21 +98,66 @@ extension subscribleItem{
         let add = UIImage.barImage(size: size, offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "plus")
         self.navigationItem.rightBarButtonItem =  UIBarButtonItem.init(image: add, style: .plain, target: self, action: #selector(addItem))
         
+        hub.show(animated: true)
+        self.tableView.isHidden = true
+        backHubView.isHidden = false
+        
     }
+    
+    
+    private func didFinishloadData(){
+        hub.hide(animated: true)
+        backHubView.isHidden = true
+        self.tableView.isHidden = false
+        errorView.isHidden = true
+        hub.removeFromSuperview()
+        self.tableView.reloadData()
+    }
+    
+    private func showError(){
+        hub.hide(animated: true)
+        errorView.isHidden = false
+        backHubView.isHidden = false
+    }
+    
+    private func reload(){
+        
+        hub.show(animated: true)
+        backHubView.isHidden = false
+        self.errorView.isHidden = true
+        self.loadData()
+        
+    }
+    
+}
+
+extension subscribleItem{
+    
     
     // 加载数据
     private func loadData(){
         
-        internData.removeAll()
-        compuseData.removeAll()
+        DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
+            
+            
+            self?.internData.removeAll()
+            self?.compuseData.removeAll()
+            Thread.sleep(forTimeInterval: 3)
+            
+            
+            self?.internData.append(subscribeConditionModel(JSON: ["type":"实习","des":["后台开发","IOS研发"],"locate":"成都","internSalary":"200/天","business":"计算机","internDay":"4天/周","internMonth":"半年", "degree":"大专"])!)
+            
+            self?.compuseData.append(subscribeConditionModel(JSON: ["type":"校招","des":["产品经理","产品设计"],"locate":"北京","salary":"10-12K/月","business":"人工智能","degree":"本科"])!)
+            self?.compuseData.append(subscribeConditionModel(JSON: ["type":"校招","des":["运维","推广"],
+                                                              "locate":"北京","salary":"20-30K/月","business":"学前教育", "degree":"硕士"])!)
+            DispatchQueue.main.async {
+                self?.didFinishloadData()
+                
+            }
+        }
         
-        internData.append(subscribeConditionModel(JSON: ["type":"实习","des":["后台开发","IOS研发"],"locate":"成都","internSalary":"200/天","business":"计算机","internDay":"4天/周","internMonth":"半年", "degree":"大专"])!)
         
-        compuseData.append(subscribeConditionModel(JSON: ["type":"校招","des":["产品经理","产品设计"],"locate":"北京","salary":"10-12K/月","business":"人工智能","degree":"本科"])!)
-        compuseData.append(subscribeConditionModel(JSON: ["type":"校招","des":["运维","推广"],
-                                                          "locate":"北京","salary":"20-30K/月","business":"学前教育", "degree":"硕士"])!)
-        
-        self.tableView.reloadData()
+       
         
     }
     
