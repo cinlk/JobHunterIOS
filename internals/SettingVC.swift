@@ -85,11 +85,13 @@ class SettingVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = "设置"
+        self.navigationController?.insertCustomerView()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationItem.title = ""
+        self.navigationController?.removeCustomerView()
     }
     
     
@@ -152,16 +154,17 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource{
     }
     
     
-    // header section view
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    //  section view
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let v = UIView.init()
         v.backgroundColor = UIColor.init(r: 239, g: 239, b: 244)
         return v
     }
     
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 20
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return  20
     }
+    
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -223,7 +226,6 @@ extension SettingVC {
     
     // 清理缓存
     private func clearCache(){
-        
         
           
           showOnlyTextHub(message: "清楚完成", view: self.view)

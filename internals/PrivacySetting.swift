@@ -12,12 +12,20 @@ import UIKit
 
 fileprivate let headerViewH:CGFloat = 50
 fileprivate let headerTitle:String = "简历隐私设置"
-fileprivate let status:[String] = ["所有公司可见","只有投递公司可见","屏蔽指定公司","影藏简历"]
 
-class PrivacySetting: UITableViewController {
+class PrivacySetting: BaseTableViewController {
+
+
 
     private var currentSelectedRow:Int = 0
+    // 选择数据
+    private var mode:privateMode?{
+        didSet{
+            privateViewMode.shared.mode = mode!
+        }
+    }
     
+
     private lazy var headerView:UIView = {
         let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: headerViewH))
         v.backgroundColor = UIColor.white
@@ -35,38 +43,66 @@ class PrivacySetting: UITableViewController {
         
     }()
     
+    
     // 由于tableview reloadindex 有bug，加入moreCell 指向
     // 屏蔽公司的cell
     private var moreCell:PrivacyCellView?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        initView()
+        self.setViews()
+        loadData()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        // 获取数据 刷新table
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = "隐私设置"
+        self.navigationController?.insertCustomerView()
     }
     
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         self.navigationItem.title = ""
+        self.navigationController?.removeCustomerView()
+        
     }
     
-    
-    
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    override func setViews(){
+        self.tableView.backgroundColor = UIColor.viewBackColor()
+        self.tableView.tableHeaderView = headerView
+        self.tableView.tableFooterView = UIView.init()
+        self.tableView.separatorStyle = .none
+        self.tableView.register(PrivacyCellView.self, forCellReuseIdentifier: PrivacyCellView.identity())
+        
+        
+        self.handleViews.append(tableView)
+        super.setViews()
+        
     }
+    
+    override func didFinishloadData(){
+        
+        super.didFinishloadData()
+        self.tableView.reloadData()
+    }
+    
+    override func showError(){
+       super.showError()
+    }
+    
+    override func reload(){
+        super.reload()
+        self.loadData()
+        
+    }
+    
+
 
     // MARK: - Table view data source
 
@@ -77,78 +113,90 @@ class PrivacySetting: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return status.count
+        return mode?.list?.count ?? 0
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        var cell = tableView.dequeueReusableCell(withIdentifier: PrivacyCellView.identity(), for: indexPath) as?
-            PrivacyCellView
-        cell?.delegate = self
-        
-        if cell == nil{
-            cell = PrivacyCellView.init(style: .default, reuseIdentifier: PrivacyCellView.identity())
+        guard let lists = mode?.list else {
+            return UITableViewCell()
         }
-        let mode = privacyModel(title: status[indexPath.row], selected: false, showCompany:false)
-        if currentSelectedRow == indexPath.row{
-            mode.selected = true
-            if currentSelectedRow == 2{
-                mode.showCompany = true
-                cell?.mode = mode
+        
+        if let  cell = tableView.dequeueReusableCell(withIdentifier: PrivacyCellView.identity(), for: indexPath) as?
+            PrivacyCellView{
+            
+            cell.delegate = self
+            
+            
+            let item = lists[indexPath.row]
+            if item.isOn == true{
+                currentSelectedRow = indexPath.row
+            }
+            // 显示屏蔽公司的cell
+            if item.showCompany == true{
                 moreCell = cell
             }
-            cell?.mode = mode
-            cell?.useCellFrameCache(with: indexPath, tableView: tableView)
-        }else{
-            cell?.mode = mode
-            cell?.useCellFrameCache(with: indexPath, tableView: tableView)
+            
+            cell.mode = item
+            cell.useCellFrameCache(with: indexPath, tableView: tableView)
+            
+            return cell
+            
         }
-        return cell!
-        
+     
+        return UITableViewCell()
         
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let mode = privacyModel(title: status[indexPath.row], selected: false, showCompany:false)
-
-        if currentSelectedRow == indexPath.row{
-            mode.selected = true
-            if currentSelectedRow == 2{
-                mode.showCompany = true
-                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: PrivacyCellView.self, contentViewWidth: ScreenW)
-            }
-            
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: PrivacyCellView.self, contentViewWidth: ScreenW)
-            
-        }else{
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: PrivacyCellView.self, contentViewWidth: ScreenW)
+        guard let item = mode?.list else {
+            return 0
         }
+
+        
+       return tableView.cellHeight(for: indexPath, model: item[indexPath.row], keyPath: "mode", cellClass: PrivacyCellView.self, contentViewWidth: ScreenW)
        
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        currentSelectedRow = indexPath.row
+       
+        if currentSelectedRow != indexPath.row{
+            mode?.list?[currentSelectedRow].isOn = false
+        }
+        mode?.list?[indexPath.row].isOn = true
         tableView.reloadData()
     }
-    override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+    
+  
+    
+}
+
+
+// 这里加载
+extension PrivacySetting{
+    private func loadData(){
+        
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            
+            Thread.sleep(forTimeInterval: 3)
+            DispatchQueue.main.async(execute: {
+                
+                
+                self?.mode = privateMode(JSON: ["list":[["name":"所有公司可见","isOn":false,"showCompany":false],["name":"只有投递公司可见","isOn":true,"showCompany":false],
+                                                        ["name":"屏蔽指定公司","isOn":false,"showCompany":true],["name":"影藏简历","isOn":false,"showCompany":false]],
+                                                "backListComp":["公司1","公司2","公司3"]])
+                
+                
+                self?.didFinishloadData()
+                
+            })
+        }
+        
         
     }
-    
-    
-
 }
 
 extension PrivacySetting{
-    
-    private func initView(){
-        self.tableView.backgroundColor = UIColor.viewBackColor()
-        self.tableView.tableHeaderView = headerView
-        self.tableView.tableFooterView = UIView.init()
-        self.tableView.separatorStyle = .none
-        //self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentiy)
-        self.tableView.register(PrivacyCellView.self, forCellReuseIdentifier: PrivacyCellView.identity())
-        
-    }
     
     // 等待 tableview 刷新后在执行
     private func refreshAfterAddItem(){

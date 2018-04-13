@@ -13,10 +13,12 @@ fileprivate let tableHeaderH:CGFloat = 200
 fileprivate let sectionTitle:[String] = ["实习经历","教育经历"]
 fileprivate let sectionH:CGFloat = 40
 
-class personCardVC: UITableViewController {
+class personCardVC: BaseTableViewController {
 
     
     private var pManager:personModelManager = personModelManager.shared
+    
+    
     
     // 头部view
     private lazy var tbHeader:personTableHeader  = {  [unowned self] in
@@ -32,11 +34,12 @@ class personCardVC: UITableViewController {
         v.alpha = 0
         let title = UILabel.init(frame: CGRect.zero)
         title.textAlignment = .center
-        title.text = self.pManager.mode?.basicinfo?.name
+        title.tag = 2
+        title.textColor = UIColor.black
         title.font = UIFont.systemFont(ofSize: 16)
-        title.sizeToFit()
+        title.setSingleLineAutoResizeWithMaxWidth(ScreenW - 60)
         v.addSubview(title)
-        _ = title.sd_layout().centerXEqualToView(v)?.topSpaceToView(v,25)?.bottomSpaceToView(v,10)
+        _ = title.sd_layout().centerXEqualToView(v)?.bottomSpaceToView(v,15)?.autoHeightRatio(0)
         return v
     }()
     
@@ -74,38 +77,58 @@ class personCardVC: UITableViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        
-        setTableHeaderView()
-        setNavigationView()
-        setShare()
-        self.tableView.separatorStyle = .singleLine
-        self.tableView.contentInset = UIEdgeInsets.init(top: 0, left: 0, bottom: 60, right: 0)
-        self.tableView.register(cardCell.self, forCellReuseIdentifier: cardCell.identity())
-      
+        self.setViews()
         loadData()
         
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-         self.tableView.contentInsetAdjustmentBehavior = .never
-         //self.navigationController?.navigationBar.settranslucent(true)
- 
+        self.tableView.contentInsetAdjustmentBehavior = .never
+        
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        //self.navigationController?.navigationBar.settranslucent(false)
         navBarTitleView.removeFromSuperview()
-        self.navigationController?.view.willRemoveSubview(navBarTitleView)
-       
-
-
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-     }
+    
+    
+    
+    override func setViews(){
+        setTableHeaderView()
+        setNavigationView()
+        shareOriginY = MyshareView.origin.y
+        self.tableView.separatorStyle = .singleLine
+        self.tableView.contentInset = UIEdgeInsets.init(top: 0, left: 0, bottom: 60, right: 0)
+        self.tableView.register(cardCell.self, forCellReuseIdentifier: cardCell.identity())
+        
+        self.handleViews.append(tableView)
+        self.handleViews.append(shareButton)
+        super.setViews()
+        
+    }
+    
+    
+    override func didFinishloadData(){
+        
+        super.didFinishloadData()
+        
+        // 设置界面值
+        self.tableView.reloadData()
+        if let pInfo = pManager.mode?.basicinfo{
+            tbHeader.mode = (image:pInfo.tx,name:pInfo.name, introduce:pInfo.degree)
+            (navBarTitleView.viewWithTag(2) as! UILabel).text = pInfo.name
+            
+        }
+    }
+    
+    override func reload(){
+        super.reload()
+        self.loadData()
+        
+    }
 
     // MARK: - Table view data source
 
@@ -127,48 +150,50 @@ class personCardVC: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let mode = pManager.mode else { return UITableViewCell() }
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: cardCell.identity(), for: indexPath) as! cardCell
         switch indexPath.section {
         case 0:
             
-            if  let item = pManager.mode?.internInfo[indexPath.row]{
-                let mode:cardModel =  cardModel.init(time: item.startTimeString + " 到 " + item.endTimeString, middle: item.company, bottom: item.position)
-                cell.mode = mode
-                cell.useCellFrameCache(with: indexPath, tableView: tableView)
-                return cell
-            }
+            let item = mode.internInfo[indexPath.row]
+            let mode:cardModel =  cardModel.init(time: item.startTimeString + " 到 " + item.endTimeString, middle: item.company, bottom: item.position)
+            cell.mode = mode
+            cell.useCellFrameCache(with: indexPath, tableView: tableView)
+            
+            
         case 1:
-            if let item = pManager.mode?.educationInfo[indexPath.row]{
-                let mode = cardModel.init(time: item.startTimeString + " 到 " + item.endTimeString, middle: item.colleage, bottom: item.department + "-" + item.degree)
-                cell.useCellFrameCache(with: indexPath, tableView: tableView)
-                cell.mode = mode
-                return cell
-            }
-        default:
-            break
-        }
-        
-        return UITableViewCell()
-    }
-    
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch indexPath.section {
-        case 0:
-            if  let item = pManager.mode?.internInfo[indexPath.row] {
-                let mode:cardModel =  cardModel.init(time: item.startTimeString + " 到 " + item.endTimeString, middle: item.company, bottom: item.position)
-                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: cardCell.self, contentViewWidth: ScreenW)
-            }
-        case 1:
-            if let item = pManager.mode?.educationInfo[indexPath.row]{
-                let mode = cardModel.init(time: item.startTimeString + " 到 " + item.endTimeString, middle: item.colleage, bottom: item.department + "-" + item.degree)
-                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: cardCell.self, contentViewWidth: ScreenW)
-            }
+            let item = mode.educationInfo[indexPath.row]
+            let mode = cardModel.init(time: item.startTimeString + " 到 " + item.endTimeString, middle: item.colleage, bottom: item.department + "-" + item.degree)
+            cell.useCellFrameCache(with: indexPath, tableView: tableView)
+            cell.mode = mode
             
         default:
             break
         }
         
-        return 0 
+        return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        guard let mode = pManager.mode else { return  0 }
+        
+        var cardMode:cardModel!
+        
+        switch indexPath.section {
+        case 0:
+            let item = mode.internInfo[indexPath.row]
+            cardMode = cardModel.init(time: item.startTimeString + " 到 " + item.endTimeString, middle: item.company, bottom: item.position)
+            
+        case 1:
+            let item = mode.educationInfo[indexPath.row]
+            cardMode = cardModel.init(time: item.startTimeString + " 到 " + item.endTimeString, middle: item.colleage, bottom: item.department + "-" + item.degree)
+            
+        default:
+            break
+        }
+        
+        return tableView.cellHeight(for: indexPath, model: cardMode, keyPath: "mode", cellClass: cardCell.self, contentViewWidth: ScreenW)
        
     }
     
@@ -210,6 +235,8 @@ class personCardVC: UITableViewController {
 }
 
 
+
+
 extension personCardVC{
     
     private func setNavigationView(){
@@ -245,13 +272,7 @@ extension personCardVC{
         })
     }
     
-   
-    
-    private func setShare(){
-        shareOriginY = MyshareView.origin.y
-        
-        
-    }
+
 }
 
 
@@ -279,10 +300,18 @@ extension personCardVC{
 extension personCardVC{
     // 通过网络获取数据
     private func loadData(){
-        pManager.initialData()
-        if let pInfo = pManager.mode?.basicinfo{
-            tbHeader.mode = (image:pInfo.tx,name:pInfo.name, introduce:pInfo.degree)
+        
+        DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
+            
+            Thread.sleep(forTimeInterval: 3)
+            DispatchQueue.main.async(execute: {
+                
+                self?.pManager.initialData()
+                self?.didFinishloadData()
+                
+            })
         }
+     
         
     }
 }

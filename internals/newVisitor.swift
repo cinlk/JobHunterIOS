@@ -8,58 +8,46 @@
 
 import UIKit
 
-class newVisitor: UITableViewController {
+class newVisitor: BaseTableViewController {
 
     private var mode:[VisitorHRModel] = []
-    
-    private lazy var  errorView:ErrorPageView = {  [unowned self] in
-        let eView = ErrorPageView.init(frame: self.view.bounds)
-        eView.isHidden = true
-        // 再次刷新
-        eView.reload = reload
-        
-        return eView
-    }()
-    
-    
-    private lazy var hub:MBProgressHUD = { [unowned self] in
-        
-        let  hub = MBProgressHUD.showAdded(to: self.backHubView, animated: true)
-        hub.mode = .indeterminate
-        hub.label.text = "加载数据"
-        hub.removeFromSuperViewOnHide = false
-        hub.margin = 10
-        hub.label.textColor = UIColor.black
-        return hub
-        
-    }()
-    
-    
-    // tableview 是第一个view，不能直接使用为hub的背景view
-    private lazy var backHubView:UIView = { [unowned self] in
-        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
-        view.backgroundColor = UIColor.white
-        self.navigationController?.view.insertSubview(view, at: 1)
-        view.isHidden = true
-        return view
-    }()
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.loadData()
-        self.setView()
+        self.setViews()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         self.navigationItem.title = ""
         
-        // 
-        backHubView.removeFromSuperview()
-        hub.removeFromSuperview()
     }
     
+    
+    override func setViews(){
+        self.tableView.backgroundColor = UIColor.viewBackColor()
+        self.tableView.tableFooterView = UIView.init()
+        self.tableView.register(visitorCell.self, forCellReuseIdentifier: visitorCell.identity())
+        
+        self.handleViews.append(tableView)
+        super.setViews()
+    }
+    
+    override func didFinishloadData(){
+        super.didFinishloadData()
+        self.tableView.reloadData()
+    }
+    
+    override func showError(){
+       super.showError()
+    }
+    
+    override func reload(){
+        super.reload()
+        self.loadData()
+        
+    }
 
     // MARK: - Table view data source
 
@@ -98,46 +86,6 @@ class newVisitor: UITableViewController {
 }
 
 
-extension newVisitor{
-    
-    
-    
-    private func setView(){
-        self.tableView.backgroundColor = UIColor.viewBackColor()
-        self.tableView.tableFooterView = UIView.init()
-        self.tableView.register(visitorCell.self, forCellReuseIdentifier: visitorCell.identity())
-        
-        hub.show(animated: true)
-        self.tableView.isHidden = true
-        backHubView.isHidden = false
-    }
-    
-    private func didFinishloadData(){
-        hub.hide(animated: true)
-        backHubView.isHidden = true
-        self.tableView.isHidden = false
-        errorView.isHidden = true
-        hub.removeFromSuperview()
-        self.tableView.reloadData()
-    }
-    
-    private func showError(){
-        hub.hide(animated: true)
-        errorView.isHidden = false
-        backHubView.isHidden = false
-    }
-    
-    private func reload(){
-        
-        hub.show(animated: true)
-        backHubView.isHidden = false
-        self.errorView.isHidden = true
-        self.loadData()
-        
-    }
-    
-    
-}
 extension newVisitor{
     
     private func loadData(){

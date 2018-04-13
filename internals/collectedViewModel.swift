@@ -38,6 +38,12 @@ class JobManager{
         collectedJobs.append(item)
     }
     
+    open func clearAll(){
+        self.collectedJobs.removeAll()
+        self.collectedInternJobs.removeAll()
+        self.collectedCompanys.removeAll()
+        
+    }
     open func removeCollectedByIndex(type:jobType,row:[Int]){
         switch type {
         case .compus:

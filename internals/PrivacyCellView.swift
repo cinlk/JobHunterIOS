@@ -14,19 +14,6 @@ fileprivate let subTableFootH:CGFloat = 30
 
 
 
-class privacyModel:NSObject{
-    
-    var title:String
-    var selected:Bool
-    var showCompany:Bool
-    init(title:String, selected:Bool, showCompany:Bool) {
-        self.title = title
-        self.selected = selected
-        self.showCompany = showCompany
-    }
-}
-
-
 protocol changeItems: class {
     
     func reloadCell(at index :Int)
@@ -40,7 +27,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 25, height: 25)
 @objcMembers class PrivacyCellView: UITableViewCell {
 
     
-    private let pdata = privacyInfo.shared
+    private let pdata = privateViewMode.shared
     
     weak var delegate:changeItems?
     
@@ -83,15 +70,17 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 25, height: 25)
         
     }()
     
-   dynamic var mode:privacyModel?{
+   dynamic var mode:privateListModel?{
         didSet{
-            self.title.text = mode?.title
-            setIcon(flag: mode!.selected)
+            guard let mode = mode else { return }
             
-            if mode!.showCompany{
+            self.title.text = mode.name ?? ""
+            setIcon(flag: mode.isOn ?? false)
+            
+            if mode.showCompany! && mode.isOn!{
                 self.subItem.isHidden = false
                 // 用约束会产生奇怪的tableview index错误？？ 直接用frame
-                subItem.frame = CGRect.init(x: 0, y: 35, width: ScreenW, height: subTableFootH + CGFloat(pdata.getCompanys().count)*InneralCellHeight)
+                subItem.frame = CGRect.init(x: 0, y: 35, width: ScreenW, height: subTableFootH + CGFloat(pdata.getCompanyCounts())*InneralCellHeight)
                 self.setupAutoHeight(withBottomView: subItem, bottomMargin: 10)
             }else{
                 self.subItem.isHidden = true
@@ -143,7 +132,7 @@ extension PrivacyCellView{
         _ = title.sd_layout().leftSpaceToView(self.contentView,TableCellOffsetX)?.topSpaceToView (self.contentView,10)?.autoHeightRatio(0)
         _ = icon.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(title)?.widthIs(imgSize.width)?.heightIs(imgSize.height)
         //  用约束会产生奇怪的tableview index错误？？ 直接用frame
-        subItem.frame = CGRect.init(x: 0, y: 35, width: ScreenW, height: subTableFootH + CGFloat(pdata.getCompanys().count)*InneralCellHeight)
+        subItem.frame = CGRect.init(x: 0, y: 35, width: ScreenW, height: subTableFootH + CGFloat(pdata.getCompanyCounts())*InneralCellHeight)
         
         title.setMaxNumberOfLinesToShow(1)
         
@@ -180,14 +169,15 @@ extension PrivacyCellView{
 extension PrivacyCellView:UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("---- \(pdata.getCompanys().count)")
-        return pdata.getCompanys().count
+        print("---- \(pdata.getCompanyCounts())")
+        return pdata.getCompanyCounts()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell.init()
         print("++++ \(indexPath)")
-        cell.textLabel?.text = pdata.getCompanys()[indexPath.row]
+        
+        cell.textLabel?.text = pdata.mode?.backListComp?[indexPath.row] ?? ""
         cell.textLabel?.font = UIFont.systemFont(ofSize: 14)
         cell.textLabel?.textColor = UIColor.lightGray
         cell.backgroundColor = UIColor.clear
@@ -220,7 +210,7 @@ extension PrivacyCellView{
     
     @objc func deletedItem(btn:UIButton){
         let row = btn.tag
-        pdata.deleteCompany(index: row)
+        pdata.removeCompanyBy(index: row)
         self.subItem.reloadData()
         self.delegate?.reloadCell(at: 2)
     }

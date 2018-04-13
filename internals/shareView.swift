@@ -144,6 +144,7 @@ extension shareView{
             return
         }
         if type.rawValue == 1001{
+            showOnlyTextHub(message: "复制成功", view: self.getParentViewController()!.view)
             //SVProgressHUD.showSuccess(withStatus: "复制成功")
             return
         }

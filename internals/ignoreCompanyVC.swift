@@ -11,7 +11,7 @@ import UIKit
 class ignoreCompanyVC: UIViewController {
 
     
-    private var pdata = privacyInfo.shared
+    private var pdata = privateViewMode.shared
     
     private lazy var textField:UITextField = {
         let tf = UITextField.init(frame: CGRect.zero)

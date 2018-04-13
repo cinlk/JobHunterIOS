@@ -58,6 +58,7 @@
 		4A30EBDC207CE68A00231D11 /* companyTableProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBDB207CE68A00231D11 /* companyTableProtocol.swift */; };
 		4A30EBDF207E61B200231D11 /* ForumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBDE207E61B200231D11 /* ForumViewController.swift */; };
 		4A30EBE1207E66AD00231D11 /* BaseTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBE0207E66AD00231D11 /* BaseTableViewController.swift */; };
+		4A30EBE3207FADFD00231D11 /* privateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBE2207FADFD00231D11 /* privateViewModel.swift */; };
 		4A3224031F5160E50065A33F /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224021F5160E50065A33F /* Alamofire.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		4A3224051F5160EA0065A33F /* SDAutoLayout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224041F5160EA0065A33F /* SDAutoLayout.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		4A3224071F5160ED0065A33F /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224061F5160ED0065A33F /* SwiftyJSON.framework */; settings = {ATTRIBUTES = (Required, ); }; };
@@ -93,7 +94,7 @@
 		4A6389F820668C7B00C4B4D0 /* SelectedThreeTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6389F720668C7B00C4B4D0 /* SelectedThreeTableView.swift */; };
 		4A686A8820400C5F00571EB0 /* PrivacySetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A686A8720400C5F00571EB0 /* PrivacySetting.swift */; };
 		4A686A8A204011AE00571EB0 /* PrivacyCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A686A89204011AE00571EB0 /* PrivacyCellView.swift */; };
-		4A686A8C2040357F00571EB0 /* InvalidateCompany.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A686A8B2040357F00571EB0 /* InvalidateCompany.swift */; };
+		4A686A8C2040357F00571EB0 /* privateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A686A8B2040357F00571EB0 /* privateModel.swift */; };
 		4A686A8E204045F000571EB0 /* ignoreCompanyVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A686A8D204045F000571EB0 /* ignoreCompanyVC.swift */; };
 		4A686A902044526200571EB0 /* extension+tablecell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A686A8F2044526200571EB0 /* extension+tablecell.swift */; };
 		4A6BC22C1FC312A7002C17B6 /* RegistryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC22B1FC312A7002C17B6 /* RegistryViewModel.swift */; };
@@ -120,7 +121,6 @@
 		4A8858F31FE550D40009D73D /* searchResultController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8858F21FE550D40009D73D /* searchResultController.swift */; };
 		4A8858FA1FE8076C0009D73D /* RecruiterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8858F81FE8076C0009D73D /* RecruiterCell.swift */; };
 		4A8858FF1FEBE89A0009D73D /* JuBaoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8858FE1FEBE89A0009D73D /* JuBaoViewController.swift */; };
-		4A8859051FED3D310009D73D /* companyscrollTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8859041FED3D310009D73D /* companyscrollTableViewController.swift */; };
 		4A88590A1FEFF0390009D73D /* JobTagsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8859091FEFF0390009D73D /* JobTagsCell.swift */; };
 		4A88590C1FF12A950009D73D /* companyJobCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A88590B1FF12A950009D73D /* companyJobCell.swift */; };
 		4A88590E1FF3E2000009D73D /* publisherControllerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A88590D1FF3E2000009D73D /* publisherControllerView.swift */; };
@@ -329,6 +329,7 @@
 		4A30EBDB207CE68A00231D11 /* companyTableProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = companyTableProtocol.swift; sourceTree = "<group>"; };
 		4A30EBDE207E61B200231D11 /* ForumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumViewController.swift; sourceTree = "<group>"; };
 		4A30EBE0207E66AD00231D11 /* BaseTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTableViewController.swift; sourceTree = "<group>"; };
+		4A30EBE2207FADFD00231D11 /* privateViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = privateViewModel.swift; sourceTree = "<group>"; };
 		4A3224021F5160E50065A33F /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = "../../../../Library/Developer/Xcode/DerivedData/internals-fvfjoslaltdhlmclwrenlrxzczpm/Build/Products/Debug-iphonesimulator/Alamofire/Alamofire.framework"; sourceTree = "<group>"; };
 		4A3224041F5160EA0065A33F /* SDAutoLayout.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDAutoLayout.framework; path = "Pods/../build/Debug-iphoneos/SDAutoLayout/SDAutoLayout.framework"; sourceTree = "<group>"; };
 		4A3224061F5160ED0065A33F /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = "../../../../Library/Developer/Xcode/DerivedData/internals-fvfjoslaltdhlmclwrenlrxzczpm/Build/Products/Debug-iphonesimulator/SwiftyJSON/SwiftyJSON.framework"; sourceTree = "<group>"; };
@@ -364,7 +365,7 @@
 		4A6389F720668C7B00C4B4D0 /* SelectedThreeTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedThreeTableView.swift; sourceTree = "<group>"; };
 		4A686A8720400C5F00571EB0 /* PrivacySetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacySetting.swift; sourceTree = "<group>"; };
 		4A686A89204011AE00571EB0 /* PrivacyCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyCellView.swift; sourceTree = "<group>"; };
-		4A686A8B2040357F00571EB0 /* InvalidateCompany.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvalidateCompany.swift; sourceTree = "<group>"; };
+		4A686A8B2040357F00571EB0 /* privateModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = privateModel.swift; sourceTree = "<group>"; };
 		4A686A8D204045F000571EB0 /* ignoreCompanyVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ignoreCompanyVC.swift; sourceTree = "<group>"; };
 		4A686A8F2044526200571EB0 /* extension+tablecell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+tablecell.swift"; sourceTree = "<group>"; };
 		4A6BC22B1FC312A7002C17B6 /* RegistryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryViewModel.swift; sourceTree = "<group>"; };
@@ -391,7 +392,6 @@
 		4A8858F21FE550D40009D73D /* searchResultController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = searchResultController.swift; sourceTree = "<group>"; };
 		4A8858F81FE8076C0009D73D /* RecruiterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecruiterCell.swift; sourceTree = "<group>"; };
 		4A8858FE1FEBE89A0009D73D /* JuBaoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JuBaoViewController.swift; sourceTree = "<group>"; };
-		4A8859041FED3D310009D73D /* companyscrollTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = companyscrollTableViewController.swift; sourceTree = "<group>"; };
 		4A8859091FEFF0390009D73D /* JobTagsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobTagsCell.swift; sourceTree = "<group>"; };
 		4A88590B1FF12A950009D73D /* companyJobCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = companyJobCell.swift; sourceTree = "<group>"; };
 		4A88590D1FF3E2000009D73D /* publisherControllerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = publisherControllerView.swift; sourceTree = "<group>"; };
@@ -856,7 +856,7 @@
 			children = (
 				4A82A0D9202709B700185E8B /* person_resume.swift */,
 				4A20EEF4203E70DF0021843B /* accountInfo.swift */,
-				4A686A8B2040357F00571EB0 /* InvalidateCompany.swift */,
+				4A686A8B2040357F00571EB0 /* privateModel.swift */,
 			);
 			name = model;
 			sourceTree = "<group>";
@@ -866,6 +866,7 @@
 			children = (
 				4A22A3A820750A9E00024C2B /* personViewModel.swift */,
 				4A2145C420788CCB000959F4 /* collectedViewModel.swift */,
+				4A30EBE2207FADFD00231D11 /* privateViewModel.swift */,
 			);
 			name = viewModel;
 			sourceTree = "<group>";
@@ -923,7 +924,6 @@
 				4A8859081FEFC9440009D73D /* CompanyTableCellView */,
 				4AFF91A81F5C338800FE189F /* JobDetailViewController.swift */,
 				4A8858FE1FEBE89A0009D73D /* JuBaoViewController.swift */,
-				4A8859041FED3D310009D73D /* companyscrollTableViewController.swift */,
 				4A88590D1FF3E2000009D73D /* publisherControllerView.swift */,
 				4A30EBD5207BAFAC00231D11 /* CompanyDetailVC.swift */,
 				4A30EBD7207BAFBE00231D11 /* CompanyJobsVC.swift */,
@@ -1764,7 +1764,6 @@
 				4AF3D354205E7D2F0012EB6E /* DeliveredJobsModel.swift in Sources */,
 				4ADDDAB31F97ABA4001CB00F /* ChatEmotionView.swift in Sources */,
 				4A20EEF5203E70DF0021843B /* accountInfo.swift in Sources */,
-				4A8859051FED3D310009D73D /* companyscrollTableViewController.swift in Sources */,
 				4A30EBDA207BB8C900231D11 /* CompanyMainVC.swift in Sources */,
 				4A8858F31FE550D40009D73D /* searchResultController.swift in Sources */,
 				4AFF91A91F5C338800FE189F /* JobDetailViewController.swift in Sources */,
@@ -1792,7 +1791,7 @@
 				4A82A0DC2027199700185E8B /* person_educationCell.swift in Sources */,
 				4A6389F420668B0900C4B4D0 /* SelectedOneTableView.swift in Sources */,
 				4A93C2E71F88B8E20022E97B /* client.swift in Sources */,
-				4A686A8C2040357F00571EB0 /* InvalidateCompany.swift in Sources */,
+				4A686A8C2040357F00571EB0 /* privateModel.swift in Sources */,
 				4A9CE3641F715B30002A8FD5 /* historyAndCatagoryView.swift in Sources */,
 				4A88590E1FF3E2000009D73D /* publisherControllerView.swift in Sources */,
 				4A444ECB1F8A168B006AE83D /* searchRequest.pb.swift in Sources */,
@@ -1843,6 +1842,7 @@
 				4A9A0BD92004F03F008721F3 /* closedJobView.swift in Sources */,
 				4AA6376420674FAD00DAE9A9 /* extension+sqlite.swift in Sources */,
 				4A5304E41F52A6ED0000F1E9 /* MainTabBarViewController.swift in Sources */,
+				4A30EBE3207FADFD00231D11 /* privateViewModel.swift in Sources */,
 				4AD8F753206E874C003969ED /* extension+UIlabel.swift in Sources */,
 				4AF3D3602062B7C10012EB6E /* sectionCellView.swift in Sources */,
 				4A2145C520788CCB000959F4 /* collectedViewModel.swift in Sources */,

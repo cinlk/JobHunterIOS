@@ -12,7 +12,7 @@ import ObjectMapper
 private let tsection = 2
 private let tHeaderHeight:CGFloat = 200
 
-class publisherControllerView: UITableViewController {
+class publisherControllerView: BaseTableViewController {
 
     // MARK:-  不同类型职位
     private var publishJobs:[CompuseRecruiteJobs] = []
@@ -25,39 +25,6 @@ class publisherControllerView: UITableViewController {
         return h
     }()
     
-    
-    
-    private lazy var  errorView:ErrorPageView = {  [unowned self] in
-        let eView = ErrorPageView.init(frame: self.view.bounds)
-        eView.isHidden = true
-        // 再次刷新
-        eView.reload = reload
-        
-        return eView
-    }()
-    
-    
-    // tableview 是第一个view，不能直接使用为hub的背景view
-    private lazy var backHubView:UIView = { [unowned self] in
-        
-        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
-        view.backgroundColor = UIColor.white
-        self.navigationController?.view.insertSubview(view, at: 1)
-        view.isHidden = true
-        return view
-    }()
-    
-    private lazy var hub:MBProgressHUD = { [unowned self] in
-        
-        let  hub = MBProgressHUD.showAdded(to: self.backHubView, animated: true)
-        hub.mode = .indeterminate
-        hub.label.text = "加载数据"
-        hub.removeFromSuperViewOnHide = false
-        hub.margin = 10
-        hub.label.textColor = UIColor.black
-        return hub
-        
-    }()
     
     
     private lazy var navigationBack:UIView = {
@@ -104,7 +71,7 @@ class publisherControllerView: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
-        loadJobsData()
+        loadData()
         
     }
    
@@ -126,8 +93,6 @@ class publisherControllerView: UITableViewController {
         navigationBack.removeFromSuperview()
         self.navigationController?.view.willRemoveSubview(navigationBack)
         
-        backHubView.removeFromSuperview()
-        hub.removeFromSuperview()
         
     }
     
@@ -137,6 +102,48 @@ class publisherControllerView: UITableViewController {
         _ = self.tableView.tableHeaderView?.sd_layout().topEqualToView(self.tableView)?.leftEqualToView(self.tableView)?.rightEqualToView(self.tableView)?.heightIs(tHeaderHeight)
         
     }
+    
+    
+    override func setViews(){
+        
+        // 导航的view 为白色,tableview 是该vc的第一个view
+        self.navigationController?.view.backgroundColor = UIColor.white
+        
+        self.tableView.delegate = self
+        self.tableView.dataSource = self
+        self.tableView.backgroundColor = UIColor.viewBackColor()
+        self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 60, 0)
+        self.tableView.tableFooterView = UIView.init()
+        self.tableView.register(UINib(nibName:"companyCell", bundle:nil), forCellReuseIdentifier: "companyCell")
+        self.tableView.register(companyJobCell.self, forCellReuseIdentifier: companyJobCell.identity())
+        self.setHeader()
+        
+        self.handleViews.append(tableView)
+        super.setViews()
+        
+    }
+    
+    
+    override func didFinishloadData(){
+        super.didFinishloadData()
+        self.tableView.reloadData()
+        self.mode = HRInfo(name: "测试---", position: "测试---", lastLogin: "02-21号", icon: "jodel")
+    }
+    
+    override func showError(){
+        super.showError()
+    }
+    
+    override func reload(){
+        
+        super.reload()
+        self.loadData()
+        
+    }
+    
+    
+    
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return tsection
     }
@@ -200,52 +207,6 @@ class publisherControllerView: UITableViewController {
 }
 
 
-extension publisherControllerView{
-    
-    private func setViews(){
-        
-        // 导航的view 为白色,tableview 是该vc的第一个view
-        self.navigationController?.view.backgroundColor = UIColor.white
-        
-        self.tableView.delegate = self
-        self.tableView.dataSource = self
-        self.tableView.backgroundColor = UIColor.viewBackColor()
-        self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 60, 0)
-        self.tableView.tableFooterView = UIView.init()
-        self.tableView.register(UINib(nibName:"companyCell", bundle:nil), forCellReuseIdentifier: "companyCell")
-        self.tableView.register(companyJobCell.self, forCellReuseIdentifier: companyJobCell.identity())
-        self.setHeader()
-        
-        hub.show(animated: true)
-        self.tableView.isHidden = true
-        backHubView.isHidden = false
-    }
-    
-    
-    private func didFinishloadData(){
-        hub.hide(animated: true)
-        backHubView.isHidden = true
-        self.tableView.isHidden = false
-        errorView.isHidden = true
-        hub.removeFromSuperview()
-        self.tableView.reloadData()
-    }
-    
-    private func showError(){
-        hub.hide(animated: true)
-        errorView.isHidden = false
-        backHubView.isHidden = false
-    }
-    
-    private func reload(){
-        
-        hub.show(animated: true)
-        backHubView.isHidden = false
-        self.errorView.isHidden = true
-        self.loadJobsData()
-        
-    }
-}
 
 extension publisherControllerView{
     private func setHeader(){
@@ -269,7 +230,7 @@ extension publisherControllerView{
     
     
     // MARK:
-    private func loadJobsData(){
+    private func loadData(){
         
         DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
             
@@ -279,15 +240,13 @@ extension publisherControllerView{
             Thread.sleep(forTimeInterval: 3)
             for var i in 0..<20{
                 let json =  ["id":"dwqd","jobName":"在线讲师","address":"北京","picture":"sina","type":"compuse","degree":"不限","create_time":"09:45","salary":"面议","tag":"市场","education":"本科"]
-                print(i)
+               
                 
                 self?.publishJobs.append(Mapper<CompuseRecruiteJobs>().map(JSON: json)!)
             }
             
             DispatchQueue.main.async(execute: {
                 
-                
-                self?.mode = HRInfo(name: "测试---", position: "测试---", lastLogin: "02-21号", icon: "jodel")
                 self?.didFinishloadData()
             })
             

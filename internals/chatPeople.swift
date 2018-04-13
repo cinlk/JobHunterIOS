@@ -62,6 +62,9 @@ class PersonModel:NSObject, Mappable{
     // 用户是否存在
     var isExist:Bool?
     
+    var phone:String?
+    
+    
     
     required init?(map: Map) {
         
@@ -76,6 +79,7 @@ class PersonModel:NSObject, Mappable{
         icon <- (map["icon"], DataTransformBase64())
         role <- map["role"]
         isShield <- map["isShield"]
+        phone <- map["phone"]
         
     }
     

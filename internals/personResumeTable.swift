@@ -20,7 +20,7 @@ enum resumeViewType:String {
 }
 
 
-class personResumeTable: UITableViewController {
+class personResumeTable: BaseTableViewController {
     
     
     // 进入页面时 要刷新数据
@@ -33,8 +33,35 @@ class personResumeTable: UITableViewController {
     private lazy var estimateVC:evaluateSelfVC = evaluateSelfVC()
     
     
+    private lazy var barBtn:UIButton = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 60, height: 25))
+
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.setViews()
+        // loadData
+        loadData()
+        
+    }
+
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationItem.title = VCtitle
+        self.navigationController?.insertCustomerView()
+        
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationItem.title = ""
+        self.navigationController?.removeCustomerView()
+        
+        
+    }
+    
+    override func setViews(){
         
         self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.tableFooterView  = UIView.init()
@@ -48,29 +75,30 @@ class personResumeTable: UITableViewController {
         // 底部cell
         self.tableView.register(singleButtonCell.self, forCellReuseIdentifier: singleButtonCell.identity())
         
-
+        
         person_infoView.delegate = self
         estimateVC.delegate = self
-        pManager.initialData()
         //navigationItem
         addBarItem()
-        // loadData
-        loadData()
         
-    }
-
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.navigationItem.title = VCtitle
-        self.navigationController?.insertCustomerView()
+        self.handleViews.append(barBtn)
+        self.handleViews.append(tableView)
+        
+        super.setViews()
         
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
-        self.navigationController?.removeCustomerView()
+    override func didFinishloadData(){
+        
+        super.didFinishloadData()
+        self.tableView.reloadData()
+    }
+    
+    
+    override func reload(){
+        super.reload()
+        self.loadData()
+        
     }
     
     
@@ -100,13 +128,19 @@ class personResumeTable: UITableViewController {
         
     }
     
+    //
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        guard let mode = pManager.mode else { return UITableViewCell() }
+        
+        
         switch viewType[indexPath.section] {
+
         case .baseInfo:
             let cell = tableView.dequeueReusableCell(withIdentifier: resume_personInfoCell.identity()) as!
                 resume_personInfoCell
             
-            cell.mode = pManager.mode?.basicinfo
+            cell.mode = mode.basicinfo
             return cell
         case .education:
             
@@ -117,7 +151,7 @@ class personResumeTable: UITableViewController {
                 cell.isUserInteractionEnabled = false
                 return cell
             }
-            if  pManager.mode!.educationInfo.count == 0 && indexPath.row == 1 {
+            if  mode.educationInfo.count == 0 && indexPath.row == 1 {
                 
                 let cell = tableView.dequeueReusableCell(withIdentifier: singleButtonCell.identity(), for: indexPath) as! singleButtonCell
                 cell.btnType = .add
@@ -129,7 +163,7 @@ class personResumeTable: UITableViewController {
                 }
                 return cell
             }else{
-                if indexPath.row == pManager.mode!.educationInfo.count + 1{
+                if indexPath.row == mode.educationInfo.count + 1{
                     let cell = tableView.dequeueReusableCell(withIdentifier: singleButtonCell.identity(), for: indexPath) as! singleButtonCell
                     cell.btnType = .add
                     cell.btn.setTitle("添加教育经历", for: .normal)
@@ -143,7 +177,7 @@ class personResumeTable: UITableViewController {
                 
                 let cell = tableView.dequeueReusableCell(withIdentifier: person_educationCell.identity(), for: indexPath) as!
                 person_educationCell
-                cell.mode = pManager.mode!.educationInfo[indexPath.row - 1]
+                cell.mode = mode.educationInfo[indexPath.row - 1]
                 
                 return cell
 
@@ -158,7 +192,7 @@ class personResumeTable: UITableViewController {
                 cell.isUserInteractionEnabled = false
                 return cell
             }
-            if  pManager.mode!.internInfo.count == 0 && indexPath.row == 1 {
+            if  mode.internInfo.count == 0 && indexPath.row == 1 {
                 
                 let cell = tableView.dequeueReusableCell(withIdentifier: singleButtonCell.identity(), for: indexPath) as! singleButtonCell
                 cell.btnType = .add
@@ -170,7 +204,7 @@ class personResumeTable: UITableViewController {
                 }
                 return cell
             }else{
-                if indexPath.row == pManager.mode!.internInfo.count + 1{
+                if indexPath.row == mode.internInfo.count + 1{
                     let cell = tableView.dequeueReusableCell(withIdentifier: singleButtonCell.identity(), for: indexPath) as! singleButtonCell
                     cell.btnType = .add
                     cell.btn.setTitle("实习经历", for: .normal)
@@ -184,7 +218,7 @@ class personResumeTable: UITableViewController {
                 
             
                 let cell = tableView.dequeueReusableCell(withIdentifier: person_projectCell.identity(), for: indexPath) as! person_projectCell
-                cell.mode = pManager.mode!.internInfo[indexPath.row - 1 ]
+                cell.mode = mode.internInfo[indexPath.row - 1 ]
                 return cell
             }
             
@@ -197,7 +231,7 @@ class personResumeTable: UITableViewController {
                 cell.isUserInteractionEnabled = false
                 return cell
             }
-            if  pManager.mode!.skills.count == 0 && indexPath.row == 1 {
+            if  mode.skills.count == 0 && indexPath.row == 1 {
                 
                 let cell = tableView.dequeueReusableCell(withIdentifier: singleButtonCell.identity(), for: indexPath) as! singleButtonCell
                 cell.btnType = .add
@@ -209,7 +243,7 @@ class personResumeTable: UITableViewController {
                 cell.btn.setTitle("技能", for: .normal)
                 return cell
             }else{
-                if indexPath.row ==  pManager.mode!.skills.count + 1{
+                if indexPath.row ==  mode.skills.count + 1{
                     let cell = tableView.dequeueReusableCell(withIdentifier: singleButtonCell.identity(), for: indexPath) as! singleButtonCell
                     cell.btnType = .add
                     cell.btn.setTitle("技能", for: .normal)
@@ -224,24 +258,28 @@ class personResumeTable: UITableViewController {
         
                 let cell = tableView.dequeueReusableCell(withIdentifier: person_skillCell.identity(), for: indexPath) as!
                     person_skillCell
-                cell.mode = pManager.mode!.skills[indexPath.row - 1]
+                cell.mode = mode.skills[indexPath.row - 1]
                 return cell
             }
             
         case .evaluate:
             let cell = tableView.dequeueReusableCell(withIdentifier: person_evaluateCell.identity(), for: indexPath) as!
                 person_evaluateCell
-            cell.mode = pManager.mode?.estimate ?? ""
+            cell.mode = mode.estimate
             return cell
         }
         
     }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
+        guard let mode = pManager.mode else {
+            return 0
+        }
+        
         switch viewType[indexPath.section] {
         case .baseInfo:
             // 必须有值
-            if let info = pManager.mode?.basicinfo{
+            if let info = mode.basicinfo{
                 
                  return tableView.cellHeight(for: indexPath, model: info, keyPath: "mode", cellClass: resume_personInfoCell.self, contentViewWidth: ScreenW)
             }
@@ -249,38 +287,38 @@ class personResumeTable: UITableViewController {
             return 0
            
         case .education:
-            if indexPath.row == 0 || indexPath.row == pManager.mode!.educationInfo.count + 1{
+            if indexPath.row == 0 || indexPath.row == mode.educationInfo.count + 1{
                 return 45
             }
             
-            return tableView.cellHeight(for: indexPath, model: pManager.mode!.educationInfo[indexPath.row - 1], keyPath: "mode", cellClass: person_educationCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: mode.educationInfo[indexPath.row - 1], keyPath: "mode", cellClass: person_educationCell.self, contentViewWidth: ScreenW)
             
             
         case .intern:
-            if indexPath.row == 0 || indexPath.row == pManager.mode!.internInfo.count + 1{
+            if indexPath.row == 0 || indexPath.row == mode.internInfo.count + 1{
                 return 45
             }
-            return tableView.cellHeight(for: indexPath, model: pManager.mode!.internInfo[indexPath.row - 1], keyPath: "mode", cellClass: person_projectCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: mode.internInfo[indexPath.row - 1], keyPath: "mode", cellClass: person_projectCell.self, contentViewWidth: ScreenW)
            
         case .skill:
-            if indexPath.row == 0 || indexPath.row == pManager.mode!.skills.count + 1{
+            if indexPath.row == 0 || indexPath.row == mode.skills.count + 1{
                 return 45
             }
-            return tableView.cellHeight(for: indexPath, model: pManager.mode!.skills[indexPath.row - 1], keyPath: "mode", cellClass: person_skillCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: mode.skills[indexPath.row - 1], keyPath: "mode", cellClass: person_skillCell.self, contentViewWidth: ScreenW)
             
         case .evaluate:
             
-            return   tableView.cellHeight(for: indexPath, model: pManager.mode?.estimate ?? "", keyPath: "mode", cellClass: person_evaluateCell.self, contentViewWidth: ScreenW)
+            return   tableView.cellHeight(for: indexPath, model:  mode.estimate, keyPath: "mode", cellClass: person_evaluateCell.self, contentViewWidth: ScreenW)
         }
         
     }
     
    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         let type = viewType[indexPath.section]
         switch type {
             
-
         case .baseInfo:
     
             person_infoView.section = indexPath.section
@@ -318,17 +356,18 @@ class personResumeTable: UITableViewController {
 
 }
 
+
 // 查看简历
 extension personResumeTable{
     
     private func addBarItem(){
-         let button = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 60, height: 25))
-         button.setTitle("预览简历", for: .normal)
-         button.setTitleColor(UIColor.blue, for: .normal)
-         button.setBackgroundImage(UIImage.init(), for: .normal)
-         button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-         button.addTarget(self, action: #selector(showResume), for: .touchUpInside)
-         self.navigationItem.rightBarButtonItem =  UIBarButtonItem.init(customView: button)
+        
+         barBtn.setTitle("预览简历", for: .normal)
+         barBtn.setTitleColor(UIColor.blue, for: .normal)
+         barBtn.setBackgroundImage(UIImage.init(), for: .normal)
+         barBtn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+         barBtn.addTarget(self, action: #selector(showResume), for: .touchUpInside)
+         self.navigationItem.rightBarButtonItem =  UIBarButtonItem.init(customView: barBtn)
     }
     
     //
@@ -377,6 +416,15 @@ extension personResumeTable: addResumeItenDelegate{
 extension personResumeTable{
     
     private func loadData(){
-        pManager.initialData()
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            Thread.sleep(forTimeInterval: 3)
+            
+            self?.pManager.initialData()
+            DispatchQueue.main.async {
+                self?.didFinishloadData()
+            }
+            
+        }
+        
     }
 }

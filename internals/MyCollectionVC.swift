@@ -11,7 +11,7 @@ import UIKit
 
 fileprivate let viewTitle:String = "收藏"
 
-class MyCollectionVC: UIViewController, UIScrollViewDelegate {
+class MyCollectionVC: BaseViewController, UIScrollViewDelegate {
 
     private var childVC:[UIViewController] = []
     // 当前tableview
@@ -116,25 +116,14 @@ class MyCollectionVC: UIViewController, UIScrollViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //self.automaticallyAdjustsScrollViewInsets = false
-        //self.  contentInsetAdjustmentBehavior = .never
-        self.view.backgroundColor = UIColor.white
-        self.view.addSubview(pageTitleView)
-        self.view.addSubview(pageContent)
-       
-        
-        setNavigationBtn()
-        bottomToolBar()
-        // 默认第一个tableview
-        currentContent = 0
+        self.setViews()
         loadData()
-        
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = viewTitle
+        self.navigationController?.insertCustomerView()
         
         
     }
@@ -142,8 +131,44 @@ class MyCollectionVC: UIViewController, UIScrollViewDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationItem.title = ""
+        self.navigationController?.removeCustomerView()
     }
 
+    
+    override func setViews() {
+        
+        self.view.backgroundColor = UIColor.white
+        self.view.addSubview(pageTitleView)
+        self.view.addSubview(pageContent)
+        
+    
+        setNavigationBtn()
+        bottomToolBar()
+        // 默认第一个tableview
+        currentContent = 0
+        self.handleViews.append(pageTitleView)
+        self.handleViews.append(pageContent)
+        self.handleViews.append(editBtn)
+        
+        super.setViews()
+        
+    }
+    
+    override func didFinishloadData() {
+        super.didFinishloadData()
+        self.currentTableView?.reloadData()
+    }
+    
+    override func reload() {
+        super.reload()
+        loadData()
+    }
+    
+    
+    override func showError() {
+        super.showError()
+    }
+    
     
     private func setNavigationBtn(){
         
@@ -164,6 +189,9 @@ class MyCollectionVC: UIViewController, UIScrollViewDelegate {
     }
 
 }
+
+
+
 
 extension MyCollectionVC{
     @objc func editCell(btn:UIButton){
@@ -252,7 +280,7 @@ extension MyCollectionVC: PageContentViewScrollDelegate{
 }
 
 
-// 异步加载 收藏的公司和职位数据
+// 异步加载 收藏的职位和公司数据
 extension MyCollectionVC{
     
     private func loadData(){
@@ -260,11 +288,14 @@ extension MyCollectionVC{
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             
             
+            self?.jobManageRoot.clearAll()
+            
             Thread.sleep(forTimeInterval: 3)
             for _ in 0..<5{
                 
                 let json:[String:String] = ["picture":"chrome","company":"google","jobName":"研发",
                                             "address":"山上","salary":"100万","create_time":"2018-01-09","education":"本科"]
+                
                 let cjson:[String:Any] = ["id":"678","icon":"sina","name":"新浪带我去的群无多大青蛙  当前为多无群  当前为多群无  当前为多群无","describe":"大公司，有前景 当前的群 dqwdq 当前为多群无 当前为多群无多群无多无群 当前为多群多群多群多群无 当前为多群无多无前端去无 当前为多群无多群无多无群  带我去的","staffs":"1000人以上","tags":["带我去的","地段"]]
                 
                 self?.jobManageRoot.addCompanyItem(item: comapnyInfo(JSON: cjson)!)
@@ -274,7 +305,7 @@ extension MyCollectionVC{
             
            
             DispatchQueue.main.async(execute: {
-                self?.currentTableView?.reloadData()
+                self?.didFinishloadData()
             })
             
         }

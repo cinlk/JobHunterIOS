@@ -27,6 +27,7 @@ class changePhoneVC: UIViewController {
     }()
     
     
+    // 
     lazy var  currentPhoneLabel:UILabel = {
         let lable = UILabel.init(frame: CGRect.zero)
         lable.font = UIFont.systemFont(ofSize: 20)
@@ -122,6 +123,7 @@ class changePhoneVC: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        //MARK 判断 用户model 的phone 是否有值来设置标题
         self.navigationItem.title = "修改手机号"
     }
     

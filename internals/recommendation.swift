@@ -29,6 +29,9 @@ class recommendation: BaseViewController {
     }()
     
     
+    // navigation barBtn
+    private lazy var btn:UIButton = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 70, height: 25))
+    
     override func viewDidLoad() {
         
         super.viewDidLoad()
@@ -53,14 +56,10 @@ class recommendation: BaseViewController {
     
     override func setViews() {
         
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 70, height: 25))
-        btn.addTarget(self, action: #selector(addSub), for: .touchUpInside)
-        btn.setTitle("我的订阅", for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-        btn.setTitleColor(UIColor.blue, for: .normal)
-        self.navigationItem.rightBarButtonItem  = UIBarButtonItem.init(customView: btn)
+        setNavigationBtn()
         self.view.addSubview(table)
         self.handleViews.append(table)
+        self.handleViews.append(btn)
         super.setViews()
     }
     
@@ -78,6 +77,15 @@ class recommendation: BaseViewController {
 }
 
 
+extension recommendation{
+    private func setNavigationBtn(){
+        btn.addTarget(self, action: #selector(addSub), for: .touchUpInside)
+        btn.setTitle("我的订阅", for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        btn.setTitleColor(UIColor.blue, for: .normal)
+        self.navigationItem.rightBarButtonItem  = UIBarButtonItem.init(customView: btn)
+    }
+}
 
 extension recommendation: UITableViewDelegate,UITableViewDataSource {
     

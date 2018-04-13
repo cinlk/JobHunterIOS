@@ -13,7 +13,7 @@ fileprivate let itemCGSize:CGSize = CGSize.init(width: ScreenW / 2 - 40 , height
 fileprivate let sectionH:CGFloat = 25
 
 
-class HelpsVC: UITableViewController {
+class HelpsVC: BaseTableViewController {
 
     private lazy var  headerView:HeaderCollectionView = {  [unowned self] in
         let v = HeaderCollectionView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: headerH), itemSize: itemCGSize)
@@ -27,14 +27,13 @@ class HelpsVC: UITableViewController {
     private var selectedCellIndexPath:[IndexPath] = []
     
     private var mode:HelpAskModel?
-    // 兼容
+    // 顶部view 显示items
     private var shareItems:[ShareItem] = []
-    
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        initView()
+        setViews()
         loadData()
         
     }
@@ -51,11 +50,36 @@ class HelpsVC: UITableViewController {
         self.navigationController?.removeCustomerView()
     }
     
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    override func setViews() {
+        self.tableView.tableFooterView = UIView.init()
+        
+        //headerView.mode = guideItem
+        self.tableView.tableHeaderView = headerView
+        self.tableView.register(expansionCell.self, forCellReuseIdentifier: expansionCell.identity())
+        
+        self.handleViews.append(tableView)
+        super.setViews()
     }
+    
+    
+    override func didFinishloadData() {
+        super.didFinishloadData()
+        self.headerView.mode = shareItems
+        self.tableView.reloadData()
+        
+    }
+    
+    override func showError() {
+        super.showError()
+    }
+    
+    override func reload() {
+        super.reload()
+        self.loadData()
+    }
+
+   
 
     // MARK: - Table view data source
 
@@ -66,32 +90,33 @@ class HelpsVC: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return  (mode?.items.count ?? 0)
+        return  mode?.items.count ?? 0
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        var cell = tableView.dequeueReusableCell(withIdentifier: expansionCell.identity(), for: indexPath) as? expansionCell
-        if cell == nil{
-            cell = expansionCell.init(style: .default, reuseIdentifier: expansionCell.identity())
+        if let  cell = tableView.dequeueReusableCell(withIdentifier: expansionCell.identity(), for: indexPath) as? expansionCell{
             
-        }
-        if let item = mode?.items[indexPath.row]{
-            // 选中cell
-            if selectedCellIndexPath.contains(indexPath){
-                let mode = helpModel.init(title: item.title ?? "", detail: item.content ?? "", select: true)
-                cell?.mode = mode
+            if let item = mode?.items[indexPath.row]{
+                // 选中cell
+                if selectedCellIndexPath.contains(indexPath){
+                    let mode = helpModel.init(title: item.title ?? "", detail: item.content ?? "", select: true)
+                    cell.mode = mode
+                    
+                }else{
+                    let mode = helpModel.init(title: item.title ?? "", detail: item.content ?? "", select: false)
+                    cell.mode = mode
+                }
                 
-            }else{
-                let mode = helpModel.init(title: item.title ?? "", detail: item.content ?? "", select: false)
-                cell?.mode = mode
             }
+            // 不显示遮挡部分
+            cell.layer.masksToBounds = true
             
+            return cell
         }
-        // 不显示遮挡部分
-        cell?.layer.masksToBounds = true
-        
-        return cell!
+    
+       
+        return UITableViewCell()
         
     }
 
@@ -137,15 +162,6 @@ class HelpsVC: UITableViewController {
 
 extension HelpsVC{
     
-    private func initView(){
-        self.tableView.tableFooterView = UIView.init()
-        
-        //headerView.mode = guideItem
-        self.tableView.tableHeaderView = headerView
-        self.tableView.register(expansionCell.self, forCellReuseIdentifier: expansionCell.identity())
-        
-    }
-    
     // 异步获取数据
     private func loadData(){
         
@@ -171,8 +187,7 @@ extension HelpsVC{
             
            
             DispatchQueue.main.async(execute: {
-                self?.headerView.mode = self?.shareItems
-                self?.tableView.reloadData()
+                self?.didFinishloadData()
             })
         }
         

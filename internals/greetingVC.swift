@@ -13,32 +13,56 @@ import UIKit
 fileprivate let sections:Int = 2
 fileprivate let cellIdentity:String = "cell"
 fileprivate let openGreeting:String = "启动打招呼用语"
-class greetingVC: UITableViewController {
 
-    
+class greetingVC: BaseTableViewController {
+
     private var data:greetingModel?
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        initView()
-        loadGreetings()
+        setViews()
+        loadData()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = "打招呼语"
+        self.navigationController?.insertCustomerView()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationItem.title = ""
+        self.navigationController?.removeCustomerView()
         
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    override func setViews() {
+        self.tableView.tableFooterView = UIView.init()
+        self.tableView.allowsMultipleSelection = false
+        self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentity)
+        self.tableView.register(switchCell.self, forCellReuseIdentifier: switchCell.identity())
+        
+        self.handleViews.append(tableView)
+        
+        super.setViews()
+        
+    }
+    
+    override func didFinishloadData() {
+        super.didFinishloadData()
+        self.tableView.reloadData()
+        
+    }
+    
+    override func reload() {
+        super.reload()
+        self.loadData()
+    }
+    
+    override func showError() {
+        super.showError()
     }
 
     // MARK: - Table view data source
@@ -64,8 +88,9 @@ class greetingVC: UITableViewController {
         
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: switchCell.identity(), for: indexPath) as! switchCell
-            cell.leftLabel.text = openGreeting
-            cell.switchOff.isOn = data?.isOn ?? false
+            
+            // tag 值默认（不使用）
+            cell.mode = (on:data?.isOn ?? false, tag:1, name:openGreeting)
             cell.switchOff.addTarget(self, action: #selector(switchBtn(sender:)), for: .valueChanged)
             
             return cell
@@ -89,11 +114,15 @@ class greetingVC: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if indexPath.section == 1{
-                data?.currentIndex = indexPath.row
-                let cell = tableView.cellForRow(at: indexPath)
-                cell?.accessoryType = .checkmark
-                updateGreeting()
             
+            updateGreeting(){ bool in
+                if bool == true{
+                    self.data?.currentIndex = indexPath.row
+                    let cell = tableView.cellForRow(at: indexPath)
+                    cell?.accessoryType = .checkmark
+                }
+            }
+           
             
             
         }
@@ -119,6 +148,7 @@ class greetingVC: UITableViewController {
             label.font = UIFont.systemFont(ofSize: 16)
             label.textAlignment = .left
             label.text = "请选择打招呼语"
+            label.textColor = UIColor.lightGray
             label.sizeToFit()
             view.addSubview(label)
             _ = label.sd_layout().leftSpaceToView(view,10)?.rightSpaceToView(view,10)?.bottomSpaceToView(view,10)?.heightIs(20)
@@ -139,19 +169,9 @@ class greetingVC: UITableViewController {
     
 }
 
-extension greetingVC{
-   private func  initView(){
-        self.tableView.tableFooterView = UIView.init()
-        self.tableView.allowsMultipleSelection = false
-        self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentity)
-        self.tableView.register(switchCell.self, forCellReuseIdentifier: switchCell.identity())
-    
-    }
-    
-    
-}
 
 extension greetingVC{
+    
     @objc func switchBtn(sender: UISwitch){
         IsGreeting = sender.isOn
         data?.isOn = sender.isOn
@@ -160,17 +180,18 @@ extension greetingVC{
         
         //print(tableView.indexPathsForSelectedRows)
     }
-    
-    private func updateGreeting(){
-        // 服务器更新数据
+    // 服务器更新数据 回调执行结果
+    private func updateGreeting(complete:@escaping ((_ :Bool)->Void)){
+        
         let msg = data!.des[data!.currentIndex]
+        // 本地招呼用语
         GreetingMsg = msg
-        let loading = Bundle.main.url(forResource: "loading", withExtension: "gif")
         
-        
-        var hub = showProgressHun(message: "加载数据", view: self.view)
+        let hub = showProgressHun(message: "加载数据", view: self.view)
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             hub.hide(animated: true)
+            complete(true)
+            
             
         }
         
@@ -183,7 +204,8 @@ extension greetingVC{
 
 // 异步获取数据
 extension greetingVC{
-    private func loadGreetings(){
+    
+    private func loadData(){
         
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
            
@@ -191,7 +213,7 @@ extension greetingVC{
             Thread.sleep(forTimeInterval: 3)
             self?.data = greetingModel(JSON: ["isOn":true,"des":["默认第一条","第二条","第三条","第四条","第五条"],"currentIndex":0])
             DispatchQueue.main.async(execute: {
-                self?.tableView.reloadData()
+                self?.didFinishloadData()
             })
         }
         

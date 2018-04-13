@@ -12,6 +12,7 @@ import ObjectMapper
 
 
 enum appType:String {
+    
     case weixin
     case weibo
     case qq
@@ -77,6 +78,7 @@ class AccountBase: Mappable{
     
 }
 
+// 
 class AccountSecurity: AccountBase{
     
     var extra:String?
@@ -94,6 +96,7 @@ class AccountSecurity: AccountBase{
     
 }
 
+// 第三方登录app 绑定
 class AccountBinds: AccountBase{
     
     var isBind:Bool? = false
@@ -182,6 +185,8 @@ class HelpGuidModel:Mappable{
     
     var name:String?
     var image:String?
+    // 查询具体的数据
+    var guideId:String?
     
     required init?(map: Map) {
         
@@ -190,6 +195,7 @@ class HelpGuidModel:Mappable{
     func mapping(map: Map) {
         name <- map["name"]
         image <- map["image"]
+        guideId <- map["guideId"]
     }
     
 }
@@ -213,8 +219,35 @@ class HelpItemsModel:Mappable{
 
 
 
-// 关注我们app model
+// 我的app描述 model
 class  AboutUsModel:Mappable{
+    
+    enum item:String {
+        case serviceLaw
+        case wechat
+        case weibo
+        case serviceCall
+        case share
+        
+        var des:String{
+            get{
+                switch self {
+                case .serviceLaw:
+                    return "服务条款"
+                case .wechat:
+                    return "关注微信公众号"
+                case .weibo:
+                    return "关注微博"
+                case .serviceCall:
+                    return "客服电话"
+                case .share:
+                    return "分享我们"
+                
+                }
+            }
+        }
+    }
+    
     
     var wecaht:String? = ""
     var servicePhone:String? = ""

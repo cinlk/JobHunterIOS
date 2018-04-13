@@ -12,13 +12,12 @@ import MBProgressHUD
 
 fileprivate let headerViewH:CGFloat = 160
 fileprivate let cellIdentiy:String = "default"
-fileprivate let cellH:CGFloat = 45
-fileprivate let cellItem:[String] = ["服务条款","关注微信公众号","关注微博","客服电话","分享我们"]
-fileprivate let footViewH:CGFloat = ScreenH - headerViewH - (CGFloat(cellItem.count) * cellH) - NavH
+fileprivate let cellItem:[AboutUsModel.item] = [.serviceLaw, .wechat, .weibo, .serviceCall, .share]
+fileprivate let footViewH:CGFloat = ScreenH - headerViewH - (CGFloat(cellItem.count) * 45) - NavH
 fileprivate let CelloffsetX:CGFloat = 16.0
 
 
-class aboutUS: UITableViewController {
+class aboutUS: BaseTableViewController {
 
     
     // mode
@@ -74,17 +73,13 @@ class aboutUS: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        initView()
+        setViews()
         loadData()
       
     }
     
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = "关于我们"
@@ -93,6 +88,39 @@ class aboutUS: UITableViewController {
         super.viewWillDisappear(animated)
         self.navigationItem.title = ""
     }
+    
+    override func setViews() {
+        self.tableView.isScrollEnabled = false
+        self.tableView.tableHeaderView = header
+        self.tableView.tableFooterView = footer
+        self.tableView.separatorStyle = .singleLine
+        self.tableView.showsVerticalScrollIndicator = false
+        self.tableView.showsHorizontalScrollIndicator = false
+        self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentiy)
+        // 下降64
+        self.tableView.contentOffset = CGPoint.init(x: 0, y: 64)
+        shareOriginY = share.origin.y
+        self.handleViews.append(tableView)
+        
+        super.setViews()
+    }
+    
+    override func  didFinishloadData() {
+        super.didFinishloadData()
+        
+        self.header.mode = (icon: UIImage.init(named: mode!.appIcon!)!,name:mode?.appName ?? "" , desc:mode!.appDes ?? "")
+        self.footer.mode =  (company:mode!.company ?? "",version: mode!.version ?? "", copyRight:mode!.copyRight ?? "")
+        
+        self.tableView.reloadData()
+    }
+    
+    override func reload() {
+        super.reload()
+        self.loadData()
+    }
+    
+    
+    
     
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
@@ -105,16 +133,16 @@ class aboutUS: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    
-        let name = cellItem[indexPath.row]
         
-        if name == "关注微信公众号" || name == "客服电话"{
-            let cell = UITableViewCell.init(style: .value1, reuseIdentifier: "cell")
+        let cell = UITableViewCell.init(style: .value1, reuseIdentifier: "cell")
+        let item = cellItem[indexPath.row]
+        switch item {
+        case .wechat, .serviceCall:
             cell.accessoryType = .disclosureIndicator
             cell.textLabel?.textAlignment = .left
             cell.textLabel?.translatesAutoresizingMaskIntoConstraints = false
-            cell.textLabel?.text = name
-            if name == "关注微信公众号"{
+            cell.textLabel?.text = item.des
+            if item == .wechat{
                 cell.detailTextLabel?.text =  mode?.wecaht ?? ""
             }else{
                 cell.detailTextLabel?.text =  mode?.servicePhone ?? ""
@@ -122,41 +150,37 @@ class aboutUS: UITableViewController {
             cell.detailTextLabel?.textAlignment = .right
             cell.detailTextLabel?.textColor = UIColor.lightGray
             cell.detailTextLabel?.font = UIFont.systemFont(ofSize: 16)
-            //_ = cell.textLabel?.sd_layout().leftSpaceToView(cell.contentView,CelloffsetX)?.widthIs(150)
             _ = cell.detailTextLabel?.sd_layout().rightEqualToView(cell.contentView)?.widthIs(200)
-            print(cell)
-            return cell
+            
+        default:
+            cell.accessoryType = .disclosureIndicator
+            cell.textLabel?.text =  item.des
+            cell.textLabel?.textAlignment = .left
         }
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentiy, for: indexPath)
-
-        cell.accessoryType = .disclosureIndicator
-        cell.textLabel?.text =  name
-        cell.textLabel?.textAlignment = .left
         return cell
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return cellH
+        return 45
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
-        let name = cellItem[indexPath.row]
-        switch name {
-        case "服务条款":
+        let item = cellItem[indexPath.row]
+        switch item {
+        case .serviceLaw:
             let serviceTerm = ServiceTerm()
             serviceTerm.serviceURL = mode?.serviceRuleURL ?? ""
             
             self.navigationController?.pushViewController(serviceTerm, animated: true)
-        case "关注微信公众号":
+        case .wechat:
             wechat()
-        case "关注微博":
+        case .weibo:
             weibo()
-        case "分享我们":
+        case .share:
             self.shared()
             
-        case "客服电话":
+        case .serviceCall:
             self.present(phoneAlert, animated: true, completion: nil)
         default:
             break
@@ -166,21 +190,6 @@ class aboutUS: UITableViewController {
 
 }
 
-
-extension aboutUS {
-    private func initView(){
-        self.tableView.isScrollEnabled = false
-        self.tableView.tableHeaderView = header
-        self.tableView.tableFooterView = footer
-        self.tableView.separatorStyle = .singleLine
-        self.tableView.showsVerticalScrollIndicator = false
-        self.tableView.showsHorizontalScrollIndicator = false
-        self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentiy)
-        // 下降64
-        self.tableView.contentOffset = CGPoint.init(x: 0, y: 64)
-        shareOriginY = share.origin.y
-    }
-}
 
 
 // 异步加载数据
@@ -194,10 +203,7 @@ extension aboutUS{
                                              "appName":"校招","appDes":"中国最好的校招平台","company":"xxxxx 版权所有","version":"Version 1.1.0","copyRight":"xxx.com @CopyRight 2018 ","serviceRuleURL":"http://www.baidu.com"])
             
             DispatchQueue.main.async(execute: {
-                self?.header.mode = (icon: UIImage.init(named: (self?.mode?.appIcon)!)! ,name:self?.mode?.appName ?? "" ,desc:self?.mode?.appDes ?? "")
-                self?.footer.mode =  (company:self?.mode?.company ?? "",version: self?.mode?.version ?? "", copyRight:self?.mode?.copyRight ?? "")
-                
-                self?.tableView.reloadData()
+               self?.didFinishloadData()
             })
             
         }
@@ -205,12 +211,6 @@ extension aboutUS{
     
 }
 
-extension aboutUS: MBProgressHUDDelegate{
-    
-    func hudWasHidden(_ hud: MBProgressHUD) {
-        print(hud.customView)
-    }
-}
 extension aboutUS{
     private func wechat(){
         // 复制到粘贴版
@@ -220,7 +220,6 @@ extension aboutUS{
         // 换成 self.navigationController?.view 没问题
         let hub = MBProgressHUD.showAdded(to: (self.navigationController?.view)!, animated: false)
         hub.mode = .text
-        hub.delegate = self
         hub.label.text = "微信账号已经复制, 跳转到微信"
         // 黑色半透明
         hub.bezelView.backgroundColor = UIColor.backAlphaColor()

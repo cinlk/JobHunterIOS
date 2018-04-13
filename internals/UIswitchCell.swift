@@ -8,7 +8,7 @@
 
 class switchCell:UITableViewCell{
     
-    lazy var leftLabel:UILabel = {
+    private lazy var leftLabel:UILabel = {
         let label = UILabel.init(frame: CGRect.zero)
         label.font = UIFont.systemFont(ofSize: 18)
         label.textAlignment = .left
@@ -20,6 +20,16 @@ class switchCell:UITableViewCell{
         sw.isOn = true 
         return sw
     }()
+    
+    
+    var mode:(on:Bool, tag:Int, name:String)?{
+        didSet{
+            self.switchOff.isOn = mode!.on
+            self.switchOff.tag = mode!.tag
+            self.leftLabel.text = mode!.name
+            
+        }
+    }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

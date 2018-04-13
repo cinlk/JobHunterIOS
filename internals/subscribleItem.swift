@@ -12,52 +12,28 @@ import UIKit
 fileprivate let campus = "campus"
 fileprivate let intern = "intern"
 fileprivate let section = 2
+fileprivate let  ImageSize = CGSize.init(width: 25, height: 25)
 
-class subscribleItem: UITableViewController {
+class subscribleItem: BaseTableViewController {
 
     
     // 数据保持在本地(校招,实习) 还是服务器？
     private lazy var internData:[subscribeConditionModel]  = []
     private lazy var compuseData:[subscribeConditionModel] = []
     
-    
-    
-    private lazy var  errorView:ErrorPageView = {  [unowned self] in
-        let eView = ErrorPageView.init(frame: self.view.bounds)
-        eView.isHidden = true
-        // 再次刷新
-        eView.reload = reload
-        
-        return eView
-        
-    }()
-    
-    
-    private lazy var hub:MBProgressHUD = { [unowned self] in
-        
-        let  hub = MBProgressHUD.showAdded(to: self.backHubView, animated: true)
-        hub.mode = .indeterminate
-        hub.label.text = "加载数据"
-        hub.removeFromSuperViewOnHide = false
-        hub.margin = 10
-        hub.label.textColor = UIColor.black
-        return hub
-        
-    }()
-    
-    
-    // tableview 是第一个view，不能直接使用为hub的背景view
-    private lazy var backHubView:UIView = { [unowned self] in
-        let view = UIView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: ScreenH - NavH))
-        view.backgroundColor = UIColor.white
-        self.navigationController?.view.insertSubview(view, at: 1)
-        view.isHidden = true
-        return view
+    private lazy var addBtnImage = UIImage.barImage(size: ImageSize, offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "plus")
+
+    private lazy var addBtn:UIButton = { [unowned self] in
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30 , height: 30))
+        btn.setImage(self.addBtnImage, for: .normal)
+        btn.addTarget(self, action: #selector(addItem), for: .touchUpInside)
+        btn.backgroundColor = UIColor.clear
+        return btn
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setView()
+        self.setViews()
         self.loadData()
     }
 
@@ -74,62 +50,44 @@ class subscribleItem: UITableViewController {
         super.viewWillDisappear(animated)
         self.navigationController?.removeCustomerView()
         self.navigationItem.title = ""
-        //
-        backHubView.removeFromSuperview()
-        hub.removeFromSuperview()
+       
     }
- 
-}
-
-extension subscribleItem{
     
-    private func setView(){
+    override func setViews(){
         //self.navigationController?.view.backgroundColor = UIColor.white
-
+        
         self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.tableHeaderView = UIView.init()
         self.tableView.tableFooterView = UIView.init()
         self.tableView.register(subjobitemCell.self, forCellReuseIdentifier: subjobitemCell.identity())
         // sectionCell
         self.tableView.register(sectionCellView.self, forCellReuseIdentifier: sectionCellView.identity())
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(customView: addBtn)
         
-        
-        let size = CGSize.init(width: 25, height: 25)
-        let add = UIImage.barImage(size: size, offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "plus")
-        self.navigationItem.rightBarButtonItem =  UIBarButtonItem.init(image: add, style: .plain, target: self, action: #selector(addItem))
-        
-        hub.show(animated: true)
-        self.tableView.isHidden = true
-        backHubView.isHidden = false
+        self.handleViews.append(tableView)
+        self.handleViews.append(addBtn)
+        super.setViews()
         
     }
     
     
-    private func didFinishloadData(){
-        hub.hide(animated: true)
-        backHubView.isHidden = true
-        self.tableView.isHidden = false
-        errorView.isHidden = true
-        hub.removeFromSuperview()
+    override func didFinishloadData(){
+        super.didFinishloadData()
         self.tableView.reloadData()
     }
     
-    private func showError(){
-        hub.hide(animated: true)
-        errorView.isHidden = false
-        backHubView.isHidden = false
+    override func showError(){
+        super.showError()
     }
     
-    private func reload(){
-        
-        hub.show(animated: true)
-        backHubView.isHidden = false
-        self.errorView.isHidden = true
+    override func reload(){
+        super.reload()
         self.loadData()
         
     }
-    
+ 
 }
+
 
 extension subscribleItem{
     

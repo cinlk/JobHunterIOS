@@ -97,6 +97,7 @@ class JobDetailViewController: BaseViewController,UITableViewDelegate,UITableVie
         // 加入最外层窗口
          UIApplication.shared.windows.last?.addSubview(view)
          ShareOriginY = view.origin.y
+         view.delegate = self
          return view
      }()
     
@@ -423,6 +424,11 @@ extension JobDetailViewController{
 }
 
 
+extension JobDetailViewController: shareViewDelegate{
+    func hiddenShareView(view:UIView){
+        self.handleSingleTapGesture()
+    }
+}
 
 extension JobDetailViewController{
     

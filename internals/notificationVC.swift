@@ -10,33 +10,62 @@ import UIKit
 
 
 
-class notificationVC: UITableViewController {
+class notificationVC: BaseTableViewController {
 
     
     private lazy var items:[Int:[notifyMesModel]] = [:]
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        initView()
-        loadNotifys()
+        setViews()
+        loadData()
         
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = "消息提醒"
+        self.navigationController?.insertCustomerView()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationItem.title = ""
+        self.navigationController?.removeCustomerView()
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-     }
 
+    
+    override func setViews(){
+        self.tableView.tableFooterView = UIView.init()
+        self.tableView.showsVerticalScrollIndicator = false
+        self.tableView.register(switchCell.self, forCellReuseIdentifier: switchCell.identity())
+        
+        self.handleViews.append(tableView)
+        
+        super.setViews()
+        
+        
+    }
+    
+    override func didFinishloadData(){
+        
+        super.didFinishloadData()
+        self.tableView.reloadData()
+        
+    }
+    
+    override func showError(){
+        super.showError()
+    }
+    
+    override func reload(){
+        
+        super.reload()
+        self.loadData()
+        
+    }
+    
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -53,9 +82,10 @@ class notificationVC: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: switchCell.identity(), for: indexPath) as! switchCell
         // 映射到数字
         if let item = items[indexPath.section]?[indexPath.row]{
-            cell.switchOff.isOn = item.isOn ?? false
-            cell.switchOff.tag = indexPath.section * 10 + indexPath.row
-            cell.leftLabel.text = item.name ?? ""
+            
+            cell.mode = (on:item.isOn ?? false, tag:indexPath.section * 10 + indexPath.row, name:item.name ?? "")
+            
+            // 开启事件
             cell.switchOff.addTarget(self, action: #selector(onMsg(_:)), for: .valueChanged)
         }
       
@@ -88,24 +118,17 @@ class notificationVC: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if section == 0 {
-            return 20
-        }
-        return 40
+        return section == 1 ? 40 : 0
     }
 
 }
 
+
+
 extension notificationVC {
-    private func initView(){
-        self.tableView.tableFooterView = UIView.init()
-        self.tableView.showsVerticalScrollIndicator = false
-        self.tableView.register(switchCell.self, forCellReuseIdentifier: switchCell.identity())
-        
-    }
     
     // 获取数据
-    private func loadNotifys(){
+    private func loadData(){
         
         
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
@@ -125,7 +148,7 @@ extension notificationVC {
             
         
             DispatchQueue.main.async(execute: {
-                self?.tableView.reloadData()
+                self?.didFinishloadData()
             })
             
         }

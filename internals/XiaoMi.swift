@@ -11,52 +11,27 @@ import UIKit
 fileprivate let titleHeaderH:CGFloat = 45
 
 
-class XiaoMi: UITableViewController {
+class XiaoMi: BaseTableViewController {
 
     
     private var news:[xiaomiNewsModel] = []
     
-    
-    private lazy var  errorView:ErrorPageView = {  [unowned self] in
-        let eView = ErrorPageView.init(frame: self.view.bounds)
-        eView.isHidden = true
-        // 再次刷新
-        eView.reload = reload
-        
-        return eView
-    
-    }()
-    
-    
-    private lazy var hub:MBProgressHUD = { [unowned self] in
-        
-        let  hub = MBProgressHUD.showAdded(to: self.backHubView, animated: true)
-        hub.mode = .indeterminate
-        hub.label.text = "加载数据"
-        hub.removeFromSuperViewOnHide = false
-        hub.margin = 10
-        hub.label.textColor = UIColor.black
-        return hub
-        
-    }()
-    
-    
-    // tableview 是第一个view，不能直接使用为hub的背景view
-    // 调整高度，不能挡住titleView
-    private lazy var backHubView:UIView = { [unowned self] in
-        let view = UIView.init(frame: CGRect.init(x: 0, y: titleHeaderH + NavH, width: ScreenW, height: ScreenH - titleHeaderH - NavH ))
-        view.backgroundColor = UIColor.white
-        self.navigationController?.view.insertSubview(view, at: 1)
-        view.isHidden = true
-        return view
-    }()
-    
-    
+//    override  lazy var backHubView:UIView = {
+//
+//        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW - titleHeaderH - NavH  , height: ScreenH))
+//        view.backgroundColor = UIColor.white
+//        //用于 navigation
+//        self.navigationController?.view.insertSubview(view, at: 1)
+//        view.isHidden = true
+//        return view
+//
+//    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setView()
+        setViews()
         loadData()
+        
      
     }
     
@@ -68,8 +43,36 @@ class XiaoMi: UITableViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        backHubView.removeFromSuperview()
-        hub.removeFromSuperview()
+
+    }
+    
+    
+    override func setViews(){
+        
+        self.tableView.backgroundColor = UIColor.viewBackColor()
+        self.tableView.separatorStyle = .none
+        self.tableView.showsHorizontalScrollIndicator = false
+        self.tableView.tableFooterView = UIView.init()
+        self.tableView.register(xiaomiTableCell.self, forCellReuseIdentifier: xiaomiTableCell.identity())
+        // 重新设置界面高度
+        backHubView.frame = CGRect.init(x: 0, y: NavH + titleHeaderH, width: ScreenW, height: ScreenH - titleHeaderH - NavH)
+        self.handleViews.append(tableView)
+        super.setViews()
+    }
+    
+    override func didFinishloadData(){
+        super.didFinishloadData()
+        self.tableView.reloadData()
+    }
+    
+    override func showError(){
+        super.showError()
+    }
+    
+    override func reload(){
+        super.reload()
+        self.loadData()
+        
     }
     
     // MARK: - Table view data source
@@ -111,45 +114,7 @@ class XiaoMi: UITableViewController {
 }
 
 
-extension XiaoMi{
-    
-    private func setView(){
-        
-        self.tableView.backgroundColor = UIColor.viewBackColor()
-        self.tableView.separatorStyle = .none
-        self.tableView.showsHorizontalScrollIndicator = false
-        self.tableView.tableFooterView = UIView.init()
-        self.tableView.register(xiaomiTableCell.self, forCellReuseIdentifier: xiaomiTableCell.identity())
-        
-        hub.show(animated: true)
-        self.tableView.isHidden = true
-        backHubView.isHidden = false
-    }
-    
-    private func didFinishloadData(){
-        hub.hide(animated: true)
-        backHubView.isHidden = true
-        self.tableView.isHidden = false
-        errorView.isHidden = true
-        hub.removeFromSuperview()
-        self.tableView.reloadData()
-    }
-    
-    private func showError(){
-        hub.hide(animated: true)
-        errorView.isHidden = false
-        backHubView.isHidden = false
-    }
-    
-    private func reload(){
-        
-        hub.show(animated: true)
-        backHubView.isHidden = false
-        self.errorView.isHidden = true
-        self.loadData()
-        
-    }
-}
+
 
 extension XiaoMi{
     private func loadData(){

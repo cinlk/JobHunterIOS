@@ -54,11 +54,14 @@ class evaluateSelfVC: UITableViewController {
         super.viewWillAppear(animated)
         self.navigationItem.title = "修改个人评价"
         content = pManager.mode?.estimate ?? ""
+        self.navigationController?.insertCustomerView()
         
     }
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         self.navigationItem.title = ""
+        self.navigationController?.removeCustomerView()
+        
     }
     
     
