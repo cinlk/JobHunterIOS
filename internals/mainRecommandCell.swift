@@ -9,7 +9,7 @@
 import UIKit
 
 fileprivate let cellHeightH:CGFloat = 120
-fileprivate let itemWidth:CGFloat = ScreenW / 4
+fileprivate let itemWidth:CGFloat = ScreenW / 2 - 30
 
 class MainPageRecommandCell: UITableViewCell,UIScrollViewDelegate {
 
@@ -28,33 +28,7 @@ class MainPageRecommandCell: UITableViewCell,UIScrollViewDelegate {
         return scroll
     }()
     
-    private lazy var line:UIView = {
-        let view = UIView.init(frame: CGRect.zero)
-        view.backgroundColor = UIColor.lightGray
-        return view
-    }()
-    
-    private lazy  var topView:UIView = {
-        
-        var uiview = UIView.init(frame: CGRect.zero)
-        var label:UILabel  = UILabel()
-        label.text = "热门推荐"
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
-        //label.font = UIFont(name: "Bobz Type", size: 5)
-        label.adjustsFontSizeToFitWidth = true
-        label.minimumScaleFactor  =  0.5
-        label.font = UIFont.systemFont(ofSize: 12)
-        uiview.addSubview(label)
-        
-        let right = UIImageView.init(image: #imageLiteral(resourceName: "rightforward"))
-        right.clipsToBounds = true
-        uiview.addSubview(right)
-        
-        _ = label.sd_layout().leftSpaceToView(uiview,10)?.topSpaceToView(uiview,2.5)?.autoHeightRatio(0)
-        _ = right.sd_layout().rightSpaceToView(uiview,10)?.topEqualToView(label)?.widthIs(15)?.autoHeightRatio(3/2)
-        return uiview
-        
-    }()
+
     
     // call back
     var  chooseItem:((_ btn:UIButton)->Void)?
@@ -68,23 +42,25 @@ class MainPageRecommandCell: UITableViewCell,UIScrollViewDelegate {
             
             //stackview
             scroller.subviews.forEach{$0.removeFromSuperview()}
-            scroller.contentSize = CGSize.init(width: CGFloat(items.count) * (itemWidth + 5), height: scroller.frame.height)
+            scroller.contentSize = CGSize.init(width: CGFloat(items.count) * (itemWidth + 10), height: scroller.frame.height)
             var index = 0
             for (image,title) in items{
                 
                 
                 let button = UIButton(type: .custom)
-                button.frame = CGRect(x: CGFloat(index)*(itemWidth+5), y: 0, width: itemWidth, height: scroller.frame.height)
+                button.frame = CGRect(x: CGFloat(index)*(itemWidth+10), y: 0, width: itemWidth, height: scroller.frame.height)
                 button.backgroundColor  = UIColor.clear
-                button.setImage(UIImage(named: image), for: .normal)
-                
-                button.imageView?.contentMode = .scaleAspectFill
+                //button.setImage(UIImage(named: image), for: .normal)
+                button.setBackgroundImage(UIImage.init(named: image), for: .normal)
+                button.setBackgroundImage(UIImage.init(named: image), for: .highlighted)
+
+                button.imageView?.contentMode = .scaleToFill
                 button.imageView?.clipsToBounds = true
                 button.imageView?.alpha = 0.7
-                button.setTitle(title, for: .normal)
-                button.setTitleColor(UIColor.black, for: .normal)
-                button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+                button.titleLabel?.text = title
+                button.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5)
                 button.addTarget(self, action: #selector(click(_:)), for: .touchUpInside)
+                button.backgroundColor = UIColor.clear
                 
                 index += 1
                 scroller.addSubview(button)
@@ -108,14 +84,10 @@ class MainPageRecommandCell: UITableViewCell,UIScrollViewDelegate {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        self.contentView.addSubview(topView)
-        self.contentView.addSubview(line)
+        
         self.contentView.addSubview(scroller)
         
-        _ = topView.sd_layout().topEqualToView(self.contentView)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.heightIs(25)
-        
-        _ = line.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topSpaceToView(topView,1)?.heightIs(1)
-        _ = scroller.sd_layout().topSpaceToView(line,0)?.leftEqualToView(self.contentView)?.bottomEqualToView(self.contentView)?.rightEqualToView(self.contentView)
+        _ = scroller.sd_layout().topEqualToView(self.contentView)?.leftEqualToView(self.contentView)?.bottomEqualToView(self.contentView)?.rightEqualToView(self.contentView)
         
     }
     
@@ -133,6 +105,7 @@ class MainPageRecommandCell: UITableViewCell,UIScrollViewDelegate {
 
 extension MainPageRecommandCell{
     @objc private func click(_ btn:UIButton){
+        
         self.chooseItem?(btn)
     }
 }

@@ -90,6 +90,7 @@ class add_internVC: UITableViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationItem.title = "实习/项目经历"
+        pickView.removeFromSuperview()
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {

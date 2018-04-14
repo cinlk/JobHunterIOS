@@ -49,7 +49,7 @@ class showResumeVC: UIViewController {
         label.textAlignment = .center
         label.tag = 1
         view.addSubview(label)
-        _ = label.sd_layout().centerXEqualToView(view)?.centerYEqualToView(view)?.autoHeightRatio(0)
+        _ = label.sd_layout().centerXEqualToView(view)?.bottomSpaceToView(view,15)?.autoHeightRatio(0)
         
         view.alpha = 0
         return view

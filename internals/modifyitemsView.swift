@@ -121,6 +121,7 @@ class modifyitemView: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
          self.navigationItem.title = ""
+        pickView.removeFromSuperview()
     }
     
     override func viewWillLayoutSubviews() {

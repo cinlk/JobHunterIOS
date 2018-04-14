@@ -16,7 +16,7 @@ fileprivate let btnHeight:CGFloat = 45
 
 protocol shareViewDelegate: class {
     func hiddenShareView(view:UIView)
-    //func triggerShare(view:UIView, name:String)
+    func handleShareType(type: UMSocialPlatformType)
 }
 
 
@@ -33,7 +33,7 @@ class shareView: UIView {
         ShareItem.init(name: "QQ空间", image: "qqZone", type: UMSocialPlatformType.qzone, bubbles: nil),
         ShareItem.init(name: "复制链接", image: "copyIcon", type: UMSocialPlatformType.init(rawValue: 1001), bubbles: nil),
         // 短信报错： 分享失败 Optional(Error Domain=UMSocialPlatformErrorDomain Code=2001 "(null)" UserInfo={message=未配置完成SDK，请检查 'build setting'中 -ObjC参数})
-        ShareItem.init(name: "短信", image: "sms", type: UMSocialPlatformType.sms, bubbles: nil)]
+        ShareItem.init(name: "更多", image: "moreShare", type: UMSocialPlatformType.init(rawValue: 1002), bubbles: nil)]
     
     
     
@@ -41,8 +41,6 @@ class shareView: UIView {
     
     var delegate:shareViewDelegate?
     
-    // 当前viewcontroller
-    weak var viewController:UIViewController?
     
     private lazy var line:UIView = {
         let v = UIView()
@@ -88,6 +86,7 @@ class shareView: UIView {
         self.addSubview(cancelBtn)
         self.addSubview(line)
         
+
         _ = cancelBtn.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.heightIs(btnHeight)?.bottomEqualToView(self)
         _ = line.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.bottomSpaceToView(cancelBtn,0)?.heightIs(1)
         _ = collectionView.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.topEqualToView(self)?.bottomSpaceToView(cancelBtn,0)
@@ -125,8 +124,8 @@ extension shareView:UICollectionViewDelegate, UICollectionViewDataSource, UIColl
     
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print(indexPath)
         let mode = showItems[indexPath.row]
-        //self.delegate?.triggerShare(view: self, name: mode.name!)
         self.sharedToUM(type: mode.type)
         
     
@@ -140,36 +139,10 @@ extension shareView{
     
     func sharedToUM(type: UMSocialPlatformType?){
         
-        guard let type = type, let vc = self.viewController  else {
+        guard let type = type  else {
             return
         }
-        if type.rawValue == 1001{
-            showOnlyTextHub(message: "复制成功", view: self.getParentViewController()!.view)
-            //SVProgressHUD.showSuccess(withStatus: "复制成功")
-            return
-        }
-        
-        // 网页分享消息
-        let mesObj = UMSocialMessageObject.init()
-        mesObj.text = "友盟网页分享测试"
-        let sharedObj = UMShareWebpageObject.init()
-        sharedObj.title = "设置标题"
-        sharedObj.descr = "xxx的个人名片"
-        sharedObj.thumbImage = UIImage.init(named: "default")
-        sharedObj.webpageUrl = "http://video.sina.com.cn/p/sports/cba/v/2013-10-22/144463050817.html"
-        mesObj.shareObject = sharedObj
-        
-      
-        print(type.rawValue)
-        // 分享到不同的平台
-        
-        UMSocialManager.default().share(to: type, messageObject: mesObj, currentViewController: vc) { (res, error) in
-            if error != nil{
-                print("分享失败 \(error)")
-            }else{
-                self.getUserInfo(platformType: type, vc: vc)
-            }
-        }
+        delegate?.handleShareType(type: type)
         
     }
     

@@ -88,6 +88,10 @@ class addSkillVC: UITableViewController {
         self.navigationItem.title = VCtitle
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        pickView.removeFromSuperview()
+    }
     
     // MARK: - Table view data source
 

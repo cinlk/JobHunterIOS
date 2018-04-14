@@ -20,6 +20,7 @@ class SysNotificationController: UIViewController {
     lazy var headerTitleView:pagetitleView = { [unowned self] in
        let titleView = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: titleHeaderH), titles: titles)
         titleView.delegate = self
+        print(titleView)
         return titleView
     }()
     

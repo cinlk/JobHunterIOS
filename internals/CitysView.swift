@@ -130,13 +130,18 @@ class CityViewController:UICollectionViewController, UICollectionViewDelegateFlo
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        
+        super.viewWillAppear(animated)
+        self.navigationController?.insertCustomerView()
         // start fetching location
         
     }
     
+
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         activiyIndicator.stopAnimating()
+        self.navigationController?.removeCustomerView()
+        
         
     }
     override func viewWillLayoutSubviews() {

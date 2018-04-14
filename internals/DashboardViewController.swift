@@ -64,6 +64,9 @@ class DashboardViewController: BaseViewController{
         }
     }
     
+    // 轮播图数据
+    private var rotateText:[String] = []
+    
     //
     private var flag = false
     // MVVM 释放内存
@@ -268,7 +271,7 @@ extension DashboardViewController: UITableViewDelegate{
         case 0:
             return 0.0
         case 1:
-            return 10
+            return 0
         case 2:
             return 30
         default:
@@ -300,9 +303,13 @@ extension DashboardViewController: UITableViewDelegate{
                 
                 let cell:MainPageCatagoryCell = table.dequeueReusableCell(withIdentifier: MainPageCatagoryCell.identity()) as! MainPageCatagoryCell
                 cell.mode = imageNames
-                cell.chooseItem = { (btn) in
-                    //print(btn.titleLabel?.text)
+                cell.selectedItem = { (btn) in
+                    let spe = SpecialJobVC()
+                    spe.queryName = btn.titleLabel?.text
+                    spe.hidesBottomBarWhenPushed = true
+                    self.navigationController?.pushViewController(spe, animated: true)
                 }
+                
                 return cell
             case let .recommandItem(imageNames):
                 
@@ -311,8 +318,11 @@ extension DashboardViewController: UITableViewDelegate{
                 cell.mode = imageNames
                 
                 cell.chooseItem = { (btn) in
+                    let web = baseWebViewController()
+                    web.mode = btn.titleLabel?.text
+                    web.hidesBottomBarWhenPushed = true
+                    self.navigationController?.pushViewController(web, animated: true)
                     
-                    //print(btn.titleLabel?.text)
                 }
                 
                 return cell
@@ -686,6 +696,12 @@ extension DashboardViewController{
             self.page.numberOfPages = rotates.count
             let width = self.imagescroller.width
             let height = self.imagescroller.height
+            // 存储iamge 的 body
+            rotates.forEach{
+                self.rotateText.append($0.body!)
+            }
+           
+            
             if rotates.isEmpty{
                 return
             }else{
@@ -701,10 +717,21 @@ extension DashboardViewController{
                 
                 for (n,item) in arrays.enumerated(){
                     
+                    guard  item.imageURL != nil, item.body != nil else { continue }
+                    
+                    
                     let imageView = UIImageView(frame:CGRect(x: CGFloat(n) * width, y: 0, width: width, height: height))
+                    // 记录tag
+                    imageView.tag = n - 1
+                    imageView.isUserInteractionEnabled = true
+                    let guest = UITapGestureRecognizer()
+                    guest.addTarget(self, action: #selector(self.selectBanner(_:)))
+                    imageView.addGestureRecognizer(guest)
+                    
+                    
                     //MARK get image from url
                     imageView.image = UIImage.init(named: item.imageURL ?? "banner1")
-                    imageView.contentMode = .scaleAspectFill
+                    imageView.contentMode = .scaleToFill
                     imageView.clipsToBounds = true
                     self.imagescroller.addSubview(imageView)
                 }
@@ -734,4 +761,20 @@ extension DashboardViewController{
     
 }
 
+// 点击banner
+extension DashboardViewController{
+    @objc private func selectBanner(_ tap:UITapGestureRecognizer){
+        guard  let image = tap.view as? UIImageView else {
+            return
+        }
+        if image.tag < rotateText.count && image.tag >= 0{
+            print(rotateText[image.tag])
+            //
+            let webView = baseWebViewController()
+            webView.mode = rotateText[image.tag]
+            webView.hidesBottomBarWhenPushed = true
+            self.navigationController?.pushViewController(webView, animated: true)
+        }
+    }
+}
 

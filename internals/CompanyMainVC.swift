@@ -64,7 +64,7 @@ class CompanyMainVC: BaseViewController {
         let view =  shareView(frame: CGRect(x: 0, y: ScreenH, width: ScreenW, height: shareViewH))
         view.delegate = self
         // 加入最外层窗口
-        UIApplication.shared.windows.last?.addSubview(view)
+        UIApplication.shared.keyWindow?.addSubview(view)
         ShareViewCenterY = view.centerY
         return view
     }()
@@ -122,6 +122,7 @@ class CompanyMainVC: BaseViewController {
         super.viewWillDisappear(animated)
         self.navigationItem.title = ""
         self.navigationController?.removeCustomerView()
+        shareapps.removeFromSuperview()
         
         
     }
@@ -310,6 +311,14 @@ extension CompanyMainVC: shareViewDelegate{
     func hiddenShareView(view:UIView){
         self.handleSingleTapGesture()
     }
+    func handleShareType(type: UMSocialPlatformType) {
+        if type.rawValue == 1002{
+            let activiController = UIActivityViewController.init(activityItems: ["dwdwqd"], applicationActivities: nil)
+            activiController.excludedActivityTypes = [UIActivityType.postToTencentWeibo, UIActivityType.postToWeibo]
+            self.present(activiController, animated: true, completion: nil)
+        }
+    }
+    
 }
 
 extension CompanyMainVC{

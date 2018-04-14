@@ -138,11 +138,12 @@ class mainPageServer {
     }
     // MARK
     public func getCatagories() -> Observable<[String:String]> {
-        return Observable.just(["car":"car","money":"money","sina":"sina","bell":"bell","qq":"qq","swift":"swift"])
+        return Observable.just(["hotJobs":"热门职位","fastOffer":"急招职位","accountIn":"户口机会","highPlay":"高薪职位","flyPig":"行业风口"])
+        
     }
     // MARK
     public func getRecommand() -> Observable<[String:String]> {
-        return Observable.just(["ali":"阿里","fly":"fly","google":"google","jodel":"jodel","volk":"volk"])
+        return Observable.just(["ali":"https://job.alibaba.com/zhaopin/index.htm","xiaomiDefault":"http://hr.xiaomi.com/","service1":"http://www.sohu.com/a/151070865_219733"])
     }
     //MARK
     public func getImageBanners() -> Driver<[RotateImages]>{

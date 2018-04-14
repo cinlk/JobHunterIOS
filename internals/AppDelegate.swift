@@ -79,7 +79,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // 例如: 你的新浪微博的AppKey为: 123456789, 那么这个值就是: wb123456789
         if url.scheme == "URL Schemes" {
             // 新浪微博 的回调
-           
             return UMSocialManager.default().handleOpen(url)
         }
         

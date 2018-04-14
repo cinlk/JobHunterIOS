@@ -24,6 +24,7 @@ class pageContentView: UIView {
     private var childVCs:[UIViewController]?
     private var pVC:UIViewController?
     weak var delegate:PageContentViewScrollDelegate?
+    fileprivate var isCkick:Bool = false
     
     lazy var collectionView:UICollectionView = { [unowned self] in
         let layout = UICollectionViewFlowLayout.init()
@@ -99,10 +100,14 @@ extension pageContentView: UICollectionViewDataSource{
 extension pageContentView: UICollectionViewDelegate{
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        isCkick = false
         startOffsetX = scrollView.contentOffset.x
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        // label点击事件不执行（不然出现错误）
+        if isCkick { return }
         
         var progress:CGFloat = 0
         var sourceIndex:Int = 0
@@ -136,7 +141,10 @@ extension pageContentView: UICollectionViewDelegate{
 extension pageContentView{
     
     func moveToIndex(_ currentIndex: Int){
+        isCkick = true
+        
         let offsetX = CGFloat(currentIndex) * self.collectionView.frame.width
+        // 触发scroller方法
         collectionView.setContentOffset(CGPoint.init(x: offsetX, y: 0), animated: false)
     }
     

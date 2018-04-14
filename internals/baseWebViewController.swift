@@ -16,7 +16,24 @@ fileprivate let imgSize = CGSize.init(width: 25, height: 25)
 class baseWebViewController: UIViewController {
     
     
+    
+    // 自适应屏幕
+   
+    private lazy var wkContent:WKUserContentController = {
+        let content = WKUserContentController()
+        let jsString = "var meta = document.createElement('meta'); meta.setAttribute('name', 'viewport'); meta.setAttribute('content', 'width=device-width'); document.getElementsByTagName('head')[0].appendChild(meta);"
+        let script = WKUserScript.init(source: jsString, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
+        content.addUserScript(script)
+        return content
+    }()
+    private lazy var webConfig:WKWebViewConfiguration =  { [unowned self] in
+        let config = WKWebViewConfiguration()
+        config.userContentController = self.wkContent
+        return config
+    }()
+    
     private lazy var webView: WKWebView = { [unowned self] in
+        //let web = WKWebView.init(frame: CGRect.zero, configuration: self.webConfig)
         let web = WKWebView.init(frame: CGRect.zero)
         web.navigationDelegate = self
         web.uiDelegate = self

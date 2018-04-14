@@ -32,7 +32,7 @@ class MainPageCatagoryCell: UITableViewCell,UIScrollViewDelegate{
     
     private var event:UIGestureRecognizer?
     
-    var chooseItem:((_ btn:UIButton)->Void)?
+    var selectedItem:((_ btn:UIButton)->Void)?
     
     
     private var itemBtn:[UIButton] = []
@@ -53,21 +53,23 @@ class MainPageCatagoryCell: UITableViewCell,UIScrollViewDelegate{
             for (imageURL,title) in items{
                
                 let btn = UIButton.init()
-                btn.frame = CGRect(x: CGFloat(index)*(itemWitdh+5), y: 10, width: itemWitdh, height: cellHeightH - CGFloat(10))
-                
+                btn.frame = CGRect(x: CGFloat(index)*(itemWitdh+5), y: 0, width: itemWitdh, height: cellHeightH - CGFloat(30))
+                btn.tag = index
+                btn.titleLabel?.text = title
                 btn.backgroundColor = UIColor.white
                 btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
                 btn.titleLabel?.textAlignment = .center
-                
-                //tagButton.tag = 100 + i
-                btn.setTitle(title, for: .normal)
-                btn.setTitleColor(UIColor.black, for: .normal)
-                //let img =
                 btn.setImage(UIImage.init(named: imageURL), for: .normal)
-            
-                //tagButton.addTarget(self, action: #selector(tag(button:)), for: .touchUpInside)
-                btn.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 20, 0)
+                btn.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5)
                 btn.addTarget(self, action: #selector(chooseItem(_:)), for: .touchUpInside)
+                let subtitle = UILabel.init(frame: CGRect.init(x: CGFloat(index)*(itemWitdh+5), y: cellHeightH - CGFloat(30) , width: itemWitdh, height: 25))
+                
+                subtitle.text = title
+                subtitle.font = UIFont.systemFont(ofSize: 15)
+                subtitle.textAlignment = .center
+                subtitle.textColor = UIColor.black
+                scrollView.addSubview(subtitle)
+                
                 scrollView.addSubview(btn)
                 itemBtn.append(btn)
                 index += 1
@@ -107,6 +109,7 @@ class MainPageCatagoryCell: UITableViewCell,UIScrollViewDelegate{
 extension MainPageCatagoryCell{
     
     @objc private func chooseItem(_ btn:UIButton){
-       self.chooseItem?(btn)
+        
+       self.selectedItem?(btn)
     }
 }

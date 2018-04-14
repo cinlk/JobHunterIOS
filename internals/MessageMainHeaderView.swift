@@ -22,7 +22,7 @@ class HeaderCollectionView:UIView{
         
         
         let collection = UICollectionView.init(frame: CGRect.init(x: 0, y: 0, width: self.bounds.width, height: self.bounds.height - 10), collectionViewLayout: self.layout)
-        collection.contentInset = UIEdgeInsetsMake(0, 10, 0, 10)
+        collection.contentInset = UIEdgeInsetsMake(0, 15, 0, 10)
         collection.autoresizingMask = [.flexibleBottomMargin, .flexibleTopMargin]
         collection.register(CollectionItemsCell.self, forCellWithReuseIdentifier: CollectionItemsCell.identity())
         collection.delegate = self

@@ -93,9 +93,8 @@ class JobDetailViewController: BaseViewController,UITableViewDelegate,UITableVie
     // 分享界面
     private lazy var shareapps:shareView = { [unowned self] in
         //放在最下方
-        let view =  shareView(frame: CGRect(x: 0, y: ScreenH, width: ScreenW, height: shareViewH))
-        // 加入最外层窗口
-         UIApplication.shared.windows.last?.addSubview(view)
+         let view =  shareView(frame: CGRect(x: 0, y: ScreenH, width: ScreenW, height: shareViewH))
+         UIApplication.shared.keyWindow?.addSubview(view)
          ShareOriginY = view.origin.y
          view.delegate = self
          return view
@@ -103,6 +102,7 @@ class JobDetailViewController: BaseViewController,UITableViewDelegate,UITableVie
     
     private var ShareOriginY:CGFloat = 0
     
+    // share背景view
     private lazy var darkView :UIView = {
         let darkView = UIView()
         darkView.frame = CGRect(x: 0, y: 0, width:ScreenW, height:ScreenH)
@@ -206,6 +206,7 @@ class JobDetailViewController: BaseViewController,UITableViewDelegate,UITableVie
         self.navigationItem.title = ""
         self.tabBarController?.tabBar.isHidden = false
         self.navigationController?.view.willRemoveSubview(nBackView)
+        shareapps.removeFromSuperview()
 
     }
     
@@ -428,6 +429,51 @@ extension JobDetailViewController: shareViewDelegate{
     func hiddenShareView(view:UIView){
         self.handleSingleTapGesture()
     }
+    
+    func handleShareType(type: UMSocialPlatformType) {
+        // 影藏分享界面
+        self.handleSingleTapGesture()
+        
+        //开始分享
+        if type.rawValue  == 1001{
+            
+            return
+        }
+        
+        if type.rawValue == 1002{
+            let activiController = UIActivityViewController.init(activityItems: ["dwdwqd"], applicationActivities: nil)
+            activiController.excludedActivityTypes = [UIActivityType.postToTencentWeibo, UIActivityType.postToWeibo]
+            self.present(activiController, animated: true, completion: nil)
+            return
+        }
+        
+        
+        // 网页分享消息
+        let mesObj = UMSocialMessageObject.init()
+        mesObj.text = "友盟网页分享测试"
+        let sharedObj = UMShareWebpageObject.init()
+        sharedObj.title = "设置标题"
+        sharedObj.descr = "xxx的个人名片"
+        sharedObj.thumbImage = UIImage.init(named: "default")
+        sharedObj.webpageUrl = "http://video.sina.com.cn/p/sports/cba/v/2013-10-22/144463050817.html"
+        mesObj.shareObject = sharedObj
+        
+        // 分享到不同的平台
+        
+        UMSocialManager.default().share(to: type, messageObject: mesObj, currentViewController: self) { (res, error) in
+            if error != nil{
+                print("分享失败 \(error)")
+            }else{
+                self.shareapps.getUserInfo(platformType: type, vc: self)
+            }
+        }
+    
+        
+    }
+    
+    
+  
+    
 }
 
 extension JobDetailViewController{
@@ -444,14 +490,11 @@ extension JobDetailViewController{
     // 举报
     @objc func warn(){
         
-        self.hidesBottomBarWhenPushed = true
+        WarnViewController.hidesBottomBarWhenPushed = true
         // test
         WarnViewController.jobId = "dwqdq"
         self.navigationController?.pushViewController(WarnViewController, animated: true)
-        
-        
     }
-   
     
     // 收藏
     @objc func collect(btn:UIButton){

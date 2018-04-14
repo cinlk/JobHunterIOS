@@ -63,11 +63,11 @@ class personCardVC: BaseTableViewController {
         return back
     }()
    // 分享界面
-    private lazy var MyshareView:shareView = {
+    private lazy var MyshareView:shareView = { [unowned self] in 
         let s = shareView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: shareViewH))
-        UIApplication.shared.windows.last?.addSubview(s)
+        //UIApplication.shared.windows.last?.addSubview(s)
+        UIApplication.shared.keyWindow?.addSubview(s)
         s.delegate = self
-        s.viewController = self 
         return s
     }()
     
@@ -91,6 +91,7 @@ class personCardVC: BaseTableViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navBarTitleView.removeFromSuperview()
+        MyshareView.removeFromSuperview()
     }
     
     
@@ -323,6 +324,28 @@ extension personCardVC:shareViewDelegate{
         if view == self.MyshareView{
             hiddenBackView()
         }
+    }
+    
+    func handleShareType(type: UMSocialPlatformType) {
+        
+        // 复制
+        if type.rawValue == 1001 {
+            hiddenBackView()
+            UIPasteboard.general.string = "连接"
+            showOnlyTextHub(message: "复制成功", view: self.view)
+            return
+        }
+        
+        // 系统自带分享
+        if type.rawValue == 1002{
+            hiddenBackView()
+            let data:[Any] = ["dqwdwq", UIImage.init(named: "sina"), "www.baidu.com"]
+            let activiController = UIActivityViewController.init(activityItems: data, applicationActivities: nil)
+            activiController.excludedActivityTypes = [UIActivityType.postToTencentWeibo, UIActivityType.postToWeibo]
+            self.present(activiController, animated: true, completion: nil)
+            return 
+        }
+        
     }
       
     

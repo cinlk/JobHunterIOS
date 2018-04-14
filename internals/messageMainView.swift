@@ -12,7 +12,7 @@ import PPBadgeViewSwift
 
 
 
-fileprivate let tableHeaderViewH:CGFloat = 160
+fileprivate let tableHeaderViewH:CGFloat = 180
 fileprivate let itemCGSize:CGSize = CGSize.init(width: ScreenW / 3 - 40, height: tableHeaderViewH / 2 - 20)
 
 
@@ -52,7 +52,7 @@ class messageMain: UITableViewController {
         ShareItem.init(name: "系统通知", image: "bell", type:nil, bubbles: 1),
         ShareItem.init(name: "推荐职位", image: "jobs", type:nil, bubbles: 1),
         ShareItem.init(name: "宣讲会", image: "voice", type:nil, bubbles: 1),
-        ShareItem.init(name: "", image: "", type:nil,  bubbles: 1)]
+        ShareItem.init(name: "", image: "", type:nil,  bubbles: 0)]
     
     
     

@@ -86,7 +86,7 @@ class add_educations: UITableViewController {
     }
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        
+        pickView.removeFromSuperview()
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {

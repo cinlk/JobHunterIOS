@@ -89,10 +89,10 @@ extension pagetitleView{
         var labelsView:[UILabel] = []
         
         for (index, item) in  labels.enumerated() {
-           // let label = UILabel.init(frame: CGRect.init(x: CGFloat(index)*width, y: 5, width: width, height: self.bounds.height - 5))
-            let label = UILabel.init(frame: CGRect.init(x: 0, y: 0, width: 0, height: self.bounds.height - 5))
+            //  调用用setupAutoMarginFlowItems 后 父view的高度和label高度一样（保持一致）
+            let label = UILabel.init(frame: CGRect.init(x: 0, y: 0, width: 0, height: self.bounds.height))
             label.font = UIFont.systemFont(ofSize: 16)
-            label.textColor = index == 0 ? UIColor.orange : UIColor.lightGray
+            label.textColor = index == 0 ? UIColor.init(r: kSelectColor.0, g: kSelectColor.1, b: kSelectColor.2) : UIColor.init(r: kNormalColor.0, g: kNormalColor.1, b: kNormalColor.2)
             label.text = item
             label.tag = index
             //label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
@@ -121,13 +121,15 @@ extension pagetitleView{
         label.addGestureRecognizer(guestTap)
     }
     
+    
+    // 点击label
     @objc func labelClick(guest:UITapGestureRecognizer){
-        
-        
+        if guest.state != .ended{
+            return
+        }
         guard let label = guest.view as? UILabel else {
             return
         }
-        
        
         
         
@@ -135,19 +137,26 @@ extension pagetitleView{
         if currentIndex == startIndex {
             return
         }
-        self.labelTitles[currentIndex].textColor = UIColor.orange
-        self.labelTitles[startIndex].textColor = UIColor.lightGray
+        
+        let oldIabel = labelTitles[startIndex]
+        let distance = labelTitles[currentIndex].frame.origin.x - oldIabel.frame.origin.x
+        
+        print("current \(currentIndex)", "start \(startIndex)")
+        self.labelTitles[currentIndex].textColor = UIColor.init(r: kSelectColor.0, g: kSelectColor.1, b: kSelectColor.2)
+        
+        self.labelTitles[startIndex].textColor = UIColor.init(r: kNormalColor.0, g: kNormalColor.1, b: kNormalColor.2)
         
         startIndex = currentIndex
         
-        let distance = CGFloat(startIndex) * moveLine.frame.width
+        
 
+        
         UIView.animate(withDuration: 0.15) { [unowned self] in
-            self.moveLine.frame.origin.x = distance
+            self.moveLine.frame.origin.x = oldIabel.frame.origin.x + distance
             
         }
         
-     
+        
         
         self.delegate?.ScrollContentAtIndex(index: currentIndex, self)
     }
@@ -172,7 +181,7 @@ extension pagetitleView{
         targetLabel.textColor = UIColor(r: kNormalColor.0 + colorDelta.0 * progress, g: kNormalColor.1 + colorDelta.1 * progress, b: kNormalColor.2 + colorDelta.2 * progress)
         
 
-        
+       
         startIndex = targetIndex
     }
 }

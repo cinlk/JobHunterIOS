@@ -188,6 +188,7 @@ class feedBackVC: UIViewController {
         super.viewWillDisappear(animated)
         self.navigationItem.title = ""
         self.navigationController?.removeCustomerView()
+        pickView.removeFromSuperview()
         
     }
     override func viewWillLayoutSubviews() {

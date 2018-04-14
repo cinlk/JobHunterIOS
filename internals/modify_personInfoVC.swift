@@ -123,6 +123,7 @@ class modify_personInfoVC: UITableViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationItem.title = ""
+        pickView.removeFromSuperview()
         
     }
     // MARK: - Table view data source
