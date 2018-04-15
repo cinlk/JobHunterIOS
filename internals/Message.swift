@@ -108,27 +108,7 @@ class MessageBoby: NSObject, Mappable{
     
     
 }
-// 显示输出内容
-extension MessageBoby{
-    override var description: String{
-        guard  let content = self.content, let type = self.type else {
-          return ""
-        }
-        // 公共方法
-        let dateformat = DateFormatter()
-        dateformat.locale = Locale.current
-        dateformat.dateFormat  = "yyyy-MM-dd HH:mm:ss"
-        
-        //let contents = String.init(data: content, encoding: String.Encoding.utf8)
-        //let timeString  = creat_time?.string(custom: dateformat.dateFormat)
-        
-        let resutl:[String] = [messageID!, type]
-        return resutl.joined(separator: " : ")
-        
-        
-    
-    }
-}
+
 
 // 投递职位信息 在聊天界面最上方
 class  JobDescriptionlMessage:MessageBoby{

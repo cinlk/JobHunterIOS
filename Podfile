@@ -23,9 +23,12 @@ target 'internals' do
 	pod 'PPBadgeViewSwift'
 	# umeng
 	pod 'UMCCommon'
-	pod 'UMCSecurityPlugins'
-        pod 'UMCShare/Social/WeChat'	
-	pod 'UMCShare/Social/QQ'
-	pod 'UMCShare/Social/Sina'
+	#pod 'UMCSecurityPlugins'
+	pod 'UMCShare/Social/ReducedWeChat'
+        pod 'UMCShare/Social/ReducedQQ'
+        pod 'UMCShare/Social/ReducedSina'
+        #pod 'UMCShare/Social/WeChat'	
+	#pod 'UMCShare/Social/QQ'
+	#pod 'UMCShare/Social/Sina'
 
 end

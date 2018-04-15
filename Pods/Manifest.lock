@@ -28,13 +28,8 @@ PODS:
   - SwiftProtobuf (0.9.905)
   - SwiftyJSON (3.0.0)
   - UMCCommon (1.5.0)
-  - UMCSecurityPlugins (1.0.6)
   - UMCShare/Core (6.9.0):
     - UMCCommon
-  - UMCShare/Social/QQ (6.9.0):
-    - UMCCommon
-    - UMCShare/Core
-    - UMCShare/Social/ReducedQQ
   - UMCShare/Social/ReducedQQ (6.9.0):
     - UMCCommon
     - UMCShare/Core
@@ -44,14 +39,6 @@ PODS:
   - UMCShare/Social/ReducedWeChat (6.9.0):
     - UMCCommon
     - UMCShare/Core
-  - UMCShare/Social/Sina (6.9.0):
-    - UMCCommon
-    - UMCShare/Core
-    - UMCShare/Social/ReducedSina
-  - UMCShare/Social/WeChat (6.9.0):
-    - UMCCommon
-    - UMCShare/Core
-    - UMCShare/Social/ReducedWeChat
   - YNDropDownMenu (3.0.2)
 
 DEPENDENCIES:
@@ -70,10 +57,9 @@ DEPENDENCIES:
   - SwiftProtobuf (~> 0.9.905)
   - SwiftyJSON (from `https://github.com/appsailor/SwiftyJSON.git`, branch `swift3`)
   - UMCCommon
-  - UMCSecurityPlugins
-  - UMCShare/Social/QQ
-  - UMCShare/Social/Sina
-  - UMCShare/Social/WeChat
+  - UMCShare/Social/ReducedQQ
+  - UMCShare/Social/ReducedSina
+  - UMCShare/Social/ReducedWeChat
   - YNDropDownMenu
 
 EXTERNAL SOURCES:
@@ -105,10 +91,9 @@ SPEC CHECKSUMS:
   SwiftProtobuf: 9dfa3d4109cf844241d5d055885d5c24cfa9ccdc
   SwiftyJSON: f57b2b44bc166617372d1c70773591fe9f0f5fd4
   UMCCommon: 82d21f4bb9532a5472cc533bbd8ed48aff376a14
-  UMCSecurityPlugins: 0831a08f3988f3cea9f1d3a7626cd9bee4fef150
   UMCShare: 0c406a22c874fe6c9c97784a71db349e7fcea0eb
   YNDropDownMenu: 9421eb9c144448415d90141344a2cdbbaf11fc3c
 
-PODFILE CHECKSUM: c5f9cda90310562e3c40528354bd842b05f12323
+PODFILE CHECKSUM: a0338c3bc8fa94953314a65f7722031354afb634
 
 COCOAPODS: 1.4.0
