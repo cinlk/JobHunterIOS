@@ -74,6 +74,11 @@ class CompuseRecruiteJobs :NSObject,Mappable, Comparable{
     var create_time:String?
     var education:String?
     
+    // 实习内容
+    var day:Int = 0
+    var duration:String?
+    var isOfficial:Bool = false
+    
     required init?(map: Map) {
         
     }
@@ -90,56 +95,35 @@ class CompuseRecruiteJobs :NSObject,Mappable, Comparable{
         salary <- map["salary"]
         create_time <- map["create_time"]
         education <- map["education"]
-    }
-    
-    
-}
-
-
-struct InternshipJobs: Mappable{
-    var id:String?
-    var picture:String?
-    var company:String?
-    var jobName:String?
-    var address:String?
-    var salary:String?
-    var create_time:String?
-    var day:Int = 0
-    var duration:String?
-    var isOfficial:Bool = false
-    var education:String?
-    
-    
-    init?(map: Map) {
-        id <- map["id"]
-        picture <- map["picture"]
-        company <- map["company"]
-        jobName <- map["jobName"]
-        address <- map["address"]
-        salary <- map["salary"]
-        create_time <- map["create_time"]
         day <- map["day"]
         duration <- map["duration"]
         isOfficial <- map["isOfficial"]
-        education <- map["education"]
-    }
-    
-    mutating func mapping(map: Map) {
+       
         
     }
+    
+    
 }
+
 
 // multi sections
 enum MultiSecontions{
+    case newSection(title:String, items: [SectionItem])
     case CatagorySection(title:String, items: [SectionItem])
     case RecommandSection(title:String, itmes: [SectionItem])
+    case RecruitMentMeet(title:String, items: [SectionItem])
+    case ApplyOnline(title:String, items: [SectionItem])
+    
     case CampuseRecruite(title:String, items: [SectionItem])
 }
 // items
 enum SectionItem{
+    case newItem(new:[String])
     case catagoryItem(imageNames:[String:String])
     case recommandItem(imageNames:[String:String])
-    case campuseRecruite(job:CompuseRecruiteJobs)
+    case recruimentMeet(list: [simpleRecruitModel])
+    case applyonline(list: [applyOnlineModel])
+    case campuseRecruite(job: CompuseRecruiteJobs)
     //case internRecruite(jobs:[InternshipJobs])
     
 }
@@ -149,10 +133,16 @@ extension MultiSecontions: SectionModelType{
     
     var items: [SectionItem]{
         switch self {
+        case .newSection(title: _, let items):
+            return items
         case .CatagorySection(title: _, let items):
             return items.map{$0}
         case .RecommandSection(title: _, let items):
             return items.map{$0}
+        case .RecruitMentMeet(title: _,  let  items):
+            return items
+        case .ApplyOnline(title: _,  let items):
+            return items
         case .CampuseRecruite(title:_,let items):
             return items
         
@@ -161,21 +151,33 @@ extension MultiSecontions: SectionModelType{
     
     var title:String{
         switch self {
+        case .newSection(title: let title, items: _):
+            return title
         case .CampuseRecruite(title: let title, items: _):
             return title
         case .CatagorySection(title: let title, items: _):
             return title
         case .RecommandSection(title: let title, itmes: _):
             return title
+        case .RecruitMentMeet(title: let title, items: _):
+            return title
+        case .ApplyOnline(title: let title, items: _):
+            return title
         }
     }
     
     init(original: MultiSecontions, items: [MultiSecontions.Item]) {
         switch original {
+        case let .newSection(title: title, items: _):
+            self = .newSection(title: title, items: items)
         case let .CatagorySection(title: title, items: _):
             self = .CatagorySection(title: title, items: items)
         case let .RecommandSection(title: title,  itmes:_):
             self = .RecommandSection(title: title, itmes: items)
+        case let .RecruitMentMeet(title: title, items: items):
+            self = .RecruitMentMeet(title: title, items: items)
+        case let .ApplyOnline(title: title, items: items):
+            self = .ApplyOnline(title: title, items: items)
         case let .CampuseRecruite(title: title, items: _):
             self = .CampuseRecruite(title: title, items: items)
         

@@ -127,7 +127,7 @@ class ChatEmotionView: UIView {
     
     // first emotionView
     private lazy var emotionView: UICollectionView = { [unowned self] in
-        let collectV = UICollectionView(frame: CGRect.zero, collectionViewLayout: ChatHorizontalLayout(column: kEmotionCellNumberOfOneRow, row: kEmotionCellRow))
+        let collectV = UICollectionView(frame: CGRect.zero, collectionViewLayout: CollectionHorizontalLayout(column: kEmotionCellNumberOfOneRow, row: kEmotionCellRow))
         collectV.backgroundColor = UIColor.backGroundColor()
         collectV.isPagingEnabled = true
         collectV.dataSource = self
@@ -139,7 +139,7 @@ class ChatEmotionView: UIView {
         }()
     // second emotionView
     private lazy var emotion2View: UICollectionView = { [unowned self] in
-        let collectV = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: ChatHorizontalLayout(column: MEmotionCellNumberOfOneRow, row: MEmotionCellRow))
+        let collectV = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: CollectionHorizontalLayout(column: MEmotionCellNumberOfOneRow, row: MEmotionCellRow))
         
         collectV.backgroundColor  = UIColor.backGroundColor()
         collectV.isPagingEnabled = true
@@ -155,7 +155,7 @@ class ChatEmotionView: UIView {
     // third emotionView
     private lazy var emootion3View: UICollectionView = { [unowned self] in
         let collectV = UICollectionView.init(frame: CGRect.zero, collectionViewLayout:
-        ChatHorizontalLayout(column: MEmotionCellNumberOfOneRow, row: MEmotionCellRow))
+        CollectionHorizontalLayout(column: MEmotionCellNumberOfOneRow, row: MEmotionCellRow))
         
         collectV.backgroundColor  = UIColor.backGroundColor()
         collectV.isPagingEnabled = true

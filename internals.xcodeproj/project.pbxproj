@@ -16,6 +16,11 @@
 		4A1A502820773A5C0070B74D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1A502720773A5C0070B74D /* libz.tbd */; };
 		4A1A502A20773A700070B74D /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1A502920773A700070B74D /* libsqlite3.tbd */; };
 		4A1A502C20773A7A0070B74D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1A502B20773A7A0070B74D /* SystemConfiguration.framework */; };
+		4A1BA2B8208A2C0F00CF8352 /* CommonJobDetailCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1BA2B7208A2C0F00CF8352 /* CommonJobDetailCellView.swift */; };
+		4A1BA2BA208A2F7600CF8352 /* CommonJobColletionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1BA2B9208A2F7600CF8352 /* CommonJobColletionCell.swift */; };
+		4A1BA2BD208AE81C00CF8352 /* BaseScrollerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1BA2BC208AE81C00CF8352 /* BaseScrollerView.swift */; };
+		4A1BA2C0208AEB1500CF8352 /* BaseScrollerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1BA2BF208AEB1500CF8352 /* BaseScrollerTableViewCell.swift */; };
+		4A1BA2C2208B021800CF8352 /* BaseCollectionHorizonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1BA2C1208B021800CF8352 /* BaseCollectionHorizonView.swift */; };
 		4A1E59A41FDEE065004DCF53 /* CompanySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1E59A31FDEE065004DCF53 /* CompanySelector.swift */; };
 		4A1E59A61FDEE0DB004DCF53 /* PositionSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A1E59A51FDEE0DB004DCF53 /* PositionSelector.swift */; };
 		4A20EEEC203D97320021843B /* loading.gif in Resources */ = {isa = PBXBuildFile; fileRef = 4A20EEEB203D97320021843B /* loading.gif */; };
@@ -60,6 +65,12 @@
 		4A30EBE1207E66AD00231D11 /* BaseTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBE0207E66AD00231D11 /* BaseTableViewController.swift */; };
 		4A30EBE3207FADFD00231D11 /* privateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBE2207FADFD00231D11 /* privateViewModel.swift */; };
 		4A30EBE52081A82F00231D11 /* SpecialJobVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBE42081A82F00231D11 /* SpecialJobVC.swift */; };
+		4A30EBE820834CBF00231D11 /* ApplyJobsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBE720834CBF00231D11 /* ApplyJobsVC.swift */; };
+		4A30EBEB2083685800231D11 /* ScrollerNewsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBEA2083685800231D11 /* ScrollerNewsCell.swift */; };
+		4A30EBED20838C7C00231D11 /* recruitmentMeetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBEC20838C7C00231D11 /* recruitmentMeetCell.swift */; };
+		4A30EBEF20838E7D00231D11 /* simpleRecuitModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBEE20838E7D00231D11 /* simpleRecuitModel.swift */; };
+		4A30EBF120838FC400231D11 /* simpleRecruitCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBF020838FC400231D11 /* simpleRecruitCell.swift */; };
+		4A30EBF32083AA6400231D11 /* applyOnlineCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBF22083AA6400231D11 /* applyOnlineCell.swift */; };
 		4A3224031F5160E50065A33F /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224021F5160E50065A33F /* Alamofire.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		4A3224051F5160EA0065A33F /* SDAutoLayout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224041F5160EA0065A33F /* SDAutoLayout.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		4A3224071F5160ED0065A33F /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224061F5160ED0065A33F /* SwiftyJSON.framework */; settings = {ATTRIBUTES = (Required, ); }; };
@@ -75,7 +86,7 @@
 		4A444ED01F8E5789006AE83D /* contactlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A444ECE1F8E5789006AE83D /* contactlist.swift */; };
 		4A444ED11F8E5789006AE83D /* contactlist.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A444ECF1F8E5789006AE83D /* contactlist.xib */; };
 		4A444ED31F8F9E44006AE83D /* chatPeople.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A444ED21F8F9E44006AE83D /* chatPeople.swift */; };
-		4A4523F21F5BABE1009D6B62 /* jobdetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4523F11F5BABE1009D6B62 /* jobdetailCell.swift */; };
+		4A4523F21F5BABE1009D6B62 /* CommonJobTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4523F11F5BABE1009D6B62 /* CommonJobTableCell.swift */; };
 		4A5304DB1F527D090000F1E9 /* loginUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5304DA1F527D090000F1E9 /* loginUtils.swift */; };
 		4A5304E41F52A6ED0000F1E9 /* MainTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5304E31F52A6ED0000F1E9 /* MainTabBarViewController.swift */; };
 		4A5304E81F52A7720000F1E9 /* DashboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5304E71F52A7720000F1E9 /* DashboardViewController.swift */; };
@@ -233,8 +244,8 @@
 		4AF3D35E20629FB00012EB6E /* subscribeConditionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF3D35D20629FB00012EB6E /* subscribeConditionModel.swift */; };
 		4AF3D3602062B7C10012EB6E /* sectionCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF3D35F2062B7C10012EB6E /* sectionCellView.swift */; };
 		4AF6C8031F571D1F0059496B /* CitysView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C8021F571D1F0059496B /* CitysView.swift */; };
-		4AF6C8051F5A98940059496B /* mainCatagoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C8041F5A98940059496B /* mainCatagoryCell.swift */; };
-		4AF6C80B1F5AEB880059496B /* mainRecommandCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C80A1F5AEB880059496B /* mainRecommandCell.swift */; };
+		4AF6C8051F5A98940059496B /* MainJobCategoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C8041F5A98940059496B /* MainJobCategoryCell.swift */; };
+		4AF6C80B1F5AEB880059496B /* MainColumnistCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C80A1F5AEB880059496B /* MainColumnistCell.swift */; };
 		4AF74432204D8C8A00BC52DB /* personRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF74431204D8C8A00BC52DB /* personRouter.swift */; };
 		4AF7DCDA200399DD009047F5 /* SysNotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF7DCD9200399DD009047F5 /* SysNotificationController.swift */; };
 		4AFCCD621F9E490400E0E168 /* gifCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFCCD611F9E490400E0E168 /* gifCell.swift */; };
@@ -286,6 +297,11 @@
 		4A1A502720773A5C0070B74D /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		4A1A502920773A700070B74D /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		4A1A502B20773A7A0070B74D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		4A1BA2B7208A2C0F00CF8352 /* CommonJobDetailCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonJobDetailCellView.swift; sourceTree = "<group>"; };
+		4A1BA2B9208A2F7600CF8352 /* CommonJobColletionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonJobColletionCell.swift; sourceTree = "<group>"; };
+		4A1BA2BC208AE81C00CF8352 /* BaseScrollerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseScrollerView.swift; sourceTree = "<group>"; };
+		4A1BA2BF208AEB1500CF8352 /* BaseScrollerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseScrollerTableViewCell.swift; sourceTree = "<group>"; };
+		4A1BA2C1208B021800CF8352 /* BaseCollectionHorizonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCollectionHorizonView.swift; sourceTree = "<group>"; };
 		4A1E59A31FDEE065004DCF53 /* CompanySelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanySelector.swift; sourceTree = "<group>"; };
 		4A1E59A51FDEE0DB004DCF53 /* PositionSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PositionSelector.swift; sourceTree = "<group>"; };
 		4A208D8F1FC16F2500C1AA0B /* RxDataSources.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RxDataSources.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -332,6 +348,12 @@
 		4A30EBE0207E66AD00231D11 /* BaseTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTableViewController.swift; sourceTree = "<group>"; };
 		4A30EBE2207FADFD00231D11 /* privateViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = privateViewModel.swift; sourceTree = "<group>"; };
 		4A30EBE42081A82F00231D11 /* SpecialJobVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecialJobVC.swift; sourceTree = "<group>"; };
+		4A30EBE720834CBF00231D11 /* ApplyJobsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplyJobsVC.swift; sourceTree = "<group>"; };
+		4A30EBEA2083685800231D11 /* ScrollerNewsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollerNewsCell.swift; sourceTree = "<group>"; };
+		4A30EBEC20838C7C00231D11 /* recruitmentMeetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = recruitmentMeetCell.swift; sourceTree = "<group>"; };
+		4A30EBEE20838E7D00231D11 /* simpleRecuitModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = simpleRecuitModel.swift; sourceTree = "<group>"; };
+		4A30EBF020838FC400231D11 /* simpleRecruitCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = simpleRecruitCell.swift; sourceTree = "<group>"; };
+		4A30EBF22083AA6400231D11 /* applyOnlineCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = applyOnlineCell.swift; sourceTree = "<group>"; };
 		4A3224021F5160E50065A33F /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = "../../../../Library/Developer/Xcode/DerivedData/internals-fvfjoslaltdhlmclwrenlrxzczpm/Build/Products/Debug-iphonesimulator/Alamofire/Alamofire.framework"; sourceTree = "<group>"; };
 		4A3224041F5160EA0065A33F /* SDAutoLayout.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDAutoLayout.framework; path = "Pods/../build/Debug-iphoneos/SDAutoLayout/SDAutoLayout.framework"; sourceTree = "<group>"; };
 		4A3224061F5160ED0065A33F /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = "../../../../Library/Developer/Xcode/DerivedData/internals-fvfjoslaltdhlmclwrenlrxzczpm/Build/Products/Debug-iphonesimulator/SwiftyJSON/SwiftyJSON.framework"; sourceTree = "<group>"; };
@@ -347,7 +369,7 @@
 		4A444ECE1F8E5789006AE83D /* contactlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = contactlist.swift; sourceTree = "<group>"; };
 		4A444ECF1F8E5789006AE83D /* contactlist.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = contactlist.xib; sourceTree = "<group>"; };
 		4A444ED21F8F9E44006AE83D /* chatPeople.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = chatPeople.swift; sourceTree = "<group>"; };
-		4A4523F11F5BABE1009D6B62 /* jobdetailCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = jobdetailCell.swift; sourceTree = "<group>"; };
+		4A4523F11F5BABE1009D6B62 /* CommonJobTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonJobTableCell.swift; sourceTree = "<group>"; };
 		4A5304DA1F527D090000F1E9 /* loginUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = loginUtils.swift; sourceTree = "<group>"; };
 		4A5304E31F52A6ED0000F1E9 /* MainTabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabBarViewController.swift; sourceTree = "<group>"; };
 		4A5304E71F52A7720000F1E9 /* DashboardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardViewController.swift; sourceTree = "<group>"; };
@@ -517,8 +539,8 @@
 		4AF3D35D20629FB00012EB6E /* subscribeConditionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = subscribeConditionModel.swift; sourceTree = "<group>"; };
 		4AF3D35F2062B7C10012EB6E /* sectionCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sectionCellView.swift; sourceTree = "<group>"; };
 		4AF6C8021F571D1F0059496B /* CitysView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CitysView.swift; sourceTree = "<group>"; };
-		4AF6C8041F5A98940059496B /* mainCatagoryCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = mainCatagoryCell.swift; sourceTree = "<group>"; };
-		4AF6C80A1F5AEB880059496B /* mainRecommandCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = mainRecommandCell.swift; sourceTree = "<group>"; };
+		4AF6C8041F5A98940059496B /* MainJobCategoryCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainJobCategoryCell.swift; sourceTree = "<group>"; };
+		4AF6C80A1F5AEB880059496B /* MainColumnistCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainColumnistCell.swift; sourceTree = "<group>"; };
 		4AF74431204D8C8A00BC52DB /* personRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = personRouter.swift; sourceTree = "<group>"; };
 		4AF7DCD9200399DD009047F5 /* SysNotificationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SysNotificationController.swift; sourceTree = "<group>"; };
 		4AFCCD611F9E490400E0E168 /* gifCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gifCell.swift; sourceTree = "<group>"; };
@@ -615,6 +637,31 @@
 			name = classes;
 			sourceTree = "<group>";
 		};
+		4A1BA2BB208AE6D500CF8352 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				4A1BA2BC208AE81C00CF8352 /* BaseScrollerView.swift */,
+				4A1BA2C1208B021800CF8352 /* BaseCollectionHorizonView.swift */,
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
+		4A1BA2BE208AEAFB00CF8352 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				4A1BA2BF208AEB1500CF8352 /* BaseScrollerTableViewCell.swift */,
+			);
+			name = Cell;
+			sourceTree = "<group>";
+		};
+		4A1BA2C3208B07A300CF8352 /* layout */ = {
+			isa = PBXGroup;
+			children = (
+				4AC056301F93B46C00D5B739 /* ChatHorizontalLayout.swift */,
+			);
+			name = layout;
+			sourceTree = "<group>";
+		};
 		4A1E59A21FDEE03D004DCF53 /* dropViews */ = {
 			isa = PBXGroup;
 			children = (
@@ -636,29 +683,33 @@
 		4A20EEEF203DA0610021843B /* cells */ = {
 			isa = PBXGroup;
 			children = (
-				4A4523F11F5BABE1009D6B62 /* jobdetailCell.swift */,
+				4A4523F11F5BABE1009D6B62 /* CommonJobTableCell.swift */,
 				4A20EEF0203DA0750021843B /* UIswitchCell.swift */,
 				4AF3D351205E62DB0012EB6E /* CollectionItemsCell.swift */,
 				4AF3D35F2062B7C10012EB6E /* sectionCellView.swift */,
+				4A1BA2B9208A2F7600CF8352 /* CommonJobColletionCell.swift */,
 			);
 			name = cells;
 			sourceTree = "<group>";
 		};
-		4A2145D0207A4FC1000959F4 /* main */ = {
+		4A2145D0207A4FC1000959F4 /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				4A2145D1207A4FFC000959F4 /* BaseViewController */,
+				4A1BA2C3208B07A300CF8352 /* layout */,
+				4A1BA2BE208AEAFB00CF8352 /* Cell */,
+				4A1BA2BB208AE6D500CF8352 /* View */,
+				4A2145D1207A4FFC000959F4 /* ViewController */,
 			);
-			name = main;
+			name = Main;
 			sourceTree = "<group>";
 		};
-		4A2145D1207A4FFC000959F4 /* BaseViewController */ = {
+		4A2145D1207A4FFC000959F4 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
 				4A2145D2207A501C000959F4 /* BaseViewController.swift */,
 				4A30EBE0207E66AD00231D11 /* BaseTableViewController.swift */,
 			);
-			name = BaseViewController;
+			name = ViewController;
 			sourceTree = "<group>";
 		};
 		4A2210332039BD1E000BDC70 /* 意见与帮助 */ = {
@@ -693,6 +744,27 @@
 				4A30EBDE207E61B200231D11 /* ForumViewController.swift */,
 			);
 			name = "论坛界面";
+			sourceTree = "<group>";
+		};
+		4A30EBE620834C8B00231D11 /* 职位 */ = {
+			isa = PBXGroup;
+			children = (
+				4A30EBE720834CBF00231D11 /* ApplyJobsVC.swift */,
+			);
+			name = "职位";
+			sourceTree = "<group>";
+		};
+		4A30EBE92083680900231D11 /* tableViewcell */ = {
+			isa = PBXGroup;
+			children = (
+				4AF6C8041F5A98940059496B /* MainJobCategoryCell.swift */,
+				4AF6C80A1F5AEB880059496B /* MainColumnistCell.swift */,
+				4A30EBEA2083685800231D11 /* ScrollerNewsCell.swift */,
+				4A30EBEC20838C7C00231D11 /* recruitmentMeetCell.swift */,
+				4A30EBF020838FC400231D11 /* simpleRecruitCell.swift */,
+				4A30EBF22083AA6400231D11 /* applyOnlineCell.swift */,
+			);
+			name = tableViewcell;
 			sourceTree = "<group>";
 		};
 		4A444EC91F8A166A006AE83D /* protobuf */ = {
@@ -730,6 +802,7 @@
 		4A5304DC1F52A3E10000F1E9 /* 板块 */ = {
 			isa = PBXGroup;
 			children = (
+				4A30EBE620834C8B00231D11 /* 职位 */,
 				4A5304E01F52A4770000F1E9 /* 个人主页 */,
 				4A5304DF1F52A4420000F1E9 /* 面试 */,
 				4A5304DE1F52A42B0000F1E9 /* 消息 */,
@@ -803,8 +876,7 @@
 		4A6BC2321FC86218002C17B6 /* 面板 */ = {
 			isa = PBXGroup;
 			children = (
-				4AF6C80A1F5AEB880059496B /* mainRecommandCell.swift */,
-				4AF6C8041F5A98940059496B /* mainCatagoryCell.swift */,
+				4A30EBE92083680900231D11 /* tableViewcell */,
 				4AF6C8021F571D1F0059496B /* CitysView.swift */,
 				4A5304E71F52A7720000F1E9 /* DashboardViewController.swift */,
 				4A30EBE42081A82F00231D11 /* SpecialJobVC.swift */,
@@ -818,6 +890,7 @@
 				4A6BC2341FC8623A002C17B6 /* ViewModel */,
 				4A6BC2381FC926C5002C17B6 /* Jobs.swift */,
 				4A6BC2421FCB12A3002C17B6 /* Exhibition.swift */,
+				4A30EBEE20838E7D00231D11 /* simpleRecuitModel.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -1165,7 +1238,7 @@
 		4ADCC74E1F511DD3001A4E9F /* internals */ = {
 			isa = PBXGroup;
 			children = (
-				4A2145D0207A4FC1000959F4 /* main */,
+				4A2145D0207A4FC1000959F4 /* Main */,
 				4ACC6DB0205BF3C400392252 /* database */,
 				4A686A912049A34200571EB0 /* support */,
 				4AFF91AC1F5DAB8600FE189F /* nibs */,
@@ -1235,7 +1308,6 @@
 			children = (
 				4AFCCD6C1FA4ABBE00E0E168 /* cellViews */,
 				4ADADAAA1FA4C09400134AAE /* quickReplyView.swift */,
-				4AC056301F93B46C00D5B739 /* ChatHorizontalLayout.swift */,
 				4ADDDAB21F97ABA4001CB00F /* ChatEmotionView.swift */,
 				4ADDDADB1F9B40A8001CB00F /* ChatBarView.swift */,
 				4ADDDADF1F9B426C001CB00F /* ChatMoreView.swift */,
@@ -1284,6 +1356,7 @@
 				4A6389F720668C7B00C4B4D0 /* SelectedThreeTableView.swift */,
 				4A2145B82077B1AC000959F4 /* ThirdPartLoginView.swift */,
 				4A2145CE20790ED5000959F4 /* ErrorPageView.swift */,
+				4A1BA2B7208A2C0F00CF8352 /* CommonJobDetailCellView.swift */,
 			);
 			name = views;
 			sourceTree = "<group>";
@@ -1714,7 +1787,7 @@
 				4A6BC23B1FC92BA3002C17B6 /* mainPageViewModel.swift in Sources */,
 				4A4254F9203EB5B00049B237 /* changePassword.swift in Sources */,
 				4A8D28BB1FD195C900FA983F /* utils.swift in Sources */,
-				4A4523F21F5BABE1009D6B62 /* jobdetailCell.swift in Sources */,
+				4A4523F21F5BABE1009D6B62 /* CommonJobTableCell.swift in Sources */,
 				4A8859141FF89A7D0009D73D /* extension+imge.swift in Sources */,
 				4A6BC22C1FC312A7002C17B6 /* RegistryViewModel.swift in Sources */,
 				4A5E3FBB203131E6009C1A6B /* personBaseCell.swift in Sources */,
@@ -1724,6 +1797,7 @@
 				4A406B691FA58BDC00277AA0 /* Message.swift in Sources */,
 				4AF3D358205EBB520012EB6E /* VisitorHRModel.swift in Sources */,
 				4A5E3FC72031D7AC009C1A6B /* modifyitemsView.swift in Sources */,
+				4A30EBED20838C7C00231D11 /* recruitmentMeetCell.swift in Sources */,
 				4AF74432204D8C8A00BC52DB /* personRouter.swift in Sources */,
 				4A444ED01F8E5789006AE83D /* contactlist.swift in Sources */,
 				4A93C2BD1F80CEAA0022E97B /* CommunicationChatView.swift in Sources */,
@@ -1740,14 +1814,16 @@
 				4A072C45200203ED006D2791 /* subscribeItems.swift in Sources */,
 				4A93C2C11F80CEF70022E97B /* recommendation.swift in Sources */,
 				4A4254FD203EF18E0049B237 /* expansionCell.swift in Sources */,
+				4A1BA2BA208A2F7600CF8352 /* CommonJobColletionCell.swift in Sources */,
 				4A9CE3681F715F1D002A8FD5 /* JobArea.swift in Sources */,
 				4A5E3FBD2031474B009C1A6B /* extension+dictonary.swift in Sources */,
 				4ADCC7521F511DD3001A4E9F /* logViewController.swift in Sources */,
 				4AFF91DD1F641A8000FE189F /* introductionCell.swift in Sources */,
+				4A1BA2C2208B021800CF8352 /* BaseCollectionHorizonView.swift in Sources */,
 				4AFF9DCC20381EC9000ADBAF /* personTableHeader.swift in Sources */,
 				4AFF91D91F641A6200FE189F /* tagsTableViewCell.swift in Sources */,
 				4A82A0D32026F6CA00185E8B /* personResumeTable.swift in Sources */,
-				4AF6C80B1F5AEB880059496B /* mainRecommandCell.swift in Sources */,
+				4AF6C80B1F5AEB880059496B /* MainColumnistCell.swift in Sources */,
 				4A93C2DE1F8359A20022E97B /* subconditions.swift in Sources */,
 				4A02614B1FD4360400747B30 /* SearchRecodeViewController.swift in Sources */,
 				4A22103E203C464D000BDC70 /* ServiceTerm.swift in Sources */,
@@ -1762,13 +1838,16 @@
 				4A5E3FC320318CC6009C1A6B /* listItemCell.swift in Sources */,
 				4AFF91B91F5DB8A900FE189F /* companyCell.swift in Sources */,
 				4A93C2C61F8124930022E97B /* delivereddata.swift in Sources */,
+				4A30EBEF20838E7D00231D11 /* simpleRecuitModel.swift in Sources */,
 				4A82A0DE2027493E00185E8B /* person_projectCell.swift in Sources */,
+				4A30EBEB2083685800231D11 /* ScrollerNewsCell.swift in Sources */,
 				4A2145C12077C3DE000959F4 /* BindAccountVC.swift in Sources */,
 				4AF3D354205E7D2F0012EB6E /* DeliveredJobsModel.swift in Sources */,
 				4ADDDAB31F97ABA4001CB00F /* ChatEmotionView.swift in Sources */,
 				4A20EEF5203E70DF0021843B /* accountInfo.swift in Sources */,
 				4A30EBDA207BB8C900231D11 /* CompanyMainVC.swift in Sources */,
 				4A8858F31FE550D40009D73D /* searchResultController.swift in Sources */,
+				4A1BA2B8208A2C0F00CF8352 /* CommonJobDetailCellView.swift in Sources */,
 				4AFF91A91F5C338800FE189F /* JobDetailViewController.swift in Sources */,
 				4A9A0BD32003BEA8008721F3 /* newVisitor.swift in Sources */,
 				4A82A0E8202B4DB400185E8B /* itemPickerView.swift in Sources */,
@@ -1787,6 +1866,7 @@
 				4AD8F751206E6CA4003969ED /* extension+UITextView.swift in Sources */,
 				4A6BC2431FCB12A3002C17B6 /* Exhibition.swift in Sources */,
 				4A82A0E62029D7BF00185E8B /* modify_personInfoCell.swift in Sources */,
+				4A1BA2C0208AEB1500CF8352 /* BaseScrollerTableViewCell.swift in Sources */,
 				4A22A3A72073D1CE00024C2B /* resumePersonInfoCell.swift in Sources */,
 				4ADADAAB1FA4C09400134AAE /* quickReplyView.swift in Sources */,
 				4AD03ABB1F9C7DD30077C15B /* GetChatEmotion.swift in Sources */,
@@ -1803,6 +1883,7 @@
 				4A9CE36F1F72C2E6002A8FD5 /* myextension.swift in Sources */,
 				4AE0DEA61FFBC5CD00A16ED4 /* pageContentView.swift in Sources */,
 				4AF3D35C2061376E0012EB6E /* baseWebViewController.swift in Sources */,
+				4A30EBF32083AA6400231D11 /* applyOnlineCell.swift in Sources */,
 				4A2145B92077B1AC000959F4 /* ThirdPartLoginView.swift in Sources */,
 				4ABFF5C01FE53B9600DCCD16 /* searchJobModel.swift in Sources */,
 				4A8859161FF8B5D10009D73D /* extension+uicolor.swift in Sources */,
@@ -1814,6 +1895,7 @@
 				4A76162A1FFE5DB600FC6A58 /* deliveryItemCell.swift in Sources */,
 				4AC056311F93B46C00D5B739 /* ChatHorizontalLayout.swift in Sources */,
 				4AFF91E11F641AA900FE189F /* CompanyDetailCell.swift in Sources */,
+				4A30EBE820834CBF00231D11 /* ApplyJobsVC.swift in Sources */,
 				4AF7DCDA200399DD009047F5 /* SysNotificationController.swift in Sources */,
 				4A20EEEE203DA0090021843B /* notificationVC.swift in Sources */,
 				4AF3D35A205FF4990012EB6E /* xiaomiNewsModel.swift in Sources */,
@@ -1833,6 +1915,7 @@
 				4AE0DEA41FFBC5AC00A16ED4 /* pagetitleView.swift in Sources */,
 				4A9A0BD62003BFB3008721F3 /* visitorCell.swift in Sources */,
 				4ACC6DB2205BF49100392252 /* SqliteManager.swift in Sources */,
+				4A30EBF120838FC400231D11 /* simpleRecruitCell.swift in Sources */,
 				4AE4D6B7203594AE00BC87FE /* addSkillVC.swift in Sources */,
 				4A30EBD6207BAFAC00231D11 /* CompanyDetailVC.swift in Sources */,
 				4AF3D356205EB2760012EB6E /* extension+navigation.swift in Sources */,
@@ -1850,7 +1933,7 @@
 				4AD8F753206E874C003969ED /* extension+UIlabel.swift in Sources */,
 				4AF3D3602062B7C10012EB6E /* sectionCellView.swift in Sources */,
 				4A2145C520788CCB000959F4 /* collectedViewModel.swift in Sources */,
-				4AF6C8051F5A98940059496B /* mainCatagoryCell.swift in Sources */,
+				4AF6C8051F5A98940059496B /* MainJobCategoryCell.swift in Sources */,
 				4AE4D6B520358E0D00BC87FE /* textViewCell.swift in Sources */,
 				4AB8FFE91FDEC0720020F026 /* searchViewModel.swift in Sources */,
 				4A93C2CC1F81FD330022E97B /* jobstatusView.swift in Sources */,
@@ -1906,6 +1989,7 @@
 				4A5E3FCB2031E271009C1A6B /* singleButtonCell.swift in Sources */,
 				4A93C2D91F834F2E0022E97B /* subjobitemCell.swift in Sources */,
 				4A686A902044526200571EB0 /* extension+tablecell.swift in Sources */,
+				4A1BA2BD208AE81C00CF8352 /* BaseScrollerView.swift in Sources */,
 				4A8859181FF8DD2D0009D73D /* extension+uiview.swift in Sources */,
 				4A4254FB203EE0170049B237 /* HelpsVC.swift in Sources */,
 				4A22103A203BFD0E000BDC70 /* SettingVC.swift in Sources */,

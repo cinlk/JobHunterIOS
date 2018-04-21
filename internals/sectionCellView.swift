@@ -10,13 +10,25 @@ import UIKit
 
 @objcMembers class sectionCellView: UITableViewCell {
 
-    private lazy var SectionTitle:UILabel = {
+    lazy var SectionTitle:UILabel = {
         let label = UILabel.init()
-        label.font = UIFont.systemFont(ofSize: 18)
+        label.font = UIFont.systemFont(ofSize: 16)
         label.textAlignment = .left
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         return label
     }()
+    
+    private lazy var rightBtn:UIButton = { [unowned self] in
+        let btn = UIButton()
+        btn.setTitle("我的订阅", for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        btn.setTitleColor(UIColor.lightGray, for: .normal)
+        btn.addTarget(self, action: #selector(choose(_ :)), for: .touchUpInside)
+        return btn
+    }()
+    
+    var action:(()->Void)?
+    
     
    dynamic var mode:String?{
         didSet{
@@ -29,8 +41,12 @@ import UIKit
         self.selectionStyle = .none
         self.contentView.backgroundColor = UIColor.lightGray
         self.contentView.addSubview(SectionTitle)
+        self.contentView.addSubview(rightBtn)
+        
         _ = SectionTitle.sd_layout().leftSpaceToView(self.contentView,10)?.centerYEqualToView(self.contentView)?.autoHeightRatio(0)
         SectionTitle.setMaxNumberOfLinesToShow(1)
+        _ = rightBtn.sd_layout().rightSpaceToView(self.contentView,10)?.centerYEqualToView(self.contentView)?.widthIs(120)?.heightIs(15)
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -39,5 +55,11 @@ import UIKit
     
     class func identity()->String{
         return "sectionCellView"
+    }
+}
+
+extension sectionCellView{
+    @objc private func choose(_ btn:UIButton){
+        self.action?()
     }
 }

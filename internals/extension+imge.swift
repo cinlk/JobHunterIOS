@@ -96,7 +96,6 @@ extension UIImage{
     }
     
     
-    
     func str_image(_ text:String,size:(CGFloat,CGFloat),backColor:UIColor=UIColor.white,textColor:UIColor=UIColor.black,isCircle:Bool=false) -> UIImage?{
         // 过滤空""
         if text.isEmpty { return nil }
@@ -113,16 +112,19 @@ extension UIImage{
         // 是否圆角裁剪
         if isCircle {
             UIBezierPath(roundedRect: rect, cornerRadius: minSide*0.5).addClip()
+            
+        }else{
+            UIBezierPath(roundedRect: rect, cornerRadius: 5).addClip()
         }
+        
         // 设置填充颜色
-        //ctx.setFillColor(backColor.cgColor)
-        ctx.setFillColor(red: 1, green: 1, blue: 1, alpha: 0)
+        ctx.setFillColor(backColor.cgColor)
         //ctx.setAlpha(0)
         // 填充绘制
         ctx.fill(rect)
-        let attr = [ NSAttributedStringKey.foregroundColor : textColor, NSAttributedStringKey.font : UIFont.systemFont(ofSize: minSide*0.5)]
+        let attr = [ NSAttributedStringKey.foregroundColor : textColor, NSAttributedStringKey.font : UIFont.systemFont(ofSize: 10)]
         // 写入文字
-        (letter as NSString).draw(at: CGPoint(x: 3, y: 10), withAttributes: attr)
+        (letter as NSString).draw(at: CGPoint(x: 2.5, y: 2.5), withAttributes: attr)
         // 得到图片
         let image = UIGraphicsGetImageFromCurrentImageContext()
         // 关闭上下文
@@ -188,8 +190,7 @@ extension UIImageView{
         self.layer.masksToBounds = true
         self.layer.borderWidth = 0.2
     }
-   
-    
+
     
 }
 

@@ -126,10 +126,6 @@ class mainPageServer {
     
     private init(){}
     
-    // MARK
-    public func getInternJobs(index:Int) -> Observable<[InternshipJobs]> {
-        return self.httpRequest.rx.request(Jobs.getInternshipJobs(limit: index)).asObservable().mapArray(InternshipJobs.self,tag:"InternshipJobs")
-    }
     
     // MARK
     public func getCompuseJobs(index:Int) -> Observable<[CompuseRecruiteJobs]> {
@@ -143,12 +139,34 @@ class mainPageServer {
     }
     // MARK
     public func getRecommand() -> Observable<[String:String]> {
-        return Observable.just(["ali":"https://job.alibaba.com/zhaopin/index.htm","xiaomiDefault":"http://hr.xiaomi.com/","service1":"http://www.sohu.com/a/151070865_219733"])
+        return Observable.just(["ali":"https://job.alibaba.com/zhaopin/index.htm","xiaomiDefault":"http://hr.xiaomi.com/","service1":"http://www.sohu.com/a/151070865_219733","company2":"https://tour.go-zh.org/welcome/1"])
     }
     //MARK
-    public func getImageBanners() -> Driver<[RotateImages]>{
+    public func getImageBanners() -> Observable<[RotateImages]>{
         
-        return self.httpRequest.rx.request(Jobs.getImageBanners).asObservable().mapArray(RotateImages.self, tag: "RotateImages").asDriver(onErrorJustReturn: [])
+        return self.httpRequest.rx.request(Jobs.getImageBanners).asObservable().mapArray(RotateImages.self, tag: "RotateImages")
+    }
+    
+    public func getHotRecruitMeetings()->Observable<[simpleRecruitModel]>{
+        //return self.httpRequest.rx.request(<#T##token: Jobs##Jobs#>)
+        var res:[simpleRecruitModel] = []
+        for _ in 0..<12{
+            res.append(simpleRecruitModel(JSON: ["image":"sina","title":"公司名字","des":"那个大学",
+                                                 "time":Date.init().timeIntervalSince1970])!)
+        }
+        
+        return Observable.just(res)
+        
+    }
+    
+    //
+    public func getHotApplyOnlines()->Observable<[applyOnlineModel]>{
+        return Observable.just([applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"独角兽"])!,
+                                applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"独角兽"])!,
+                                applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"独角兽"])!,
+                                applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"独角兽"])!,
+                                applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"独角兽"])!,
+                                applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"独角兽"])!])
     }
     // MARK search jobs
     public func searchKeyByWord(word:String) -> Observable<[CompuseRecruiteJobs]> {

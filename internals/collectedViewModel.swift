@@ -14,7 +14,7 @@ class JobManager{
     
     enum jobType {
         case compus
-        case intern
+        
         case company
         case none
     }
@@ -25,7 +25,6 @@ class JobManager{
     
     //TODO  合并 实习和社招被收藏的job 条目 ？？
     private var collectedJobs:[CompuseRecruiteJobs] = []
-    private var collectedInternJobs:[InternshipJobs] = []
     
     // 收藏的公司信息
     private var collectedCompanys:[comapnyInfo] = []
@@ -40,7 +39,6 @@ class JobManager{
     
     open func clearAll(){
         self.collectedJobs.removeAll()
-        self.collectedInternJobs.removeAll()
         self.collectedCompanys.removeAll()
         
     }
@@ -82,8 +80,7 @@ class JobManager{
             
         case .compus:
             return collectedJobs
-        case .intern:
-            return collectedInternJobs
+      
         case .company:
             return collectedCompanys
         default:

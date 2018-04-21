@@ -17,7 +17,7 @@ import MBProgressHUD
 
 
 
-fileprivate let tableSection = 3
+fileprivate let tableSection = 6
 fileprivate let thresholds:CGFloat = -80
 fileprivate let searchBarH:CGFloat = 30
 fileprivate let tableBottomInset:CGFloat = 50
@@ -76,7 +76,7 @@ class DashboardViewController: BaseViewController{
     
 
     
-    //导航栏遮挡背景view
+    //导航栏遮挡背景view，随着滑动透明度可变
     private lazy  var navigationView:UIView = {
         let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH))
         v.backgroundColor = UIColor.clear
@@ -107,11 +107,6 @@ class DashboardViewController: BaseViewController{
         return page
     }()
     
-    // 搜索结果VC
-//    private lazy var searchResultVC: searchResultController = {
-//        let s = searchResultController()
-//        return s
-//    }()
     
     // 搜索框外部view，滑动影藏搜索框
     private lazy var searchBarContainer:UIView = {
@@ -126,8 +121,7 @@ class DashboardViewController: BaseViewController{
 
     // 选择城市VC
     private lazy var cityVC:CityViewController = CityViewController()
-     
-
+    
     
     override func viewDidLoad() {
         
@@ -186,13 +180,28 @@ class DashboardViewController: BaseViewController{
     override func setViews(){
         /***** table *****/
         // MARK 需要修改 category
-        self.tables.register(MainPageCatagoryCell.self, forCellReuseIdentifier: MainPageCatagoryCell.identity())
-        self.tables.register(MainPageRecommandCell.self, forCellReuseIdentifier: MainPageRecommandCell.identity())
+        self.tables.register(MainJobCategoryCell.self, forCellReuseIdentifier: MainJobCategoryCell.identity())
+        self.tables.register(MainColumnistCell.self, forCellReuseIdentifier: MainColumnistCell.identity())
         
+        // 热门公司
+        self.tables.register(ScrollerNewsCell.self, forCellReuseIdentifier: ScrollerNewsCell.identitiy())
+        // 推荐职位
         self.tables.register(jobdetailCell.self, forCellReuseIdentifier: jobdetailCell.identity())
+        self.tables.register(sectionCellView.self, forCellReuseIdentifier: sectionCellView.identity())
+        
+        // 热门宣讲会
+        self.tables.register(recruitmentMeetCell.self, forCellReuseIdentifier: recruitmentMeetCell.identity())
+        // 热门网申
+        self.tables.register(applyOnlineCell.self, forCellReuseIdentifier: applyOnlineCell.identity())
+        
+        
+        //self.tables.register(jobdetailCell.self, forCellReuseIdentifier: jobdetailCell.identity())
         self.tables.tableHeaderView  = imagescroller
         self.tables.insertSubview(page, aboveSubview: self.tables.tableHeaderView!)
         self.tables.contentInset = UIEdgeInsetsMake(0, 0, tableBottomInset, 0)
+        self.tables.tableFooterView = UIView()
+        self.tables.separatorStyle = .none
+        
         
         /***** search *****/
         // search 切到到另一个view后，search bar不保留
@@ -271,11 +280,19 @@ extension DashboardViewController: UITableViewDelegate{
         case 0:
             return 0.0
         case 1:
-            return 0
+            return 10
         case 2:
-            return 30
+            return 10
+        case 5:
+            return 10
         default:
             return 10
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == 0{
+            print(indexPath)
         }
     }
     
@@ -284,24 +301,65 @@ extension DashboardViewController: UITableViewDelegate{
         
         
         if indexPath.section == 0 {
-            return MainPageCatagoryCell.cellHeight()
+            return ScrollerNewsCell.cellheight()
         }
-        else if indexPath.section == 1{
-            return MainPageRecommandCell.cellHeight()
+        
+        if indexPath.section == 1 {
+            return MainJobCategoryCell.cellHeight()
         }
-        return  jobdetailCell.cellHeight()
+        else if indexPath.section == 2{
+            return MainColumnistCell.cellHeight()
+        }
+        else if indexPath.section  == 3{
+            // 动态计算？？？
+            return 280
+            //return recruitmentMeetCell.cellHeight()
+        }
+        else if indexPath.section == 4 {
+            return  280
+        }
+        
+        else if indexPath.section == 5 {
+            
+            return   indexPath.row == 0 ? 30 : 65
+        }
+        return 0
+        //return  jobdetailCell.cellHeight()
     }
     
+    
+
     
 
      func dataSource() -> RxTableViewSectionedReloadDataSource<MultiSecontions>{
         
         return RxTableViewSectionedReloadDataSource<MultiSecontions>.init(configureCell: { (dataSource, table, idxPath, _) -> UITableViewCell in
-           
+            if idxPath.section == 5 && idxPath.row == 0 {
+                if let cell = table.dequeueReusableCell(withIdentifier: sectionCellView.identity(), for: idxPath) as? sectionCellView{
+                    cell.mode = "推荐职位"
+                    cell.SectionTitle.font = UIFont.systemFont(ofSize: 16)
+                    cell.action = {
+                        let subscribleView = subscribleItem()
+                        subscribleView.hidesBottomBarWhenPushed = true
+                        self.navigationController?.pushViewController(subscribleView, animated: true)
+                    }
+                    cell.contentView.backgroundColor = UIColor.white
+                    return cell
+                }
+            }
+            
             switch dataSource[idxPath]{
+            case let  .newItem(news):
+                
+                let cell:ScrollerNewsCell = table.dequeueReusableCell(withIdentifier: ScrollerNewsCell.identitiy()) as! ScrollerNewsCell
+                cell.mode = news
+
+                return cell
+                //return UITableViewCell()
+                
             case let .catagoryItem(imageNames):
                 
-                let cell:MainPageCatagoryCell = table.dequeueReusableCell(withIdentifier: MainPageCatagoryCell.identity()) as! MainPageCatagoryCell
+                let cell:MainJobCategoryCell = table.dequeueReusableCell(withIdentifier: MainJobCategoryCell.identity()) as! MainJobCategoryCell
                 cell.mode = imageNames
                 cell.selectedItem = { (btn) in
                     let spe = SpecialJobVC()
@@ -313,11 +371,11 @@ extension DashboardViewController: UITableViewDelegate{
                 return cell
             case let .recommandItem(imageNames):
                 
-                let cell:MainPageRecommandCell = table.dequeueReusableCell(withIdentifier: MainPageRecommandCell.identity()) as!
-                MainPageRecommandCell
+                let cell:MainColumnistCell = table.dequeueReusableCell(withIdentifier: MainColumnistCell.identity()) as!
+                MainColumnistCell
                 cell.mode = imageNames
                 
-                cell.chooseItem = { (btn) in
+                cell.selectedItem = { (btn) in
                     let web = baseWebViewController()
                     web.mode = btn.titleLabel?.text
                     web.hidesBottomBarWhenPushed = true
@@ -326,14 +384,25 @@ extension DashboardViewController: UITableViewDelegate{
                 }
                 
                 return cell
+            case let .recruimentMeet(list: meets):
+                let cell = table.dequeueReusableCell(withIdentifier: recruitmentMeetCell.identity()) as! recruitmentMeetCell
+                cell.mode = (title:"热门宣讲会",item:meets)
+               
+                return cell
+            case let .applyonline(list: applys):
+                let cell = table.dequeueReusableCell(withIdentifier: applyOnlineCell.identity()) as!  applyOnlineCell
+                cell.mode = (title:"热门网申", items: applys)
+                return cell
+            //MARK  不显示 job 数据
             case let .campuseRecruite(jobs):
                 
-                let cell:jobdetailCell = table.dequeueReusableCell(withIdentifier: jobdetailCell.identity()) as!
-                jobdetailCell
-                cell.mode = jobs
-                cell.useCellFrameCache(with: idxPath, tableView: table)
-               return cell
+                
+                  let cell:jobdetailCell = table.dequeueReusableCell(withIdentifier: jobdetailCell.identity()) as! jobdetailCell
+                  cell.mode =  jobs
+ 
+                  return cell 
             }
+            
         },
         titleForHeaderInSection: {
             dataSource ,index in
@@ -639,32 +708,32 @@ extension DashboardViewController{
         }, onCompleted: nil, onDisposed: nil).disposed(by: disposebag)
         //view to VM
         
+        
+        
         // VM to view
         vm.sections.asDriver().drive(self.tables.rx.items(dataSource: dataSource)).disposed(by: disposebag)
+        
         vm.refreshStatus.asObservable().subscribe(onNext: {
             [weak self] status in
             switch status{
             case .beginHeaderRefrsh:
                 self?.tables.mj_header.beginRefreshing()
             case .endHeaderRefresh:
+                // 重置下拉刷新状态
                 self?.tables.mj_footer.resetNoMoreData()
                 //正常结束刷新后，显示界面
                 self?.tables.mj_header.endRefreshing(completionBlock: {
                     self?.didFinishloadData()
                 })
-                //self?.tables.mj_header.endRefreshing()
+                
             case .beginFooterRefresh:
                 self?.tables.mj_footer.beginRefreshing()
             case .endFooterRefresh:
                 self?.tables.mj_footer.endRefreshing()
             case .NoMoreData:
                 self?.tables.mj_footer.endRefreshingWithNoMoreData()
-            
             case .error:
-                //self?.hub.label.text = "网络异常"
-                //self?.hub.hide(animated: true, afterDelay: 2)
                 self?.showError()
-                
                 
             default:
                 break
@@ -683,16 +752,17 @@ extension DashboardViewController{
         (self.tables.mj_header as! MJRefreshNormalHeader).setTitle("开始刷新", for: .pulling)
         (self.tables.mj_header as! MJRefreshNormalHeader).setTitle("刷新 ...", for: .refreshing)
         
+        // 上拉刷新
         self.tables.mj_footer = MJRefreshAutoNormalFooter.init(refreshingBlock: { [weak self] in
             self?.vm.refreshData.onNext(false)
         })
-        
+
         (self.tables.mj_footer as! MJRefreshAutoNormalFooter).setTitle("上拉刷新", for: .idle)
         (self.tables.mj_footer as! MJRefreshAutoNormalFooter).setTitle("刷新", for: .refreshing)
+
         
         
-        // 获取轮播数据和图
-        _ = request.getImageBanners().debug().drive(onNext: { [unowned self ] (rotates) in
+        vm.driveBanner.debug().drive(onNext: { [unowned self]  (rotates) in
             self.page.numberOfPages = rotates.count
             let width = self.imagescroller.width
             let height = self.imagescroller.height
@@ -700,7 +770,7 @@ extension DashboardViewController{
             rotates.forEach{
                 self.rotateText.append($0.body!)
             }
-           
+            
             
             if rotates.isEmpty{
                 return
@@ -744,7 +814,9 @@ extension DashboardViewController{
             
             }, onCompleted: {
                 self.creatTimer()
-        }, onDisposed: nil)
+        }, onDisposed: nil).disposed(by: disposebag)
+        // 获取轮播数据和图
+    
         
         
     }

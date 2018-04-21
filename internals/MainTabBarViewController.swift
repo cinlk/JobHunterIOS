@@ -19,6 +19,9 @@ class MainTabBarViewController: UITabBarController {
         let offset = CGPoint(x: 0, y: 0)
         let home = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Home_Img)
         let selectHome = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Select_Home_Img)
+        let jobs = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Job_Img)
+        let selectJobs = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Select_Job_Img)
+        
         let message = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Message_Img)
         let selectMessage = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Select_Message_Img)
         
@@ -27,7 +30,7 @@ class MainTabBarViewController: UITabBarController {
         let selectPerson = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Select_Person_Img)
         
         
-        return [(home, selectHome),(message,selectMessage),(person,selectPerson)]
+        return [(home, selectHome),(jobs, selectJobs),(message,selectMessage),(person,selectPerson)]
     
     }
     override func viewDidAppear(_ animated: Bool) {
@@ -52,13 +55,13 @@ class MainTabBarViewController: UITabBarController {
             }
         }
         // #TODO 被通知加载 显示圆点
-        self.tabBar.items![1].pp.addBadge(text: "···")
-        self.tabBar.items![1].pp.setBadgeLabel(attributes: { (lable) in
-            lable.font = UIFont.systemFont(ofSize: 10)
-            lable.textColor = UIColor.white
-        })
+//        self.tabBar.items![1].pp.addBadge(text: "···")
+//        self.tabBar.items![1].pp.setBadgeLabel(attributes: { (lable) in
+//            lable.font = UIFont.systemFont(ofSize: 10)
+//            lable.textColor = UIColor.white
+//        })
         
-        self.tabBar.items![2].pp.addDot(color: UIColor.red)
+        //self.tabBar.items![2].pp.addDot(color: UIColor.red)
         //self.tabBar.items![2].pp.hiddenBadge()
     }
 

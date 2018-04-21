@@ -12,6 +12,7 @@ class SpecialJobVC: BaseTableViewController {
 
     
     
+    // 查询条件
     var queryName:String?{
         didSet{
             self.loadData()
@@ -24,12 +25,6 @@ class SpecialJobVC: BaseTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setViews()
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
     override func viewWillAppear(_ animated: Bool) {

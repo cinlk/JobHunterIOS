@@ -9,16 +9,18 @@
 
 import UIKit
 
-class ChatHorizontalLayout: UICollectionViewFlowLayout {
+class CollectionHorizontalLayout: UICollectionViewFlowLayout {
     // 保存所有item
     fileprivate var attributesArr: [UICollectionViewLayoutAttributes] = []
     fileprivate var col: Int = 0
     fileprivate var row: Int = 0
     
-    init(column: Int, row: Int) {
+    fileprivate var lineSpace:CGFloat = 0
+    init(column: Int, row: Int, lineSpace:CGFloat = 0 ) {
         super.init()
         self.col = column
         self.row = row
+        self.lineSpace = lineSpace
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -34,7 +36,7 @@ class ChatHorizontalLayout: UICollectionViewFlowLayout {
         let itemH: CGFloat = (collectionView?.bounds.height)! / CGFloat(row)
         // 设置itemSize
         itemSize = CGSize(width: itemW, height: itemH)
-        minimumLineSpacing = 0
+        minimumLineSpacing = self.lineSpace
         minimumInteritemSpacing = 0
         scrollDirection = .horizontal
         
@@ -76,7 +78,7 @@ class ChatHorizontalLayout: UICollectionViewFlowLayout {
         return rectAttributes
     }
     
-    //
+    // 横向
     override var collectionViewContentSize: CGSize {
         let size: CGSize = super.collectionViewContentSize
         let collectionViewWidth: CGFloat = self.collectionView!.frame.size.width

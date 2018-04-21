@@ -32,7 +32,7 @@ class ChatMoreView: UIView {
     weak var delegate: ChatMoreViewDelegate?
     
     private lazy var moreView:UICollectionView = { [unowned self] in
-        let collectView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: ChatHorizontalLayout(
+        let collectView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: CollectionHorizontalLayout(
             column: cellNumbeOfOneRow, row:CellRow))
         collectView.backgroundColor = UIColor.backGroundColor()
         collectView.register(ChatMoreCell.self, forCellWithReuseIdentifier: ChatMoreCell.identity())

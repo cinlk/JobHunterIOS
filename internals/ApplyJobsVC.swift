@@ -1,23 +1,18 @@
 //
-//  PickImageController.swift
+//  ApplyJobsVC.swift
 //  internals
 //
-//  Created by ke.liang on 2017/10/29.
-//  Copyright © 2017年 lk. All rights reserved.
+//  Created by ke.liang on 2018/4/15.
+//  Copyright © 2018年 lk. All rights reserved.
 //
 
 import UIKit
 
+class ApplyJobsVC: UIViewController {
 
-class PickImageController: UIImagePickerController {
-
-    //显示的图片
-    
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         // Do any additional setup after loading the view.
     }
 
@@ -26,9 +21,7 @@ class PickImageController: UIImagePickerController {
         // Dispose of any resources that can be recreated.
     }
     
-    
-  
-    
+
     /*
     // MARK: - Navigation
 
