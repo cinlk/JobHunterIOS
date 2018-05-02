@@ -22,7 +22,7 @@ class jobCollectedVC: UITableViewController {
         self.tableView.separatorColor = UIColor.black
         self.tableView.separatorStyle = .singleLine
         self.tableView.allowsMultipleSelectionDuringEditing = true
-        self.tableView.register(jobdetailCell.self, forCellReuseIdentifier: jobdetailCell.identity())
+        self.tableView.register(CommonJobTableCell.self, forCellReuseIdentifier: CommonJobTableCell.identity())
         
    
     }
@@ -54,7 +54,7 @@ class jobCollectedVC: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: jobdetailCell.identity(), for: indexPath) as! jobdetailCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: CommonJobTableCell.identity(), for: indexPath) as! CommonJobTableCell
         let job = jobManageRoot.getCollections(type: .compus)[indexPath.row] as! CompuseRecruiteJobs
         
         cell.mode = job
@@ -65,7 +65,7 @@ class jobCollectedVC: UITableViewController {
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let job = jobManageRoot.getCollections(type: .compus)[indexPath.row] as! CompuseRecruiteJobs
 
-        return  tableView.cellHeight(for: indexPath, model: job, keyPath: "mode", cellClass: jobdetailCell.self, contentViewWidth: ScreenW)
+        return  tableView.cellHeight(for: indexPath, model: job, keyPath: "mode", cellClass: CommonJobTableCell.self, contentViewWidth: ScreenW)
         
     }
     

@@ -96,7 +96,7 @@ class CityViewController:UICollectionViewController, UICollectionViewDelegateFlo
         self.collectionView?.backgroundColor = UIColor.white
         self.collectionView?.isScrollEnabled = true
         self.collectionView?.isMultipleTouchEnabled = false
-        self.collectionView?.register(MyCityCell.self, forCellWithReuseIdentifier: "city")
+        self.collectionView?.register(CollectionTextCell.self, forCellWithReuseIdentifier: CollectionTextCell.identity())
         self.collectionView?.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "localCity")
         self.collectionView?.register(headerView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "header")
        
@@ -175,28 +175,31 @@ class CityViewController:UICollectionViewController, UICollectionViewDelegateFlo
             return cell
             
         }else {
-            let cell  = collectionView.dequeueReusableCell(withReuseIdentifier: "city", for: indexPath) as! MyCityCell
+            let cell  = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionTextCell.identity(), for: indexPath) as! CollectionTextCell
             
-            cell.name.addTarget(self, action: #selector(click(button:)), for: .touchUpInside)
+            //cell.name.addTarget(self, action: #selector(click(button:)), for: .touchUpInside)
             
         
             let content =  (citys[indexs[indexPath.section - 1]]! as NSArray).object(at: indexPath.row) as! String
-            cell.name.setTitle(content, for: .normal)
+            cell.name.text = content
+            
             return cell
         }
         
         
     }
-    
-    // choose city
-    @objc func click(button:UIButton){
-        let city = button.titleLabel?.text ?? "全国"
-        self.navigationController?.popViewController(animated: true)
-        if let main = self.navigationController?.topViewController as? DashboardViewController{
-            main.currentCity = city
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if indexPath.section != 0 {
+            let cell = collectionView.cellForItem(at: indexPath) as! CollectionTextCell
+            let city = cell.name.text ?? "全国"
+            self.navigationController?.popViewController(animated: true)
+            if let main = self.navigationController?.topViewController as? DashboardViewController{
+                main.currentCity = city
+            }
+
         }
-        
     }
+    
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
@@ -318,35 +321,7 @@ extension CityViewController: CLLocationManagerDelegate{
 
 
 
-private class MyCityCell:UICollectionViewCell{
-    
-    lazy var name:UIButton = {
-        let name = UIButton.init()
-        name.backgroundColor = UIColor.white
-        name.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-        name.titleLabel?.textAlignment = .center
-        name.setTitleColor(UIColor.black, for: .normal)
-        name.layer.borderWidth = 0.7
-        name.layer.cornerRadius = 10.0
-        name.titleLabel?.lineBreakMode = .byTruncatingTail
-        name.layer.borderColor = UIColor.gray.cgColor
-        name.layer.masksToBounds = true
-        return name
-    }()
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.contentView.addSubview(name)
-        _ = name.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topEqualToView(self.contentView)?.bottomEqualToView(self.contentView)
-        name.titleLabel?.setSingleLineAutoResizeWithMaxWidth(self.contentView.frame.width)
 
-        
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
 
 
 

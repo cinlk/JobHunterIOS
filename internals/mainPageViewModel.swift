@@ -39,7 +39,7 @@ class mainPageViewMode {
     var recommand = Variable<[String:String]>.init([:])
     
     // 宣讲会
-    var recruitMentMeets = Variable<[simpleRecruitModel]>.init([])
+    var recruitMentMeets = Variable<[CareerTalkMeetingModel]>.init([])
     // 网申
     var applys = Variable<[applyOnlineModel]>.init([])
     

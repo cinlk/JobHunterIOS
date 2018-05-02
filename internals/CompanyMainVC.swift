@@ -17,18 +17,43 @@ class CompanyMainVC: BaseViewController {
     
     
     
-    private var mode:CompanyDetailModel?
 
     // 本地数据库 companytable
     private lazy var companyTable = DBFactory.shared.getCompanyDB()
     
+    // 从job 页面跳转过来
     var companyID:String?{
         didSet{
             loadData()
         }
     }
+    // 从公司界面跳转过来
+    var mode:CompanyModel?{
+        didSet{
+            // 这样执行 才能关闭hub显示！！！
+            DispatchQueue.main.asyncAfter(deadline: .now() +  0.5) {
+                 self.didFinishloadData()
+            }
+           
+            
+        }
+    }
     
-    
+    private lazy var collectedBtn:UIButton = {
+        // 收藏
+        let collected = UIImage.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "heart")
+        
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
+        btn.addTarget(self, action: #selector(collectedCompany(btn:)), for: .touchUpInside)
+        btn.setImage(collected, for: .normal)
+        
+        let selectedCollection = UIImage.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "selectedHeart")
+        
+        btn.setImage(selectedCollection, for: .selected)
+        btn.clipsToBounds = true
+        
+        return btn
+    }()
     
     private lazy var flowLayout:UICollectionViewFlowLayout = { [unowned self] in
         let layout = UICollectionViewFlowLayout()
@@ -96,7 +121,6 @@ class CompanyMainVC: BaseViewController {
     private lazy var companyJobs:CompanyJobsVC = CompanyJobsVC()
     
     private var barItems:[UIButton] = []
-    private var isCollected:Bool = false
     
     //
     // scorllerStartX
@@ -168,11 +192,13 @@ class CompanyMainVC: BaseViewController {
             self.companyDetail.detailModel = mode
             // 收藏数据从服务器获取??
             
-            isCollected = companyTable.isCollectedBy(id: companyID!)
-            barItems.last?.isSelected = isCollected
+            if mode.isCollected == true {
+                collectedBtn.isSelected = true
+                
+            }
         }
         
-        
+       
         super.didFinishloadData()
         
     }
@@ -196,8 +222,8 @@ extension CompanyMainVC{
             
             DispatchQueue.main.async {
                 
-                self?.mode =  CompanyDetailModel(JSON:  ["address":"地址 北京 - 定位","webSite":"https://www.baidu.com","tags":["标签1","标签1测试","标签89我的打到我","好id多多多多多无多无多付付","有多长好长","没有嘛yiu哦郁闷yiu","标签1","标签12","标签1等我大大哇","分为发违法标签99"]
-                    ,"name":"sina","describe":"大哇多无多首先想到的肯定是结束减速的代理方法：scrollViewDscrollViewDidEndDecelerating代理方法的，如果做过用3个界面+scrollView实现循环滚动展示图片，那么基本上都会碰到这么问题。如何准确的监听翻页？我的解决的思路如下达瓦大文大无大无多无大无大无多哇大无多无飞啊飞分为飞飞飞达瓦大文大无大无多哇付达瓦大文大无付多无dwadwadadawdawde吊袜带挖多哇建外大街文档就frog忙不忙你有他们今天又摸排个人票买房可免费课时费\n个人个人，二哥，二\n吊袜带挖多，另外的码问了；吗\n","simpleDes":"新浪微博个性化","simpleTag":["北京","2000人以上","互联网"]])
+                self?.mode =  CompanyModel(JSON:  ["id":"dqw-dqwd","name":"公司名",
+                                                   "describe":"大哇多无多首先想到的肯定是结束减速的代理方法：scrollViewDscrollViewDidEndDecelerating代理方法的，如果做过用3个界面+scrollView实现循环滚动展示图片，那么基本上都会碰到这么问题。如何准确的监听翻页？我的解决的思路如下达瓦大文大无大无多无大无大无多哇大无多无飞啊飞分为飞飞飞达瓦大文大无大无多哇付达瓦大文大无付多无dwadwadadawdawde吊袜带挖多哇建外大街文档就frog忙不忙你有他们今天又摸排个人票买房可免费课时费\n个人个人，二哥，二\n吊袜带挖多，另外的码问了；吗\n","address":["地址1","地址2"],"icon":"sina","type":["教育","医疗","化工"],"webSite":"https://www.baidu.com","tags":["标签1","标签1测试","标签89我的当前","当前为多","迭代器","群无多当前为多群当前","达瓦大群无多", "当前为多当前的群","当前为多无", "当前为多群无多","杜德伟七多"],"isValidate":true,"isCollected":false])!
                 self?.didFinishloadData()
             }
             
@@ -206,8 +232,7 @@ extension CompanyMainVC{
        
     }
     
-    
-    
+
     
 }
 
@@ -236,29 +261,17 @@ extension CompanyMainVC{
         // 分享
         let up =  UIImage.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "upload")
         
-        let b1 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
+        let shareBtn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
         
-        b1.addTarget(self, action: #selector(share), for: .touchUpInside)
-        b1.setImage(up, for: .normal)
-        b1.clipsToBounds = true
+        shareBtn.addTarget(self, action: #selector(share), for: .touchUpInside)
+        shareBtn.setImage(up, for: .normal)
+        shareBtn.clipsToBounds = true
         
-        // 收藏
-        let collected = UIImage.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "heart")
+ 
+        self.navigationItem.setRightBarButtonItems([UIBarButtonItem.init(customView: shareBtn), UIBarButtonItem.init(customView: collectedBtn)], animated: false)
         
-        let b2 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
-        b2.addTarget(self, action: #selector(collectedCompany(btn:)), for: .touchUpInside)
-        b2.setImage(collected, for: .normal)
-        
-        let selectedCollection = UIImage.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "selectedHeart")
-        
-        b2.setImage(selectedCollection, for: .selected)
-        b2.clipsToBounds = true
-        b2.isSelected = self.isCollected
-        
-        self.navigationItem.setRightBarButtonItems([UIBarButtonItem.init(customView: b1), UIBarButtonItem.init(customView: b2)], animated: false)
-        
-        barItems.append(b1)
-        barItems.append(b2)
+        barItems.append(shareBtn)
+        barItems.append(collectedBtn)
         
         
     }
@@ -278,19 +291,15 @@ extension CompanyMainVC{
         // MARK 修改公司状态 已经为收藏
         
         
-        if !isCollected{
+        if mode?.isCollected == false{
             showOnlyTextHub(message: "收藏成功", view: self.view)
-            //jobManageRoot.addCompanyItem(item: comapnyInfo(JSON: json)!)
-            isCollected = true
             btn.isSelected = true
-            companyTable.setCollectedBy(id: companyID!)
         }else{
-            //jobManageRoot.removeCollectedCompany(item: comapnyInfo(JSON: json)!)
             showOnlyTextHub(message: "取消收藏", view: self.view)
-            isCollected = false
             btn.isSelected = false
-            companyTable.unCollected(id: companyID!)
         }
+        
+        mode?.isCollected = !(mode?.isCollected)!
         
     }
     
@@ -519,17 +528,22 @@ fileprivate class CompanyHeaderView:UIView{
     // 分割线
     private let line = UIView.init()
     
-    var mode:CompanyDetailModel?{
+    var mode:CompanyModel?{
         didSet{
-            self.icon.image = UIImage.init(named: mode?.iconURL ?? "default")
+            self.icon.image = UIImage.init(named: mode?.icon ?? "default")
             self.companyName.text = mode?.name
-            self.des.text = mode?.simpleDes
-            var tags  = ""
-            for (index,item) in (mode!.simpleTag?.enumerated())!{
-                
-                tags += item +  (index == mode?.tags?.count ? "" : "|")
+            self.des.text = mode?.describe
+            
+            var tmp = ""
+            guard let  tags = mode!.tags else {
+                return
             }
-            self.tags.text = tags
+            
+            for (index,item) in tags.enumerated(){
+                
+                tmp += item +  (index == tags.count ? "" : "|")
+            }
+            self.tags.text = tmp
             
         }
     }

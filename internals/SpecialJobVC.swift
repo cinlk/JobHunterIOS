@@ -43,7 +43,7 @@ class SpecialJobVC: BaseTableViewController {
         tableView.backgroundColor = UIColor.viewBackColor()
         tableView.tableFooterView = UIView()
         tableView.showsHorizontalScrollIndicator = false
-        tableView.register(jobdetailCell.self, forCellReuseIdentifier: jobdetailCell.identity())
+        tableView.register(CommonJobTableCell.self, forCellReuseIdentifier: CommonJobTableCell.identity())
         
         self.handleViews.append(tableView)
         super.setViews()
@@ -77,7 +77,7 @@ class SpecialJobVC: BaseTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: jobdetailCell.identity(), for: indexPath) as? jobdetailCell{
+        if let cell = tableView.dequeueReusableCell(withIdentifier: CommonJobTableCell.identity(), for: indexPath) as? CommonJobTableCell{
             let mode = items[indexPath.row]
             cell.mode = mode
             return cell
@@ -89,7 +89,7 @@ class SpecialJobVC: BaseTableViewController {
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
         let mode = items[indexPath.row]
-        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: jobdetailCell.self, contentViewWidth: ScreenW)
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CommonJobTableCell.self, contentViewWidth: ScreenW)
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

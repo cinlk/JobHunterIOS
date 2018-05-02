@@ -39,6 +39,7 @@ class CompanyDetailVC: UIViewController {
         tb.register(tagsTableViewCell.self, forCellReuseIdentifier: "tagsTableViewCell")
         tb.register(introductionCell.self, forCellReuseIdentifier: "introductionCell")
         tb.register(CompanyDetailCell.self, forCellReuseIdentifier: "CompanyDetailCell")
+        
         return tb
         
     }()
@@ -47,7 +48,7 @@ class CompanyDetailVC: UIViewController {
     weak var delegate:CompanySubTableScrollDelegate?
     
     
-    var detailModel:CompanyDetailModel?{
+    var detailModel:CompanyModel?{
         didSet{
             self.detailTable.reloadData()
         }

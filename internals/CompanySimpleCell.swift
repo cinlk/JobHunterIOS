@@ -8,7 +8,7 @@
 
 import UIKit
 
-class companyCell: UITableViewCell {
+class CompanySimpleCell: UITableViewCell {
 
     @IBOutlet weak var cimage: UIImageView!
     
@@ -45,12 +45,16 @@ class companyCell: UITableViewCell {
     }
 
    
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
     }
     
+    class func identity()->String{
+        return "CompanySimpleCell"
+    }
     
     class func cellHeight()->CGFloat{
         

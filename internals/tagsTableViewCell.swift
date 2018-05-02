@@ -26,14 +26,15 @@ fileprivate let cellH:CGFloat = 30
     private lazy var taggroup: UICollectionView = { [unowned self] in
         
         let layout = UICollectionViewFlowLayout()
-        layout.sectionInset=UIEdgeInsetsMake(0, 10, 0, 10)
-        layout.estimatedItemSize = CGSize(width: 20, height: 20)
+        // 用120，字数长度最大为
+        layout.estimatedItemSize = CGSize.init(width: 120, height: 30)
         layout.minimumInteritemSpacing = 10
         layout.minimumLineSpacing = 10
         let taggroup = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
         taggroup.isUserInteractionEnabled = false
         taggroup.showsVerticalScrollIndicator = false
         taggroup.showsVerticalScrollIndicator = false
+        taggroup.contentInset = UIEdgeInsetsMake(10, 10, 0, 10)
         // 取消滚动，不然视图滑动错位
         taggroup.isScrollEnabled = false
         taggroup.delegate = self
@@ -56,9 +57,15 @@ fileprivate let cellH:CGFloat = 30
             // MARK 如何动态计算 collectionview 高度？？？？
             let count = tags!.count
             // 技巧，最小2个，大于3个的数 高度都能覆盖
-            self.taggroup.height = CGFloat((count/3) * 50 + 50)
+            self.taggroup.sd_layout().heightIs(CGFloat((count/3) * 40 + 40))
             self.taggroup.reloadData()
             
+            // 立刻跟新布局，不用等runloop 来更新
+            //self.taggroup.layoutIfNeeded()
+//
+//            let contentSize = self.taggroup.collectionViewLayout.collectionViewContentSize
+//            self.taggroup.sd_layout().heightIs(contentSize.height)
+//
             self.setupAutoHeight(withBottomView: taggroup, bottomMargin: 10)
         }
     }
@@ -75,7 +82,7 @@ fileprivate let cellH:CGFloat = 30
         
         _ = line.sd_layout().topSpaceToView(label,5)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.heightIs(1)
         
-        _ = taggroup.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topSpaceToView(line,5)
+        _ = taggroup.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topSpaceToView(line,5)?.heightIs(0)
         
         
         
@@ -113,8 +120,7 @@ fileprivate let cellH:CGFloat = 30
         let cell  = collectionView.dequeueReusableCell(withReuseIdentifier: "mytag", for: indexPath) as! MyTag
         let content =  tags?[indexPath.row] ?? ""
         cell.lable.text = content
-        cell.lable.textColor = UIColor.black
-        cell.backgroundColor = UIColor.gray
+ 
         return cell
     }
     
@@ -130,18 +136,18 @@ fileprivate  class MyTag:UICollectionViewCell{
         lable.backgroundColor = UIColor.white
         lable.layer.borderWidth  = 1
         lable.adjustsFontSizeToFitWidth = true
-        lable.layer.borderColor = UIColor.black.cgColor
-        lable.font = UIFont.systemFont(ofSize: 17)
-       
+        lable.font = UIFont.systemFont(ofSize: 16)
+        lable.lineBreakMode = .byWordWrapping
+        
         return lable
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         // 必须放到cell的contentview
+        self.contentView.backgroundColor = UIColor.white
         self.contentView.addSubview(lable)
-       _ = lable.sd_layout().centerXEqualToView(self.contentView)?.centerYEqualToView(self.contentView)
-
+        _ = lable.sd_layout().centerXEqualToView(self.contentView)?.centerYEqualToView(self.contentView)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -152,7 +158,7 @@ fileprivate  class MyTag:UICollectionViewCell{
         let attributes = super.preferredLayoutAttributesFitting(layoutAttributes)
         attributes.frame = CGRect(x: 0, y: 0, width:NSString(string: lable.text!).size(withAttributes: [NSAttributedStringKey.font:lable.font]).width+10, height: 30)
         lable.frame = attributes.frame
-
+        
         return attributes
     }
 }

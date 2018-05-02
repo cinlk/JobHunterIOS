@@ -11,7 +11,7 @@ import UIKit
 
 fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
 
-@objcMembers class jobdetailCell: UITableViewCell {
+@objcMembers class CommonJobTableCell: UITableViewCell {
     
     
     

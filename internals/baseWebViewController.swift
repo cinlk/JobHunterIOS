@@ -16,7 +16,6 @@ fileprivate let imgSize = CGSize.init(width: 25, height: 25)
 class baseWebViewController: UIViewController {
     
     
-    
     // 自适应屏幕
    
     private lazy var wkContent:WKUserContentController = {
@@ -144,6 +143,7 @@ class baseWebViewController: UIViewController {
     }
     
     deinit {
+        // 如果key 不存在，崩溃
         webView.removeObserver(self, forKeyPath: keyStr)
         webView.navigationDelegate = nil
     }
@@ -156,8 +156,6 @@ extension baseWebViewController {
     private func initView(){
         self.view.addSubview(webView)
         self.view.addSubview(progressView)
-        
-        
         _ = progressView.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,64)?.heightIs(2)
         
         webView.frame = self.view.frame

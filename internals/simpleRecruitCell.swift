@@ -12,7 +12,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
 
 @objcMembers class simpleRecruitCell: UICollectionViewCell {
 
-    private lazy var companyIcon:UIImageView = {
+    private lazy var collegeIcon:UIImageView = {
         let icon = UIImageView()
         icon.contentMode = .scaleToFill
         icon.clipsToBounds = true
@@ -30,7 +30,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
         return label
     }()
     
-    private lazy var companyName:UILabel = {
+    private lazy var collegeName:UILabel = {
         let label = UILabel()
         
         label.textAlignment = .left
@@ -48,28 +48,26 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
         return label
     }()
     
-   dynamic var mode:simpleRecruitModel?{
+   dynamic var mode:CareerTalkMeetingModel?{
         didSet{
             
-            self.times.text = mode?.startTime
-            self.companyIcon.image = UIImage.init(named: mode?.image ?? "default")
-            self.companyName.text = mode?.title
-            self.des.text = mode?.des
-            self.setupAutoHeight(withBottomViewsArray: [self.companyIcon,self.des], bottomMargin: 10)
+            self.times.text = mode?.time
+            self.collegeIcon.image = UIImage.init(named: mode!.icon)
+            self.collegeName.text = mode?.college
+            self.des.text = mode?.address
+            self.setupAutoHeight(withBottomViewsArray: [self.collegeIcon,self.des], bottomMargin: 10)
             
         }
     }
     override init(frame: CGRect) {
         super.init(frame: frame)
-        let views:[UIView] = [times, companyIcon, companyName, des]
+        let views:[UIView] = [times, collegeIcon, collegeName, des]
         self.contentView.sd_addSubviews(views)
-        _ = companyIcon.sd_layout().topSpaceToView(self.contentView,5)?.leftSpaceToView(self.contentView,10)?.widthIs(imgSize.width)?.heightIs(imgSize.height)
-        _ = companyName.sd_layout().leftSpaceToView(companyIcon,5)?.topEqualToView(companyIcon)?.autoHeightRatio(0)
-        _ = des.sd_layout().topSpaceToView(companyName,5)?.leftEqualToView(companyName)?.autoHeightRatio(0)
+        _ = collegeIcon.sd_layout().topSpaceToView(self.contentView,5)?.leftSpaceToView(self.contentView,10)?.widthIs(imgSize.width)?.heightIs(imgSize.height)
+        _ = collegeName.sd_layout().leftSpaceToView(collegeIcon,5)?.topEqualToView(collegeIcon)?.autoHeightRatio(0)
+        _ = des.sd_layout().topSpaceToView(collegeName,5)?.leftEqualToView(collegeName)?.autoHeightRatio(0)
         _ = times.sd_layout().rightSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,10)?.autoHeightRatio(0)
         
-        
-        companyIcon.sd_cornerRadiusFromWidthRatio = 0.5
     }
     
     required init?(coder aDecoder: NSCoder) {

@@ -82,7 +82,7 @@ private class closedJobHeaderView:UIView{
     
     lazy var jobhead:JobDetailHeader = { [unowned self] in
         let jh = JobDetailHeader.init(frame: CGRect.zero)
-        jh.createInfos(item: ["jobName":"test","address":"beijing","salary":"2000","类型":"社招"])
+        //jh.createInfos(item: ["jobName":"test","address":"beijing","salary":"2000","类型":"社招"])
         return jh
     }()
     

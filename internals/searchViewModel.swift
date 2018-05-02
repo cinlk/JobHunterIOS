@@ -39,6 +39,8 @@ class searchViewModel: NSObject {
     // 搜索框 加载数据
     var loadData:PublishSubject<String> = PublishSubject<String>.init()
     
+   
+    
     var companyType:Variable<[String:[String]]> = Variable.init(["":[]])
     var position:Variable<[String:[String]]> = Variable.init(["":[]])
     var jobArea:Variable<[String:String]> = Variable.init(["":""])
@@ -81,12 +83,13 @@ class searchViewModel: NSObject {
         
         loadData.subscribe(onNext: { (word) in
             // 搜索的word
-            mainPageServer.shareInstance.searchKeyByWord(word: word).subscribe(onNext: { [unowned self] (jobs) in
+            mainPageServer.shareInstance.searchJobsByWord(word: word).subscribe(onNext: { [unowned self] (jobs) in
                 self.sectionJobData.value = jobs
                 
                 }, onError: { (error) in
                     self.sectionJobData.value = []
                     self.refreshStatus.value = .error
+                    
             }, onCompleted: {
                 //self.refreshStatus.value = .endFooterRefresh
                 self.refreshStatus.value = .end
@@ -102,7 +105,7 @@ class searchViewModel: NSObject {
             
             // MARK  change to post method
             
-            mainPageServer.shareInstance.searchKeyByWord(word: String(self.test)).subscribe(onNext: { [unowned self] (jobbs) in
+            mainPageServer.shareInstance.searchJobsByWord(word: String(self.test)).subscribe(onNext: { [unowned self] (jobbs) in
                 
                 self.sectionJobData.value = more ? self.sectionJobData.value + jobbs : jobbs
                 if jobbs.isEmpty{

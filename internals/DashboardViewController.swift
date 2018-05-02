@@ -19,7 +19,6 @@ import MBProgressHUD
 
 fileprivate let tableSection = 6
 fileprivate let thresholds:CGFloat = -80
-fileprivate let searchBarH:CGFloat = 30
 fileprivate let tableBottomInset:CGFloat = 50
 fileprivate let tableViewH:CGFloat = 180
 
@@ -34,9 +33,6 @@ protocol UISearchRecordDelegatae : class {
 
 //  主页面板块
 class DashboardViewController: BaseViewController{
-
-    
-    
     
     @IBOutlet weak var tables: UITableView!
     
@@ -172,6 +168,7 @@ class DashboardViewController: BaseViewController{
     override func viewWillDisappear(_ animated: Bool) {
         self.navigationView.removeFromSuperview()
         self.navigationController?.view.willRemoveSubview(navigationView)
+        self.navigationItem.title = ""
          
         
     }
@@ -186,7 +183,7 @@ class DashboardViewController: BaseViewController{
         // 热门公司
         self.tables.register(ScrollerNewsCell.self, forCellReuseIdentifier: ScrollerNewsCell.identitiy())
         // 推荐职位
-        self.tables.register(jobdetailCell.self, forCellReuseIdentifier: jobdetailCell.identity())
+        self.tables.register(CommonJobTableCell.self, forCellReuseIdentifier: CommonJobTableCell.identity())
         self.tables.register(sectionCellView.self, forCellReuseIdentifier: sectionCellView.identity())
         
         // 热门宣讲会
@@ -204,7 +201,7 @@ class DashboardViewController: BaseViewController{
         
         
         /***** search *****/
-        // search 切到到另一个view后，search bar不保留
+        // searchController 占时新的控制视图时，显示在当前视图上
         self.definesPresentationContext  = true
         
         searchController  = baseSearchViewController.init(searchResultsController: searchResultController())
@@ -216,12 +213,17 @@ class DashboardViewController: BaseViewController{
             //self?.hidesBottomBarWhenPushed = false
         }
         
+            
+        // 主页搜索menu 选项
+        searchController?.popMenuView.datas =  [.onlineApply, .graduate, .intern, .meeting, .company]
+        
         searchController?.searchResultsUpdater = self
         searchController?.delegate =  self
         searchController?.searchBar.delegate = self
         
         //searchController?.cityDelegate = self
         searchController?.height = searchBarH
+        
         searchBarContainer.addSubview((searchController?.searchBar)!)
         
         self.navigationItem.titleView = searchBarContainer
@@ -397,7 +399,7 @@ extension DashboardViewController: UITableViewDelegate{
             case let .campuseRecruite(jobs):
                 
                 
-                  let cell:jobdetailCell = table.dequeueReusableCell(withIdentifier: jobdetailCell.identity()) as! jobdetailCell
+                  let cell:CommonJobTableCell = table.dequeueReusableCell(withIdentifier: CommonJobTableCell.identity()) as! CommonJobTableCell
                   cell.mode =  jobs
  
                   return cell 
@@ -417,23 +419,26 @@ extension DashboardViewController: UITableViewDelegate{
    
 }
 
-// 与searchbar 交换
+// 输入状态 代理
 extension DashboardViewController: UISearchResultsUpdating{
     
+    
+    // 检测searchbar 输入信息
     @available(iOS 8.0, *)
     func updateSearchResults(for searchController: UISearchController) {
         
         if  let text = searchController.searchBar.text, !text.isEmpty{
-            
+            //MARK 显示搜索匹配结果
             self.searchController?.serchRecordVC.listRecords(word: text)
         }else{
+            // 历史搜索记录
              self.searchController?.serchRecordVC.showHistory()
         }
         self.searchController?.showRecordView = true
 
         
     }
-    // 搜索框结束输入，开始搜索
+    // 开始搜索，显示搜索结果控件
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         // 显示搜索resultview
         guard let searchItem = searchBar.text else {
@@ -442,35 +447,23 @@ extension DashboardViewController: UISearchResultsUpdating{
         guard !searchItem.isEmpty else {
             return
         }
-        //self.searchController.serchRecordView.view.isHidden = true
-        self.searchController?.showRecordView = false
         
-        // 查找新的item 然后 重新加载table
-        DBFactory.shared.getSearchDB().insertSearch(name: searchItem)
-        searchController?.resultDelegate?.startSearch(word: "test")
+        self.searchController?.startSearch(word: searchItem)
         
     }
-    
-    
-    
     
 }
 
 
-// searchController delegate
+//  搜索控件 代理
 extension DashboardViewController: UISearchControllerDelegate{
+    
+    
     
     func willPresentSearchController(_ searchController: UISearchController) {
         
-        if let sc =  (searchController as? baseSearchViewController){
-           
-            sc.showRecordView = true
-//            sc.serchRecordVC.HistoryTable.reloadData()
-           
-        }
-        
-        print("willPresentSearchController")
-       
+        self.searchController?.searchBar.setPositionAdjustment(UIOffset.init(horizontal: 60, vertical: 0), for: .search)
+        self.searchController?.setSearchBar(open: true)
         
         self.navigationController?.navigationBar.settranslucent(false)
         self.tabBarController?.tabBar.isHidden = true
@@ -479,34 +472,32 @@ extension DashboardViewController: UISearchControllerDelegate{
     
     
     func didDismissSearchController(_ searchController: UISearchController) {
-        print("didDismissSearchController")
-        // 隐藏导航栏
-        if searchController is baseSearchViewController{
-            let sc =  (searchController as! baseSearchViewController)
- 
-            sc.showRecordView = false
-            
-        }
-
+        
+        self.searchController?.searchBar.setPositionAdjustment(UIOffset.init(horizontal: 0, vertical: 0), for: .search)
+        self.searchController?.setSearchBar(open: false)
+        
         self.navigationController?.navigationBar.settranslucent(true)
         self.tabBarController?.tabBar.isHidden = false
-        
 
     }
 
     
 }
-// searchBar delegate
+// 搜索bar组件 代理
 extension DashboardViewController: UISearchBarDelegate{
     
-
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
-        
+        print("begin edit")
+        self.searchController?.popMenuView.dismiss()
         return true
     }
     //文本发生改变
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         print("search bar text \(searchText)")
+        if searchText.isEmpty{
+            self.searchController?.popMenuView.dismiss()
+        }
+        
         // text 为空时 显示历史记录
         if searchText.isEmpty{
             self.searchController?.serchRecordVC.showHistory()
@@ -514,9 +505,7 @@ extension DashboardViewController: UISearchBarDelegate{
             self.searchController?.serchRecordVC.listRecords(word: searchText)
         }
         // text 不为空 tableview 显示匹配搜索结果
-        
     }
-    
     
 }
 
@@ -696,7 +685,7 @@ extension DashboardViewController{
             }
             
             self.tables.deselectRow(at: indexpath, animated: true)
-            if  let cell = self.tables.cellForRow(at: indexpath) as? jobdetailCell, let data = cell.mode{
+            if  let cell = self.tables.cellForRow(at: indexpath) as? CommonJobTableCell, let data = cell.mode{
                 
                 self.showDetails(jobModel: data )
                 
@@ -744,6 +733,7 @@ extension DashboardViewController{
         
         self.tables.mj_header  = MJRefreshNormalHeader.init { [weak self] in
             print(" 下拉刷新 -----")
+            self?.timer?.invalidate()
             self?.vm.refreshData.onNext(true)
         }
         
@@ -810,10 +800,13 @@ extension DashboardViewController{
                 //第二张开始
                 self.imagescroller.contentOffset = CGPoint.init(x: self.view.frame.width, y: 0)
                 
+                //
+                self.creatTimer()
+                self.page.currentPage = 0
             }
             
             }, onCompleted: {
-                self.creatTimer()
+               
         }, onDisposed: nil).disposed(by: disposebag)
         // 获取轮播数据和图
     
@@ -826,6 +819,7 @@ extension DashboardViewController{
         
         // 传递jobid  查询job 具体信息
         let detail = JobDetailViewController()
+        detail.hidesBottomBarWhenPushed = true 
         detail.jobID = jobModel.id!
         self.navigationController?.pushViewController(detail, animated: true)
         

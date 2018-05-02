@@ -12,98 +12,6 @@ import RxDataSources
 
 
 
-// 公司数据model
-
-class  comapnyInfo: NSObject, Mappable, Comparable {
-    
-    static func < (lhs: comapnyInfo, rhs: comapnyInfo) -> Bool {
-        return true
-    }
-    
-    static func == (lhs: comapnyInfo, rhs: comapnyInfo) -> Bool {
-        return lhs.id  ==  rhs.id
-    }
-    
-    var id:String?
-    var icon:String?
-    var name:String?
-    var describe:String?
-    var address:String?
-    var staffs:String?
-    var industry:String?
-    var tags:[String]?
-    
-    
-    required init?(map: Map) {
-        
-    }
-    
-    func mapping(map: Map) {
-        id <- map["id"]
-        icon <- map["icon"]
-        name <- map["name"]
-        describe <- map["describe"]
-        address <- map["address"]
-        staffs <- map["staffs"]
-        industry <- map["industry"]
-        tags <- map["tags"]
-        
-    }
-}
-
-
-// MARK 添加更多的属性，比如id，标签等？？
-class CompuseRecruiteJobs :NSObject,Mappable, Comparable{
-    
-    static func <(lhs: CompuseRecruiteJobs, rhs: CompuseRecruiteJobs) -> Bool {
-        return true
-    }
-    
-    static func ==(lhs: CompuseRecruiteJobs, rhs: CompuseRecruiteJobs) -> Bool {
-         return lhs.id  ==  rhs.id
-    }
-    
-    var id:String?
-    var type:String = "compuse"
-    var tag:[String] = [""]
-    var picture:String?
-    var company:String?
-    var jobName:String?
-    var address:String?
-    var salary:String?
-    var create_time:String?
-    var education:String?
-    
-    // 实习内容
-    var day:Int = 0
-    var duration:String?
-    var isOfficial:Bool = false
-    
-    required init?(map: Map) {
-        
-    }
-    
-    
-    func mapping(map: Map) {
-        id <- map["id"]
-        tag <- map["tag"]
-        type <-  map["type"]
-        picture <- map["picture"]
-        company <- map["company"]
-        jobName <- map["jobName"]
-        address <- map["address"]
-        salary <- map["salary"]
-        create_time <- map["create_time"]
-        education <- map["education"]
-        day <- map["day"]
-        duration <- map["duration"]
-        isOfficial <- map["isOfficial"]
-       
-        
-    }
-    
-    
-}
 
 
 // multi sections
@@ -121,7 +29,7 @@ enum SectionItem{
     case newItem(new:[String])
     case catagoryItem(imageNames:[String:String])
     case recommandItem(imageNames:[String:String])
-    case recruimentMeet(list: [simpleRecruitModel])
+    case recruimentMeet(list: [CareerTalkMeetingModel])
     case applyonline(list: [applyOnlineModel])
     case campuseRecruite(job: CompuseRecruiteJobs)
     //case internRecruite(jobs:[InternshipJobs])
@@ -186,4 +94,26 @@ extension MultiSecontions: SectionModelType{
     }
     
 }
+
+
+
+// 搜索table section
+
+struct searchJobSection {
+    var items: [Item]
+}
+
+extension searchJobSection:SectionModelType {
+    
+    typealias Item =  CompuseRecruiteJobs
+    
+    init(original: searchJobSection, items: [searchJobSection.Item]) {
+        self = original
+        self.items = items
+        
+    }
+    
+    
+}
+
 

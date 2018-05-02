@@ -82,7 +82,6 @@ class CollectionHorizontalLayout: UICollectionViewFlowLayout {
     override var collectionViewContentSize: CGSize {
         let size: CGSize = super.collectionViewContentSize
         let collectionViewWidth: CGFloat = self.collectionView!.frame.size.width
-        
         //let nbOfScreen:Int = 1
         let nbOfScreen: Int = Int(ceil(size.width / collectionViewWidth))
         let newSize: CGSize = CGSize(width: collectionViewWidth * CGFloat(nbOfScreen), height: size.height)

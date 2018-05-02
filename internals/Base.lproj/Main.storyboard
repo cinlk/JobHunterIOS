@@ -272,10 +272,10 @@
             </objects>
             <point key="canvasLocation" x="-623" y="738"/>
         </scene>
-        <!--Apply JobsVC-->
+        <!--Job HomeVC-->
         <scene sceneID="9he-EE-0hl">
             <objects>
-                <viewController id="caO-Re-hU0" customClass="ApplyJobsVC" customModule="internals" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="caO-Re-hU0" customClass="JobHomeVC" customModule="internals" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="4Lx-fO-n7B"/>
                         <viewControllerLayoutGuide type="bottom" id="asi-cA-etN"/>

@@ -15,6 +15,7 @@ enum ItemLayout{
     
 }
 
+// 轮播图数据
 struct RotateImages:Mappable {
     
     var imageURL:String?
@@ -32,4 +33,28 @@ struct RotateImages:Mappable {
     
     
 }
+
+
+
+// 推荐网申数据  
+class applyOnlineModel:NSObject,Mappable{
+    
+    var imageIcon:String?
+    var type:String?
+    var title:String?
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        imageIcon <- map["imageIcon"]
+        type <- map["type"]
+        title <- map["title"]
+    }
+    
+}
+
+
+
 

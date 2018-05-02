@@ -72,9 +72,9 @@ fileprivate let website:String = "公司网址:"
         return v
     }()
   
-   dynamic var comp:CompanyDetailModel?{
+   dynamic var comp:CompanyModel?{
         didSet{
-            adressDetail.text = comp?.address
+            adressDetail.text = comp?.address?.joined(separator: " ")
             webAddressDetail.text = comp?.webSite
             self.setupAutoHeight(withBottomView: webAddress, bottomMargin: 10)
         }

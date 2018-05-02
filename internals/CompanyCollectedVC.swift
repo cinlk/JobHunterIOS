@@ -48,7 +48,7 @@ class CompanyCollectedVC: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: collectedCompanyCell.identity(), for: indexPath) as! collectedCompanyCell
-        let item = jobManageRoot.getCollections(type: .company)[indexPath.row] as! comapnyInfo
+        let item = jobManageRoot.getCollections(type: .company)[indexPath.row] as! CompanyModel
         cell.mode = item
         return cell
         
@@ -56,7 +56,7 @@ class CompanyCollectedVC: UITableViewController {
     
     // 设置cell样式
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let item = jobManageRoot.getCollections(type: .company)[indexPath.row] as! comapnyInfo
+        let item = jobManageRoot.getCollections(type: .company)[indexPath.row] as! CompanyModel
       
         return tableView.cellHeight(for: indexPath, model: item, keyPath: "mode", cellClass: collectedCompanyCell.self, contentViewWidth: ScreenW)
         
@@ -66,7 +66,7 @@ class CompanyCollectedVC: UITableViewController {
         if tableView.isEditing{
             return
         }
-        let item = jobManageRoot.getCollections(type: .company)[indexPath.row] as! comapnyInfo
+        let item = jobManageRoot.getCollections(type: .company)[indexPath.row] as! CompanyModel
         // MARK TODO company数据给界面展示
         let vc = CompanyMainVC()
         vc.companyID =  item.id

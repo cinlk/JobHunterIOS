@@ -298,7 +298,7 @@ extension MyCollectionVC{
                 
                 let cjson:[String:Any] = ["id":"678","icon":"sina","name":"新浪带我去的群无多大青蛙  当前为多无群  当前为多群无  当前为多群无","describe":"大公司，有前景 当前的群 dqwdq 当前为多群无 当前为多群无多群无多无群 当前为多群多群多群多群无 当前为多群无多无前端去无 当前为多群无多群无多无群  带我去的","staffs":"1000人以上","tags":["带我去的","地段"]]
                 
-                self?.jobManageRoot.addCompanyItem(item: comapnyInfo(JSON: cjson)!)
+                self?.jobManageRoot.addCompanyItem(item: CompanyModel(JSON: cjson)!)
                 
                 self?.jobManageRoot.addCollectedItem(item: CompuseRecruiteJobs(JSON: json)!)
             }

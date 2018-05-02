@@ -70,11 +70,11 @@ import UIKit
     
     dynamic var mode:CompuseRecruiteJobs?{
         didSet{
-            jobName.text = mode?.jobName
+            jobName.text = mode?.name
             address.text = mode?.address
             type.text = mode?.type
             degree.text =  mode?.education
-            create_time.text = mode?.create_time
+            create_time.text = mode?.creatTimeStr
             salary.text = mode?.salary
             self.setupAutoHeight(withBottomViewsArray: [address, salary], bottomMargin: 10)
         }

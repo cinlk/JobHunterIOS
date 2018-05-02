@@ -61,9 +61,6 @@ class BaseViewController: UIViewController {
             $0.isHidden = true
         }
         
-        //hub.show(animated: true)
-        //hub.show(animated: true)
-        
     }
     
     

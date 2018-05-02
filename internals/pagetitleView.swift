@@ -14,16 +14,19 @@ protocol pagetitleViewDelegate: class {
     
 }
 
-private let kScrollLineH : CGFloat = 2
-private let kNormalColor : (CGFloat, CGFloat, CGFloat) = (85, 85, 85)
-private let kSelectColor : (CGFloat, CGFloat, CGFloat) = (255, 128, 0)
+
 
 class pagetitleView: UIView {
 
     
+    var kScrollLineH : CGFloat = 2
+    var kNormalColor : (CGFloat, CGFloat, CGFloat) = (85, 85, 85)
+    var kSelectColor : (CGFloat, CGFloat, CGFloat) = (255, 128, 0)
+    
     var labelTitles:[UILabel] = []
     var startIndex:Int = 0
     var titles:[String]?
+    var lineCenter:Bool = false
     
     weak var delegate:pagetitleViewDelegate?
     
@@ -34,6 +37,7 @@ class pagetitleView: UIView {
        return v
     }()
     
+    
     lazy var subline:UIView = { [unowned self] in
         let v = UIView.init(frame: CGRect.init(x: 0, y: self.bounds.height-1, width: ScreenW, height: 1))
         v.backgroundColor = UIColor.init(r: 100, g: 100, b: 100, alpha: 0.5)
@@ -41,9 +45,10 @@ class pagetitleView: UIView {
     }()
     
     
-    init(frame:CGRect, titles:[String]) {
+    init(frame:CGRect, titles:[String], lineCenter:Bool = false) {
         super.init(frame: frame)
         self.titles = titles
+        self.lineCenter = lineCenter
         self.setViews()
         
         
@@ -63,7 +68,6 @@ extension pagetitleView{
  
     private func setViews(){
         self.backgroundColor = UIColor.white
-        
         self.creatLabels()
         self.layoutSubviews()
         self.addSubview(moveLine)
@@ -71,15 +75,24 @@ extension pagetitleView{
         guard let firstLabel = labelTitles.first else {
             return
         }
-        
-        moveLine.frame = CGRect.init(x: firstLabel.frame.origin.x, y: frame.height - kScrollLineH , width: firstLabel.frame.width, height: kScrollLineH)
-        
+        if lineCenter{
+          
+            moveLine.frame = CGRect.init(x: firstLabel.center.x - 15 , y: frame.height - 5, width: 30, height: kScrollLineH)
+        }else{
+            moveLine.frame = CGRect.init(x: firstLabel.frame.origin.x, y: frame.height - kScrollLineH , width: firstLabel.frame.width, height: kScrollLineH)
+        }
         
     }
     
     private func creatLabels(){
         guard let labels = self.titles else {
             return
+        }
+        
+        if lineCenter{
+            kNormalColor = (169,169,169)
+            kSelectColor = (255,255,255)
+            
         }
         let count = labels.count
         // 以4为单位
@@ -106,7 +119,12 @@ extension pagetitleView{
         }
         self.sd_addSubviews(labelsView)
         if count >= 4{
-            self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: (ScreenW - 20) / CGFloat(count)  , verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: 5)
+            if self.lineCenter{
+                // 缩短间隔距离
+                self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: 60, verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: 30)
+            }else{
+                self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: (ScreenW - 20) / CGFloat(count), verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: 5)
+            }
         }else{
              let diff = 4 - count
              // horizoneEdge 与最近父view的边距
@@ -140,6 +158,8 @@ extension pagetitleView{
         
         let oldIabel = labelTitles[startIndex]
         let distance = labelTitles[currentIndex].frame.origin.x - oldIabel.frame.origin.x
+        let centerDistance =  labelTitles[currentIndex].center.x - oldIabel.center.x
+
         
         print("current \(currentIndex)", "start \(startIndex)")
         self.labelTitles[currentIndex].textColor = UIColor.init(r: kSelectColor.0, g: kSelectColor.1, b: kSelectColor.2)
@@ -152,8 +172,13 @@ extension pagetitleView{
 
         
         UIView.animate(withDuration: 0.15) { [unowned self] in
-            self.moveLine.frame.origin.x = oldIabel.frame.origin.x + distance
-            
+            if self.lineCenter{
+                
+                self.moveLine.center.x = oldIabel.center.x + centerDistance
+            }else{
+                self.moveLine.frame.origin.x = oldIabel.frame.origin.x + distance
+
+            }
         }
         
         
@@ -170,8 +195,12 @@ extension pagetitleView{
         let targetLabel = labelTitles[targetIndex]
         
         let distance = targetLabel.frame.origin.x - sourceLabel.frame.origin.x
-        moveLine.frame.origin.x = sourceLabel.frame.origin.x + distance*progress
-        
+        let centerDistance = targetLabel.center.x - sourceLabel.center.x
+        if lineCenter{
+            self.moveLine.center.x = sourceLabel.center.x + centerDistance*progress
+        }else{
+            moveLine.frame.origin.x = sourceLabel.frame.origin.x + distance*progress
+        }
         let colorDelta = (kSelectColor.0 - kNormalColor.0, kSelectColor.1 - kNormalColor.1, kSelectColor.2 - kNormalColor.2)
         
         // 3.2.变化sourceLabel

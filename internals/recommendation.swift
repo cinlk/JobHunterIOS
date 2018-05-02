@@ -24,7 +24,7 @@ class recommendation: BaseViewController {
         table.delegate = self
         table.dataSource = self
         table.backgroundColor = UIColor.viewBackColor()
-        table.register(jobdetailCell.self, forCellReuseIdentifier: jobdetailCell.identity())
+        table.register(CommonJobTableCell.self, forCellReuseIdentifier: CommonJobTableCell.identity())
         return table
     }()
     
@@ -91,7 +91,7 @@ extension recommendation: UITableViewDelegate,UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell  =  table.dequeueReusableCell(withIdentifier: jobdetailCell.identity(), for: indexPath) as! jobdetailCell
+        let cell  =  table.dequeueReusableCell(withIdentifier: CommonJobTableCell.identity(), for: indexPath) as! CommonJobTableCell
         cell.mode = data[indexPath.row]
         return cell
     }
@@ -116,7 +116,7 @@ extension recommendation: UITableViewDelegate,UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
         let mode = data[indexPath.row]
-        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: jobdetailCell.self, contentViewWidth: ScreenW)
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CommonJobTableCell.self, contentViewWidth: ScreenW)
     }
 }
 

@@ -42,7 +42,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 40, height: 45)
         return des
     }()
     
-   dynamic var mode:comapnyInfo?{
+   dynamic var mode:CompanyModel?{
         didSet{
             self.icon.image = UIImage.init(named: (mode?.icon)!)
             self.companyName.text = mode?.name

@@ -8,7 +8,7 @@
 
 import UIKit
 
-fileprivate let labelMaxWidth:CGFloat = 80
+fileprivate let labelMaxWidth:CGFloat = 200
 fileprivate let imgSize:CGSize = CGSize.init(width: 15, height: 20)
 
 class JobDetailHeader:UIView {
@@ -61,6 +61,8 @@ class JobDetailHeader:UIView {
         type.textAlignment = .left
         return type
     }()
+    
+    
     private lazy var des:UILabel = {
         let des = UILabel.init()
         des.font = UIFont.systemFont(ofSize: 14)
@@ -70,7 +72,30 @@ class JobDetailHeader:UIView {
         return des
     }()
     
-    // 户口？
+    // 实习 标记
+    private lazy var month:UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 13)
+        label.setSingleLineAutoResizeWithMaxWidth(labelMaxWidth)
+        label.textAlignment = .left
+        return label
+    }()
+    
+    private lazy var perDay:UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 13)
+        label.setSingleLineAutoResizeWithMaxWidth(labelMaxWidth)
+        label.textAlignment = .left
+        return label
+    }()
+    
+    private lazy var stuff:UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 13)
+        label.setSingleLineAutoResizeWithMaxWidth(labelMaxWidth)
+        label.textAlignment = .left
+        return label
+    }()
     
     private lazy var typeIcon:UIImageView = {
         let img = UIImageView.init(image: UIImage.init(named: "clock"))
@@ -95,16 +120,41 @@ class JobDetailHeader:UIView {
     }()
     
     private lazy var yuanIcon:UIImageView = {
-       let img = UIImageView.init(image: UIImage.init(named: "yuan"))
+        let img = UIImageView.init(image: UIImage.init(named: "yuan"))
+        img.contentMode = .scaleAspectFit
+        img.clipsToBounds = true
+        return img
+    }()
+    
+    private lazy var monthIcon:UIImageView = {
+        let img = UIImageView.init(image: UIImage.init(named: "month"))
+        img.contentMode = .scaleAspectFit
+        img.clipsToBounds = true
+        return img
+    }()
+    
+    private lazy var dayIcon:UIImageView = {
+        let img = UIImageView.init(image: UIImage.init(named: "clock"))
+        img.contentMode = .scaleAspectFit
+        img.clipsToBounds = true
+        return img
+    }()
+    
+    // 占时不用
+    private lazy var stuffIcon:UIImageView = {
+        let img = UIImageView.init(image: UIImage.init(named: "me"))
         img.contentMode = .scaleAspectFit
         img.clipsToBounds = true
         return img
     }()
     
     
+    private lazy var internViews:[UIView] = []
+    
     var mode:CompuseRecruiteJobs?{
         didSet{
-            createInfos(item: mode?.toJSON() ?? [:])
+            
+            createInfos(item: mode!)
         }
     }
     
@@ -112,8 +162,12 @@ class JobDetailHeader:UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+        internViews = [month, perDay, monthIcon, dayIcon]
+        
+        
         let views:[UIView] = [line,jobName,address,salary,type,education,des, typeIcon,locateIcon,degreeIcon,yuanIcon]
         self.sd_addSubviews(views)
+        self.sd_addSubviews(internViews)
         
         _ = line.sd_layout().bottomEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(1)
         //des.text = "职位诱惑(标签):"
@@ -123,14 +177,21 @@ class JobDetailHeader:UIView {
         _ = locateIcon.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(jobName,10)?.widthIs(imgSize.width)?.heightIs(imgSize.height)
         _ = address.sd_layout().leftSpaceToView(locateIcon,2)?.topEqualToView(locateIcon)?.autoHeightRatio(0)
         
-        _ = degreeIcon.sd_layout().leftSpaceToView(address,20)?.topEqualToView(address)?.widthIs(imgSize.width)?.heightIs(imgSize.height)
+        _ = degreeIcon.sd_layout().leftSpaceToView(address,20)?.topEqualToView(address)?.widthRatioToView(locateIcon,1)?.heightRatioToView(locateIcon,1)
         _ = education.sd_layout().leftSpaceToView(degreeIcon,2)?.topEqualToView(degreeIcon)?.autoHeightRatio(0)
         
-        _ = yuanIcon.sd_layout().leftSpaceToView(education,20)?.topEqualToView(education)?.widthIs(imgSize.width)?.heightIs(imgSize.height)
+        _ = yuanIcon.sd_layout().leftSpaceToView(education,20)?.topEqualToView(education)?.widthRatioToView(locateIcon,1)?.heightRatioToView(locateIcon,1)
         _ = salary.sd_layout().leftSpaceToView(yuanIcon,2)?.topEqualToView(yuanIcon)?.autoHeightRatio(0)
         
-        _ = typeIcon.sd_layout().topSpaceToView(locateIcon,15)?.leftEqualToView(locateIcon)?.widthIs(imgSize.width)?.heightIs(imgSize.height)
+        _ = typeIcon.sd_layout().topSpaceToView(locateIcon,15)?.leftEqualToView(locateIcon)?.widthRatioToView(locateIcon,1)?.heightRatioToView(locateIcon,1)
         _ = type.sd_layout().leftSpaceToView(typeIcon,2)?.topEqualToView(typeIcon)?.autoHeightRatio(0)
+        
+        _ = monthIcon.sd_layout().topEqualToView(typeIcon)?.leftEqualToView(degreeIcon)?.widthRatioToView(typeIcon,1)?.heightRatioToView(typeIcon,1)
+        _ = month.sd_layout().leftSpaceToView(monthIcon,2)?.topEqualToView(monthIcon)?.autoHeightRatio(0)
+        
+        _ = dayIcon.sd_layout().leftEqualToView(yuanIcon)?.topEqualToView(month)?.widthRatioToView(typeIcon,1)?.heightRatioToView(typeIcon,1)
+        _ = perDay.sd_layout().leftSpaceToView(dayIcon,2)?.topEqualToView(dayIcon)?.autoHeightRatio(0)
+        
         
         _ = des.sd_layout().topSpaceToView(typeIcon,10)?.leftEqualToView(typeIcon)?.autoHeightRatio(0)
         
@@ -145,21 +206,40 @@ class JobDetailHeader:UIView {
     
     
     // 实习还是校招？ MARK
-    func createInfos(item:[String:Any]){
+    func createInfos(item:CompuseRecruiteJobs){
 
+        guard  let kind = item.kind else {
+            return
+        }
         
-        if item["type"] as! String == "compuse"{
+        self.jobName.text = mode?.name
+        self.address.text = mode?.address
+        self.education.text = mode?.education
+        self.salary.text = mode?.salary
+        
+        // 社招
+        if kind == .graduate{
             
-            jobName.text =  item["jobName"] as? String
-            address.text = item["address"] as? String
-            salary.text = item["salary"] as? String
-            education.text = item["education"] as? String
-            type.text = "社招"
-            des.text = "这是公司描述 当前的群多群无多群当前为多群多无群多当前为多群无多群无多当前为多群多群无当前为多群无多单独!!!"
+            internViews.forEach{
+                $0.isHidden = true
+            }
+              des.isHidden = false
+              self.type.text = "全职"
+              self.des.text = ""
+            self.setupAutoHeight(withBottomView: des, bottomMargin: 10)
             
-            self.setupAutoHeight(withBottomView: des, bottomMargin: 15)
+        // 实习
+        }else if kind == .intern{
+             des.isHidden = true
+             internViews.forEach{
+                $0.isHidden = false
+            }
+            self.type.text = "实习"
+            self.month.text = mode?.months
+            self.perDay.text = mode?.perDay
+            self.setupAutoHeight(withBottomView: perDay, bottomMargin: 10)
             
-        }else{
+            
             
         }
         

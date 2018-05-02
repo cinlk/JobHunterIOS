@@ -19,6 +19,8 @@ let NavBarH:CGFloat = 44
 // navigation View 高度
 let NavH:CGFloat = 64
 
+let searchBarH:CGFloat = 30
+
 // 屏幕宽高
 let ScreenW:CGFloat = UIScreen.main.bounds.width
 let ScreenH:CGFloat = UIScreen.main.bounds.height
@@ -30,7 +32,7 @@ let TableCellOffsetX:CGFloat = 16
 
 // url
 let GITHUB_API_URL:String = "https://api.github.com"
-let APP_JOB_URL:String = "http://192.168.1.125:8080"
+let APP_JOB_URL:String = "http://127.0.0.1:8080"
 
 
 

@@ -27,7 +27,7 @@ class JobManager{
     private var collectedJobs:[CompuseRecruiteJobs] = []
     
     // 收藏的公司信息
-    private var collectedCompanys:[comapnyInfo] = []
+    private var collectedCompanys:[CompanyModel] = []
     
     open func  addCollectedItem(item:CompuseRecruiteJobs){
         if collectedJobs.contains(item){
@@ -60,7 +60,7 @@ class JobManager{
         }
     }
     
-    open func addCompanyItem(item: comapnyInfo){
+    open func addCompanyItem(item: CompanyModel){
         if collectedCompanys.contains(item){
             return
         }
@@ -68,7 +68,7 @@ class JobManager{
         collectedCompanys.append(item)
     }
     
-    open func removeCollectedCompany(item: comapnyInfo){
+    open func removeCollectedCompany(item: CompanyModel){
         if let index = collectedCompanys.index(of: item){
             collectedCompanys.remove(at: index)
         }

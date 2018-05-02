@@ -15,7 +15,7 @@ class recruitmentMeetCell: UITableViewCell {
     private lazy var baseCollection:BaseCollectionHorizonView = BaseCollectionHorizonView.init(frame: CGRect.zero, column: 1, row: 4)
    
     
-    var mode:(title:String,item:[simpleRecruitModel])?{
+    var mode:(title:String,item:[CareerTalkMeetingModel])?{
         didSet{
             self.baseCollection.topTitle.text = mode?.title
             //self.table.reloadData()

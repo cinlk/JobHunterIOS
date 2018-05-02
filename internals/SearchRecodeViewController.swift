@@ -12,6 +12,8 @@ import UIKit
 protocol SearchResultDelegate: class{
     
     func ShowSearchResults(word:String)
+    func dismissPopView()
+    
     
 }
 
@@ -115,10 +117,9 @@ class SearchRecodeViewController: UIViewController {
         super.viewWillAppear(animated)
         ShowHistoryTable = true
         
-       
-        
-        
     }
+    
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         //ShowHistoryTable = true
@@ -264,6 +265,13 @@ extension SearchRecodeViewController{
     }
 }
 
+
+extension SearchRecodeViewController:UIScrollViewDelegate{
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        self.resultDelegate?.dismissPopView()
+        
+    }
+}
 
 
 

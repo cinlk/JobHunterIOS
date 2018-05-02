@@ -40,58 +40,6 @@ class HRInfo:NSObject {
 }
 
 
-//
-class CompanyJoblistModel:NSObject, Mappable{
-    
-    
-    var jobtag:[String]?
-    var jobs:[CompuseRecruiteJobs]?
-    
-    
-    required init?(map: Map) {
-        
-    }
-    
-    func mapping(map: Map) {
-        jobtag <- map["jobtag"]
-        jobs <- map["jobs"]
-    }
-    
-    
-}
 
-class CompanyDetailModel: NSObject, Mappable {
-    
-   
-    
-    // MARK:
-    var id:String?
-    var address:String?
-    var webSite:String?
-    var tags:[String]?
-    var name:String?
-    var describe:String?
-    var simpleDes:String?
-    var iconURL:String?
-    var simpleTag:[String]?
-    // 招聘职位
-    //var joblist:MapJoblist?
 
-    required init?(map: Map) {
-        
-    }
-    
-    func mapping(map: Map) {
-        id <- map["id"]
-        address <- map["address"]
-        webSite <- map["webSite"]
-        tags <- map["tags"]
-        name <- map["name"]
-        describe <- map["describe"]
-        simpleDes <- map["simpleDes"]
-        iconURL <- map["iconURL"]
-        simpleTag <- map["simpleTag"]
-        //joblist <- map["joblist"]
-        
-    }
-}
+

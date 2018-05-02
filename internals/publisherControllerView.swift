@@ -114,7 +114,7 @@ class publisherControllerView: BaseTableViewController {
         self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 60, 0)
         self.tableView.tableFooterView = UIView.init()
-        self.tableView.register(UINib(nibName:"companyCell", bundle:nil), forCellReuseIdentifier: "companyCell")
+        self.tableView.register(UINib(nibName:"CompanySimpleCell", bundle:nil), forCellReuseIdentifier: "companyCell")
         self.tableView.register(companyJobCell.self, forCellReuseIdentifier: companyJobCell.identity())
         self.setHeader()
         
@@ -155,7 +155,7 @@ class publisherControllerView: BaseTableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch  indexPath.section {
         case 0:
-             let cell = tableView.dequeueReusableCell(withIdentifier: "companyCell", for: indexPath) as! companyCell
+             let cell = tableView.dequeueReusableCell(withIdentifier: "companyCell", for: indexPath) as! CompanySimpleCell
              cell.mode = (image: "sina", companyName:"公司x", tags:"行业|地点|人数ring")
              return cell
         case 1:
@@ -171,7 +171,7 @@ class publisherControllerView: BaseTableViewController {
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if   indexPath.section == 0 {
-            return  companyCell.cellHeight()
+            return  CompanySimpleCell.cellHeight()
         }
         
         let mode = publishJobs[indexPath.row]

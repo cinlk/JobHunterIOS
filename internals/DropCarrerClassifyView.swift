@@ -11,16 +11,16 @@ import YNDropDownMenu
 
 
 
-fileprivate let leftTableH:CGFloat = 100
+fileprivate let leftTableH:CGFloat = 140
 
 
-class JobArea:YNDropDownView,UITableViewDataSource,UITableViewDelegate{
+class DropCarrerClassifyView:YNDropDownView,UITableViewDataSource,UITableViewDelegate{
     
         
     private var table1:UITableView?
     private var table2:UITableView?
     
-    var passData: ((_ cond:[String:String]?) -> Void)?
+    var passData: ((_ cond:String) -> Void)?
     
     
     private var first = ["全部","IT互联网","电子电气","人事行政","传媒设计","杀掉无多哇多无多无多"]
@@ -37,7 +37,7 @@ class JobArea:YNDropDownView,UITableViewDataSource,UITableViewDelegate{
         super.init(frame: frame)
         
         table1 = UITableView()
-        table1?.backgroundColor = UIColor.lightGray
+        table1?.backgroundColor = UIColor.viewBackColor()
         table1?.frame = CGRect(x: 0, y: 0, width: leftTableH, height: frame.height)
         table1?.delegate = self
         table1?.dataSource = self
@@ -47,7 +47,7 @@ class JobArea:YNDropDownView,UITableViewDataSource,UITableViewDelegate{
         
         
         table2 = UITableView()
-        table2?.backgroundColor = UIColor.viewBackColor()
+        table2?.backgroundColor = UIColor.white
         table2?.frame = CGRect(x: leftTableH, y: 0, width: self.frame.width-leftTableH, height: frame.height)
         table2?.delegate = self
         table2?.dataSource = self
@@ -63,7 +63,8 @@ class JobArea:YNDropDownView,UITableViewDataSource,UITableViewDelegate{
     }
     
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
+        //fatalError("init(coder:) has not been implemented")
     }
     
     
@@ -84,13 +85,13 @@ class JobArea:YNDropDownView,UITableViewDataSource,UITableViewDelegate{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell:UITableViewCell =  tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         cell.textLabel?.textAlignment = .center
-        cell.textLabel?.font = UIFont.systemFont(ofSize: 12)
+        cell.textLabel?.font = UIFont.systemFont(ofSize: 14)
         cell.selectionStyle = .none
         
         if tableView == table1{
             cell.textLabel?.text = first[indexPath.row]
             
-            cell.backgroundColor = UIColor.lightGray
+            cell.backgroundColor = UIColor.viewBackColor()
         }else{
             
             cell.subviews.filter({ (view) -> Bool in
@@ -98,7 +99,7 @@ class JobArea:YNDropDownView,UITableViewDataSource,UITableViewDelegate{
             }).forEach{
                 $0.removeFromSuperview()
             }
-            cell.backgroundColor = UIColor.viewBackColor()
+            cell.backgroundColor = UIColor.white
             cell.textLabel?.textColor = UIColor.black
             cell.textLabel?.text =  selected == "全部" ? "全部" : seconds[selected]?[indexPath.row]
             
@@ -127,10 +128,12 @@ class JobArea:YNDropDownView,UITableViewDataSource,UITableViewDelegate{
         }else{
             cell?.addSubview(lines)
             let name:String = selected == "全部" ? "全部" : (seconds[selected]?[indexPath.row])!
+            
             self.hideMenu()
             if let pass = passData{
-                pass(["行业领域":name])
+                pass(name)
             }
+            
             
         }
     }
@@ -146,7 +149,7 @@ class JobArea:YNDropDownView,UITableViewDataSource,UITableViewDelegate{
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 30
+        return 45
     }
     
     

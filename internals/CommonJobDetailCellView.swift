@@ -20,6 +20,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
         image.contentMode = .scaleAspectFit
         image.clipsToBounds = true
         image.backgroundColor = UIColor.clear
+        
         return image
     }()
     
@@ -104,14 +105,6 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
         return label
     }()
     
-    // 实习标签view （图片左上角）
-    private lazy var internTagImageView:UIImageView = {
-        let imgView = UIImageView()
-        imgView.clipsToBounds = true
-        imgView.image = UIImage.init(named: "pbackimg")?.str_image("实习", size: (30,20), backColor: UIColor.blue, textColor: UIColor.white, isCircle: false)
-        return imgView
-    }()
-    
     
     private lazy var rightArrow:UIImageView = {
         let right = UIImageView.init(image: #imageLiteral(resourceName: "rightforward") )
@@ -128,26 +121,31 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     
     dynamic var mode:CompuseRecruiteJobs?{
         didSet{
-            icon.image = UIImage.init(named: (mode?.picture)!)
-            JobName.text = mode?.jobName
-            company.text = mode?.company
+            
+            icon.image = UIImage.init(named: (mode?.icon)!)
+            JobName.text = mode?.name
+            company.text = mode?.companyID
             address.text = mode?.address
-            type.text = "校招"
+            type.text = mode?.kind?.describe
+            
             degree.text = mode?.education
-            if type.text == "校招"{
-                internDay.isHidden = true
-                // 测试
-                internTagImageView.isHidden = false
+            salary.text = mode?.salary
+            create_time.text = mode?.creatTimeStr
+            
+            
+            guard let kind = mode?.kind else {
+                 self.setupAutoHeight(withBottomViewsArray: [address, type, degree], bottomMargin: 10)
+                 return
             }
-            else{
+            if kind == .graduate {
+                internDay.isHidden = true
+            }
+            else if kind == .intern {
                 internDay.isHidden = false
-                internDay.text = "0"
-                internTagImageView.isHidden = false
+                internDay.text = mode?.perDay
                 
             }
-            salary.text = mode?.salary
-            create_time.text = mode?.create_time
-            
+           
             self.setupAutoHeight(withBottomViewsArray: [address, type, degree], bottomMargin: 10)
             
         }
@@ -158,7 +156,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        let views:[UIView] = [icon, JobName, company, address, type, degree, internDay, create_time, salary,rightArrow, internTagImageView]
+        let views:[UIView] = [icon, JobName, company, address, type, degree, internDay, create_time, salary,rightArrow]
         
         //icon.addSubview(internTagImageView)
         self.sd_addSubviews(views)
@@ -189,7 +187,6 @@ extension  CommonJobDetailCellView{
        
         
         _ = JobName.sd_layout().topEqualToView(icon)?.leftSpaceToView(icon,10)?.autoHeightRatio(0)
-        _ = internTagImageView.sd_layout().leftSpaceToView(JobName,5)?.centerYEqualToView(JobName)?.widthIs(25)?.heightRatioToView(JobName,0.9)
         _ = company.sd_layout().leftEqualToView(JobName)?.topSpaceToView(JobName,3)?.autoHeightRatio(0)
         _ = address.sd_layout().leftEqualToView(JobName)?.topSpaceToView(company,5)?.autoHeightRatio(0)
         _ = type.sd_layout().topEqualToView(address)?.leftSpaceToView(address,5)?.autoHeightRatio(0)
