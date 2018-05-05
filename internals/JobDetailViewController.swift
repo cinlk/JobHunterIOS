@@ -271,7 +271,7 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
             apply.isSelected = true
             apply.isUserInteractionEnabled = false
             showCustomerImageHub(message: "投递简历成功", view: self.view, image: #imageLiteral(resourceName: "checkmark").withRenderingMode(.alwaysTemplate))
-            mode?.isApply == true
+            mode?.isApply = true
         }
        
         
@@ -297,7 +297,7 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
                     
                     
                     // 打招呼消息
-                    let greetingMessage = MessageBoby(JSON: ["messageID":getUUID(),"content": GreetingMsg.data(using: String.Encoding.utf8)?.base64EncodedString(),
+                    let greetingMessage = MessageBoby(JSON: ["messageID":getUUID(),"content": GreetingMsg.data(using: String.Encoding.utf8)!.base64EncodedString(),
                                                              "isRead":true,"creat_time":Date.init().timeIntervalSince1970,
                                                              "type":MessgeType.text.rawValue,"sender":myself,"receiver":hr!])
                     
@@ -490,7 +490,7 @@ extension JobDetailViewController{
         // MARK: - 数据替换
         case 0:
             let cell  = table.dequeueReusableCell(withIdentifier: "companyCell", for: indexPath) as! CompanySimpleCell
-            cell.mode = (image: "sina",companyName: "测试公司" ?? "", tags:"上市企业|1万人|不加班")
+            cell.mode = (image: "sina",companyName: "测试公司" , tags:"上市企业|1万人|不加班")
             return cell
             
         case 1:
@@ -600,7 +600,7 @@ extension JobDetailViewController: shareViewDelegate{
         
         UMSocialManager.default().share(to: type, messageObject: mesObj, currentViewController: self) { (res, error) in
             if error != nil{
-                print("分享失败 \(error)")
+                print("分享失败 \(String(describing: error))")
             }else{
                 self.shareapps.getUserInfo(platformType: type, vc: self)
             }

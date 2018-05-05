@@ -197,11 +197,11 @@ extension HelpsVC{
 // 选中头部图 进入指导
 extension HelpsVC:headerCollectionViewDelegate{
     
-    func chooseItem(index: Int) {
-        if let item = self.mode?.guide[index]{
-            print(item)
-            self.navigationController?.pushViewController(HelpGuideViewController(), animated: true)
-        }
+    func chooseItem(name: String) {
+//        if let item = self.mode?.guide[index]{
+//            print(item)
+//            self.navigationController?.pushViewController(HelpGuideViewController(), animated: true)
+//        }
     }
     
     

@@ -59,7 +59,7 @@ class InternJobsViewController: BasePositionItemViewController {
         
         // 筛选回调
         cityMenu.passData = { citys in
-            print(citys)
+            //print(citys)
         }
         
         careerClassify.passData = { kind in
@@ -68,7 +68,7 @@ class InternJobsViewController: BasePositionItemViewController {
         }
         
         internCondition.passData = { condition in
-            print(condition)
+            //print(condition)
         }
         
         

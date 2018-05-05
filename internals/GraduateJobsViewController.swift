@@ -53,7 +53,7 @@ class GraduateJobsViewController: BasePositionItemViewController {
         }
         
         cityMenu.passData = { citys in
-            print(citys)
+           // print(citys)
         }
         
         companyKind.passData = { kind in

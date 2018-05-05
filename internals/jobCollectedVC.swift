@@ -76,7 +76,7 @@ class jobCollectedVC: UITableViewController {
             return
         }
         let JobDetail =  JobDetailViewController()
-        let job = jobManageRoot.getCollections(type: .compus)[indexPath.row] as! CompuseRecruiteJobs
+        _ = jobManageRoot.getCollections(type: .compus)[indexPath.row] as! CompuseRecruiteJobs
        // JobDetail.infos = job.toJSON() as? [String:String]
         
         self.navigationController?.pushViewController(JobDetail, animated: true)

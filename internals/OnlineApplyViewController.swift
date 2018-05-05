@@ -46,7 +46,7 @@ class OnlineApplyViewController: BasePositionItemViewController {
             self.dropMenu.changeMenu(title: name, at: 1)
         }
         cityMenu.passData = { city in
-            print(city)
+            //print(city)
             
         }
     }

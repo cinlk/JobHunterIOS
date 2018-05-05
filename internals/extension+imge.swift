@@ -19,6 +19,7 @@ extension UIImage{
             
             let source:CGImageSource = CGImageSourceCreateWithData(data as! CFData, nil)!
             
+            
             let count:size_t = CGImageSourceGetCount(source)
             
             var animatedImage:UIImage?

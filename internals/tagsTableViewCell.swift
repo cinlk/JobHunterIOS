@@ -57,7 +57,7 @@ fileprivate let cellH:CGFloat = 30
             // MARK 如何动态计算 collectionview 高度？？？？
             let count = tags!.count
             // 技巧，最小2个，大于3个的数 高度都能覆盖
-            self.taggroup.sd_layout().heightIs(CGFloat((count/3) * 40 + 40))
+            _ = self.taggroup.sd_layout().heightIs(CGFloat((count/3) * 40 + 40))
             self.taggroup.reloadData()
             
             // 立刻跟新布局，不用等runloop 来更新

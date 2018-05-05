@@ -36,7 +36,7 @@ class BaseTableViewController: UITableViewController {
     
     // tableview 是第一个view，不能直接使用为hub的背景view
     lazy var backHubView:UIView = { [unowned self] in
-        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
+        let view = UIView.init(frame: self.view.frame)
         view.backgroundColor = UIColor.white
         //用于 navigation
         self.navigationController?.view.insertSubview(view, at: 1)

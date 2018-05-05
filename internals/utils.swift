@@ -28,26 +28,7 @@ public func  build_image(frame: CGRect, color:UIColor)->UIImage{
     
 }
 
-// 
-struct ShareItem {
-    
-    var name:String?
-    var image:String?
-    var type:UMSocialPlatformType?
-    var bubbles:Int?
-    
-    init(name:String?,image:String?, type:UMSocialPlatformType? = nil, bubbles:Int? = nil) {
-        self.name = name
-        self.image = image
-        self.type = type
-        self.bubbles = bubbles
-    }
-    
-    
-}
-
-// 第三方验证
-
+ 
 
 
 

@@ -21,6 +21,8 @@ class BaseSingleItemDropView: YNDropDownView {
     }
     
     internal var passData: ((_ cond:String) -> Void)?
+    // currentSelected index
+    private var index:IndexPath?
     
     
     internal lazy var table:UITableView = {
@@ -93,6 +95,8 @@ extension BaseSingleItemDropView: UITableViewDelegate, UITableViewDataSource{
         let cell = tableView.cellForRow(at: indexPath)
         cell?.textLabel?.textColor = UIColor.blue
         cell?.accessoryType = .checkmark
+        index = indexPath
+        
         if let name = cell?.textLabel?.text{
             
             chooseItem(name:name)
@@ -107,4 +111,15 @@ extension BaseSingleItemDropView: UITableViewDelegate, UITableViewDataSource{
     }
     
 
+}
+
+extension BaseSingleItemDropView{
+    func clearSelected(){
+        guard  let index = index  else {
+            return
+        }
+        let cell = table.cellForRow(at: index)
+        cell?.isSelected = false
+        self.table.reloadData()
+    }
 }

@@ -209,11 +209,10 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
             cell.mode = pManager.mode?.estimate
             cell.selectionStyle = .none
             return cell
-        default:
-            break
+     
         }
         
-        return UITableViewCell()
+        //return UITableViewCell()
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

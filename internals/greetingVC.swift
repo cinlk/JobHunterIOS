@@ -91,8 +91,8 @@ class greetingVC: BaseTableViewController {
             
             // tag 值默认（不使用）
             cell.mode = (on:data?.isOn ?? false, tag:1, name:openGreeting)
-            cell.switchOff.addTarget(self, action: #selector(switchBtn(sender:)), for: .valueChanged)
-            
+            //cell.switchOff.addTarget(self, action: #selector(switchBtn(sender:)), for: .valueChanged)
+            cell.callChange = change
             return cell
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentity, for: indexPath)
@@ -172,7 +172,7 @@ class greetingVC: BaseTableViewController {
 
 extension greetingVC{
     
-    @objc func switchBtn(sender: UISwitch){
+    private func change(_ name: String, _ sender:UISwitch){
         IsGreeting = sender.isOn
         data?.isOn = sender.isOn
         // 服务器更新数据

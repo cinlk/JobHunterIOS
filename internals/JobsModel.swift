@@ -12,29 +12,6 @@ import ObjectMapper
 // MARK 添加更多的属性，比如id，标签等？？
 class CompuseRecruiteJobs :BaseModel{
     
-    enum jobType:String {
-        case intern = "intern"
-        case graduate = "graduate"
-        case onlineApply = "onlineApply"
-        case none = ""
-        
-        var describe:String{
-            get{
-                switch self {
-                case .intern:
-                    return "实习"
-                case .graduate:
-                    return "校招"
-                case .onlineApply:
-                    return ""
-                default:
-                    return ""
-                }
-            }
-        }
-        
-    }
-    
 
    // 职位类型 (必须)
    internal var type:String?{

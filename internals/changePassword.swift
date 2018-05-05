@@ -129,7 +129,7 @@ extension changePassword: UITextFieldDelegate{
     
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        print(textField.text)
+        //print(textField.text)
     }
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {

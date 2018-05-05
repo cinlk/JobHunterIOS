@@ -68,7 +68,7 @@ class messageCell: UITableViewCell {
         guard let content = messageInfo.content else { return 0 }
         guard let strs = String.init(data:  content, encoding: String.Encoding.utf8) else { return  0 }
         
-        let labelSize:CGSize = UILabel.sizeOfString(string: strs as! NSString, font: UIFont.systemFont(ofSize: 16), maxWidth: ScreenW-10-20-avatarSize.width * 2)
+        let labelSize:CGSize = UILabel.sizeOfString(string: strs as NSString , font: UIFont.systemFont(ofSize: 16), maxWidth: ScreenW-10-20-avatarSize.width * 2)
         
         
         

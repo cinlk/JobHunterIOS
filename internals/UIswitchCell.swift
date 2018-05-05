@@ -17,10 +17,13 @@ class switchCell:UITableViewCell{
     
     lazy var switchOff:UISwitch = {
         let sw = UISwitch.init(frame: CGRect.zero)
-        sw.isOn = true 
+        sw.isOn = true
+        sw.addTarget(self, action: #selector(change(_:)), for: .valueChanged)
         return sw
     }()
     
+    
+    var callChange:((_ name:String, _ sender: UISwitch)->Void)?
     
     var mode:(on:Bool, tag:Int, name:String)?{
         didSet{
@@ -63,4 +66,11 @@ class switchCell:UITableViewCell{
         
     }
     
+}
+
+
+extension switchCell{
+    @objc private func change(_ sender:UISwitch){
+        self.callChange?(mode!.name,sender)
+    }
 }

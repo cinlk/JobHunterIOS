@@ -339,7 +339,7 @@ extension personCardVC:shareViewDelegate{
         // 系统自带分享
         if type.rawValue == 1002{
             hiddenBackView()
-            let data:[Any] = ["dqwdwq", UIImage.init(named: "sina"), "www.baidu.com"]
+            let data:[Any] = ["dqwdwq", UIImage.init(named: "sina")!, "www.baidu.com"]
             let activiController = UIActivityViewController.init(activityItems: data, applicationActivities: nil)
             activiController.excludedActivityTypes = [UIActivityType.postToTencentWeibo, UIActivityType.postToWeibo]
             self.present(activiController, animated: true, completion: nil)

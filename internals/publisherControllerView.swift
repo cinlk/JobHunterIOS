@@ -238,7 +238,7 @@ extension publisherControllerView{
             self?.userID = "4234-53453"
             // 2 获取ta 发布的职位
             Thread.sleep(forTimeInterval: 3)
-            for var i in 0..<20{
+            for _ in 0..<20{
                 let json =  ["id":"dwqd","jobName":"在线讲师","address":"北京","picture":"sina","type":"compuse","degree":"不限","create_time":"09:45","salary":"面议","tag":"市场","education":"本科"]
                
                 

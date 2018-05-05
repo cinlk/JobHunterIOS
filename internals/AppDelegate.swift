@@ -33,7 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //TODO 服务器获取greeting数据, 并与本地存储的数据来判断(最新的时间)
         
         // 数据库信息
-        let sqlite = SqliteManager.shared
+        //let _ = SqliteManager.shared
         
         // 从服务器获取打招呼语句
         GreetingMsg = "默认第一条"

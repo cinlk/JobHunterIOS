@@ -180,7 +180,7 @@ extension BindAccountVC: UITextFieldDelegate{
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        print(textField.text)
+        //print(textField.text)
     }
     
 }

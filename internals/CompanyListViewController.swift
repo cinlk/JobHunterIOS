@@ -46,7 +46,7 @@ class CompanyListViewController: BasePositionItemViewController {
         // Do any additional setup after loading the view.
         // 筛选回调
         cityMenu.passData = { citys in
-            print(citys)
+            //print(citys)
             
         }
         careerClassify.passData = { industry in

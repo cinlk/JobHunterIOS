@@ -22,7 +22,7 @@ class ScrollerNewsCell: UITableViewCell {
             
             // 插入第一个位置，滚到这里切换到底部
             
-            self.scroller.sd_layout().heightIs( CGFloat(2 * 25) )
+            _ = self.scroller.sd_layout().heightIs( CGFloat(2 * 25) )
             self.scroller.reloadData()
  
 //

@@ -38,7 +38,7 @@ class aboutUS: BaseTableViewController {
     
     //phone call Alert
     private lazy var phoneAlert:UIAlertController = { [unowned self] in
-        let alert = UIAlertController.init(title: "呼叫电话 \(self.mode?.servicePhone)", message: nil, preferredStyle: .alert)
+        let alert = UIAlertController.init(title: "呼叫电话 \(self.mode!.servicePhone)", message: nil, preferredStyle: .alert)
         let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
         let call = UIAlertAction.init(title: "呼叫", style: .default, handler: { (action) in
             self.callPhone()

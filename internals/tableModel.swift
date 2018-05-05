@@ -503,7 +503,7 @@ struct PersonTable {
                 return  PersonModel(JSON: ["userID":item[PersonTable.personID],
                                            "name":item[PersonTable.personName],
                                            "company":item[PersonTable.company],
-                                           "icon":iconString,
+                                           "icon":iconString ?? "",
                                            "role":item[PersonTable.role],
                                            "isShield":item[PersonTable.isShield],
                                            "isExist":item[PersonTable.isExist]])
@@ -561,7 +561,7 @@ struct PersonTable {
         
         do{
             let target = PersonTable.person.filter(PersonTable.personID == userID)
-            try? self.dbManage.db?.run(target.delete())
+            try self.dbManage.db?.run(target.delete())
             
         }catch{
             print(error)
@@ -719,7 +719,7 @@ func insertBaseMessage(message:MessageBoby) throws{
         }catch{
             // 抛出异常
             throw error
-            print(error)
+            //print(error)
         }
     }
     

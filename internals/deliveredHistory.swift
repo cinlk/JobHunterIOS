@@ -7,65 +7,85 @@
 //
 
 import UIKit
-
+import YNDropDownMenu
 
 
 fileprivate let titleName = "投递记录"
+fileprivate let dropViewH:CGFloat = 40
 
 class deliveredHistory: BaseViewController,UIScrollViewDelegate {
 
     
-    //MARK  data map json?
-    private var data:[DeliveredJobsResults] = [] {
+    // 所有数据
+    private var datas:[DeliveredJobsModel] = []{
         didSet{
-            data.forEach{
-                if $0.title != nil{
-                    titles.append($0.title!)
-                }
-            }
+            filterDatas = datas
         }
-       
     }
     
-    private var childVC:[UIViewController] = []
+    // 条件筛选数据 (MARK)
+    private var filterDatas:[DeliveredJobsModel] = []
     
-    // 数据顺序
-    private  var titles:[String] = []
+    // 过滤条件
+    private var currentJobType:jobType = .none
+    private var currentDelivery:ResumeDeliveryStatus = .none
     
-    lazy var pageTitleView:pagetitleView = { [unowned self] in
-        let pagetitle:pagetitleView = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: 40), titles: self.titles)
-        
-        pagetitle.delegate = self
-        return pagetitle
-    }()
-    
-    lazy var pageContent:pageContentView = { [unowned self] in
-        
-         for i in 0..<titles.count{
-            let vc = deliveryCategoryView.init(style: .plain, datas: self.data[i])
-            vc.view.backgroundColor = UIColor.white
-            childVC.append(vc)
-        
-           
+    // dropItem
+    private lazy var jobTypes:DropJobTypeView = { [unowned self] in
+        let view = DropJobTypeView(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 45*4))
+        view.passData = { type in
+            
+            self.filterJobType(type: jobType.getType(name: type))
+            self.dropMenu.changeMenu(title: type, at: 0)
+
         }
-        let v:pageContentView = pageContentView.init(frame: CGRect.init(x: 0, y: NavH + 40 , width: ScreenW, height: ScreenH - NavH - 40), childVCs: childVC, pVC: self)
-        v.delegate = self
-        return v
-    }()
-    
-    
-    private lazy var navigationBackView:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH))
-        // naviagtionbar 默认颜色
-        v.backgroundColor = UIColor.navigationBarColor()
         
-        return v
+        
+        return view
     }()
+    
+    
+    private lazy var deliveryStatus:DropDelieveryStatusView = { [unowned self] in
+        let view = DropDelieveryStatusView(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 45*6))
+        view.passData = { status in
+            
+            self.filterDelievery(type: ResumeDeliveryStatus.getType(name: status))
+            self.dropMenu.changeMenu(title: status, at: 1)
+        }
+        return view
+    }()
+    
+    
+    
+    // dropMenu
+    private lazy var dropMenu:YNDropDownMenu = { [unowned self] in
+       
+        let dropView =  configDropMenu(items: [jobTypes,deliveryStatus], titles: ["职位类型","投递状态"], height: dropViewH)
+        dropView.origin.y  = 64
+        dropView.isHidden = false
+        return dropView
+    }()
+    
+    // table
+    
+    private lazy var table:UITableView = { [unowned self] in
+        let table = UITableView(frame: CGRect.init(x: 0, y: NavH + self.dropMenu.height + 10 , width: ScreenW, height: ScreenH - (NavH + self.dropMenu.height + 10)))
+        table.tableFooterView = UIView()
+        table.register(deliveryItemCell.self, forCellReuseIdentifier: deliveryItemCell.identity())
+        table.tableHeaderView = UIView()
+        table.dataSource = self
+        table.delegate = self
+        table.separatorStyle = .none
+        table.backgroundColor = UIColor.viewBackColor()
+        
+        return table
+    }()
+
     
     override func viewDidLoad() {
         //self.oldSetViews()
         super.viewDidLoad()
-        
+        self.view.backgroundColor = UIColor.viewBackColor()
         self.setViews()
         self.loadData()
         
@@ -75,21 +95,25 @@ class deliveredHistory: BaseViewController,UIScrollViewDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = titleName
-        self.navigationController?.view.insertSubview(navigationBackView, at: 1)
-    }
+        self.navigationController?.insertCustomerView()
+     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         self.navigationItem.title = ""
-        navigationBackView.removeFromSuperview()
-        self.navigationController?.view.willRemoveSubview(navigationBackView)
-    }
+        self.navigationController?.removeCustomerView()
+        self.dropMenu.hideMenu()
+        
+     }
     
     override func setViews() {
         
-        self.view.backgroundColor = UIColor.viewBackColor()
-        //self.handleViews.append(view)
+        self.handleViews.append(table)
+        self.handleViews.append(dropMenu)
+        self.view.addSubview(table)
+        self.view.addSubview(dropMenu)
         
+       
         super.setViews()
     }
     
@@ -97,8 +121,8 @@ class deliveredHistory: BaseViewController,UIScrollViewDelegate {
         
         super.didFinishloadData()
         // 只有获取数据后 才能设置view
-        self.view.addSubview(pageTitleView)
-        self.view.addSubview(pageContent)
+        self.table.reloadData()
+        
         
     }
     
@@ -108,28 +132,73 @@ class deliveredHistory: BaseViewController,UIScrollViewDelegate {
         self.loadData()
     }
     
-    
-//    override func showError() {
-//
-//    }
 
 }
 
-// pagetitle delegate
-extension deliveredHistory: pagetitleViewDelegate{
-    
-    func ScrollContentAtIndex(index: Int, _ titleView: pagetitleView) {
-        self.pageContent.moveToIndex(index)
-    }
 
-}
+extension deliveredHistory{
+    
+    private func filterJobType(type:jobType){
+        var res:[DeliveredJobsModel] = []
+        currentJobType = type
+        
+        if currentJobType == .all{
+           filterDatas = datas
+           // 状态栏恢复初始化设置
+           self.dropMenu.changeMenu(title: "投递状态", at: 1)
+           self.deliveryStatus.clearSelected()
+           currentDelivery = .none
+            
+        }else if currentDelivery == .none{
+            datas.forEach{
+                if currentJobType == $0.jobtype{
+                    res.append($0)
+                }
+            }
+            
+            filterDatas = res
 
-extension deliveredHistory: PageContentViewScrollDelegate{
-    func pageContenScroll(_ contentView: pageContentView, progress: CGFloat, sourcIndex: Int, targetIndex: Int) {
-        self.pageTitleView.changeTitleWithProgress(progress, sourceIndex: sourcIndex, targetIndex: targetIndex)
+            
+        }else{
+            datas.forEach{
+                if currentJobType == $0.jobtype && currentDelivery == $0.deliveryStatus {
+                    res.append($0)
+                }
+            }
+            filterDatas = res
+        }
+        
+        
+        self.table.reloadData()
+        
     }
     
-    
+    private func filterDelievery(type:ResumeDeliveryStatus){
+        var res:[DeliveredJobsModel] = []
+        currentDelivery = type
+        
+        if currentJobType == .none || currentJobType == .all{
+            
+            datas.forEach{
+                if currentDelivery == $0.deliveryStatus{
+                    res.append($0)
+                }
+            }
+            
+            filterDatas = res
+
+        }else{
+            datas.forEach{
+                if currentJobType == $0.jobtype && currentDelivery == $0.deliveryStatus {
+                    res.append($0)
+                }
+            }
+            filterDatas = res
+        }
+        
+        self.table.reloadData()
+        
+    }
 }
 
 // load data
@@ -141,39 +210,36 @@ extension deliveredHistory{
         DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
             
             
-            var res:[DeliveredJobsResults] = []
+            for _ in 0..<5{
+                self?.datas.append(DeliveredJobsModel(JSON: ["id":"dqw-dqwd","type":jobType.intern.rawValue,
+                "icon":"chrome","title":"测试实习","companyName":"google","address":["北京","天津"],
+                "create_time":Date().timeIntervalSince1970,"currentStatus":ResumeDeliveryStatus.read.rawValue,"feedBack":"当前为多群无多群无多当前为多群无多当前为多群无多群无当前为多群多群当前的群",
+                "historyStatus":[(status:"面试",time:"2017-03-23 16:45"),(status:"HR已阅",time:"2017-03-20 22:45"),(status:"投递成功",time:"2017-03-19 09:23")]])!)
+                
+                
+            }
             
-            // 注意顺序
-            let  d1 =  DeliveredJobsModel(JSON: ["id":"dwqdqwd","picture":"chrome","jobName":"AI","company":"Google","address":"mountain","type":"社招","checkStatus":"不合适","create_time":"2017-12-21","records":[["不合适","2017-9-13: 08:25"],["待沟通","2017-9-13: 08:25"],["被查看","2017-9-13: 08:21"],["投递成功","2017-9-12: 16:08"]], "response":["status":"不合适","des":"专业方向不符合 dqwd 吊袜带挖 当前为多群无 当前为多群无多多群无  当前为多无群多群 当前的群多群无"]])
+            for _ in 0..<5{
+                self?.datas.append(DeliveredJobsModel(JSON: ["id":"dqw-dqwd","type":jobType.graduate.rawValue,
+                    "icon":"chrome","title":"前端nodejs工程师","companyName":"google",
+                    "create_time":Date().timeIntervalSince1970,"currentStatus":ResumeDeliveryStatus.read.rawValue,"address":["北京","天津"],
+                    "historyStatus":[(status:"面试",time:"2017-03-23 16:45"),(status:"HR已阅",time:"2017-03-20 22:45"),(status:"投递成功",time:"2017-03-19 09:23")]])!)
+                
+                
+            }
             
-            
-            let  d2 =  DeliveredJobsModel(JSON: ["picture":"sina","jobName":"媒体编辑","company":"新浪","address":"上海","type":"社招","checkStatus":"被查看","create_time":"2017-12-21","records":[["被查看","2017-9-13: 08:21"],["投递成功","2017-9-12: 16:08"]],"response":["status":"被查看","des":""]])
-            
-            
-            // 全部
-            // 直接写json 构造函数 不能转换 为nil ？？
-            let m1 = DeliveredJobsResults(JSON: ["title":"全部","jobs":[]])
-            m1?.jobs?.append(d1!)
-            m1?.jobs?.append(d2!)
-            res.append(m1!)
-            
-            //self?.data.append(m1!)
-            
-            
-            // 赋值有才数据  ？？
-            //data.first?.jobs = [d1,d2]
-            //self.title?.append("全部")
-            res.append(DeliveredJobsResults(JSON: ["title":"待沟通","jobs":[]])!)
-            res.append(DeliveredJobsResults(JSON: ["title":"面试","jobs":[]])!)
-            //
-            res.append(DeliveredJobsResults(JSON: ["title":"不合适","jobs":["picture":"chrome","jobName":"AI","company":"Google","address":"mountain","type":"社招","checkStatus":"不合适","create_time":"2017-12-21"]])!)
+            for _ in 0..<4{
+                self?.datas.append(DeliveredJobsModel(JSON: ["id":"dqw-dqwd","type":jobType.onlineApply.rawValue,
+                    "icon":"chrome","title":"","companyName":"公司2018校招",
+                    "create_time":Date().timeIntervalSince1970,"currentStatus":ResumeDeliveryStatus.interview.rawValue,"address":["北京","成都","天津"],"business":["建筑","管理","设计","培训","投资"],
+                    
+                    "historyStatus":[(status:"面试",time:"2017-03-23 16:45"),(status:"投递成功",time:"2017-03-19 09:23")]])!)
+            }
             
             Thread.sleep(forTimeInterval: 3)
             
             DispatchQueue.main.async(execute: {
                 
-                
-                self?.data = res
                 self?.didFinishloadData()
             })
         }
@@ -184,4 +250,52 @@ extension deliveredHistory{
 }
 
 
+
+extension deliveredHistory:UITableViewDataSource, UITableViewDelegate{
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+            return filterDatas.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let item = filterDatas[indexPath.row]
+        if let cell = table.dequeueReusableCell(withIdentifier: deliveryItemCell.identity(), for: indexPath) as? deliveryItemCell{
+            
+            cell.mode = item
+            return cell
+        }
+        
+        return UITableViewCell()
+        
+    }
+    
+    
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let item = filterDatas[indexPath.row]
+        let height =  table.cellHeight(for: indexPath, model: item, keyPath: "mode", cellClass: deliveryItemCell.self, contentViewWidth: ScreenW)
+        
+        return height + 10
+        
+    }
+    
+    
+    // 查看详细记录
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
+        let item = filterDatas[indexPath.row]
+        let detail = DetailDeliveryStatus()
+        detail.mode = item
+        
+        self.navigationController?.pushViewController(detail, animated: true)
+        
+    }
+    
+    
+    
+}
 

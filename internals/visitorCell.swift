@@ -8,35 +8,43 @@
 
 import UIKit
 
+
+fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
+
 @objcMembers class visitorCell: UITableViewCell {
 
     private lazy var avartar: UIImageView = {
         let img = UIImageView.init()
         img.clipsToBounds = true
-        img.contentMode = .scaleAspectFit
+        img.contentMode = .scaleToFill
         return img
         
     }()
+    
+    private lazy var titleName:UILabel = {
+        let label = UILabel()
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
+        label.textAlignment = .left
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.textColor = UIColor.black
+        return label
+        
+    }()
+    
+    // YYYY-MM-DD
     private lazy var visite_time: UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
         label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 12)
+        label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = UIColor.lightGray
         return label
         
     }()
-    private lazy var jobName: UILabel = {
-        let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
-        label.textAlignment = .left
-        label.textColor = UIColor.blue
-        label.font = UIFont.systemFont(ofSize: 12)
-        return label
-    }()
+    
     private lazy var company: UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
         label.textAlignment = .left
         label.textColor = UIColor.black
         label.font = UIFont.systemFont(ofSize: 14)
@@ -44,54 +52,51 @@ import UIKit
     }()
     
     
-    private lazy var position:UILabel = {
-        let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
-        label.textAlignment = .left
-        label.textColor = UIColor.black
-        label.font = UIFont.systemFont(ofSize: 14)
-        return label
-    }()
-    private lazy var action:UILabel = {
-        let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
-        label.textAlignment = .left
-        label.textColor = UIColor.lightGray
-        label.font = UIFont.systemFont(ofSize: 12)
-        return label
-    }()
+    
+    override var frame: CGRect{
+        didSet{
+            var newFrame = frame
+            newFrame.origin.x += 10
+            newFrame.size.width -= 20
+            //newFrame.origin.y += 10
+            newFrame.size.height -= 10
+            super.frame = newFrame
+        }
+    }
     
     
    
-  dynamic var mode:VisitorHRModel?{
+   dynamic var mode:HRVisitorModel?{
         didSet{
-            avartar.image = UIImage.init(named: mode?.iconURL ?? "default")
-            visite_time.text = mode?.visit_time
-            jobName.text = mode?.jobName
-            company.text = mode?.company
-            position.text = mode?.position
-            action.text = mode?.tag
+            guard let mode = mode else {
+                return
+            }
+            avartar.image = UIImage.init(named: mode.icon)
+            visite_time.text = mode.visitTimeStr
+            titleName.text = mode.name! + "看过你"
+            company.text = mode.company
             
-            self.setupAutoHeight(withBottomViewsArray: [avartar, position], bottomMargin: 10)
+            self.setupAutoHeight(withBottomViewsArray: [avartar, company], bottomMargin: 10)
             
         }
     }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        let views:[UIView] = [avartar, visite_time, jobName, company, position, action]
+        let views:[UIView] = [avartar, visite_time, company, titleName ]
         self.contentView.sd_addSubviews(views)
-        _ = avartar.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(45)?.heightIs(45)
-        _ = company.sd_layout().leftSpaceToView(avartar,10)?.topEqualToView(avartar)?.autoHeightRatio(0)
-        _ = position.sd_layout().leftSpaceToView(company,5)?.topEqualToView(company)?.autoHeightRatio(0)
-        _ = action.sd_layout().leftEqualToView(company)?.topSpaceToView(company,5)?.autoHeightRatio(0)
-        _ = jobName.sd_layout().leftSpaceToView(action,10)?.topEqualToView(action)?.autoHeightRatio(0)
-        _ = visite_time.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(company)?.autoHeightRatio(0)
         
+        _ = avartar.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(iconSize.width)?.heightEqualToWidth()
+        _ = titleName.sd_layout().leftSpaceToView(avartar,10)?.topEqualToView(avartar)?.autoHeightRatio(0)
         
+        _ = company.sd_layout().leftEqualToView(titleName)?.topSpaceToView(titleName,10)?.autoHeightRatio(0)
+        
+        _ = visite_time.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(titleName)?.autoHeightRatio(0)
+        
+        avartar.sd_cornerRadiusFromHeightRatio = 0.5
+        titleName.setMaxNumberOfLinesToShow(1)
         company.setMaxNumberOfLinesToShow(1)
-        position.setMaxNumberOfLinesToShow(1)
-        jobName.setMaxNumberOfLinesToShow(1)
+       
         
     }
     

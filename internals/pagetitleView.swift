@@ -108,6 +108,7 @@ extension pagetitleView{
             label.textColor = index == 0 ? UIColor.init(r: kSelectColor.0, g: kSelectColor.1, b: kSelectColor.2) : UIColor.init(r: kNormalColor.0, g: kNormalColor.1, b: kNormalColor.2)
             label.text = item
             label.tag = index
+            
             //label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
             self.addGuesture(label: label)
             //label.sizeToFit()

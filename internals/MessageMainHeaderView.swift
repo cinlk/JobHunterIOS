@@ -2,7 +2,7 @@
 
 protocol headerCollectionViewDelegate: class {
     
-    func chooseItem(index:Int)
+    func chooseItem(name:String)
     
 }
 
@@ -91,7 +91,10 @@ extension HeaderCollectionView:UICollectionViewDelegateFlowLayout, UICollectionV
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.delegate?.chooseItem(index: indexPath.row)
+        guard  let name = mode?[indexPath.row].name else {
+            return
+        }
+        self.delegate?.chooseItem(name: name)
     }
     
     

@@ -8,9 +8,9 @@
 
 import UIKit
 
-class newVisitor: BaseTableViewController {
+class MyVisitor: BaseTableViewController {
 
-    private var mode:[VisitorHRModel] = []
+    private var mode:[HRVisitorModel] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,14 +18,24 @@ class newVisitor: BaseTableViewController {
         self.setViews()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.insertCustomerView()
+        self.navigationItem.title = "谁看过我"
+
+    }
     override func viewWillDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+        super.viewWillDisappear(animated)
         self.navigationItem.title = ""
+        self.navigationController?.removeCustomerView()
+
         
     }
     
     
     override func setViews(){
+        self.tableView.contentInset = UIEdgeInsetsMake(10, 0, 0, 0)
+        self.tableView.separatorStyle = .none
         self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.tableFooterView = UIView.init()
         self.tableView.register(visitorCell.self, forCellReuseIdentifier: visitorCell.identity())
@@ -71,14 +81,16 @@ class newVisitor: BaseTableViewController {
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
-        return tableView.cellHeight(for: indexPath, model: mode[indexPath.row], keyPath: "mode", cellClass: visitorCell.self, contentViewWidth: ScreenW)
+        let height =  tableView.cellHeight(for: indexPath, model: mode[indexPath.row], keyPath: "mode", cellClass: visitorCell.self, contentViewWidth: ScreenW)
+        return height + 10
     }
   
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         tableView.deselectRow(at: indexPath, animated: false)
-        let hrVC = publisherControllerView()
-        //hrVC.mode = 
+        _ = publisherControllerView()
+        //hrVC.mode =
+        
     }
     
     
@@ -86,7 +98,7 @@ class newVisitor: BaseTableViewController {
 }
 
 
-extension newVisitor{
+extension MyVisitor{
     
     private func loadData(){
         //self.data
@@ -95,7 +107,7 @@ extension newVisitor{
             Thread.sleep(forTimeInterval: 3)
             
             for _ in 0..<10{
-                self?.mode.append(VisitorHRModel(JSON: ["iconURL":"avartar","company":"小公司","position":"HRBP","visit_time":"2017-12-27","jobName":"销售经理","tag":"招聘"])!)
+                self?.mode.append(HRVisitorModel(JSON: ["userID":"dqw-4234-dqwd-dqwd","icon":"chicken","company":"小公司","name":"大u云", "position":"HRBP","visitTime":Date().timeIntervalSince1970,"companyID":"dqw-dqwfq-dqwd"])!)
             }
             
             DispatchQueue.main.async(execute: {

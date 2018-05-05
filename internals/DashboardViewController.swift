@@ -341,6 +341,7 @@ extension DashboardViewController: UITableViewDelegate{
                     cell.mode = "推荐职位"
                     cell.SectionTitle.font = UIFont.systemFont(ofSize: 16)
                     cell.action = {
+                        // 订阅条件
                         let subscribleView = subscribleItem()
                         subscribleView.hidesBottomBarWhenPushed = true
                         self.navigationController?.pushViewController(subscribleView, animated: true)

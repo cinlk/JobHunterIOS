@@ -11,19 +11,19 @@ import PPBadgeViewSwift
 
 
 
+fileprivate let iconSize:CGSize = CGSize.init(width: 40, height: 40)
+fileprivate let tableHeaderViewH:CGFloat = 100
+fileprivate let itemCGSize:CGSize = CGSize.init(width: ScreenW / 3 - 40, height: tableHeaderViewH - 20 )
 
-fileprivate let tableHeaderViewH:CGFloat = 180
-fileprivate let itemCGSize:CGSize = CGSize.init(width: ScreenW / 3 - 40, height: tableHeaderViewH / 2 - 20)
 
-
-enum messageItemType:Int {
-    case result = 0
-    case forum = 1
-    case notification = 2
-    //case message  = "消息"
-    case recommend = 3
-    case careertak = 4
-    case others
+fileprivate enum messageItemType:String {
+    
+    case delivery = "投递记录"
+    case forum = "论坛动态"
+    case invitation = "我的邀约"
+    case visitor = "看过我"
+    case notification = "通知"
+    
 }
 
 
@@ -38,21 +38,13 @@ class messageMain: UITableViewController {
     private lazy var cModel:[conversationModel] = []
     
     
-    private lazy var navigationBackView:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH))
-        // naviagtionbar 默认颜色
-        v.backgroundColor = UIColor.navigationBarColor()
-        
-        return v
-    }()
-    
     // table 头部显示 item
-    fileprivate var showItems:[ShareItem] = [ShareItem.init(name: "投递记录", image: "delivery",type:nil, bubbles: 1),
-        ShareItem.init(name: "论坛动态", image: "forum", type:nil,bubbles: 1),
-        ShareItem.init(name: "系统通知", image: "bell", type:nil, bubbles: 1),
-        ShareItem.init(name: "推荐职位", image: "jobs", type:nil, bubbles: 1),
-        ShareItem.init(name: "宣讲会", image: "voice", type:nil, bubbles: 1),
-        ShareItem.init(name: "", image: "", type:nil,  bubbles: 0)]
+    fileprivate var showItems:[ShareItem] = [
+        ShareItem.init(name: "投递记录", image: "delivery", type:nil,bubbles: 1),
+        ShareItem.init(name: "我的邀约", image: "bell", type:nil, bubbles: 1),
+        ShareItem.init(name: "看过我", image: "jobs", type:nil, bubbles: 1)
+    ]
+    
     
     
     
@@ -76,17 +68,15 @@ class messageMain: UITableViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationItem.title = "消息记录"
-        self.navigationController?.view.insertSubview(navigationBackView, at: 1)
-        
+        self.navigationItem.title = "消息"
+        self.navigationController?.insertCustomerView()
      }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationItem.title = ""
-        navigationBackView.removeFromSuperview()
-        self.navigationController?.view.willRemoveSubview(navigationBackView)
-
+        self.navigationController?.removeCustomerView()
+        
     }
     
     
@@ -94,12 +84,6 @@ class messageMain: UITableViewController {
         NotificationCenter.default.removeObserver(self)
     }
    
-    
-    override func viewWillLayoutSubviews() {
-       super.viewDidLayoutSubviews()
-        
-        
-    }
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -213,7 +197,6 @@ extension messageMain {
     private func setViews(){
         // 聊天会话cell
         self.tableView.register(conversationCell.self, forCellReuseIdentifier: conversationCell.identity())
-        //self.tableView.register(UINib.init(nibName: "conversationCell", bundle: nil), forCellReuseIdentifier: conversationCell.identity())
         // 数据
         headerView.mode = showItems
         self.tableView.tableHeaderView = headerView
@@ -235,31 +218,35 @@ extension messageMain {
         
     }
 }
-// 子界面
+// 实现header的代理
 extension messageMain: headerCollectionViewDelegate{
     
-    func chooseItem(index: Int) {
+    func chooseItem(name: String) {
         
-        switch index {
-        case  messageItemType.result.rawValue:
-            let view =  deliveredHistory()
+        switch name {
+            
+        case messageItemType.invitation.rawValue:
+            
+            let view = InvitationViewController()
             view.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(view, animated: true)
             
-        case messageItemType.notification.rawValue:
-            let view = SysNotificationController()
+        case messageItemType.delivery.rawValue:
+            let view = deliveredHistory()
             view.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(view, animated: true)
+
             
         case messageItemType.forum.rawValue:
             let view = ForumViewController()
             view.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(view, animated: true)
-        case messageItemType.recommend.rawValue:
-            let view = recommendation()
+            
+        case messageItemType.visitor.rawValue:
+            let view = MyVisitor()
             view.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(view, animated: true)
-            
+           
         default:
             return
         }
@@ -278,8 +265,6 @@ extension messageMain{
           
           cModel = cManager.getConversaions()
           self.tableView.reloadData()
-//        ChatPeople = ContactManger.getUsers()
-//        self.tableView.reloadData()
     }
     // 刷新某行数据
     func refreshRow(indexPath: IndexPath, userID:String){
@@ -294,4 +279,95 @@ extension messageMain{
     
 }
 
+
+
+
+// 对话cell
+@objcMembers fileprivate class conversationCell: UITableViewCell {
+    
+    private lazy var name: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .left
+        label.font = UIFont.systemFont(ofSize: 16)
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 120)
+        return label
+    }()
+    
+    private lazy var content: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .left
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 60)
+        return label
+    }()
+    
+    private lazy var time: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.textColor = UIColor.lightGray
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 120)
+        return label
+    }()
+    
+    private lazy var icon: UIImageView = {
+        let img = UIImageView.init(frame: CGRect.zero)
+        img.clipsToBounds = true
+        img.contentMode = .scaleAspectFill
+        return img
+    }()
+    
+    
+    
+    dynamic var mode:conversationModel?{
+        didSet{
+            
+            guard let user = mode?.user else { return }
+            guard let mes = mode?.message else { return }
+            
+            guard let iconData = user.icon else { return }
+            
+            self.icon.image = UIImage.init(data: iconData) ?? #imageLiteral(resourceName: "default")
+            self.name.text =  user.name! + "@" + user.company!
+            
+            self.content.text = mes.getContent(isConversion: true) as? String
+            
+            self.time.text =  mes.creat_time?.string()
+            self.setupAutoHeight(withBottomViewsArray: [icon,content], bottomMargin: 10)
+            
+        }
+    }
+    
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        let views:[UIView] = [name, content, time, icon]
+        self.contentView.sd_addSubviews(views)
+        _ = icon.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(iconSize.width)?.autoHeightRatio(1)
+        
+        _ = name.sd_layout().leftSpaceToView(icon,10)?.topEqualToView(icon)?.autoHeightRatio(0)
+        _ = content.sd_layout().leftEqualToView(name)?.topSpaceToView(name,5)?.autoHeightRatio(0)
+        _ = time.sd_layout().rightSpaceToView(self.contentView,10)?.topSpaceToView(name,5)?.autoHeightRatio(0)
+        
+        // 圆角是宽度的05倍
+        icon.sd_cornerRadiusFromWidthRatio = 0.5
+        content.setMaxNumberOfLinesToShow(1)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    
+    
+    class func identity()->String{
+        return "conversationCell"
+    }
+    
+    class func cellHeight()->CGFloat {
+        return 60.0
+    }
+    
+    
+}
 

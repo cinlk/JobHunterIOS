@@ -244,7 +244,7 @@ extension myAccount{
                     if error != nil{
                         print("授权失败, 不能绑定")
                     }else{
-                        if let response = resp as? UMSocialUserInfoResponse{
+                        if (resp as? UMSocialUserInfoResponse) != nil{
                             
                             // 得到uid 存入服务器
                             print("绑定成功")
@@ -264,9 +264,9 @@ extension myAccount{
                 
                 UMSocialManager.default().getUserInfo(with: .wechatSession, currentViewController: self) { (resp, error) in
                     if error != nil{
-                        print("授权失败\(error), 不能绑定")
+                        print("授权失败\(String(describing: error)), 不能绑定")
                     }else{
-                        if let response = resp as? UMSocialUserInfoResponse{
+                        if (resp as? UMSocialUserInfoResponse) != nil{
                             
                             // 得到uid 存入服务器 提示进度
                             print("绑定成功")

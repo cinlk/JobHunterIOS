@@ -252,7 +252,7 @@ extension CommunicationChatView {
             
         }
         // 影藏底部tabbar
-        if let vc = viewController as? messageMain{
+        if viewController is messageMain{
             self.tabBarController?.tabBar.isHidden = false
         }else{
             self.tabBarController?.tabBar.isHidden = true
@@ -358,7 +358,7 @@ extension CommunicationChatView: UITableViewDelegate,UITableViewDataSource{
                 return cell
             case .time:
                 let cell = tableView.dequeueReusableCell(withIdentifier: ChatTimeCell.identity(), for: indexPath) as! ChatTimeCell
-                cell.model = message as! TimeBody
+                cell.model = message as? TimeBody
                 //cell.useCellFrameCache(with: indexPath, tableView: tableView)
                 return cell
             default:
@@ -485,7 +485,7 @@ extension CommunicationChatView{
     fileprivate func createTimeMsg(msg: MessageBoby) -> TimeBody{
         
         // 时间消息
-        let time = TimeBody(JSON: ["type":MessgeType.time.rawValue,"creat_time":msg.creat_time?.timeIntervalSince1970])!
+        let time = TimeBody(JSON: ["type":MessgeType.time.rawValue,"creat_time":msg.creat_time!.timeIntervalSince1970])!
         time.timeStr = LXFChatMsgTimeHelper.shared.chatTimeString(with: time.creat_time?.timeIntervalSince1970)
         return time
         
@@ -743,7 +743,7 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
         // 本地存储 占时
         if let message = MessageBoby(JSON: ["messageID":getUUID(),"type":MessgeType.picture.rawValue,
                                             "creat_time":Date.init().timeIntervalSince1970,
-                                            "isRead":true,"content":imageName.data(using: String.Encoding.utf8)?.base64EncodedString()]){
+                                            "isRead":true,"content":imageName.data(using: String.Encoding.utf8)!.base64EncodedString()]){
             message.sender = myself
             message.receiver = self.hr
             self.reloads(mes: message)
@@ -1011,7 +1011,7 @@ extension CommunicationChatView: UIImagePickerControllerDelegate{
             }else if picker.sourceType == .photoLibrary{
                 // 照片库
                 // 获取名称
-                imagePathURL = info[UIImagePickerControllerImageURL] as! URL
+                imagePathURL = info[UIImagePickerControllerImageURL] as? URL
                 imageName = imagePathURL!.lastPathComponent
                 // 文件扩展类型
                 let fileType =  imageName.components(separatedBy: ".").last!
