@@ -152,35 +152,6 @@
             </objects>
             <point key="canvasLocation" x="-3721" y="682"/>
         </scene>
-        <!--消息界面-->
-        <scene sceneID="59d-fN-2An">
-            <objects>
-                <tableViewController id="6sL-mI-3vi" customClass="messageMain" customModule="internals" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="BOw-U4-McU">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="messgeItem" id="QgW-fw-GTQ" customClass="messageItemCell" customModule="internals" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="QgW-fw-GTQ" id="RoE-4w-laj">
-                                    <rect key="frame" x="0.0" y="0.0" width="341" height="43.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="6sL-mI-3vi" id="vDw-wc-FTK"/>
-                            <outlet property="delegate" destination="6sL-mI-3vi" id="MuK-xD-QaK"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" title="消息界面" id="eTo-eG-kQI"/>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="eJn-Tn-U1a" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-76" y="1564"/>
-        </scene>
         <!--消息-->
         <scene sceneID="aU9-Nv-jS5">
             <objects>
@@ -191,12 +162,31 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="6sL-mI-3vi" kind="relationship" relationship="rootViewController" id="j7o-ls-Oqg"/>
+                        <segue destination="7yL-La-ZI6" kind="relationship" relationship="rootViewController" id="618-bb-lhm"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ezd-vV-cqS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1042" y="1564"/>
+        </scene>
+        <!--Message Main-->
+        <scene sceneID="nmn-QP-Tl5">
+            <objects>
+                <viewController id="7yL-La-ZI6" customClass="messageMain" customModule="internals" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="jhM-CP-n1z"/>
+                        <viewControllerLayoutGuide type="bottom" id="85f-o8-iDj"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="nKP-bF-cMW">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="DgI-f0-cbT"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gI2-r8-v7a" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-33" y="1564"/>
         </scene>
         <!--Person View Controller-->
         <scene sceneID="xC3-zk-x6Q">

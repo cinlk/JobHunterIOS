@@ -131,7 +131,6 @@ class PostContentViewController: BaseTableViewController {
         //self.navigationController?.toolbar.autoresizingMask = [.flexibleHeight, .flexibleTopMargin]
         InputViewHeigh = self.navigationController?.toolbar.height ?? TOOLBARH
  
-        self.handleViews.append(tableView)
         super.setViews()
     }
     

@@ -23,7 +23,7 @@ class BaseTableViewController: UITableViewController {
     
     private lazy var hub:MBProgressHUD = { [unowned self] in
         
-        let  hub = MBProgressHUD.showAdded(to: self.backHubView, animated: true)
+        let  hub = MBProgressHUD.showAdded(to: self.tableView, animated: true)
         hub.mode = .indeterminate
         hub.label.text = "加载数据"
         hub.removeFromSuperViewOnHide = false
@@ -33,17 +33,6 @@ class BaseTableViewController: UITableViewController {
         
     }()
     
-    
-    // tableview 是第一个view，不能直接使用为hub的背景view
-    lazy var backHubView:UIView = { [unowned self] in
-        let view = UIView.init(frame: self.view.frame)
-        view.backgroundColor = UIColor.white
-        //用于 navigation
-        self.navigationController?.view.insertSubview(view, at: 1)
-        view.isHidden = true
-        return view
-        
-    }()
     
     var handleViews:[UIView] = []
     
@@ -57,16 +46,16 @@ class BaseTableViewController: UITableViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         hub.removeFromSuperview()
-        backHubView.removeFromSuperview()
         
     }
     
     func setViews(){
+                
+        
         hub.show(animated: true)
         self.handleViews.forEach{
             $0.isHidden = true
         }
-        backHubView.isHidden = false
     }
     
     func didFinishloadData(){
@@ -74,7 +63,6 @@ class BaseTableViewController: UITableViewController {
         self.handleViews.forEach{
             $0.isHidden = false
         }
-        backHubView.isHidden = true
         errorView.isHidden = true
         hub.removeFromSuperview()
         
@@ -87,12 +75,12 @@ class BaseTableViewController: UITableViewController {
         }
         hub.hide(animated: true)
         errorView.isHidden = false
-        backHubView.isHidden = true
+        //backHubView.isHidden = true
     }
 
     func reload(){
         errorView.isHidden = true
-        backHubView.isHidden = false
+        //backHubView.isHidden = false
         hub.show(animated: true)
     }
     

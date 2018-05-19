@@ -44,7 +44,6 @@ class greetingVC: BaseTableViewController {
         self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentity)
         self.tableView.register(switchCell.self, forCellReuseIdentifier: switchCell.identity())
         
-        self.handleViews.append(tableView)
         
         super.setViews()
         

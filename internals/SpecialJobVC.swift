@@ -45,7 +45,6 @@ class SpecialJobVC: BaseTableViewController {
         tableView.showsHorizontalScrollIndicator = false
         tableView.register(CommonJobTableCell.self, forCellReuseIdentifier: CommonJobTableCell.identity())
         
-        self.handleViews.append(tableView)
         super.setViews()
     }
     

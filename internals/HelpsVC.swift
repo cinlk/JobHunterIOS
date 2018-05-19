@@ -58,7 +58,6 @@ class HelpsVC: BaseTableViewController {
         self.tableView.tableHeaderView = headerView
         self.tableView.register(expansionCell.self, forCellReuseIdentifier: expansionCell.identity())
         
-        self.handleViews.append(tableView)
         super.setViews()
     }
     

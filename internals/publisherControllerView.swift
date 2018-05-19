@@ -118,7 +118,6 @@ class publisherControllerView: BaseTableViewController {
         self.tableView.register(companyJobCell.self, forCellReuseIdentifier: companyJobCell.identity())
         self.setHeader()
         
-        self.handleViews.append(tableView)
         super.setViews()
         
     }

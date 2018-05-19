@@ -59,7 +59,6 @@ class myAccount: BaseTableViewController {
         self.tableView.separatorStyle = .singleLine
         self.tableView.allowsMultipleSelection = false
         self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentity)
-        self.handleViews.append(tableView)
         super.setViews()
         
     }

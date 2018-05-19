@@ -40,9 +40,7 @@ class notificationVC: BaseTableViewController {
         self.tableView.tableFooterView = UIView.init()
         self.tableView.showsVerticalScrollIndicator = false
         self.tableView.register(switchCell.self, forCellReuseIdentifier: switchCell.identity())
-        
-        self.handleViews.append(tableView)
-        
+                
         super.setViews()
         
         

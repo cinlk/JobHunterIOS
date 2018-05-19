@@ -37,8 +37,7 @@ class JobInviteViewController: BaseTableViewController {
         self.tableView.separatorStyle = .none
         self.tableView.register(JobInviteTableViewCell.self, forCellReuseIdentifier: JobInviteTableViewCell.identity())
         // 调整状态背景view 高度
-        backHubView.frame = CGRect.init(x: 0, y: NavH + 45, width: ScreenW, height: ScreenH - (NavH + 45))
-        self.handleViews.append(tableView)
+        //backHubView.frame = CGRect.init(x: 0, y: NavH + 45, width: ScreenW, height: ScreenH - (NavH + 45))
         super.setViews()
     }
     

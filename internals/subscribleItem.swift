@@ -64,7 +64,6 @@ class subscribleItem: BaseTableViewController {
         self.tableView.register(sectionCellView.self, forCellReuseIdentifier: sectionCellView.identity())
         self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(customView: addBtn)
         
-        self.handleViews.append(tableView)
         self.handleViews.append(addBtn)
         super.setViews()
         

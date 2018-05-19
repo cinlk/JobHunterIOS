@@ -100,7 +100,6 @@ class aboutUS: BaseTableViewController {
         // 下降64
         self.tableView.contentOffset = CGPoint.init(x: 0, y: 64)
         shareOriginY = share.origin.y
-        self.handleViews.append(tableView)
         
         super.setViews()
     }

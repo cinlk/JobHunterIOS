@@ -58,7 +58,6 @@ class invitationSettingViewController: BaseTableViewController {
         self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.register(switchCell.self, forCellReuseIdentifier: switchCell.identity())
         //self.navigationItem.rightBarButtonItem
-        self.handleViews.append(tableView)
         
         super.setViews()
         

@@ -13,6 +13,8 @@
 		4A0BA74320ADC9D30099F332 /* MagazineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA74220ADC9D30099F332 /* MagazineViewController.swift */; };
 		4A0BA74520ADCA880099F332 /* MagineTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA74420ADCA880099F332 /* MagineTableViewCell.swift */; };
 		4A0BA74720ADCB140099F332 /* MagazineModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA74620ADCB140099F332 /* MagazineModel.swift */; };
+		4A0BA74920B01C880099F332 /* ChatListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA74820B01C880099F332 /* ChatListViewController.swift */; };
+		4A0BA74B20B01CED0099F332 /* ChatUsersTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA74A20B01CED0099F332 /* ChatUsersTableViewCell.swift */; };
 		4A18E1EB202CA03F00B1038E /* TreeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A18E1EA202CA03F00B1038E /* TreeNode.swift */; };
 		4A1A502620773A500070B74D /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1A502520773A500070B74D /* CoreTelephony.framework */; };
 		4A1A502820773A5C0070B74D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1A502720773A5C0070B74D /* libz.tbd */; };
@@ -340,6 +342,8 @@
 		4A0BA74220ADC9D30099F332 /* MagazineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagazineViewController.swift; sourceTree = "<group>"; };
 		4A0BA74420ADCA880099F332 /* MagineTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagineTableViewCell.swift; sourceTree = "<group>"; };
 		4A0BA74620ADCB140099F332 /* MagazineModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagazineModel.swift; sourceTree = "<group>"; };
+		4A0BA74820B01C880099F332 /* ChatListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListViewController.swift; sourceTree = "<group>"; };
+		4A0BA74A20B01CED0099F332 /* ChatUsersTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUsersTableViewCell.swift; sourceTree = "<group>"; };
 		4A18E1EA202CA03F00B1038E /* TreeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeNode.swift; sourceTree = "<group>"; };
 		4A1A502520773A500070B74D /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		4A1A502720773A5C0070B74D /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -1051,6 +1055,7 @@
 				4A88591A1FFA57530009D73D /* ViewModel */,
 				4A8859191FFA57460009D73D /* ViewController */,
 				4A93C2C21F80CF080022E97B /* markTestSocketView.swift */,
+				4A0BA74A20B01CED0099F332 /* ChatUsersTableViewCell.swift */,
 			);
 			name = "消息";
 			sourceTree = "<group>";
@@ -1260,11 +1265,12 @@
 		4A8859191FFA57460009D73D /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				4AF7DCD8200398C6009047F5 /* 来访者 */,
+				4A0BA74820B01C880099F332 /* ChatListViewController.swift */,
 				4A93C2B41F80AB900022E97B /* messageMainView.swift */,
 				4A9543A1209DA272009BCBE2 /* 我的邀约 */,
 				4A9A0BE52009DE5E008721F3 /* 聊天界面 */,
 				4AE0DEA01FFBC35800A16ED4 /* 投递记录 */,
-				4AF7DCD8200398C6009047F5 /* 来访者 */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -2146,6 +2152,7 @@
 				4A82A0DE2027493E00185E8B /* person_projectCell.swift in Sources */,
 				4A9543B6209DE9C6009BCBE2 /* JobInviteTableViewCell.swift in Sources */,
 				4A30EBEB2083685800231D11 /* ScrollerNewsCell.swift in Sources */,
+				4A0BA74B20B01CED0099F332 /* ChatUsersTableViewCell.swift in Sources */,
 				4A9543D620A8927F009BCBE2 /* PostCommentViewController.swift in Sources */,
 				4A2145C12077C3DE000959F4 /* BindAccountVC.swift in Sources */,
 				4AF3D354205E7D2F0012EB6E /* DeliveredJobsModel.swift in Sources */,
@@ -2261,6 +2268,7 @@
 				4A30EBE3207FADFD00231D11 /* privateViewModel.swift in Sources */,
 				4AD8F753206E874C003969ED /* extension+UIlabel.swift in Sources */,
 				4AF3D3602062B7C10012EB6E /* sectionCellView.swift in Sources */,
+				4A0BA74920B01C880099F332 /* ChatListViewController.swift in Sources */,
 				4A2145C520788CCB000959F4 /* collectedViewModel.swift in Sources */,
 				4AF6C8051F5A98940059496B /* MainJobCategoryCell.swift in Sources */,
 				4A9543AB209DDD75009BCBE2 /* CareerTalkInviteViewController.swift in Sources */,

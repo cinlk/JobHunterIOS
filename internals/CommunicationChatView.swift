@@ -247,19 +247,13 @@ extension CommunicationChatView {
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         // 刷新 会话cell
-        if let vc = viewController as? messageMain{
+        if let vc = viewController as? ChatListViewController{
             vc.refreshRow(indexPath: self.currentIndexPath!, userID: self.hr.userID!)
             
         }
-        // 影藏底部tabbar
-        if viewController is messageMain{
-            self.tabBarController?.tabBar.isHidden = false
-        }else{
-            self.tabBarController?.tabBar.isHidden = true
-        }
-        
     }
 }
+
 extension CommunicationChatView {
     
     

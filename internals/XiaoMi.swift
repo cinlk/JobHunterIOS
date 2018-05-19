@@ -55,8 +55,7 @@ class XiaoMi: BaseTableViewController {
         self.tableView.tableFooterView = UIView.init()
         self.tableView.register(xiaomiTableCell.self, forCellReuseIdentifier: xiaomiTableCell.identity())
         // 重新设置界面高度
-        backHubView.frame = CGRect.init(x: 0, y: NavH + titleHeaderH, width: ScreenW, height: ScreenH - titleHeaderH - NavH)
-        self.handleViews.append(tableView)
+        //backHubView.frame = CGRect.init(x: 0, y: NavH + titleHeaderH, width: ScreenW, height: ScreenH - titleHeaderH - NavH)
         super.setViews()
     }
     

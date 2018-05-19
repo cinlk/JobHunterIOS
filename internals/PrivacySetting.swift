@@ -81,7 +81,6 @@ class PrivacySetting: BaseTableViewController {
         self.tableView.register(PrivacyCellView.self, forCellReuseIdentifier: PrivacyCellView.identity())
         
         
-        self.handleViews.append(tableView)
         super.setViews()
         
     }

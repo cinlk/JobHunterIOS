@@ -14,21 +14,18 @@ class MyVisitor: BaseTableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.loadData()
+        
         self.setViews()
+        self.loadData()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.insertCustomerView()
-        self.navigationItem.title = "谁看过我"
-
+ 
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
-        self.navigationController?.removeCustomerView()
-
+ 
         
     }
     
@@ -40,7 +37,6 @@ class MyVisitor: BaseTableViewController {
         self.tableView.tableFooterView = UIView.init()
         self.tableView.register(visitorCell.self, forCellReuseIdentifier: visitorCell.identity())
         
-        self.handleViews.append(tableView)
         super.setViews()
     }
     
@@ -89,7 +85,9 @@ class MyVisitor: BaseTableViewController {
         
         tableView.deselectRow(at: indexPath, animated: false)
         _ = publisherControllerView()
-        //hrVC.mode =
+        let vc = UIViewController()
+        vc.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(vc, animated: true)
         
     }
     

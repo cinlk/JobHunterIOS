@@ -105,7 +105,6 @@ class personCardVC: BaseTableViewController {
         self.tableView.contentInset = UIEdgeInsets.init(top: 0, left: 0, bottom: 60, right: 0)
         self.tableView.register(cardCell.self, forCellReuseIdentifier: cardCell.identity())
         
-        self.handleViews.append(tableView)
         self.handleViews.append(shareButton)
         super.setViews()
         

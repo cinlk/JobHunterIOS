@@ -82,7 +82,6 @@ class personResumeTable: BaseTableViewController {
         addBarItem()
         
         self.handleViews.append(barBtn)
-        self.handleViews.append(tableView)
         
         super.setViews()
         
