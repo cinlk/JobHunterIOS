@@ -52,20 +52,18 @@ class baseWebViewController: UIViewController {
     //share
     private lazy var sharedView:shareView = {
         let share = shareView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: shareViewH))
-        UIApplication.shared.windows.last?.insertSubview(share, at: 1)
+        UIApplication.shared.keyWindow?.addSubview(share)
+        share.delegate = self
         return share
     }()
     
-    private lazy var shareOriginY:CGFloat = 0
     
-    private lazy var backGroudView:UIView = { [unowned self] in
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
-        v.backgroundColor = UIColor.init(r: 127, g: 127, b: 127, alpha: 0.5)
-        let tap = UITapGestureRecognizer.init()
-        tap.numberOfTapsRequired  = 1
-        tap.addTarget(self, action: #selector(clooseShareView(tap:)))
-        v.addGestureRecognizer(tap)
-        return v
+    private lazy var backGroudView:UIButton = { [unowned self] in
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
+        btn.alpha = 0.5
+        btn.backgroundColor = UIColor.lightGray
+        btn.addTarget(self, action: #selector(clooseShareView), for: .touchUpInside)
+        return btn
     }()
     
     private lazy var btnBack:UIBarButtonItem = { [unowned self] in
@@ -122,8 +120,7 @@ class baseWebViewController: UIViewController {
         super.viewDidLoad()
         initView()
         addBarItem()
-        shareOriginY = sharedView.origin.y
-        
+ 
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -197,22 +194,28 @@ extension baseWebViewController{
     }
     @objc func share(){
         self.navigationController?.view.addSubview(backGroudView)
-        UIView.animate(withDuration: 0.5, animations: {
+        
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             self.sharedView.origin.y = ScreenH  - shareViewH
-            
+
         }, completion: nil)
-        print("share data")
+       
     }
     
-    @objc func clooseShareView(tap:UIGestureRecognizer){
-        if tap.state == .ended{
-            backGroudView.removeFromSuperview()
-            self.navigationController?.view.willRemoveSubview(backGroudView)
-            UIView.animate(withDuration: 0.5, animations: {
-                self.sharedView.origin.y = ScreenH
-            }, completion: nil)
-        }
+    @objc func clooseShareView(){
+        
+        backGroudView.removeFromSuperview()
+        self.navigationController?.view.willRemoveSubview(backGroudView)
+        
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
+            self.sharedView.origin.y = ScreenH
+        }, completion: nil)
+        
+       
+            
+           
     }
+    
 }
 
 extension baseWebViewController: WKNavigationDelegate{
@@ -259,4 +262,19 @@ extension baseWebViewController: WKUIDelegate{
         }))
         self.present(alert, animated: true, completion: nil)
     }
+}
+
+//share 代理
+extension baseWebViewController: shareViewDelegate{
+    
+    func hiddenShareView(view: UIView) {
+        self.clooseShareView()
+    }
+    
+    func handleShareType(type: UMSocialPlatformType) {
+        
+    }
+    
+    
+    
 }

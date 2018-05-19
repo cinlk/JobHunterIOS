@@ -37,6 +37,7 @@ class InviteBaseTableViewCell: UITableViewCell {
         arrow.clipsToBounds = true
         arrow.contentMode = .scaleToFill
         arrow.image = #imageLiteral(resourceName: "forward").changesize(size: CGSize.init(width: 15, height: 15))
+        arrow.tintColor = UIColor.blue
         return arrow
     }()
     

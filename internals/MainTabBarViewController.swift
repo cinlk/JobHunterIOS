@@ -33,8 +33,11 @@ class MainTabBarViewController: UITabBarController {
         return [(home, selectHome),(jobs, selectJobs),(message,selectMessage),(person,selectPerson)]
     
     }
+    
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
         
         
     }
@@ -54,6 +57,19 @@ class MainTabBarViewController: UITabBarController {
                 tabitem.selectedImage = tabBarImage.1
             }
         }
+        
+        
+        let forum = ForumViewController()
+        let forumNavigate = UINavigationController(rootViewController: forum)
+        
+        forumNavigate.tabBarItem.imageInsets = UIEdgeInsetsMake(0, 0, 0, 0)
+        forumNavigate.tabBarItem.image = UIImage.barImage(size: BarImg_Size, offset: CGPoint.zero, renderMode: .automatic, name: "forum")
+        
+        forumNavigate.tabBarItem.title = "论坛"
+        
+        addChildViewController(forumNavigate)
+        
+        
         // #TODO 被通知加载 显示圆点
 //        self.tabBar.items![1].pp.addBadge(text: "···")
 //        self.tabBar.items![1].pp.setBadgeLabel(attributes: { (lable) in
@@ -65,11 +81,6 @@ class MainTabBarViewController: UITabBarController {
         //self.tabBar.items![2].pp.hiddenBadge()
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-        
-    }
     
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
     

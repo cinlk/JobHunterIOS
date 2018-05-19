@@ -26,15 +26,12 @@ fileprivate let defaultSearchCity:String = "全国"
 class baseSearchViewController: UISearchController{
 
     
-    private var searchField:UITextField!
+    internal var searchField:UITextField!
     
     // 搜索结果显示控制组件
     internal var searchShowVC:searchResultController?
     
-    
-    
-    
-    
+
     // 筛选条件
     private lazy var currentMenuType:searchItem = .onlineApply
     
@@ -456,6 +453,12 @@ extension baseSearchViewController{
             }
         })
 
+    }
+    // 搜索论坛数据
+     open func startPostSearch(word:String){
+         self.showRecordView = false
+         DBFactory.shared.getSearchDB().insertSearch(name: word)
+        
     }
 }
 

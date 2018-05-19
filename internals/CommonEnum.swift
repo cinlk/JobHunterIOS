@@ -175,5 +175,36 @@ enum ResumeDeliveryStatus:String {
 
 
 
+// 论坛分类
+enum forumType:String{
+    case popular = "popular"
+    case jobs = "jobs"
+    case life = "life"
+    case roast = "roast"
+    case none = ""
+    
+    
+    static var items:[forumType]{
+        get{
+            return [forumType.jobs, forumType.life, forumType.roast]
+        }
+    }
+    
+    var describe:String{
+        switch self {
+        case .popular:
+            return "热门"
+        case .jobs:
+            return "求职"
+        case .life:
+            return "生活"
+        case .roast:
+            return "吐槽"
+        case .none:
+            return ""
+        }
+    
+    }
+}
 
 

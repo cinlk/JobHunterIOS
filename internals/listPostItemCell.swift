@@ -1,0 +1,87 @@
+//
+//  listPostItemCell.swift
+//  internals
+//
+//  Created by ke.liang on 2018/5/12.
+//  Copyright © 2018年 lk. All rights reserved.
+//
+
+import UIKit
+
+
+fileprivate let iconSize:CGSize = CGSize.init(width: 30, height: 30)
+
+@objcMembers class listPostItemCell: ForumBaseCell {
+
+    dynamic var mode:PostArticleModel?{
+        didSet{
+            guard let mode = mode   else {
+                return
+            }
+            self.postTitle.text = mode.title
+            self.postType.text = "[" + mode.type.describe + "]"
+            self.creatTime.text = mode.createTimeStr
+            self.authorIcon.image = UIImage.init(named: mode.authorIcon)
+            self.authorName.text = mode.authorName
+            
+            
+            
+            
+            // 点赞
+            let ts = String(mode.thumbUP)
+            let thumbStr = NSMutableAttributedString.init(string: ts)
+            thumbStr.addAttributes([NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12)], range: NSRange.init(location: 0, length: ts.count))
+            let attch = NSTextAttachment.init()
+            attch.image = UIImage.init(named: "heart")?.withRenderingMode(.alwaysTemplate).imageWithColor(color: UIColor.lightGray)
+            // 图片和文字水平对齐
+            attch.bounds = CGRect.init(x: 0, y: (UIFont.systemFont(ofSize: 12).capHeight - 15)/2, width: 15, height: 15)
+            
+            let tmp = NSMutableAttributedString.init(attributedString: NSAttributedString.init(attachment: attch))
+            tmp.append(thumbStr)
+            
+ 
+            let width1 = tmp.boundingRect(with: CGSize.init(width: 100, height: CGFloat(MAXFLOAT)), options: .usesLineFragmentOrigin, context: nil).width + 10
+            
+            self.thumbs.attributedText = tmp
+            _ = self.thumbs.sd_layout().widthIs(width1)
+            
+            // 回复
+            let rs = String(mode.reply)
+            
+            let replyAttr = NSMutableAttributedString.init(string: rs)
+            replyAttr.addAttributes([NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12)], range: NSRange.init(location: 0, length: rs.count))
+            let commentAttch = NSTextAttachment.init()
+            commentAttch.image = UIImage.init(named: "comment")?.withRenderingMode(.alwaysTemplate).imageWithColor(color: UIColor.lightGray)
+            commentAttch.bounds = CGRect.init(x: 0, y: (UIFont.systemFont(ofSize: 12).capHeight - 15)/2, width: 15, height: 15)
+            //replyAttr.append(NSAttributedString.init(attachment: commentAttch))
+            let tmp2 = NSMutableAttributedString.init(attributedString: NSAttributedString.init(attachment: commentAttch))
+            tmp2.append(replyAttr)
+            
+            
+            
+            // 字符串width
+            let width = tmp2.boundingRect(with: CGSize.init(width: 100, height: CGFloat(MAXFLOAT)), options: .usesLineFragmentOrigin, context: nil).width + 10
+            
+            self.reply.attributedText = tmp2
+            _ = self.reply.sd_layout().widthIs(width)
+            
+            
+            self.setupAutoHeight(withBottomView: self.creatTime, bottomMargin: 5)
+            
+        }
+    }
+    
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    class func identity()->String{
+        return "listPostItemCell"
+    }
+
+}

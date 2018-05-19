@@ -281,6 +281,7 @@ extension DropCollegeItemView: UICollectionViewDataSource, UICollectionViewDeleg
         return datas[currentCity]!.count
     }
     
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionTextCell.identity(), for: indexPath) as! CollectionTextCell
         

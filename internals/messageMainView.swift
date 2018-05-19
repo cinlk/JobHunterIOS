@@ -236,12 +236,7 @@ extension messageMain: headerCollectionViewDelegate{
             view.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(view, animated: true)
 
-            
-        case messageItemType.forum.rawValue:
-            let view = ForumViewController()
-            view.hidesBottomBarWhenPushed = true
-            self.navigationController?.pushViewController(view, animated: true)
-            
+ 
         case messageItemType.visitor.rawValue:
             let view = MyVisitor()
             view.hidesBottomBarWhenPushed = true

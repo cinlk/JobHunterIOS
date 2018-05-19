@@ -12,13 +12,14 @@ import Foundation
 
 /* 定义全局的变量 */
 
+// 不同版本键盘高度不一样？？
 let KEYBOARD_HEIGHT:CGFloat = 216.0
 
 // navigationbar 高度
 let NavBarH:CGFloat = 44
 // navigation View 高度
 let NavH:CGFloat = 64
-
+let TOOLBARH:CGFloat = 44
 let searchBarH:CGFloat = 30
 
 // 屏幕宽高
@@ -70,6 +71,7 @@ var IsGreeting:Bool = true
 
 //shareView Height
 let shareViewH:CGFloat = 240
+
 
 
 

@@ -23,6 +23,18 @@ fileprivate let HeadeTitle:String = "热门搜索"
 
 class SearchRecodeViewController: UIViewController {
 
+    // 区分论坛 和非论坛的数据
+    internal var isForum:Bool = false{
+        didSet{
+             hotItem = ["面试","实习","租房","刷题"]
+             searchHederView.mode = hotItem
+             let height = CGFloat((hotItem.count / 3)*10 + ( hotItem.count / 3 + hotItem.count % 3) * 25 + 20 + 25 + 10)
+             searchHederView.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: height)
+            
+            
+        }
+    }
+    
     //private let userData = localData.shared
     // 搜索数据库 数据
     private let searchTable = DBFactory.shared.getSearchDB()
@@ -147,8 +159,12 @@ extension SearchRecodeViewController{
     }
 
     private func loadItemData(){
-         hotItem = ["测试1", "测试2","测试带我当前为多群无多群去的", "测大豆纤维2", "测试2", "测试2", "测试2",
+        if isForum{
+            hotItem = ["面试","实习","租房","刷题"]
+        }else{
+            hotItem = ["测试1", "测试2","测试带我当前为多群无多群去的", "测大豆纤维2", "测试2", "测试2", "测试2",
         "测试2","测试2","测试2","测试大青蛙2","当前为多"]
+        }
          searchHederView.mode = hotItem
     }
 }
@@ -300,7 +316,7 @@ fileprivate class TableViewHeader:UIView{
         coll.backgroundColor = UIColor.clear
         coll.dataSource = self
         coll.delegate = self
-        coll.isScrollEnabled  = true
+        coll.isScrollEnabled  = false
         coll.showsVerticalScrollIndicator = false
         coll.register(labelCollectionCell.self, forCellWithReuseIdentifier: "cell")
         return coll
@@ -313,6 +329,7 @@ fileprivate class TableViewHeader:UIView{
     var mode:[String]?{
         didSet{
             self.collectionView.reloadData()
+ 
         }
     }
     

@@ -33,8 +33,8 @@ class pageContentView: UIView {
         layout.itemSize = self.bounds.size
         layout.scrollDirection = .horizontal
         
+        
         let collv = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
-        collv.autoresizingMask  = [.flexibleWidth,.flexibleHeight]
         collv.register(UICollectionViewCell.self, forCellWithReuseIdentifier: CollectionCellID)
         collv.showsVerticalScrollIndicator = false
         collv.showsHorizontalScrollIndicator = false
@@ -81,7 +81,8 @@ extension pageContentView: UICollectionViewDataSource{
         return 1
     }
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell{
-         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionCellID, for: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionCellID, for: indexPath)
+    
         cell.contentView.subviews.forEach { (view) in
             view.removeFromSuperview()
         }
@@ -92,6 +93,7 @@ extension pageContentView: UICollectionViewDataSource{
         cell.contentView.addSubview(cVC.view)
         return cell 
     }
+    
 
     
 }

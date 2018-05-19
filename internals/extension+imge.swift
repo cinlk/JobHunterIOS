@@ -143,6 +143,8 @@ extension UIImage{
         image?.draw(in: CGRect(x: offset.x, y: offset.y, width: size.width - offset.x, height: size.height - offset.y))
         
         let newImage:UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        
         return newImage
         
     }
@@ -150,10 +152,11 @@ extension UIImage{
     // 改变图片大小
     func changesize(size:CGSize) -> UIImage{
         
-        UIGraphicsBeginImageContextWithOptions(size, false, 0)
+        UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
         self.draw(in: CGRect.init(x: 0, y: 0, width: size.width, height: size.height))
         
         let newImage:UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
         return newImage
     }
     
@@ -181,6 +184,21 @@ extension UIImage{
     
    
     
+}
+
+// 图片颜色
+extension UIImage {
+    func imageWithColor(color:UIColor) -> UIImage {
+        let rect = CGRect(x: 0, y: 0, width: self.size.width, height: self.size.height);
+        UIGraphicsBeginImageContext(rect.size)
+        let context = UIGraphicsGetCurrentContext()
+        context?.clip(to: rect, mask: self.cgImage!)
+        context?.setFillColor(color.cgColor)
+        context?.fill(rect)
+        let imageFromCurrentContext = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return UIImage(cgImage: imageFromCurrentContext!.cgImage!, scale: 1.0, orientation:.downMirrored)
+    }
 }
 
 extension UIImageView{

@@ -10,6 +10,9 @@
 		4A0261411FD2EB2200747B30 /* citys.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4A0261401FD2EB2200747B30 /* citys.plist */; };
 		4A0261451FD3D1EF00747B30 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A0261441FD3D1E000747B30 /* CoreLocation.framework */; };
 		4A02614B1FD4360400747B30 /* SearchRecodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A02614A1FD4360400747B30 /* SearchRecodeViewController.swift */; };
+		4A0BA74320ADC9D30099F332 /* MagazineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA74220ADC9D30099F332 /* MagazineViewController.swift */; };
+		4A0BA74520ADCA880099F332 /* MagineTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA74420ADCA880099F332 /* MagineTableViewCell.swift */; };
+		4A0BA74720ADCB140099F332 /* MagazineModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA74620ADCB140099F332 /* MagazineModel.swift */; };
 		4A18E1EB202CA03F00B1038E /* TreeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A18E1EA202CA03F00B1038E /* TreeNode.swift */; };
 		4A1A502620773A500070B74D /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1A502520773A500070B74D /* CoreTelephony.framework */; };
 		4A1A502820773A5C0070B74D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1A502720773A5C0070B74D /* libz.tbd */; };
@@ -83,7 +86,6 @@
 		4A30EBD8207BAFBE00231D11 /* CompanyJobsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBD7207BAFBE00231D11 /* CompanyJobsVC.swift */; };
 		4A30EBDA207BB8C900231D11 /* CompanyMainVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBD9207BB8C900231D11 /* CompanyMainVC.swift */; };
 		4A30EBDC207CE68A00231D11 /* companyTableProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBDB207CE68A00231D11 /* companyTableProtocol.swift */; };
-		4A30EBDF207E61B200231D11 /* ForumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBDE207E61B200231D11 /* ForumViewController.swift */; };
 		4A30EBE1207E66AD00231D11 /* BaseTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBE0207E66AD00231D11 /* BaseTableViewController.swift */; };
 		4A30EBE3207FADFD00231D11 /* privateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBE2207FADFD00231D11 /* privateViewModel.swift */; };
 		4A30EBE52081A82F00231D11 /* SpecialJobVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBE42081A82F00231D11 /* SpecialJobVC.swift */; };
@@ -194,6 +196,19 @@
 		4A9543B2209DE421009BCBE2 /* InviteBaseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543B1209DE421009BCBE2 /* InviteBaseTableViewCell.swift */; };
 		4A9543B4209DE4FE009BCBE2 /* CareerTalkTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543B3209DE4FE009BCBE2 /* CareerTalkTableViewCell.swift */; };
 		4A9543B6209DE9C6009BCBE2 /* JobInviteTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543B5209DE9C6009BCBE2 /* JobInviteTableViewCell.swift */; };
+		4A9543B820A0B52F009BCBE2 /* ForumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543B720A0B52F009BCBE2 /* ForumViewController.swift */; };
+		4A9543BC20A0B634009BCBE2 /* ForumBaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543BB20A0B634009BCBE2 /* ForumBaseCell.swift */; };
+		4A9543BE20A350F8009BCBE2 /* EditPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543BD20A350F8009BCBE2 /* EditPostViewController.swift */; };
+		4A9543C020A6974C009BCBE2 /* ForumTopicTypeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543BF20A6974C009BCBE2 /* ForumTopicTypeViewController.swift */; };
+		4A9543C420A6E3FD009BCBE2 /* BasePostItemsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543C320A6E3FD009BCBE2 /* BasePostItemsViewController.swift */; };
+		4A9543C820A6E471009BCBE2 /* PostArticleModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543C720A6E471009BCBE2 /* PostArticleModel.swift */; };
+		4A9543CA20A6E92D009BCBE2 /* listPostItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543C920A6E92D009BCBE2 /* listPostItemCell.swift */; };
+		4A9543CC20A72A8F009BCBE2 /* PostContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543CB20A72A8F009BCBE2 /* PostContentViewController.swift */; };
+		4A9543CE20A739BE009BCBE2 /* ReplyPostTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543CD20A739BE009BCBE2 /* ReplyPostTableViewCell.swift */; };
+		4A9543D020A83C8E009BCBE2 /* ChatInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543CF20A83C8E009BCBE2 /* ChatInputView.swift */; };
+		4A9543D220A879B2009BCBE2 /* SingleReplyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543D120A879B2009BCBE2 /* SingleReplyViewController.swift */; };
+		4A9543D420A87B6D009BCBE2 /* PostHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543D320A87B6D009BCBE2 /* PostHeaderView.swift */; };
+		4A9543D620A8927F009BCBE2 /* PostCommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543D520A8927F009BCBE2 /* PostCommentViewController.swift */; };
 		4A96B52F205C14CE0028C096 /* tableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A96B52E205C14CE0028C096 /* tableModel.swift */; };
 		4A96B533205CB7830028C096 /* extension+toolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A96B532205CB7830028C096 /* extension+toolBar.swift */; };
 		4A9A0BD32003BEA8008721F3 /* MyVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9A0BD22003BEA8008721F3 /* MyVisitor.swift */; };
@@ -322,6 +337,9 @@
 		4A0261401FD2EB2200747B30 /* citys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = citys.plist; sourceTree = "<group>"; };
 		4A0261441FD3D1E000747B30 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		4A02614A1FD4360400747B30 /* SearchRecodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchRecodeViewController.swift; sourceTree = "<group>"; };
+		4A0BA74220ADC9D30099F332 /* MagazineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagazineViewController.swift; sourceTree = "<group>"; };
+		4A0BA74420ADCA880099F332 /* MagineTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagineTableViewCell.swift; sourceTree = "<group>"; };
+		4A0BA74620ADCB140099F332 /* MagazineModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagazineModel.swift; sourceTree = "<group>"; };
 		4A18E1EA202CA03F00B1038E /* TreeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeNode.swift; sourceTree = "<group>"; };
 		4A1A502520773A500070B74D /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		4A1A502720773A5C0070B74D /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -397,7 +415,6 @@
 		4A30EBD7207BAFBE00231D11 /* CompanyJobsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyJobsVC.swift; sourceTree = "<group>"; };
 		4A30EBD9207BB8C900231D11 /* CompanyMainVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyMainVC.swift; sourceTree = "<group>"; };
 		4A30EBDB207CE68A00231D11 /* companyTableProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = companyTableProtocol.swift; sourceTree = "<group>"; };
-		4A30EBDE207E61B200231D11 /* ForumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumViewController.swift; sourceTree = "<group>"; };
 		4A30EBE0207E66AD00231D11 /* BaseTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTableViewController.swift; sourceTree = "<group>"; };
 		4A30EBE2207FADFD00231D11 /* privateViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = privateViewModel.swift; sourceTree = "<group>"; };
 		4A30EBE42081A82F00231D11 /* SpecialJobVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecialJobVC.swift; sourceTree = "<group>"; };
@@ -512,6 +529,19 @@
 		4A9543B1209DE421009BCBE2 /* InviteBaseTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteBaseTableViewCell.swift; sourceTree = "<group>"; };
 		4A9543B3209DE4FE009BCBE2 /* CareerTalkTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CareerTalkTableViewCell.swift; sourceTree = "<group>"; };
 		4A9543B5209DE9C6009BCBE2 /* JobInviteTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobInviteTableViewCell.swift; sourceTree = "<group>"; };
+		4A9543B720A0B52F009BCBE2 /* ForumViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumViewController.swift; sourceTree = "<group>"; };
+		4A9543BB20A0B634009BCBE2 /* ForumBaseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumBaseCell.swift; sourceTree = "<group>"; };
+		4A9543BD20A350F8009BCBE2 /* EditPostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditPostViewController.swift; sourceTree = "<group>"; };
+		4A9543BF20A6974C009BCBE2 /* ForumTopicTypeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumTopicTypeViewController.swift; sourceTree = "<group>"; };
+		4A9543C320A6E3FD009BCBE2 /* BasePostItemsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasePostItemsViewController.swift; sourceTree = "<group>"; };
+		4A9543C720A6E471009BCBE2 /* PostArticleModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostArticleModel.swift; sourceTree = "<group>"; };
+		4A9543C920A6E92D009BCBE2 /* listPostItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = listPostItemCell.swift; sourceTree = "<group>"; };
+		4A9543CB20A72A8F009BCBE2 /* PostContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostContentViewController.swift; sourceTree = "<group>"; };
+		4A9543CD20A739BE009BCBE2 /* ReplyPostTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyPostTableViewCell.swift; sourceTree = "<group>"; };
+		4A9543CF20A83C8E009BCBE2 /* ChatInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInputView.swift; sourceTree = "<group>"; };
+		4A9543D120A879B2009BCBE2 /* SingleReplyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleReplyViewController.swift; sourceTree = "<group>"; };
+		4A9543D320A87B6D009BCBE2 /* PostHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostHeaderView.swift; sourceTree = "<group>"; };
+		4A9543D520A8927F009BCBE2 /* PostCommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCommentViewController.swift; sourceTree = "<group>"; };
 		4A96B52E205C14CE0028C096 /* tableModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tableModel.swift; sourceTree = "<group>"; };
 		4A96B532205CB7830028C096 /* extension+toolBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+toolBar.swift"; sourceTree = "<group>"; };
 		4A9A0BD22003BEA8008721F3 /* MyVisitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyVisitor.swift; sourceTree = "<group>"; };
@@ -688,6 +718,15 @@
 				4A93C2D31F834C030022E97B /* subscribleItem.swift */,
 			);
 			name = "订阅职位";
+			sourceTree = "<group>";
+		};
+		4A0BA74020ADC8F70099F332 /* 专栏 */ = {
+			isa = PBXGroup;
+			children = (
+				4A0BA74220ADC9D30099F332 /* MagazineViewController.swift */,
+				4A0BA74420ADCA880099F332 /* MagineTableViewCell.swift */,
+			);
+			name = "专栏";
 			sourceTree = "<group>";
 		};
 		4A1BA2BB208AE6D500CF8352 /* View */ = {
@@ -928,14 +967,6 @@
 			name = "通用设置";
 			sourceTree = "<group>";
 		};
-		4A30EBDD207E619200231D11 /* 论坛界面 */ = {
-			isa = PBXGroup;
-			children = (
-				4A30EBDE207E61B200231D11 /* ForumViewController.swift */,
-			);
-			name = "论坛界面";
-			sourceTree = "<group>";
-		};
 		4A30EBE620834C8B00231D11 /* 职位 */ = {
 			isa = PBXGroup;
 			children = (
@@ -995,7 +1026,7 @@
 			children = (
 				4A30EBE620834C8B00231D11 /* 职位 */,
 				4A5304E01F52A4770000F1E9 /* 个人主页 */,
-				4A5304DF1F52A4420000F1E9 /* 面试 */,
+				4A5304DF1F52A4420000F1E9 /* 论坛 */,
 				4A5304DE1F52A42B0000F1E9 /* 消息 */,
 				4A5304DD1F52A4180000F1E9 /* 主页 */,
 				4A5304E31F52A6ED0000F1E9 /* MainTabBarViewController.swift */,
@@ -1024,11 +1055,15 @@
 			name = "消息";
 			sourceTree = "<group>";
 		};
-		4A5304DF1F52A4420000F1E9 /* 面试 */ = {
+		4A5304DF1F52A4420000F1E9 /* 论坛 */ = {
 			isa = PBXGroup;
 			children = (
+				4A9543C620A6E433009BCBE2 /* Model */,
+				4A9543C520A6E42D009BCBE2 /* ViewModel */,
+				4A9543BA20A0B605009BCBE2 /* ViewController */,
+				4A9543B920A0B5FE009BCBE2 /* cells */,
 			);
-			name = "面试";
+			name = "论坛";
 			sourceTree = "<group>";
 		};
 		4A5304E01F52A4770000F1E9 /* 个人主页 */ = {
@@ -1227,7 +1262,6 @@
 			children = (
 				4A93C2B41F80AB900022E97B /* messageMainView.swift */,
 				4A9543A1209DA272009BCBE2 /* 我的邀约 */,
-				4A30EBDD207E619200231D11 /* 论坛界面 */,
 				4A9A0BE52009DE5E008721F3 /* 聊天界面 */,
 				4AE0DEA01FFBC35800A16ED4 /* 投递记录 */,
 				4AF7DCD8200398C6009047F5 /* 来访者 */,
@@ -1362,6 +1396,57 @@
 				4A9543B5209DE9C6009BCBE2 /* JobInviteTableViewCell.swift */,
 			);
 			name = InviteCell;
+			sourceTree = "<group>";
+		};
+		4A9543B920A0B5FE009BCBE2 /* cells */ = {
+			isa = PBXGroup;
+			children = (
+				4A9543CD20A739BE009BCBE2 /* ReplyPostTableViewCell.swift */,
+				4A9543BB20A0B634009BCBE2 /* ForumBaseCell.swift */,
+				4A9543C920A6E92D009BCBE2 /* listPostItemCell.swift */,
+			);
+			name = cells;
+			sourceTree = "<group>";
+		};
+		4A9543BA20A0B605009BCBE2 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				4A0BA74020ADC8F70099F332 /* 专栏 */,
+				4A9543C120A6E3AD009BCBE2 /* 帖子 */,
+				4A9543B720A0B52F009BCBE2 /* ForumViewController.swift */,
+				4A9543BD20A350F8009BCBE2 /* EditPostViewController.swift */,
+				4A9543BF20A6974C009BCBE2 /* ForumTopicTypeViewController.swift */,
+			);
+			name = ViewController;
+			sourceTree = "<group>";
+		};
+		4A9543C120A6E3AD009BCBE2 /* 帖子 */ = {
+			isa = PBXGroup;
+			children = (
+				4A9543C320A6E3FD009BCBE2 /* BasePostItemsViewController.swift */,
+				4A9543CB20A72A8F009BCBE2 /* PostContentViewController.swift */,
+				4A9543CF20A83C8E009BCBE2 /* ChatInputView.swift */,
+				4A9543D120A879B2009BCBE2 /* SingleReplyViewController.swift */,
+				4A9543D320A87B6D009BCBE2 /* PostHeaderView.swift */,
+				4A9543D520A8927F009BCBE2 /* PostCommentViewController.swift */,
+			);
+			name = "帖子";
+			sourceTree = "<group>";
+		};
+		4A9543C520A6E42D009BCBE2 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = ViewModel;
+			sourceTree = "<group>";
+		};
+		4A9543C620A6E433009BCBE2 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				4A9543C720A6E471009BCBE2 /* PostArticleModel.swift */,
+				4A0BA74620ADCB140099F332 /* MagazineModel.swift */,
+			);
+			name = Model;
 			sourceTree = "<group>";
 		};
 		4A9A0BE52009DE5E008721F3 /* 聊天界面 */ = {
@@ -1997,6 +2082,7 @@
 				4A686A8A204011AE00571EB0 /* PrivacyCellView.swift in Sources */,
 				4AF6C8031F571D1F0059496B /* CitysView.swift in Sources */,
 				4AE4AFC11F5131AE00B5F509 /* ForgetPasswordController.swift in Sources */,
+				4A9543D220A879B2009BCBE2 /* SingleReplyViewController.swift in Sources */,
 				4A6BC23B1FC92BA3002C17B6 /* mainPageViewModel.swift in Sources */,
 				4A4254F9203EB5B00049B237 /* changePassword.swift in Sources */,
 				4A8D28BB1FD195C900FA983F /* utils.swift in Sources */,
@@ -2015,8 +2101,10 @@
 				4A444ED01F8E5789006AE83D /* contactlist.swift in Sources */,
 				4A93C2BD1F80CEAA0022E97B /* CommunicationChatView.swift in Sources */,
 				4AEDFE901FC00A7B0071F4D8 /* extension+observer.swift in Sources */,
+				4A9543C420A6E3FD009BCBE2 /* BasePostItemsViewController.swift in Sources */,
 				4A8D28BF1FD27A2F00FA983F /* extension+String.swift in Sources */,
 				4AD2C77D209899D7002F3486 /* BaseModel.swift in Sources */,
+				4A9543CE20A739BE009BCBE2 /* ReplyPostTableViewCell.swift in Sources */,
 				4A221030203873AB000BDC70 /* collectedCompanyCell.swift in Sources */,
 				4ACBD6FC1F77E8F500A5FD23 /* shareView.swift in Sources */,
 				4A93C2E11F8369B10022E97B /* conditionCell.swift in Sources */,
@@ -2058,6 +2146,7 @@
 				4A82A0DE2027493E00185E8B /* person_projectCell.swift in Sources */,
 				4A9543B6209DE9C6009BCBE2 /* JobInviteTableViewCell.swift in Sources */,
 				4A30EBEB2083685800231D11 /* ScrollerNewsCell.swift in Sources */,
+				4A9543D620A8927F009BCBE2 /* PostCommentViewController.swift in Sources */,
 				4A2145C12077C3DE000959F4 /* BindAccountVC.swift in Sources */,
 				4AF3D354205E7D2F0012EB6E /* DeliveredJobsModel.swift in Sources */,
 				4A1BA2D4208B460700CF8352 /* OnlineApplyViewController.swift in Sources */,
@@ -2102,11 +2191,13 @@
 				4A686A8C2040357F00571EB0 /* privateModel.swift in Sources */,
 				4A1BA2E9208C514F00CF8352 /* BaseShowJobViewController.swift in Sources */,
 				4A88590E1FF3E2000009D73D /* publisherControllerView.swift in Sources */,
+				4A9543BE20A350F8009BCBE2 /* EditPostViewController.swift in Sources */,
 				4A444ECB1F8A168B006AE83D /* searchRequest.pb.swift in Sources */,
 				4A406B5F1FA4D3D900277AA0 /* PersonCardCell.swift in Sources */,
 				4A95439A209C9969009BCBE2 /* DropDelieveryStatusView.swift in Sources */,
 				4A9CE36F1F72C2E6002A8FD5 /* myextension.swift in Sources */,
 				4AE0DEA61FFBC5CD00A16ED4 /* pageContentView.swift in Sources */,
+				4A0BA74520ADCA880099F332 /* MagineTableViewCell.swift in Sources */,
 				4A1BA2DD208B76D900CF8352 /* CareerTalkMeetingViewController.swift in Sources */,
 				4AF3D35C2061376E0012EB6E /* baseWebViewController.swift in Sources */,
 				4A30EBF32083AA6400231D11 /* applyOnlineCell.swift in Sources */,
@@ -2122,6 +2213,7 @@
 				4AC056311F93B46C00D5B739 /* ChatHorizontalLayout.swift in Sources */,
 				4AFF91E11F641AA900FE189F /* CompanyDetailCell.swift in Sources */,
 				4A30EBE820834CBF00231D11 /* JobHomeViewController.swift in Sources */,
+				4A0BA74320ADC9D30099F332 /* MagazineViewController.swift in Sources */,
 				4A20EEEE203DA0090021843B /* notificationVC.swift in Sources */,
 				4AF3D35A205FF4990012EB6E /* xiaomiNewsModel.swift in Sources */,
 				4A30EBD8207BAFBE00231D11 /* CompanyJobsVC.swift in Sources */,
@@ -2136,11 +2228,14 @@
 				4ADDDADC1F9B40A8001CB00F /* ChatBarView.swift in Sources */,
 				4A6BC2301FC856D7002C17B6 /* PersonViewController.swift in Sources */,
 				4A8858FF1FEBE89A0009D73D /* JuBaoViewController.swift in Sources */,
+				4A9543C020A6974C009BCBE2 /* ForumTopicTypeViewController.swift in Sources */,
 				4A406B671FA5834F00277AA0 /* ImageCell.swift in Sources */,
 				4AFF9DCA203819AC000ADBAF /* MyCollectionVC.swift in Sources */,
+				4A9543B820A0B52F009BCBE2 /* ForumViewController.swift in Sources */,
 				4A18E1EB202CA03F00B1038E /* TreeNode.swift in Sources */,
 				4AE0DEA41FFBC5AC00A16ED4 /* pagetitleView.swift in Sources */,
 				4A9A0BD62003BFB3008721F3 /* visitorCell.swift in Sources */,
+				4A9543D020A83C8E009BCBE2 /* ChatInputView.swift in Sources */,
 				4ACC6DB2205BF49100392252 /* SqliteManager.swift in Sources */,
 				4A1BA2FA208E1F4400CF8352 /* DropItemIndustrySectorView.swift in Sources */,
 				4A30EBF120838FC400231D11 /* simpleRecruitCell.swift in Sources */,
@@ -2161,6 +2256,7 @@
 				4A9A0BD92004F03F008721F3 /* closedJobView.swift in Sources */,
 				4A9543A8209DB523009BCBE2 /* intivationItemModel.swift in Sources */,
 				4AA6376420674FAD00DAE9A9 /* extension+sqlite.swift in Sources */,
+				4A9543CA20A6E92D009BCBE2 /* listPostItemCell.swift in Sources */,
 				4A5304E41F52A6ED0000F1E9 /* MainTabBarViewController.swift in Sources */,
 				4A30EBE3207FADFD00231D11 /* privateViewModel.swift in Sources */,
 				4AD8F753206E874C003969ED /* extension+UIlabel.swift in Sources */,
@@ -2197,6 +2293,7 @@
 				4A4254F7203EB5A30049B237 /* changePhoneVC.swift in Sources */,
 				4A8D28BD1FD2734400FA983F /* extension+searchDelegate.swift in Sources */,
 				4ADCC7501F511DD3001A4E9F /* AppDelegate.swift in Sources */,
+				4A0BA74720ADCB140099F332 /* MagazineModel.swift in Sources */,
 				4A6BC23D1FC92C26002C17B6 /* mainPageHttpServer.swift in Sources */,
 				4A1BA2F5208CDA6A00CF8352 /* DropItemCityView.swift in Sources */,
 				4A2145D3207A501C000959F4 /* BaseViewController.swift in Sources */,
@@ -2204,13 +2301,15 @@
 				4A9543B2209DE421009BCBE2 /* InviteBaseTableViewCell.swift in Sources */,
 				4A8B36492090B1160073BE89 /* CollectionLabelHeaderView.swift in Sources */,
 				4A30EBE1207E66AD00231D11 /* BaseTableViewController.swift in Sources */,
-				4A30EBDF207E61B200231D11 /* ForumViewController.swift in Sources */,
 				4AB8FFE71FDD025B0020F026 /* HistoryRecordCell.swift in Sources */,
+				4A9543C820A6E471009BCBE2 /* PostArticleModel.swift in Sources */,
 				4A82A0D82027042B00185E8B /* resume_personInfoCell.swift in Sources */,
+				4A9543BC20A0B634009BCBE2 /* ForumBaseCell.swift in Sources */,
 				4A6389F820668C7B00C4B4D0 /* SelectedThreeTableView.swift in Sources */,
 				4A1BA2C6208B1E1400CF8352 /* JobsModel.swift in Sources */,
 				4A9A0BDF200650A0008721F3 /* xiaomiTableCell.swift in Sources */,
 				4A1BA302208EAA6A00CF8352 /* AreaCollectionView.swift in Sources */,
+				4A9543D420A87B6D009BCBE2 /* PostHeaderView.swift in Sources */,
 				4A406B651FA5772100277AA0 /* PickImageController.swift in Sources */,
 				4A1BA2E3208B806A00CF8352 /* CompanyItemCell.swift in Sources */,
 				4A2210322039463D000BDC70 /* extension+array.swift in Sources */,
@@ -2219,6 +2318,7 @@
 				4A8859101FF7EAD80009D73D /* extension+alert.swift in Sources */,
 				4A82A0DA202709B700185E8B /* person_resume.swift in Sources */,
 				4A20EEF3203E6AD50021843B /* myAccount.swift in Sources */,
+				4A9543CC20A72A8F009BCBE2 /* PostContentViewController.swift in Sources */,
 				4A954398209C98E6009BCBE2 /* DropJobTypeView.swift in Sources */,
 				4ADDDAE01F9B426C001CB00F /* ChatMoreView.swift in Sources */,
 				4ADCC7811F512880001A4E9F /* RegisterViewController.swift in Sources */,

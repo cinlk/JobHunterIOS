@@ -16,7 +16,7 @@ class JobInviteViewController: BaseTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setViews()
-        self.loadData()
+        loadData()
         
         // Do any additional setup after loading the view.
     }
