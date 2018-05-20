@@ -95,16 +95,18 @@ class deliveredHistory: BaseViewController,UIScrollViewDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = titleName
-        self.navigationController?.insertCustomerView()
-     }
+      }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         self.navigationItem.title = ""
-        self.navigationController?.removeCustomerView()
         self.dropMenu.hideMenu()
+        // ??? 不然多出view 
+        self.navigationController?.removeCustomerView()
         
-     }
+        
+    }
+   
     
     override func setViews() {
         

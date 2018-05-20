@@ -17,7 +17,7 @@ fileprivate let footViewH:CGFloat = ScreenH - headerViewH - (CGFloat(cellItem.co
 fileprivate let CelloffsetX:CGFloat = 16.0
 
 
-class aboutUS: BaseTableViewController {
+class aboutUS: BaseViewController {
 
     
     // mode
@@ -36,6 +36,21 @@ class aboutUS: BaseTableViewController {
         return v
     }()
     
+    private lazy var tableView:UITableView = { [unowned self] in
+        let tb = UITableView()
+        tb.delegate = self
+        tb.dataSource = self
+        tb.isScrollEnabled = false
+        tb.tableHeaderView = header
+        tb.tableFooterView = footer
+        tb.separatorStyle = .singleLine
+        tb.showsVerticalScrollIndicator = false
+        tb.showsHorizontalScrollIndicator = false
+        tb.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentiy)
+        
+        return tb
+    }()
+    
     //phone call Alert
     private lazy var phoneAlert:UIAlertController = { [unowned self] in
         let alert = UIAlertController.init(title: "呼叫电话 \(self.mode!.servicePhone)", message: nil, preferredStyle: .alert)
@@ -51,22 +66,18 @@ class aboutUS: BaseTableViewController {
     // sharedView
     private lazy var share:shareView = {
         let v = shareView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: shareViewH))
-        UIApplication.shared.windows.last?.addSubview(v)
+        UIApplication.shared.keyWindow?.addSubview(v)
+        v.delegate = self
         return v
     }()
     
-    private var shareOriginY:CGFloat = 0
-    // shareView的背景
-    lazy var shareBackground :UIView = {  [unowned self] in
-        let shareBackground = UIView()
-        shareBackground.frame = CGRect(x: 0, y: 0, width:ScreenW, height:ScreenH)
-        shareBackground.backgroundColor = UIColor(red: 0 / 255.0, green: 0 / 255.0, blue: 0 / 255.0, alpha: 0.5) // 设置半透明颜色
-        shareBackground.isUserInteractionEnabled = true // 打开用户交互
-        let tab = UITapGestureRecognizer.init()
-        tab.numberOfTapsRequired = 1
-        tab.addTarget(self, action: #selector(hiddenShareView))
-        shareBackground.addGestureRecognizer(tab)
-        return shareBackground
+     // shareView的背景
+    lazy var sharebackBtn: UIButton = {  [unowned self] in
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
+        btn.alpha = 0.5
+        btn.backgroundColor = UIColor.lightGray
+        btn.addTarget(self, action: #selector(hiddenShare), for: .touchUpInside)
+        return btn
     }()
     
    
@@ -90,17 +101,10 @@ class aboutUS: BaseTableViewController {
     }
     
     override func setViews() {
-        self.tableView.isScrollEnabled = false
-        self.tableView.tableHeaderView = header
-        self.tableView.tableFooterView = footer
-        self.tableView.separatorStyle = .singleLine
-        self.tableView.showsVerticalScrollIndicator = false
-        self.tableView.showsHorizontalScrollIndicator = false
-        self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentiy)
-        // 下降64
-        self.tableView.contentOffset = CGPoint.init(x: 0, y: 64)
-        shareOriginY = share.origin.y
         
+        self.view.addSubview(tableView)
+        _ = tableView.sd_layout().topSpaceToView(self.view, NavH)?.rightEqualToView(self.view)?.leftEqualToView(self.view)?.bottomEqualToView(self.view)
+        self.handleViews.append(tableView)
         super.setViews()
     }
     
@@ -118,20 +122,27 @@ class aboutUS: BaseTableViewController {
         self.loadData()
     }
     
+
+    
+
+}
+
+
+extension aboutUS:UITableViewDataSource, UITableViewDelegate{
     
     
     
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return cellItem.count
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = UITableViewCell.init(style: .value1, reuseIdentifier: "cell")
         let item = cellItem[indexPath.row]
@@ -159,11 +170,11 @@ class aboutUS: BaseTableViewController {
         return cell
     }
     
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 45
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
         let item = cellItem[indexPath.row]
         switch item {
@@ -181,14 +192,11 @@ class aboutUS: BaseTableViewController {
             
         case .serviceCall:
             self.present(phoneAlert, animated: true, completion: nil)
-        default:
-            break
+            
         }
     }
     
-
 }
-
 
 
 // 异步加载数据
@@ -262,27 +270,42 @@ extension aboutUS{
     // shared
     private func shared(){
         // navigation最外层
-        self.navigationController?.view.addSubview(shareBackground)
-        UIView.animate(withDuration: 0.3, animations: {
+        self.navigationController?.view.addSubview(sharebackBtn)
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             self.share.frame.origin.y = ScreenH - shareViewH
+            
         }, completion: nil)
-        
+    
     }
     
-    @objc private func hiddenShareView(){
+    @objc private func hiddenShare(){
        
-        UIView.animate(withDuration: 0.3, animations: {
-            self.share.origin.y  = self.shareOriginY
-        }) { (bool) in
-            self.navigationController?.view.willRemoveSubview(self.shareBackground)
-            self.shareBackground.removeFromSuperview()
-        }
+        
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.share.frame.origin.y = ScreenH
+            
+            self.navigationController?.view.willRemoveSubview(self.sharebackBtn)
+            self.sharebackBtn.removeFromSuperview()
+        }, completion: nil)
+        
     }
     
     
     
 }
-
+// share view 代理
+extension aboutUS: shareViewDelegate{
+    
+    func hiddenShareView(view: UIView) {
+        self.hiddenShare()
+    }
+    
+    func handleShareType(type: UMSocialPlatformType) {
+        
+    }
+    
+    
+}
 
 private class  aboutUSHeaderView:UIView{
     

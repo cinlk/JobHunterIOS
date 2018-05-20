@@ -112,26 +112,7 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
         
     }()
     
-    
-    // mycard
-    
-    private lazy var cardAlert:UIAlertController = { [unowned self ] in
-        let alertView = UIAlertController.init(title: "分享你的个人名片", message: nil, preferredStyle: .alert)
-        alertView.addAction(UIAlertAction.init(title: "立刻分享", style: .default, handler: { (action) in
-            self.sendPersonCard()
-            
-        }))
-        alertView.addAction(UIAlertAction.init(title: "预览个人名片", style: .default, handler: { (action) in
-            self.showPersonCard()
-        }))
-        alertView.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: { (action) in
-            print(action)
-        }))
-        
-        return alertView
-        
-        
-    }()
+
     // moreAction
     private lazy var alertView:UIAlertController = { [unowned self] in
         let alertV = UIAlertController.init(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
@@ -205,7 +186,7 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
         moreView.moreDataSource = [
             (name: "照片",icon: #imageLiteral(resourceName: "picture"), type: ChatMoreType.pic),
             (name: "相机",icon: #imageLiteral(resourceName: "camera"), type: ChatMoreType.camera),
-            (name: "个人名片",icon: #imageLiteral(resourceName: "mycard"), type: ChatMoreType.mycard),
+           // (name: "个人名片",icon: #imageLiteral(resourceName: "mycard"), type: ChatMoreType.mycard),
             (name: "快捷回复",icon: #imageLiteral(resourceName: "autoMessage"), type: ChatMoreType.feedback)
         ]
         
@@ -337,11 +318,6 @@ extension CommunicationChatView: UITableViewDelegate,UITableViewDataSource{
                 cell.mode = message
                 //cell.useCellFrameCache(with: indexPath, tableView: tableView)
                 return cell
-            case .personCard:
-                let cell = tableView.dequeueReusableCell(withIdentifier: PersonCardCell.reuseidentity(), for: indexPath) as! PersonCardCell
-                cell.mode = message
-                //cell.useCellFrameCache(with: indexPath, tableView: tableView)
-                return cell
                 
             case .picture:
                 let cell = tableView.dequeueReusableCell(withIdentifier: ImageCell.reuseIdentify(), for: indexPath) as! ImageCell
@@ -377,9 +353,6 @@ extension CommunicationChatView: UITableViewDelegate,UITableViewDataSource{
                 
             case .smallGif,.bigGif:
                 return gifCell.heightForCell(messageInfo: message)
-            case .personCard:
-                let message = self.tableSource.object(at: indexPath.row) as! MessageBoby
-                return  tableView.cellHeight(for: indexPath, model: message, keyPath: "mode", cellClass: PersonCardCell.self, contentViewWidth: ScreenW)
             case .picture:
                 let message = self.tableSource.object(at: indexPath.row) as! MessageBoby
                  return tableView.cellHeight(for: indexPath, model: message, keyPath: "mode", cellClass: ImageCell.self, contentViewWidth: ScreenW)
@@ -406,9 +379,6 @@ extension CommunicationChatView: UITableViewDelegate,UITableViewDataSource{
             switch mes.type!{
             case MessgeType.jobDescribe.rawValue:
                 showJobView(mes: mes)
-
-            case MessgeType.personCard.rawValue:
-                showPersonCard()
                 
             case MessgeType.text.rawValue:
                 break
@@ -507,31 +477,6 @@ extension CommunicationChatView{
     }
     
     
-    // 显示个人名片
-    private func showPersonCard(){
-        
-        
-        self.chatBarView.inputText.resignFirstResponder()
-        
-        // 影藏 emotion 和 more 输入view
-        if self.chatBarView.keyboardType == .emotion || self.chatBarView.keyboardType == .more{
-            self.moveBar(distance: 0){
-                let personCardview = personCardVC()
-                personCardview.hidesBottomBarWhenPushed = true
-                self.navigationController?.pushViewController(personCardview, animated: true)
-            }
-        }
-        else{
-            let personCardview = personCardVC()
-            personCardview.hidesBottomBarWhenPushed = true
-            self.navigationController?.pushViewController(personCardview, animated: true)
-        }
-        
-        self.chatBarView.keyboardType = .none
-        
-        
-       
-    }
     
     // 显示jod详细界面
     
@@ -613,6 +558,7 @@ extension CommunicationChatView: ChatMoreViewDelegate{
             self.navigationController?.view.addSubview(self.replyView)
               _ = replyView.sd_layout().centerXEqualToView(self.view)?.centerYEqualToView(self.view)?.widthIs(230)?.heightIs(300)
             
+        // 模拟器相机不能用
         case .camera:
             if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
                 
@@ -648,9 +594,8 @@ extension CommunicationChatView: ChatMoreViewDelegate{
             else{
                 print("找不到相机")
             }
-        case .mycard:
-            self.present(cardAlert, animated: true, completion: nil)
             
+     
         }
     }
 
@@ -718,17 +663,6 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
 
     }
     
-    // 个人名片
-    func sendPersonCard(){
-        
-        if let message = MessageBoby(JSON: ["messageID":getUUID(), "type": MessgeType.personCard.rawValue,
-                                            "creat_time": Date.init().timeIntervalSince1970, "isRead": true]){
-            message.sender = myself
-            message.receiver = self.hr
-            self.reloads(mes: message)
-        }
-
-    }
 
     // 发送照片
     
@@ -980,6 +914,9 @@ extension CommunicationChatView: UIImagePickerControllerDelegate{
     
     
 
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        
+    }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         //查看info对象
@@ -988,9 +925,17 @@ extension CommunicationChatView: UIImagePickerControllerDelegate{
         var imageName = ""
         var imagePathURL:URL?
         
+        var selectedImage:UIImage?
         
-        if let image:UIImage = info[UIImagePickerControllerOriginalImage] as? UIImage{
-            picker.dismiss(animated: true, completion: nil)
+        
+        if let originImage = info[UIImagePickerControllerOriginalImage] as? UIImage{
+                selectedImage = originImage
+        }else if let editImage = info[UIImagePickerControllerEditedImage] as? UIImage{
+                selectedImage = editImage
+        }
+        
+        if let image = selectedImage{
+            //picker.dismiss(animated: true, completion: nil)
             if picker.sourceType == .camera{
                 // 照相的照片 默认是jpeg 格式
                 // 生成时间戳 和 扩展名的 图片名称
@@ -1027,9 +972,9 @@ extension CommunicationChatView: UIImagePickerControllerDelegate{
                 return
             }
             
-            
         }
         
+        dismiss(animated: true, completion: nil)
         
         
     }

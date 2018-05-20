@@ -10,8 +10,8 @@ import UIKit
 
 
 
-fileprivate let SectionN = 2
-fileprivate let tableHeaderH:CGFloat = ScreenH / 3
+fileprivate let SectionN = 3
+fileprivate let tableHeaderH:CGFloat = ScreenH / 4
 
 
 class PersonViewController: UIViewController {
@@ -20,8 +20,11 @@ class PersonViewController: UIViewController {
         let table = UITableView.init(frame: self.view.bounds)
         table.isScrollEnabled = false
         table.tableFooterView = UIView.init()
+        table.backgroundColor = UIColor.viewBackColor()
         table.delegate = self
         table.dataSource = self
+        table.register(SetFourItemTableViewCell.self, forCellReuseIdentifier: SetFourItemTableViewCell.identity())
+        
         table.register(personTableCell.self, forCellReuseIdentifier: personTableCell.identity())
         return table
     }()
@@ -34,7 +37,7 @@ class PersonViewController: UIViewController {
         
     }()
     
-    private var mode:[(image:UIImage, title:String)] = [(#imageLiteral(resourceName: "namecard"),"我的名片"),(#imageLiteral(resourceName: "settings"),"通用设置"),(#imageLiteral(resourceName: "collection"),"我的收藏"),(#imageLiteral(resourceName: "private"),"隐私设置")]
+    private var mode:[(image:UIImage, title:String)] = [(#imageLiteral(resourceName: "namecard"),"我的订阅"),(#imageLiteral(resourceName: "settings"),"帮助中心"),(#imageLiteral(resourceName: "collection"),"设置"),(#imageLiteral(resourceName: "private"),"隐私设置")]
     
     
     
@@ -42,23 +45,24 @@ class PersonViewController: UIViewController {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.clear
         
-        // Do any additional setup after loading the view.
-    }
+     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        //self.tabBarController?.tabBar.isHidden = false
         self.table.contentInsetAdjustmentBehavior = .never
         self.navigationController?.navigationBar.settranslucent(true)
         self.navigationController?.navigationBar.isHidden = true
+        self.navigationController?.removeCustomerView()
+
     }
    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.navigationBar.isHidden = false
-        self.navigationItem.title = ""
         //self.tabBarController?.tabBar.isHidden = true
+        self.navigationController?.insertCustomerView()
+
         
     }
     
@@ -82,18 +86,26 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return  section == 0 ? 1 : self.mode.count
+        if section == 0 || section == 1{
+            return 1
+        }
+        return self.mode.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         case 0:
-            let cell =  table.dequeueReusableCell(withIdentifier: personTableCell.identity(), for: indexPath) as! personTableCell
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier:SetFourItemTableViewCell.identity() , for: indexPath) as! SetFourItemTableViewCell
+            cell.delegate = self
+            return cell
+        case 1:
+            let cell =  tableView.dequeueReusableCell(withIdentifier: personTableCell.identity(), for: indexPath) as! personTableCell
             cell.mode = (image:#imageLiteral(resourceName: "personResume"),title:"我的简历")
             return cell
             
-        case 1:
-            let cell =  table.dequeueReusableCell(withIdentifier: personTableCell.identity(), for: indexPath) as! personTableCell
+        case 2:
+            let cell =  tableView.dequeueReusableCell(withIdentifier: personTableCell.identity(), for: indexPath) as! personTableCell
             cell.mode = self.mode[indexPath.row]
             return cell
         default:
@@ -104,52 +116,51 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 10
+        
+        return  section == 0 ? 0 : 10
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
-        let view = UIView.init(frame: CGRect.zero)
-        view.backgroundColor = UIColor.lightGray
-        return view
+        return UIView()
         
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return personTableCell.cellHeight()
+        return indexPath.section == 0 ? SetFourItemTableViewCell.cellHeight() : personTableCell.cellHeight()
+       
     }
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-       
-        if indexPath.section == 0 {
+        switch indexPath.section {
+        case 0:
+            return
+        case 1:
             let resumeView = personResumeTable(style: .plain)
             resumeView.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(resumeView, animated: true)
-        }else{
+        case 2:
+            
             
             let row = indexPath.row
             switch row{
             case 0:
-                // 我的名片
-                let mycard = personCardVC()
-                mycard.hidesBottomBarWhenPushed = true
-                self.navigationController?.pushViewController(mycard, animated: true)
+                // 我的订阅
+                let subscrible = subconditions()
+                self.present(subscrible, animated: true, completion: nil)
             case 1:
-                // 通用设置
-                let setting  = SettingVC()
+                // 帮助中心
+                let help  = HelpsVC()
+                help.hidesBottomBarWhenPushed = true
+                self.navigationController?.pushViewController(help, animated: true)
+            case 2:
+                // 设置
+                let setting = SettingVC()
                 setting.hidesBottomBarWhenPushed = true
                 self.navigationController?.pushViewController(setting, animated: true)
-            case 2:
-                // 我的收藏
-                let mycollection = MyCollectionVC()
-                mycollection.hidesBottomBarWhenPushed = true
-                self.navigationController?.pushViewController(mycollection, animated: true)
             case 3:
-                // 目前只是反馈界面
-                //let myfeedBAck = feedBackVC()
-                //self.navigationController?.pushViewController(myfeedBAck, animated: true)
                 // 隐私设置
                 let privicy = PrivacySetting()
                 privicy.hidesBottomBarWhenPushed = true
@@ -159,11 +170,47 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
             default:
                 break
             }
+            
+            
+        default:
+            return
         }
+        
       
     }
     
 }
 
 
+// 代理实现
+extension PersonViewController:selectedItemDelegate{
+    
+    func showdelivery() {
+        let vc = deliveredHistory()
+        vc.hidesBottomBarWhenPushed = true
+        
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func showInvitation() {
+        let vc = InvitationViewController()
+        vc.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func showollections() {
+        let vc = MyCollectionVC()
+        vc.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func showPostArticle() {
+        let vc = UIViewController()
+        vc.hidesBottomBarWhenPushed = true
+        vc.view.backgroundColor = UIColor.randomeColor()
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    
+}
 

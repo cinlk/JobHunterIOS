@@ -24,9 +24,6 @@ class myAccount: BaseTableViewController {
     // 默认值
     private var sectionStr:[String] = ["账号安全设置","账号绑定"]
 
-    //private lazy var user:PersonModel
-    
-    
     
     
     override func viewDidLoad() {
@@ -40,13 +37,11 @@ class myAccount: BaseTableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = "账号设置"
-        self.navigationController?.insertCustomerView()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = ""
-        self.navigationController?.removeCustomerView()
         
         
     }

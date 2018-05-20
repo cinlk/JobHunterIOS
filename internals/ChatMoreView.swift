@@ -11,7 +11,7 @@ import UIKit
 enum ChatMoreType:String{
     case pic = "picture"
     case camera = "camera"
-    case mycard = "personCard"
+    //case mycard = "personCard"
     case feedback = "text"// 快捷回复
     
 }

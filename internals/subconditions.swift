@@ -132,6 +132,13 @@ class subconditions: UIViewController {
         return third
     }()
     
+    // 状态栏颜色
+    override var preferredStatusBarStyle: UIStatusBarStyle{
+        get{
+            return .lightContent
+        }
+    }
+    
     // 底部弹出界面位置
     private var centerCategoryY:CGFloat = 0
 

@@ -17,8 +17,9 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
 
     private let appFileManger = AppFileManager.shared
     
-    // old imageFrame
-    private var oldFrame:CGRect = CGRect.zero
+    // 图片zoom 属性
+    private var startingFrame:CGRect?
+    private var blackBackgroundView:UIView?
     
     private lazy var avartar:UIImageView = {
         var v = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: avatarSize.width, height: avatarSize.height))
@@ -35,7 +36,7 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
         v.clipsToBounds = true
         v.isUserInteractionEnabled = true
         // 放大效果
-        let tap = UITapGestureRecognizer.init(target: self, action: #selector(showBig(tap:)))
+        let tap = UITapGestureRecognizer.init(target: self, action: #selector(startZoomImage(tap:)))
         v.addGestureRecognizer(tap)
         return v
     }()
@@ -152,7 +153,7 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
 extension ImageCell{
     
     
-    @objc private func showBig(tap: UITapGestureRecognizer){
+    @objc private func startZoomImage(tap: UITapGestureRecognizer){
         if let imageView = tap.view as? UIImageView{
             ShowBigImageView(imageView: imageView)
         }
@@ -160,78 +161,61 @@ extension ImageCell{
     
     private func ShowBigImageView(imageView:UIImageView){
         
-        let currentImage = imageView.image
         
- 
-        let windows = UIApplication.shared.keyWindow
+        startingFrame = imageView.superview?.convert(imageView.frame, to: nil)
         
-        let backGroudView = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
+        let zoomImageView = UIImageView.init(frame: startingFrame!)
+        zoomImageView.backgroundColor = UIColor.clear
+        zoomImageView.image = imageView.image
+        zoomImageView.contentMode = .scaleToFill
+        zoomImageView.isUserInteractionEnabled = true
+        zoomImageView.addGestureRecognizer(UITapGestureRecognizer.init(target: self, action: #selector(zoomOut)))
         
-        oldFrame = imageView.convert(imageView.bounds, to: windows)
- 
-        backGroudView.backgroundColor = UIColor.init(r: 107, g: 107, b: 99, alpha: 06)
-        
-        backGroudView.alpha = 0
-        
-        
-        // 重新绘制imageView
-        
-        
-        let  newImageView = UIImageView.init(frame: oldFrame)
-        newImageView.image = currentImage
-        newImageView.tag = 0
-        backGroudView.addSubview(newImageView)
-        
-        windows?.addSubview(backGroudView)
-        
-        
-        // backGround 点击事件
-        
-        let tap = UITapGestureRecognizer(target: self, action: #selector(hideImageView(tap:)))
-        tap.delegate = self
-        backGroudView.addGestureRecognizer(tap)
-        
-        //
-        // 长按 弹出保存
-        let longpress = UILongPressGestureRecognizer.init(target: self, action: #selector(store(tap:)))
-        longpress.minimumPressDuration = 2
-        longpress.delegate = self
-        backGroudView.addGestureRecognizer(longpress)
-        
-        // 放大imageView
-        UIView.animate(withDuration: 0.4, animations: {
-            var y:CGFloat = 0
+        if let keyWindow = UIApplication.shared.keyWindow{
             
-            var width:CGFloat = 0
-            var height:CGFloat = 0
+            self.imageV.isHidden = true
+            blackBackgroundView = UIView.init(frame: keyWindow.frame)
+            blackBackgroundView?.backgroundColor = UIColor.black
+            blackBackgroundView?.alpha = 0
+            blackBackgroundView?.isUserInteractionEnabled = true
+         
+            // 保存
+            let longpress = UILongPressGestureRecognizer.init(target: self, action: #selector(store(tap:)))
+            longpress.minimumPressDuration = 2
+            zoomImageView.addGestureRecognizer(longpress)
             
-            y = (ScreenH - (currentImage?.size.height)! * (ScreenW / (currentImage?.size.width)!))*0.5
-            width =  ScreenW
-            height = (currentImage?.size.height)! * (ScreenW / (currentImage?.size.width)!)
-            newImageView.frame = CGRect.init(x: 0, y: y, width: width, height: height)
-            backGroudView.alpha = 1
+            keyWindow.addSubview(self.blackBackgroundView!)
+            keyWindow.addSubview(zoomImageView)
             
-        }, completion: nil)
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                //根据屏幕计算放大后的尺寸
+                self.blackBackgroundView?.alpha = 1
+                let height = self.startingFrame!.height / self.startingFrame!.width * keyWindow.frame.width
+                
+                zoomImageView.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: height)
+                zoomImageView.center = keyWindow.center
+                
+                
+            }, completion: nil)
+        }
+
+        
+      
     }
     
     
     //
-    @objc func hideImageView(tap: UITapGestureRecognizer){
-        
-        let backgroundView = tap.view
-        
-        // 原始imageView
-        let imageView = tap.view?.viewWithTag(0)
-        backgroundView?.alpha = 0
-        //backgroundView?.backgroundColor = UIColor.clear
-        UIView.animate(withDuration: 0.5, animations: {
-            imageView?.frame = self.oldFrame
-            
-        }) { (bool) in
-            backgroundView?.removeFromSuperview()
-            
+    @objc private func zoomOut(tap: UITapGestureRecognizer){
+        if  let  zoomoutImage = tap.view{
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                zoomoutImage.frame = self.startingFrame!
+                self.blackBackgroundView?.alpha = 0
+                
+            }) { (completed) in
+                zoomoutImage.removeFromSuperview()
+                self.imageV.isHidden = false
+            }
         }
-        
     }
     
     

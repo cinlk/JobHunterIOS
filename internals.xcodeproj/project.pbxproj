@@ -15,6 +15,7 @@
 		4A0BA74720ADCB140099F332 /* MagazineModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA74620ADCB140099F332 /* MagazineModel.swift */; };
 		4A0BA74920B01C880099F332 /* ChatListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA74820B01C880099F332 /* ChatListViewController.swift */; };
 		4A0BA74B20B01CED0099F332 /* ChatUsersTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA74A20B01CED0099F332 /* ChatUsersTableViewCell.swift */; };
+		4A0BA74E20B053DD0099F332 /* SetFourItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA74D20B053DD0099F332 /* SetFourItemTableViewCell.swift */; };
 		4A18E1EB202CA03F00B1038E /* TreeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A18E1EA202CA03F00B1038E /* TreeNode.swift */; };
 		4A1A502620773A500070B74D /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1A502520773A500070B74D /* CoreTelephony.framework */; };
 		4A1A502820773A5C0070B74D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1A502720773A5C0070B74D /* libz.tbd */; };
@@ -311,10 +312,8 @@
 		4AFF91DD1F641A8000FE189F /* introductionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91DB1F641A8000FE189F /* introductionCell.swift */; };
 		4AFF91E11F641AA900FE189F /* CompanyDetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91DF1F641AA900FE189F /* CompanyDetailCell.swift */; };
 		4AFF9DC42036FE3C000ADBAF /* evaluateSelfVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF9DC32036FE3C000ADBAF /* evaluateSelfVC.swift */; };
-		4AFF9DC720381950000ADBAF /* personCardVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF9DC620381950000ADBAF /* personCardVC.swift */; };
 		4AFF9DCA203819AC000ADBAF /* MyCollectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF9DC9203819AC000ADBAF /* MyCollectionVC.swift */; };
 		4AFF9DCC20381EC9000ADBAF /* personTableHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF9DCB20381EC9000ADBAF /* personTableHeader.swift */; };
-		4AFF9DCE20384103000ADBAF /* cardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF9DCD20384103000ADBAF /* cardCell.swift */; };
 		D1EC4964AE33F5F8C9864AAB /* Pods_internals.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E63353C953561B2E076FD4C /* Pods_internals.framework */; };
 /* End PBXBuildFile section */
 
@@ -344,6 +343,7 @@
 		4A0BA74620ADCB140099F332 /* MagazineModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagazineModel.swift; sourceTree = "<group>"; };
 		4A0BA74820B01C880099F332 /* ChatListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListViewController.swift; sourceTree = "<group>"; };
 		4A0BA74A20B01CED0099F332 /* ChatUsersTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUsersTableViewCell.swift; sourceTree = "<group>"; };
+		4A0BA74D20B053DD0099F332 /* SetFourItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetFourItemTableViewCell.swift; sourceTree = "<group>"; };
 		4A18E1EA202CA03F00B1038E /* TreeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeNode.swift; sourceTree = "<group>"; };
 		4A1A502520773A500070B74D /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		4A1A502720773A5C0070B74D /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -655,10 +655,8 @@
 		4AFF91DB1F641A8000FE189F /* introductionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = introductionCell.swift; sourceTree = "<group>"; };
 		4AFF91DF1F641AA900FE189F /* CompanyDetailCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompanyDetailCell.swift; sourceTree = "<group>"; };
 		4AFF9DC32036FE3C000ADBAF /* evaluateSelfVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = evaluateSelfVC.swift; sourceTree = "<group>"; };
-		4AFF9DC620381950000ADBAF /* personCardVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = personCardVC.swift; sourceTree = "<group>"; };
 		4AFF9DC9203819AC000ADBAF /* MyCollectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCollectionVC.swift; sourceTree = "<group>"; };
 		4AFF9DCB20381EC9000ADBAF /* personTableHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = personTableHeader.swift; sourceTree = "<group>"; };
-		4AFF9DCD20384103000ADBAF /* cardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cardCell.swift; sourceTree = "<group>"; };
 		6E63353C953561B2E076FD4C /* Pods_internals.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_internals.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA9E8A53CA89B7891A8B0201 /* Pods-internals.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-internals.release.xcconfig"; path = "Pods/Target Support Files/Pods-internals/Pods-internals.release.xcconfig"; sourceTree = "<group>"; };
 		DB5827C0AD300F2CEAAB654F /* Pods-internals.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-internals.debug.xcconfig"; path = "Pods/Target Support Files/Pods-internals/Pods-internals.debug.xcconfig"; sourceTree = "<group>"; };
@@ -731,6 +729,14 @@
 				4A0BA74420ADCA880099F332 /* MagineTableViewCell.swift */,
 			);
 			name = "专栏";
+			sourceTree = "<group>";
+		};
+		4A0BA74C20B051DB0099F332 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				4A0BA74A20B01CED0099F332 /* ChatUsersTableViewCell.swift */,
+			);
+			name = View;
 			sourceTree = "<group>";
 		};
 		4A1BA2BB208AE6D500CF8352 /* View */ = {
@@ -1051,11 +1057,11 @@
 		4A5304DE1F52A42B0000F1E9 /* 消息 */ = {
 			isa = PBXGroup;
 			children = (
+				4A0BA74C20B051DB0099F332 /* View */,
 				4A88591B1FFA575B0009D73D /* Model */,
 				4A88591A1FFA57530009D73D /* ViewModel */,
 				4A8859191FFA57460009D73D /* ViewController */,
 				4A93C2C21F80CF080022E97B /* markTestSocketView.swift */,
-				4A0BA74A20B01CED0099F332 /* ChatUsersTableViewCell.swift */,
 			);
 			name = "消息";
 			sourceTree = "<group>";
@@ -1143,12 +1149,13 @@
 		4A82A0CC2026D88C00185E8B /* view+controller */ = {
 			isa = PBXGroup;
 			children = (
+				4AE0DEA01FFBC35800A16ED4 /* 投递记录 */,
+				4A9543A1209DA272009BCBE2 /* 我的邀约 */,
 				4A95439B209D5CD5009BCBE2 /* 系统通知 */,
 				4A686A862040054100571EB0 /* 隐私设置 */,
 				4A221038203BBCBF000BDC70 /* 通用设置 */,
 				4A2210332039BD1E000BDC70 /* 意见与帮助 */,
 				4AFF9DC820381981000ADBAF /* 我的收藏 */,
-				4AFF9DC520381933000ADBAF /* 我的名片 */,
 				4A82A0D42026FD5500185E8B /* 简历 */,
 				4A82A0CF2026DEEA00185E8B /* tableCells */,
 				4A6BC22F1FC856D7002C17B6 /* PersonViewController.swift */,
@@ -1193,6 +1200,7 @@
 				4A5E3FD020329792009C1A6B /* AddItemCell.swift */,
 				4AE4D6B420358E0D00BC87FE /* textViewCell.swift */,
 				4A22A3A62073D1CE00024C2B /* resumePersonInfoCell.swift */,
+				4A0BA74D20B053DD0099F332 /* SetFourItemTableViewCell.swift */,
 			);
 			name = tableCells;
 			sourceTree = "<group>";
@@ -1265,12 +1273,10 @@
 		4A8859191FFA57460009D73D /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				4AF7DCD8200398C6009047F5 /* 来访者 */,
 				4A0BA74820B01C880099F332 /* ChatListViewController.swift */,
 				4A93C2B41F80AB900022E97B /* messageMainView.swift */,
-				4A9543A1209DA272009BCBE2 /* 我的邀约 */,
+				4AF7DCD8200398C6009047F5 /* 来访者 */,
 				4A9A0BE52009DE5E008721F3 /* 聊天界面 */,
-				4AE0DEA01FFBC35800A16ED4 /* 投递记录 */,
 			);
 			name = ViewController;
 			sourceTree = "<group>";
@@ -1760,15 +1766,6 @@
 				4A444ECF1F8E5789006AE83D /* contactlist.xib */,
 			);
 			name = nibs;
-			sourceTree = "<group>";
-		};
-		4AFF9DC520381933000ADBAF /* 我的名片 */ = {
-			isa = PBXGroup;
-			children = (
-				4AFF9DC620381950000ADBAF /* personCardVC.swift */,
-				4AFF9DCD20384103000ADBAF /* cardCell.swift */,
-			);
-			name = "我的名片";
 			sourceTree = "<group>";
 		};
 		4AFF9DC820381981000ADBAF /* 我的收藏 */ = {
@@ -2296,7 +2293,6 @@
 				4AE694C31F91D5BD005BE1F0 /* messageCell.swift in Sources */,
 				4AEDFE941FC087440071F4D8 /* ActivityIndicator.swift in Sources */,
 				4A82A0E02028939F00185E8B /* person_skillCell.swift in Sources */,
-				4AFF9DCE20384103000ADBAF /* cardCell.swift in Sources */,
 				4AEDFE921FC06A3B0071F4D8 /* httpservers.swift in Sources */,
 				4A4254F7203EB5A30049B237 /* changePhoneVC.swift in Sources */,
 				4A8D28BD1FD2734400FA983F /* extension+searchDelegate.swift in Sources */,
@@ -2305,7 +2301,6 @@
 				4A6BC23D1FC92C26002C17B6 /* mainPageHttpServer.swift in Sources */,
 				4A1BA2F5208CDA6A00CF8352 /* DropItemCityView.swift in Sources */,
 				4A2145D3207A501C000959F4 /* BaseViewController.swift in Sources */,
-				4AFF9DC720381950000ADBAF /* personCardVC.swift in Sources */,
 				4A9543B2209DE421009BCBE2 /* InviteBaseTableViewCell.swift in Sources */,
 				4A8B36492090B1160073BE89 /* CollectionLabelHeaderView.swift in Sources */,
 				4A30EBE1207E66AD00231D11 /* BaseTableViewController.swift in Sources */,
@@ -2346,6 +2341,7 @@
 				4A8859181FF8DD2D0009D73D /* extension+uiview.swift in Sources */,
 				4A4254FB203EE0170049B237 /* HelpsVC.swift in Sources */,
 				4A22103A203BFD0E000BDC70 /* SettingVC.swift in Sources */,
+				4A0BA74E20B053DD0099F332 /* SetFourItemTableViewCell.swift in Sources */,
 				4AF3D352205E62DB0012EB6E /* CollectionItemsCell.swift in Sources */,
 				4AEDFE8B1FBFF75D0071F4D8 /* Users.swift in Sources */,
 			);

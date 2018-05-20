@@ -623,7 +623,7 @@ struct MessageTable {
     
     func insertProxy(message:Any, type:MessgeType){
         switch type {
-        case .text, .personCard:
+        case .text:
             try? self.insertBaseMessage(message: message as! MessageBoby)
         case .jobDescribe:
             self.insertJobMessage(message: message as! JobDescriptionlMessage)

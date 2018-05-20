@@ -68,9 +68,11 @@ class baseWebViewController: UIViewController {
     
     private lazy var btnBack:UIBarButtonItem = { [unowned self] in
         
-        let back = UIImage.barImage(size: imgSize, offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "back")
+        let img = UIImage.init(named: "back")?.changesize(size: imgSize).withRenderingMode(.alwaysTemplate)
+        
         let b1 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
-        b1.setImage(back, for: .normal)
+        b1.tintColor = UIColor.lightGray
+        b1.setImage(img, for: .normal)
         b1.addTarget(self, action: #selector(goBack), for: .touchUpInside)
         return UIBarButtonItem.init(customView: b1)
         
@@ -78,34 +80,29 @@ class baseWebViewController: UIViewController {
     }()
     
     
-    private lazy var btnForward:UIBarButtonItem = { [unowned self] in
-       
-        let back = UIImage.barImage(size: imgSize, offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "back")
-       
-        let b1 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
-        b1.setImage( UIImage.flipImage(image: back, orientation: .upMirrored), for: .normal)
-        b1.addTarget(self, action: #selector(goForward), for: .touchUpInside)
-        return UIBarButtonItem.init(customView: b1)
-    }()
     
     private lazy var btnCancel:UIBarButtonItem = { [unowned self] in
         
-        let back = UIImage.barImage(size: imgSize, offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "cancel")
+        let img = UIImage.init(named: "cancel")?.changesize(size: imgSize).withRenderingMode(.alwaysTemplate)
+
         let b1 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
-        b1.setImage(back, for: .normal)
+        b1.setImage(img, for: .normal)
         b1.addTarget(self, action: #selector(cancel), for: .touchUpInside)
-        
+        b1.tintColor = UIColor.lightGray
+
         return UIBarButtonItem.init(customView: b1)
         
     }()
     
     private lazy var shareBtn:UIBarButtonItem = { [unowned self] in
         
-        let shares = UIImage.barImage(size: imgSize, offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "upload")
+        let img = UIImage.init(named: "upload")?.changesize(size: imgSize).withRenderingMode(.alwaysTemplate)
         let b1 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
+        b1.tintColor = UIColor.lightGray
+
         b1.addTarget(self, action: #selector(share), for: .touchUpInside)
         b1.clipsToBounds = true
-        b1.setImage(shares, for: .normal)
+        b1.setImage(img, for: .normal)
         
          return UIBarButtonItem.init(customView: b1)
     }()
@@ -168,7 +165,7 @@ extension baseWebViewController {
     }
     
     private func addBarItem(){
-        self.navigationItem.leftBarButtonItems = [btnBack,btnForward,btnCancel]
+        self.navigationItem.leftBarButtonItems = [btnBack,btnCancel]
         self.navigationItem.rightBarButtonItem = shareBtn
     }
     
@@ -179,16 +176,11 @@ extension baseWebViewController{
     @objc func goBack(){
         if self.webView.canGoBack{
             self.webView.goBack()
+        }else{
+            self.navigationController?.popViewController(animated: true)
         }
-        // navigationVC 控制跳转  MARK
-        
     }
     
-    @objc func goForward(){
-        if self.webView.canGoForward{
-            self.webView.goForward()
-        }
-    }
     @objc func cancel(){
         self.navigationController?.popViewController(animated: true)
     }

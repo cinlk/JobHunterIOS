@@ -38,13 +38,11 @@ class invitationSettingViewController: BaseTableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.title = viewTitle
-        self.navigationController?.insertCustomerView()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.title = ""
-        self.navigationController?.removeCustomerView()
         
     }
     

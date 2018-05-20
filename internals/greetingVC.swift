@@ -27,14 +27,12 @@ class greetingVC: BaseTableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = "打招呼语"
-        self.navigationController?.insertCustomerView()
-    }
+     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationItem.title = ""
-        self.navigationController?.removeCustomerView()
-        
+ 
     }
     
     

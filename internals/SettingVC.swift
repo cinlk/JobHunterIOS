@@ -24,7 +24,6 @@ class SettingVC: UIViewController {
         case evaluationUS = "给我们评价"
         case logout = "退出当前账号"
         case feedBack = "问题反馈"
-        case help = "帮助"
     }
 
     private lazy var tableView:UITableView = { [unowned self] in
@@ -55,7 +54,7 @@ class SettingVC: UIViewController {
         return alertVC
     }()
     
-    private lazy var items:[Int:[SettingCellItem]] = [0:[.myAccount,.messageSetting,.greeting,.help,.feedBack],1:[.clearCache,.aboutUS,.evaluationUS], 2:[.logout]]
+    private lazy var items:[Int:[SettingCellItem]] = [0:[.myAccount,.messageSetting,.greeting,.feedBack],1:[.clearCache,.aboutUS,.evaluationUS], 2:[.logout]]
     
     
     private lazy var label:UILabel = {
@@ -85,14 +84,12 @@ class SettingVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = "设置"
-        self.navigationController?.insertCustomerView()
-    }
+     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationItem.title = ""
-        self.navigationController?.removeCustomerView()
-    }
+     }
     
     
 
@@ -191,9 +188,6 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource{
             logoutAlertShow()
         case .evaluationUS:
             evaluationApp()
-        case .help:
-            let help = HelpsVC()
-            self.navigationController?.pushViewController(help, animated: true)
         case .feedBack:
             let problem = feedBackVC()
             self.navigationController?.pushViewController(problem, animated: true)

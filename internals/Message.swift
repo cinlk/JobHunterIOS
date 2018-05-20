@@ -18,7 +18,7 @@ enum MessgeType:String {
     case bigGif = "bigGif"
     case voice = "voice"
     case jobDescribe = "jobDescribe"
-    case personCard = "personCard"
+    //case personCard = "personCard"
     case time = "time"
     
     
@@ -90,8 +90,6 @@ class MessageBoby: NSObject, Mappable{
         case .smallGif,.bigGif:
             return String.init(data: data, encoding: String.Encoding.utf8) ?? ""
             
-        case .personCard:
-            return "[个人名片]"
             
         default:
             break
@@ -197,22 +195,6 @@ extension GigImageMessageBody{
     }
 }
 
-
-
-// 个人名片消息
-class PersonCardMessage:MessageBoby{
-    
-    
-    required init?(map: Map) {
-        super.init(map: map)
-    }
-    
-    override func mapping(map: Map) {
-        super.mapping(map: map)
-    }
-
-    
-}
 
 
 // 时间消息 单独抽取显示cell

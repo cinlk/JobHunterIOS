@@ -13,8 +13,20 @@ fileprivate let itemCGSize:CGSize = CGSize.init(width: ScreenW / 2 - 40 , height
 fileprivate let sectionH:CGFloat = 25
 
 
-class HelpsVC: BaseTableViewController {
+class HelpsVC: BaseViewController {
 
+    
+    
+    private lazy var tableView: UITableView = { [unowned self] in
+        let table = UITableView()
+        table.delegate = self
+        table.dataSource = self
+        table.tableFooterView = UIView.init()
+        table.register(expansionCell.self, forCellReuseIdentifier: expansionCell.identity())
+        return table
+
+    }()
+    
     private lazy var  headerView:HeaderCollectionView = {  [unowned self] in
         let v = HeaderCollectionView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: headerH), itemSize: itemCGSize)
         v.backgroundColor = UIColor.clear
@@ -41,23 +53,19 @@ class HelpsVC: BaseTableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationItem.title = "帮助"
-        self.navigationController?.insertCustomerView()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationItem.title = ""
-        self.navigationController?.removeCustomerView()
     }
     
     
     override func setViews() {
-        self.tableView.tableFooterView = UIView.init()
-        
-        //headerView.mode = guideItem
+        self.view.addSubview(tableView)
+        _ = tableView.sd_layout().topEqualToView(self.view)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
         self.tableView.tableHeaderView = headerView
-        self.tableView.register(expansionCell.self, forCellReuseIdentifier: expansionCell.identity())
-        
+        self.handleViews.append(tableView)
         super.setViews()
     }
     
@@ -78,22 +86,26 @@ class HelpsVC: BaseTableViewController {
         self.loadData()
     }
 
-   
+}
 
+
+extension HelpsVC: UITableViewDelegate, UITableViewDataSource{
+    
+    
     // MARK: - Table view data source
-
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return  mode?.items.count ?? 0
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         if let  cell = tableView.dequeueReusableCell(withIdentifier: expansionCell.identity(), for: indexPath) as? expansionCell{
             
             if let item = mode?.items[indexPath.row]{
@@ -113,23 +125,23 @@ class HelpsVC: BaseTableViewController {
             
             return cell
         }
-    
-       
+        
+        
         return UITableViewCell()
         
     }
-
     
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return "常见问题"
     }
-
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return sectionH
     }
     
     
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
         guard let item = mode?.items[indexPath.row] else { return 0}
         // 显示已经选择cell 自适应高度
@@ -141,13 +153,13 @@ class HelpsVC: BaseTableViewController {
             // 未选择cell 高度
             let mode = helpModel.init(title: item.title ?? "", detail: item.content ?? "", select: false)
             
-             return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: expansionCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: expansionCell.self, contentViewWidth: ScreenW)
         }
         
-       
+        
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
         if let index = selectedCellIndexPath.index(of: indexPath){
             selectedCellIndexPath.remove(at: index)
@@ -156,8 +168,8 @@ class HelpsVC: BaseTableViewController {
         }
         tableView.reloadRows(at: [indexPath], with: .automatic)
     }
+    
 }
-
 
 extension HelpsVC{
     

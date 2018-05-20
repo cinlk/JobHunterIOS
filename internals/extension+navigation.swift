@@ -14,18 +14,21 @@ extension UINavigationController{
     
      func insertCustomerView(){
         
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH))
-        // naviagtionbar 默认颜色
-        v.backgroundColor = UIColor.navigationBarColor()
-        v.tag  = 10
-        self.view.insertSubview(v, at: 1)
+        if self.view.viewWithTag(10) == nil{
+            let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH))
+            // naviagtionbar 默认颜色
+            v.backgroundColor = UIColor.navigationBarColor()
+            v.tag  = 10
+            self.view.insertSubview(v, at: 1)
+        }
         
     }
     
     func removeCustomerView(){
-        let view = self.view.viewWithTag(10)
-       // print(view.tag)
-        view!.removeFromSuperview()
-        self.view.willRemoveSubview(view!)
+        if let v = self.view.viewWithTag(10){
+            v.removeFromSuperview()
+            self.view.willRemoveSubview(v)
+        }
+       
     }
 }
