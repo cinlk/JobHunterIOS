@@ -138,7 +138,7 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
         case 0:
             return
         case 1:
-            let resumeView = personResumeTable(style: .plain)
+            let resumeView = personResumeTable()
             resumeView.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(resumeView, animated: true)
         case 2:

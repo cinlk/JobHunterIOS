@@ -35,4 +35,17 @@ extension String {
 }
 
 
+extension String{
+    
+    func getTimeInterval(format:String) -> TimeInterval{
+        let dateFormat = DateFormatter()
+        dateFormat.timeStyle = .short
+        dateFormat.dateFormat = format
+        if let date =  dateFormat.date(from: self){
+            return date.timeIntervalSince1970
+        }
+        return 0
+    }
+}
+
 

@@ -148,8 +148,11 @@ extension itemPickerView: UIPickerViewDelegate, UIPickerViewDataSource{
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        guard let col =  self.nodeComponents[component] else {
+            return 0
+        }
         
-        return self.nodeComponents[component]!.count
+        return col.count
     
     }
     

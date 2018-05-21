@@ -303,7 +303,7 @@ class SelectItemUtil {
     
     // 学历
     private func degress(){
-        let name:String = "学位"
+        let name:String = "学历"
         let path = Bundle.main.path(forResource: "degrees", ofType: "plist")
         let arr = NSArray.init(contentsOfFile: path!) as! Array<String>
         let tree = nodes.init()
@@ -411,9 +411,14 @@ class SelectItemUtil {
         degress()
         birthDay()
         
-        creatTreeBy(name: "性别", target: ["男","女"])
-        creatTreeBy(name: "技能", target: ["职业技能","语言能力","其他"])
+        
+        creatTreeBy(name: ResumeInfoType.gender.describe, target: ["男","女"])
+        creatTreeBy(name: ResumeInfoType.skill.describe, target: ["专业技能","语言水平","兴趣爱好","其他"])
         creatTreeBy(name: "反馈", target: ["产品建议","系统问题","其他"])
+        creatTreeBy(name: ResumeInfoType.workType.describe, target: ["全职","兼职","实习"])
+        
+        creatTreeBy(name: ResumeInfoType.pScale.describe, target: ["1-20人","20-50人","50人以上"])
+        creatTreeBy(name: ResumeInfoType.rank.describe, target: ["前5%", "前10%","前30%","前50%", "其它"])
         creatTreeBy(name: "职位类型", target: ["校招", "实习"])
         creatTreeBy(name: "职位类别", target:condition_jobs)
         creatTreeBy(name: "薪资范围", target: condition_salary)

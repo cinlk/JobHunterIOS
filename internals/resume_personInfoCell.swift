@@ -110,7 +110,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
     }()
     
     
-    dynamic var mode:personBasicInfo?{
+    dynamic var mode:personalBasicalInfo?{
         
         didSet{
             touxaing.image = UIImage.init(named:  mode!.tx)
@@ -122,10 +122,10 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
             phone.text = mode!.phone
             degree.text = mode!.degree
             
-            birthday.text = mode!.birthDayString
+            birthday.text = mode!.birthday
             email.text = mode!.email
             
-            lable1.text = mode!.gender + "|" + mode!.city + "|" + mode!.degree + "|" + mode!.birthDayString
+            lable1.text = mode!.gender + "|" + mode!.city + "|" + mode!.degree + "|" + mode!.birthday
             lable2.text = mode!.phone + "|" + mode!.email
             
             // cell 自适应高度

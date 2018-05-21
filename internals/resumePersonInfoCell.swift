@@ -106,13 +106,13 @@ import UIKit
     }()
     
     
-   dynamic var mode:personBasicInfo?{
+   dynamic var mode:personalBasicalInfo?{
         didSet{
             guard let mode = mode else { return }
             self.genderDes.text =  mode.gender
             self.degreeDes.text = mode.degree
             self.cityDes.text = mode.city
-            self.birthdayDes.text = mode.birthDayString
+            self.birthdayDes.text = mode.birthday
             self.phoneDes.text = mode.phone
             self.emailDes.text = mode.email
             

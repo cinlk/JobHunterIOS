@@ -101,7 +101,6 @@ extension singleButtonCell{
         
         switch btnType {
         case .add:
-            print("add ")
             self.addMoreItem?()
         case .delete:
             self.deleteItem?()

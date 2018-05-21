@@ -8,16 +8,21 @@
 
 import UIKit
 
+
+
 fileprivate let placeholdStr:String = "输入技能，100字以内"
+
+
 class textViewCell: UITableViewCell {
     
     // textview
-    lazy var textView:UITextView = {
+    lazy var textView:UITextView = {  [unowned self] in
         let tv = UITextView.init(frame: CGRect.zero)
         tv.textColor = UIColor.black
         tv.textAlignment = .left
-        tv.backgroundColor = UIColor.lightGray
+        tv.backgroundColor = UIColor.white
         tv.font = UIFont.systemFont(ofSize: 15)
+        tv.delegate = self
         return tv
     }()
     
@@ -26,7 +31,7 @@ class textViewCell: UITableViewCell {
         label.text = placeholdStr
         label.numberOfLines = 0
         label.contentMode = .top
-        label.textColor = UIColor.white
+        label.textColor = UIColor.lightGray
         return label
     }()
     
@@ -39,6 +44,9 @@ class textViewCell: UITableViewCell {
         toolBar.sizeToFit()
         return toolBar
     }()
+    
+    
+    var updateText:((_ value:String) -> Void)?
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -64,6 +72,7 @@ class textViewCell: UITableViewCell {
 
     override func layoutSubviews() {
         super.layoutSubviews()
+        
         self.contentView.addSubview(textView)
         self.textView.addSubview(placeHolderLabel)
         self.textView.inputAccessoryView = doneBtn
@@ -92,4 +101,40 @@ extension textViewCell{
     @objc func done(){
         self.textView.endEditing(true)
     }
+}
+
+extension textViewCell: UITextViewDelegate{
+    
+    
+    func textViewDidChange(_ textView: UITextView) {
+       
+        placeHolderLabel.isHidden =  textView.text.isEmpty == true ? false : true
+        
+    }
+    
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        return true
+    }
+    func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
+        textView.resignFirstResponder()
+        return true
+    }
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        placeHolderLabel.isHidden =  textView.text.isEmpty == true ? false : true
+
+        
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        guard  let text = textView.text else {
+            return
+        }
+        placeHolderLabel.isHidden =  text.isEmpty == true ? false : true
+        if !text.isEmpty{
+            self.updateText?(text)
+        }
+        
+    }
+    
 }

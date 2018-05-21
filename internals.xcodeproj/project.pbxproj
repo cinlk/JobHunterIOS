@@ -16,6 +16,8 @@
 		4A0BA74920B01C880099F332 /* ChatListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA74820B01C880099F332 /* ChatListViewController.swift */; };
 		4A0BA74B20B01CED0099F332 /* ChatUsersTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA74A20B01CED0099F332 /* ChatUsersTableViewCell.swift */; };
 		4A0BA74E20B053DD0099F332 /* SetFourItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA74D20B053DD0099F332 /* SetFourItemTableViewCell.swift */; };
+		4A0BA75020B13A700099F332 /* AddBaseInfoTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA74F20B13A700099F332 /* AddBaseInfoTableViewController.swift */; };
+		4A0BA75220B16D600099F332 /* ResumeItemsTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA75120B16D600099F332 /* ResumeItemsTypes.swift */; };
 		4A18E1EB202CA03F00B1038E /* TreeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A18E1EA202CA03F00B1038E /* TreeNode.swift */; };
 		4A1A502620773A500070B74D /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1A502520773A500070B74D /* CoreTelephony.framework */; };
 		4A1A502820773A5C0070B74D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1A502720773A5C0070B74D /* libz.tbd */; };
@@ -114,19 +116,20 @@
 		4A444ED11F8E5789006AE83D /* contactlist.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A444ECF1F8E5789006AE83D /* contactlist.xib */; };
 		4A444ED31F8F9E44006AE83D /* chatPeople.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A444ED21F8F9E44006AE83D /* chatPeople.swift */; };
 		4A4523F21F5BABE1009D6B62 /* CommonJobTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4523F11F5BABE1009D6B62 /* CommonJobTableCell.swift */; };
+		4A502CEF20B1C44D00BB71FD /* BaseResumeInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A502CEE20B1C44D00BB71FD /* BaseResumeInfoCell.swift */; };
+		4A502CF120B1C5B100BB71FD /* projectInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A502CF020B1C5B100BB71FD /* projectInfoCell.swift */; };
+		4A502CF320B1C98B00BB71FD /* studentWorkCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A502CF220B1C98B00BB71FD /* studentWorkCell.swift */; };
+		4A502CF520B1CA1000BB71FD /* SocialPracticeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A502CF420B1CA1000BB71FD /* SocialPracticeCell.swift */; };
+		4A502CF720B1CA5B00BB71FD /* ResumeOtherCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A502CF620B1CA5B00BB71FD /* ResumeOtherCell.swift */; };
 		4A5304DB1F527D090000F1E9 /* loginUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5304DA1F527D090000F1E9 /* loginUtils.swift */; };
 		4A5304E41F52A6ED0000F1E9 /* MainTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5304E31F52A6ED0000F1E9 /* MainTabBarViewController.swift */; };
 		4A5304E81F52A7720000F1E9 /* DashboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5304E71F52A7720000F1E9 /* DashboardViewController.swift */; };
 		4A5E3FB5202DF14D009C1A6B /* address.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4A5E3FB4202DF14D009C1A6B /* address.plist */; };
 		4A5E3FB7202ECA57009C1A6B /* degrees.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4A5E3FB6202ECA57009C1A6B /* degrees.plist */; };
 		4A5E3FB9202ECD86009C1A6B /* birthDate.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4A5E3FB8202ECD86009C1A6B /* birthDate.plist */; };
-		4A5E3FBB203131E6009C1A6B /* personBaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5E3FBA203131E6009C1A6B /* personBaseCell.swift */; };
 		4A5E3FBD2031474B009C1A6B /* extension+dictonary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5E3FBC2031474B009C1A6B /* extension+dictonary.swift */; };
-		4A5E3FC320318CC6009C1A6B /* listItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5E3FC220318CC6009C1A6B /* listItemCell.swift */; };
 		4A5E3FC72031D7AC009C1A6B /* modifyitemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5E3FC62031D7AC009C1A6B /* modifyitemsView.swift */; };
-		4A5E3FC92031DF17009C1A6B /* modify_ResumeItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5E3FC82031DF17009C1A6B /* modify_ResumeItemCell.swift */; };
 		4A5E3FCB2031E271009C1A6B /* singleButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5E3FCA2031E271009C1A6B /* singleButtonCell.swift */; };
-		4A5E3FCF20329393009C1A6B /* add_educations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5E3FCE20329393009C1A6B /* add_educations.swift */; };
 		4A5E3FD120329792009C1A6B /* AddItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5E3FD020329792009C1A6B /* AddItemCell.swift */; };
 		4A6389F420668B0900C4B4D0 /* SelectedOneTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6389F320668B0900C4B4D0 /* SelectedOneTableView.swift */; };
 		4A6389F620668BE100C4B4D0 /* SelectedTowTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6389F520668BE100C4B4D0 /* SelectedTowTableView.swift */; };
@@ -149,12 +152,12 @@
 		4A82A0D32026F6CA00185E8B /* personResumeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0D22026F6CA00185E8B /* personResumeTable.swift */; };
 		4A82A0D82027042B00185E8B /* resume_personInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0D72027042B00185E8B /* resume_personInfoCell.swift */; };
 		4A82A0DA202709B700185E8B /* person_resume.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0D9202709B700185E8B /* person_resume.swift */; };
-		4A82A0DC2027199700185E8B /* person_educationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0DB2027199700185E8B /* person_educationCell.swift */; };
-		4A82A0DE2027493E00185E8B /* person_projectCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0DD2027493E00185E8B /* person_projectCell.swift */; };
+		4A82A0DC2027199700185E8B /* educationInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0DB2027199700185E8B /* educationInfoCell.swift */; };
+		4A82A0DE2027493E00185E8B /* jobInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0DD2027493E00185E8B /* jobInfoCell.swift */; };
 		4A82A0E02028939F00185E8B /* person_skillCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0DF2028939F00185E8B /* person_skillCell.swift */; };
 		4A82A0E22028A8C900185E8B /* person_evaluateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0E12028A8C900185E8B /* person_evaluateCell.swift */; };
-		4A82A0E42029D38B00185E8B /* modify_personInfoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0E32029D38B00185E8B /* modify_personInfoVC.swift */; };
-		4A82A0E62029D7BF00185E8B /* modify_personInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0E52029D7BF00185E8B /* modify_personInfoCell.swift */; };
+		4A82A0E42029D38B00185E8B /* modifyPersonInfoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0E32029D38B00185E8B /* modifyPersonInfoVC.swift */; };
+		4A82A0E62029D7BF00185E8B /* modifyPersonInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0E52029D7BF00185E8B /* modifyPersonInfoCell.swift */; };
 		4A82A0E8202B4DB400185E8B /* itemPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0E7202B4DB400185E8B /* itemPickerView.swift */; };
 		4A8858F31FE550D40009D73D /* searchResultController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8858F21FE550D40009D73D /* searchResultController.swift */; };
 		4A8858FA1FE8076C0009D73D /* RecruiterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8858F81FE8076C0009D73D /* RecruiterCell.swift */; };
@@ -274,9 +277,7 @@
 		4AE0DEA41FFBC5AC00A16ED4 /* pagetitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE0DEA31FFBC5AC00A16ED4 /* pagetitleView.swift */; };
 		4AE0DEA61FFBC5CD00A16ED4 /* pageContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE0DEA51FFBC5CD00A16ED4 /* pageContentView.swift */; };
 		4AE4AFC11F5131AE00B5F509 /* ForgetPasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE4AFC01F5131AE00B5F509 /* ForgetPasswordController.swift */; };
-		4AE4D6B3203581CA00BC87FE /* add_internVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE4D6B2203581CA00BC87FE /* add_internVC.swift */; };
 		4AE4D6B520358E0D00BC87FE /* textViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE4D6B420358E0D00BC87FE /* textViewCell.swift */; };
-		4AE4D6B7203594AE00BC87FE /* addSkillVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE4D6B6203594AE00BC87FE /* addSkillVC.swift */; };
 		4AE694C31F91D5BD005BE1F0 /* messageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE694C21F91D5BD005BE1F0 /* messageCell.swift */; };
 		4AEDFE861FBFEA5B0071F4D8 /* extension+textfield.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AEDFE851FBFEA5B0071F4D8 /* extension+textfield.swift */; };
 		4AEDFE8B1FBFF75D0071F4D8 /* Users.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AEDFE8A1FBFF75D0071F4D8 /* Users.swift */; };
@@ -344,6 +345,8 @@
 		4A0BA74820B01C880099F332 /* ChatListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListViewController.swift; sourceTree = "<group>"; };
 		4A0BA74A20B01CED0099F332 /* ChatUsersTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatUsersTableViewCell.swift; sourceTree = "<group>"; };
 		4A0BA74D20B053DD0099F332 /* SetFourItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetFourItemTableViewCell.swift; sourceTree = "<group>"; };
+		4A0BA74F20B13A700099F332 /* AddBaseInfoTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddBaseInfoTableViewController.swift; sourceTree = "<group>"; };
+		4A0BA75120B16D600099F332 /* ResumeItemsTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumeItemsTypes.swift; sourceTree = "<group>"; };
 		4A18E1EA202CA03F00B1038E /* TreeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeNode.swift; sourceTree = "<group>"; };
 		4A1A502520773A500070B74D /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		4A1A502720773A5C0070B74D /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -444,19 +447,20 @@
 		4A444ECF1F8E5789006AE83D /* contactlist.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = contactlist.xib; sourceTree = "<group>"; };
 		4A444ED21F8F9E44006AE83D /* chatPeople.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = chatPeople.swift; sourceTree = "<group>"; };
 		4A4523F11F5BABE1009D6B62 /* CommonJobTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonJobTableCell.swift; sourceTree = "<group>"; };
+		4A502CEE20B1C44D00BB71FD /* BaseResumeInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseResumeInfoCell.swift; sourceTree = "<group>"; };
+		4A502CF020B1C5B100BB71FD /* projectInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = projectInfoCell.swift; sourceTree = "<group>"; };
+		4A502CF220B1C98B00BB71FD /* studentWorkCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = studentWorkCell.swift; sourceTree = "<group>"; };
+		4A502CF420B1CA1000BB71FD /* SocialPracticeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialPracticeCell.swift; sourceTree = "<group>"; };
+		4A502CF620B1CA5B00BB71FD /* ResumeOtherCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumeOtherCell.swift; sourceTree = "<group>"; };
 		4A5304DA1F527D090000F1E9 /* loginUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = loginUtils.swift; sourceTree = "<group>"; };
 		4A5304E31F52A6ED0000F1E9 /* MainTabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabBarViewController.swift; sourceTree = "<group>"; };
 		4A5304E71F52A7720000F1E9 /* DashboardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardViewController.swift; sourceTree = "<group>"; };
 		4A5E3FB4202DF14D009C1A6B /* address.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = address.plist; sourceTree = "<group>"; };
 		4A5E3FB6202ECA57009C1A6B /* degrees.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = degrees.plist; sourceTree = "<group>"; };
 		4A5E3FB8202ECD86009C1A6B /* birthDate.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = birthDate.plist; sourceTree = "<group>"; };
-		4A5E3FBA203131E6009C1A6B /* personBaseCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = personBaseCell.swift; sourceTree = "<group>"; };
 		4A5E3FBC2031474B009C1A6B /* extension+dictonary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+dictonary.swift"; sourceTree = "<group>"; };
-		4A5E3FC220318CC6009C1A6B /* listItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = listItemCell.swift; sourceTree = "<group>"; };
 		4A5E3FC62031D7AC009C1A6B /* modifyitemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = modifyitemsView.swift; sourceTree = "<group>"; };
-		4A5E3FC82031DF17009C1A6B /* modify_ResumeItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = modify_ResumeItemCell.swift; sourceTree = "<group>"; };
 		4A5E3FCA2031E271009C1A6B /* singleButtonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = singleButtonCell.swift; sourceTree = "<group>"; };
-		4A5E3FCE20329393009C1A6B /* add_educations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = add_educations.swift; sourceTree = "<group>"; };
 		4A5E3FD020329792009C1A6B /* AddItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemCell.swift; sourceTree = "<group>"; };
 		4A6389F320668B0900C4B4D0 /* SelectedOneTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedOneTableView.swift; sourceTree = "<group>"; };
 		4A6389F520668BE100C4B4D0 /* SelectedTowTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedTowTableView.swift; sourceTree = "<group>"; };
@@ -479,12 +483,12 @@
 		4A82A0D22026F6CA00185E8B /* personResumeTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = personResumeTable.swift; sourceTree = "<group>"; };
 		4A82A0D72027042B00185E8B /* resume_personInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = resume_personInfoCell.swift; sourceTree = "<group>"; };
 		4A82A0D9202709B700185E8B /* person_resume.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = person_resume.swift; sourceTree = "<group>"; };
-		4A82A0DB2027199700185E8B /* person_educationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = person_educationCell.swift; sourceTree = "<group>"; };
-		4A82A0DD2027493E00185E8B /* person_projectCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = person_projectCell.swift; sourceTree = "<group>"; };
+		4A82A0DB2027199700185E8B /* educationInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = educationInfoCell.swift; sourceTree = "<group>"; };
+		4A82A0DD2027493E00185E8B /* jobInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = jobInfoCell.swift; sourceTree = "<group>"; };
 		4A82A0DF2028939F00185E8B /* person_skillCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = person_skillCell.swift; sourceTree = "<group>"; };
 		4A82A0E12028A8C900185E8B /* person_evaluateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = person_evaluateCell.swift; sourceTree = "<group>"; };
-		4A82A0E32029D38B00185E8B /* modify_personInfoVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = modify_personInfoVC.swift; sourceTree = "<group>"; };
-		4A82A0E52029D7BF00185E8B /* modify_personInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = modify_personInfoCell.swift; sourceTree = "<group>"; };
+		4A82A0E32029D38B00185E8B /* modifyPersonInfoVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = modifyPersonInfoVC.swift; sourceTree = "<group>"; };
+		4A82A0E52029D7BF00185E8B /* modifyPersonInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = modifyPersonInfoCell.swift; sourceTree = "<group>"; };
 		4A82A0E7202B4DB400185E8B /* itemPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = itemPickerView.swift; sourceTree = "<group>"; };
 		4A8858F21FE550D40009D73D /* searchResultController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = searchResultController.swift; sourceTree = "<group>"; };
 		4A8858F81FE8076C0009D73D /* RecruiterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecruiterCell.swift; sourceTree = "<group>"; };
@@ -616,9 +620,7 @@
 		4AE0DEA51FFBC5CD00A16ED4 /* pageContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = pageContentView.swift; sourceTree = "<group>"; };
 		4AE4AFC01F5131AE00B5F509 /* ForgetPasswordController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgetPasswordController.swift; sourceTree = "<group>"; };
 		4AE4AFC21F515E7500B5F509 /* bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bridge.h; sourceTree = "<group>"; };
-		4AE4D6B2203581CA00BC87FE /* add_internVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = add_internVC.swift; sourceTree = "<group>"; };
 		4AE4D6B420358E0D00BC87FE /* textViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = textViewCell.swift; sourceTree = "<group>"; };
-		4AE4D6B6203594AE00BC87FE /* addSkillVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = addSkillVC.swift; sourceTree = "<group>"; };
 		4AE694C21F91D5BD005BE1F0 /* messageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = messageCell.swift; sourceTree = "<group>"; };
 		4AEDFE851FBFEA5B0071F4D8 /* extension+textfield.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+textfield.swift"; sourceTree = "<group>"; };
 		4AEDFE8A1FBFF75D0071F4D8 /* Users.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Users.swift; sourceTree = "<group>"; };
@@ -1009,6 +1011,23 @@
 			name = protobuf;
 			sourceTree = "<group>";
 		};
+		4A502CF820B1CBB900BB71FD /* resumeSubItemCell */ = {
+			isa = PBXGroup;
+			children = (
+				4A502CF420B1CA1000BB71FD /* SocialPracticeCell.swift */,
+				4A502CF220B1C98B00BB71FD /* studentWorkCell.swift */,
+				4A502CF020B1C5B100BB71FD /* projectInfoCell.swift */,
+				4A502CEE20B1C44D00BB71FD /* BaseResumeInfoCell.swift */,
+				4A82A0E12028A8C900185E8B /* person_evaluateCell.swift */,
+				4A82A0DF2028939F00185E8B /* person_skillCell.swift */,
+				4A82A0DD2027493E00185E8B /* jobInfoCell.swift */,
+				4A82A0DB2027199700185E8B /* educationInfoCell.swift */,
+				4A82A0D72027042B00185E8B /* resume_personInfoCell.swift */,
+				4A502CF620B1CA5B00BB71FD /* ResumeOtherCell.swift */,
+			);
+			name = resumeSubItemCell;
+			sourceTree = "<group>";
+		};
 		4A50F8091FC1E53000011AA5 /* utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -1186,16 +1205,9 @@
 		4A82A0CF2026DEEA00185E8B /* tableCells */ = {
 			isa = PBXGroup;
 			children = (
+				4A502CF820B1CBB900BB71FD /* resumeSubItemCell */,
 				4A82A0D02026DF4300185E8B /* personTableCell.swift */,
-				4A82A0D72027042B00185E8B /* resume_personInfoCell.swift */,
-				4A82A0DB2027199700185E8B /* person_educationCell.swift */,
-				4A82A0DD2027493E00185E8B /* person_projectCell.swift */,
-				4A82A0DF2028939F00185E8B /* person_skillCell.swift */,
-				4A82A0E12028A8C900185E8B /* person_evaluateCell.swift */,
-				4A82A0E52029D7BF00185E8B /* modify_personInfoCell.swift */,
-				4A5E3FBA203131E6009C1A6B /* personBaseCell.swift */,
-				4A5E3FC220318CC6009C1A6B /* listItemCell.swift */,
-				4A5E3FC82031DF17009C1A6B /* modify_ResumeItemCell.swift */,
+				4A82A0E52029D7BF00185E8B /* modifyPersonInfoCell.swift */,
 				4A5E3FCA2031E271009C1A6B /* singleButtonCell.swift */,
 				4A5E3FD020329792009C1A6B /* AddItemCell.swift */,
 				4AE4D6B420358E0D00BC87FE /* textViewCell.swift */,
@@ -1208,14 +1220,12 @@
 		4A82A0D42026FD5500185E8B /* 简历 */ = {
 			isa = PBXGroup;
 			children = (
-				4A82A0E32029D38B00185E8B /* modify_personInfoVC.swift */,
+				4A82A0E32029D38B00185E8B /* modifyPersonInfoVC.swift */,
 				4A5E3FC62031D7AC009C1A6B /* modifyitemsView.swift */,
 				4A82A0D22026F6CA00185E8B /* personResumeTable.swift */,
-				4A5E3FCE20329393009C1A6B /* add_educations.swift */,
-				4AE4D6B2203581CA00BC87FE /* add_internVC.swift */,
-				4AE4D6B6203594AE00BC87FE /* addSkillVC.swift */,
 				4AFF9DC32036FE3C000ADBAF /* evaluateSelfVC.swift */,
 				4A22A3A42073C67D00024C2B /* showResumeVC.swift */,
+				4A0BA74F20B13A700099F332 /* AddBaseInfoTableViewController.swift */,
 			);
 			name = "简历";
 			sourceTree = "<group>";
@@ -1537,6 +1547,7 @@
 			isa = PBXGroup;
 			children = (
 				4AD2C77820973D28002F3486 /* CommonEnum.swift */,
+				4A0BA75120B16D600099F332 /* ResumeItemsTypes.swift */,
 			);
 			name = Enum;
 			sourceTree = "<group>";
@@ -2081,7 +2092,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A5E3FC92031DF17009C1A6B /* modify_ResumeItemCell.swift in Sources */,
 				4A686A8A204011AE00571EB0 /* PrivacyCellView.swift in Sources */,
 				4AF6C8031F571D1F0059496B /* CitysView.swift in Sources */,
 				4AE4AFC11F5131AE00B5F509 /* ForgetPasswordController.swift in Sources */,
@@ -2092,7 +2102,6 @@
 				4A4523F21F5BABE1009D6B62 /* CommonJobTableCell.swift in Sources */,
 				4A8859141FF89A7D0009D73D /* extension+imge.swift in Sources */,
 				4A6BC22C1FC312A7002C17B6 /* RegistryViewModel.swift in Sources */,
-				4A5E3FBB203131E6009C1A6B /* personBaseCell.swift in Sources */,
 				4A2145C92078D039000959F4 /* MBHubUtils.swift in Sources */,
 				4A88590A1FEFF0390009D73D /* JobTagsCell.swift in Sources */,
 				4AD03AB81F9B45270077C15B /* InputTextView.swift in Sources */,
@@ -2140,13 +2149,14 @@
 				4AFCCD621F9E490400E0E168 /* gifCell.swift in Sources */,
 				4A9CE36C1F716101002A8FD5 /* progressHUB.swift in Sources */,
 				4A444ED31F8F9E44006AE83D /* chatPeople.swift in Sources */,
+				4A502CF120B1C5B100BB71FD /* projectInfoCell.swift in Sources */,
 				4ADDDAB81F98F054001CB00F /* MChatEmotion.swift in Sources */,
+				4A502CEF20B1C44D00BB71FD /* BaseResumeInfoCell.swift in Sources */,
 				4ADDDAD81F9B1EE3001CB00F /* ChatEmotionAttachment.swift in Sources */,
 				4A2145CF20790ED5000959F4 /* ErrorPageView.swift in Sources */,
 				4A9543AD209DDD88009BCBE2 /* JobInviteViewController.swift in Sources */,
-				4A5E3FC320318CC6009C1A6B /* listItemCell.swift in Sources */,
 				4AFF91B91F5DB8A900FE189F /* CompanySimpleCell.swift in Sources */,
-				4A82A0DE2027493E00185E8B /* person_projectCell.swift in Sources */,
+				4A82A0DE2027493E00185E8B /* jobInfoCell.swift in Sources */,
 				4A9543B6209DE9C6009BCBE2 /* JobInviteTableViewCell.swift in Sources */,
 				4A30EBEB2083685800231D11 /* ScrollerNewsCell.swift in Sources */,
 				4A0BA74B20B01CED0099F332 /* ChatUsersTableViewCell.swift in Sources */,
@@ -2177,11 +2187,11 @@
 				4AD2C77920973D28002F3486 /* CommonEnum.swift in Sources */,
 				4A96B533205CB7830028C096 /* extension+toolBar.swift in Sources */,
 				4ADDDAD51F98F9B3001CB00F /* ChatEmotionHelper.swift in Sources */,
-				4A82A0E42029D38B00185E8B /* modify_personInfoVC.swift in Sources */,
+				4A82A0E42029D38B00185E8B /* modifyPersonInfoVC.swift in Sources */,
 				4A93C2BB1F80CE5F0022E97B /* deliveredHistory.swift in Sources */,
 				4AD8F751206E6CA4003969ED /* extension+UITextView.swift in Sources */,
 				4A6BC2431FCB12A3002C17B6 /* mainPageModel.swift in Sources */,
-				4A82A0E62029D7BF00185E8B /* modify_personInfoCell.swift in Sources */,
+				4A82A0E62029D7BF00185E8B /* modifyPersonInfoCell.swift in Sources */,
 				4A1BA2C0208AEB1500CF8352 /* BaseScrollerTableViewCell.swift in Sources */,
 				4A22A3A72073D1CE00024C2B /* resumePersonInfoCell.swift in Sources */,
 				4ADADAAB1FA4C09400134AAE /* quickReplyView.swift in Sources */,
@@ -2189,7 +2199,7 @@
 				4A1BA2F8208CE3C000CF8352 /* CollectionTextCell.swift in Sources */,
 				4A93C2C31F80CF080022E97B /* markTestSocketView.swift in Sources */,
 				4ACBD6F51F76386D00A5FD23 /* baseSearchViewController.swift in Sources */,
-				4A82A0DC2027199700185E8B /* person_educationCell.swift in Sources */,
+				4A82A0DC2027199700185E8B /* educationInfoCell.swift in Sources */,
 				4A6389F420668B0900C4B4D0 /* SelectedOneTableView.swift in Sources */,
 				4A93C2E71F88B8E20022E97B /* client.swift in Sources */,
 				4A686A8C2040357F00571EB0 /* privateModel.swift in Sources */,
@@ -2223,10 +2233,12 @@
 				4A30EBD8207BAFBE00231D11 /* CompanyJobsVC.swift in Sources */,
 				4A6BC2371FC86453002C17B6 /* config.swift in Sources */,
 				4A1BA2F0208C832E00CF8352 /* TableContentCell.swift in Sources */,
+				4A502CF320B1C98B00BB71FD /* studentWorkCell.swift in Sources */,
 				4A1BA2CA208B1F0E00CF8352 /* CareerTalkMeetingModel.swift in Sources */,
 				4A88590C1FF12A950009D73D /* companyJobCell.swift in Sources */,
 				4AFF91C41F5EF40000FE189F /* mapApp.swift in Sources */,
 				4A22102E203869D3000BDC70 /* CompanyCollectedVC.swift in Sources */,
+				4A502CF520B1CA1000BB71FD /* SocialPracticeCell.swift in Sources */,
 				4A20EEF1203DA0750021843B /* UIswitchCell.swift in Sources */,
 				4AA637662067CCC000DAE9A9 /* ConversationManager.swift in Sources */,
 				4ADDDADC1F9B40A8001CB00F /* ChatBarView.swift in Sources */,
@@ -2243,7 +2255,6 @@
 				4ACC6DB2205BF49100392252 /* SqliteManager.swift in Sources */,
 				4A1BA2FA208E1F4400CF8352 /* DropItemIndustrySectorView.swift in Sources */,
 				4A30EBF120838FC400231D11 /* simpleRecruitCell.swift in Sources */,
-				4AE4D6B7203594AE00BC87FE /* addSkillVC.swift in Sources */,
 				4A30EBD6207BAFAC00231D11 /* CompanyDetailVC.swift in Sources */,
 				4AF3D356205EB2760012EB6E /* extension+navigation.swift in Sources */,
 				4A82A0D12026DF4300185E8B /* personTableCell.swift in Sources */,
@@ -2265,6 +2276,7 @@
 				4A30EBE3207FADFD00231D11 /* privateViewModel.swift in Sources */,
 				4AD8F753206E874C003969ED /* extension+UIlabel.swift in Sources */,
 				4AF3D3602062B7C10012EB6E /* sectionCellView.swift in Sources */,
+				4A0BA75220B16D600099F332 /* ResumeItemsTypes.swift in Sources */,
 				4A0BA74920B01C880099F332 /* ChatListViewController.swift in Sources */,
 				4A2145C520788CCB000959F4 /* collectedViewModel.swift in Sources */,
 				4AF6C8051F5A98940059496B /* MainJobCategoryCell.swift in Sources */,
@@ -2273,7 +2285,6 @@
 				4AB8FFE91FDEC0720020F026 /* searchViewModel.swift in Sources */,
 				4A9543AF209DDD9A009BCBE2 /* HRInviteViewController.swift in Sources */,
 				4A93C2CC1F81FD330022E97B /* DetailDeliveryStatus.swift in Sources */,
-				4AE4D6B3203581CA00BC87FE /* add_internVC.swift in Sources */,
 				4A221040203D1B5E000BDC70 /* greetingVC.swift in Sources */,
 				4A686A8820400C5F00571EB0 /* PrivacySetting.swift in Sources */,
 				4A96B52F205C14CE0028C096 /* tableModel.swift in Sources */,
@@ -2284,7 +2295,6 @@
 				4ADDDAB51F98EF84001CB00F /* ChatEmotionCells.swift in Sources */,
 				4A1BA2D9208B639D00CF8352 /* GraduateJobsViewController.swift in Sources */,
 				4AB0FEDA201630B000932C02 /* externals.swift in Sources */,
-				4A5E3FCF20329393009C1A6B /* add_educations.swift in Sources */,
 				4A5304DB1F527D090000F1E9 /* loginUtils.swift in Sources */,
 				4A82A0E22028A8C900185E8B /* person_evaluateCell.swift in Sources */,
 				4AEDFE861FBFEA5B0071F4D8 /* extension+textfield.swift in Sources */,
@@ -2340,9 +2350,11 @@
 				4A1BA2C8208B1E3A00CF8352 /* CompanyModel.swift in Sources */,
 				4A8859181FF8DD2D0009D73D /* extension+uiview.swift in Sources */,
 				4A4254FB203EE0170049B237 /* HelpsVC.swift in Sources */,
+				4A502CF720B1CA5B00BB71FD /* ResumeOtherCell.swift in Sources */,
 				4A22103A203BFD0E000BDC70 /* SettingVC.swift in Sources */,
 				4A0BA74E20B053DD0099F332 /* SetFourItemTableViewCell.swift in Sources */,
 				4AF3D352205E62DB0012EB6E /* CollectionItemsCell.swift in Sources */,
+				4A0BA75020B13A700099F332 /* AddBaseInfoTableViewController.swift in Sources */,
 				4AEDFE8B1FBFF75D0071F4D8 /* Users.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

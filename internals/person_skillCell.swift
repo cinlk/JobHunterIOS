@@ -46,7 +46,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 25, height: 25)
             guard let mode = mode else {
                 return
             }
-            self.type.text = mode.skillType
+            self.type.text = mode.skill
             self.detail.text = mode.describe
             self.setupAutoHeight(withBottomView: detail, bottomMargin: 10)
             
@@ -62,6 +62,9 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 25, height: 25)
         _ = type.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,10)?.autoHeightRatio(0)
         _ = modifyIcon.sd_layout().topEqualToView(type)?.rightSpaceToView(self.contentView,20)?.widthIs(iconSize.width)?.heightIs(iconSize.height)
         _ = detail.sd_layout().leftEqualToView(type)?.topSpaceToView(type,10)?.autoHeightRatio(0)
+        
+        detail.setMaxNumberOfLinesToShow(5)
+        
         
     }
     

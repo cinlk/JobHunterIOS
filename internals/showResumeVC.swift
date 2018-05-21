@@ -16,7 +16,7 @@ class showResumeVC: UIViewController {
 
     
     
-    private var viewType:[resumeViewType] = [.baseInfo,.education,.intern,.skill,.evaluate]
+    private var viewType:[ResumeSubItems] = [.personInfo,.education,.works,.skills]
     
     // test
     private var pManager:personModelManager = personModelManager.shared
@@ -32,8 +32,8 @@ class showResumeVC: UIViewController {
         table.contentInsetAdjustmentBehavior = .never
         table.backgroundColor = UIColor.viewBackColor()
         table.register(resumePersonInfoCell.self, forCellReuseIdentifier: resumePersonInfoCell.identity())
-        table.register(person_educationCell.self, forCellReuseIdentifier: person_educationCell.identity())
-        table.register(person_projectCell.self, forCellReuseIdentifier: person_projectCell.identity())
+        table.register(educationInfoCell.self, forCellReuseIdentifier: educationInfoCell.identity())
+        table.register(jobInfoCell.self, forCellReuseIdentifier: jobInfoCell.identity())
         table.register(person_skillCell.self, forCellReuseIdentifier: person_skillCell.identity())
         table.register(person_evaluateCell.self, forCellReuseIdentifier: person_evaluateCell.identity())
         
@@ -140,9 +140,9 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
         case .education:
             // 内容cell 和   标题cell
             return (pManager.mode?.educationInfo.count ?? 0) + 1
-        case .intern:
+        case .works:
             return (pManager.mode?.internInfo.count ?? 0) + 1
-        case .skill:
+        case .skills:
             return (pManager.mode?.skills.count ?? 0) + 1
         default:
             break
@@ -155,7 +155,7 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
         cell.selectionStyle = .none
         
         switch viewType[indexPath.section] {
-        case .baseInfo:
+        case .personInfo:
             if indexPath.row == 0 {
               cell.textLabel?.text = "个人信息"
               return cell
@@ -170,25 +170,25 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
                 return cell
             }
             
-            let cell = table.dequeueReusableCell(withIdentifier: person_educationCell.identity(), for: indexPath) as! person_educationCell
+            let cell = table.dequeueReusableCell(withIdentifier: educationInfoCell.identity(), for: indexPath) as! educationInfoCell
             cell.modifyIcon.isHidden = true 
             cell.mode = pManager.mode?.educationInfo[indexPath.row - 1]
             cell.selectionStyle = .none
             
             return cell
             
-        case .intern:
+        case .works:
             if indexPath.row == 0 {
                 cell.textLabel?.text = "实习经历"
                 return cell
             }
-            let cell = table.dequeueReusableCell(withIdentifier: person_projectCell.identity(), for: indexPath) as! person_projectCell
+            let cell = table.dequeueReusableCell(withIdentifier: jobInfoCell.identity(), for: indexPath) as! jobInfoCell
             cell.modifyIcon.isHidden = true
             cell.mode = pManager.mode?.internInfo[indexPath.row - 1]
             cell.selectionStyle = .none
             return cell
             
-        case .skill:
+        case .skills:
             if indexPath.row == 0 {
                 cell.textLabel?.text = "技能"
                 return cell
@@ -199,20 +199,22 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
             cell.selectionStyle = .none
             return cell
             
-        case .evaluate:
-            if indexPath.row == 0 {
-                cell.textLabel?.text = "自我评价"
-                return cell
-            }
-            let cell = table.dequeueReusableCell(withIdentifier: person_evaluateCell.identity(), for: indexPath) as! person_evaluateCell
-            cell.close = true
-            cell.mode = pManager.mode?.estimate
-            cell.selectionStyle = .none
-            return cell
+//        case .evaluate:
+//            if indexPath.row == 0 {
+//                cell.textLabel?.text = "自我评价"
+//                return cell
+//            }
+//            let cell = table.dequeueReusableCell(withIdentifier: person_evaluateCell.identity(), for: indexPath) as! person_evaluateCell
+//            cell.close = true
+//            cell.mode = pManager.mode?.estimate
+//            cell.selectionStyle = .none
+//            return cell
+        default:
+            break
      
         }
         
-        //return UITableViewCell()
+        return UITableViewCell()
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -221,7 +223,7 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
         }
        
         switch viewType[indexPath.section] {
-        case .baseInfo:
+        case .personInfo:
             // 必须有值
             guard let mode = pManager.mode?.basicinfo  else {
                 return 0
@@ -232,29 +234,33 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
             guard let mode = pManager.mode?.educationInfo[indexPath.row - 1] else {
                 return 0
             }
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: person_educationCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: educationInfoCell.self, contentViewWidth: ScreenW)
             
-        case .intern:
+        case .works:
             guard let mode =  pManager.mode?.internInfo[indexPath.row - 1] else {
                 return 0
             }
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: person_projectCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: jobInfoCell.self, contentViewWidth: ScreenW)
             
-        case .skill:
+        case .skills:
             guard let mode = pManager.mode?.skills[indexPath.row - 1] else {
                 return 0
             }
             return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: person_skillCell.self, contentViewWidth: ScreenW)
             
-        case .evaluate:
-            guard let str = pManager.mode?.estimate else {
-                return 0
-            }
-            if str.isEmpty{
-                return 0 
-            }
-            return   tableView.cellHeight(for: indexPath, model: str, keyPath: "mode", cellClass: person_evaluateCell.self, contentViewWidth: ScreenW)
+//        case .evaluate:
+//            guard let str = pManager.mode?.estimate else {
+//                return 0
+//            }
+//            if str.isEmpty{
+//                return 0
+//            }
+//            return   tableView.cellHeight(for: indexPath, model: str, keyPath: "mode", cellClass: person_evaluateCell.self, contentViewWidth: ScreenW)
+        default:
+            break
         }
+        
+        return 0
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

@@ -8,38 +8,68 @@
 
 import UIKit
 
-fileprivate let VCtitle:String = "我的简历"
+fileprivate let VCtitle:String = "简历完整度"
 
-enum resumeViewType:String {
+
+
+class personResumeTable: BaseViewController {
     
-    case baseInfo = "个人信息"
-    case education = "教育经历"
-    case intern = "实习经历"
-    case skill = "技能/爱好"
-    case evaluate = "个人评价"
-}
-
-
-class personResumeTable: BaseTableViewController {
     
+    
+    private lazy var tableView:UITableView = {  [unowned self] in
+        let tb = UITableView()
+        tb.backgroundColor = UIColor.viewBackColor()
+        tb.tableFooterView  = UIView.init()
+        tb.showsHorizontalScrollIndicator = false
+        tb.separatorStyle = .singleLine
+        tb.register(resume_personInfoCell.self, forCellReuseIdentifier: resume_personInfoCell.identity())
+        tb.register(educationInfoCell.self, forCellReuseIdentifier: educationInfoCell.identity())
+        tb.register(jobInfoCell.self, forCellReuseIdentifier: jobInfoCell.identity())
+        tb.register(person_skillCell.self, forCellReuseIdentifier: person_skillCell.identity())
+        tb.register(person_evaluateCell.self, forCellReuseIdentifier: person_evaluateCell.identity())
+        tb.register(SocialPracticeCell.self, forCellReuseIdentifier: SocialPracticeCell.identity())
+        tb.register(studentWorkCell.self, forCellReuseIdentifier: studentWorkCell.identity())
+        tb.register(projectInfoCell.self, forCellReuseIdentifier: projectInfoCell.identity())
+        tb.register(ResumeOtherCell.self, forCellReuseIdentifier: ResumeOtherCell.identity())
+        
+        
+        // 底部cell
+        tb.register(singleButtonCell.self, forCellReuseIdentifier: singleButtonCell.identity())
+        tb.dataSource = self
+        tb.delegate = self
+        
+        return tb
+    }()
     
     // 进入页面时 要刷新数据
     private var pManager:personModelManager = personModelManager.shared
-    private var viewType:[resumeViewType] = [.baseInfo,.education,.intern,.skill,.evaluate]
+    // 初始化subitem类型
+    private var viewType:[ResumeSubItems] = [.personInfo,.education,.works, .project,.schoolWork,.practice,.skills,.other,.selfEvaludate]
    
-    // 基本信息修改view
-    private lazy var person_infoView:modify_personInfoVC = modify_personInfoVC()
-    // 自我评价修改view
-    private lazy var estimateVC:evaluateSelfVC = evaluateSelfVC()
+    private var datas:[ResumeSubItems:Any?]{
+        get{
+            return [.personInfo:pManager.mode?.basicinfo ,.education: pManager.mode?.educationInfo,
+                    .works: pManager.mode?.internInfo, .project: pManager.mode?.projectInfo,.schoolWork: pManager.mode?.studentWorkInfo,
+                    .practice:pManager.mode?.practiceInfo,.skills: pManager.mode?.skills,.other: pManager.mode?.resumeOtherInfo,
+                    .selfEvaludate: pManager.mode?.estimate]
+        }
+    }
     
+    
+    
+    
+    
+
     
     private lazy var barBtn:UIButton = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 60, height: 25))
 
+    // 简历完善度
+    private var progress:Int = 20
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setViews()
-        // loadData
         loadData()
         
     }
@@ -48,7 +78,7 @@ class personResumeTable: BaseTableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationItem.title = VCtitle
+        self.navigationItem.title = VCtitle +  "\(progress)%"
         self.navigationController?.insertCustomerView()
         
     }
@@ -63,24 +93,15 @@ class personResumeTable: BaseTableViewController {
     
     override func setViews(){
         
-        self.tableView.backgroundColor = UIColor.viewBackColor()
-        self.tableView.tableFooterView  = UIView.init()
-        self.tableView.showsHorizontalScrollIndicator = false
-        self.tableView.separatorStyle = .singleLine
-        self.tableView.register(resume_personInfoCell.self, forCellReuseIdentifier: resume_personInfoCell.identity())
-        self.tableView.register(person_educationCell.self, forCellReuseIdentifier: person_educationCell.identity())
-        self.tableView.register(person_projectCell.self, forCellReuseIdentifier: person_projectCell.identity())
-        self.tableView.register(person_skillCell.self, forCellReuseIdentifier: person_skillCell.identity())
-        self.tableView.register(person_evaluateCell.self, forCellReuseIdentifier: person_evaluateCell.identity())
-        // 底部cell
-        self.tableView.register(singleButtonCell.self, forCellReuseIdentifier: singleButtonCell.identity())
+      
+        self.view.addSubview(tableView)
+        _ = tableView.sd_layout().topSpaceToView(self.view,NavH)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
         
         
-        person_infoView.delegate = self
-        estimateVC.delegate = self
+       
         //navigationItem
         addBarItem()
-        
+        self.handleViews.append(tableView)
         self.handleViews.append(barBtn)
         
         super.setViews()
@@ -101,260 +122,293 @@ class personResumeTable: BaseTableViewController {
     }
     
     
-    // MARK: - Table view data source
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
+}
+
+
+// table
+
+extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
+    
+    
+    // MARK: - Table view data source
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return  viewType.count
         
     }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        switch viewType[section] {
-        case .education:
-            // 内容cell 和   标题cell  和 底部添加 cell
-            
-            return (pManager.mode?.educationInfo.count ?? 0)  + 2
-        case .intern:
-            return (pManager.mode?.internInfo.count ?? 0)  + 2
-        case .skill:
-            return (pManager.mode?.skills.count ?? 0) + 2
-        default:
-            break
+        
+        // 个人信息 和 自我评价只有一行
+        if viewType[section] == .personInfo || viewType[section] == .selfEvaludate{
+            return 1
         }
-        return 1
+        guard let arrys = datas[viewType[section]] as? NSArray else {
+            return 0
+        }
+        return arrys.count + 2
         
     }
     
     //
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        guard let mode = pManager.mode else { return UITableViewCell() }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         
-        switch viewType[indexPath.section] {
-
-        case .baseInfo:
+        // 个人基本信息（不是数组）
+        if indexPath.section == 0 {
+            guard let mode = datas[viewType[0]] as? personalBasicalInfo else {
+                return UITableViewCell()
+            }
             let cell = tableView.dequeueReusableCell(withIdentifier: resume_personInfoCell.identity()) as!
-                resume_personInfoCell
-            
-            cell.mode = mode.basicinfo
+            resume_personInfoCell
+            cell.mode = mode
             return cell
-        case .education:
             
-            if indexPath.row == 0 {
-                let cell = UITableViewCell.init()
-                cell.textLabel?.text = "教育经历"
-                cell.textLabel?.textAlignment = .left
-                cell.isUserInteractionEnabled = false
-                return cell
-            }
-            if  mode.educationInfo.count == 0 && indexPath.row == 1 {
-                
-                let cell = tableView.dequeueReusableCell(withIdentifier: singleButtonCell.identity(), for: indexPath) as! singleButtonCell
-                cell.btnType = .add
-                cell.btn.setTitle("添加教育经历", for: .normal)
-                cell.addMoreItem = {
-                    let view = add_educations()
-                    view.delegate = self
-                    self.navigationController?.pushViewController(view, animated: true)
-                }
-                return cell
-            }else{
-                if indexPath.row == mode.educationInfo.count + 1{
-                    let cell = tableView.dequeueReusableCell(withIdentifier: singleButtonCell.identity(), for: indexPath) as! singleButtonCell
-                    cell.btnType = .add
-                    cell.btn.setTitle("添加教育经历", for: .normal)
-                    cell.addMoreItem = {
-                        let view = add_educations()
-                        view.delegate = self
-                        self.navigationController?.pushViewController(view, animated: true)
-                    }
-                    return cell
-                }
-                
-                let cell = tableView.dequeueReusableCell(withIdentifier: person_educationCell.identity(), for: indexPath) as!
-                person_educationCell
-                cell.mode = mode.educationInfo[indexPath.row - 1]
-                
-                return cell
-
+        // 自我评价
+        }else if indexPath.section == viewType.count - 1{
+            guard let mode = datas[viewType[indexPath.section]] as? String else {
+                return UITableViewCell()
             }
             
-        case .intern:
-            
-            if indexPath.row == 0 {
-                let cell = UITableViewCell.init()
-                cell.textLabel?.text = "实习经历"
-                cell.textLabel?.textAlignment = .left
-                cell.isUserInteractionEnabled = false
-                return cell
-            }
-            if  mode.internInfo.count == 0 && indexPath.row == 1 {
-                
-                let cell = tableView.dequeueReusableCell(withIdentifier: singleButtonCell.identity(), for: indexPath) as! singleButtonCell
-                cell.btnType = .add
-                cell.btn.setTitle("实习经历", for: .normal)
-                cell.addMoreItem = {
-                    let view = add_internVC()
-                    view.delegate = self
-                    self.navigationController?.pushViewController(view, animated: true)
-                }
-                return cell
-            }else{
-                if indexPath.row == mode.internInfo.count + 1{
-                    let cell = tableView.dequeueReusableCell(withIdentifier: singleButtonCell.identity(), for: indexPath) as! singleButtonCell
-                    cell.btnType = .add
-                    cell.btn.setTitle("实习经历", for: .normal)
-                    cell.addMoreItem = {
-                        let view = add_internVC()
-                        view.delegate = self
-                        self.navigationController?.pushViewController(view, animated: true)
-                    }
-                    return cell
-                }
-                
-            
-                let cell = tableView.dequeueReusableCell(withIdentifier: person_projectCell.identity(), for: indexPath) as! person_projectCell
-                cell.mode = mode.internInfo[indexPath.row - 1 ]
-                return cell
-            }
-            
-            
-        case .skill:
-            if indexPath.row == 0 {
-                let cell = UITableViewCell.init()
-                cell.textLabel?.text = "技能"
-                cell.textLabel?.textAlignment = .left
-                cell.isUserInteractionEnabled = false
-                return cell
-            }
-            if  mode.skills.count == 0 && indexPath.row == 1 {
-                
-                let cell = tableView.dequeueReusableCell(withIdentifier: singleButtonCell.identity(), for: indexPath) as! singleButtonCell
-                cell.btnType = .add
-                cell.addMoreItem = {
-                    let view = addSkillVC()
-                    view.delegate = self
-                    self.navigationController?.pushViewController(view, animated: true)
-                }
-                cell.btn.setTitle("技能", for: .normal)
-                return cell
-            }else{
-                if indexPath.row ==  mode.skills.count + 1{
-                    let cell = tableView.dequeueReusableCell(withIdentifier: singleButtonCell.identity(), for: indexPath) as! singleButtonCell
-                    cell.btnType = .add
-                    cell.btn.setTitle("技能", for: .normal)
-                    cell.addMoreItem = {
-                        let view = addSkillVC()
-                        view.delegate = self
-                        self.navigationController?.pushViewController(view, animated: true)
-                    }
-                    return cell
-                }
-                
-        
-                let cell = tableView.dequeueReusableCell(withIdentifier: person_skillCell.identity(), for: indexPath) as!
-                    person_skillCell
-                cell.mode = mode.skills[indexPath.row - 1]
-                return cell
-            }
-            
-        case .evaluate:
             let cell = tableView.dequeueReusableCell(withIdentifier: person_evaluateCell.identity(), for: indexPath) as!
-                person_evaluateCell
-            cell.mode = mode.estimate
+            person_evaluateCell
+            cell.mode = mode
+        
             return cell
+            
+            
+        }else{
+            
+            let type = viewType[indexPath.section]
+            let infos = (datas[type] as? NSArray) ?? []
+            
+            // 名字cell
+            if indexPath.row == 0 {
+                
+                let cell = UITableViewCell.init()
+
+                cell.textLabel?.text = type.describe
+                cell.textLabel?.textAlignment = .left
+                cell.isUserInteractionEnabled = false
+                return cell
+            
+            // 添加btn cell
+            }else if indexPath.row == infos.count + 1{
+                let cell = tableView.dequeueReusableCell(withIdentifier: singleButtonCell.identity(), for: indexPath) as! singleButtonCell
+                cell.btnType = .add
+                cell.btn.setTitle(type.add, for: .normal)
+                cell.addMoreItem = {
+                    let view = AddBaseInfoTableViewController()
+                    view.itemType = type
+                    view.delegate = self
+                    self.navigationController?.pushViewController(view, animated: true)
+                }
+                return cell
+            // 具体内容cell
+            }else{
+                guard infos.count > 0 else { return UITableViewCell() }
+                switch type{
+                case .education:
+                    guard let modes = infos as?  [personEducationInfo] else { return UITableViewCell() }
+                    let cell = tableView.dequeueReusableCell(withIdentifier: educationInfoCell.identity(), for: indexPath) as!
+                    educationInfoCell
+                    cell.mode = modes[indexPath.row - 1]
+                    
+                    return cell
+                    
+                case .works:
+                    guard let modes = infos as?  [personInternInfo] else { return UITableViewCell() }
+                    let cell = tableView.dequeueReusableCell(withIdentifier: jobInfoCell.identity(), for: indexPath) as!
+                    jobInfoCell
+                    cell.mode = modes[indexPath.row - 1]
+                    
+                    return cell
+                    
+                case .project:
+                    guard let modes = infos as?  [personProjectInfo] else { return UITableViewCell() }
+                    let cell = tableView.dequeueReusableCell(withIdentifier: projectInfoCell.identity(), for: indexPath) as!
+                    projectInfoCell
+                    cell.mode = modes[indexPath.row - 1]
+                    
+                    return cell
+                    
+                case .schoolWork:
+                    
+                    guard let modes = infos as?  [studentWorkInfo] else { return UITableViewCell() }
+                    let cell = tableView.dequeueReusableCell(withIdentifier: studentWorkCell.identity(), for: indexPath) as!
+                    studentWorkCell
+                    cell.mode = modes[indexPath.row - 1]
+                    
+                    return cell
+                    
+                case .practice:
+                    guard let modes = infos as?  [socialPracticeInfo] else { return UITableViewCell() }
+                    let cell = tableView.dequeueReusableCell(withIdentifier: SocialPracticeCell.identity(), for: indexPath) as!
+                    SocialPracticeCell
+                    cell.mode = modes[indexPath.row - 1]
+                    
+                    return cell
+                    
+                case .other:
+                     guard let modes = infos as?  [resumeOther] else { return UITableViewCell() }
+                    let cell = tableView.dequeueReusableCell(withIdentifier: ResumeOtherCell.identity(), for: indexPath) as!
+                    ResumeOtherCell
+                    cell.mode = modes[indexPath.row - 1]
+                    
+                    return cell
+                    
+                    
+                case .skills:
+                    
+                    guard let modes = infos as?  [personSkillInfo] else { return UITableViewCell() }
+                    let cell = tableView.dequeueReusableCell(withIdentifier: person_skillCell.identity(), for: indexPath) as!
+                    person_skillCell
+                    cell.mode = modes[indexPath.row - 1]
+                    
+                    return cell
+                    
+                default:
+                    break
+                }
+            }
+            
         }
+
+        
+        return UITableViewCell()
         
     }
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
-        guard let mode = pManager.mode else {
-            return 0
-        }
         
-        switch viewType[indexPath.section] {
-        case .baseInfo:
-            // 必须有值
-            if let info = mode.basicinfo{
+        
+
+        if indexPath.section == 0 {
+            guard let mode = datas[viewType[0]] as? personalBasicalInfo else {
+                return 0
+            }
+            
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: resume_personInfoCell.self, contentViewWidth: ScreenW)
+        }else if indexPath.section == viewType.count - 1{
+            
+            
+            guard  let str =  datas[viewType[indexPath.section]] as? String else {
+                return 0
+            }
+            return tableView.cellHeight(for: indexPath, model: str, keyPath: "mode", cellClass: person_evaluateCell.self, contentViewWidth: ScreenW)
+            
+        }else{
+            
+            guard let modes = datas[viewType[indexPath.section]] as? NSArray else {
+                return 0
+            }
+            
+            if indexPath.row == 0 || indexPath.row == modes.count + 1{
+                return 45
+            }
+            
+            let infos = (datas[viewType[indexPath.section]] as? NSArray) ?? []
+            
+            switch viewType[indexPath.section]{
                 
-                 return tableView.cellHeight(for: indexPath, model: info, keyPath: "mode", cellClass: resume_personInfoCell.self, contentViewWidth: ScreenW)
+            case .education:
+                guard let modes = infos as?  [personEducationInfo] else { return 0  }
+                
+                return tableView.cellHeight(for: indexPath, model: modes[indexPath.row - 1], keyPath: "mode", cellClass: educationInfoCell.self, contentViewWidth: ScreenW)
+                
+                
+            case .works:
+                guard let modes = infos as?  [personInternInfo] else { return 0 }
+                
+                return tableView.cellHeight(for: indexPath, model: modes[indexPath.row - 1], keyPath: "mode", cellClass: jobInfoCell.self, contentViewWidth: ScreenW)
+                
+            case .project:
+            
+                guard let modes = infos as?  [personProjectInfo] else { return 0 }
+                return tableView.cellHeight(for: indexPath, model: modes[indexPath.row - 1], keyPath: "mode", cellClass: projectInfoCell.self, contentViewWidth: ScreenW)
+                
+            case .schoolWork:
+                guard let modes = infos as?  [studentWorkInfo] else { return 0 }
+                 return tableView.cellHeight(for: indexPath, model: modes[indexPath.row - 1], keyPath: "mode", cellClass: studentWorkCell.self, contentViewWidth: ScreenW)
+              
+                
+            case .practice:
+                guard let modes = infos as?  [socialPracticeInfo] else { return 0 }
+                return tableView.cellHeight(for: indexPath, model: modes[indexPath.row - 1], keyPath: "mode", cellClass: SocialPracticeCell.self, contentViewWidth: ScreenW)
+
+                
+            case .other:
+                guard let modes = infos as?  [resumeOther] else { return 0 }
+                return tableView.cellHeight(for: indexPath, model: modes[indexPath.row - 1], keyPath: "mode", cellClass: ResumeOtherCell.self, contentViewWidth: ScreenW)
+
+                
+            case .skills:
+                
+                guard let modes = infos as?  [personSkillInfo] else { return 0 }
+                return tableView.cellHeight(for: indexPath, model: modes[indexPath.row - 1], keyPath: "mode", cellClass: person_skillCell.self, contentViewWidth: ScreenW)
+            
+            default:
+                break
             }
             
-            return 0
-           
-        case .education:
-            if indexPath.row == 0 || indexPath.row == mode.educationInfo.count + 1{
-                return 45
-            }
-            
-            return tableView.cellHeight(for: indexPath, model: mode.educationInfo[indexPath.row - 1], keyPath: "mode", cellClass: person_educationCell.self, contentViewWidth: ScreenW)
-            
-            
-        case .intern:
-            if indexPath.row == 0 || indexPath.row == mode.internInfo.count + 1{
-                return 45
-            }
-            return tableView.cellHeight(for: indexPath, model: mode.internInfo[indexPath.row - 1], keyPath: "mode", cellClass: person_projectCell.self, contentViewWidth: ScreenW)
-           
-        case .skill:
-            if indexPath.row == 0 || indexPath.row == mode.skills.count + 1{
-                return 45
-            }
-            return tableView.cellHeight(for: indexPath, model: mode.skills[indexPath.row - 1], keyPath: "mode", cellClass: person_skillCell.self, contentViewWidth: ScreenW)
-            
-        case .evaluate:
-            
-            return   tableView.cellHeight(for: indexPath, model:  mode.estimate, keyPath: "mode", cellClass: person_evaluateCell.self, contentViewWidth: ScreenW)
         }
         
+        return 0
     }
     
-   
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        tableView.deselectRow(at: indexPath, animated: false)
         
         let type = viewType[indexPath.section]
         switch type {
             
-        case .baseInfo:
-    
-            person_infoView.section = indexPath.section
-            self.navigationController?.pushViewController(person_infoView, animated: true)
+        case .personInfo:
+            guard let info = datas[type] as? personalBasicalInfo else { return }
+            let pModify = modifyPersonInfoVC()
+            pModify.mode = (indexPath:indexPath, info:info)
+            pModify.delegate = self
             
-        case .education,.intern, .skill:
+            self.navigationController?.pushViewController(pModify, animated: true)
+            
+        case .education, .works, .skills,.project,.practice,.schoolWork,.other:
+            
             if indexPath.row != 0 && indexPath.row != pManager.getCountBy(type: type) + 1{
+                
+                
                 let modify = modifyitemView()
                 modify.delegate = self
-                modify.mode = (viewType:type, indexPath:IndexPath.init(row: indexPath.row - 1, section: indexPath.section))
+                guard let list = datas[type] as? NSArray else {
+                    return
+                }
+                modify.mode = (viewType:type, indexPath:IndexPath.init(row: indexPath.row - 1, section: indexPath.section), data: list[indexPath.row - 1])
                 self.navigationController?.pushViewController(modify, animated: true)
             }
-        case .evaluate:
+        case .selfEvaludate:
+            let evc = evaluateSelfVC()
+            evc.delegate = self
+            evc.section = indexPath.section
+            self.navigationController?.pushViewController(evc, animated: true)
+
+        default:
+            break
             
-            estimateVC.section = indexPath.section
-            self.navigationController?.pushViewController(estimateVC, animated: true)
-            
-        
         }
     }
-
+    
     // section
-    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        if section == viewType.count - 1{
-            return 0 
-        }
-        return 20
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return  20
     }
-    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        return UIView()
         
-            let v = UIView.init()
-            v.backgroundColor = UIColor.lightGray
-            return v
     }
-
 }
-
 
 // 查看简历
 extension personResumeTable{
@@ -382,28 +436,26 @@ extension personResumeTable: modifyItemDelegate{
     
     func modifiedItem(indexPath: IndexPath) {
         
-        if viewType[indexPath.section] == .evaluate{
+        if viewType[indexPath.section] == .selfEvaludate{
             // 必须用这个 cell自动调整高度
             self.tableView.reloadData()
         }
         // 重新排序
         pManager.sortByEndTime(type: viewType[indexPath.section])
         self.tableView.reloadSections([indexPath.section], animationStyle: .automatic)
-        //self.tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
     func deleteItem(indexPath: IndexPath) {
         // 重新排序
         pManager.sortByEndTime(type: viewType[indexPath.section])
         self.tableView.reloadSections([indexPath.section], animationStyle: .automatic)
-        //self.tableView.deleteRows(at: [indexPath], with: .automatic)
     }
 }
 
 extension personResumeTable: addResumeItenDelegate{
     
     // 添加数据，刷新section
-    func addNewItem(type: resumeViewType) {
+    func addNewItem(type: ResumeSubItems) {
         // 重新排序
         pManager.sortByEndTime(type: type)
         self.tableView.reloadSections([viewType.index(of: type)!], animationStyle: .automatic)
@@ -416,7 +468,7 @@ extension personResumeTable{
     
     private func loadData(){
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            Thread.sleep(forTimeInterval: 3)
+            Thread.sleep(forTimeInterval: 1)
             
             self?.pManager.initialData()
             DispatchQueue.main.async {

@@ -8,8 +8,47 @@
 
 import UIKit
 
+
+// 全局变量 保存不同类型的picker的位置
+fileprivate var pickPosition:[ResumeInfoType:[Int:Int]] = [:]
+
+protocol AddItemCellUpdate:class {
+    func updateTextfield(value: String, type: ResumeInfoType)
+}
+
 class AddItemCell: UITableViewCell {
 
+    
+    
+    weak var delegate:AddItemCellUpdate?
+
+    // picker 占时的 元素
+    internal var onlyPickerResumeType:[ResumeInfoType] = []
+
+    
+    private lazy var  upImage:UIImageView = {
+        let img = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 20, height: 20))
+        img.image = #imageLiteral(resourceName: "arrow_mr")
+        return img
+    }()
+    
+    
+    private lazy var  downImage:UIImageView = {
+        let img = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 20, height: 20))
+        img.image = #imageLiteral(resourceName: "arrow_xl")
+        return img
+    }()
+    
+    
+    lazy var pickView:itemPickerView = {
+        let pick = itemPickerView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: 200))
+        pick.backgroundColor = UIColor.white
+        pick.pickerDelegate = self
+        return pick
+        
+    }()
+    
+    
     
     lazy var textFiled:UITextField = { [unowned self] in
         let textField = UITextField.init(frame: CGRect.zero)
@@ -22,6 +61,8 @@ class AddItemCell: UITableViewCell {
         textField.keyboardType = .default
         textField.textAlignment = .left
         textField.rightViewMode = UITextFieldViewMode.always
+        textField.delegate = self
+        
         return textField
     }()
     
@@ -30,14 +71,23 @@ class AddItemCell: UITableViewCell {
     private let img = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 20, height: 20))
    
   
-    var mode:(name:String,title:String)?{
+    var mode:(type:ResumeInfoType,title:String)?{
         didSet{
-            self.textFiled.placeholder = mode!.name
-            self.textFiled.text = mode!.title
-            if mode?.name == "能力/技能" || mode?.name == "开始时间" ||
-                mode?.name == "结束时间" || mode?.name == "学位"{
+            guard  let mode = mode else {
+                return
+            }
+            self.textFiled.placeholder = mode.type.describe
+            
+            self.textFiled.text = mode.title
+            
+            if onlyPickerResumeType.contains(mode.type){
+                
                 img.image = #imageLiteral(resourceName: "arrow_xl")
                 textFiled.rightView = img
+                textFiled.inputView = pickView
+                pickView.mode =  (mode.type.describe, SelectItemUtil.shared.getItems(name: mode.type.describe)!)
+                
+                
             }else{
                 textFiled.rightView = UIView.init()
             }
@@ -79,6 +129,69 @@ class AddItemCell: UITableViewCell {
     }
     
    
+}
+
+extension AddItemCell: itemPickerDelegate{
+    
+    func quitPickerView(_ picker: UIPickerView) {
+        
+        self.textFiled.rightView = downImage
+        self.textFiled.resignFirstResponder()
+        
+    }
+    
+    func changeItemValue(_ picker: UIPickerView, value: String, position: [Int : Int]) {
+     
+        guard let mode = mode  else {
+            return
+        }
+        // 保留当前选择位置
+        pickPosition[mode.type] = position
+        delegate?.updateTextfield(value: value, type: mode.type)
+        self.textFiled.resignFirstResponder()
+
+    }
+    
+}
+
+extension AddItemCell: UITextFieldDelegate{
+    
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        guard  let mode = mode  else {
+            return true
+        }
+        
+        if onlyPickerResumeType.contains(mode.type){
+            textFiled.rightView = upImage
+            
+            pickView.setPosition(position: pickPosition[mode.type])
+        }
+        
+        return true
+    }
+    
+    
+    func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+        return true
+    }
+    
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        guard  let mode = mode,let text = textField.text  else {
+            return
+        }
+        if onlyPickerResumeType.contains(mode.type){
+            textFiled.rightView = downImage
+            return
+        }
+        delegate?.updateTextfield(value: text, type: mode.type)
+     }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
 }
 
 
