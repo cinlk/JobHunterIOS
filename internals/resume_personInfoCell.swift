@@ -20,7 +20,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
     private var touxaing:UIImageView = {
         let tx = UIImageView.init(frame: CGRect.zero)
         tx.contentMode = .scaleToFill
-        tx.setCircle()
+        tx.clipsToBounds = true 
         return tx
     }()
     
@@ -113,20 +113,23 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
     dynamic var mode:personalBasicalInfo?{
         
         didSet{
-            touxaing.image = UIImage.init(named:  mode!.tx)
+            
+            guard let mode = mode else { return }
+            
+            touxaing.image = UIImage.init(named:  mode.tx)
             
             
-            name.text = mode!.name
-            sex.text = mode!.gender
-            city.text = mode!.city
-            phone.text = mode!.phone
-            degree.text = mode!.degree
+            name.text = mode.name
+            sex.text = mode.gender
+            city.text = mode.city
+            phone.text = mode.phone
+            degree.text = mode.degree
             
-            birthday.text = mode!.birthday
-            email.text = mode!.email
+            birthday.text = mode.birthday
+            email.text = mode.email
             
-            lable1.text = mode!.gender + "|" + mode!.city + "|" + mode!.degree + "|" + mode!.birthday
-            lable2.text = mode!.phone + "|" + mode!.email
+            lable1.text = mode.gender + "|" + mode.city + "|" + mode.degree + "|" + mode.birthday
+            lable2.text = mode.phone + "|" + mode.email
             
             // cell 自适应高度
             self.setupAutoHeight(withBottomViewsArray: [touxaing,lable1,lable2], bottomMargin: 10)
@@ -160,16 +163,6 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-    
-    // 自动布局后不能放这里？？？
-    override func layoutSubviews() {
-        super.layoutSubviews()
     }
     
     class func identity()->String{

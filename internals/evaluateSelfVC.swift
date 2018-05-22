@@ -19,7 +19,7 @@ class evaluateSelfVC: UITableViewController {
     private var  cacheCell:textViewCell?
     private var pManager:personModelManager = personModelManager.shared
     
-    private  lazy var content:String = pManager.mode?.estimate ?? ""
+    private  lazy var content:String = pManager.mode?.estimate?.content ?? ""
     
     weak var delegate:modifyItemDelegate?
     
@@ -91,7 +91,7 @@ extension evaluateSelfVC{
     
     @objc func save(){
         self.view.endEditing(true)
-        pManager.mode?.estimate = content
+        pManager.mode?.estimate?.content = content
         self.delegate?.modifiedItem(indexPath: IndexPath.init(row: 0, section: self.section))
         self.navigationController?.popViewController(animated: true)
         

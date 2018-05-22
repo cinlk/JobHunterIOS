@@ -23,7 +23,13 @@ import UIKit
             self.startToEndTime.text = mode.startTimeString + "至" + mode.endTimeString
             self.multiValues.text = mode.company + "-" +  mode.position + "-" +  mode.city
             self.describe.text = mode.describe
+      
+            if mode.isOpen{
+                self.describe.setMaxNumberOfLinesToShow(0)
+            }else{
+                self.describe.setMaxNumberOfLinesToShow(5)
 
+            }
             self.setupAutoHeight(withBottomView: describe, bottomMargin: 10)
             
             

@@ -137,6 +137,8 @@ protocol reumseInfoAction: class {
 class  personBaseInfo:NSObject, Mappable, reumseInfoAction{
     
     
+    var isOpen:Bool = false
+    
     var position:String = ""
     var describe:String = ""
     // 格式为 "YYYY-MM"
@@ -338,6 +340,7 @@ class personInternInfo: personBaseInfo {
 class personSkillInfo: NSObject, Mappable, reumseInfoAction{
     
     
+    var isOpen:Bool = false
     var skill:String = ""
     var describe:String = ""
     
@@ -553,6 +556,22 @@ class resumeOther: personBaseInfo{
     
 }
 
+class selfEstimateModel:NSObject, Mappable{
+    
+    var isOpen:Bool = false
+    var content:String = ""
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        content <- map["content"]
+    }
+    
+    
+}
+
 
 class  ResumeMode:NSObject, Mappable{
     
@@ -567,7 +586,7 @@ class  ResumeMode:NSObject, Mappable{
     var resumeOtherInfo:[resumeOther] = []
     
     // 个人评价
-    var estimate:String?
+    var estimate:selfEstimateModel?
     
     required init?(map: Map) {
         

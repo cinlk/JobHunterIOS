@@ -28,7 +28,7 @@ class  personModelManager {
                                                "email":"dqwd@163.com","birthday":"1990-01"])
         if initialFirst == false{
             mode = ResumeMode(JSON: ["basicinfo":basicinfo?.toJSON(),"educationInfo":[],"internInfo":[],"skills":[],"projectInfo":[],
-                                     "studentWorkInfo":[],"practiceInfo":[],"resumeOtherInfo":[],"estimate":""])
+                                     "studentWorkInfo":[],"practiceInfo":[],"resumeOtherInfo":[],"estimate":selfEstimateModel(JSON: [:])?.toJSON()])
         //print(mode?.toJSON(),mode?.educationInfo.count)
         }
         initialFirst = true 

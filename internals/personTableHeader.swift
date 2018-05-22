@@ -13,15 +13,16 @@ import UIKit
 class personTableHeader: UIView {
 
     
-    lazy var avatarImg:UIImageView = { [unowned self] in
+    private lazy var avatarImg:UIImageView = { [unowned self] in
         
  
         let img = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: avatarSize.width + 15, height: avatarSize.height + 15))
         img.contentMode = .scaleToFill
+        img.clipsToBounds = true
         return img
-        }()
+    }()
     
-    lazy var nameTitle:UILabel = {
+    private lazy var nameTitle:UILabel = {
         let name = UILabel.init(frame: CGRect.zero)
         name.textAlignment = .center
         name.textColor = UIColor.black
@@ -31,7 +32,7 @@ class personTableHeader: UIView {
     }()
     
     // 根据 hr 还是求职者 展示不同消息
-    lazy var introduce:UILabel = {
+    private lazy var introduce:UILabel = {
         let intr = UILabel.init(frame: CGRect.zero)
         intr.textAlignment = .center
         intr.textColor = UIColor.black
@@ -44,6 +45,7 @@ class personTableHeader: UIView {
     
     var isHR:Bool?{
         didSet{
+            
             if isHR!{
                 hrlayout()
             }else{
@@ -53,17 +55,21 @@ class personTableHeader: UIView {
     }
     var  mode:(image:String,name:String, introduce:String)?{
         didSet{
-            self.avatarImg.image = UIImage.init(named: mode?.image ?? "default")
-            self.nameTitle.text = mode?.name
-            self.introduce.text = mode?.introduce
+            guard let mode = mode else { return }
+            self.avatarImg.image = UIImage.init(named: mode.image)
+            self.nameTitle.text = mode.name
+            self.introduce.text = mode.introduce
+            
+            self.setupAutoHeight(withBottomViewsArray: [introduce,nameTitle], bottomMargin: 20)
+            
         }
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.addSubview(avatarImg)
-        self.addSubview(nameTitle)
-        self.addSubview(introduce)
+        let views:[UIView] = [avatarImg, nameTitle, introduce]
+        self.sd_addSubviews(views)
+      
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -76,7 +82,10 @@ class personTableHeader: UIView {
         _ = avatarImg.sd_layout().centerXEqualToView(self)?.topSpaceToView(self,10)
         _ = nameTitle.sd_layout().topSpaceToView(avatarImg,5)?.centerXEqualToView(avatarImg)?.autoHeightRatio(0)
         _ = introduce.sd_layout().topSpaceToView(nameTitle,5)?.centerXEqualToView(avatarImg)?.autoHeightRatio(0)
-        avatarImg.setCircle()
+        
+        avatarImg.sd_cornerRadiusFromWidthRatio = 0.5
+        nameTitle.setMaxNumberOfLinesToShow(1)
+        
 
     }
 
@@ -86,6 +95,8 @@ class personTableHeader: UIView {
         _ = avatarImg.sd_layout().centerXEqualToView(self)?.centerYEqualToView(self)
         _ = nameTitle.sd_layout().topSpaceToView(avatarImg,5)?.centerXEqualToView(avatarImg)?.autoHeightRatio(0)
         _ = introduce.sd_layout().topSpaceToView(nameTitle,5)?.centerXEqualToView(avatarImg)?.autoHeightRatio(0)
-        avatarImg.setCircle()
+        
+        avatarImg.sd_cornerRadiusFromWidthRatio = 0.5
+        nameTitle.setMaxNumberOfLinesToShow(1)
     }
 }

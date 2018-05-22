@@ -40,12 +40,27 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 25, height: 25)
         return lb
     }()
     
+    internal var showResume:Bool = false{
+        didSet{
+            if showResume{
+                self.modifyIcon.isHidden = true
+                self.selectionStyle = .none
+            }
+        }
+    }
+    
+    
     dynamic var mode:resumeOther?{
         didSet{
             
             self.lableTitle.text = mode?.title
             self.content.text = mode?.describe
-            
+            if (mode?.isOpen)!{
+                self.content.setMaxNumberOfLinesToShow(0)
+            }else{
+                self.content.setMaxNumberOfLinesToShow(5)
+                
+            }
             self.setupAutoHeight(withBottomView: content, bottomMargin: 5)
         }
     }

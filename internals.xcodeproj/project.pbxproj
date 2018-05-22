@@ -744,6 +744,7 @@
 		4A1BA2BB208AE6D500CF8352 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				4A502CF920B31AB000BB71FD /* tableHeaderViews */,
 				4A954396209C88BB009BCBE2 /* pageTitleAndContent */,
 				4A1BA2F3208CD87000CF8352 /* dropMenuViews */,
 				4A1BA2BC208AE81C00CF8352 /* BaseScrollerView.swift */,
@@ -967,6 +968,7 @@
 		4A221038203BBCBF000BDC70 /* 通用设置 */ = {
 			isa = PBXGroup;
 			children = (
+				4A2210332039BD1E000BDC70 /* 意见与帮助 */,
 				4A221039203BFD0E000BDC70 /* SettingVC.swift */,
 				4A22103B203C374A000BDC70 /* aboutUS.swift */,
 				4A22103D203C464D000BDC70 /* ServiceTerm.swift */,
@@ -1026,6 +1028,14 @@
 				4A502CF620B1CA5B00BB71FD /* ResumeOtherCell.swift */,
 			);
 			name = resumeSubItemCell;
+			sourceTree = "<group>";
+		};
+		4A502CF920B31AB000BB71FD /* tableHeaderViews */ = {
+			isa = PBXGroup;
+			children = (
+				4AFF9DCB20381EC9000ADBAF /* personTableHeader.swift */,
+			);
+			name = tableHeaderViews;
 			sourceTree = "<group>";
 		};
 		4A50F8091FC1E53000011AA5 /* utils */ = {
@@ -1173,7 +1183,6 @@
 				4A95439B209D5CD5009BCBE2 /* 系统通知 */,
 				4A686A862040054100571EB0 /* 隐私设置 */,
 				4A221038203BBCBF000BDC70 /* 通用设置 */,
-				4A2210332039BD1E000BDC70 /* 意见与帮助 */,
 				4AFF9DC820381981000ADBAF /* 我的收藏 */,
 				4A82A0D42026FD5500185E8B /* 简历 */,
 				4A82A0CF2026DEEA00185E8B /* tableCells */,
@@ -1671,7 +1680,6 @@
 			children = (
 				4A20EEEF203DA0610021843B /* cells */,
 				4A9A0BD82004F03F008721F3 /* closedJobView.swift */,
-				4AFF9DCB20381EC9000ADBAF /* personTableHeader.swift */,
 				4A82A0E7202B4DB400185E8B /* itemPickerView.swift */,
 				4AF3D34F205E5C0C0012EB6E /* MessageMainHeaderView.swift */,
 				4ACBD6FB1F77E8F500A5FD23 /* shareView.swift */,

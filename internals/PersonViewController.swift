@@ -33,6 +33,9 @@ class PersonViewController: UIViewController {
     private lazy var tableHeader: personTableHeader = {
         let v = personTableHeader.init(frame:CGRect.init(x: 0, y: 0, width: ScreenW, height: tableHeaderH))
         v.isHR = false
+        // test 用个人信息
+        v.mode = (image:"chicken",name:"名字", introduce:"")
+        v.layoutSubviews()
         return v
         
     }()
@@ -69,8 +72,8 @@ class PersonViewController: UIViewController {
     override func viewWillLayoutSubviews() {
         self.view.addSubview(table)
         self.table.tableHeaderView = tableHeader
-        tableHeader.avatarImg.image = UIImage.init(named: "chicken")
-        tableHeader.nameTitle.text = "我的名字"
+        //tableHeader.avatarImg.image = UIImage.init(named: "chicken")
+        //tableHeader.nameTitle.text = "我的名字"
         
     }
 

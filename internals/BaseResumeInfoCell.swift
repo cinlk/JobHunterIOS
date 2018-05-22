@@ -46,6 +46,7 @@ class BaseResumeInfoCell: UITableViewCell {
     internal lazy var describe:UILabel = {
         let t = UILabel.init(frame: CGRect.zero)
         t.textColor = UIColor.lightGray
+        //t.numberOfLines = 0
         t.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20 - iconSize.width)
         t.font = UIFont.systemFont(ofSize: 12)
         t.textAlignment = .left
@@ -53,12 +54,19 @@ class BaseResumeInfoCell: UITableViewCell {
         return t
     }()
     
+    internal var showResume:Bool = false{
+        didSet{
+            if showResume{
+                self.modifyIcon.isHidden = true
+                self.selectionStyle = .none
+            }
+        }
+    }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         let views:[UIView] =  [modifyIcon, startToEndTime, multiValues,describe]
         self.contentView.sd_addSubviews(views)
-        self.contentView.clipsToBounds = true
         self.clipsToBounds = true 
         _ = startToEndTime.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,10)?.autoHeightRatio(0)
         _ = modifyIcon.sd_layout().rightSpaceToView(self.contentView,20)?.topEqualToView(startToEndTime)?.widthIs(iconSize.width)?.heightIs(iconSize.height)

@@ -169,7 +169,7 @@ extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
             
         // 自我评价
         }else if indexPath.section == viewType.count - 1{
-            guard let mode = datas[viewType[indexPath.section]] as? String else {
+            guard let mode = datas[viewType[indexPath.section]] as? selfEstimateModel else {
                 return UITableViewCell()
             }
             
@@ -295,10 +295,11 @@ extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
         }else if indexPath.section == viewType.count - 1{
             
             
-            guard  let str =  datas[viewType[indexPath.section]] as? String else {
+            guard  let mode =  datas[viewType[indexPath.section]] as? selfEstimateModel else {
                 return 0
             }
-            return tableView.cellHeight(for: indexPath, model: str, keyPath: "mode", cellClass: person_evaluateCell.self, contentViewWidth: ScreenW)
+            mode.isOpen = false
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: person_evaluateCell.self, contentViewWidth: ScreenW)
             
         }else{
             
@@ -316,39 +317,61 @@ extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
                 
             case .education:
                 guard let modes = infos as?  [personEducationInfo] else { return 0  }
-                
-                return tableView.cellHeight(for: indexPath, model: modes[indexPath.row - 1], keyPath: "mode", cellClass: educationInfoCell.self, contentViewWidth: ScreenW)
+                let mode = modes[indexPath.row - 1]
+                mode.isOpen = false
+                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: educationInfoCell.self, contentViewWidth: ScreenW)
                 
                 
             case .works:
                 guard let modes = infos as?  [personInternInfo] else { return 0 }
-                
-                return tableView.cellHeight(for: indexPath, model: modes[indexPath.row - 1], keyPath: "mode", cellClass: jobInfoCell.self, contentViewWidth: ScreenW)
+                let mode = modes[indexPath.row - 1]
+                mode.isOpen = false
+                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: jobInfoCell.self, contentViewWidth: ScreenW)
                 
             case .project:
             
                 guard let modes = infos as?  [personProjectInfo] else { return 0 }
-                return tableView.cellHeight(for: indexPath, model: modes[indexPath.row - 1], keyPath: "mode", cellClass: projectInfoCell.self, contentViewWidth: ScreenW)
+                let mode = modes[indexPath.row - 1]
+                mode.isOpen = false
+                
+                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: projectInfoCell.self, contentViewWidth: ScreenW)
                 
             case .schoolWork:
+                
+                
                 guard let modes = infos as?  [studentWorkInfo] else { return 0 }
-                 return tableView.cellHeight(for: indexPath, model: modes[indexPath.row - 1], keyPath: "mode", cellClass: studentWorkCell.self, contentViewWidth: ScreenW)
+                
+                let mode = modes[indexPath.row - 1]
+                mode.isOpen = false
+                
+                 return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: studentWorkCell.self, contentViewWidth: ScreenW)
               
                 
             case .practice:
                 guard let modes = infos as?  [socialPracticeInfo] else { return 0 }
-                return tableView.cellHeight(for: indexPath, model: modes[indexPath.row - 1], keyPath: "mode", cellClass: SocialPracticeCell.self, contentViewWidth: ScreenW)
+                
+                let mode = modes[indexPath.row - 1]
+                mode.isOpen = false
+                
+                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: SocialPracticeCell.self, contentViewWidth: ScreenW)
 
                 
             case .other:
                 guard let modes = infos as?  [resumeOther] else { return 0 }
-                return tableView.cellHeight(for: indexPath, model: modes[indexPath.row - 1], keyPath: "mode", cellClass: ResumeOtherCell.self, contentViewWidth: ScreenW)
+                
+                let mode = modes[indexPath.row - 1]
+                mode.isOpen = false
+                
+                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: ResumeOtherCell.self, contentViewWidth: ScreenW)
 
                 
             case .skills:
                 
                 guard let modes = infos as?  [personSkillInfo] else { return 0 }
-                return tableView.cellHeight(for: indexPath, model: modes[indexPath.row - 1], keyPath: "mode", cellClass: person_skillCell.self, contentViewWidth: ScreenW)
+                let mode = modes[indexPath.row - 1]
+                mode.isOpen = false
+                
+                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: person_skillCell.self, contentViewWidth: ScreenW)
             
             default:
                 break

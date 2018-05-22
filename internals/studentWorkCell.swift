@@ -21,6 +21,13 @@ import UIKit
             self.multiValues.text = mode.colleage + "-" +  mode.orgName
             self.describe.text = mode.describe
             
+            if mode.isOpen{
+                self.describe.setMaxNumberOfLinesToShow(0)
+            }else{
+                self.describe.setMaxNumberOfLinesToShow(5)
+                
+            }
+            
             self.setupAutoHeight(withBottomView: describe, bottomMargin: 10)
             
             

@@ -41,6 +41,17 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 25, height: 25)
         return t
     }()
     
+    
+    internal var showResume:Bool = false{
+        didSet{
+            if showResume{
+                self.modifyIcon.isHidden = true
+                self.detail.setMaxNumberOfLinesToShow(0)
+                self.selectionStyle = .none
+            }
+        }
+    }
+    
     dynamic var mode:personSkillInfo?{
         didSet{
             guard let mode = mode else {
@@ -48,6 +59,13 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 25, height: 25)
             }
             self.type.text = mode.skill
             self.detail.text = mode.describe
+            if mode.isOpen{
+                self.detail.setMaxNumberOfLinesToShow(0)
+            }else{
+                self.detail.setMaxNumberOfLinesToShow(5)
+                
+            }
+            
             self.setupAutoHeight(withBottomView: detail, bottomMargin: 10)
             
         }
