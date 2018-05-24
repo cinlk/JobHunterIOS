@@ -19,6 +19,14 @@ class PostContentViewController: BaseTableViewController {
     private lazy var InputViewHeigh:CGFloat = 0
     
     
+    private lazy var alertTitle = "举报"
+    
+    internal var mypost:Bool = false{
+        didSet{
+            alertTitle = mypost ? "删除" : "举报"
+        }
+    }
+    
     private lazy var tableHeader:contentHeaderView = {
         let header = contentHeaderView()
         header.thumbUP.addTarget(self, action: #selector(like), for: .touchUpInside)
@@ -50,10 +58,10 @@ class PostContentViewController: BaseTableViewController {
     }
     
     // 举报alert
-    private lazy var alertVC:UIAlertController = {
+    private lazy var alertVC:UIAlertController = { [unowned self] in
         let vc = UIAlertController.init(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
-        let report = UIAlertAction.init(title: "举报", style: UIAlertActionStyle.default, handler:{ action in
-                    print("action")
+        let report = UIAlertAction.init(title: alertTitle, style: UIAlertActionStyle.default, handler:{ action in
+                    self.alertAaction()
             })
         vc.addAction(report)
         vc.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: nil))
@@ -204,6 +212,18 @@ class PostContentViewController: BaseTableViewController {
     }
     
 
+}
+
+
+extension PostContentViewController{
+    private func alertAaction(){
+        if mypost{
+            print("删除")
+            return
+        }
+        
+        print("举报")
+    }
 }
 
 // 点赞 评论 和分享

@@ -16,8 +16,6 @@ class BasePostItemsViewController: BaseViewController {
     // 帖子主题类型
     internal var type:forumType?
     
-   
-    
     private lazy var table:UITableView = { [unowned self] in
         let table = UITableView()
         table.tableFooterView = UIView()
@@ -26,7 +24,6 @@ class BasePostItemsViewController: BaseViewController {
         table.backgroundColor = UIColor.viewBackColor()
         table.register(listPostItemCell.self, forCellReuseIdentifier: listPostItemCell.identity())
         return table
-        
     }()
     
     
@@ -34,11 +31,19 @@ class BasePostItemsViewController: BaseViewController {
         super.viewDidLoad()
         setViews()
         loadData()
-        
-
     }
     
    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationItem.title =    type == .mypost ? "我的帖子" : ""
+        
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationItem.title = ""
+    }
     
     
     override func setViews() {
@@ -94,6 +99,8 @@ extension BasePostItemsViewController: UITableViewDataSource, UITableViewDelegat
         tableView.deselectRow(at: indexPath, animated: false)
         let post = PostContentViewController()
         post.postID = "ddqw-dwqdq"
+        // 如果是自己的帖子 可以删除
+        post.mypost =  type == .mypost
         post.hidesBottomBarWhenPushed = true 
         self.navigationController?.pushViewController(post, animated: true)
         

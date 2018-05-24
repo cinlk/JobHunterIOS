@@ -10,9 +10,6 @@ import UIKit
 
 @objcMembers class SocialPracticeCell: BaseResumeInfoCell {
 
-    
-  
-    
    
     dynamic var mode:socialPracticeInfo?{
         didSet{

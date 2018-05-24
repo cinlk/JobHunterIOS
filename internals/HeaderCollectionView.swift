@@ -44,9 +44,7 @@ class HeaderCollectionView:UIView{
     
     var mode:[ShareItem]?{
         didSet{
-           
             collectionView.reloadData()
-            
         }
     }
     

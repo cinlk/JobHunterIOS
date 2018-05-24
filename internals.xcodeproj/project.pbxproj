@@ -220,8 +220,6 @@
 		4A9A0BD32003BEA8008721F3 /* MyVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9A0BD22003BEA8008721F3 /* MyVisitor.swift */; };
 		4A9A0BD62003BFB3008721F3 /* visitorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9A0BD42003BFB3008721F3 /* visitorCell.swift */; };
 		4A9A0BD92004F03F008721F3 /* closedJobView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9A0BD82004F03F008721F3 /* closedJobView.swift */; };
-		4A9A0BDB20064EAA008721F3 /* XiaoMi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9A0BDA20064EAA008721F3 /* XiaoMi.swift */; };
-		4A9A0BDF200650A0008721F3 /* xiaomiTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9A0BDD200650A0008721F3 /* xiaomiTableCell.swift */; };
 		4A9A0BE9200B164F008721F3 /* JobMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9A0BE7200B164F008721F3 /* JobMessageCell.swift */; };
 		4A9CE3681F715F1D002A8FD5 /* DropCarrerClassifyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9CE3671F715F1D002A8FD5 /* DropCarrerClassifyView.swift */; };
 		4A9CE36C1F716101002A8FD5 /* progressHUB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9CE36B1F716101002A8FD5 /* progressHUB.swift */; };
@@ -229,6 +227,10 @@
 		4AA6376420674FAD00DAE9A9 /* extension+sqlite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA6376320674FAD00DAE9A9 /* extension+sqlite.swift */; };
 		4AA637662067CCC000DAE9A9 /* ConversationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA637652067CCC000DAE9A9 /* ConversationManager.swift */; };
 		4AA63768206A11F800DAE9A9 /* extension+objectMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA63767206A11F800DAE9A9 /* extension+objectMapper.swift */; };
+		4AAB084120B5171800BEF38A /* MyPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AAB084020B5171800BEF38A /* MyPostViewController.swift */; };
+		4AAB084320B59D6800BEF38A /* feedBackTypeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AAB084220B59D6800BEF38A /* feedBackTypeCell.swift */; };
+		4AAB084520B5BA5600BEF38A /* TextAndPhontoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AAB084420B5BA5600BEF38A /* TextAndPhontoCell.swift */; };
+		4AAB084720B5C8D900BEF38A /* innerTextFiledCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AAB084620B5C8D900BEF38A /* innerTextFiledCell.swift */; };
 		4AB0FED82014E23200932C02 /* ChatTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB0FED72014E23200932C02 /* ChatTimeCell.swift */; };
 		4AB0FEDA201630B000932C02 /* externals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB0FED9201630B000932C02 /* externals.swift */; };
 		4AB8FFE71FDD025B0020F026 /* HistoryRecordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB8FFE61FDD025B0020F026 /* HistoryRecordCell.swift */; };
@@ -285,7 +287,7 @@
 		4AEDFE901FC00A7B0071F4D8 /* extension+observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AEDFE8F1FC00A7B0071F4D8 /* extension+observer.swift */; };
 		4AEDFE921FC06A3B0071F4D8 /* httpservers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AEDFE911FC06A3B0071F4D8 /* httpservers.swift */; };
 		4AEDFE941FC087440071F4D8 /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AEDFE931FC087440071F4D8 /* ActivityIndicator.swift */; };
-		4AF3D350205E5C0C0012EB6E /* MessageMainHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF3D34F205E5C0C0012EB6E /* MessageMainHeaderView.swift */; };
+		4AF3D350205E5C0C0012EB6E /* HeaderCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF3D34F205E5C0C0012EB6E /* HeaderCollectionView.swift */; };
 		4AF3D352205E62DB0012EB6E /* CollectionItemsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF3D351205E62DB0012EB6E /* CollectionItemsCell.swift */; };
 		4AF3D354205E7D2F0012EB6E /* DeliveredJobsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF3D353205E7D2F0012EB6E /* DeliveredJobsModel.swift */; };
 		4AF3D356205EB2760012EB6E /* extension+navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF3D355205EB2760012EB6E /* extension+navigation.swift */; };
@@ -555,8 +557,6 @@
 		4A9A0BD22003BEA8008721F3 /* MyVisitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyVisitor.swift; sourceTree = "<group>"; };
 		4A9A0BD42003BFB3008721F3 /* visitorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = visitorCell.swift; sourceTree = "<group>"; };
 		4A9A0BD82004F03F008721F3 /* closedJobView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = closedJobView.swift; sourceTree = "<group>"; };
-		4A9A0BDA20064EAA008721F3 /* XiaoMi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiaoMi.swift; sourceTree = "<group>"; };
-		4A9A0BDD200650A0008721F3 /* xiaomiTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = xiaomiTableCell.swift; sourceTree = "<group>"; };
 		4A9A0BE7200B164F008721F3 /* JobMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobMessageCell.swift; sourceTree = "<group>"; };
 		4A9CE3671F715F1D002A8FD5 /* DropCarrerClassifyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropCarrerClassifyView.swift; sourceTree = "<group>"; };
 		4A9CE36B1F716101002A8FD5 /* progressHUB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = progressHUB.swift; sourceTree = "<group>"; };
@@ -564,6 +564,10 @@
 		4AA6376320674FAD00DAE9A9 /* extension+sqlite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+sqlite.swift"; sourceTree = "<group>"; };
 		4AA637652067CCC000DAE9A9 /* ConversationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationManager.swift; sourceTree = "<group>"; };
 		4AA63767206A11F800DAE9A9 /* extension+objectMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+objectMapper.swift"; sourceTree = "<group>"; };
+		4AAB084020B5171800BEF38A /* MyPostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPostViewController.swift; sourceTree = "<group>"; };
+		4AAB084220B59D6800BEF38A /* feedBackTypeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = feedBackTypeCell.swift; sourceTree = "<group>"; };
+		4AAB084420B5BA5600BEF38A /* TextAndPhontoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAndPhontoCell.swift; sourceTree = "<group>"; };
+		4AAB084620B5C8D900BEF38A /* innerTextFiledCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = innerTextFiledCell.swift; sourceTree = "<group>"; };
 		4AB0FED72014E23200932C02 /* ChatTimeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTimeCell.swift; sourceTree = "<group>"; };
 		4AB0FED9201630B000932C02 /* externals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = externals.swift; sourceTree = "<group>"; };
 		4AB8FFE61FDD025B0020F026 /* HistoryRecordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryRecordCell.swift; sourceTree = "<group>"; };
@@ -628,7 +632,7 @@
 		4AEDFE8F1FC00A7B0071F4D8 /* extension+observer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+observer.swift"; sourceTree = "<group>"; };
 		4AEDFE911FC06A3B0071F4D8 /* httpservers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = httpservers.swift; sourceTree = "<group>"; };
 		4AEDFE931FC087440071F4D8 /* ActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
-		4AF3D34F205E5C0C0012EB6E /* MessageMainHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageMainHeaderView.swift; sourceTree = "<group>"; };
+		4AF3D34F205E5C0C0012EB6E /* HeaderCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderCollectionView.swift; sourceTree = "<group>"; };
 		4AF3D351205E62DB0012EB6E /* CollectionItemsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionItemsCell.swift; sourceTree = "<group>"; };
 		4AF3D353205E7D2F0012EB6E /* DeliveredJobsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeliveredJobsModel.swift; sourceTree = "<group>"; };
 		4AF3D355205EB2760012EB6E /* extension+navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+navigation.swift"; sourceTree = "<group>"; };
@@ -744,7 +748,7 @@
 		4A1BA2BB208AE6D500CF8352 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				4A502CF920B31AB000BB71FD /* tableHeaderViews */,
+				4A502CF920B31AB000BB71FD /* HeaderViews */,
 				4A954396209C88BB009BCBE2 /* pageTitleAndContent */,
 				4A1BA2F3208CD87000CF8352 /* dropMenuViews */,
 				4A1BA2BC208AE81C00CF8352 /* BaseScrollerView.swift */,
@@ -761,6 +765,8 @@
 				4A1BA2F6208CE38900CF8352 /* CollectionCells */,
 				4A1BA2BF208AEB1500CF8352 /* BaseScrollerTableViewCell.swift */,
 				4A20EEF0203DA0750021843B /* UIswitchCell.swift */,
+				4AAB084420B5BA5600BEF38A /* TextAndPhontoCell.swift */,
+				4AAB084620B5C8D900BEF38A /* innerTextFiledCell.swift */,
 			);
 			name = Cell;
 			sourceTree = "<group>";
@@ -954,21 +960,20 @@
 			name = ViewController;
 			sourceTree = "<group>";
 		};
-		4A2210332039BD1E000BDC70 /* 意见与帮助 */ = {
+		4A2210332039BD1E000BDC70 /* 帮助 */ = {
 			isa = PBXGroup;
 			children = (
 				4A2145C2207874A6000959F4 /* HelpGuideViewController.swift */,
-				4A2210362039BE88000BDC70 /* feedBackVC.swift */,
 				4A4254FA203EE0170049B237 /* HelpsVC.swift */,
 				4A4254FC203EF18E0049B237 /* expansionCell.swift */,
 			);
-			name = "意见与帮助";
+			name = "帮助";
 			sourceTree = "<group>";
 		};
 		4A221038203BBCBF000BDC70 /* 通用设置 */ = {
 			isa = PBXGroup;
 			children = (
-				4A2210332039BD1E000BDC70 /* 意见与帮助 */,
+				4A2210362039BE88000BDC70 /* feedBackVC.swift */,
 				4A221039203BFD0E000BDC70 /* SettingVC.swift */,
 				4A22103B203C374A000BDC70 /* aboutUS.swift */,
 				4A22103D203C464D000BDC70 /* ServiceTerm.swift */,
@@ -1030,12 +1035,13 @@
 			name = resumeSubItemCell;
 			sourceTree = "<group>";
 		};
-		4A502CF920B31AB000BB71FD /* tableHeaderViews */ = {
+		4A502CF920B31AB000BB71FD /* HeaderViews */ = {
 			isa = PBXGroup;
 			children = (
+				4AF3D34F205E5C0C0012EB6E /* HeaderCollectionView.swift */,
 				4AFF9DCB20381EC9000ADBAF /* personTableHeader.swift */,
 			);
-			name = tableHeaderViews;
+			name = HeaderViews;
 			sourceTree = "<group>";
 		};
 		4A50F8091FC1E53000011AA5 /* utils */ = {
@@ -1178,9 +1184,10 @@
 		4A82A0CC2026D88C00185E8B /* view+controller */ = {
 			isa = PBXGroup;
 			children = (
-				4AE0DEA01FFBC35800A16ED4 /* 投递记录 */,
 				4A9543A1209DA272009BCBE2 /* 我的邀约 */,
-				4A95439B209D5CD5009BCBE2 /* 系统通知 */,
+				4AAB083F20B516BE00BEF38A /* 我的帖子 */,
+				4A2210332039BD1E000BDC70 /* 帮助 */,
+				4AE0DEA01FFBC35800A16ED4 /* 投递记录 */,
 				4A686A862040054100571EB0 /* 隐私设置 */,
 				4A221038203BBCBF000BDC70 /* 通用设置 */,
 				4AFF9DC820381981000ADBAF /* 我的收藏 */,
@@ -1222,6 +1229,7 @@
 				4AE4D6B420358E0D00BC87FE /* textViewCell.swift */,
 				4A22A3A62073D1CE00024C2B /* resumePersonInfoCell.swift */,
 				4A0BA74D20B053DD0099F332 /* SetFourItemTableViewCell.swift */,
+				4AAB084220B59D6800BEF38A /* feedBackTypeCell.swift */,
 			);
 			name = tableCells;
 			sourceTree = "<group>";
@@ -1360,15 +1368,6 @@
 				4AE0DEA51FFBC5CD00A16ED4 /* pageContentView.swift */,
 			);
 			name = pageTitleAndContent;
-			sourceTree = "<group>";
-		};
-		4A95439B209D5CD5009BCBE2 /* 系统通知 */ = {
-			isa = PBXGroup;
-			children = (
-				4A9A0BDA20064EAA008721F3 /* XiaoMi.swift */,
-				4A9A0BDD200650A0008721F3 /* xiaomiTableCell.swift */,
-			);
-			name = "系统通知";
 			sourceTree = "<group>";
 		};
 		4A95439C209D5D66009BCBE2 /* 招聘model */ = {
@@ -1514,6 +1513,14 @@
 				4A3C8DAB2098C6530008C2A4 /* AddEventInCalender.swift */,
 			);
 			name = utils;
+			sourceTree = "<group>";
+		};
+		4AAB083F20B516BE00BEF38A /* 我的帖子 */ = {
+			isa = PBXGroup;
+			children = (
+				4AAB084020B5171800BEF38A /* MyPostViewController.swift */,
+			);
+			name = "我的帖子";
 			sourceTree = "<group>";
 		};
 		4ACBD6FA1F77E76D00A5FD23 /* ChatBar */ = {
@@ -1681,7 +1688,6 @@
 				4A20EEEF203DA0610021843B /* cells */,
 				4A9A0BD82004F03F008721F3 /* closedJobView.swift */,
 				4A82A0E7202B4DB400185E8B /* itemPickerView.swift */,
-				4AF3D34F205E5C0C0012EB6E /* MessageMainHeaderView.swift */,
 				4ACBD6FB1F77E8F500A5FD23 /* shareView.swift */,
 				4A6389F320668B0900C4B4D0 /* SelectedOneTableView.swift */,
 				4A6389F520668BE100C4B4D0 /* SelectedTowTableView.swift */,
@@ -2188,7 +2194,7 @@
 				4A1BA2D7208B598900CF8352 /* OnlineApplyCell.swift in Sources */,
 				4A1BA300208E30C300CF8352 /* DropCollegeItemView.swift in Sources */,
 				4A2145CD2078FB56000959F4 /* extension+UIResponder.swift in Sources */,
-				4AF3D350205E5C0C0012EB6E /* MessageMainHeaderView.swift in Sources */,
+				4AF3D350205E5C0C0012EB6E /* HeaderCollectionView.swift in Sources */,
 				4A1BA2FE208E2DE900CF8352 /* BaseSingleItemDropView.swift in Sources */,
 				4A8859121FF7F4930009D73D /* extension+button.swift in Sources */,
 				4AFF91A71F5C238400FE189F /* JobHeaderView.swift in Sources */,
@@ -2202,12 +2208,14 @@
 				4A82A0E62029D7BF00185E8B /* modifyPersonInfoCell.swift in Sources */,
 				4A1BA2C0208AEB1500CF8352 /* BaseScrollerTableViewCell.swift in Sources */,
 				4A22A3A72073D1CE00024C2B /* resumePersonInfoCell.swift in Sources */,
+				4AAB084720B5C8D900BEF38A /* innerTextFiledCell.swift in Sources */,
 				4ADADAAB1FA4C09400134AAE /* quickReplyView.swift in Sources */,
 				4AD03ABB1F9C7DD30077C15B /* GetChatEmotion.swift in Sources */,
 				4A1BA2F8208CE3C000CF8352 /* CollectionTextCell.swift in Sources */,
 				4A93C2C31F80CF080022E97B /* markTestSocketView.swift in Sources */,
 				4ACBD6F51F76386D00A5FD23 /* baseSearchViewController.swift in Sources */,
 				4A82A0DC2027199700185E8B /* educationInfoCell.swift in Sources */,
+				4AAB084120B5171800BEF38A /* MyPostViewController.swift in Sources */,
 				4A6389F420668B0900C4B4D0 /* SelectedOneTableView.swift in Sources */,
 				4A93C2E71F88B8E20022E97B /* client.swift in Sources */,
 				4A686A8C2040357F00571EB0 /* privateModel.swift in Sources */,
@@ -2251,6 +2259,7 @@
 				4AA637662067CCC000DAE9A9 /* ConversationManager.swift in Sources */,
 				4ADDDADC1F9B40A8001CB00F /* ChatBarView.swift in Sources */,
 				4A6BC2301FC856D7002C17B6 /* PersonViewController.swift in Sources */,
+				4AAB084320B59D6800BEF38A /* feedBackTypeCell.swift in Sources */,
 				4A8858FF1FEBE89A0009D73D /* JuBaoViewController.swift in Sources */,
 				4A9543C020A6974C009BCBE2 /* ForumTopicTypeViewController.swift in Sources */,
 				4A406B671FA5834F00277AA0 /* ImageCell.swift in Sources */,
@@ -2296,9 +2305,9 @@
 				4A221040203D1B5E000BDC70 /* greetingVC.swift in Sources */,
 				4A686A8820400C5F00571EB0 /* PrivacySetting.swift in Sources */,
 				4A96B52F205C14CE0028C096 /* tableModel.swift in Sources */,
-				4A9A0BDB20064EAA008721F3 /* XiaoMi.swift in Sources */,
 				4A1E59A41FDEE065004DCF53 /* DropInternCondtionView.swift in Sources */,
 				4A1BA2CC208B21B300CF8352 /* OnlineApplyModel.swift in Sources */,
+				4AAB084520B5BA5600BEF38A /* TextAndPhontoCell.swift in Sources */,
 				4ACC6DAF2054023A00392252 /* jobDetails.swift in Sources */,
 				4ADDDAB51F98EF84001CB00F /* ChatEmotionCells.swift in Sources */,
 				4A1BA2D9208B639D00CF8352 /* GraduateJobsViewController.swift in Sources */,
@@ -2328,7 +2337,6 @@
 				4A9543BC20A0B634009BCBE2 /* ForumBaseCell.swift in Sources */,
 				4A6389F820668C7B00C4B4D0 /* SelectedThreeTableView.swift in Sources */,
 				4A1BA2C6208B1E1400CF8352 /* JobsModel.swift in Sources */,
-				4A9A0BDF200650A0008721F3 /* xiaomiTableCell.swift in Sources */,
 				4A1BA302208EAA6A00CF8352 /* AreaCollectionView.swift in Sources */,
 				4A9543D420A87B6D009BCBE2 /* PostHeaderView.swift in Sources */,
 				4A406B651FA5772100277AA0 /* PickImageController.swift in Sources */,

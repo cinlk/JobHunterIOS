@@ -208,9 +208,9 @@ extension PersonViewController:selectedItemDelegate{
     }
     
     func showPostArticle() {
-        let vc = UIViewController()
+        let vc =  MyPostViewController()
         vc.hidesBottomBarWhenPushed = true
-        vc.view.backgroundColor = UIColor.randomeColor()
+        vc.type = .mypost
         self.navigationController?.pushViewController(vc, animated: true)
     }
     

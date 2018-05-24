@@ -11,8 +11,6 @@ import UIKit
 class PostCommentViewController: UIViewController {
 
     
-    
-    
     private var content:String = ""
     
     internal var postBack:((_ content:String)->Void)?
@@ -24,7 +22,6 @@ class PostCommentViewController: UIViewController {
         top.post.addTarget(self, action: #selector(post), for: .touchUpInside)
         top.viewTitle.text = self.title!
         return top
-        
     }()
     
     
@@ -33,9 +30,7 @@ class PostCommentViewController: UIViewController {
         text.textColor = UIColor.black
         text.font = UIFont.systemFont(ofSize: 16)
         text.delegate = self
-    
         return text
-        
     }()
     
     

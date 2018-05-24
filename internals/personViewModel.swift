@@ -27,8 +27,8 @@ class  personModelManager {
                                                "city":"北京","degree":"专科","phone":"13718754627",
                                                "email":"dqwd@163.com","birthday":"1990-01"])
         if initialFirst == false{
-            mode = ResumeMode(JSON: ["basicinfo":basicinfo?.toJSON(),"educationInfo":[],"internInfo":[],"skills":[],"projectInfo":[],
-                                     "studentWorkInfo":[],"practiceInfo":[],"resumeOtherInfo":[],"estimate":selfEstimateModel(JSON: [:])?.toJSON()])
+            mode = ResumeMode(JSON: ["basicinfo": basicinfo?.toJSON(),"educationInfo":[],"internInfo":[],"skills":[],"projectInfo":[],
+                                     "studentWorkInfo":[],"practiceInfo":[],"resumeOtherInfo":[],"estimate": selfEstimateModel(JSON: [:])?.toJSON()])
         //print(mode?.toJSON(),mode?.educationInfo.count)
         }
         initialFirst = true 

@@ -183,6 +183,9 @@ enum forumType:String{
     case roast = "roast"
     case none = ""
     
+    //
+    case mypost = "mypost"
+    
     
     static var items:[forumType]{
         get{
@@ -200,6 +203,8 @@ enum forumType:String{
             return "生活"
         case .roast:
             return "吐槽"
+        case .mypost:
+            return "我的帖子"
         case .none:
             return ""
         }

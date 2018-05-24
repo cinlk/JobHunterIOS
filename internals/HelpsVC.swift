@@ -111,12 +111,12 @@ extension HelpsVC: UITableViewDelegate, UITableViewDataSource{
             if let item = mode?.items[indexPath.row]{
                 // 选中cell
                 if selectedCellIndexPath.contains(indexPath){
-                    let mode = helpModel.init(title: item.title ?? "", detail: item.content ?? "", select: true)
-                    cell.mode = mode
+                    item.selected = true
+                    cell.mode = item
                     
                 }else{
-                    let mode = helpModel.init(title: item.title ?? "", detail: item.content ?? "", select: false)
-                    cell.mode = mode
+                    item.selected = false
+                    cell.mode = item
                 }
                 
             }
@@ -147,13 +147,12 @@ extension HelpsVC: UITableViewDelegate, UITableViewDataSource{
         // 显示已经选择cell 自适应高度
         if selectedCellIndexPath.contains(indexPath){
             
-            let mode = helpModel.init(title: item.title ?? "", detail: item.content ?? "", select: true)
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: expansionCell.self, contentViewWidth: ScreenW)
+            item.selected = true
+            return tableView.cellHeight(for: indexPath, model: item, keyPath: "mode", cellClass: expansionCell.self, contentViewWidth: ScreenW)
         }else{
-            // 未选择cell 高度
-            let mode = helpModel.init(title: item.title ?? "", detail: item.content ?? "", select: false)
             
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: expansionCell.self, contentViewWidth: ScreenW)
+            item.selected = false
+            return tableView.cellHeight(for: indexPath, model: item, keyPath: "mode", cellClass: expansionCell.self, contentViewWidth: ScreenW)
         }
         
         
@@ -206,7 +205,7 @@ extension HelpsVC{
 }
 
 // 选中头部图 进入指导
-extension HelpsVC:headerCollectionViewDelegate{
+extension HelpsVC: headerCollectionViewDelegate{
     
     func chooseItem(name: String) {
 //        if let item = self.mode?.guide[index]{

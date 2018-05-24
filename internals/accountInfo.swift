@@ -145,7 +145,7 @@ class  notifyMesModel:Mappable{
 }
 
 // 打招呼常用语
-class greetingModel:Mappable{
+class greetingModel:NSObject,Mappable{
     
     var des:[String] = []
     var isOn:Bool = false
@@ -164,7 +164,7 @@ class greetingModel:Mappable{
 
 
 // 帮助文档
-class HelpAskModel:Mappable{
+class HelpAskModel:NSObject,Mappable{
     
     var items:[HelpItemsModel] = []
     var guide:[HelpGuidModel] = []
@@ -181,7 +181,7 @@ class HelpAskModel:Mappable{
     
 }
 
-class HelpGuidModel:Mappable{
+class HelpGuidModel:NSObject, Mappable{
     
     var name:String?
     var image:String?
@@ -201,11 +201,12 @@ class HelpGuidModel:Mappable{
 }
 
 
-class HelpItemsModel:Mappable{
+class HelpItemsModel:NSObject, Mappable{
     
     var title:String?
     var content:String?
-    
+    //
+    var selected:Bool = false
     required init?(map: Map) {
         
     }
@@ -213,6 +214,7 @@ class HelpItemsModel:Mappable{
     func mapping(map: Map) {
         title <- map["title"]
         content <- map["content"]
+    
     }
     
 }

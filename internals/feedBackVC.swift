@@ -9,167 +9,65 @@
 import UIKit
 
 
-fileprivate let typeTitle:String = "请选择意见类型"
-fileprivate let content:String = "反馈内容"
-fileprivate let contact:String = "你的联系方式"
-fileprivate let typeDefault:String = "产品建议"
+
 fileprivate let textPlaceHolder:String = "请填写内容，最多500字。"
 
 
-fileprivate let name:String = "反馈"
+class feedBackVC: UITableViewController {
 
-class feedBackVC: UIViewController {
-
-    
-    private lazy var topTitle:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: 30))
-        v.backgroundColor = UIColor.lightGray
-        let label = UILabel.init(frame: CGRect.zero)
-        label.text = typeTitle
-        label.font = UIFont.systemFont(ofSize: 15)
-        label.textColor = UIColor.black
-        label.sizeToFit()
-        v.addSubview(label)
-        _ = label.sd_layout().leftSpaceToView(v,10)?.topSpaceToView(v,5)?.bottomSpaceToView(v,5)?.rightSpaceToView(v,10)
-        return v
-    }()
-    
-    private lazy var wrapperView:UIView = { [unowned self] in
-        let v = UIView.init(frame: CGRect.zero)
-        v.backgroundColor = UIColor.white
-        let tap = UITapGestureRecognizer.init()
-        tap.addTarget(self, action: #selector(pick))
-        tap.numberOfTapsRequired = 1
-        v.addGestureRecognizer(tap)
-        return v
-    }()
-    
-    private lazy var typeLabel:UILabel = {
-       let label = UILabel.init(frame: CGRect.zero)
-        label.textColor = UIColor.blue
-        label.font = UIFont.systemFont(ofSize: 20)
-        label.sizeToFit()
-        label.textAlignment = .center
-        label.text = typeDefault
-        return label
-    }()
-    
-    //
-    private lazy var contentTitle:UIView = {
-        let v = UIView.init(frame: CGRect.zero)
-        v.backgroundColor = UIColor.lightGray
-        let label = UILabel.init(frame: CGRect.zero)
-        label.text = content
-        label.font = UIFont.systemFont(ofSize: 15)
-        label.textColor = UIColor.black
-        label.sizeToFit()
-        v.addSubview(label)
-        _ = label.sd_layout().leftSpaceToView(v,10)?.topSpaceToView(v,5)?.bottomSpaceToView(v,5)?.rightSpaceToView(v,10)
-        return v
-    }()
-    
-
-    private lazy var textView:UITextView = { [unowned self] in
-        let text = UITextView.init(frame: CGRect.zero)
-        text.textColor = UIColor.black
-        text.font = UIFont.systemFont(ofSize: 16)
-        text.textAlignment = .left
-        // 调整输入内容偏移
-        text.textContainerInset = UIEdgeInsetsMake(10, 8, 0, 0)
-        text.delegate = self
-        return text
-    }()
-    
-    // textview placeholder 值
-    private lazy var textPlaceholder:UILabel = {
-        let placeHolder = UILabel.init(frame: CGRect.zero)
-        placeHolder.text = textPlaceHolder
-        placeHolder.textAlignment = .left
-        placeHolder.textColor = UIColor.lightGray
-        placeHolder.font = UIFont.systemFont(ofSize: 16)
-        return placeHolder
-    }()
-    // last
-    
-    
-    private lazy var contactTitle:UIView = {
-        let v = UIView.init(frame: CGRect.zero)
-        v.backgroundColor = UIColor.lightGray
-        let label = UILabel.init(frame: CGRect.zero)
-        label.text = contact
-        label.font = UIFont.systemFont(ofSize: 15)
-        label.textColor = UIColor.black
-        label.sizeToFit()
-        v.addSubview(label)
-        _ = label.sd_layout().leftSpaceToView(v,10)?.topSpaceToView(v,5)?.bottomSpaceToView(v,5)?.rightSpaceToView(v,10)
-        return v
-    }()
-    
-    private lazy var wrapperContactField:UIView = {
-        let v = UIView.init(frame: CGRect.zero)
-        v.backgroundColor = UIColor.white
-        return v
-    }()
-    private lazy var contactField:UITextField = { [unowned self] in
-        let field = UITextField.init(frame: CGRect.zero)
-        field.textAlignment = .left
-        field.font = UIFont.systemFont(ofSize: 16)
-        field.delegate = self
-        // 左边留部分距离
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: 10, height: 30))
-        field.leftView = v
-        field.leftViewMode = .always
-        field.placeholder = "手机或邮箱联系方式(选填)"
-        return field
-    }()
-    
-    
-    private lazy var pickView:itemPickerView = {
-        let pick = itemPickerView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: 200))
-        pick.backgroundColor = UIColor.white
-        UIApplication.shared.windows.last?.addSubview(pick)
-        pick.pickerDelegate = self
-        return pick
+ 
+    enum catalogs:String {
+        case problem = "problem"
+        case idea = "idea"
+        case contact = "contact"
         
-    }()
+        var describe:String{
+            get{
+                switch self {
+                case .problem:
+                    return "问题类型"
+                case .idea:
+                    return "反馈意见"
+                case .contact:
+                    return "联系方式"
+                }
+            }
+        }
+    }
     
-    private lazy var backgroundView:UIView = { [unowned self] in
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
-        v.backgroundColor = UIColor.lightGray
-        v.alpha = 0.5
-        let guest = UITapGestureRecognizer.init()
-        guest.addTarget(self, action: #selector(hiddenBackGround))
-        guest.numberOfTapsRequired  = 1
-        v.addGestureRecognizer(guest)
-        v.isUserInteractionEnabled = true
-        return v
+    private var contacts = ["邮箱","手机"]
+    
+    private var sectionTitle:[catalogs] = [.problem, .idea, .contact]
+    
+    private var cell:TextAndPhontoCell?
+    
+    
+    private lazy var showChooseImage:UIAlertController = { [unowned self] in
+        let choose = UIAlertController.init(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+        let fromCamera = UIAlertAction.init(title: "照相机", style: UIAlertActionStyle.default, handler: { action in
+            
+            //self.selectPicture(type: UIImagePickerControllerSourceType)
+            self.selectPicture(type: UIImagePickerControllerSourceType.camera)
+        })
         
-    }()
-    
-    // 键盘 toolbar
-    private lazy var doneButton:UIToolbar = { [unowned self] in
         
-        let toolBar:UIToolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: ScreenW, height: 35))
-        toolBar.backgroundColor = UIColor.gray
-        let spaceBtn = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let barBtn = UIBarButtonItem(title: "完成", style: .plain, target: self, action: #selector(textStorage))
-        toolBar.items = [spaceBtn, barBtn]
-        toolBar.sizeToFit()
-        return toolBar
-        }()
+        let fromPicture = UIAlertAction.init(title: "相册", style: UIAlertActionStyle.default, handler: { action in
+            self.selectPicture(type: UIImagePickerControllerSourceType.photoLibrary)
+        })
+        
+        let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
+        
+        choose.addAction(fromCamera)
+        choose.addAction(fromPicture)
+        choose.addAction(cancel)
+        return choose
+     }()
     
-    private lazy var pickViewOriginXY:CGPoint = CGPoint.init(x: 0, y: 0)
-    private var selected:SelectItemUtil = SelectItemUtil.shared
-    private var pickPosition:[String:[Int:Int]] = [:]
-
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor.viewBackColor()
-        pickViewOriginXY = pickView.origin
-        setNavigationBtn()
-        keyboardEvent()
-        
+        setViews()
         
      }
 
@@ -188,16 +86,11 @@ class feedBackVC: UIViewController {
         super.viewWillDisappear(animated)
         self.navigationItem.title = ""
         self.navigationController?.removeCustomerView()
-        pickView.removeFromSuperview()
-        
+ 
     }
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        buildView()
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
+       
     }
     
 
@@ -206,192 +99,154 @@ class feedBackVC: UIViewController {
 
 extension feedBackVC{
     
-    private func setNavigationBtn(){
-        
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "发送", style: .plain, target: self, action: #selector(postMsg))
+    override  func numberOfSections(in tableView: UITableView) -> Int {
+        return sectionTitle.count
     }
     
-    @objc func postMsg(){
-        
-        self.view.endEditing(true)
-        
-        if typeLabel.text == nil{
-            
-        }else if textView.text.isEmpty{
-            
-        }else if (contactField.text?.isEmpty)!{
-            
-        }
-        // 服务器
-        showOnlyTextHub(message: "发送成功", view: self.view)
-        
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return  section == 2 ? 3 : 2
     }
     
-    
-    private func buildView(){
-        self.view.addSubview(topTitle)
-        self.view.addSubview(wrapperView)
-        self.view.addSubview(contentTitle)
-        wrapperView.addSubview(typeLabel)
-        self.view.addSubview(textView)
-        textView.addSubview(textPlaceholder)
-        self.view.addSubview(contactTitle)
-        self.view.addSubview(wrapperContactField)
-        wrapperContactField.addSubview(contactField)
-        // 添加完成 btn
-        textView.inputAccessoryView = doneButton
-        contactField.inputAccessoryView = doneButton
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
+        if indexPath.row == 0 {
+            let cell = UITableViewCell.init()
+            cell.textLabel?.text = sectionTitle[indexPath.section].describe
         
-        _ = wrapperView.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(topTitle,0)?.heightIs(60)
-        _ = typeLabel.sd_layout().centerXEqualToView(wrapperView)?.centerYEqualToView(wrapperView)?.widthIs(200)?.heightIs(30)
-        _ = contentTitle.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(wrapperView,0)?.heightIs(30)
-        
-        _ = textView.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(contentTitle,0)?.heightIs(160)
-        _ = textPlaceholder.sd_layout().leftSpaceToView(textView,10)?.topSpaceToView(textView,5)?.rightSpaceToView(textView,10)?.heightIs(25)
-        
-        _ = contactTitle.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(textView,0)?.heightIs(30)
-        
-        _ = wrapperContactField.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(contactTitle,0)?.heightIs(50)
-        _ = contactField.sd_layout().leftEqualToView(wrapperContactField)?.rightEqualToView(wrapperContactField)?.topEqualToView(wrapperContactField)?.bottomEqualToView(wrapperContactField)
-        
-        
-    }
-    
-}
-
-extension feedBackVC{
-    
-    @objc func pick(){
-        pickView.mode =  (name,selected.getItems(name: name)!)
-        pickView.setPosition(position: pickPosition[name])
-        self.showPickView()
-    }
-    
-    @objc private func hiddenBackGround(){
-        
-        self.navigationController?.view.willRemoveSubview(backgroundView)
-        backgroundView.removeFromSuperview()
-        
-        UIView.animate(withDuration: 0.3, animations: {
-            self.pickView.origin = self.pickViewOriginXY
-            
-        }) { (bool) in
+            return cell
             
         }
         
-    }
-    
-    private func showPickView(){
-        // 取消编辑，影藏键盘
-        self.view.endEditing(true)
-        self.navigationController?.view.addSubview(backgroundView)
-        UIView.animate(withDuration: 0.3, animations: {
-            self.pickView.frame = CGRect.init(x: 0, y: ScreenH - 200, width: ScreenW, height: 200)
-        }, completion: { (bool) in
-            
-        })
-    }
-    
-    @objc func textStorage(){
-        self.view.endEditing(true)
-    }
-    
-    private func keyboardEvent(){
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHidden), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-    }
-    
-    @objc func keyboardHidden(sender: NSNotification){
-        
-        // 下降view的y坐标
-        UIView.animate(withDuration: 0.5) {
-            self.view.origin.y = 0
-        }
-    }
-    
-    
-    @objc func keyboardShow(sender: NSNotification){
-        // 上升view 的y坐标
-        if  let kframe = sender.userInfo![UIKeyboardFrameEndUserInfoKey] as? CGRect{
-            
-            let offsetY = kframe.height - (ScreenH - (self.wrapperContactField.origin.y + self.wrapperContactField.frame.height)) + 20
-            UIView.animate(withDuration: 0.5) {
-                if offsetY > 0 {
-                    self.view.origin.y = -offsetY
+        switch sectionTitle[indexPath.section] {
+        case .problem:
+            if let cell =  tableView.dequeueReusableCell(withIdentifier: feedBackTypeCell.identity(), for: indexPath) as? feedBackTypeCell{
+                cell.mode = ["新功能建议","注册登录", "修改账号", "绑定账号", "招聘信息","宣讲会","搜索","简历修改","简历投递","订阅管理","笔试面试", "应用闪退","论坛","其他"]
+                cell.selectItem = { theme in
+                    print(theme)
                 }
+                return cell
+            }
+           
+        case .idea:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: TextAndPhontoCell.identity(), for: indexPath) as? TextAndPhontoCell{
+                cell.setImage = {
+                    self.present(self.showChooseImage, animated: true, completion: nil)
+                }
+                self.cell = cell
+                return cell 
+            }
+            
+        case .contact:
+            
+            if let cell  = tableView.dequeueReusableCell(withIdentifier: innerTextFiledCell.identity(), for: indexPath) as? innerTextFiledCell{
+                cell.mode = (placeholder:"选填", title: contacts[indexPath.row - 1], content:"")
                 
+                return cell 
+            }
+           
+            
+        }
+        
+        return UITableViewCell()
+    }
+    
+    // cell height
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.row == 0 {
+            return 25
+        }
+        switch sectionTitle[indexPath.section] {
+        case .problem:
+            let mode = ["新功能建议","注册登录", "修改账号", "绑定账号", "招聘信息","宣讲会","搜索","简历修改","简历投递","订阅管理","笔试面试", "应用闪退","论坛","其他"]
+            
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: feedBackTypeCell.self, contentViewWidth: ScreenW)
+        case .idea:
+            return TextAndPhontoCell.cellHeight()
+            
+        default:
+            break
+        }
+        return 45
+    }
+    
+    
+    
+    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        return UIView()
+    }
+    
+    
+    
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 10
+    }
+}
+
+extension feedBackVC{
+    
+    private func setViews(){
+        self.tableView.backgroundColor = UIColor.viewBackColor()
+        self.tableView.tableFooterView = UIView()
+        self.tableView.keyboardDismissMode = .onDrag
+        self.tableView.register(feedBackTypeCell.self, forCellReuseIdentifier: feedBackTypeCell.identity())
+        self.tableView.register(TextAndPhontoCell.self, forCellReuseIdentifier: TextAndPhontoCell.identity())
+        self.tableView.register(innerTextFiledCell.self, forCellReuseIdentifier: innerTextFiledCell.identity())
+        self.tableView.bounces = false
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "发送", style: .plain, target: self, action: #selector(sendComment))
+    }
+    
+    @objc private func sendComment(){
+        self.view.endEditing(true)
+    }
+}
+
+
+// 照片
+extension feedBackVC: UIImagePickerControllerDelegate, UINavigationControllerDelegate{
+    
+    
+    func selectPicture(type: UIImagePickerControllerSourceType){
+        let select = UIImagePickerController()
+        select.delegate = self
+        select.allowsEditing = true
+        select.sourceType = type
+        self.present(select, animated: true, completion: nil)
+        
+    }
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        print("cancel")
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        
+        var outputImage:UIImage?
+        
+        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage{
+            outputImage = image
+        }else if let image = info[UIImagePickerControllerEditedImage] as? UIImage{
+            outputImage = image
+        }
+        guard outputImage != nil else {
+            return
+        }
+        // 上传压缩image
+        if let imageData = UIImageJPEGRepresentation(outputImage!, 0), let image = UIImage.init(data: imageData){
+            //outputImage = UIImage.init(data: UIImageJPEGRepresentation(outputImage, 0))
+            if cell?.imageOne  == nil {
+                cell?.imageOne = image
+                
+            }else{
+                cell?.imageTwo = image
             }
         }
         
-    }
-    
-}
-
-extension feedBackVC: itemPickerDelegate{
-    
-    func quitPickerView(_ picker: UIPickerView) {
-        self.hiddenBackGround()
-    }
-    
-    func changeItemValue(_ picker: UIPickerView, value: String, position:[Int:Int]) {
-        // 记录新的picker位置
-        pickPosition[name] = position
-        typeLabel.text = value
-        hiddenBackGround()
-    }
         
-}
-
-extension feedBackVC: UITextViewDelegate{
-    
-    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        return true
-    }
-    func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
-        textView.resignFirstResponder()
-        return true
-    }
-    
-    func textViewDidChange(_ textView: UITextView) {
-        
-       
-        // 显示默认的placeholder
-        if textView.text.isEmpty{
-            textPlaceholder.isHidden = false
-        }else{
-            textPlaceholder.isHidden = true
-        }
-    }
-
-    func textViewDidBeginEditing(_ textView: UITextView) {
-       
-    }
-    
-    func textViewDidEndEditing(_ textView: UITextView) {
-        if textView.text.count > 10{
-            print("字数太多")
-            return
-        }
-        
-    }
-    
-}
-
-
-extension feedBackVC: UITextFieldDelegate {
-    
-    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        return true
-    }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
+        picker.dismiss(animated: true, completion: nil)
         
     }
 }
+
+
+
 

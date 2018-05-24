@@ -38,7 +38,7 @@ class CareerTalkInviteViewController: BaseTableViewController {
         self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.separatorStyle = .none
         
-        //backHubView.frame = CGRect.init(x: 0, y: NavH + 45, width: ScreenW, height: ScreenH - (NavH + 45))
+        self.handleViews.append(tableView)
 
         self.tableView.register( CareerTalkTableViewCell.self, forCellReuseIdentifier: CareerTalkTableViewCell.identity())
         

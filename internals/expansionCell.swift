@@ -9,17 +9,7 @@
 import UIKit
 
 
-class helpModel:NSObject{
-    var title:String
-    var detail:String
-    var selected:Bool
-    
-    init(title:String, detail:String, select:Bool) {
-        self.title = title
-        self.detail = detail
-        self.selected = select
-    }
-}
+
 @objcMembers class expansionCell: UITableViewCell {
 
     
@@ -44,19 +34,18 @@ class helpModel:NSObject{
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = UIColor.lightGray
-        //label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20 )
         return label
     }()
     
-   dynamic var mode:helpModel?{
+   dynamic var mode:HelpItemsModel?{
         didSet{
             self.title.text = mode?.title
             if mode!.selected{
                 self.icon.image = UIImage.init(named: "arrow_xl")
                 self.title.textColor = UIColor.green
-                detailLabel.text = mode?.detail
+                detailLabel.text = mode?.content
                 self.setupAutoHeight(withBottomView: detailLabel, bottomMargin: 5)
             }else{
                 self.title.textColor = UIColor.black
