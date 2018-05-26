@@ -2598,6 +2598,7 @@
 			baseConfigurationReference = DB5827C0AD300F2CEAAB654F /* Pods-internals.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = internals/internals.entitlements;
 				DEVELOPMENT_TEAM = C2S64LJ4ZF;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2619,6 +2620,7 @@
 			baseConfigurationReference = BA9E8A53CA89B7891A8B0201 /* Pods-internals.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = internals/internals.entitlements;
 				DEVELOPMENT_TEAM = C2S64LJ4ZF;
 				FRAMEWORK_SEARCH_PATHS = (
