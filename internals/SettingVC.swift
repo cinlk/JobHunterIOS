@@ -245,10 +245,10 @@ extension SettingVC {
     
     private func logout(){
         
-       let loginView =  UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "login") as! LogViewController
+       let loginView =  UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "login") as! UserLogginViewController
          // 禁止自动登录
          DBFactory.shared.getUserDB().setLoginAuto(auto: false)
-         self.dismiss(animated: false, completion: {
+         self.dismiss(animated: true, completion: {
                 self.present(loginView, animated: true, completion: nil)
         })
         

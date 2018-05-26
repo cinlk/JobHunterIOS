@@ -24,6 +24,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UITabBarItem.appearance().setTitleTextAttributes([NSAttributedStringKey.foregroundColor: unselectedColor], for: .normal)
         UITabBarItem.appearance().setTitleTextAttributes([NSAttributedStringKey.foregroundColor: selectedColor], for: .selected)
         
+        // 初始viewController
+//        let userlogging = UserLogginViewController()
+//        
+//        let nav = UINavigationController.init(rootViewController: userlogging)
+//        window = UIWindow(frame: UIScreen.main.bounds)
+//        window?.makeKeyAndVisible()
+//        window?.rootViewController = nav
+//        
+        
         // load contacts
        // Contactlist.shared.removeAll()
         // load search keywords

@@ -116,6 +116,12 @@
 		4A444ED11F8E5789006AE83D /* contactlist.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A444ECF1F8E5789006AE83D /* contactlist.xib */; };
 		4A444ED31F8F9E44006AE83D /* chatPeople.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A444ED21F8F9E44006AE83D /* chatPeople.swift */; };
 		4A4523F21F5BABE1009D6B62 /* CommonJobTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4523F11F5BABE1009D6B62 /* CommonJobTableCell.swift */; };
+		4A4DBBCD20B6FDEA0036AD9D /* UserLogginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBCC20B6FDEA0036AD9D /* UserLogginViewController.swift */; };
+		4A4DBBD020B707D80036AD9D /* QuickLoggingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBCF20B707D80036AD9D /* QuickLoggingViewController.swift */; };
+		4A4DBBD220B707F50036AD9D /* PasswordLoggingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBD120B707F50036AD9D /* PasswordLoggingViewController.swift */; };
+		4A4DBBD420B796B80036AD9D /* customerTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBD320B796B80036AD9D /* customerTextField.swift */; };
+		4A4DBBD620B86E3D0036AD9D /* ResetPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBD520B86E3D0036AD9D /* ResetPasswordViewController.swift */; };
+		4A4DBBD820B9694E0036AD9D /* AffiliatedAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBD720B9694E0036AD9D /* AffiliatedAccountViewController.swift */; };
 		4A502CEF20B1C44D00BB71FD /* BaseResumeInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A502CEE20B1C44D00BB71FD /* BaseResumeInfoCell.swift */; };
 		4A502CF120B1C5B100BB71FD /* projectInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A502CF020B1C5B100BB71FD /* projectInfoCell.swift */; };
 		4A502CF320B1C98B00BB71FD /* studentWorkCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A502CF220B1C98B00BB71FD /* studentWorkCell.swift */; };
@@ -449,6 +455,12 @@
 		4A444ECF1F8E5789006AE83D /* contactlist.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = contactlist.xib; sourceTree = "<group>"; };
 		4A444ED21F8F9E44006AE83D /* chatPeople.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = chatPeople.swift; sourceTree = "<group>"; };
 		4A4523F11F5BABE1009D6B62 /* CommonJobTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonJobTableCell.swift; sourceTree = "<group>"; };
+		4A4DBBCC20B6FDEA0036AD9D /* UserLogginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserLogginViewController.swift; sourceTree = "<group>"; };
+		4A4DBBCF20B707D80036AD9D /* QuickLoggingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickLoggingViewController.swift; sourceTree = "<group>"; };
+		4A4DBBD120B707F50036AD9D /* PasswordLoggingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordLoggingViewController.swift; sourceTree = "<group>"; };
+		4A4DBBD320B796B80036AD9D /* customerTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = customerTextField.swift; sourceTree = "<group>"; };
+		4A4DBBD520B86E3D0036AD9D /* ResetPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordViewController.swift; sourceTree = "<group>"; };
+		4A4DBBD720B9694E0036AD9D /* AffiliatedAccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AffiliatedAccountViewController.swift; sourceTree = "<group>"; };
 		4A502CEE20B1C44D00BB71FD /* BaseResumeInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseResumeInfoCell.swift; sourceTree = "<group>"; };
 		4A502CF020B1C5B100BB71FD /* projectInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = projectInfoCell.swift; sourceTree = "<group>"; };
 		4A502CF220B1C98B00BB71FD /* studentWorkCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = studentWorkCell.swift; sourceTree = "<group>"; };
@@ -753,6 +765,7 @@
 				4A1BA2F3208CD87000CF8352 /* dropMenuViews */,
 				4A1BA2BC208AE81C00CF8352 /* BaseScrollerView.swift */,
 				4A1BA2C1208B021800CF8352 /* BaseCollectionHorizonView.swift */,
+				4A4DBBD320B796B80036AD9D /* customerTextField.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -1016,6 +1029,26 @@
 				4A444ECA1F8A168B006AE83D /* searchRequest.pb.swift */,
 			);
 			name = protobuf;
+			sourceTree = "<group>";
+		};
+		4A4DBBCB20B6FDAC0036AD9D /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				4A4DBBCC20B6FDEA0036AD9D /* UserLogginViewController.swift */,
+				4A4DBBCF20B707D80036AD9D /* QuickLoggingViewController.swift */,
+				4A4DBBD120B707F50036AD9D /* PasswordLoggingViewController.swift */,
+				4A4DBBD520B86E3D0036AD9D /* ResetPasswordViewController.swift */,
+				4A4DBBD720B9694E0036AD9D /* AffiliatedAccountViewController.swift */,
+			);
+			name = ViewController;
+			sourceTree = "<group>";
+		};
+		4A4DBBCE20B6FE080036AD9D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				4A2145B82077B1AC000959F4 /* ThirdPartLoginView.swift */,
+			);
+			name = View;
 			sourceTree = "<group>";
 		};
 		4A502CF820B1CBB900BB71FD /* resumeSubItemCell */ = {
@@ -1523,6 +1556,15 @@
 			name = "我的帖子";
 			sourceTree = "<group>";
 		};
+		4AAB084820B6FD2400BEF38A /* 新登录界面  */ = {
+			isa = PBXGroup;
+			children = (
+				4A4DBBCE20B6FE080036AD9D /* View */,
+				4A4DBBCB20B6FDAC0036AD9D /* ViewController */,
+			);
+			name = "新登录界面 ";
+			sourceTree = "<group>";
+		};
 		4ACBD6FA1F77E76D00A5FD23 /* ChatBar */ = {
 			isa = PBXGroup;
 			children = (
@@ -1602,6 +1644,7 @@
 				4AEDFE841FBFE78A0071F4D8 /* extension */,
 				4A93C2E51F88B8C90022E97B /* socketim */,
 				4A5304DC1F52A3E10000F1E9 /* 板块 */,
+				4AAB084820B6FD2400BEF38A /* 新登录界面  */,
 				4ADCC77F1F512529001A4E9F /* 登录 */,
 				4ADCC74F1F511DD3001A4E9F /* AppDelegate.swift */,
 				4ADCC7531F511DD3001A4E9F /* Main.storyboard */,
@@ -1692,7 +1735,6 @@
 				4A6389F320668B0900C4B4D0 /* SelectedOneTableView.swift */,
 				4A6389F520668BE100C4B4D0 /* SelectedTowTableView.swift */,
 				4A6389F720668C7B00C4B4D0 /* SelectedThreeTableView.swift */,
-				4A2145B82077B1AC000959F4 /* ThirdPartLoginView.swift */,
 				4A2145CE20790ED5000959F4 /* ErrorPageView.swift */,
 				4A1BA2B7208A2C0F00CF8352 /* CommonJobDetailCellView.swift */,
 			);
@@ -2111,6 +2153,7 @@
 				4AE4AFC11F5131AE00B5F509 /* ForgetPasswordController.swift in Sources */,
 				4A9543D220A879B2009BCBE2 /* SingleReplyViewController.swift in Sources */,
 				4A6BC23B1FC92BA3002C17B6 /* mainPageViewModel.swift in Sources */,
+				4A4DBBD820B9694E0036AD9D /* AffiliatedAccountViewController.swift in Sources */,
 				4A4254F9203EB5B00049B237 /* changePassword.swift in Sources */,
 				4A8D28BB1FD195C900FA983F /* utils.swift in Sources */,
 				4A4523F21F5BABE1009D6B62 /* CommonJobTableCell.swift in Sources */,
@@ -2178,6 +2221,7 @@
 				4A2145C12077C3DE000959F4 /* BindAccountVC.swift in Sources */,
 				4AF3D354205E7D2F0012EB6E /* DeliveredJobsModel.swift in Sources */,
 				4A1BA2D4208B460700CF8352 /* OnlineApplyViewController.swift in Sources */,
+				4A4DBBD020B707D80036AD9D /* QuickLoggingViewController.swift in Sources */,
 				4ADDDAB31F97ABA4001CB00F /* ChatEmotionView.swift in Sources */,
 				4A20EEF5203E70DF0021843B /* accountInfo.swift in Sources */,
 				4A30EBDA207BB8C900231D11 /* CompanyMainVC.swift in Sources */,
@@ -2187,6 +2231,7 @@
 				4A9A0BD32003BEA8008721F3 /* MyVisitor.swift in Sources */,
 				4A82A0E8202B4DB400185E8B /* itemPickerView.swift in Sources */,
 				4A30EBDC207CE68A00231D11 /* companyTableProtocol.swift in Sources */,
+				4A4DBBCD20B6FDEA0036AD9D /* UserLogginViewController.swift in Sources */,
 				4A1BA2E5208B834E00CF8352 /* InternJobsViewController.swift in Sources */,
 				4A93C2CF1F82292E0022E97B /* statustage.swift in Sources */,
 				4A22102C203869C3000BDC70 /* jobCollectedVC.swift in Sources */,
@@ -2206,12 +2251,14 @@
 				4AD8F751206E6CA4003969ED /* extension+UITextView.swift in Sources */,
 				4A6BC2431FCB12A3002C17B6 /* mainPageModel.swift in Sources */,
 				4A82A0E62029D7BF00185E8B /* modifyPersonInfoCell.swift in Sources */,
+				4A4DBBD220B707F50036AD9D /* PasswordLoggingViewController.swift in Sources */,
 				4A1BA2C0208AEB1500CF8352 /* BaseScrollerTableViewCell.swift in Sources */,
 				4A22A3A72073D1CE00024C2B /* resumePersonInfoCell.swift in Sources */,
 				4AAB084720B5C8D900BEF38A /* innerTextFiledCell.swift in Sources */,
 				4ADADAAB1FA4C09400134AAE /* quickReplyView.swift in Sources */,
 				4AD03ABB1F9C7DD30077C15B /* GetChatEmotion.swift in Sources */,
 				4A1BA2F8208CE3C000CF8352 /* CollectionTextCell.swift in Sources */,
+				4A4DBBD420B796B80036AD9D /* customerTextField.swift in Sources */,
 				4A93C2C31F80CF080022E97B /* markTestSocketView.swift in Sources */,
 				4ACBD6F51F76386D00A5FD23 /* baseSearchViewController.swift in Sources */,
 				4A82A0DC2027199700185E8B /* educationInfoCell.swift in Sources */,
@@ -2367,6 +2414,7 @@
 				4A8859181FF8DD2D0009D73D /* extension+uiview.swift in Sources */,
 				4A4254FB203EE0170049B237 /* HelpsVC.swift in Sources */,
 				4A502CF720B1CA5B00BB71FD /* ResumeOtherCell.swift in Sources */,
+				4A4DBBD620B86E3D0036AD9D /* ResetPasswordViewController.swift in Sources */,
 				4A22103A203BFD0E000BDC70 /* SettingVC.swift in Sources */,
 				4A0BA74E20B053DD0099F332 /* SetFourItemTableViewCell.swift in Sources */,
 				4AF3D352205E62DB0012EB6E /* CollectionItemsCell.swift in Sources */,

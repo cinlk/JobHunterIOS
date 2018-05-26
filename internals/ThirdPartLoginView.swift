@@ -8,15 +8,14 @@
 
 import UIKit
 
-fileprivate let title:String = "使用第三方登录"
+fileprivate let title:String = "或"
 fileprivate let items = 3
-fileprivate let witdh = ScreenW - 20 - 3*15
+fileprivate let iconWidth:CGFloat = 50
 
 
-protocol thirdPartLoginDelegate: class {
+protocol SocialAppLoginDelegate: class {
     func verifyLoggable(view:UIView, type: UMSocialPlatformType, respons:UMSocialUserInfoResponse)
     func showError(view:UIView,message:String)
-    
     
 }
 
@@ -27,16 +26,19 @@ class ThirdPartLoginView: UIView {
         let label = UILabel.init()
         label.text  = title
         label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 16)
+        label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = UIColor.lightGray
-        label.setSingleLineAutoResizeWithMaxWidth(180)
+        label.setSingleLineAutoResizeWithMaxWidth(100)
         return label
     }()
     
     private lazy var weixinBtn:UIButton = {
         let btn = UIButton()
-        btn.setImage(UIImage.init(named: "wechat"), for: .normal)
+        btn.setBackgroundImage(UIImage.init(named: "wechat_circle"), for: .normal)
+        btn.setBackgroundImage(UIImage.init(named: "wechat_circle"), for: .highlighted)
+
         btn.imageView?.contentMode = .scaleToFill
+        btn.backgroundColor = UIColor.clear
         btn.addTarget(self, action: #selector(loginWeixin), for: .touchUpInside)
         return btn
         
@@ -44,18 +46,25 @@ class ThirdPartLoginView: UIView {
     
     private lazy var weiboBtn:UIButton = {
         let btn = UIButton()
-        btn.setImage(UIImage.init(named: "sina"), for: .normal)
+        btn.setBackgroundImage(UIImage.init(named: "weibo_circle"), for: .normal)
+        btn.setBackgroundImage(UIImage.init(named: "weibo_circle"), for: .highlighted)
+
         btn.imageView?.contentMode = .scaleToFill
         btn.addTarget(self, action: #selector(loginWeiBo), for: .touchUpInside)
+        btn.backgroundColor = UIColor.clear
 
         return btn
     }()
     
     private lazy var qqBtn:UIButton = {
         let btn = UIButton()
-        btn.setImage(UIImage.init(named: "qq"), for: .normal)
+        btn.setBackgroundImage(UIImage.init(named: "qq_circle"), for: .normal)
+        btn.setBackgroundImage(UIImage.init(named: "qq_circle"), for: .highlighted)
+
         btn.imageView?.contentMode = .scaleToFill
         btn.addTarget(self, action: #selector(loginQQ), for: .touchUpInside)
+        btn.backgroundColor = UIColor.clear
+
         return btn
     }()
     
@@ -73,7 +82,7 @@ class ThirdPartLoginView: UIView {
     }()
     
     
-    weak var delegate:thirdPartLoginDelegate?
+    weak var delegate:SocialAppLoginDelegate?
     
     
     override init(frame: CGRect) {
@@ -82,10 +91,10 @@ class ThirdPartLoginView: UIView {
         
         self.sd_addSubviews(views)
         
-        _ = loginTitle.sd_layout().topSpaceToView(self,10)?.centerXEqualToView(self)?.autoHeightRatio(0)
-        _ = weiboBtn.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(loginTitle,20)?.widthIs(witdh/3)?.heightIs(50)
-        _ = weixinBtn.sd_layout().leftSpaceToView(weiboBtn,10)?.topEqualToView(weiboBtn)?.widthRatioToView(weiboBtn,1)?.heightRatioToView(weiboBtn,1)
-        _ = qqBtn.sd_layout().leftSpaceToView(weixinBtn,10)?.topEqualToView(weixinBtn)?.widthRatioToView(weixinBtn,1)?.heightRatioToView(weixinBtn,1)
+        _ = loginTitle.sd_layout().topSpaceToView(self,0)?.centerXEqualToView(self)?.autoHeightRatio(0)
+        _ = weiboBtn.sd_layout().centerXEqualToView(self)?.topSpaceToView(loginTitle,10)?.widthIs(iconWidth)?.autoHeightRatio(1)
+        _ = weixinBtn.sd_layout().leftSpaceToView(weiboBtn,25)?.topEqualToView(weiboBtn)?.widthRatioToView(weiboBtn,1)?.heightRatioToView(weiboBtn,1)
+        _ = qqBtn.sd_layout().rightSpaceToView(weiboBtn,25)?.topEqualToView(weixinBtn)?.widthRatioToView(weixinBtn,1)?.heightRatioToView(weixinBtn,1)
         
         _ = leftLine.sd_layout().leftSpaceToView(self,10)?.rightSpaceToView(loginTitle, 10)?.heightIs(1)?.centerYEqualToView(loginTitle)
         _ = rightLine.sd_layout().rightSpaceToView(self,10)?.leftSpaceToView(loginTitle, 10)?.heightIs(1)?.centerYEqualToView(loginTitle)
@@ -101,16 +110,18 @@ class ThirdPartLoginView: UIView {
 extension ThirdPartLoginView{
     // 第三方登录  判断用户是否安装weibo - app？？？
     @objc private func loginWeixin(){
+        self.delegate?.verifyLoggable(view: self, type: .QQ, respons: UMSocialUserInfoResponse.init())
+
         // 获取能够登录的 用户信息
-        UMSocialManager.default().getUserInfo(with: .wechatSession, currentViewController: nil) { (res, error) in
-            if error != nil {
-                
-            }else{
-                if let response = res as? UMSocialUserInfoResponse{
-                    print(response)
-                }
-            }
-        }
+//        UMSocialManager.default().getUserInfo(with: .wechatSession, currentViewController: nil) { (res, error) in
+//            if error != nil {
+//
+//            }else{
+//                if let response = res as? UMSocialUserInfoResponse{
+//                    print(response)
+//                }
+//            }
+//        }
     }
     
     @objc private func loginWeiBo(){

@@ -35,4 +35,9 @@ extension UIColor{
     class func backAlphaColor() -> UIColor{
         return UIColor.init(r: 34, g: 34, b: 34, alpha: 0.8)
     }
+    
+    // blue color
+    class func autoBlueColor()->UIColor{
+        return UIColor.init(r: 0, g: 134, b: 249)
+    }
 }

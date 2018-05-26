@@ -33,7 +33,6 @@ class pageContentView: UIView {
         layout.itemSize = self.bounds.size
         layout.scrollDirection = .horizontal
         
-        
         let collv = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
         collv.register(UICollectionViewCell.self, forCellWithReuseIdentifier: CollectionCellID)
         collv.showsVerticalScrollIndicator = false
@@ -43,7 +42,6 @@ class pageContentView: UIView {
         collv.dataSource = self
         collv.delegate = self
         collv.scrollsToTop = false
-        
         
         return collv
     }()
@@ -59,7 +57,8 @@ class pageContentView: UIView {
         
         self.addSubview(collectionView)
         collectionView.frame = self.bounds
-        
+        //collectionView.contentSize = CGSize.init(width: self.bounds.width * CGFloat(childVCs.count), height: self.bounds.height)
+
     }
     
     
@@ -81,6 +80,7 @@ extension pageContentView: UICollectionViewDataSource{
         return 1
     }
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell{
+        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionCellID, for: indexPath)
     
         cell.contentView.subviews.forEach { (view) in
@@ -99,9 +99,11 @@ extension pageContentView: UICollectionViewDataSource{
 }
 
 
-extension pageContentView: UICollectionViewDelegate{
+extension pageContentView: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout{
     
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        
+
+     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         isCkick = false
         startOffsetX = scrollView.contentOffset.x
     }
@@ -148,6 +150,9 @@ extension pageContentView{
         let offsetX = CGFloat(currentIndex) * self.collectionView.frame.width
         // 触发scroller方法
         collectionView.setContentOffset(CGPoint.init(x: offsetX, y: 0), animated: false)
+        
+       // print(collectionView.layoutAttributesForItem(at: IndexPath.init(row: currentIndex, section: 0)))
+       // print(collectionView.cellForItem(at: IndexPath.init(row: currentIndex, section: 0)))
     }
     
 }

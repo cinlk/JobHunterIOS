@@ -93,7 +93,7 @@ class LogViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        fetchUserFromDB()
+        //fetchUserFromDB()
     }
     
     
@@ -263,8 +263,8 @@ extension LogViewController{
         //UIApplication.shared.windows.last?.addSubview(startImage)
         
         // 开始动画
-        self.view.addSubview(startImage)
-        self.startImage.isHidden = false
+        //self.view.addSubview(startImage)
+        //self.startImage.isHidden = false
         //self.startImage.startAnimating()
     }
     
@@ -358,7 +358,7 @@ extension LogViewController: UITextFieldDelegate{
 
 
 // 第三方登录代理
-extension LogViewController:thirdPartLoginDelegate{
+extension LogViewController:SocialAppLoginDelegate{
     
     func verifyLoggable(view:UIView, type: UMSocialPlatformType, respons:UMSocialUserInfoResponse){
         // 与服务器交互，判断是否关联了 注册的手机号， 如果是就登录

@@ -14,11 +14,12 @@ class ValidateNumber {
     
     var remainSeconds = 0{
         willSet{
-            self.b?.setTitle("\(newValue)后重新获取", for: .normal)
-            
+            self.b?.setTitle("重新获取(\(newValue))", for: .normal)
+            self.b?.setTitleColor(UIColor.lightGray, for: .normal)
             if newValue <= 0 {
                 self.b?.setTitle("获取验证码", for: .normal)
                 isCounting = false
+                self.b?.setTitleColor(UIColor.blue, for: .normal)
             }
         }
         
