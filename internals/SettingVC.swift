@@ -245,12 +245,20 @@ extension SettingVC {
     
     private func logout(){
         
-       let loginView =  UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "login") as! UserLogginViewController
+      
          // 禁止自动登录
          DBFactory.shared.getUserDB().setLoginAuto(auto: false)
-         self.dismiss(animated: true, completion: {
-                self.present(loginView, animated: true, completion: nil)
-        })
+        // 登录界面进入
+        if  let _ = self.presentingViewController as? LoginNavigationController{
+            self.dismiss(animated: true, completion: nil)
+        }else{
+            // 直接进入
+             let loginView =  UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "loginNav") as! LoginNavigationController
+            
+            self.present(loginView, animated: true, completion: nil)
+        }
+        
+        
         
     }
 }

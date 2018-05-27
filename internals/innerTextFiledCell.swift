@@ -18,7 +18,7 @@ class innerTextFiledCell: UITableViewCell {
         //field.delegate = self
         field.textAlignment = .left
         field.clearButtonMode = .whileEditing
-        field.keyboardType = UIKeyboardType.default
+        field.keyboardType = UIKeyboardType.asciiCapable
         field.font = UIFont.systemFont(ofSize: 16)
         //field.inputAccessoryView = UIToolbar.NumberkeyBoardDone(title: "完成", view: self, selector: #selector(done))
        

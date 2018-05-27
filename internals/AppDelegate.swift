@@ -25,13 +25,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UITabBarItem.appearance().setTitleTextAttributes([NSAttributedStringKey.foregroundColor: selectedColor], for: .selected)
         
         // 初始viewController
-//        let userlogging = UserLogginViewController()
-//        
-//        let nav = UINavigationController.init(rootViewController: userlogging)
-//        window = UIWindow(frame: UIScreen.main.bounds)
-//        window?.makeKeyAndVisible()
-//        window?.rootViewController = nav
-//        
+        let enter = EnterAppViewController()
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.makeKeyAndVisible()
+        window?.rootViewController = enter
+        
         
         // load contacts
        // Contactlist.shared.removeAll()

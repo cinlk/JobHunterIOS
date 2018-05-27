@@ -122,6 +122,12 @@
 		4A4DBBD420B796B80036AD9D /* customerTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBD320B796B80036AD9D /* customerTextField.swift */; };
 		4A4DBBD620B86E3D0036AD9D /* ResetPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBD520B86E3D0036AD9D /* ResetPasswordViewController.swift */; };
 		4A4DBBD820B9694E0036AD9D /* AffiliatedAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBD720B9694E0036AD9D /* AffiliatedAccountViewController.swift */; };
+		4A4DBBDC20B9A5370036AD9D /* EnterAppViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBDB20B9A5370036AD9D /* EnterAppViewController.swift */; };
+		4A4DBBDE20B9A75A0036AD9D /* UserGuideViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBDD20B9A75A0036AD9D /* UserGuideViewController.swift */; };
+		4A4DBBE020B9A8EB0036AD9D /* AdvertiseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBDF20B9A8EB0036AD9D /* AdvertiseViewController.swift */; };
+		4A4DBBE520B9AB090036AD9D /* UserGuidePageItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBE420B9AB090036AD9D /* UserGuidePageItem.swift */; };
+		4A4DBBE720B9AC480036AD9D /* UserGuideItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBE620B9AC480036AD9D /* UserGuideItemCell.swift */; };
+		4A4DBBE920B9B3050036AD9D /* UserGuideLogginCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBE820B9B3050036AD9D /* UserGuideLogginCell.swift */; };
 		4A502CEF20B1C44D00BB71FD /* BaseResumeInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A502CEE20B1C44D00BB71FD /* BaseResumeInfoCell.swift */; };
 		4A502CF120B1C5B100BB71FD /* projectInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A502CF020B1C5B100BB71FD /* projectInfoCell.swift */; };
 		4A502CF320B1C98B00BB71FD /* studentWorkCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A502CF220B1C98B00BB71FD /* studentWorkCell.swift */; };
@@ -461,6 +467,12 @@
 		4A4DBBD320B796B80036AD9D /* customerTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = customerTextField.swift; sourceTree = "<group>"; };
 		4A4DBBD520B86E3D0036AD9D /* ResetPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordViewController.swift; sourceTree = "<group>"; };
 		4A4DBBD720B9694E0036AD9D /* AffiliatedAccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AffiliatedAccountViewController.swift; sourceTree = "<group>"; };
+		4A4DBBDB20B9A5370036AD9D /* EnterAppViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterAppViewController.swift; sourceTree = "<group>"; };
+		4A4DBBDD20B9A75A0036AD9D /* UserGuideViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserGuideViewController.swift; sourceTree = "<group>"; };
+		4A4DBBDF20B9A8EB0036AD9D /* AdvertiseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvertiseViewController.swift; sourceTree = "<group>"; };
+		4A4DBBE420B9AB090036AD9D /* UserGuidePageItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserGuidePageItem.swift; sourceTree = "<group>"; };
+		4A4DBBE620B9AC480036AD9D /* UserGuideItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserGuideItemCell.swift; sourceTree = "<group>"; };
+		4A4DBBE820B9B3050036AD9D /* UserGuideLogginCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserGuideLogginCell.swift; sourceTree = "<group>"; };
 		4A502CEE20B1C44D00BB71FD /* BaseResumeInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseResumeInfoCell.swift; sourceTree = "<group>"; };
 		4A502CF020B1C5B100BB71FD /* projectInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = projectInfoCell.swift; sourceTree = "<group>"; };
 		4A502CF220B1C98B00BB71FD /* studentWorkCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = studentWorkCell.swift; sourceTree = "<group>"; };
@@ -1051,6 +1063,43 @@
 			name = View;
 			sourceTree = "<group>";
 		};
+		4A4DBBDA20B9A46B0036AD9D /* 引导界面 */ = {
+			isa = PBXGroup;
+			children = (
+				4A4DBBE320B9A9B50036AD9D /* mode */,
+				4A4DBBE220B9A9A80036AD9D /* view */,
+				4A4DBBE120B9A9A30036AD9D /* cell */,
+				4A4DBBDB20B9A5370036AD9D /* EnterAppViewController.swift */,
+				4A4DBBDD20B9A75A0036AD9D /* UserGuideViewController.swift */,
+				4A4DBBDF20B9A8EB0036AD9D /* AdvertiseViewController.swift */,
+			);
+			name = "引导界面";
+			sourceTree = "<group>";
+		};
+		4A4DBBE120B9A9A30036AD9D /* cell */ = {
+			isa = PBXGroup;
+			children = (
+				4A4DBBE620B9AC480036AD9D /* UserGuideItemCell.swift */,
+				4A4DBBE820B9B3050036AD9D /* UserGuideLogginCell.swift */,
+			);
+			name = cell;
+			sourceTree = "<group>";
+		};
+		4A4DBBE220B9A9A80036AD9D /* view */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = view;
+			sourceTree = "<group>";
+		};
+		4A4DBBE320B9A9B50036AD9D /* mode */ = {
+			isa = PBXGroup;
+			children = (
+				4A4DBBE420B9AB090036AD9D /* UserGuidePageItem.swift */,
+			);
+			name = mode;
+			sourceTree = "<group>";
+		};
 		4A502CF820B1CBB900BB71FD /* resumeSubItemCell */ = {
 			isa = PBXGroup;
 			children = (
@@ -1635,6 +1684,7 @@
 		4ADCC74E1F511DD3001A4E9F /* internals */ = {
 			isa = PBXGroup;
 			children = (
+				4A4DBBDA20B9A46B0036AD9D /* 引导界面 */,
 				4A2145D0207A4FC1000959F4 /* Main */,
 				4ACC6DB0205BF3C400392252 /* database */,
 				4A686A912049A34200571EB0 /* support */,
@@ -2186,6 +2236,7 @@
 				4A1BA2BA208A2F7600CF8352 /* CommonJobColletionCell.swift in Sources */,
 				4A9CE3681F715F1D002A8FD5 /* DropCarrerClassifyView.swift in Sources */,
 				4A1BA2E7208C3A6B00CF8352 /* OnlineApplyShowViewController.swift in Sources */,
+				4A4DBBE020B9A8EB0036AD9D /* AdvertiseViewController.swift in Sources */,
 				4A5E3FBD2031474B009C1A6B /* extension+dictonary.swift in Sources */,
 				4ADCC7521F511DD3001A4E9F /* logViewController.swift in Sources */,
 				4AFF91DD1F641A8000FE189F /* introductionCell.swift in Sources */,
@@ -2206,6 +2257,7 @@
 				4AFCCD621F9E490400E0E168 /* gifCell.swift in Sources */,
 				4A9CE36C1F716101002A8FD5 /* progressHUB.swift in Sources */,
 				4A444ED31F8F9E44006AE83D /* chatPeople.swift in Sources */,
+				4A4DBBDE20B9A75A0036AD9D /* UserGuideViewController.swift in Sources */,
 				4A502CF120B1C5B100BB71FD /* projectInfoCell.swift in Sources */,
 				4ADDDAB81F98F054001CB00F /* MChatEmotion.swift in Sources */,
 				4A502CEF20B1C44D00BB71FD /* BaseResumeInfoCell.swift in Sources */,
@@ -2213,6 +2265,7 @@
 				4A2145CF20790ED5000959F4 /* ErrorPageView.swift in Sources */,
 				4A9543AD209DDD88009BCBE2 /* JobInviteViewController.swift in Sources */,
 				4AFF91B91F5DB8A900FE189F /* CompanySimpleCell.swift in Sources */,
+				4A4DBBE920B9B3050036AD9D /* UserGuideLogginCell.swift in Sources */,
 				4A82A0DE2027493E00185E8B /* jobInfoCell.swift in Sources */,
 				4A9543B6209DE9C6009BCBE2 /* JobInviteTableViewCell.swift in Sources */,
 				4A30EBEB2083685800231D11 /* ScrollerNewsCell.swift in Sources */,
@@ -2253,6 +2306,7 @@
 				4A82A0E62029D7BF00185E8B /* modifyPersonInfoCell.swift in Sources */,
 				4A4DBBD220B707F50036AD9D /* PasswordLoggingViewController.swift in Sources */,
 				4A1BA2C0208AEB1500CF8352 /* BaseScrollerTableViewCell.swift in Sources */,
+				4A4DBBE520B9AB090036AD9D /* UserGuidePageItem.swift in Sources */,
 				4A22A3A72073D1CE00024C2B /* resumePersonInfoCell.swift in Sources */,
 				4AAB084720B5C8D900BEF38A /* innerTextFiledCell.swift in Sources */,
 				4ADADAAB1FA4C09400134AAE /* quickReplyView.swift in Sources */,
@@ -2282,6 +2336,7 @@
 				4A8859161FF8B5D10009D73D /* extension+uicolor.swift in Sources */,
 				4A22103C203C374A000BDC70 /* aboutUS.swift in Sources */,
 				4AF3D35E20629FB00012EB6E /* subscribeConditionModel.swift in Sources */,
+				4A4DBBDC20B9A5370036AD9D /* EnterAppViewController.swift in Sources */,
 				4A5E3FD120329792009C1A6B /* AddItemCell.swift in Sources */,
 				4A6BC22E1FC711EB002C17B6 /* ChangePasswordModeView.swift in Sources */,
 				4AFCF84A208F847D00F5B96E /* DropValidTimeView.swift in Sources */,
@@ -2314,6 +2369,7 @@
 				4A9543B820A0B52F009BCBE2 /* ForumViewController.swift in Sources */,
 				4A18E1EB202CA03F00B1038E /* TreeNode.swift in Sources */,
 				4AE0DEA41FFBC5AC00A16ED4 /* pagetitleView.swift in Sources */,
+				4A4DBBE720B9AC480036AD9D /* UserGuideItemCell.swift in Sources */,
 				4A9A0BD62003BFB3008721F3 /* visitorCell.swift in Sources */,
 				4A9543D020A83C8E009BCBE2 /* ChatInputView.swift in Sources */,
 				4ACC6DB2205BF49100392252 /* SqliteManager.swift in Sources */,
