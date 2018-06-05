@@ -7,10 +7,11 @@
 //
 
 import UIKit
+import ObjectMapper
+
 
 class SpecialJobVC: BaseTableViewController {
 
-    
     
     // 查询条件
     var queryName:String?{
@@ -22,14 +23,21 @@ class SpecialJobVC: BaseTableViewController {
     
     private var items:[CompuseRecruiteJobs] = []
     
+    
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setViews()
     }
+    
+    
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.insertCustomerView()
+        // 背景颜色
+        self.navigationController?.insertCustomerView(UIColor.orange)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -107,9 +115,8 @@ extension SpecialJobVC{
             Thread.sleep(forTimeInterval: 3)
             
             // 更加名字查询jobs
-            self?.items = [CompuseRecruiteJobs(JSON: ["id":"dqw-dqwd","type":"校招","picture":"car","company":"大秦网"
-                ,"jobName":"隔热计数","address":"上海","salary":"10-15K","create_time":"2018-03-23","education":"本科","tag":["好","不好"]])!, CompuseRecruiteJobs(JSON: ["id":"dqw-dqwd","type":"校招","picture":"car","company":"大秦网"
-                    ,"jobName":"隔热计数","address":"上海","salary":"10-15K","create_time":"2018-03-23","education":"本科","tag":["好","不好"]])!]
+            self?.items = [Mapper<CompuseRecruiteJobs>().map(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dqwd-dqwdqwddqw","name":"码农","address":"北京","create_time":Date().timeIntervalSince1970,"education":"本科","type":"graduate","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false])!, Mapper<CompuseRecruiteJobs>().map(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dqwd-dqwdqwddqw","name":"码农","address":"北京","create_time":Date().timeIntervalSince1970,"education":"本科","type":"graduate","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false])!]
+            
             DispatchQueue.main.async(execute: {
                 self?.didFinishloadData()
                 

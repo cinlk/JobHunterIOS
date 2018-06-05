@@ -12,7 +12,7 @@ fileprivate let condition_jobs:[String:Any] = ["销售/客服":["销售业务":[
 
 
 fileprivate let condition_internSalary =  ["不限","80/天","100/天","150/天","200/天","250/天"]
-fileprivate let condition_salary = ["不限","1000-2000","2000-3000","3000-4000","4000-5000"]
+fileprivate let condition_salary = ["不限","2000元/月以下","2000-5000元/月","5000-10000元/月","10000-15000元/月","15000元/月以上"]
 fileprivate let condition_internDay = ["2天/周","3天/周","4天/周","5天/周"]
 fileprivate let condition_internMonth = ["1个月","2个月","3个月","4个月","5个月","半年","半年以上"]
 
@@ -47,7 +47,6 @@ class component:CustomDebugStringConvertible{
     // 孩子节点选中状态变化通知父节点更新选中状态
     private func callParent(status:Bool){
         if let p = parent{
-            //print(p.selected,p.ChildSelectedCounts,p.key)
             if status{
                 p.ChildSelectedCounts += 1
             }else{

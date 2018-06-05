@@ -123,7 +123,7 @@ class baseWebViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        self.navigationController?.insertCustomerView()
+        self.navigationController?.insertCustomerView(UIColor.orange)
     }
     
     override func viewWillDisappear(_ animated: Bool) {

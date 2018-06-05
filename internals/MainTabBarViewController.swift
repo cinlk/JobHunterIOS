@@ -66,6 +66,7 @@ class MainTabBarViewController: UITabBarController {
         forumNavigate.tabBarItem.image = UIImage.barImage(size: BarImg_Size, offset: CGPoint.zero, renderMode: .automatic, name: "forum")
         
         forumNavigate.tabBarItem.title = "论坛"
+        //self.selectedIndex = 0
         
         addChildViewController(forumNavigate)
         
@@ -83,7 +84,8 @@ class MainTabBarViewController: UITabBarController {
 
     
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-    
+        //tabBar.setItems([item], animated: fa)
+        print(self.selectedIndex)
     }
     
     

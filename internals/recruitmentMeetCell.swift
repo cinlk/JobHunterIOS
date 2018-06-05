@@ -12,6 +12,8 @@ import UIKit
 class recruitmentMeetCell: UITableViewCell {
 
     
+    var selectedIndex:(()->Void)?
+    
     private lazy var baseCollection:BaseCollectionHorizonView = BaseCollectionHorizonView.init(frame: CGRect.zero, column: 1, row: 4)
    
     
@@ -55,7 +57,9 @@ extension recruitmentMeetCell{
         if self.baseCollection.topTitle.text == ""{
             
         }else{
-            print(btn)
+            // 跳转到职位的宣讲会界面
+            
+            self.selectedIndex?()
         }
     }
 }

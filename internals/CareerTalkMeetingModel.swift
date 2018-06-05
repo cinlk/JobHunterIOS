@@ -35,12 +35,9 @@ class CareerTalkMeetingModel: BaseModel  {
     internal var time:String{
         get{
             guard let time = self.start_time else { return "" }
-            let dateFormat = DateFormatter()
-            dateFormat.locale = Locale.current
-            dateFormat.dateFormat = "yyyy-MM-dd HH:mm "
+           
+            return meetingTalkTime(time:time)
             
-            let str = dateFormat.string(from: time)
-            return str
         }
     }
     

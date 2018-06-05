@@ -17,11 +17,19 @@ class OnlineApplyViewController: BasePositionItemViewController {
     // 网申数据
     private var datas:[OnlineApplyModel] = []
     
+    internal var type:String = ""{
+        didSet{
+            // 取消当前的http查询进程，如果有，用新的查询
+            loadData(type)
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
         loadData()
+        // MARK 主界面加载 还是滑动加载？？
+        
         print("网申")
         // Do any additional setup after loading the view.
     }
@@ -137,7 +145,9 @@ extension  OnlineApplyViewController: UITableViewDataSource, UITableViewDelegate
 
 extension OnlineApplyViewController{
     
-    private func loadData(){
+    // 查询不同类型数据
+    private func loadData(_ type:String = ""){
+        
         
         DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
             Thread.sleep(forTimeInterval: 3)

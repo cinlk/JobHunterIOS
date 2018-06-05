@@ -44,6 +44,7 @@ extension EnterAppViewController{
         // 第一次run
         if  UserDefaults.standard.value(forKey: firstRun) == nil {
             
+            // 设置延迟加载，等待主view load 结束
             perform(#selector(showUserGuide), with: nil, afterDelay: 0.03)
                 
         }else{

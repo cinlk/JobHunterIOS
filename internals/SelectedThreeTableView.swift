@@ -11,6 +11,8 @@ import UIKit
 
 
 fileprivate let cellIdentity:String = "cell"
+// 最多5个选择
+fileprivate let count = 5
 
 class SelectedThreeTableView:UIView{
     
@@ -20,7 +22,7 @@ class SelectedThreeTableView:UIView{
     
     lazy var title:UILabel = {
         let title = UILabel.init()
-        title.font = UIFont.systemFont(ofSize: 14)
+        title.font = UIFont.boldSystemFont(ofSize: 16)
         title.textColor = UIColor.black
         title.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         title.textAlignment = .center
@@ -56,7 +58,7 @@ class SelectedThreeTableView:UIView{
         table.dataSource = self
         table.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentity)
         return table
-        }()
+    }()
     
     private lazy var table2:UITableView = {  [unowned self] in
         
@@ -70,7 +72,7 @@ class SelectedThreeTableView:UIView{
         
         return table
         
-        }()
+    }()
     
     private lazy var table3:UITableView = { [unowned self] in
         
@@ -83,7 +85,7 @@ class SelectedThreeTableView:UIView{
         table.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentity)
         return table
         
-        }()
+    }()
     
     private lazy var scroller:UIScrollView = { [unowned self] in
         var scroll = UIScrollView()
@@ -95,14 +97,9 @@ class SelectedThreeTableView:UIView{
         scroll.delegate = self
         scroll.contentSize = CGSize.init(width: ScreenW + ScreenW / 2 , height: self.frame.height - 36)
         return scroll
-        }()
+    }()
     
-    // 当前选择的值
-    private var leftItem:String = "职位类别"
-    private var middleItem:String = ""
-    private var rightItem:String = ""
-    // 最多5个选择
-    private let count = 5
+    
     //最后一层
     private var last:[component] = []
     //中间层
@@ -111,13 +108,25 @@ class SelectedThreeTableView:UIView{
     private var first:[component] = []
     
     private var node:nodes?
-    // 返回的数据
-    var results:[String] = []
+    // 结果数据
+    internal var results:[String] = []
     
-    var mode:(name:String, row:Int)?{
+    //
+    var mode:(title:String ,name:String, row:Int)?{
         didSet{
-            node =  SelectItemUtil.shared.getItems(name: mode!.name)
-            first = node?.getNodeByName(name: mode!.name)?.item ?? []
+            guard  let mode = mode  else {
+                return
+            }
+            self.title.text = mode.title
+            
+            guard let   node =  SelectItemUtil.shared.getItems(name: mode.name) else {
+                return
+            }
+            guard  let firstList = node.getNodeByName(name: mode.name)?.item else {
+                return
+            }
+            self.first = firstList
+            
             
             if first.count > 0{
                 
@@ -164,7 +173,8 @@ class SelectedThreeTableView:UIView{
         scroller.sd_addSubviews([table1,table2,table3])
         
         _ = title.sd_layout().topSpaceToView(self,5)?.centerXEqualToView(self)?.autoHeightRatio(0)
-        _ = confirm.sd_layout().rightSpaceToView(self,5)?.centerYEqualToView(title)?.widthIs(50)?.heightIs(20)
+        _ = confirm.sd_layout().rightSpaceToView(self,5)?.centerYEqualToView(title)?.widthIs(50)?.heightRatioToView(title,1.5)
+        
         _ = line.sd_layout().topSpaceToView(title,5)?.widthIs(ScreenW)?.heightIs(1)
         
         
@@ -214,33 +224,25 @@ extension SelectedThreeTableView: UITableViewDelegate,UITableViewDataSource,UISc
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentity, for: indexPath)
         cell.selectionStyle = .none
         cell.textLabel?.highlightedTextColor = UIColor.blue
+        cell.textLabel?.font = UIFont.systemFont(ofSize: 14)
         if tableView  == table1{
             let currentNode = first[indexPath.row]
             
-            if currentNode.selected{
-                cell.textLabel?.isHighlighted = true
-            }
+            cell.textLabel?.isHighlighted = currentNode.selected
+            
             cell.textLabel?.text  = currentNode.key
             
         }else if tableView == table2{
             let currentNode = middle[indexPath.row]
-            
-            if currentNode.selected{
-                cell.textLabel?.isHighlighted = true
-            }
-            
+            cell.textLabel?.isHighlighted = currentNode.selected
             cell.textLabel?.text = currentNode.key
             
             
             
         }else{
             let currentNode = last[indexPath.row]
-            if currentNode.selected{
-                cell.textLabel?.isHighlighted = true
-                cell.accessoryType = .checkmark
-            }else{
-                cell.accessoryType = .none
-            }
+            cell.textLabel?.isHighlighted = currentNode.selected
+            cell.accessoryType =  currentNode.selected ? .checkmark : .none
             
             cell.textLabel?.text  = currentNode.key
             
@@ -256,22 +258,19 @@ extension SelectedThreeTableView: UITableViewDelegate,UITableViewDataSource,UISc
         }
         if tableView == table1{
             let currentNode = first[indexPath.row]
-            if  currentNode.selected == false{
-                cell.textLabel?.isHighlighted = false
-            }
+            cell.textLabel?.isHighlighted = currentNode.selected
+            
             
         }else if tableView == table2{
             let currentNode = middle[indexPath.row]
-            if currentNode.selected == false{
-                cell.textLabel?.isHighlighted = false
-            }
+            cell.textLabel?.isHighlighted = currentNode.selected
         }else{
         }
         
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 40
+        return 30
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -286,19 +285,18 @@ extension SelectedThreeTableView: UITableViewDelegate,UITableViewDataSource,UISc
             cell.textLabel?.isHighlighted = true
             
             let currentNode = first[indexPath.row]
-            leftItem  = currentNode.key
+           
             // 第二个table 的数据
             middle = currentNode.item
-            //middleItem = ""
+            
             // 刷新第二个table
             table2.reloadData()
-            //table3.reloadData()
             
         }else if tableView == table2{
             cell.textLabel?.isHighlighted = true
             
             let currentNode = middle[indexPath.row]
-            middleItem = currentNode.key
+           
             // 刷新第三个table
             last = currentNode.item
             table3.reloadData()
@@ -317,28 +315,29 @@ extension SelectedThreeTableView{
         
         let currentNode = last[row]
         // 再次点击取消
-        if currentNode.selected == true{
-            currentNode.selected = false
-            cell.textLabel?.isHighlighted = false
-            cell.accessoryType = .none
-            if let  index = results.index(of: (cell.textLabel?.text)!){
+        if currentNode.selected == true, let text = cell.textLabel?.text{
+            if let  index = results.index(of: text){
                 results.remove(at: index)
             }
             
             
         }else{
-            if results.count >= 5{
+            // 提示最多选择5个
+            if results.count >= count{
                 //SVProgressHUD.show(#imageLiteral(resourceName: "warn"), status: "最多选择5个")
                 //SVProgressHUD.dismiss(withDelay: 2)
                 return
             }
+            if let text = cell.textLabel?.text{
+                results.append(text)
+            }
             
-            results.append((cell.textLabel?.text)!)
-            // 更新选中状态，更新父节点选中状态
-            currentNode.selected = true
-            cell.textLabel?.isHighlighted = true
-            cell.accessoryType = .checkmark
         }
+        //更新父节点选中状态
+        currentNode.selected = !currentNode.selected
+        cell.textLabel?.isHighlighted  = currentNode.selected
+        cell.accessoryType  = currentNode.selected ? .checkmark : .none
+        
         
         self.table2.reloadData()
         self.table1.reloadData()

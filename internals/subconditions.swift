@@ -10,33 +10,22 @@ import UIKit
 
 
 
-fileprivate let campus = "campus"
-fileprivate let intern = "intern"
 fileprivate let BottomViewH:CGFloat = 300
-
-
+fileprivate let cellIdentity:String = "cell"
+fileprivate let cellH:CGFloat = 40
 
 protocol subconditionDelegate: class {
-    func addNewConditionItem(item: subscribeConditionModel)
-    func modifyCondition(row:Int, item: subscribeConditionModel )
+    func addNewConditionItem(item: BaseSubscribeModel)
+    func modifyCondition(row:Int, item: BaseSubscribeModel )
 }
 
 class subconditions: UIViewController {
 
-    
-    
-    fileprivate let types:[String] = ["实习", "校招"]
-    fileprivate let initalType:[String:[(String,String)]] = ["实习":[("职位类型","实习"),("城市","(必选)请选择"),("职位类别","(必选)请选择"),("从事行业","不限"),("实习天数","不限"),("实习薪水","不限"),("实习时间","不限"),("学位","不限")],
-        "校招":[("职位类型","校招"),("城市","(必选)请选择"),("职位类别","(必选)请选择"),("从事行业","不限"),("学位","不限"),("薪资范围","不限")]]
-    // 与subscribeConditionModel 数据转化
-    fileprivate var restMapData:[String:String] = ["职位类型":"校招","城市":"(必选)请选择","职位类别":"(必选)请选择","从事行业":"不限","学位":"不限","薪资范围":"不限","实习天数":"不限","实习薪水":"不限","实习时间":"不限"]
-    
     private lazy var table:UITableView = { [unowned self] in
         let table = UITableView.init(frame: self.view.bounds)
         table.separatorStyle = .singleLine
         table.tableFooterView = UIView()
         table.tableHeaderView?.backgroundColor = UIColor.blue
-        table.register(conditionCell.self, forCellReuseIdentifier: conditionCell.identity())
         table.isScrollEnabled = false
         table.delegate = self
         table.dataSource = self
@@ -58,7 +47,7 @@ class subconditions: UIViewController {
         title.textAlignment = .center
         title.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         view.addSubview(title)
-        _ = title.sd_layout().centerXEqualToView(view)?.bottomSpaceToView(view,5)?.autoHeightRatio(0)
+        _ = title.sd_layout().centerXEqualToView(view)?.bottomSpaceToView(view,10)?.autoHeightRatio(0)
         title.setMaxNumberOfLinesToShow(1)
         
         
@@ -89,28 +78,20 @@ class subconditions: UIViewController {
     }()
     
    
-
-
-    // 背景view
-    private lazy var darkView:UIView = { [unowned self] in
-        
-        let darkView = UIView()
-        darkView.frame = CGRect(x: 0, y: 0, width:ScreenW, height:ScreenH)
-        darkView.backgroundColor = UIColor.lightGray
-        darkView.alpha = 0.5
-        darkView.isHidden = true
-        darkView.isUserInteractionEnabled = true // 打开用户交互
-        let singTap = UITapGestureRecognizer(target: self, action:#selector(hidenView)) // 添加点击事件
-        singTap.numberOfTouchesRequired = 1
-        darkView.addGestureRecognizer(singTap)
-        return darkView
+    private lazy var btnBackGround:UIButton = { [unowned self] in
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
+        btn.addTarget(self, action: #selector(hidenView), for: .touchUpInside)
+        btn.backgroundColor = UIColor.lightGray
+        btn.alpha = 0.5
+        btn.isHidden = true
+        return btn
     }()
+  
     
     
     // 一个tableview
     private lazy  var SelectedOne:SelectedOneTablView = { [unowned self] in
         let one =  SelectedOneTablView.init(frame: CGRect(x: 0, y: ScreenH, width: ScreenW, height: BottomViewH))
-        
         one.call  = self.selectOneItem
         return one
     }()
@@ -118,19 +99,11 @@ class subconditions: UIViewController {
     
     // 包含左右2个table的view
     private lazy var SelectedSecond:SelectedTowTableView = {
-
         let second = SelectedTowTableView.init(frame:  CGRect(x: 0, y: ScreenH, width: ScreenW, height: BottomViewH))
         second.call  = selectOneItem
         return second
     }()
     
-    // 包含3个tableview 的界面
-    private lazy var  SelectedThird:SelectedThreeTableView = { [unowned self] in
-        
-        let third = SelectedThreeTableView.init(frame: CGRect(x: 0, y: ScreenH, width: ScreenW, height: BottomViewH))
-        third.call  = self.selectOneItem
-        return third
-    }()
     
     // 状态栏颜色
     override var preferredStatusBarStyle: UIStatusBarStyle{
@@ -139,55 +112,56 @@ class subconditions: UIViewController {
         }
     }
     
-    // 底部弹出界面位置
-    private var centerCategoryY:CGFloat = 0
-
-    private var centerCityY:CGFloat = 0
-    
-    private var centerJobcategorysY:CGFloat = 0
     
     // 修改数据界面不能切换 职位类型
     private var isEdit = false
     // 父view修改订阅条件所在的行数
     private var row:Int = 0
     // 默认显示校招 条目
-    private var type:String = "校招"
+    private var type:subscribeType = .none
     
-    private var currentItems:[(String,String)]  = []
+    private var currentItems:BaseSubscribeModel?{
+        didSet{
+            data = currentItems!.getTypeValue()
+            keys = currentItems!.getKeys()
+        }
+    }
+    
+    // 所有的key
+    fileprivate var keys:[subscribeItemType] = []
+    fileprivate var data:[subscribeItemType:String] = [:]
+    
+    
     
     // 代理回传数据
     weak var delegate:subconditionDelegate?
     
-    var editData:subscribeConditionModel?{
+    var editData:(type:subscribeType, data:BaseSubscribeModel, row:Int)?{
         didSet{
+            guard let edit  = editData else {
+                return
+            }
             isEdit = true
-            type = editData?.type ?? "校招"
-            // 编辑数据 对应table 数据
+            self.row = edit.row
             
-            currentItems = editData!.getAttributes()
-            for item in currentItems{
-                restMapData[item.0] = item.1
+            type = edit.type
+            // 编辑数据 对应table 数据
+            if type == .intern{
+                currentItems = edit.data as? internSubscribeModel
+            }else{
+                currentItems = edit.data as? graduateSubscribeModel
+
             }
             self.table.reloadData()
-            
         }
-    }
-    
-    init(row:Int? = nil) {
-        self.row = row ?? 0
-        if let res = initalType[type]{
-            currentItems = res
-        }
-        super.init(nibName: nil, bundle: nil)
-        
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // 默认是校招
+        type = .graduate
+        currentItems = graduateSubscribeModel(JSON: [:])
+        
         self.setViews()
         
     }
@@ -208,35 +182,35 @@ extension  subconditions:UITableViewDelegate,UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        return  currentItems.count
-        
+        return  data.count
     }
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         
-        let cell =  table.dequeueReusableCell(withIdentifier: conditionCell.identity(), for: indexPath) as! conditionCell
-        cell.mode = currentItems[indexPath.row]
+        let cell = UITableViewCell.init(style: .value1, reuseIdentifier: cellIdentity)
+        cell.selectionStyle = .none
+        cell.accessoryType = .disclosureIndicator
+        cell.textLabel?.text =  keys[indexPath.row].describe
+        cell.detailTextLabel?.text = data[keys[indexPath.row]]
+        cell.detailTextLabel?.textColor = UIColor.lightGray
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 45
+        return cellH
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath) as! conditionCell
-        guard let name = cell.mode?.0 else{
-            return
-        }
+
+        let type =  keys[indexPath.row]
         // 不切换职位类型
         if isEdit && indexPath.row == 0{
             return
         }
-        self.showSelectedView(title:name, row: indexPath.row)
+        self.showSelectedView(type:type, row: indexPath.row)
         
         
     }
@@ -249,53 +223,39 @@ extension subconditions{
     private func setViews(){
         
         table.tableHeaderView = tableHeaderView
-        centerCategoryY = SelectedOne.centerY
-        centerCityY = SelectedSecond.centerY
-        centerJobcategorysY = SelectedThird.centerY
-        
-        
         self.view.addSubview(table)
-        // dartview 在table 前顺序
-        self.view.addSubview(darkView)
+        self.view.addSubview(btnBackGround)
         self.view.addSubview(SelectedOne)
         self.view.addSubview(SelectedSecond)
-        self.view.addSubview(SelectedThird)
     }
     
     
     
     
-    func showSelectedView(title:String, row:Int){
+    func showSelectedView(type:subscribeItemType, row:Int){
         
-        darkView.isHidden = false
-        switch title {
+        btnBackGround.isHidden = false
+        
+        switch type {
             
-        case "职位类型", "学位", "薪资范围", "实习天数", "实习时间", "实习薪水":
-            SelectedOne.title.text = title
-            SelectedOne.mode = (name:title, row:row)
-            SelectedOne.isHidden = false
-            UIView.animate(withDuration: 0.5, animations: {
+        case .type, .degree, .salary, .internDay, .internSalary, .internMonth:
+            
+            SelectedOne.mode = (name:type.describe, row:row)
+            
+            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
                 self.SelectedOne.frame = CGRect.init(x: 0, y: ScreenH - BottomViewH, width: ScreenW, height: BottomViewH)
-            })
-        case "城市","从事行业":
-            SelectedSecond.title.text = title
-            SelectedSecond.mode = (name: title, row: row)
-            SelectedSecond.isHidden = false
-            UIView.animate(withDuration: 0.5, animations: {
-                self.SelectedSecond.frame = CGRect.init(x: 0, y: ScreenH - BottomViewH, width: ScreenW, height: BottomViewH)
-            })
+            }, completion: nil)
+           
+        case .locate, .business:
             
-        case "职位类别":
-            SelectedThird.title.text = title
-            SelectedThird.mode = (name:title,row: row)
-            SelectedThird.isHidden = false
-            UIView.animate(withDuration: 0.5, animations: {
-                self.SelectedThird.frame = CGRect(x: 0, y: ScreenH-BottomViewH, width: ScreenW, height: BottomViewH)
+            SelectedSecond.mode = (name: type.describe, row: row)
+            
+            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                self.SelectedSecond.frame = CGRect.init(x: 0, y: ScreenH - BottomViewH, width: ScreenW, height: BottomViewH)
+                
+            }, completion: nil)
+            
 
-        }, completion: nil)
-        
-        default:
-            return
         }
           
     }
@@ -306,34 +266,32 @@ extension subconditions{
     func selectOneItem(name:String,value:String, row:Int){
         
         self.hidenView()
-        // 切换当前视图
-        if name == "职位类型" && value != type{
-            restMapData["职位类型"] = value
-            type = value
-            currentItems = initalType[type] ?? []
-            self.table.reloadData()
-            clearNodeStatus()
-            // 清楚数据
-            SelectedThird.results.removeAll()
-            
-
-        }else if name == "职位类型" && value == type{}
-            
-        else{
-            // 刷新当前行数据
-            currentItems[row].1 = value
-            restMapData[currentItems[row].0] = value
+        
+        if row == 0 {
+            // 切换数据
+            if value != type.describe{
+                type  = subscribeType(rawValue: value)!
+                if type == .intern{
+                    currentItems =  internSubscribeModel(JSON: [:])
+                }else{
+                    currentItems = graduateSubscribeModel(JSON: [:])
+                }
+                clearNodeStatus()
+                self.table.reloadData()
+            }
+        }else{
+            data[keys[row]] = value
             self.table.reloadRows(at: [IndexPath.init(item: row, section: 0)], with: .automatic)
-            
         }
         
     }
     
+    
+    // 取消被选中的node
     private func clearNodeStatus(){
         
-        // 清楚所有选中类型的node选中状态
-        for (name, _) in restMapData{
-            SelectItemUtil.shared.clearByName(name: name)
+        for (key,_) in data{
+            SelectItemUtil.shared.clearByName(name: key.describe)
         }
         
     }
@@ -346,25 +304,25 @@ extension subconditions{
     // 保存条件数据
     @objc func storage(sender:UIButton){
         
-        
-        if  restMapData["职位类别"] == "(必选)请选择" || restMapData["职位类别"]!.isEmpty{
-            //SVProgressHUD.showError(withStatus: "职位类别不能为空")
-            //SVProgressHUD.dismiss(withDelay: 2)
-            return
+        var res:[String:String] = [:]
+        data.forEach {
+            res[$0.key.rawValue] = $0.value
         }
-        if restMapData["城市"] == "(必选)请选择" || restMapData["城市"]!.isEmpty{
-            //SVProgressHUD.showError(withStatus: "城市不能为空")
-            //SVProgressHUD.dismiss(withDelay: 2)
-            return
+        
+        switch type {
+        case .intern:
+            currentItems = internSubscribeModel(JSON: res)
+        case .graduate:
+            currentItems = graduateSubscribeModel(JSON: res)
+        default:
+            break
         }
         
 
-        guard  let item = subscribeConditionModel(JSON: [:]) else{ return }
-        item.transForData(target: restMapData)
         if isEdit{
-            self.delegate?.modifyCondition(row: self.row, item: item)
+            self.delegate?.modifyCondition(row: self.row, item: currentItems!)
         }else{
-            self.delegate?.addNewConditionItem(item: item)
+            self.delegate?.addNewConditionItem(item: currentItems!)
         }
         
         clearNodeStatus()
@@ -377,15 +335,11 @@ extension subconditions{
     }
     
     @objc func hidenView(){
-        darkView.isHidden = true
-        UIView.animate(withDuration: 0.5, animations: {
-            
-            self.SelectedOne.centerY =  self.centerCategoryY
-            self.SelectedSecond.centerY  = self.centerCityY
-            self.SelectedThird.centerY = self.centerJobcategorysY
-            self.SelectedOne.isHidden = true
-            self.SelectedSecond.isHidden = true
-            self.SelectedThird.isHidden = true
+        btnBackGround.isHidden = true
+        
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.SelectedOne.origin.y = ScreenH
+            self.SelectedSecond.origin.y = ScreenH
             
         }, completion: nil)
 

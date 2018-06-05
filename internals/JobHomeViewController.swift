@@ -16,6 +16,32 @@ class JobHomeVC: UIViewController {
 
     
     
+    private lazy var curentIndex:Int = 0
+    
+    internal var scrollToindex2:Bool?{
+        didSet{
+            if scrollToindex2!{
+                self.pageContent.moveToIndex(2)
+               
+                self.pageTitleView.changeTitleWithProgress(1, sourceIndex: curentIndex, targetIndex: 2)
+                 curentIndex = 2
+
+            }
+        }
+    }
+    
+    internal var scrollToindex:Bool?{
+        didSet{
+            if scrollToindex!{
+                self.pageContent.moveToIndex(0)
+                self.pageTitleView.changeTitleWithProgress(1, sourceIndex: curentIndex, targetIndex: 0)
+                curentIndex = 0
+                
+            }
+        }
+    }
+    
+    
     // navigationbar 背景view
     private lazy var navBackView:UIView = {
         let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH))
@@ -57,7 +83,7 @@ class JobHomeVC: UIViewController {
         return view
     }()
     
-    private var childVC:[UIViewController] = []
+    internal var childVC:[UIViewController] = []
 
     // 内容vc
     private lazy var pageContent:pageContentView = { [unowned self] in
@@ -153,12 +179,14 @@ extension JobHomeVC {
 extension JobHomeVC: pagetitleViewDelegate{
     
     func ScrollContentAtIndex(index: Int, _ titleView: pagetitleView) {
+        curentIndex = index
         self.pageContent.moveToIndex(index)
      }
 }
 // page 内容代理
 extension JobHomeVC: PageContentViewScrollDelegate{
     func pageContenScroll(_ contentView: pageContentView, progress: CGFloat, sourcIndex: Int, targetIndex: Int) {
+        curentIndex = targetIndex
         self.pageTitleView.changeTitleWithProgress(progress, sourceIndex: sourcIndex, targetIndex: targetIndex)
     }
 }

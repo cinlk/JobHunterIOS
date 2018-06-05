@@ -193,7 +193,7 @@ class baseSearchViewController: UISearchController{
         button.titleLabel?.adjustsFontSizeToFitWidth = false
         button.autoresizesSubviews = true
         button.frame = CGRect.init(x: 5, y: 4.5, width: 30, height: 20)
-        button.addTarget(self, action: #selector(cityClick), for: .touchUpInside)
+        //button.addTarget(self, action: #selector(cityClick), for: .touchUpInside)
         return button
         
     }()
@@ -250,7 +250,6 @@ class baseSearchViewController: UISearchController{
     }
     
     
-    var chooseCity:(()->Void)?
     
     
 
@@ -355,9 +354,6 @@ class baseSearchViewController: UISearchController{
 
     }
     
-    @objc func cityClick(){
-       self.chooseCity?()
-    }
     
 }
 

@@ -154,10 +154,11 @@ class mainPageServer {
             res.append(CareerTalkMeetingModel(JSON: ["id":"dqw-dqwd","companyModel":["id":"com-dqwd-5dq",
                                                                                      "icon":"sina","name":"公司名字","describe":"达瓦大群-dqwd","isValidate":true,"isCollected":false],
                                                      "college":"北京大学","address":"教学室二"
-                ,"isValidate":true,"isCollected":false,"icon":"car","start_time":Date().timeIntervalSince1970,
+                ,"isValidate":true,"isCollected":false,"icon":"car","start_time":Date().timeIntervalSince1970 + TimeInterval (arc4random()%(7 * 60 * 60 * 24)),
                  "name":"北京高华证券有限责任公司宣讲会但钱当前无多群","source":"上海交大",
                  "content":"举办方：电院举办时间：2018年4月25日 18:00~20:00  \n举办地点：上海交通大学 - 上海市东川路800号电院楼群3-100会议室 单位名称：北京高华证券有限责任公司 联系方式：专业要求：不限、信息安全类、自动化类、计算机类、电子类、软件工程类"])!)
         }
+        
         
         return Observable.just(res)
         
@@ -165,12 +166,12 @@ class mainPageServer {
     
     //
     public func getHotApplyOnlines()->Observable<[applyOnlineModel]>{
-        return Observable.just([applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"独角兽"])!,
+        return Observable.just([applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"金融行业"])!,
+                                applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"能源行业"])!,
+                                applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"教育行业"])!,
+                                applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"互联网行业"])!,
                                 applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"独角兽"])!,
-                                applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"独角兽"])!,
-                                applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"独角兽"])!,
-                                applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"独角兽"])!,
-                                applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"独角兽"])!])
+                                applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"制造业"])!])
     }
     
     // MARK 搜索校招和实习职位

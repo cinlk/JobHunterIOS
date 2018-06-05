@@ -9,6 +9,7 @@
 import UIKit
 
 fileprivate let cellIdentity:String = "cell"
+fileprivate let all:String = "不限"
 
 class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
     
@@ -22,7 +23,7 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
         table.dataSource = self
         table.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentity)
         return table
-        }()
+    }()
     
     private lazy var righttable:UITableView = { [unowned self] in
         var table = UITableView()
@@ -33,17 +34,17 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
         table.dataSource = self
         table.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentity)
         return table
-        }()
+    }()
     
     
     lazy var title:UILabel = {
         let label = UILabel()
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW/2)
         label.textAlignment = .left
-        label.font = UIFont.systemFont(ofSize: 16)
-        
+        label.font = UIFont.boldSystemFont(ofSize: 16)
         return label
     }()
+    
     private lazy  var line:UIView = {
         let v = UIView()
         v.backgroundColor = UIColor.lightGray
@@ -54,7 +55,7 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
     // 数据回传回调
     var call:((_ name:String,_ value: String, _ row:Int)->Void)?
     
-    var node:nodes?
+    private var node:nodes?
     
     
     private lazy var first:[component] = []
@@ -62,10 +63,20 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
     // MARK: 记录修改值状态数据
     var mode:(name:String,row:Int)?{
         didSet{
+            guard let mode = mode else {
+                return
+            }
             
-            node = SelectItemUtil.shared.getItems(name: mode!.name)
-            first = node?.getNodeByName(name: mode!.name)?.item ?? []
+            guard let   node = SelectItemUtil.shared.getItems(name: mode.name) else {
+                return
+            }
             
+            guard let  firstList = node.getNodeByName(name: mode.name)?.item else {
+                return
+            }
+            self.title.text = mode.name
+            
+            self.first = firstList
             
             if first.count > 0 {
                 // 默认第一个父节点的孩子nodes
@@ -120,27 +131,28 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
         return 1
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 40
+        return 30
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell =  tableView.dequeueReusableCell(withIdentifier: cellIdentity, for: indexPath)
-        cell.textLabel?.textColor  = UIColor.black
+       
         cell.textLabel?.highlightedTextColor  = UIColor.blue
+        cell.textLabel?.font = UIFont.systemFont(ofSize: 14)
         cell.selectionStyle = .none
         
         if tableView  == lefttable{
             let currentNode = first[indexPath.row]
             cell.textLabel?.text  = currentNode.key
             
-            cell.textLabel?.isHighlighted = currentNode.selected ? true : false
+            cell.textLabel?.isHighlighted = currentNode.selected
             
             
         }else{
             let currentNode = second[indexPath.row]
             cell.textLabel?.text  = currentNode.key
-            cell.textLabel?.isHighlighted = currentNode.selected ? true : false
+            cell.textLabel?.isHighlighted = currentNode.selected
             cell.accessoryType = currentNode.selected ? .checkmark : .none
         }
         
@@ -151,20 +163,14 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if tableView == lefttable{
-            return  first.count
-        }
-        
-        return  second.count
+        return tableView == lefttable ? first.count :  second.count
     }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath)
         if tableView == lefttable{
             let curretNode = first[indexPath.row]
-            if curretNode.selected == false{
-                cell?.textLabel?.isHighlighted = false
-            }
+            cell?.textLabel?.isHighlighted = curretNode.selected
         }
     }
     
@@ -175,13 +181,11 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
         let cell = tableView.cellForRow(at: indexPath)
         
         if tableView  == lefttable{
-            guard  first.count > 0 else {
-                return
-            }
+           
             let currentNode = first[indexPath.row]
             leftValue  =  currentNode.key
             // 返回数据
-            if leftValue == "不限"{
+            if leftValue == all{
                 self.call?(title.text!, leftValue, mode!.row)
                 return
             }
@@ -191,7 +195,7 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
             self.righttable.reloadData()
             
         }else{
-            // 取消之前被选中节点状态
+            // 取消之前被选中节点状态,包括子节点
             for node in first{
                 resetTableItemStatus(node: node)
             }

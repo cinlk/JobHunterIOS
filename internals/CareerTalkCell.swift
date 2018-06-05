@@ -11,13 +11,17 @@ import UIKit
 
 fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
 
+
+
 @objcMembers class CareerTalkCell: UITableViewCell {
 
+    
     
     private lazy var icon:UIImageView = {
         let img = UIImageView()
         img.contentMode = .scaleToFill
         img.clipsToBounds = true
+        
         return img
         
     }()
@@ -35,8 +39,8 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
     private lazy var time:UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.textColor = UIColor.lightGray
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textColor = UIColor.blue
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
         return label
     }()
@@ -74,6 +78,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
         didSet{
             self.icon.image = UIImage.init(named: mode!.icon)
             self.company.text = mode?.companyModel?.name
+            
             self.time.text = mode?.time
             self.collage.text = mode?.college
             self.address.text = mode?.address
@@ -93,7 +98,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
         _ = type.sd_layout().topSpaceToView(time,10)?.rightEqualToView(time)?.autoHeightRatio(0)
         
         _ = collage.sd_layout().leftEqualToView(company)?.topSpaceToView(company,5)?.autoHeightRatio(0)
-        _ = address.sd_layout().leftEqualToView(collage)?.topSpaceToView(collage,5)?.autoHeightRatio(0)
+        _ = address.sd_layout().leftSpaceToView(collage, 10)?.topEqualToView(collage)?.autoHeightRatio(0)
         
     }
     

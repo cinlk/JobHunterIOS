@@ -213,3 +213,34 @@ enum forumType:String{
 }
 
 
+// 新闻类型
+enum newsType {
+    case toutiao(name:String, url:String)
+    case zhuanlan(name:String, url:String)
+    
+    case none 
+}
+
+
+enum subscribeType:String {
+    case graduate = "校招"
+    case intern = "实习"
+    case none
+    
+    var describe:String{
+        get{
+            switch self {
+            case .graduate:
+                return "校招"
+            case .intern:
+                return "实习"
+                
+            default:
+                return ""
+            
+            }
+        }
+    
+    }
+}
+

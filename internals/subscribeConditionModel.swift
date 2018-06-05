@@ -9,54 +9,102 @@
 import UIKit
 import ObjectMapper
 
-class subscribeConditionModel: NSObject,  Mappable {
-    
-    var type:String?
-    var des:[String]?
-    var locate:String?
-    var salary:String?
-    var business:String?
-    var internDay:String?
-    var degree:String?
-    var internMonth:String?
-    var internSalary:String?
+
+
+
+class BaseSubscribeModel: NSObject, Mappable{
+    var type:String = "校招"
+    var locate:String = "不限"
+    var business:String = "不限"
     
     required init?(map: Map) {
         
     }
     
-     func mapping(map: Map) {
-        
+    func mapping(map: Map) {
         type <- map["type"]
-        des <- map["des"]
         locate <- map["locate"]
-        salary <- map["salary"]
         business <- map["business"]
+    }
+    
+    
+    func getTypeValue() -> [subscribeItemType:String]{
+        
+        return [:]
+    }
+    
+    func getKeys()->[subscribeItemType]{
+        return []
+    }
+    
+    
+}
+
+
+class graduateSubscribeModel: BaseSubscribeModel{
+    
+    var salary:String = "不限"
+    var degree:String = "不限"
+    
+    
+   
+    
+    required init?(map: Map) {
+        super.init(map: map)
+    }
+    
+    override func mapping(map: Map) {
+        super.mapping(map: map)
+        salary <- map["salary"]
+        degree <- map["degree"]
+    }
+    
+    override func getTypeValue() -> [subscribeItemType : String] {
+        self.type = "校招"
+        return [.type:self.type, .locate:self.locate, .business: self.business,
+                .salary: self.salary, .degree: self.degree]
+    }
+    
+    override func getKeys() -> [subscribeItemType] {
+        return [.type, .locate, .business, .salary, .degree]
+    }
+    
+    
+    
+    
+}
+
+class internSubscribeModel: BaseSubscribeModel{
+    
+    
+
+    var internDay:String = "不限"
+    var degree:String = "不限"
+    var internMonth:String = "不限"
+    var internSalary:String = "不限"
+    
+    required init?(map: Map) {
+        super.init(map: map)
+    }
+    
+    override func mapping(map: Map) {
+        super.mapping(map: map)
         internDay <- map["internDay"]
         degree <- map["degree"]
         internMonth <- map["internMonth"]
         internSalary <- map["internSalary"]
+        
     }
     
-    func getAttributes()->[(String,String)]{
-        if self.type == "校招"{
-            return [("职位类型",type!),("城市", locate!),("职位类别",des!.joined(separator: "+")),("从事行业", business!),("学位",degree!),("薪资范围",salary!)]
-        }
-        return [("职位类型",type!),("城市",locate!),("职位类别",des!.joined(separator: "+")),("从事行业",business!),("实习天数",internDay!),("实习薪水",internSalary!),("实习时间",internMonth!),("学位",degree!)]
+    override func getTypeValue() -> [subscribeItemType : String] {
+        self.type = "实习"
+        return [.type:self.type, .locate:self.locate, .business: self.business,
+                .internDay: self.internDay, .degree: self.degree, .internMonth: self.internMonth,
+                .internSalary: self.internSalary]
     }
-    func transForData(target:[String:String]){
-        self.type = target["职位类型"] ?? ""
-        self.locate = target["城市"] ?? ""
-        self.des = target["职位类别"]?.components(separatedBy: "+")
-        self.business = target["从事行业"] ?? ""
-        self.degree = target["学位"] ?? ""
-        if self.type == "实习"{
-            self.internDay = target["实习天数"]
-            self.internMonth = target["实习时间"]
-            self.internSalary = target["实习薪水"]
-        }else{
-            self.salary = target["薪资范围"]
-        }
+    
+    override func getKeys() -> [subscribeItemType] {
+        return [.type, .locate, .business, .degree, .internDay, .internMonth, .internSalary]
     }
     
 }

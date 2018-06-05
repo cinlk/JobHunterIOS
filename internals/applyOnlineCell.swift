@@ -15,6 +15,9 @@ class applyOnlineCell: UITableViewCell {
     private lazy var collect:BaseCollectionHorizonView = BaseCollectionHorizonView.init(frame: CGRect.zero, column: 2, row: 2)
     
     
+    internal var selectedIndex:((_ name:String)->Void)?
+    
+
     var mode:(title:String, items:[applyOnlineModel])?{
         didSet{
                 self.collect.topTitle.text = mode?.title
@@ -49,7 +52,7 @@ class applyOnlineCell: UITableViewCell {
 
 extension applyOnlineCell{
     @objc private func showAll(_ btn:UIButton) {
-        print(btn)
+        self.selectedIndex?("")
         
     }
 }
@@ -75,7 +78,9 @@ extension applyOnlineCell:UICollectionViewDelegateFlowLayout, UICollectionViewDe
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         //self.delegate?.chooseItem(index: indexPath.row)
-        print(indexPath)
+        // 跳转到 网申界面，显示所有对应项
+        self.selectedIndex?(mode!.title)
+        //print(indexPath)
     }
     
     

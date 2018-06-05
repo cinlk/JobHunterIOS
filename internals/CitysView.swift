@@ -193,9 +193,7 @@ class CityViewController:UICollectionViewController, UICollectionViewDelegateFlo
             let cell = collectionView.cellForItem(at: indexPath) as! CollectionTextCell
             let city = cell.name.text ?? "全国"
             self.navigationController?.popViewController(animated: true)
-            if let main = self.navigationController?.topViewController as? DashboardViewController{
-                main.currentCity = city
-            }
+            
 
         }
     }

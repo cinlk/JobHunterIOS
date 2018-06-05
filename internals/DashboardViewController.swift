@@ -20,7 +20,7 @@ import MBProgressHUD
 fileprivate let tableSection = 6
 fileprivate let thresholds:CGFloat = -80
 fileprivate let tableBottomInset:CGFloat = 50
-fileprivate let tableViewH:CGFloat = 180
+fileprivate let tableViewH:CGFloat = 200
 
 //
 protocol UISearchRecordDelegatae : class {
@@ -52,14 +52,8 @@ class DashboardViewController: BaseViewController{
     // 搜索控制组件
     private weak var searchController:baseSearchViewController?
     
-    
-    // 当前城市
-    var currentCity = ""{
-        didSet{
-            self.refreshByCity(city: currentCity)
-        }
-    }
-    
+   
+ 
     // 轮播图数据
     private var rotateText:[String] = []
     
@@ -118,12 +112,13 @@ class DashboardViewController: BaseViewController{
     // 选择城市VC
     private lazy var cityVC:CityViewController = CityViewController()
     
+  
+    
     
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        
-        // init view
+      
         self.setViews()
         // viewmodel
         self.loadViewModel()
@@ -205,13 +200,6 @@ class DashboardViewController: BaseViewController{
         self.definesPresentationContext  = true
         
         searchController  = baseSearchViewController.init(searchResultsController: searchResultController())
-        // 选择城市回调
-        searchController?.chooseCity = { [weak self] in
-            
-            //self?.hidesBottomBarWhenPushed = true
-            self?.navigationController?.pushViewController((self?.cityVC)!, animated: true)
-            //self?.hidesBottomBarWhenPushed = false
-        }
         
             
         // 主页搜索menu 选项
@@ -294,7 +282,12 @@ extension DashboardViewController: UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0{
-            print(indexPath)
+            // 显示头条界面
+            let news = MagazineViewController()
+            news.hidesBottomBarWhenPushed = true
+            news.dataType = .toutiao(name: "测试", url: "测试")
+            
+            self.navigationController?.pushViewController(news, animated: true)
         }
     }
     
@@ -340,8 +333,8 @@ extension DashboardViewController: UITableViewDelegate{
                 if let cell = table.dequeueReusableCell(withIdentifier: sectionCellView.identity(), for: idxPath) as? sectionCellView{
                     cell.mode = "推荐职位"
                     cell.SectionTitle.font = UIFont.systemFont(ofSize: 16)
+                    // 我的订阅
                     cell.action = {
-                        // 订阅条件
                         let subscribleView = subscribleItem()
                         subscribleView.hidesBottomBarWhenPushed = true
                         self.navigationController?.pushViewController(subscribleView, animated: true)
@@ -360,6 +353,7 @@ extension DashboardViewController: UITableViewDelegate{
                 return cell
                 //return UITableViewCell()
                 
+            // 特别职位
             case let .catagoryItem(imageNames):
                 
                 let cell:MainJobCategoryCell = table.dequeueReusableCell(withIdentifier: MainJobCategoryCell.identity()) as! MainJobCategoryCell
@@ -390,11 +384,39 @@ extension DashboardViewController: UITableViewDelegate{
             case let .recruimentMeet(list: meets):
                 let cell = table.dequeueReusableCell(withIdentifier: recruitmentMeetCell.identity()) as! recruitmentMeetCell
                 cell.mode = (title:"热门宣讲会",item:meets)
-               
+                cell.selectedIndex = {
+                    self.tabBarController?.selectedIndex = 1
+                    //self.tabBarController?.viewControllers[1]
+                    if let nav = self.tabBarController?.viewControllers?[1] as?  UINavigationController, let target = nav.viewControllers[0] as? JobHomeVC{
+                        target.scrollToindex2 = true
+                    }
+                    
+                }
                 return cell
             case let .applyonline(list: applys):
                 let cell = table.dequeueReusableCell(withIdentifier: applyOnlineCell.identity()) as!  applyOnlineCell
                 cell.mode = (title:"热门网申", items: applys)
+               
+                cell.selectedIndex = { name in
+                    // 切换tab 的item
+                    self.tabBarController?.selectedIndex = 1
+                    
+                    
+                    if let nav = self.tabBarController?.viewControllers?[1] as?  UINavigationController, let target = nav.viewControllers[0] as? JobHomeVC{
+                       
+                        //perform(#selecto, with: <#T##Any?#>, afterDelay: <#T##TimeInterval#>)
+                        // 登录jobhome 加载完后 才有chidlvc
+                        target.scrollToindex = true 
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+                            // 查询某个行业的数据
+                            
+                            if !name.isEmpty, let vc = target.childVC[0] as? OnlineApplyViewController {
+                                vc.type = name
+                            }
+                        })
+                        
+                    }
+                }
                 return cell
             //MARK  不显示 job 数据
             case let .campuseRecruite(jobs):
@@ -512,16 +534,7 @@ extension DashboardViewController: UISearchBarDelegate{
 
 
 
-extension DashboardViewController{
-    
-    
-    // 刷新城市
-    private func refreshByCity(city:String){
-        self.searchController?.changeCityTitle(title: city)
-        //MARK refresh table
-    }
 
-}
 
 
 // scroll

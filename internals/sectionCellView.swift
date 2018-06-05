@@ -18,7 +18,7 @@ import UIKit
         return label
     }()
     
-    private lazy var rightBtn:UIButton = { [unowned self] in
+    lazy var rightBtn:UIButton = { [unowned self] in
         let btn = UIButton()
         btn.setTitle("我的订阅", for: .normal)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
@@ -39,7 +39,7 @@ import UIKit
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
-        self.contentView.backgroundColor = UIColor.lightGray
+        self.contentView.backgroundColor = UIColor.clear
         self.contentView.addSubview(SectionTitle)
         self.contentView.addSubview(rightBtn)
         

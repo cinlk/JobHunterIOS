@@ -10,6 +10,7 @@ import UIKit
 
 
 fileprivate let cellIdentity = "cell"
+fileprivate let cellH: CGFloat = 30
 
 class SelectedOneTablView:UIView,UITableViewDelegate,UITableViewDataSource{
     
@@ -28,10 +29,10 @@ class SelectedOneTablView:UIView,UITableViewDelegate,UITableViewDataSource{
         table.separatorStyle = .singleLine
         return table
         
-        }()
-    lazy var title:UILabel = {
+    }()
+    private  lazy var title:UILabel = {
         let title = UILabel.init(frame: CGRect.zero)
-        title.font = UIFont.systemFont(ofSize: 14)
+        title.font = UIFont.boldSystemFont(ofSize: 16)
         title.textAlignment = .center
         title.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         return title
@@ -44,12 +45,24 @@ class SelectedOneTablView:UIView,UITableViewDelegate,UITableViewDataSource{
         return line
     }()
     // 数据
-    private var dataList:[component]?
+    private var dataList:[component] = []
     
     var mode:(name:String,row:Int)?{
         didSet{
-            let node = SelectItemUtil.shared.getItems(name: mode!.name)
-            dataList = node?.getNodeByName(name: mode!.name)?.item ?? []
+            guard let mode = mode else {
+                return
+            }
+            guard  let node = SelectItemUtil.shared.getItems(name: mode.name) else {
+                return
+            }
+            
+            guard let  list = node.getNodeByName(name: mode.name)?.item else {
+                return
+            }
+            self.dataList = list
+            
+            self.title.text = mode.name
+            
             self.table.reloadData()
         }
     }
@@ -86,7 +99,7 @@ class SelectedOneTablView:UIView,UITableViewDelegate,UITableViewDataSource{
         return 1
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataList?.count ?? 0
+        return dataList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -94,21 +107,19 @@ class SelectedOneTablView:UIView,UITableViewDelegate,UITableViewDataSource{
         cell.textLabel?.font  = UIFont.systemFont(ofSize: 14)
         cell.textLabel?.highlightedTextColor = UIColor.blue
         // 节点被选中
-        if let currentNode = dataList?[indexPath.row]{
-            cell.textLabel?.text = currentNode.key
-            cell.textLabel?.isHighlighted =  currentNode.selected ? true : false
-            cell.accessoryType = currentNode.selected ? .checkmark : .none
-        }
+        let currentNode = dataList[indexPath.row]
+        cell.textLabel?.text = currentNode.key
+        cell.textLabel?.isHighlighted =  currentNode.selected
+        cell.accessoryType = currentNode.selected ? .checkmark : .none
+        
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        guard let data = dataList else {
-            return
-        }
-        resetTableItemStatus(data: data)
+       
+        resetTableItemStatus(data: dataList)
         // 被选中节点
-        let currentNode = data[indexPath.row]
+        let currentNode = dataList[indexPath.row]
         currentNode.selected = true
         self.call?(title.text!, currentNode.key, mode!.row)
         
@@ -117,7 +128,7 @@ class SelectedOneTablView:UIView,UITableViewDelegate,UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return  45
+        return cellH
     }
     
     private func resetTableItemStatus(data: [component]){

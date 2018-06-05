@@ -12,17 +12,19 @@ import Foundation
 extension UINavigationController{
     
     
-     func insertCustomerView(){
+    func insertCustomerView(_ color: UIColor? = nil){
         
         if self.view.viewWithTag(10) == nil{
             let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH))
             // naviagtionbar 默认颜色
-            v.backgroundColor = UIColor.navigationBarColor()
+            v.backgroundColor =  color ?? UIColor.navigationBarColor()
             v.tag  = 10
             self.view.insertSubview(v, at: 1)
         }
         
     }
+    
+    
     
     func removeCustomerView(){
         if let v = self.view.viewWithTag(10){

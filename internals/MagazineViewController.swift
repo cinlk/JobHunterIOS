@@ -11,6 +11,14 @@ import UIKit
 class MagazineViewController: BaseViewController {
 
     
+    internal var dataType:newsType  = .none{
+        didSet{
+            
+            loadData()
+        }
+    }
+    
+    
     private var modes:[MagazineModel] = []
     
     private lazy var table:UITableView = { [unowned self] in
@@ -28,7 +36,7 @@ class MagazineViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
-        loadData()
+        
         
 
         // Do any additional setup after loading the view.
@@ -36,13 +44,18 @@ class MagazineViewController: BaseViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.navigationController?.insertCustomerView(UIColor.orange)
+        
         self.title = "专栏"
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        self.navigationController?.removeCustomerView()
+        
         self.title = ""
     }
+    
     
     
     
@@ -77,6 +90,13 @@ extension MagazineViewController{
         
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             Thread.sleep(forTimeInterval: 2)
+            guard let type = self?.dataType else { return }
+            switch type{
+                case let .toutiao(name, url):
+                    print(name, url)
+                default:
+                    break
+            }
             
             for _ in 0..<12{
                 self?.modes.append(MagazineModel(JSON: ["title":"这是比当前为多群无多群dqwd当前为多群多多群无多群",
