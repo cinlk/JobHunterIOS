@@ -273,7 +273,7 @@ private class tableHeader:UIView{
             
             self.icon.image = UIImage.init(named: mode!.companyModel!.icon)
             self.address.text = mode?.positionAddress?.joined(separator: " ")
-            self.time.text = mode?.end_time
+            self.time.text = mode?.endTimeStr
             self.name.text = mode?.companyModel?.name
             self.setupAutoHeight(withBottomViewsArray: [icon,time], bottomMargin: 10)
         }

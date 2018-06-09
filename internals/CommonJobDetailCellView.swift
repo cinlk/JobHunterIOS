@@ -14,6 +14,8 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
 @objcMembers class CommonJobDetailCellView: UIView{
 
     
+    // 控制 标签显示
+    internal var showTag:Bool = true
     
     private lazy var icon:UIImageView = {
         let image = UIImageView.init()
@@ -49,7 +51,8 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
         label.font = UIFont.systemFont(ofSize: 12)
         label.textAlignment = .left
         label.textColor = UIColor.black
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
+        // 留出空白给标签
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 40)
         return label
     }()
     
@@ -106,8 +109,12 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
             
             icon.image = UIImage.init(named: mode.icon)
             
-            interTag.isHidden =  type == .intern ? false : true
-           
+            
+            if showTag{
+                interTag.isHidden  = type == .intern ? false : true
+            }
+            
+            
             company.text = mode.companyID
 
             jobName.text = mode.name

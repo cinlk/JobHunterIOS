@@ -10,19 +10,19 @@ import UIKit
 
 
 fileprivate let titlePageH:CGFloat = 35
-fileprivate let topColor = UIColor.init(r: 231, g: 41, b: 46, alpha: 1)
+fileprivate let titles:[String] = ["网申","校招","宣讲会","公司","实习"]
+fileprivate let topColor =  UIColor.init(r: 231, g: 41, b: 46, alpha: 1)
 
 class JobHomeVC: UIViewController {
 
     
-    
     private lazy var curentIndex:Int = 0
     
+    // 跳转到宣讲会
     internal var scrollToindex2:Bool?{
         didSet{
             if scrollToindex2!{
                 self.pageContent.moveToIndex(2)
-               
                 self.pageTitleView.changeTitleWithProgress(1, sourceIndex: curentIndex, targetIndex: 2)
                  curentIndex = 2
 
@@ -30,6 +30,7 @@ class JobHomeVC: UIViewController {
         }
     }
     
+    // 跳转到网申
     internal var scrollToindex:Bool?{
         didSet{
             if scrollToindex!{
@@ -42,12 +43,7 @@ class JobHomeVC: UIViewController {
     }
     
     
-    // navigationbar 背景view
-    private lazy var navBackView:UIView = {
-        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH))
-        view.backgroundColor = topColor
-        return view
-    }()
+ 
     
     
     
@@ -68,12 +64,10 @@ class JobHomeVC: UIViewController {
     
     
     
-    private var titles:[String] = ["网申","校招","宣讲会","公司","实习"]
     
     // 滑动栏
     private lazy var pageTitleView: pagetitleView = {  [unowned self] in
-        let view = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: titlePageH), titles: self.titles,
-                                      lineCenter:true)
+        let view = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: titlePageH), titles: titles,lineCenter:true)
         view.delegate = self
         view.backgroundColor = topColor
         // 设置属性
@@ -122,7 +116,7 @@ class JobHomeVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.navigationBar.settranslucent(true)
-        self.navigationController?.view.insertSubview(navBackView, at: 1)
+        self.navigationController?.insertCustomerView(topColor)
         
     }
     
@@ -135,7 +129,7 @@ class JobHomeVC: UIViewController {
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navBackView.removeFromSuperview()
+        self.navigationController?.removeCustomerView()
         self.navigationItem.title = ""
     }
     
@@ -252,8 +246,7 @@ extension JobHomeVC: UISearchBarDelegate{
     
     
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
-        print("begin edit")
-        self.searchController.popMenuView.dismiss()
+       
         return true
     }
     
@@ -261,9 +254,6 @@ extension JobHomeVC: UISearchBarDelegate{
     //文本发生改变
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         print("search bar text \(searchText)")
-        if searchText.isEmpty{
-            self.searchController.popMenuView.dismiss()
-        }
         
         // text 为空时 显示历史记录
         if searchText.isEmpty{

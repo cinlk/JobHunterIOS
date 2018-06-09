@@ -23,7 +23,7 @@ class GraduateJobsViewController: BasePositionItemViewController {
     lazy var myDropMenu: YNDropDownMenu = { [unowned self] in
         
         
-        let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: dropMenuH), dropDownViews: [cityMenu,careerClassify,companyKind], dropDownViewTitles: ["城市","行业分类","公司性质"])
+        let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: dropMenuH), dropDownViews: [cityMenu,careerClassify,degree], dropDownViewTitles: ["城市","行业分类","学历"])
         
         menu.setImageWhen(normal: UIImage(named: "arrow_nor"), selected: UIImage(named: "arrow_xl"), disabled: UIImage(named: "arrow_dim"))
         menu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
@@ -44,7 +44,6 @@ class GraduateJobsViewController: BasePositionItemViewController {
         super.viewDidLoad()
         setViews()
         loadData()
-        print("校招")
         
         // 筛选回调
         careerClassify.passData = { business in
@@ -56,7 +55,7 @@ class GraduateJobsViewController: BasePositionItemViewController {
            // print(citys)
         }
         
-        companyKind.passData = { kind in
+        degree.passData = { kind in
             print(kind)
             self.myDropMenu.changeMenu(title: kind, at: 2)
         }
@@ -145,7 +144,7 @@ extension GraduateJobsViewController{
             Thread.sleep(forTimeInterval: 3)
             for _ in 0..<20{
                 
-                self?.datas.append(Mapper<CompuseRecruiteJobs>().map(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dqwd-dqwdqwddqw","name":"码农","address":"北京","create_time":Date().timeIntervalSince1970,"education":"本科","type":"graduate","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false])!)
+                self?.datas.append(Mapper<CompuseRecruiteJobs>().map(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dqwd-dqwdqwddqw","name":"码农","address":"北京","create_time":Date().timeIntervalSince1970,"education":"本科","type":"graduate","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false,"readNums":arc4random()%1000])!)
                 
             }
             

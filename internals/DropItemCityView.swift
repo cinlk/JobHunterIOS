@@ -11,7 +11,7 @@ import YNDropDownMenu
 
 
 fileprivate let column:Int = 3
-
+fileprivate let maxCount:Int = 5
 
 class DropItemCityView: YNDropDownView {
 
@@ -20,7 +20,12 @@ class DropItemCityView: YNDropDownView {
     
     private  var citys:[String:[String]] = [:]{
         didSet{
-            index = citys.keys.sorted().reversed()
+            index = citys.keys.sorted()
+            // 热门城市 插入第一位
+            if let last = index.popLast(), last == "热门城市"{
+                index.insert(last, at: 0)
+            }
+            
         }
     }
     
@@ -47,7 +52,6 @@ class DropItemCityView: YNDropDownView {
         col.contentInset = UIEdgeInsetsMake(0, 10, 45, 10)
         col.delegate = self
         col.dataSource = self
-        
         col.allowsMultipleSelection = false
         col.backgroundColor = UIColor.white
         col.showsHorizontalScrollIndicator = false
@@ -57,7 +61,7 @@ class DropItemCityView: YNDropDownView {
     }()
     
     private lazy var clearAll:UIButton = {
-        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 150, height: 40))
+        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 150, height: 35))
         clear.setTitle("清空", for: .normal)
         clear.setTitleColor(UIColor.black, for: .normal)
         clear.backgroundColor = UIColor.white
@@ -68,7 +72,7 @@ class DropItemCityView: YNDropDownView {
     }()
     
     private lazy var confirm:UIButton = {
-        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 150, height: 40))
+        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 150, height: 35))
         confirm.setTitle("确定", for: .normal)
         confirm.setTitleColor(UIColor.white, for: .normal)
         confirm.backgroundColor = UIColor.blue
@@ -85,6 +89,16 @@ class DropItemCityView: YNDropDownView {
         return bar
     }()
     
+    // 全局的 透明背景view
+    internal lazy var backGroundBtn:UIButton = {
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 0))
+        btn.addTarget(self, action: #selector(hidden), for: .touchUpInside)
+        btn.backgroundColor = UIColor.clear
+        btn.alpha = 1
+    
+        return btn
+    }()
+    
     
     private lazy var selected:[String] = []
     
@@ -96,7 +110,7 @@ class DropItemCityView: YNDropDownView {
         self.addSubview(collection)
         self.addSubview(toolBar)
         
-        _ = toolBar.sd_layout().bottomEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(44)
+        _ = toolBar.sd_layout().bottomEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(40)
         _ = collection.sd_layout().topEqualToView(self)?.rightEqualToView(self)?.leftEqualToView(self)?.heightIs(self.frame.height)
         
         let space = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
@@ -115,8 +129,28 @@ class DropItemCityView: YNDropDownView {
         //fatalError("init(coder:) has not been implemented")
     }
     
+    // 显示 和 关闭 view
+    override func dropDownViewOpened() {
+        
+        UIApplication.shared.keyWindow?.addSubview(backGroundBtn)
+        self.getParentViewController()?.tabBarController?.tabBar.isHidden = true
+    }
+    
+    override func dropDownViewClosed() {
+        
+        backGroundBtn.removeFromSuperview()
+        self.getParentViewController()?.tabBarController?.tabBar.isHidden = false
+    }
+    
 }
 
+
+extension DropItemCityView{
+    @objc private func hidden(){
+        backGroundBtn.removeFromSuperview()
+        self.hideMenu()
+    }
+}
 
 extension DropItemCityView{
     private func loadData(){
@@ -147,7 +181,8 @@ extension DropItemCityView:UICollectionViewDataSource, UICollectionViewDelegate,
             header.titleLabel.text = index[indexPath.section]
             return header
         }
-        fatalError("失败")
+        
+        return UICollectionReusableView()
         
     }
     
@@ -177,10 +212,11 @@ extension DropItemCityView:UICollectionViewDataSource, UICollectionViewDelegate,
     // 多选
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-         let cell = collectionView.cellForItem(at: indexPath) as! CollectionTextCell
+        let cell = collectionView.cellForItem(at: indexPath) as! CollectionTextCell
         guard let text = cell.name.text else {
             return
         }
+        
         
         // 全国 则取消其他选择
         if text == "全国"{
@@ -204,6 +240,11 @@ extension DropItemCityView:UICollectionViewDataSource, UICollectionViewDelegate,
             cell.name.layer.borderColor = UIColor.clear.cgColor
            
         }else{
+            //
+            if selected.count >= maxCount{
+                print("不能超过5个")
+                return
+            }
             selected.append(text)
             cell.name.textColor = UIColor.blue
             cell.name.layer.borderColor = UIColor.blue.cgColor

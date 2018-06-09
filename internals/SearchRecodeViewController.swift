@@ -61,6 +61,8 @@ class SearchRecodeViewController: UIViewController {
         //HistoryTable.tableHeaderView =  RecordHeaderView()
         HistoryTable.delegate = self
         HistoryTable.dataSource = self
+        HistoryTable.keyboardDismissMode = .onDrag
+        
         return HistoryTable
     }()
     // 匹配搜索记录
@@ -70,6 +72,8 @@ class SearchRecodeViewController: UIViewController {
         FilterTable.tableFooterView = UIView.init()
         FilterTable.delegate = self
         FilterTable.dataSource = self
+        FilterTable.keyboardDismissMode = .onDrag
+
         return FilterTable
     }()
        

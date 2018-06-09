@@ -103,6 +103,7 @@
 		4A3224051F5160EA0065A33F /* SDAutoLayout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224041F5160EA0065A33F /* SDAutoLayout.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		4A3224071F5160ED0065A33F /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224061F5160ED0065A33F /* SwiftyJSON.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		4A39A7BE20C4C28D00953C1C /* SubscribleItemEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A39A7BD20C4C28D00953C1C /* SubscribleItemEnum.swift */; };
+		4A39A7C020CC01DB00953C1C /* DropDegreeMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A39A7BF20CC01DB00953C1C /* DropDegreeMenuView.swift */; };
 		4A3C8DAC2098C6530008C2A4 /* AddEventInCalender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A3C8DAB2098C6530008C2A4 /* AddEventInCalender.swift */; };
 		4A406B5F1FA4D3D900277AA0 /* PersonCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A406B5E1FA4D3D900277AA0 /* PersonCardCell.swift */; };
 		4A406B651FA5772100277AA0 /* PickImageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A406B641FA5772100277AA0 /* PickImageController.swift */; };
@@ -450,6 +451,7 @@
 		4A3224041F5160EA0065A33F /* SDAutoLayout.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDAutoLayout.framework; path = "Pods/../build/Debug-iphoneos/SDAutoLayout/SDAutoLayout.framework"; sourceTree = "<group>"; };
 		4A3224061F5160ED0065A33F /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = "../../../../Library/Developer/Xcode/DerivedData/internals-fvfjoslaltdhlmclwrenlrxzczpm/Build/Products/Debug-iphonesimulator/SwiftyJSON/SwiftyJSON.framework"; sourceTree = "<group>"; };
 		4A39A7BD20C4C28D00953C1C /* SubscribleItemEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscribleItemEnum.swift; sourceTree = "<group>"; };
+		4A39A7BF20CC01DB00953C1C /* DropDegreeMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDegreeMenuView.swift; sourceTree = "<group>"; };
 		4A3C8DAB2098C6530008C2A4 /* AddEventInCalender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventInCalender.swift; sourceTree = "<group>"; };
 		4A406B5E1FA4D3D900277AA0 /* PersonCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonCardCell.swift; sourceTree = "<group>"; };
 		4A406B641FA5772100277AA0 /* PickImageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickImageController.swift; sourceTree = "<group>"; };
@@ -936,6 +938,7 @@
 				4AFCF849208F847D00F5B96E /* DropValidTimeView.swift */,
 				4A954397209C98E6009BCBE2 /* DropJobTypeView.swift */,
 				4A954399209C9969009BCBE2 /* DropDelieveryStatusView.swift */,
+				4A39A7BF20CC01DB00953C1C /* DropDegreeMenuView.swift */,
 			);
 			name = dropMenuViews;
 			sourceTree = "<group>";
@@ -2387,6 +2390,7 @@
 				4A82A0D12026DF4300185E8B /* personTableCell.swift in Sources */,
 				4A93C2B51F80AB900022E97B /* messageMainView.swift in Sources */,
 				4AD2C77B209752DA002F3486 /* ConfigDropItemView.swift in Sources */,
+				4A39A7C020CC01DB00953C1C /* DropDegreeMenuView.swift in Sources */,
 				4A93C2DC1F83574A0022E97B /* localData.swift in Sources */,
 				4AEDFE8D1FBFF8AD0071F4D8 /* LoginViewModel.swift in Sources */,
 				4A9543A0209D5F8D009BCBE2 /* HRModel.swift in Sources */,

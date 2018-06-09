@@ -95,6 +95,16 @@ class DropInternCondtionView: YNDropDownView{
     }()
     
     
+    // 全局的 透明背景view
+    internal lazy var backGroundBtn:UIButton = {
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 0))
+        btn.addTarget(self, action: #selector(hidden), for: .touchUpInside)
+        btn.backgroundColor = UIColor.clear
+        btn.alpha = 1
+        
+        return btn
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = UIColor.white
@@ -123,6 +133,19 @@ class DropInternCondtionView: YNDropDownView{
     }
     
     
+    // 显示 和 关闭 view
+    override func dropDownViewOpened() {
+        UIApplication.shared.keyWindow?.addSubview(backGroundBtn)
+        self.getParentViewController()?.tabBarController?.tabBar.isHidden = true
+    }
+    
+    override func dropDownViewClosed() {
+        backGroundBtn.removeFromSuperview()
+        self.getParentViewController()?.tabBarController?.tabBar.isHidden = false
+    }
+    
+    
+    
 }
 
 extension DropInternCondtionView{
@@ -141,6 +164,11 @@ extension DropInternCondtionView{
         self.passData?(conditions)
         self.hideMenu()
         
+    }
+    
+    @objc private func hidden(){
+        self.backGroundBtn.removeFromSuperview()
+        self.hideMenu()
     }
 }
 

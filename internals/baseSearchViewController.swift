@@ -62,6 +62,7 @@ class baseSearchViewController: UISearchController{
                 // 加上currentMenuType类型
                 self.searchShowVC?.startSearch(type: self.currentMenuType, word: "搜索", complete: nil)
             }
+            city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
             citys.append(city)
         }
         
@@ -79,6 +80,8 @@ class baseSearchViewController: UISearchController{
             indus.passData = { item in
                 self.searchShowVC?.startSearch(type: self.currentMenuType, word: "搜索", complete: nil)
             }
+            indus.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+
             indes.append(indus)
         }
         
@@ -92,13 +95,16 @@ class baseSearchViewController: UISearchController{
             self.searchShowVC?.startSearch(type: self.currentMenuType , word: "搜索", complete: nil)
             
         }
+        company.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+
         return company
     }()
     
     // 大学
     internal lazy var colleges: DropCollegeItemView = {
         let college = DropCollegeItemView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
-        
+        college.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+
         return college
     }()
     
@@ -112,6 +118,9 @@ class baseSearchViewController: UISearchController{
                 self.searchShowVC?.startSearch(type: self.currentMenuType , word: "搜索", complete: nil)
 
             }
+            
+            v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+
         
             classes.append(v1)
         }
@@ -129,6 +138,8 @@ class baseSearchViewController: UISearchController{
             
             self.searchShowVC?.startSearch(type: self.currentMenuType ,word: "搜索", complete:  nil)
         }
+        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+
         return v1
     }()
     
@@ -140,6 +151,8 @@ class baseSearchViewController: UISearchController{
             self.searchShowVC?.startSearch(type: self.currentMenuType , word: "搜索", complete:  nil)
 
         }
+        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+
         
         return v1
         
@@ -151,6 +164,9 @@ class baseSearchViewController: UISearchController{
             self.searchShowVC?.startSearch(type: self.currentMenuType , word: "搜索", complete:  nil)
 
         }
+        
+        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+
         
         return v1
     }()

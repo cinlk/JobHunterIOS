@@ -106,6 +106,8 @@ extension InternJobsViewController: UITableViewDataSource, UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = table.dequeueReusableCell(withIdentifier: CommonJobTableCell.identity(), for: indexPath) as! CommonJobTableCell
+        cell.showTag = false
+        
         cell.mode = self.datas[indexPath.row]
         return cell
     }
@@ -139,7 +141,7 @@ extension InternJobsViewController{
             for _ in 0..<20{
                 
                 self?.datas.append(Mapper<CompuseRecruiteJobs>().map(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"apple-dqw-fefwe","name":"码农","address":"北京","salary":"150-190元/天","create_time":Date().timeIntervalSince1970,"education":"本科","type":"intern"
-                    ,"applyEndTime":Date().timeIntervalSince1970,"perDay":"4天/周","months":"5个月","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false])!)
+                    ,"applyEndTime":Date().timeIntervalSince1970,"perDay":"4天/周","months":"5个月","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false,"readNums":arc4random()%1000])!)
                 
             }
             

@@ -12,53 +12,73 @@ import YNDropDownMenu
 
 
 fileprivate let leftTableH:CGFloat = 140
-
+fileprivate let all:String = "不限"
 
 class DropCarrerClassifyView:YNDropDownView,UITableViewDataSource,UITableViewDelegate{
     
         
-    private var table1:UITableView?
-    private var table2:UITableView?
+    private lazy var  leftTable:UITableView = { [unowned self] in
+        let table = UITableView()
+        table.backgroundColor = UIColor.viewBackColor()
+        table.frame = CGRect(x: 0, y: 0, width: leftTableH, height: frame.height)
+        table.delegate = self
+        table.dataSource = self
+        table.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        table.separatorStyle = .none
+        table.allowsMultipleSelection = false
+        return table
+        
+    }()
+    private lazy  var rightTable:UITableView = { [unowned self] in
+        
+        let table = UITableView()
+        table.backgroundColor = UIColor.white
+        table.frame = CGRect(x: leftTableH, y: 0, width: self.frame.width-leftTableH, height: frame.height)
+        table.delegate = self
+        table.dataSource = self
+        table.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        
+        table.separatorStyle = .none
+        table.allowsMultipleSelection = false
+       
+        return table
+        
+        
+    }()
     
     var passData: ((_ cond:String) -> Void)?
     
     
-    private var first = ["全部","IT互联网","电子电气","人事行政","传媒设计","杀掉无多哇多无多无多"]
-    private var selected = "全部"
-    private var all = ["全部"]
-    private var seconds = ["IT互联网":["全部","软件及系统开发","算法/大数据","智能硬件","移动开发"],
-                   "电子电气":["全部","电子/通信","嵌入式","电气工程"],
-                   "人事行政":["全部","人事HR","猎头","行政"],
-                   "传媒设计":["全部","广告","编辑","媒体","视频后期"],
-                   "杀掉无多哇多无多无多":[]]
+    private var keys:[String] = []
+    private var selected = ""
+    private var rightTableIndex:Int = 0
+    
+    private var datas:[String:[String]] = [:]{
+        didSet{
+            keys = datas.keys.sorted()
+            keys.insert(all, at: 0)
+            selected = keys[0]
+        }
+    }
+    
+    
+    
+    // 全局的 透明背景view
+    internal lazy var backGroundBtn:UIButton = {
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 0))
+        btn.addTarget(self, action: #selector(hidden), for: .touchUpInside)
+        btn.backgroundColor = UIColor.clear
+        btn.alpha = 1
+        
+        return btn
+    }()
     
     
     override init(frame: CGRect){
         super.init(frame: frame)
-        
-        table1 = UITableView()
-        table1?.backgroundColor = UIColor.viewBackColor()
-        table1?.frame = CGRect(x: 0, y: 0, width: leftTableH, height: frame.height)
-        table1?.delegate = self
-        table1?.dataSource = self
-        table1?.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        table1?.separatorStyle = .none
-        table1?.allowsMultipleSelection = false
-        
-        
-        table2 = UITableView()
-        table2?.backgroundColor = UIColor.white
-        table2?.frame = CGRect(x: leftTableH, y: 0, width: self.frame.width-leftTableH, height: frame.height)
-        table2?.delegate = self
-        table2?.dataSource = self
-        table2?.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        
-        table2?.separatorStyle = .none
-        table2?.allowsMultipleSelection = false
-        
-        
-        self.addSubview(table1!)
-        self.addSubview(table2!)
+        self.addSubview(leftTable)
+        self.addSubview(rightTable)
+        loadData()
         
     }
     
@@ -68,16 +88,29 @@ class DropCarrerClassifyView:YNDropDownView,UITableViewDataSource,UITableViewDel
     }
     
     
+    // 显示 和 关闭 view
+    override func dropDownViewOpened() {
+        UIApplication.shared.keyWindow?.addSubview(backGroundBtn)
+        self.getParentViewController()?.tabBarController?.tabBar.isHidden = true
+    }
+    
+    override func dropDownViewClosed() {
+        backGroundBtn.removeFromSuperview()
+        self.getParentViewController()?.tabBarController?.tabBar.isHidden = false
+    }
+    
+    
+    
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if tableView == table1{
-            return first.count
+        if tableView == leftTable{
+            return keys.count
         }
         else{
-            return  selected == "全部" ?  1 : (seconds[selected]?.count)!
+            return  selected == all ?  0 :  (datas[selected]?.count ?? 0)
         }
     }
     
@@ -88,8 +121,8 @@ class DropCarrerClassifyView:YNDropDownView,UITableViewDataSource,UITableViewDel
         cell.textLabel?.font = UIFont.systemFont(ofSize: 14)
         cell.selectionStyle = .none
         
-        if tableView == table1{
-            cell.textLabel?.text = first[indexPath.row]
+        if tableView == leftTable{
+            cell.textLabel?.text = keys[indexPath.row]
             
             cell.backgroundColor = UIColor.viewBackColor()
         }else{
@@ -101,7 +134,7 @@ class DropCarrerClassifyView:YNDropDownView,UITableViewDataSource,UITableViewDel
             }
             cell.backgroundColor = UIColor.white
             cell.textLabel?.textColor = UIColor.black
-            cell.textLabel?.text =  selected == "全部" ? "全部" : seconds[selected]?[indexPath.row]
+            cell.textLabel?.text =  datas[selected]?[indexPath.row]
             
         }
         
@@ -121,17 +154,22 @@ class DropCarrerClassifyView:YNDropDownView,UITableViewDataSource,UITableViewDel
         cell?.textLabel?.textColor = UIColor.orange
         
         
-        if tableView == table1{
-            selected = first[indexPath.row]
-            table2?.reloadData()
+        if tableView == leftTable{
+            selected = keys[indexPath.row]
+            if selected == all{
+                self.hideMenu()
+                passData?(selected)
+                
+            }
+            rightTable.reloadData()
             
         }else{
+            rightTableIndex = indexPath.row
             cell?.addSubview(lines)
-            let name:String = selected == "全部" ? "全部" : (seconds[selected]?[indexPath.row])!
+            if let name:String =  datas[selected]?[indexPath.row]{
             
-            self.hideMenu()
-            if let pass = passData{
-                pass(name)
+                self.hideMenu()
+                passData?(name)
             }
             
             
@@ -141,7 +179,7 @@ class DropCarrerClassifyView:YNDropDownView,UITableViewDataSource,UITableViewDel
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath)
         cell?.textLabel?.textColor = UIColor.black
-        if tableView == table2{
+        if tableView == rightTable{
             cell?.subviews.filter({ (view) -> Bool in
                 return view.tag == 101
             })[0].removeFromSuperview()
@@ -150,6 +188,27 @@ class DropCarrerClassifyView:YNDropDownView,UITableViewDataSource,UITableViewDel
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 45
+    }
+    
+    
+}
+
+extension DropCarrerClassifyView{
+    private func loadData(){
+        
+        datas =   ["IT互联网":["软件及系统开发","算法/大数据","智能硬件","移动开发"],
+                    "电子电气":["电子/通信","嵌入式","电气工程"],
+                    "人事行政":["人事HR","猎头","行政"],
+                    "传媒设计":["广告","编辑","媒体","视频后期"],
+                    "杀掉无多哇多无多无多":["数据1","数据2"]]
+        
+        self.leftTable.reloadData()
+        
+    }
+    
+    @objc private func hidden(){
+        backGroundBtn.removeFromSuperview()
+        self.hideMenu()
     }
     
     

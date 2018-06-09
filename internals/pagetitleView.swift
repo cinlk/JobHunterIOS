@@ -90,7 +90,7 @@ extension pagetitleView{
         }
         
         if lineCenter{
-            kNormalColor = (169,169,169)
+            kNormalColor = (50,50,50)
             kSelectColor = (255,255,255)
             
         }

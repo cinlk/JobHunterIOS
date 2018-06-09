@@ -10,12 +10,9 @@ import UIKit
 import YNDropDownMenu
 
 
-
-
 class BasePositionItemViewController: BaseViewController {
 
-    
-    let dropMenuH:CGFloat = 40
+    internal let dropMenuH:CGFloat = 40
 
     // 内容显示table
     lazy var table:UITableView = {
@@ -26,14 +23,11 @@ class BasePositionItemViewController: BaseViewController {
     }()
     
     
-    
-
-    
-    
     // 选择城市
     internal lazy var cityMenu:DropItemCityView = {
         let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
-        
+        // 覆盖指定高度
+        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
         return city
     }()
     
@@ -41,21 +35,24 @@ class BasePositionItemViewController: BaseViewController {
     internal lazy var industryKind:DropItemIndustrySectorView = {
         let indus = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
        
-        
+        indus.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
+
         return indus
         
     }()
     // 公司性质
     internal lazy var companyKind: DropCompanyPropertyView = {
         let company = DropCompanyPropertyView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 6*45))
-        
+        company.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
+
         return company
     }()
     
     // 大学
     internal lazy var colleges: DropCollegeItemView = {
         let college = DropCollegeItemView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
-        
+        college.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
+
         return college
     }()
     
@@ -63,9 +60,18 @@ class BasePositionItemViewController: BaseViewController {
     // 行业分类
     lazy var careerClassify:DropCarrerClassifyView = { [unowned self] in
         let v1 = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
-        
+        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
+
         
         return v1
+    }()
+    
+    // 学历
+    lazy var degree:DropDegreeMenuView = { [unowned self] in
+        let v = DropDegreeMenuView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 45*5))
+        v.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
+
+        return v
     }()
     
     
@@ -73,24 +79,27 @@ class BasePositionItemViewController: BaseViewController {
     internal lazy var meetingValidate:DropValidTimeView = {  [unowned self] in
         
         let v1 = DropValidTimeView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 90))
-        
-        
+        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
+
         return v1
     }()
     
     
-    //
+    // 实习条件
     internal lazy var  internCondition:DropInternCondtionView = { [unowned self] in
         let v1 = DropInternCondtionView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
         
-        
+        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
+
         return v1
         
     }()
     
+    //
     internal  lazy var meetingTime:YNDropDownView = { [unowned self] in
         let v1 = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 260))
-        
+        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
+
         return v1
     }()
     
@@ -119,11 +128,11 @@ class BasePositionItemViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         self.view.addSubview(table)
         self.view.addSubview(dropMenu)
         
-        _ = table.sd_layout().topSpaceToView(dropMenu,0)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
+        _ = table.sd_layout().topSpaceToView(self,dropMenuH)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
         
         // Do any additional setup after loading the view.
     }
@@ -139,7 +148,7 @@ class BasePositionItemViewController: BaseViewController {
     
     // 子类实现方法 MARK 抽象出来必须实现（语法？？）
     func sendRequest(){
-        
+    
     }
 
     

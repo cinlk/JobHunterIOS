@@ -255,13 +255,13 @@ extension CompanyJobsVC:UITableViewDelegate, UITableViewDataSource{
             }else if let mode = filterJobs?[indexPath.row] as? OnlineApplyModel{
                 let cell = tableView.dequeueReusableCell(withIdentifier: OnlineApplyCell.identity(), for: indexPath) as!  OnlineApplyCell
                 cell.mode = mode
-                cell.type.isHidden = false
+                //cell.type.isHidden = false
                 return cell
                 
             }else if let mode = filterJobs?[indexPath.row] as? CareerTalkMeetingModel{
                 let cell = tableView.dequeueReusableCell(withIdentifier: CareerTalkCell.identity(), for: indexPath) as! CareerTalkCell
                 cell.mode = mode
-                cell.type.isHidden = false
+                //cell.type.isHidden = false
                 return cell
             }
             

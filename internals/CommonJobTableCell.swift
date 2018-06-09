@@ -18,8 +18,11 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     private lazy var commonjobView: CommonJobDetailCellView =  CommonJobDetailCellView()
     
 
-
-    private var deliver:Bool = false
+    internal var showTag:Bool = false{
+        didSet{
+            commonjobView.showTag = showTag
+        }
+    }
     
     dynamic var mode:CompuseRecruiteJobs?{
         didSet{
@@ -31,7 +34,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
+        showTag = false
       
         self.contentView.addSubview(commonjobView)
         _ = commonjobView.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topEqualToView(self.contentView)?.heightIs(0)
@@ -48,8 +51,5 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     
     // MARK 区分cell 投递 和非
     
-//    class func cellHeight()->CGFloat{
-//        return  65
-//    }
 
 }

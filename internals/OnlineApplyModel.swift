@@ -16,7 +16,25 @@ class OnlineApplyModel: BaseModel {
     // 举办公司
     internal var companyModel:CompanyModel?
     // 截止时间
-    internal var end_time:String?
+    internal var end_time:Date?
+    
+    
+    internal var endTimeStr:String{
+        get{
+            
+            guard let time = self.end_time else { return "" }
+            let dateFormat = DateFormatter()
+            dateFormat.locale = Locale.current
+            
+            if time.year == Date().year{
+                dateFormat.dateFormat = "MM-dd"
+            }else{
+                dateFormat.dateFormat = "yyyy-MM-dd"
+            }
+            let str = dateFormat.string(from: time)
+            return str
+        }
+    }
     
     
     // 工作城市
@@ -32,9 +50,8 @@ class OnlineApplyModel: BaseModel {
     internal var link:String?
     
     // 外部链接
-    // 1 外部网申 有content 展示content，申请跳转外部地址
-    // 2 没有content 直接跳转外部地址
-    // 3 如果是内部发布的网申，显示content 并简历可以投递
+    //申请跳转外部地址
+    // 如果是内部发布的网申，显示content 并简历可以投递
     internal var outer:Bool = true
     
     // 网申招聘描述（MARK）
@@ -44,15 +61,15 @@ class OnlineApplyModel: BaseModel {
     
     required init?(map: Map) {
         super.init(map: map)
-        if map.JSON["isApply"] == nil {
-            return nil
-        }
+//        if map.JSON["isApply"] == nil {
+//            return nil
+//        }
     }
     
     override func mapping(map: Map) {
        
         super.mapping(map: map)
-        end_time <- map["end_time"]
+        end_time <- (map["end_time"], DateTransform())
         companyModel <- map["companyModel"]
         positionAddress <- map["positionAddress"]
         positions <- map["positions"]

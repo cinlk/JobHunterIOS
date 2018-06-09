@@ -22,32 +22,43 @@ func meetingTalkTime(time: Date) -> String{
     
     dateFormat.pmSymbol = "下午"
     dateFormat.amSymbol = "上午"
+
     dateFormat.weekdaySymbols = ["周天","周一","周二","周三","周四","周五","周六"]
     let secondInDays:TimeInterval = 60 * 60 * 24
     
     // 明天
     if  elapsedTimeSeconds > secondInDays && elapsedTimeSeconds < 2*secondInDays{
-        dateFormat.dateFormat = "h:mm a"
+       
+        
+        dateFormat.dateFormat = "HH:mm"
         timeStr = "明天 " +  dateFormat.string(from: time)
     }else if elapsedTimeSeconds > 2*secondInDays && elapsedTimeSeconds < 7*secondInDays{
-        dateFormat.dateFormat = "EEEE h:mm a"
+        dateFormat.dateFormat = "EEEE HH:mm"
         timeStr = dateFormat.string(from: time)
         
     }else if elapsedTimeSeconds >= 7*secondInDays{
-        dateFormat.dateFormat = "yyy-MM-dd"
+        
+        dateFormat.dateFormat =   time.year  ==  startDate!.year ? "MM-dd HH:mm" : "yy-MM-dd HH:mm"
         timeStr = dateFormat.string(from: time)
     }
     else if elapsedTimeSeconds < secondInDays && elapsedTimeSeconds >= 0{
-        dateFormat.dateFormat = "h:mm:a"
+        dateFormat.dateFormat = "HH:mm"
         timeStr = "今天 " + dateFormat.string(from: time)
     }else if elapsedTimeSeconds < 0{
-        dateFormat.dateFormat = "yyy-MM-dd"
+        dateFormat.dateFormat =   time.year  ==  startDate!.year ? "MM-dd HH:mm" : "yy-MM-dd HH:mm"
         timeStr = "已经过期 " + dateFormat.string(from: time)
     }
     
     //print(time.timeIntervalSince1970,elapsedTimeSeconds)
-    
-    return timeStr
+    var postStr = ""
+    if time.hour >= 0 && time.hour < 12{
+        postStr = " 上午"
+    } else if time.hour >= 12 && time.hour < 18{
+        postStr = " 下午"
+    }else{
+        postStr = " 晚上"
+    }
+    return timeStr + postStr
 }
 
 

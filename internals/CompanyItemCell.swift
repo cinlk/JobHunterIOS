@@ -15,8 +15,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
 
     private lazy var icon:UIImageView = {
         let img = UIImageView()
-        img.clipsToBounds = true
-        img.contentMode = .scaleToFill
+        img.contentMode = .scaleAspectFit
         return img
     }()
     
@@ -35,26 +34,63 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 14)
+        label.textColor = UIColor.black
+        return label
+    }()
+    
+    private lazy var address:UILabel = {
+        let label = UILabel()
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
+        label.textAlignment = .left
+        label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = UIColor.lightGray
+        return label
+    }()
+    
+    
+    private lazy var follows:UILabel = {
+        let label = UILabel()
+        label.isAttributedContent = true
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 12)
         return label
     }()
     
    dynamic var mode:CompanyModel?{
         didSet{
-            self.icon.image = UIImage.init(named: mode?.icon ?? "default")
-            self.company.text = mode?.name
-            self.types.text = mode?.type?.joined(separator: " ")
-            self.setupAutoHeight(withBottomViewsArray: [icon,types], bottomMargin: 10)
+            guard let mode = mode else {
+                return
+            }
+            
+            self.icon.image = UIImage.init(named: mode.icon)
+            self.company.text = mode.name
+            self.types.text = mode.industry!.joined(separator: " ")
+            self.address.text = mode.address!.joined(separator: " ")
+            
+            let fs = NSMutableAttributedString(string: String.init(describing: mode.follows) , attributes: [NSAttributedStringKey.foregroundColor:UIColor.blue])
+            fs.append(NSAttributedString.init(string: "人关注", attributes: [NSAttributedStringKey.foregroundColor:UIColor.lightGray]))
+            
+            self.follows.attributedText = fs
+            self.setupAutoHeight(withBottomViewsArray: [icon,address], bottomMargin: 10)
+            
         }
     }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        let views:[UIView] = [icon, company, types]
+        let views:[UIView] = [icon, company, types, address, follows]
+        
         self.contentView.sd_addSubviews(views)
         _ = icon.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(imgSize.width)?.autoHeightRatio(1)
         _ = company.sd_layout().leftSpaceToView(icon,10)?.topEqualToView(icon)?.autoHeightRatio(0)
         _ = types.sd_layout().leftEqualToView(company)?.topSpaceToView(company,5)?.autoHeightRatio(0)
+        _ = address.sd_layout().leftEqualToView(company)?.topSpaceToView(types,5)?.autoHeightRatio(0)
+        _ = follows.sd_layout().centerYEqualToView(company)?.rightSpaceToView(self.contentView,10)?.autoHeightRatio(0)
+        
+        company.setMaxNumberOfLinesToShow(2)
+        types.setMaxNumberOfLinesToShow(1)
+        address.setMaxNumberOfLinesToShow(1)
         
     }
     

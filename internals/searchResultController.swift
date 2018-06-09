@@ -122,6 +122,7 @@ extension searchResultController:UITableViewDataSource, UITableViewDelegate{
             }
         case .graduate, .intern:
             if let cell = tableView.dequeueReusableCell(withIdentifier: CommonJobTableCell.identity(), for: indexPath) as? CommonJobTableCell{
+                cell.showTag = false
                 cell.mode = datas[currentType]?[indexPath.row] as? CompuseRecruiteJobs
                 return cell
             }

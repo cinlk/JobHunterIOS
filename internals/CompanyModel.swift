@@ -29,17 +29,27 @@ class  CompanyModel: BaseModel {
     
     // 福利标签
     internal var tags:[String]?
-    // 行业类型标签
-    internal var type:[String]?
+    // 所属行业
+    internal var industry:[String]?
+    
+    // 关注人数
+    internal var follows:Int = 0
+    
     
     
     
     required init?(map: Map) {
         super.init(map: map)
+        
+        if map.JSON["address"] == nil || map.JSON["industry"] == nil{
+            return nil
+        }
+        
         if map.JSON["icon"] == nil{
             // 公司默认图标
             self.icon = "dong"
         }
+        
         
     }
     
@@ -51,10 +61,9 @@ class  CompanyModel: BaseModel {
         address <- map["address"]
         staffs <- map["staffs"]
         webSite <- map["webSite"]
-        
         tags <- map["tags"]
-        type <- map["type"]
-        
+        industry <- map["industry"]
+        follows <- map["follows"]
         
     }
 }

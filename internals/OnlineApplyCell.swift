@@ -21,24 +21,26 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
     }()
     
     
-    private lazy var company:UILabel = {
-        let company = UILabel()
-        company.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgIcon.width - 20 )
-        company.textAlignment = .left
-        company.font = UIFont.boldSystemFont(ofSize: 16)
-        company.textColor = UIColor.black
-        return company
+    private lazy var jobName:UILabel = {
+        let label = UILabel()
+        label.isAttributedContent = true
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgIcon.width - 20 )
+        label.textAlignment = .left
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.textColor = UIColor.black
+       
+        return label
     }()
     
     
     
-    private lazy var publishTime:UILabel = {
+    private lazy var endTime:UILabel = {
         
         let label = UILabel()
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgIcon.width - 20 )
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 12)
-        label.textColor = UIColor.lightGray
+        label.isAttributedContent = true 
         return label
     }()
     
@@ -51,84 +53,60 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
         return label
     }()
     
-    private lazy var position:UILabel = {
-        let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgIcon.width - 20 )
-        label.textAlignment = .left
-        label.font = UIFont.systemFont(ofSize: 12)
-        label.textColor = UIColor.lightGray
-        return label
-    }()
-    
-    // 是否过期
-    private lazy var validate:UILabel = {
-        let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgIcon.width - 20 )
-        label.textAlignment = .left
-        label.font = UIFont.systemFont(ofSize: 12)
-        label.textColor = UIColor.lightGray
-        label.text = "已过期"
-        label.isHidden = true
-        return label
-    }()
-    
-    // 外部标签
-    private lazy var outerTagImageView :UIImageView = {
-        let imgView = UIImageView()
-        imgView.clipsToBounds = true
-        imgView.image = UIImage.init(named: "pbackimg")?.str_image("外链", size: (35,20), backColor: UIColor.blue, textColor: UIColor.white, isCircle: false)
-        imgView.isHidden = true
-        return imgView
-    }()
-    
-    // 类型标记lable 提醒
-    internal lazy var type:UILabel = {
-        let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(200)
-        label.textColor = UIColor.blue
-        label.textAlignment = .left
-        label.isHidden = true
-        label.font = UIFont.systemFont(ofSize: 12)
-        return label
-    }()
+
     
     dynamic var mode:OnlineApplyModel?{
         didSet{
            
-            self.validate.isHidden = (mode?.isValidate ?? true)
-            self.publishTime.isHidden = !(mode?.isValidate ?? true)
-            self.outerTagImageView.isHidden = !(mode?.outer ?? false)
-            self.type.text = "网申"
-            self.icon.image = UIImage.init(named:  mode!.companyModel!.icon)
-            self.company.text = mode?.companyModel?.name
-            self.publishTime.text = mode?.creatTimeStr
-            self.address.text = mode?.positionAddress?.joined(separator: " ")
-            self.position.text = mode?.positions?.joined(separator: " ")
-            self.setupAutoHeight(withBottomViewsArray: [icon,position], bottomMargin: 10)
+            guard let mode = mode else {
+                return
+            }
+            let jobName = NSMutableAttributedString.init(string: mode.name!)
+            if mode.outer{
+                let attchment = NSTextAttachment()
+                // image 对齐
+                attchment.bounds = CGRect.init(x: 0, y: (self.jobName.font.capHeight - 15).rounded()/2, width: 15, height: 15)
+
+                attchment.image = UIImage.init(named: "links")
+                let imageStr = NSAttributedString.init(attachment: attchment)
+                
+                // 间隔距离
+                jobName.append(NSAttributedString.init(string: " "))
+                jobName.append(imageStr)
+
+            
+
+            }
+            
+            //jobName.addAttributes([NSAttributedStringKey.foregroundColor:UIColor.black], range: NSRange.init(location: 0, length: jobName.length))
+            
+            self.icon.image = UIImage.init(named:  mode.companyModel?.icon  ?? "default")
+            self.jobName.attributedText = jobName
+            
+            
+            let endStr = NSMutableAttributedString.init(string: mode.endTimeStr, attributes: [NSAttributedStringKey.foregroundColor: UIColor.red])
+            endStr.insert(NSAttributedString.init(string:"截止") , at: 0)
+            self.endTime.attributedText =  endStr
+            
+            self.address.text = mode.positionAddress?.joined(separator: " ")
+            self.setupAutoHeight(withBottomViewsArray: [icon, address], bottomMargin: 5)
             
         }
     }
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        let views:[UIView] = [icon, company, publishTime, address, position,validate,outerTagImageView,type]
+        let views:[UIView] = [icon, jobName, endTime, address]
         self.contentView.sd_addSubviews(views)
         
         _ = icon.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(imgIcon.width)?.autoHeightRatio(1)
-        _ = company.sd_layout().leftSpaceToView(icon,5)?.topEqualToView(icon)?.autoHeightRatio(0)
+        _ = jobName.sd_layout().leftSpaceToView(icon,10)?.topEqualToView(icon)?.autoHeightRatio(0)
+        _ = address.sd_layout().leftEqualToView(jobName)?.topSpaceToView(jobName,10)?.autoHeightRatio(0)
+        _ = endTime.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(address)?.autoHeightRatio(0)
+     
         
-        _ = outerTagImageView.sd_layout().leftSpaceToView(company,10)?.topEqualToView(company)?.widthIs(35)?.heightIs(20)
-        
-        _ = publishTime.sd_layout().rightSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,15)?.autoHeightRatio(0)
-        _ = type.sd_layout().topSpaceToView(publishTime,10)?.rightEqualToView(publishTime)?.autoHeightRatio(0)
-        
-        _ = address.sd_layout().leftEqualToView(company)?.topSpaceToView(company,10)?.autoHeightRatio(0)
-        _ = position.sd_layout().leftEqualToView(address)?.topSpaceToView(address,10)?.autoHeightRatio(0)
-        _ = validate.sd_layout().rightSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,10)?.autoHeightRatio(0)
-        
-        
+        jobName.setMaxNumberOfLinesToShow(2)
         address.setMaxNumberOfLinesToShow(1)
-        position.setMaxNumberOfLinesToShow(1)
     }
     
     required init?(coder aDecoder: NSCoder) {

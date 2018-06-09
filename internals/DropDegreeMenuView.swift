@@ -1,37 +1,32 @@
 //
-//  DropValidTimeView.swift
+//  DropDegreeMenuView.swift
 //  internals
 //
-//  Created by ke.liang on 2018/4/24.
+//  Created by ke.liang on 2018/6/9.
 //  Copyright © 2018年 lk. All rights reserved.
 //
 
 import UIKit
 
-class DropValidTimeView: BaseSingleItemDropView {
+class DropDegreeMenuView: BaseSingleItemDropView {
 
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         loadData()
     }
     
     required init?(coder aDecoder: NSCoder) {
-         super.init(coder: aDecoder)
+        super.init(coder: aDecoder)
         //fatalError("init(coder:) has not been implemented")
     }
     
     
-    
+
 }
 
-
-extension DropValidTimeView{
+extension DropDegreeMenuView{
+    
     private func loadData(){
-        // 从网络获取数据
-        //
-        datas =   ["将来","过去","具体时间"]
-        
-        
+        datas = ["不限","大专","本科","硕士","博士"]
     }
 }
