@@ -33,10 +33,23 @@ class CompuseRecruiteJobs :BaseModel{
    internal var publisherID:String?
     
    // 和hr聊天标记
-    internal var isTalked:Bool?
+   internal var isTalked:Bool?
+   
+   //浏览次数
+    internal var readNums:Int64 = 0
     
+   
+   private var address:[String] = ["不限"]
     
-   internal var address:String = "不限"
+   internal var addressStr:String{
+        get{
+            // 最多5多个地址（前5个地址）
+            if address.count > 5{
+                return   address[0..<5].joined(separator: " ")
+            }
+            return   address.joined(separator: " ")
+        }
+    }
    
    internal var salary:String = "面议"
     
@@ -51,6 +64,7 @@ class CompuseRecruiteJobs :BaseModel{
    // 可转正
    internal var isStuff:Bool = false
   
+    
     
    internal var endTime:String{
         get{
@@ -88,7 +102,7 @@ class CompuseRecruiteJobs :BaseModel{
         isStuff <- map["isStuff"]
         isTalked <- map["isTalked"]
         applyEndTime <- (map["applyEndTime"], DateTransform())
-        
+        readNums <- map["readNums"]
         
         
     }

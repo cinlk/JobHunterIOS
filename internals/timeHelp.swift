@@ -15,6 +15,7 @@ func meetingTalkTime(time: Date) -> String{
     // 今天起始时间
     let startDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date())
     
+    
     var timeStr = ""
     
     let elapsedTimeSeconds = time.timeIntervalSince(startDate!)
@@ -48,3 +49,5 @@ func meetingTalkTime(time: Date) -> String{
     
     return timeStr
 }
+
+

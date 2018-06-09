@@ -146,7 +146,7 @@ extension ForumViewController{
         searchController.delegate = self
         searchController.searchBar.delegate = self
         // 论坛
-        searchController.serchRecordVC.isForum = true
+        searchController.searchType = .forum
     }
     
     private func setNavigationBtn(){

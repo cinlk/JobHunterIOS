@@ -15,7 +15,9 @@ import ObjectMapper
 class  CompanyModel: BaseModel {
     
     
-   
+    
+
+    
     // 简介
     internal var describe:String?
     // 地点
@@ -31,8 +33,13 @@ class  CompanyModel: BaseModel {
     internal var type:[String]?
     
     
+    
     required init?(map: Map) {
         super.init(map: map)
+        if map.JSON["icon"] == nil{
+            // 公司默认图标
+            self.icon = "dong"
+        }
         
     }
     

@@ -56,7 +56,6 @@ class CareerTalkMeetingModel: BaseModel  {
         companyModel <- map["companyModel"]
         college <- map["college"]
         address <- map["address"]
-        isValidate <- map["isValidate"]
         start_time <- (map["start_time"], DateTransform())
         source <- map["source"]
         content <- map["content"]

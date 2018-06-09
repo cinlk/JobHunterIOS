@@ -213,7 +213,7 @@ class JobDetailHeader:UIView {
         }
         
         self.jobName.text = mode?.name
-        self.address.text = mode?.address
+        self.address.text = mode?.addressStr
         self.education.text = mode?.education
         self.salary.text = mode?.salary
         

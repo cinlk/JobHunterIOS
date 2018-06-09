@@ -315,7 +315,13 @@ struct JobTable {
 // 搜索历史
 struct SearchHistory {
     static let search = Table("search")
-    // 主键
+    
+    //
+    static let id = Expression<Int64>("id")
+    // 搜索类型
+    static let type = Expression<String>("type")
+    
+    // 搜索记录
     static let name = Expression<String>("name")
     // 时间 排序 （MARK 默认是UTC时间）
     static let ctime = Expression<Date>("ctime")
@@ -327,21 +333,30 @@ struct SearchHistory {
     }
     
     
-    func insertSearch(name:String){
+    func insertSearch(type:String,name:String){
         
         do{
             // 插入新数据 或替换原来数据的时间
-            try dbManager.db?.run(SearchHistory.search.insert(or: .replace, SearchHistory.name <- name, SearchHistory.ctime <- Date()))
+            let target = SearchHistory.search.filter(SearchHistory.type  ==  type && SearchHistory.name == name)
+            
+            if let _ =  try dbManager.db?.pluck(target){
+                    // 更新时间
+                    try  dbManager.db?.run(target.update(SearchHistory.ctime <- Date()))
+                
+            }else{
+            
+            try dbManager.db?.run(SearchHistory.search.insert(SearchHistory.type <- type ,SearchHistory.name <- name, SearchHistory.ctime <- Date()))
+            }
             
         }catch{
             print(error)
         }
     }
     
-    func deleteSearch(name:String){
+    func deleteSearch(type:String, name:String){
         do{
             try dbManager.db?.transaction(block: {
-                let target = SearchHistory.search.filter(SearchHistory.name == name)
+                let target = SearchHistory.search.filter(SearchHistory.name == name && SearchHistory.type == type )
                 try dbManager.db?.run(target.delete())
             })
             
@@ -350,13 +365,13 @@ struct SearchHistory {
         }
     }
     
-    func getSearches()->[String]{
+    func getSearches(type:String)->[String]{
         guard  let db = self.dbManager.db else {
             return []
         }
         do{
             var res = [String]()
-            for item in try db.prepare(SearchHistory.search.select(SearchHistory.name).order(SearchHistory.ctime.desc)){
+            for item in try db.prepare(SearchHistory.search.select(SearchHistory.name).filter(SearchHistory.type == type).order(SearchHistory.ctime.desc)){
                 res.append(item[SearchHistory.name])
             }
             return res
@@ -368,9 +383,9 @@ struct SearchHistory {
     }
     
     
-    func removeAllSearchItem(){
+    func removeAllSearchItem(type:String){
         do{
-            try dbManager.db?.run(SearchHistory.search.delete())
+            try dbManager.db?.run(SearchHistory.search.filter(SearchHistory.type == type).delete())
         }catch{
             print(error)
         }

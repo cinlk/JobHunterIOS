@@ -19,134 +19,110 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
         let image = UIImageView.init()
         image.contentMode = .scaleAspectFit
         image.clipsToBounds = true
-        image.backgroundColor = UIColor.clear
-        
         return image
     }()
     
-    private lazy var JobName:UILabel = {
-        let label = UILabel.init()
-        label.font = UIFont.systemFont(ofSize: 15)
-        label.sizeToFit()
-        label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
-        return label
-    }()
     
     private lazy var company:UILabel = {
         let label = UILabel.init()
-        label.font = UIFont.systemFont(ofSize: 10)
-        label.textColor = UIColor.lightGray
-        label.sizeToFit()
         label.textAlignment = .left
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.textColor = UIColor.black
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20 )
         return label
         
     }()
     
+    private lazy var interTag:UILabel = {
+        let label = UILabel.init()
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 10)
+        label.textColor = UIColor.white
+        label.backgroundColor = UIColor.orange
+        label.text = "实习"
+        label.isHidden = true
+        return label
+        
+    }()
+    private lazy var jobName:UILabel = {
+        let label = UILabel.init()
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textAlignment = .left
+        label.textColor = UIColor.black
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
+        return label
+    }()
+    
     private lazy var address:UILabel = {
         let label = UILabel.init()
-        label.font = UIFont.systemFont(ofSize: 10)
+        label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = UIColor.lightGray
-        label.sizeToFit()
         label.textAlignment = .left
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
         return label
     }()
     
-    private lazy var type:UILabel = {
-        let label = UILabel.init()
-        label.font = UIFont.systemFont(ofSize: 10)
-        label.textColor = UIColor.lightGray
-        label.sizeToFit()
-        label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
-        return label
-    }()
     
     private lazy var  degree:UILabel = {
         let label = UILabel.init()
-        label.font = UIFont.systemFont(ofSize: 10)
+        label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = UIColor.lightGray
-        label.sizeToFit()
         label.textAlignment = .left
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
         return label
     }()
     
-    private lazy var  internDay:UILabel = {
-        let label = UILabel.init()
-        label.font = UIFont.systemFont(ofSize: 10)
-        label.textColor = UIColor.lightGray
-        label.sizeToFit()
-        label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
-        return label
-    }()
     
     
     private lazy var  create_time:UILabel = {
         let label = UILabel.init()
-        label.font = UIFont.systemFont(ofSize: 10)
-        label.textColor = UIColor.lightGray
-        label.sizeToFit()
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textColor = UIColor.blue
         label.textAlignment = .right
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
         return label
     }()
     
-    private lazy var  salary:UILabel = {
+    
+    // 浏览次数
+    private lazy var checkNums:UILabel = {
         let label = UILabel.init()
-        label.font = UIFont.systemFont(ofSize: 10)
-        label.textColor = UIColor.red
-        label.sizeToFit()
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textColor = UIColor.lightGray
         label.textAlignment = .right
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
         return label
-    }()
-    
-    
-    private lazy var rightArrow:UIImageView = {
-        let right = UIImageView.init(image: #imageLiteral(resourceName: "rightforward") )
-        right.clipsToBounds = true
-        right.contentMode  = .scaleAspectFit
-        return right
         
     }()
-    
-    
-    private var deliver:Bool = false
     
     
     
     dynamic var mode:CompuseRecruiteJobs?{
         didSet{
             
-            icon.image = UIImage.init(named: (mode?.icon)!)
-            JobName.text = mode?.name
-            company.text = mode?.companyID
-            address.text = mode?.address
-            type.text = mode?.kind?.describe
-            
-            degree.text = mode?.education
-            salary.text = mode?.salary
-            create_time.text = mode?.creatTimeStr
-            
-            
-            guard let kind = mode?.kind else {
-                 self.setupAutoHeight(withBottomViewsArray: [address, type, degree], bottomMargin: 10)
-                 return
+            guard  let mode = mode, let type = mode.kind else {
+                return
             }
-            if kind == .graduate {
-                internDay.isHidden = true
-            }
-            else if kind == .intern {
-                internDay.isHidden = false
-                internDay.text = mode?.perDay
-                
-            }
+            
+            icon.image = UIImage.init(named: mode.icon)
+            
+            interTag.isHidden =  type == .intern ? false : true
            
-            self.setupAutoHeight(withBottomViewsArray: [address, type, degree], bottomMargin: 10)
+            company.text = mode.companyID
+
+            jobName.text = mode.name
+            
+            address.text = mode.addressStr
+            
+            degree.text = "| " + mode.education
+           
+            create_time.text = mode.creatTimeStr
+            
+            checkNums.text = "\(mode.readNums)人浏览"
+            
+       
+           
+            self.setupAutoHeight(withBottomViewsArray: [address, degree], bottomMargin: 5)
             
         }
     }
@@ -156,9 +132,8 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        let views:[UIView] = [icon, JobName, company, address, type, degree, internDay, create_time, salary,rightArrow]
+        let views:[UIView] = [icon, jobName, company, address, degree, create_time, checkNums,interTag]
         
-        //icon.addSubview(internTagImageView)
         self.sd_addSubviews(views)
         setLayout()
         
@@ -170,10 +145,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     }
     
     
-    
-    class func cellHeight()->CGFloat{
-        return  65
-    }
+
     
 }
 
@@ -186,30 +158,21 @@ extension  CommonJobDetailCellView{
         _ = icon.sd_layout().topSpaceToView(self,5)?.leftSpaceToView(self,5)?.widthIs(imgSize.width)?.heightIs(imgSize.height)
        
         
-        _ = JobName.sd_layout().topEqualToView(icon)?.leftSpaceToView(icon,10)?.autoHeightRatio(0)
-        _ = company.sd_layout().leftEqualToView(JobName)?.topSpaceToView(JobName,3)?.autoHeightRatio(0)
-        _ = address.sd_layout().leftEqualToView(JobName)?.topSpaceToView(company,5)?.autoHeightRatio(0)
-        _ = type.sd_layout().topEqualToView(address)?.leftSpaceToView(address,5)?.autoHeightRatio(0)
-        _ = degree.sd_layout().topEqualToView(type)?.leftSpaceToView(type,5)?.autoHeightRatio(0)
-        _ = internDay.sd_layout().topEqualToView(degree)?.leftSpaceToView(degree,5)?.autoHeightRatio(0)
-        _ = salary.sd_layout().topEqualToView(JobName)?.rightSpaceToView(self,10)?.autoHeightRatio(0)
-        _ = create_time.sd_layout().rightEqualToView(salary)?.topSpaceToView(salary,15)?.autoHeightRatio(0)
-        
-        
-        if deliver{
-            _ = rightArrow.sd_layout().rightEqualToView(salary)?.centerYEqualToView(self)?.widthIs(20)?.heightIs(20)
-        }else{
-            rightArrow.frame = CGRect.zero
-        }
-        
-        JobName.setMaxNumberOfLinesToShow(1)
+        _ = company.sd_layout().topEqualToView(icon)?.leftSpaceToView(icon,15)?.autoHeightRatio(0)
+        _ = interTag.sd_layout().leftSpaceToView(company,5)?.centerYEqualToView(company)?.autoHeightRatio(0)?.widthIs(28)
+        _ = jobName.sd_layout().topSpaceToView(company,5)?.leftEqualToView(company)?.autoHeightRatio(0)
+        _ = address.sd_layout().topSpaceToView(jobName,10)?.leftEqualToView(jobName)?.autoHeightRatio(0)
+        _ = degree.sd_layout().topEqualToView(address)?.leftSpaceToView(address,5)?.autoHeightRatio(0)
+        _ = checkNums.sd_layout().topEqualToView(icon)?.rightSpaceToView(self,15)?.autoHeightRatio(0)
+        _ = create_time.sd_layout().topSpaceToView(checkNums,10)?.rightEqualToView(checkNums)?.autoHeightRatio(0)
+
+        interTag.setMaxNumberOfLinesToShow(1)
+        jobName.setMaxNumberOfLinesToShow(1)
         company.setMaxNumberOfLinesToShow(1)
         address.setMaxNumberOfLinesToShow(1)
-        type.setMaxNumberOfLinesToShow(1)
         degree.setMaxNumberOfLinesToShow(1)
-        internDay.setMaxNumberOfLinesToShow(1)
-        salary.setMaxNumberOfLinesToShow(1)
         create_time.setMaxNumberOfLinesToShow(1)
+        checkNums.setMaxNumberOfLinesToShow(1)
     }
     
     

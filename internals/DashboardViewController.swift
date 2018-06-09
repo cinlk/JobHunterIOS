@@ -192,8 +192,7 @@ class DashboardViewController: BaseViewController{
         self.tables.insertSubview(page, aboveSubview: self.tables.tableHeaderView!)
         self.tables.contentInset = UIEdgeInsetsMake(0, 0, tableBottomInset, 0)
         self.tables.tableFooterView = UIView()
-        self.tables.separatorStyle = .none
-        
+        self.tables.separatorStyle = .singleLine
         
         /***** search *****/
         // searchController 占时新的控制视图时，显示在当前视图上
@@ -211,8 +210,10 @@ class DashboardViewController: BaseViewController{
         
         //searchController?.cityDelegate = self
         searchController?.height = searchBarH
+        searchController?.searchType = .company
         
         searchBarContainer.addSubview((searchController?.searchBar)!)
+        
         
         self.navigationItem.titleView = searchBarContainer
         
@@ -316,7 +317,7 @@ extension DashboardViewController: UITableViewDelegate{
         
         else if indexPath.section == 5 {
             
-            return   indexPath.row == 0 ? 30 : 65
+            return   indexPath.row == 0 ? 30 : 75
         }
         return 0
         //return  jobdetailCell.cellHeight()
@@ -384,6 +385,7 @@ extension DashboardViewController: UITableViewDelegate{
             case let .recruimentMeet(list: meets):
                 let cell = table.dequeueReusableCell(withIdentifier: recruitmentMeetCell.identity()) as! recruitmentMeetCell
                 cell.mode = (title:"热门宣讲会",item:meets)
+                // 查看所有热门宣讲会
                 cell.selectedIndex = {
                     self.tabBarController?.selectedIndex = 1
                     //self.tabBarController?.viewControllers[1]
@@ -392,6 +394,16 @@ extension DashboardViewController: UITableViewDelegate{
                     }
                     
                 }
+                // 查看具体的宣讲会
+                cell.selectItem = { mode in
+                    let talkShow = CareerTalkShowViewController()
+                    talkShow.meetingID = mode.id
+                    talkShow.hidesBottomBarWhenPushed = true
+                    self.navigationController?.pushViewController(talkShow, animated: true)
+                    
+                }
+                
+                
                 return cell
             case let .applyonline(list: applys):
                 let cell = table.dequeueReusableCell(withIdentifier: applyOnlineCell.identity()) as!  applyOnlineCell
@@ -488,8 +500,12 @@ extension DashboardViewController: UISearchControllerDelegate{
         self.searchController?.searchBar.setPositionAdjustment(UIOffset.init(horizontal: 60, vertical: 0), for: .search)
         self.searchController?.setSearchBar(open: true)
         
-        self.navigationController?.navigationBar.settranslucent(false)
+        self.navigationController?.navigationBar.isTranslucent = false
+        self.navigationController?.navigationBar.barTintColor = UIColor.init(r: 192, g: 192, b: 192)
         self.tabBarController?.tabBar.isHidden = true
+        
+        (self.navigationController as? DashboardNavigationVC)?.currentStyle = .default
+        
         
     }
     
@@ -501,6 +517,8 @@ extension DashboardViewController: UISearchControllerDelegate{
         
         self.navigationController?.navigationBar.settranslucent(true)
         self.tabBarController?.tabBar.isHidden = false
+
+        (self.navigationController as? DashboardNavigationVC)?.currentStyle = .lightContent
 
     }
 
@@ -555,13 +573,15 @@ extension DashboardViewController{
             
             // searchcontiner 透明度
             if (newoffsetY >= 0 && newoffsetY <= 64){
+                (self.navigationController as? DashboardNavigationVC)?.currentStyle = .lightContent
                 self.searchBarContainer.alpha = 1
                 self.navigationView.backgroundColor  = UIColor.init(r: 249, g: 249, b: 249, alpha: newoffsetY/64)
                     
                 
             }
             else if ( newoffsetY > 64){
-                self.navigationView.backgroundColor  = UIColor.navigationBarColor()
+                (self.navigationController as? DashboardNavigationVC)?.currentStyle = .default
+                self.navigationView.backgroundColor  = UIColor.init(r: 192, g: 192, b: 192)
                 
             }
             else {
@@ -580,10 +600,12 @@ extension DashboardViewController{
                     self.navigationView.alpha = 0
                 })
             }else{
+                //(self.navigationController as? DashboardNavigationVC)?.currentStyle = .default
                 UIView.animate(withDuration: 0.1, animations: {
                     self.navigationView.alpha = 1
                 })
             }
+            
             
         }
             

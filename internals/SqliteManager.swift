@@ -114,7 +114,9 @@ extension SqliteManager{
         
         do{
             try db?.run(SearchHistory.search.create(temporary: false, ifNotExists: true, withoutRowid: false, block: { (t) in
-                t.column(SearchHistory.name, primaryKey: true)
+                t.column(SearchHistory.id, primaryKey: PrimaryKey.autoincrement)
+                t.column(SearchHistory.type)
+                t.column(SearchHistory.name, unique: true)
                 // 不是空字符串
                 //t.check(SearchHistory.name.trim().length > 0)
                 t.column(SearchHistory.ctime, defaultValue: startDate)

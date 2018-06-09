@@ -26,13 +26,29 @@ fileprivate let defaultSearchCity:String = "全国"
 class baseSearchViewController: UISearchController{
 
     
+    // 搜索类型 决定 搜索记录界面显示数据 MARK
+    internal var searchType:searchItem = .none{
+        didSet{
+            switch searchType {
+            case .forum:
+                self.serchRecordVC.hotItem = ["面试dqd ","实习","租房","刷题","当前为多群无多"]
+                self.serchRecordVC.searchType = "forum"
+            case .company, .intern, .meeting, .graduate, .onlineApply:
+                self.serchRecordVC.hotItem = ["带我去的群无dqdqdqw", "大青蛙","当前为多群","dwq","当前为多","d当前为多群无","当前为多群无多"]
+                //默认值
+                self.serchRecordVC.searchType = "jobs"
+
+            default:
+                break
+            }
+        }
+    }
+    
     internal var searchField:UITextField!
     
     // 搜索结果显示控制组件
     internal var searchShowVC:searchResultController?
     
-
-    // 筛选条件
     private lazy var currentMenuType:searchItem = .onlineApply
     
     
@@ -204,7 +220,7 @@ class baseSearchViewController: UISearchController{
         let btn = UIButton.init(frame: CGRect.init(x: 5, y: 4.5, width: 60, height: 20))
         //let btn = UIButton.init(frame: CGRect.zero)
         btn.setImage(#imageLiteral(resourceName: "arrow_nor").changesize(size: CGSize.init(width: 10, height: 10)), for: .normal)
-        btn.setTitle(currentMenuType.rawValue, for: .normal)
+        btn.setTitle(currentMenuType.describe, for: .normal)
         btn.imageEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 0)
         
         // btn的元素排列
@@ -225,6 +241,16 @@ class baseSearchViewController: UISearchController{
         popMenuView.delegate = self
         return popMenuView
     }()
+    
+    // 背景btn
+    private lazy var backgroundBtn:UIButton = {
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
+        btn.addTarget(self, action: #selector(hiddenPopMenu), for: .touchUpInside)
+        btn.backgroundColor = UIColor.lightGray
+        btn.alpha = 0.5
+        return btn
+    }()
+    
     
     
     
@@ -301,6 +327,8 @@ class baseSearchViewController: UISearchController{
         //
         currentDropMenuView = [searchItem.onlineApply: OnLineApplydropDownMenu, .company: company, .intern: intern, .graduate: graduate, .meeting: meeting]
         
+        self.addChildViewController(serchRecordVC)
+        
         // 必须把布局代码 放这里，才能初始化正常！！！！
         self.view.addSubview(self.serchRecordVC.view)
         self.view.addSubview(dropBackView)
@@ -333,34 +361,30 @@ class baseSearchViewController: UISearchController{
     
 
     
-    // 选择城市，标签frame更新
-    func changeCityTitle(title:String){
-        
-        // 计算city 字符串长度，改变button长度，和searchicon 偏移位置
-        let rect = title.getStringCGRect(size: CGSize.init(width: 120, height: 0),font: (self.cityButton.titleLabel?.font!)!)
-        if rect.width > 30{
-            let add =  rect.width - 30
-            UIView.animate(withDuration: 0.1, animations: {
-                self.searchBar.setPositionAdjustment(UIOffsetMake(leftDistance + add, 0), for: .search)
-                self.cityButton.frame = CGRect.init(x: 5, y: 4.5, width: 30 + add , height: 20)
-                
-            })
-        }else{
-            self.cityButton.frame = CGRect.init(x: 5, y: 4.5, width: 30, height: 20)
-            self.searchBar.setPositionAdjustment(UIOffsetMake(leftDistance  , 0), for: .search)
-
-        }
-        self.cityButton.setTitle(title, for: .normal)
-
-    }
-    
     
 }
 
 
+
 extension baseSearchViewController{
     @objc private func showItems(_ btn:UIButton){
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            UIApplication.shared.keyWindow?.addSubview(self.backgroundBtn)
+        }, completion: { bool in
             self.popMenuView.show()
+        })
+        
+    }
+    
+    @objc private func hiddenPopMenu(){
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.popMenuView.dismiss()
+
+        }) { bool in
+            self.backgroundBtn.removeFromSuperview()
+
+        }
+        
     }
 }
 
@@ -369,7 +393,7 @@ extension baseSearchViewController{
         
         self.chooseTypeBtn.isHidden = !open
         self.showRecordView = open
-        self.popMenuView.dismiss()
+        //self.popMenuView.dismiss()
         
     }
 }
@@ -381,12 +405,7 @@ extension baseSearchViewController{
 // 搜索历史记录 代理实现
 extension baseSearchViewController:SearchResultDelegate,UISearchBarDelegate{
     
-    func dismissPopView() {
-        self.popMenuView.dismiss()
-        self.searchField.endEditing(true)
-    }
-    
-    
+
 
     func ShowSearchResults(word: String) {
         
@@ -395,9 +414,9 @@ extension baseSearchViewController:SearchResultDelegate,UISearchBarDelegate{
             return
         }
         
-        DBFactory.shared.getSearchDB().insertSearch(name: word)
+       
+        DBFactory.shared.getSearchDB().insertSearch(type: self.serchRecordVC.searchType,name: word)
         //localData.shared.appendSearchHistories(value: word)
-        self.serchRecordVC.AddHistoryItem = true
         
         // 影藏当前所有dropMenu
         currentDropMenuView.values.forEach{
@@ -419,7 +438,7 @@ extension baseSearchViewController:SearchResultDelegate,UISearchBarDelegate{
         
     }
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        self.popMenuView.dismiss()
+        //self.popMenuView.dismiss()
         self.showRecordView = false
         searchBar.endEditing(true)
     }
@@ -435,8 +454,8 @@ extension baseSearchViewController{
         self.showRecordView = false
         
         // 查找新的item 然后 查询数据刷新搜索结果界面
-        self.popMenuView.dismiss()
-        DBFactory.shared.getSearchDB().insertSearch(name: word)
+        //self.popMenuView.dismiss()
+        DBFactory.shared.getSearchDB().insertSearch(type: self.serchRecordVC.searchType,name: word)
         
         currentDropMenuView.values.forEach{
             $0.isHidden = true
@@ -453,7 +472,7 @@ extension baseSearchViewController{
     // 搜索论坛数据
      open func startPostSearch(word:String){
          self.showRecordView = false
-         DBFactory.shared.getSearchDB().insertSearch(name: word)
+         DBFactory.shared.getSearchDB().insertSearch(type: self.serchRecordVC.searchType,name: word)
         
     }
 }
@@ -483,7 +502,9 @@ extension baseSearchViewController: SearchMenuDelegate{
         let refresh  =  currentMenuType == item ? false : true
         currentMenuType = item
         
-        chooseTypeBtn.setTitle(item.rawValue, for: .normal)
+        self.hiddenPopMenu()
+        
+        chooseTypeBtn.setTitle(item.describe, for: .normal)
         if item == .meeting{
             chooseTypeBtn.imageEdgeInsets = UIEdgeInsetsMake(0, 30, 0, 0)
         }else{
@@ -493,7 +514,7 @@ extension baseSearchViewController: SearchMenuDelegate{
         
         // 刷新结果界面
         if self.showRecordView == false && refresh{
-            self.popMenuView.dismiss()
+            //self.popMenuView.dismiss()
             currentDropMenuView.values.forEach{
                 $0.isHidden = true
             }

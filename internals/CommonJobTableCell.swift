@@ -25,7 +25,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
         didSet{
             self.commonjobView.mode = mode
             
-            self.setupAutoHeight(withBottomView: commonjobView, bottomMargin: 0)
+            self.setupAutoHeight(withBottomView: commonjobView, bottomMargin: 5)
         }
     }
     
@@ -48,8 +48,8 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     
     // MARK 区分cell 投递 和非
     
-    class func cellHeight()->CGFloat{
-        return  65
-    }
+//    class func cellHeight()->CGFloat{
+//        return  65
+//    }
 
 }

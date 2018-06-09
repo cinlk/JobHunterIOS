@@ -42,7 +42,7 @@ class SearchTypeMenuView: UIView {
         path.addLine(to: CGPoint.init(x: arrowLeftMargin, y: arrowHeight))
         path.addLine(to: CGPoint.init(x: arrowLeftMargin + arrowWidth, y: arrowHeight))
         layer.path = path.cgPath
-        layer.fillColor = UIColor.lightGray.cgColor
+        layer.fillColor = UIColor.white.cgColor
         view.layer.masksToBounds = true
         view.layer.addSublayer(layer)
         return view
@@ -117,7 +117,8 @@ extension SearchTypeMenuView: UITableViewDataSource, UITableViewDelegate{
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = datas[indexPath.row].rawValue
+        cell.selectionStyle = .none
+        cell.textLabel?.text = datas[indexPath.row].describe
         cell.textLabel?.font = UIFont.systemFont(ofSize: 12)
         cell.textLabel?.textAlignment = .center
         return cell

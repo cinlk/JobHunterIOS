@@ -47,7 +47,7 @@ fileprivate let itemHeight:CGFloat = 30
             // 计算layout 的高度，在设置collectionView高度 调整cell高度
             let height = collectionView.collectionViewLayout.collectionViewContentSize.height + 20
              _ = contentView.sd_layout().heightIs(height)
-            print(contentView.frame)
+            //print(contentView.frame)
             self.setupAutoHeight(withBottomView: contentView, bottomMargin: 10)
             
         }

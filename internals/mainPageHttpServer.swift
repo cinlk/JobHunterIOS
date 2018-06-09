@@ -183,7 +183,12 @@ class mainPageServer {
     public func searchCareerTalk(word:String) -> Observable<[CareerTalkMeetingModel]>{
         var res:[CareerTalkMeetingModel] = []
         for _ in 0..<12{
-            res.append(CareerTalkMeetingModel(JSON: ["collegeIcon":"sina","company":"公司名字","address":"北京大学","id":"dwq-dwq323","start_time":Date.init().timeIntervalSince1970])!)
+            
+            guard let data = CareerTalkMeetingModel(JSON: ["icon":"chrome","college":"北京大学","company":"公司名字","address":"第一教学楼","id":"dwq-dwq323","name":"当前为多群无多","isValidate":true,"isCollected":true, "start_time":Date.init().timeIntervalSince1970]) else {
+                continue
+            }
+            
+             res.append(data)
         }
         
         return Observable.just(res)
@@ -203,8 +208,13 @@ class mainPageServer {
     public func searchOnlineApply(word:String) -> Observable<[OnlineApplyModel]>{
         var res:[OnlineApplyModel] = []
         for _ in 0..<12{
-            res.append(OnlineApplyModel(JSON: ["id":"fq-4320-dqwd","end_time":"2017","start_time":"2018","positionAddress":["成都","重庆"],"content":"dqwdqwdqwddqwdqwdqwddqwdqwdqwddqwdqwdqwdqwdqwdwqdqwdqwdqw","outer":true,
-                                               "majors":["土木工程","软件工程","其他"],"positions":["设计","测试","销售"],"link":"http://campus.51job.com/padx2018/index.html","isApply":false,"isValidate":true,"isCollected":true,"name":"网申测试"])!)
+            
+            if let data = OnlineApplyModel(JSON: ["id":"fq-4320-dqwd","end_time":"2017","start_time":"2018","positionAddress":["成都","重庆"],"content":"dqwdqwdqwddqwdqwdqwddqwdqwdqwddqwdqwdqwdqwdqwdwqdqwdqwdqw","outer":true,
+                                                  "majors":["土木工程","软件工程","其他"],"positions":["设计","测试","销售"],"link":"http://campus.51job.com/padx2018/index.html","isApply":false,"isValidate":true,"isCollected":true,"name":"网申测试","companyModel":["id":"dqwdqw","name":"company1","isValidate":true,"isCollected":false]]){
+                 res.append(data)
+                
+            }
+           
         }
         return Observable.just(res)
     }

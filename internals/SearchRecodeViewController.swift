@@ -12,38 +12,32 @@ import UIKit
 protocol SearchResultDelegate: class{
     
     func ShowSearchResults(word:String)
-    func dismissPopView()
-    
-    
+
 }
 
 
-fileprivate let headerViewH:CGFloat = 200
 fileprivate let HeadeTitle:String = "热门搜索"
+fileprivate let searchHistory:String = "搜索历史"
+
 
 class SearchRecodeViewController: UIViewController {
-
-    // 区分论坛 和非论坛的数据
-    internal var isForum:Bool = false{
-        didSet{
-             hotItem = ["面试","实习","租房","刷题"]
-             searchHederView.mode = hotItem
-             let height = CGFloat((hotItem.count / 3)*10 + ( hotItem.count / 3 + hotItem.count % 3) * 25 + 20 + 25 + 10)
-             searchHederView.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: height)
-            
-            
-        }
-    }
     
-    //private let userData = localData.shared
+  
+    
     // 搜索数据库 数据
     private let searchTable = DBFactory.shared.getSearchDB()
-    private lazy var searchItems:[String]  = searchTable.getSearches()
+    // 主界面职位搜索记录
+    private  var searchItems:[String]  = []
     
+    // 论坛搜索记录  MARK
+    //private lazy var articlItems:[String]  = searchTable.getSearches()
     
     // 控制table的显示
-    var ShowHistoryTable:Bool = true {
+    private var ShowHistoryTable:Bool = true {
         willSet{
+            
+            searchItems = searchTable.getSearches(type: searchType)
+
             if newValue{
                 HistoryTable.isHidden = false
                 FilterTable.isHidden = true
@@ -62,9 +56,8 @@ class SearchRecodeViewController: UIViewController {
     private lazy var HistoryTable:UITableView = {  [unowned self] in
         
         let HistoryTable = UITableView.init()
-        HistoryTable.backgroundColor = UIColor.viewBackColor()
+        HistoryTable.backgroundColor = UIColor.white
         HistoryTable.tableFooterView = UIView.init()
-        HistoryTable.register(HistoryRecordCell.self, forCellReuseIdentifier: HistoryRecordCell.identity())
         //HistoryTable.tableHeaderView =  RecordHeaderView()
         HistoryTable.delegate = self
         HistoryTable.dataSource = self
@@ -73,7 +66,7 @@ class SearchRecodeViewController: UIViewController {
     // 匹配搜索记录
    private lazy var FilterTable:UITableView = {  [unowned self] in
         let FilterTable = UITableView.init()
-        FilterTable.backgroundColor = UIColor.viewBackColor()
+        FilterTable.backgroundColor = UIColor.white
         FilterTable.tableFooterView = UIView.init()
         FilterTable.delegate = self
         FilterTable.dataSource = self
@@ -82,7 +75,9 @@ class SearchRecodeViewController: UIViewController {
        
     // 热门搜索headerview
     fileprivate lazy var searchHederView:TableViewHeader = { [unowned self] in
-            let h = TableViewHeader.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: headerViewH))
+            let h = TableViewHeader.init(frame: CGRect.zero)
+            h.backgroundColor = UIColor.white
+        
             h.chooseItem = { (word) in
                 self.resultDelegate?.ShowSearchResults(word: word)
             
@@ -90,21 +85,56 @@ class SearchRecodeViewController: UIViewController {
             return h
     }()
     
+    private lazy var clearAllLabel:UIView = {
+        
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 40))
+        v.backgroundColor = UIColor.clear
+        v.isUserInteractionEnabled = true
+        
+        let  label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 16)
+        label.textColor = UIColor.lightGray
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.text = "清除历史记录"
+        label.textAlignment = .center
+        label.backgroundColor = UIColor.clear
+        label.isUserInteractionEnabled = true
+        let gesture = UITapGestureRecognizer()
+        gesture.addTarget(self, action: #selector(deleteAll))
+        label.addGestureRecognizer(gesture)
+        
+        v.addSubview(label)
+        _ = label.sd_layout().centerYEqualToView(v)?.centerXEqualToView(v)?.autoHeightRatio(0)
+        return v
+        
+    }()
     
+    
+    //
     private var matchRecords:[String] = [""]
     
-    private var hotItem:[String] = []
+    internal var searchType:String = ""{
+        didSet{
+            
+            searchItems = searchTable.getSearches(type: searchType)
+            HistoryTable.reloadData()
+            
+        }
+    }
+    
+    // 热门搜索数据
+    internal var hotItem:[String] = []{
+        didSet{
+            searchHederView.mode = hotItem
+            searchHederView.layoutSubviews()
+            HistoryTable.tableHeaderView = searchHederView
+        }
+    }
     
     // delegate
     weak var resultDelegate:SearchResultDelegate?
     
-    // 添加值
-    var AddHistoryItem = false{
-        willSet{
-            searchItems = searchTable.getSearches()
-            self.HistoryTable.reloadData()
-        }
-    }
+
     
     //private var hcount  = 0
     
@@ -112,11 +142,10 @@ class SearchRecodeViewController: UIViewController {
         
         super.viewDidLoad()
        
-        //hcount  =  1 +  SqliteManager.shared.getSearches().count
-        // 加载tags
-       
-        HistoryTable.tableHeaderView = searchHederView
-        loadItemData()
+        
+        //isForum = false
+        HistoryTable.tableFooterView = clearAllLabel
+    
         self.view.backgroundColor = UIColor.lightGray
         
         self.view.addSubview(HistoryTable)
@@ -134,16 +163,15 @@ class SearchRecodeViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        //ShowHistoryTable = true
         
         
     }
     
     override func viewWillLayoutSubviews() {
+        
         _ = HistoryTable.sd_layout().topEqualToView(self.view)?.bottomEqualToView(self.view)?.leftEqualToView(self.view)?.rightEqualToView(self.view)
         
         _ = FilterTable.sd_layout().topEqualToView(self.view)?.bottomEqualToView(self.view)?.leftEqualToView(self.view)?.rightEqualToView(self.view)
-        
         
         
     }
@@ -158,15 +186,7 @@ extension SearchRecodeViewController{
          self.resultDelegate?.ShowSearchResults(word: (sender.titleLabel?.text)!)
     }
 
-    private func loadItemData(){
-        if isForum{
-            hotItem = ["面试","实习","租房","刷题"]
-        }else{
-            hotItem = ["测试1", "测试2","测试带我当前为多群无多群去的", "测大豆纤维2", "测试2", "测试2", "测试2",
-        "测试2","测试2","测试2","测试大青蛙2","当前为多"]
-        }
-         searchHederView.mode = hotItem
-    }
+    
 }
 extension SearchRecodeViewController:UITableViewDelegate,UITableViewDataSource{
     
@@ -178,43 +198,45 @@ extension SearchRecodeViewController:UITableViewDelegate,UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         
-        if tableView == self.HistoryTable{
-            return 1 +  searchItems.count
-        }
-            return matchRecords.count
+       
+        tableView.tableFooterView?.isHidden =  searchItems.count == 0 ? true : false
         
-        
+        return tableView == self.HistoryTable ? (searchItems.count  == 0 ? 0 : searchItems.count + 1) : matchRecords.count
         
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell =  UITableViewCell.init()
+        let cell =  UITableViewCell()
         if tableView == self.HistoryTable{
-            // 删除cell
-            if  indexPath.row  == searchItems.count{
-                cell.textLabel?.text = "清除历史记录"
-                cell.textLabel?.textAlignment  = .center
-                // 只有一个cell  影藏当前cell
-                cell.isHidden =  searchItems.count == 0 ? true:false
-                return cell
-            }
-           guard let  hcell = tableView.dequeueReusableCell(withIdentifier: HistoryRecordCell.identity()) as? HistoryRecordCell else{
-                return cell
-            }
-           
-            hcell.mode = searchItems[indexPath.row]
-            hcell.deleteRow = { [weak self] (name) in
+            // 标题
+            if indexPath.row == 0 && searchItems.count > 0 {
                 
-                self?.HistoryTable.beginUpdates()
-                self?.searchTable.deleteSearch(name: name)
-                self?.searchItems = (self?.searchTable.getSearches())!
-                // 删除某个row，其他row值会改变，通过刷新reloadData 来更新row值
-                self?.HistoryTable.deleteRows(at: [IndexPath.init(row: indexPath.row, section: 0)], with: .none)
-                self?.HistoryTable.reloadData()
-                self?.HistoryTable.endUpdates()
+                let cell = UITableViewCell.init()
+                cell.selectionStyle = .none
+                cell.textLabel?.text =  "搜索记录"
+                cell.backgroundColor = UIColor.clear
+                cell.layer.borderWidth = 0
+                
+                cell.separatorInset = UIEdgeInsetsMake(0, 20, 0, 0)
+                return cell
+                
             }
-            hcell.useCellFrameCache(with: indexPath, tableView: tableView)
-            return hcell
+          
+            let rowCell = UITableViewCell.init(style: .value1, reuseIdentifier: "cell")
+            rowCell.backgroundColor = UIColor.clear
+            rowCell.textLabel?.text = searchItems[indexPath.row - 1]
+            rowCell.textLabel?.textAlignment = .left
+            rowCell.textLabel?.font = UIFont.systemFont(ofSize: 14)
+            let btn = UIButton.init(type: .custom)
+            btn.frame = CGRect.init(x: 0, y: 0, width: 25, height: 25)
+            btn.setImage(UIImage.init(named: "cancel")?.changesize(size: CGSize.init(width: 20, height: 20)).withRenderingMode(.alwaysTemplate), for: .normal)
+            
+            btn.tag = indexPath.row - 1
+            btn.addTarget(self, action: #selector(removeItem), for: .touchUpInside)
+            rowCell.separatorInset = UIEdgeInsetsMake(0, 20, 0, 0)
+            rowCell.accessoryView = btn
+            
+            return rowCell
             
         }else{
             cell.textLabel?.text = matchRecords[indexPath.row]
@@ -226,31 +248,25 @@ extension SearchRecodeViewController:UITableViewDelegate,UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat{
         
-        if tableView == self.HistoryTable && (searchItems.count != indexPath.row){
-            let mode = searchItems[indexPath.row]
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: HistoryRecordCell.self, contentViewWidth: ScreenW)
-            
-        }else{
-            return 45
+        if tableView == self.HistoryTable && indexPath.row == 0{
+            return 60
         }
+        
+        return 45
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         var word = ""
-        if tableView == self.HistoryTable{
-            if indexPath.row == searchItems.count  {
-                //userData.removeAllHistory()
-                searchItems.removeAll()
-                searchTable.removeAllSearchItem()
-                tableView.reloadData()
+        
+        tableView.deselectRow(at: indexPath, animated: true)
+        if tableView == self.HistoryTable && indexPath.row == 0{
                 return
-            }
-            let cell = tableView.cellForRow(at: indexPath) as! HistoryRecordCell
-            word = cell.mode!
-        }else{
-            let cell = tableView.cellForRow(at: indexPath)
-            word  = cell?.textLabel?.text ?? ""
         }
+        
+        let cell = tableView.cellForRow(at: indexPath)
+        word  = cell?.textLabel?.text ?? ""
+        
         self.resultDelegate?.ShowSearchResults(word: word)
         
     }
@@ -264,7 +280,7 @@ extension SearchRecodeViewController{
     // 根据输入框调整 recordVC 显示view
     func showHistory(){
         ShowHistoryTable = true
-        AddHistoryItem = true 
+        //AddHistoryItem = true
         
     }
     func listRecords(word:String){
@@ -282,15 +298,31 @@ extension SearchRecodeViewController{
 }
 
 
-extension SearchRecodeViewController:UIScrollViewDelegate{
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        self.resultDelegate?.dismissPopView()
-        
+
+extension SearchRecodeViewController{
+    
+    @objc  private func removeItem(_ sender:UIButton){
+    
+        guard  searchItems.count > sender.tag else {
+            return
+        }
+    
+    
+        searchTable.deleteSearch(type: searchType,name: searchItems[sender.tag])
+        searchItems.remove(at: sender.tag)
+        HistoryTable.reloadData()
+    }
+    
+    @objc private func deleteAll(){
+        searchItems.removeAll()
+        searchTable.removeAllSearchItem(type:searchType)
+        HistoryTable.reloadData()
     }
 }
 
 
 
+// 头部
 fileprivate class TableViewHeader:UIView{
     
     
@@ -308,11 +340,12 @@ fileprivate class TableViewHeader:UIView{
     private lazy var collectionView:UICollectionView = {
         let layout = UICollectionViewFlowLayout.init()
         layout.minimumLineSpacing =  10
-        layout.minimumInteritemSpacing = 10
-        layout.itemSize = CGSize.init(width: (ScreenW - 60) / 3 , height: 25)
+        layout.minimumInteritemSpacing = 5
+        // 每行3个元素
+        layout.itemSize = CGSize.init(width: (ScreenW - 60) / 4 , height: 20)
         layout.sectionInset = UIEdgeInsetsMake(5, 0, 5, 0)
-    
-        let coll = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
+        // collection view  初始高度
+        let coll = UICollectionView.init(frame: CGRect.init(x: 0, y: 25, width: ScreenW - 40, height: ScreenH), collectionViewLayout: layout)
         coll.backgroundColor = UIColor.clear
         coll.dataSource = self
         coll.delegate = self
@@ -328,8 +361,15 @@ fileprivate class TableViewHeader:UIView{
     
     var mode:[String]?{
         didSet{
+            
             self.collectionView.reloadData()
- 
+            // 布局后的高度
+            let height = collectionView.collectionViewLayout.collectionViewContentSize.height + 5
+
+            _ = self.collectionView.sd_layout().heightIs(height)
+            print(self.collectionView)
+            self.setupAutoHeight(withBottomView: collectionView, bottomMargin: 5)
+            
         }
     }
     
@@ -340,7 +380,7 @@ fileprivate class TableViewHeader:UIView{
         self.addSubview(collectionView)
         
         _ = label.sd_layout().leftSpaceToView(self,20)?.topSpaceToView(self,20)?.autoHeightRatio(0)
-        _ = collectionView.sd_layout().leftEqualToView(label)?.rightSpaceToView(self,20)?.topSpaceToView(label,5)?.bottomEqualToView(self)
+        _ = collectionView.sd_layout().leftEqualToView(label)?.rightSpaceToView(self,20)?.topSpaceToView(label,5)?.heightIs(0)
         
        
         
@@ -369,6 +409,7 @@ extension TableViewHeader:UICollectionViewDelegateFlowLayout, UICollectionViewDa
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! labelCollectionCell
         if let mode = mode{
+            
             cell.label.text = mode[indexPath.row]
         }
         return cell
@@ -391,19 +432,17 @@ private class labelCollectionCell:UICollectionViewCell{
     
     fileprivate lazy var label:UILabel = {
         let l = UILabel.init(frame: CGRect.zero)
-        l.font = UIFont.systemFont(ofSize: 16)
+        l.font = UIFont.systemFont(ofSize: 12)
         l.textAlignment = .center
-        l.setSingleLineAutoResizeWithMaxWidth((ScreenW - 60) / 3)
+        l.lineBreakMode = .byWordWrapping
+        l.numberOfLines = 1
         l.textColor = UIColor.blue
-        
-        
         return l
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.contentView.backgroundColor = UIColor.white
-        self.layer.borderColor = UIColor.black.cgColor
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -413,9 +452,10 @@ private class labelCollectionCell:UICollectionViewCell{
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        self.contentView.backgroundColor = UIColor.lightGray
         self.contentView.addSubview(label)
-        _ = label.sd_layout().centerXEqualToView(self.contentView)?.centerYEqualToView(self.contentView)?.heightIs(25)
-        label.setMaxNumberOfLinesToShow(1)
+        _ = label.sd_layout().centerXEqualToView(self.contentView)?.centerYEqualToView(self.contentView)?.widthIs(self.contentView.width)?.heightIs(self.contentView.height)
+        
     }
     
 }

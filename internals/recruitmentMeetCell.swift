@@ -12,7 +12,12 @@ import UIKit
 class recruitmentMeetCell: UITableViewCell {
 
     
+    // 查看所有热门宣讲会
     var selectedIndex:(()->Void)?
+    
+    
+    // 查看某个宣讲会
+    var selectItem:(( _ mode:CareerTalkMeetingModel)->Void)?
     
     private lazy var baseCollection:BaseCollectionHorizonView = BaseCollectionHorizonView.init(frame: CGRect.zero, column: 1, row: 4)
    
@@ -33,6 +38,7 @@ class recruitmentMeetCell: UITableViewCell {
         baseCollection.rightBtn.addTarget(self, action: #selector(chooseAll(_ :)), for: .touchUpInside)
         baseCollection.collectionView.delegate = self
         baseCollection.collectionView.dataSource = self
+        
         _ = baseCollection.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topEqualToView(self.contentView)?.bottomEqualToView(self.contentView)
         
         
@@ -84,7 +90,11 @@ extension recruitmentMeetCell:UICollectionViewDelegateFlowLayout, UICollectionVi
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         //self.delegate?.chooseItem(index: indexPath.row)
-        print(indexPath)
+        guard let mode = mode else {
+            return
+        }
+        self.selectItem?(mode.item[indexPath.row])
+        
     }
     
     

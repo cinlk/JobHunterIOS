@@ -167,6 +167,9 @@ extension JobHomeVC {
         searchController.delegate = self
         searchController.searchBar.delegate = self
         
+        searchController.searchType = .company
+        
+        
         // 加入titleview
         self.view.addSubview(self.pageTitleView)
         // 加入contentview

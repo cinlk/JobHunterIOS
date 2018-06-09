@@ -71,7 +71,7 @@ import UIKit
     dynamic var mode:CompuseRecruiteJobs?{
         didSet{
             jobName.text = mode?.name
-            address.text = mode?.address
+            address.text = mode?.addressStr
             type.text = mode?.type
             degree.text =  mode?.education
             create_time.text = mode?.creatTimeStr

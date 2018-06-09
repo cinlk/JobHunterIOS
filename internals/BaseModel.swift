@@ -38,7 +38,12 @@ class BaseModel:NSObject, Mappable, Comparable{
             guard let time = self.create_time else { return "" }
             let dateFormat = DateFormatter()
             dateFormat.locale = Locale.current
-            dateFormat.dateFormat = "yyyy-MM-dd"
+            
+            if time.year == Date().year{
+                 dateFormat.dateFormat = "MM-dd"
+            }else{
+                 dateFormat.dateFormat = "yyyy-MM-dd"
+            }
             let str = dateFormat.string(from: time)
             return str
         }

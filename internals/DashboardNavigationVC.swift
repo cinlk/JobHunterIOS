@@ -11,10 +11,17 @@ import UIKit
 class DashboardNavigationVC: UINavigationController {
 
     
-    // 设置status 类型
+     // 改变 status  颜色
+    var currentStyle = UIStatusBarStyle.lightContent{
+        didSet{
+            setNeedsStatusBarAppearanceUpdate()
+        }
+    }
+    
+   
     override var preferredStatusBarStyle: UIStatusBarStyle{
         get{
-            return .lightContent
+            return currentStyle
         }
     }
     
