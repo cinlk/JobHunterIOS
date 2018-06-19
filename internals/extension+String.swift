@@ -31,12 +31,6 @@ extension String {
     }
     
     
-    
-}
-
-
-extension String{
-    
     func getTimeInterval(format:String) -> TimeInterval{
         let dateFormat = DateFormatter()
         dateFormat.timeStyle = .short
@@ -46,6 +40,27 @@ extension String{
         }
         return 0
     }
+    
+    
+    
+    var htmlToAttributedString: NSAttributedString? {
+        guard let data =  data(using: .utf8, allowLossyConversion: true) else { return NSAttributedString() }
+        do {
+            return try NSAttributedString(data: data, options: [NSAttributedString.DocumentReadingOptionKey.documentType:  NSAttributedString.DocumentType.html], documentAttributes: nil)
+        } catch {
+            return NSAttributedString()
+        }
+    }
+    var htmlToString: String {
+        return htmlToAttributedString?.string ?? ""
+    }
+    
+    
 }
+
+
+
+
+
 
 

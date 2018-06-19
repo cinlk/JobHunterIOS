@@ -9,9 +9,7 @@
 import UIKit
 
 
-
-
-fileprivate let headerViewH:CGFloat =  100
+// 与companyMainVC 一致
 fileprivate let sections:Int = 3
 fileprivate var sectionHeight:CGFloat = 10
 
@@ -30,15 +28,16 @@ class CompanyDetailVC: UIViewController {
         tb.separatorStyle = .none
         //tb.bounces = false
         // 底部内容距离底部高60，防止回弹底部内容被影藏
-        let head = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: headerViewH))
+        let head = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: CompanyMainVC.headerViewH))
         head.backgroundColor = UIColor.viewBackColor()
         tb.tableHeaderView = head
         
-        tb.contentInset = UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0)
+        tb.contentInset = UIEdgeInsets.init(top: 0, left: 0, bottom: 30, right: 0)
         // cell
-        tb.register(tagsTableViewCell.self, forCellReuseIdentifier: "tagsTableViewCell")
-        tb.register(introductionCell.self, forCellReuseIdentifier: "introductionCell")
-        tb.register(CompanyDetailCell.self, forCellReuseIdentifier: "CompanyDetailCell")
+        tb.register(feedBackTypeCell.self, forCellReuseIdentifier: feedBackTypeCell.identity())
+        tb.register(contentAndTitleCell.self, forCellReuseIdentifier: contentAndTitleCell.identity())
+        tb.register(worklocateCell.self, forCellReuseIdentifier: worklocateCell.identity())
+        tb.register(subIconAndTitleCell.self, forCellReuseIdentifier: subIconAndTitleCell.identity())
         
         return tb
         
@@ -47,6 +46,12 @@ class CompanyDetailVC: UIViewController {
     // deleagte
     weak var delegate:CompanySubTableScrollDelegate?
     
+    private lazy var tap :UIGestureRecognizer  = {
+        let tap = UITapGestureRecognizer()
+        tap.addTarget(self, action: #selector(open))
+        
+        return tap
+    }()
     
     var detailModel:CompanyModel?{
         didSet{
@@ -80,7 +85,11 @@ extension CompanyDetailVC: UITableViewDelegate, UITableViewDataSource{
     
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return  sections
+        if let web = detailModel?.webSite, !web.isEmpty{
+            return sections + 1
+        }
+        return   sections
+        
         
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -93,21 +102,32 @@ extension CompanyDetailVC: UITableViewDelegate, UITableViewDataSource{
         switch indexPath.section{
         
         case 0:
-            let cell  = tableView.dequeueReusableCell(withIdentifier: "tagsTableViewCell", for: indexPath) as! tagsTableViewCell
-            cell.tags = detailModel?.tags  ?? [""]
+            let cell  = tableView.dequeueReusableCell(withIdentifier: feedBackTypeCell.identity(), for: indexPath) as! feedBackTypeCell
+            cell.collectionView.isUserInteractionEnabled = false
+            
+            cell.mode = detailModel?.tags  ?? []
             return cell
             
         case 1:
-            let cell  = tableView.dequeueReusableCell(withIdentifier: "introductionCell", for: indexPath) as! introductionCell
+            let cell  = tableView.dequeueReusableCell(withIdentifier: contentAndTitleCell.identity(), for: indexPath) as! contentAndTitleCell
             cell.des = detailModel?.describe  ?? ""
             return cell
         case 2:
-            //let comp = CompanyDetail(address: "地址 北京 - 定位", webSite: "https://www.baidu.com")
+            let cell  = tableView.dequeueReusableCell(withIdentifier: worklocateCell.identity(), for: indexPath) as! worklocateCell
+            cell.mode = detailModel?.address
             
-            let cell  = tableView.dequeueReusableCell(withIdentifier: "CompanyDetailCell", for: indexPath) as! CompanyDetailCell
-            cell.comp = detailModel
             return cell
+        
+        case 3:
+            let cell = tableView.dequeueReusableCell(withIdentifier: subIconAndTitleCell.identity(), for: indexPath) as! subIconAndTitleCell
             
+            cell.content.isUserInteractionEnabled = true
+            cell.content.attributedText = NSAttributedString.init(string: (detailModel?.webSite)!, attributes: [NSAttributedStringKey.foregroundColor:UIColor.blue, NSAttributedStringKey.link: URL(string: (detailModel?.webSite)!)!])
+            cell.content.addGestureRecognizer(tap)
+            //cell.mode = detailModel?.webSite
+            cell.icon.image  = #imageLiteral(resourceName: "link")
+            cell.iconName.text = "公司网址"
+            return cell
         default:
             break
             
@@ -132,14 +152,19 @@ extension CompanyDetailVC: UITableViewDelegate, UITableViewDataSource{
         switch indexPath.section {
         case 0:
             let tags =  detailModel?.tags ?? []
-            return tableView.cellHeight(for: indexPath, model: tags, keyPath: "tags", cellClass: tagsTableViewCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: tags, keyPath: "mode", cellClass: feedBackTypeCell.self, contentViewWidth: ScreenW)
         case 1:
             let des  = detailModel?.describe ?? ""
-            return tableView.cellHeight(for: indexPath, model: des, keyPath: "des", cellClass: introductionCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: des, keyPath: "des", cellClass: contentAndTitleCell.self, contentViewWidth: ScreenW)
         case 2:
-            if let cMode = detailModel{
-                return tableView.cellHeight(for: indexPath, model: cMode, keyPath: "comp", cellClass: CompanyDetailCell.self, contentViewWidth: ScreenW)
-            }
+           
+            return tableView.cellHeight(for: indexPath, model: detailModel?.address, keyPath: "mode", cellClass: worklocateCell.self, contentViewWidth: ScreenW)
+            
+        case 3:
+            let mode = detailModel?.webSite
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: subIconAndTitleCell.self, contentViewWidth: ScreenW) + 20
+            
+            
         default:
             break
         }
@@ -168,5 +193,15 @@ extension CompanyDetailVC{
         }
         
        
+    }
+}
+
+extension CompanyDetailVC{
+    @objc private func open(){
+        
+        openApp(appURL: (detailModel?.webSite)!, completion:{
+            bool in
+            
+        })
     }
 }

@@ -8,23 +8,25 @@
 
 import UIKit
 
-@objcMembers class TableContentCell: UITableViewCell {
+@objcMembers class applyJobsCell: UITableViewCell {
 
     lazy var name:UILabel = {
         let label = UILabel()
         label.textAlignment = .left
         label.font = UIFont.boldSystemFont(ofSize: 16)
         label.setSingleLineAutoResizeWithMaxWidth(200)
+        label.text = "招聘内容"
         return label
     }()
     
-    private lazy var content:UILabel = {
-        let label = UILabel()
-        label.textAlignment = .left
-        label.font = UIFont.systemFont(ofSize: 16)
-        label.textColor = UIColor.black
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20)
-        return label
+    private lazy var content:UITextView = {
+        let text = UITextView()
+        text.isScrollEnabled = false
+        text.font = UIFont.systemFont(ofSize: 16)
+        text.textAlignment = .left
+        text.isEditable = false
+        return text
+        
     }()
     
     // 分割线
@@ -36,7 +38,15 @@ import UIKit
     
     dynamic var mode:String?{
         didSet{
-            self.content.text = mode
+            
+           
+          
+            // 判断 内容格式
+            //self.content.attributedText = mode?.htmlToAttributedString
+            //self.content.text = mode?.htmlToString
+            self.content.text =  mode
+            let size = self.content.sizeThatFits(CGSize.init(width: ScreenW - 20, height: CGFloat(MAXFLOAT)))
+            _ = self.content.sd_layout().heightIs(size.height + 40)
             
             self.setupAutoHeight(withBottomView: content, bottomMargin: 20)
         }
@@ -50,8 +60,9 @@ import UIKit
         
         _ = name.sd_layout().topSpaceToView(self.contentView,5)?.leftSpaceToView(self.contentView,10)?.autoHeightRatio(0)
         _ = line.sd_layout().leftEqualToView(name)?.rightSpaceToView(self.contentView,10)?.topSpaceToView(name,5)?.heightIs(1)
-        _ = content.sd_layout().leftEqualToView(name)?.topSpaceToView(line,5)?.autoHeightRatio(0)
-        content.setMaxNumberOfLinesToShow(0)
+        // 高度？
+        _ = content.sd_layout().leftEqualToView(name)?.topSpaceToView(line,10)?.rightEqualToView(line)?.heightIs(0)
+        
         
         
         
@@ -62,7 +73,7 @@ import UIKit
     }
     
     class func identity()->String{
-        return "tableCellView"
+        return "applyJobsCell"
     }
 }
 

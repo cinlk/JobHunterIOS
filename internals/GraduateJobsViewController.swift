@@ -34,6 +34,7 @@ class GraduateJobsViewController: BasePositionItemViewController {
         menu.showMenuSpringWithDamping = 1
         menu.hideMenuSpringWithDamping = 1
         menu.bottomLine.isHidden = false
+        menu.addSwipeGestureToBlurView()
         
         return menu
         
@@ -118,10 +119,9 @@ extension GraduateJobsViewController: UITableViewDataSource, UITableViewDelegate
         table.deselectRow(at: indexPath, animated: false)
         let mode = self.datas[indexPath.row]
         let graduateJob = JobDetailViewController()
-        guard let id = mode.id else {
-            return
-        }
-        graduateJob.jobID = id
+
+        graduateJob.kind = (id: mode.id!, type: mode.kind!)
+        
         graduateJob.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(graduateJob, animated: true)
         
@@ -144,7 +144,7 @@ extension GraduateJobsViewController{
             Thread.sleep(forTimeInterval: 3)
             for _ in 0..<20{
                 
-                self?.datas.append(Mapper<CompuseRecruiteJobs>().map(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dqwd-dqwdqwddqw","name":"码农","address":"北京","create_time":Date().timeIntervalSince1970,"education":"本科","type":"graduate","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false,"readNums":arc4random()%1000])!)
+                self?.datas.append(Mapper<CompuseRecruiteJobs>().map(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dqwd-dqwdqwddqw","name":"码农","company":["id":"dqwd","name":"公司名称","isCollected":false,"icon":"chrome","address":["地址1","地址2"],"industry":["行业1","行业2"],"staffs":"1000人以上"],"hr":["userID":"dqwd","name":"我是hr","position":"HRBP","ontime": Date().timeIntervalSince1970 - TimeInterval(6514),"icon": #imageLiteral(resourceName: "jing").toBase64String()],"address":["北京","地址2"],"create_time":Date().timeIntervalSince1970,"education":"本科","type":"graduate","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false,"readNums":arc4random()%1000])!)
                 
             }
             

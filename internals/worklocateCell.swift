@@ -8,55 +8,83 @@
 
 import UIKit
 
-@objcMembers  class worklocateCell: UITableViewCell {
+
+
+fileprivate let cellH:CGFloat = 30
+
+
+@objcMembers  class worklocateCell: TitleTableViewCell {
 
     
-    private lazy var locate: UILabel = {
-        let lable = UILabel.init()
-        lable.textAlignment = .left
-        lable.font = UIFont.boldSystemFont(ofSize: 18)
-        lable.setSingleLineAutoResizeWithMaxWidth(ScreenW)
-        return lable
+    var chooseAddress:((_ adress:String)->Void)?
+    
+    private lazy var address:UITableView = {
+        let tb = UITableView()
+        tb.tableFooterView = UIView()
+        tb.backgroundColor = UIColor.white
+        tb.dataSource = self
+        tb.delegate  = self
+        tb.showsVerticalScrollIndicator = false
+        return tb
     }()
+  
     
-    
-    private lazy var details: UILabel = {
-        let lable = UILabel.init()
-        lable.textAlignment = .left
-        lable.font = UIFont.systemFont(ofSize: 14)
-        lable.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
-        lable.textColor = UIColor.lightGray
-        return lable
-    }()
-    
-    private lazy var line:UIView = {
-        let v = UIView.init()
-        v.backgroundColor = UIColor.black
-        return v
-    }()
-    
-    dynamic var mode:jobDetails?{
+    dynamic var mode:[String]?{
         didSet{
-            locate.text = "工作地址"
-            details.text = mode?.address
-            self.setupAutoHeight(withBottomView: details, bottomMargin: 10)
+            iconName.text = "工作地址"
+            
+            self.address.reloadData()
+            if let num = mode?.count {
+               _ =  address.sd_layout().heightIs(CGFloat(num) * cellH)
+            }
+            self.setupAutoHeight(withBottomView: address, bottomMargin: 0)
         }
     }
      override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
-        let views:[UIView] = [locate, line, details]
-        self.contentView.sd_addSubviews(views)
         
-        _  = locate.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.autoHeightRatio(0)
-    
-        _ = line.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topSpaceToView(locate,5)?.heightIs(1)
+        self.contentView.addSubview(address)
         
-        _ = details.sd_layout().topSpaceToView(line,5)?.leftEqualToView(locate)?.autoHeightRatio(0)
+        
+        _ = address.sd_layout().topSpaceToView(line,5)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.heightIs(0)
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    class func identity()->String{
+        return "worklocateCell"
+    }
+}
+
+extension worklocateCell: UITableViewDataSource, UITableViewDelegate{
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return mode?.count ?? 0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell()
+        cell.selectionStyle = .none
+        cell.textLabel?.font = UIFont.systemFont(ofSize: 16)
+        cell.textLabel?.text = mode?[indexPath.row]
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return cellH
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
+        if let address = mode?[indexPath.row]{
+            chooseAddress?(address)
+
+        }
+        
     }
     
     

@@ -41,7 +41,8 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 40, height: 40)
     private lazy var position: UILabel = {
         let label = UILabel.init()
         label.textAlignment = .left
-        label.font = UIFont.systemFont(ofSize: 16)
+        label.textColor = UIColor.lightGray
+        label.font = UIFont.systemFont(ofSize: 14)
         
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
         return label
@@ -63,14 +64,19 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 40, height: 40)
     }()
     
     
-    dynamic var mode:HRInfo?{
+    dynamic var mode:HRPersonModel?{
         didSet{
+            guard  let mode = mode  else {
+                return
+            }
+            
             title.text = "职位发布者"
-            icon.image = UIImage.init(named: mode?.icon ?? "chrome")
-            name.text = mode?.name
-            position.text = mode?.position
-            onlineTime.text = "最近活跃:" + (mode?.lastLogin ?? "0")
-            self.setupAutoHeight(withBottomViewsArray: [icon,position], bottomMargin: 10)
+            // 头像？？
+            icon.image = UIImage.init(data: mode.icon!)
+            name.text = mode.name
+            position.text = mode.position
+            onlineTime.text = "最近活跃:" + mode.ontimeStr
+            self.setupAutoHeight(withBottomViewsArray: [icon,position], bottomMargin: 5)
         }
     }
     
@@ -91,6 +97,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 40, height: 40)
         
         _ = onlineTime.sd_layout().centerYEqualToView(icon)?.rightSpaceToView(self.contentView,10)?.autoHeightRatio(0)
         
+        icon.sd_cornerRadiusFromWidthRatio = 0.5 
         
     }
     
@@ -98,4 +105,8 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 40, height: 40)
         fatalError("init(coder:) has not been implemented")
     }
     
+    
+    class func identity()->String{
+        return "RecruiterCell"
+    }
 }

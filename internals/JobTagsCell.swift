@@ -13,10 +13,12 @@ fileprivate let ROWITEMS = 4
 
 @objcMembers class JobTagsCell: UITableViewCell {
     
+    
     private var onece  = true
     private var btns:[UIButton] = []
     
-    private var currentSelectedBtn:UIButton?
+    private var currentSelected:Int = 0
+    
     
     private lazy var btnView:UIView = UIView()
     
@@ -33,10 +35,12 @@ fileprivate let ROWITEMS = 4
                 btn.titleLabel?.font = UIFont.systemFont(ofSize: 12)
                 btn.backgroundColor = UIColor.white
                 btn.titleLabel?.textAlignment = .center
-                if index == 0 {
+                if index == 0 && currentSelected == 0 {
                     btn.isSelected = true
                     btn.backgroundColor = UIColor.blue
-                    currentSelectedBtn = btn
+                }else if index == currentSelected{
+                    btn.isSelected = true
+                    btn.backgroundColor = UIColor.blue
                 }
         
                 btn.addTarget(self, action: #selector(click(_:)), for: .touchUpInside)
@@ -56,7 +60,7 @@ fileprivate let ROWITEMS = 4
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
-        self.backgroundColor = UIColor.lightGray
+        self.backgroundColor = UIColor.init(r: 230, g: 230, b: 250)
         self.contentView.addSubview(btnView)
         _ = btnView.sd_layout().leftSpaceToView(self.contentView,10)?.rightSpaceToView (self.contentView,10)?.topSpaceToView(self.contentView,10)?.heightIs(0)
     }
@@ -74,12 +78,12 @@ extension JobTagsCell{
     //
     @objc private func click(_ btn:UIButton){
         //改变btn 状态
-        currentSelectedBtn?.isSelected = false
-        currentSelectedBtn?.backgroundColor = UIColor.white
+        btns[currentSelected].isSelected = false
+        btns[currentSelected].backgroundColor = UIColor.white
         
         btn.isSelected = true
         btn.backgroundColor = UIColor.blue
-        currentSelectedBtn = btn
+        currentSelected = btns.index(of: btn)!
         
         // 消息通知刷新tableview
         if let tag = btn.titleLabel?.text{

@@ -19,6 +19,8 @@ class BasePositionItemViewController: BaseViewController {
         let table = UITableView()
         table.tableFooterView = UIView()
         table.backgroundColor = UIColor.viewBackColor()
+       
+        
         return table
     }()
     
@@ -27,6 +29,7 @@ class BasePositionItemViewController: BaseViewController {
     internal lazy var cityMenu:DropItemCityView = {
         let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
         // 覆盖指定高度
+        
         city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
         return city
     }()
@@ -57,7 +60,7 @@ class BasePositionItemViewController: BaseViewController {
     }()
     
     
-    // 行业分类
+    // 职业类型
     lazy var careerClassify:DropCarrerClassifyView = { [unowned self] in
         let v1 = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
         v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
@@ -78,9 +81,9 @@ class BasePositionItemViewController: BaseViewController {
     // 宣讲会过期?
     internal lazy var meetingValidate:DropValidTimeView = {  [unowned self] in
         
-        let v1 = DropValidTimeView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 90))
+        let v1 = DropValidTimeView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 45*3))
         v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
-
+    
         return v1
     }()
     
@@ -119,8 +122,11 @@ class BasePositionItemViewController: BaseViewController {
         menu.hideMenuSpringWithDamping = 1
         menu.bottomLine.isHidden = false
         
-        return menu
+        // 添加手势
+        menu.addSwipeGestureToBlurView()
         
+
+        return menu
         
     }()
     
@@ -152,6 +158,8 @@ class BasePositionItemViewController: BaseViewController {
     }
 
     
+    
+
    
 
 }

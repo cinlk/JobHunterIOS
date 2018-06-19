@@ -31,7 +31,7 @@ class  SqliteManager{
         
         let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
         let dbPath = url.last?.appendingPathComponent(dbName)
-        //print(dbPath)
+        print(dbPath)
         let exist = fileManager.fileExists(atPath: dbPath!.path)
         if !exist{
             fileManager.createFile(atPath: dbPath!.path, contents: nil, attributes: nil)
@@ -175,9 +175,10 @@ extension SqliteManager{
     private func createPersonTable(){
         do{
             try db?.run(PersonTable.person.create(temporary: false, ifNotExists: true, withoutRowid: false, block: { (t) in
+                //t.column(<#T##name: Expression<Value>##Expression<Value>#>, primaryKey: PrimaryK)
                 t.column(PersonTable.personID, primaryKey: true)
-                t.column(PersonTable.personName, check: PersonTable.personID.length >= 6)
-                t.column(PersonTable.company)
+                t.column(PersonTable.personName, check: PersonTable.personName.length >= 6)
+                t.column(PersonTable.company, defaultValue: "")
                 t.column(PersonTable.icon)
                 t.column(PersonTable.role)
                 t.column(PersonTable.isShield, defaultValue: false)

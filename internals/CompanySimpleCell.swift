@@ -18,11 +18,21 @@ class CompanySimpleCell: UITableViewCell {
     
     
     
-    var mode:(image:String,companyName:String, tags:String)?{
+    var mode:CompanyModel?{
         didSet{
-            cimage.image = UIImage.init(named: mode!.image)
-            name.text = mode?.companyName
-            infos.text = mode?.tags
+            guard let mode = mode else {
+                return
+            }
+            
+            cimage.image = UIImage.init(named: mode.icon)
+            name.text = mode.name
+            let address = mode.address?.joined(separator: " ")  ?? "--"
+            let industry = mode.industry?.joined(separator: " ") ?? "--"
+            let staff  = mode.staffs ?? "--"
+            let res = [address, industry, staff]
+            infos.text = res.joined(separator: "|")
+            
+            
         }
     }
     override func awakeFromNib() {
@@ -30,6 +40,7 @@ class CompanySimpleCell: UITableViewCell {
         
         name.setSingleLineAutoResizeWithMaxWidth(ScreenW - 60)
         infos.setSingleLineAutoResizeWithMaxWidth(ScreenW - 60)
+        infos.font = UIFont.systemFont(ofSize: 12)
         
         cimage.contentMode = .scaleAspectFit
         self.selectionStyle = .none

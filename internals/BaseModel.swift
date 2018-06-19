@@ -50,7 +50,7 @@ class BaseModel:NSObject, Mappable, Comparable{
     }
     
     required init?(map: Map) {
-        if map.JSON["id"] == nil || map.JSON["isValidate"] == nil || map.JSON["isCollected"] == nil
+        if map.JSON["id"] == nil  || map.JSON["isCollected"] == nil
             || map.JSON["name"] == nil {
             return nil
         }

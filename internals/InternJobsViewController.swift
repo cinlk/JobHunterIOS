@@ -31,6 +31,7 @@ class InternJobsViewController: BasePositionItemViewController {
         menu.hideMenuSpringWithDamping = 1
         menu.bottomLine.isHidden = false
         
+        menu.addSwipeGestureToBlurView()
         return menu
         
         
@@ -40,7 +41,7 @@ class InternJobsViewController: BasePositionItemViewController {
         super.viewDidLoad()
         setViews()
         loadData()
-        print("实习")
+       
         // Do any additional setup after loading the view.
     }
     
@@ -116,10 +117,7 @@ extension InternJobsViewController: UITableViewDataSource, UITableViewDelegate{
         table.deselectRow(at: indexPath, animated: false)
         let mode = self.datas[indexPath.row]
         let internJob = JobDetailViewController()
-        guard let id = mode.id else {
-            return
-        }
-        internJob.internJobID =  id 
+        internJob.kind = (id: mode.id!, type: mode.kind!)
         internJob.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(internJob, animated: true)
     }
@@ -140,8 +138,11 @@ extension InternJobsViewController{
             Thread.sleep(forTimeInterval: 3)
             for _ in 0..<20{
                 
-                self?.datas.append(Mapper<CompuseRecruiteJobs>().map(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"apple-dqw-fefwe","name":"码农","address":"北京","salary":"150-190元/天","create_time":Date().timeIntervalSince1970,"education":"本科","type":"intern"
-                    ,"applyEndTime":Date().timeIntervalSince1970,"perDay":"4天/周","months":"5个月","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false,"readNums":arc4random()%1000])!)
+                if let data = Mapper<CompuseRecruiteJobs>().map(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dqwd-dqwdqwddqw","name":"码农","company":["id":"dqwd","name":"公司名称","isCollected":false,"icon":"chrome","address":["地址1","地址2"],"industry":["行业1","行业2"],"staffs":"1000人以上"],"address":["北京","地址2"],"create_time":Date().timeIntervalSince1970,"education":"本科","type":"intern","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false,"readNums":arc4random()%1000]){
+                    self?.datas.append(data)
+                    
+                }
+                
                 
             }
             

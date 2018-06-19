@@ -9,36 +9,33 @@
 import UIKit
 
 fileprivate let labelMaxWidth:CGFloat = 200
-fileprivate let imgSize:CGSize = CGSize.init(width: 15, height: 20)
+fileprivate let imgSize:CGSize = CGSize.init(width: 15, height: 15)
+fileprivate let leftWidth:CGFloat = 30
+fileprivate let topHeight:CGFloat = 10
+fileprivate let internalLeft:CGFloat = 2
 
 class JobDetailHeader:UIView {
 
-    // 分割线
-    private lazy var line:UIView = {
-       let line = UIView.init()
-       line.backgroundColor = UIColor.black
-       return line
-        
-    }()
-    
+
     
     private lazy var jobName: UILabel = {
         let jobName = UILabel()
         jobName.font = UIFont.boldSystemFont(ofSize: 16)
         jobName.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20 )
         jobName.textAlignment = .left
-        jobName.lineBreakMode = .byWordWrapping
         return jobName
         
     }()
     private lazy var address: UILabel = {
         let address = UILabel()
         address.font = UIFont.systemFont(ofSize: 13)
-        address.setSingleLineAutoResizeWithMaxWidth(labelMaxWidth)
+        address.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40 )
         address.textAlignment = .left
         return address
         
     }()
+    
+    // 实习薪水 和 校招薪水
     private lazy var salary: UILabel = {
         let salary = UILabel()
         salary.font = UIFont.systemFont(ofSize: 13)
@@ -68,7 +65,7 @@ class JobDetailHeader:UIView {
         des.font = UIFont.systemFont(ofSize: 14)
         des.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20 )
         des.textAlignment = .left
-        des.lineBreakMode = .byWordWrapping
+        des.textColor = UIColor.lightGray
         return des
     }()
     
@@ -89,13 +86,7 @@ class JobDetailHeader:UIView {
         return label
     }()
     
-    private lazy var stuff:UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 13)
-        label.setSingleLineAutoResizeWithMaxWidth(labelMaxWidth)
-        label.textAlignment = .left
-        return label
-    }()
+ 
     
     private lazy var typeIcon:UIImageView = {
         let img = UIImageView.init(image: UIImage.init(named: "clock"))
@@ -140,63 +131,45 @@ class JobDetailHeader:UIView {
         return img
     }()
     
-    // 占时不用
-    private lazy var stuffIcon:UIImageView = {
-        let img = UIImageView.init(image: UIImage.init(named: "me"))
-        img.contentMode = .scaleAspectFit
-        img.clipsToBounds = true
-        return img
-    }()
+ 
     
     
     private lazy var internViews:[UIView] = []
     
     var mode:CompuseRecruiteJobs?{
         didSet{
-            
-            createInfos(item: mode!)
+            guard  let mode = mode  else {
+                return
+            }
+            createInfos(item: mode)
         }
     }
     
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.backgroundColor = UIColor.white
+        internViews = [month, perDay,monthIcon, dayIcon]
         
-        internViews = [month, perDay, monthIcon, dayIcon]
         
-        
-        let views:[UIView] = [line,jobName,address,salary,type,education,des, typeIcon,locateIcon,degreeIcon,yuanIcon]
+        let views:[UIView] = [jobName,address,type,education,des, typeIcon,locateIcon,degreeIcon,yuanIcon,salary]
         self.sd_addSubviews(views)
         self.sd_addSubviews(internViews)
         
-        _ = line.sd_layout().bottomEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(1)
-        //des.text = "职位诱惑(标签):"
+        
+        _ = jobName.sd_layout().topSpaceToView(self,10)?.leftSpaceToView(self,10)?.autoHeightRatio(0)
+
+        _ = degreeIcon.sd_layout().leftEqualToView(jobName)?.topSpaceToView(jobName, topHeight + 5)?.widthIs(15)?.heightIs(15)
+        _ = education.sd_layout().leftSpaceToView(degreeIcon,internalLeft)?.topEqualToView(degreeIcon)?.autoHeightRatio(0)
+        
+        _ = typeIcon.sd_layout().leftSpaceToView(education,leftWidth)?.topEqualToView(education)?.widthRatioToView(degreeIcon,1)?.heightRatioToView(degreeIcon,1)
+        _ = type.sd_layout().leftSpaceToView(typeIcon,internalLeft)?.topEqualToView(typeIcon)?.autoHeightRatio(0)
+        
+      
         
         
-        _ = jobName.sd_layout().topSpaceToView(self,5)?.leftSpaceToView(self,10)?.autoHeightRatio(0)
-        _ = locateIcon.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(jobName,10)?.widthIs(imgSize.width)?.heightIs(imgSize.height)
-        _ = address.sd_layout().leftSpaceToView(locateIcon,2)?.topEqualToView(locateIcon)?.autoHeightRatio(0)
+        jobName.setMaxNumberOfLinesToShow(2)
         
-        _ = degreeIcon.sd_layout().leftSpaceToView(address,20)?.topEqualToView(address)?.widthRatioToView(locateIcon,1)?.heightRatioToView(locateIcon,1)
-        _ = education.sd_layout().leftSpaceToView(degreeIcon,2)?.topEqualToView(degreeIcon)?.autoHeightRatio(0)
-        
-        _ = yuanIcon.sd_layout().leftSpaceToView(education,20)?.topEqualToView(education)?.widthRatioToView(locateIcon,1)?.heightRatioToView(locateIcon,1)
-        _ = salary.sd_layout().leftSpaceToView(yuanIcon,2)?.topEqualToView(yuanIcon)?.autoHeightRatio(0)
-        
-        _ = typeIcon.sd_layout().topSpaceToView(locateIcon,15)?.leftEqualToView(locateIcon)?.widthRatioToView(locateIcon,1)?.heightRatioToView(locateIcon,1)
-        _ = type.sd_layout().leftSpaceToView(typeIcon,2)?.topEqualToView(typeIcon)?.autoHeightRatio(0)
-        
-        _ = monthIcon.sd_layout().topEqualToView(typeIcon)?.leftEqualToView(degreeIcon)?.widthRatioToView(typeIcon,1)?.heightRatioToView(typeIcon,1)
-        _ = month.sd_layout().leftSpaceToView(monthIcon,2)?.topEqualToView(monthIcon)?.autoHeightRatio(0)
-        
-        _ = dayIcon.sd_layout().leftEqualToView(yuanIcon)?.topEqualToView(month)?.widthRatioToView(typeIcon,1)?.heightRatioToView(typeIcon,1)
-        _ = perDay.sd_layout().leftSpaceToView(dayIcon,2)?.topEqualToView(dayIcon)?.autoHeightRatio(0)
-        
-        
-        _ = des.sd_layout().topSpaceToView(typeIcon,10)?.leftEqualToView(typeIcon)?.autoHeightRatio(0)
-        
-        jobName.setMaxNumberOfLinesToShow(1)
-        des.setMaxNumberOfLinesToShow(2)
         
     }
     
@@ -211,11 +184,13 @@ class JobDetailHeader:UIView {
         guard  let kind = item.kind else {
             return
         }
-        
-        self.jobName.text = mode?.name
-        self.address.text = mode?.addressStr
-        self.education.text = mode?.education
-        self.salary.text = mode?.salary
+        self.salary.text = item.salary
+        self.jobName.text =  item.name
+        self.address.text =  item.addressStr
+        self.education.text = item.education
+        if let des = item.benefits{
+            self.des.text  = "职位诱惑: " +  des
+        }
         
         // 社招
         if kind == .graduate{
@@ -223,32 +198,70 @@ class JobDetailHeader:UIView {
             internViews.forEach{
                 $0.isHidden = true
             }
-              des.isHidden = false
-              self.type.text = "全职"
-              self.des.text = ""
-            self.setupAutoHeight(withBottomView: des, bottomMargin: 10)
+            self.type.text = "校招"
+        
+            _ = yuanIcon.sd_layout().topEqualToView(type)?.leftSpaceToView(type,leftWidth)?.widthRatioToView(degreeIcon,1)?.heightRatioToView(degreeIcon,1)
+            
+            _ = salary.sd_layout().leftSpaceToView(yuanIcon,internalLeft)?.topEqualToView(yuanIcon)?.autoHeightRatio(0)
+
+            
+            
+            _ = locateIcon.sd_layout().leftEqualToView(jobName)?.topSpaceToView(type,topHeight)?.widthRatioToView(degreeIcon,1)?.heightRatioToView(degreeIcon,1)
+            
+            _ = address.sd_layout().leftSpaceToView(locateIcon,internalLeft)?.topEqualToView(locateIcon)?.autoHeightRatio(0)
+            
+            
+            address.setMaxNumberOfLinesToShow(2)
+
+            _ = des.sd_layout().topSpaceToView(address,topHeight)?.leftEqualToView(jobName)?.autoHeightRatio(0)
+
+            self.setupAutoHeight(withBottomViewsArray: [des,address], bottomMargin: 5)
             
         // 实习
         }else if kind == .intern{
-             des.isHidden = true
+            
              internViews.forEach{
                 $0.isHidden = false
             }
-            self.type.text = "实习"
-            self.month.text = mode?.months
-            self.perDay.text = mode?.perDay
-            self.setupAutoHeight(withBottomView: perDay, bottomMargin: 10)
+            typeIcon.isHidden = true
+            type.isHidden = true
+            
+            self.month.text = item.months
+            self.perDay.text = item.perDay
             
             
+
+            _ = yuanIcon.sd_layout().topEqualToView(education)?.leftSpaceToView(education,leftWidth)?.widthRatioToView(degreeIcon,1)?.heightRatioToView(degreeIcon,1)
+            
+            _ = salary.sd_layout().leftSpaceToView(yuanIcon,internalLeft)?.topEqualToView(yuanIcon)?.autoHeightRatio(0)
+
+            
+            
+            
+            _ = monthIcon.sd_layout().topEqualToView(salary)?.leftSpaceToView(salary,leftWidth)?.widthRatioToView(degreeIcon,1)?.heightRatioToView(degreeIcon,1)
+            _ = month.sd_layout().leftSpaceToView(monthIcon,internalLeft)?.topEqualToView(monthIcon)?.autoHeightRatio(0)
+            
+            _ = dayIcon.sd_layout().leftEqualToView(degreeIcon)?.topSpaceToView(degreeIcon,topHeight)?.widthRatioToView(degreeIcon,1)?.heightRatioToView(degreeIcon,1)
+            
+            _ = perDay.sd_layout().leftSpaceToView(dayIcon,internalLeft)?.topEqualToView(dayIcon)?.autoHeightRatio(0)
+            
+            
+            
+            _ = locateIcon.sd_layout().leftEqualToView(yuanIcon)?.topEqualToView(perDay)?.widthRatioToView(degreeIcon,1)?.heightRatioToView(degreeIcon,1)
+            
+            _ = address.sd_layout().leftSpaceToView(locateIcon,internalLeft)?.topEqualToView(locateIcon)?.autoHeightRatio(0)
+            
+            
+            address.setMaxNumberOfLinesToShow(1)
+
+            _ = des.sd_layout().topSpaceToView(perDay,topHeight)?.leftEqualToView(jobName)?.autoHeightRatio(0)
+            self.setupAutoHeight(withBottomViewsArray: [des,address,perDay], bottomMargin: 5)
+
             
         }
-        
     
     }
     
-   
-    
-
 
 
 }

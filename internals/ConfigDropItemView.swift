@@ -29,11 +29,10 @@ public func configDropMenu(items: [YNDropDownView], titles:[String], height:CGFl
     
     dropDownMenu.backgroundBlurEnabled = true
     dropDownMenu.bottomLine.isHidden = false
-    let back = UIView()
-    back.backgroundColor = UIColor.black
-    dropDownMenu.blurEffectView = back
     dropDownMenu.blurEffectViewAlpha = 0.7
-    dropDownMenu.setBackgroundColor(color: UIColor.white)
+    
+    dropDownMenu.addSwipeGestureToBlurView()
+    
     return dropDownMenu
     
     

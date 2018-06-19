@@ -21,7 +21,9 @@ class CareerTalkMeetingViewController: BasePositionItemViewController {
         
         
         let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: dropMenuH), dropDownViews: [colleges,industryKind,meetingValidate], dropDownViewTitles: ["学校","行业领域","宣讲时间"])
-        
+        // 不遮挡子view，子view 改变frame
+        //menu.clipsToBounds = false
+    
         menu.setImageWhen(normal: UIImage(named: "arrow_nor"), selected: UIImage(named: "arrow_xl"), disabled: UIImage(named: "arrow_dim"))
         menu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
         
@@ -31,7 +33,7 @@ class CareerTalkMeetingViewController: BasePositionItemViewController {
         menu.showMenuSpringWithDamping = 1
         menu.hideMenuSpringWithDamping = 1
         menu.bottomLine.isHidden = false
-        menu.bottomLine.backgroundColor = UIColor.black
+        menu.addSwipeGestureToBlurView()
         return menu
         
     }()
@@ -40,7 +42,6 @@ class CareerTalkMeetingViewController: BasePositionItemViewController {
         super.viewDidLoad()
         setViews()
         loadData()
-        print("宣讲会")
         // Do any additional setup after loading the view.
         // 筛选回调
         self.colleges.passData = { colleges in
@@ -54,7 +55,7 @@ class CareerTalkMeetingViewController: BasePositionItemViewController {
         }
         meetingValidate.passData = { time in
             print(time)
-            self.myDropMenu.changeMenu(title: time, at: 2)
+            //self.myDropMenu.changeMenu(title: time, at: 2)
         }
         
     }
@@ -134,12 +135,8 @@ extension CareerTalkMeetingViewController{
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             Thread.sleep(forTimeInterval: 3)
             for _ in 0..<20{
-                self?.datas.append(CareerTalkMeetingModel(JSON: ["id":"dqw-dqwd","companyModel":["id":"com-dqwd-5dq",
-                                                                                                 "icon":"sina","name":"公司名字","describe":"达瓦大群-dqwd","isValidate":true,"isCollected":false,"address":["地址1","地址2"],"industry":["教育","医疗","化工"]],
-                                                                 "college":"北京大学","address":"教学室二"
-                    ,"isValidate":true,"isCollected":false,"icon":"car","start_time":Date().timeIntervalSince1970,
-                                                          "name":"北京高华证券有限责任公司宣讲会但钱当前无多群","source":"上海交大",
-                                                          "content":"举办方：电院举办时间：2018年4月25日 18:00~20:00  \n举办地点：上海交通大学 - 上海市东川路800号电院楼群3-100会议室 单位名称：北京高华证券有限责任公司 联系方式：专业要求：不限、信息安全类、自动化类、计算机类、电子类、软件工程类"])!)
+                self?.datas.append(CareerTalkMeetingModel(JSON: ["id":"dqw-dqwd","companyModel":["id":"com-dqwd-5dq","icon":"sina","name":"公司名字","describe":"达瓦大群-dqwd","isValidate":true,"isCollected":false,"address":["地址1","地址2"],"industry":["教育","医疗","化工"]],"college":"北京大学","address":"教学室二"
+                    ,"isValidate":true,"isCollected":false,"icon":"car","start_time":Date().timeIntervalSince1970,"end_time":Date().timeIntervalSince1970 + TimeInterval(3600*2),"name":"北京高华证券有限责任公司宣讲会但钱当前无多群","source":"上海交大"])!)
                 
                 
             }

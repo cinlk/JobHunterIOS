@@ -67,7 +67,9 @@ class PersonModel:NSObject, Mappable{
     
     
     required init?(map: Map) {
-        
+        if map.JSON["userID"] == nil || map.JSON["name"] == nil || map.JSON["role"] == nil {
+            return nil
+        }
     }
     
     func mapping(map: Map) {
@@ -91,8 +93,21 @@ class HRPersonModel: PersonModel {
     var position:String?
     
     
+    var  ontimeStr:String{
+        get{
+            guard let time = ontime  else {
+                return ""
+            }
+            return personOnlineTime(date: time)
+            
+        }
+    }
+    
     required init?(map: Map) {
         super.init(map: map)
+        if map.JSON["ontime"] == nil || map.JSON["position"] == nil{
+            return nil
+        }
     }
     
     override func mapping(map: Map) {

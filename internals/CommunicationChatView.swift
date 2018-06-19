@@ -449,7 +449,7 @@ extension CommunicationChatView{
     fileprivate func createTimeMsg(msg: MessageBoby) -> TimeBody{
         
         // 时间消息
-        let time = TimeBody(JSON: ["type":MessgeType.time.rawValue,"creat_time":msg.creat_time!.timeIntervalSince1970])!
+        let time = TimeBody(JSON: ["messageID":getUUID(), "type":MessgeType.time.rawValue,"creat_time":msg.creat_time!.timeIntervalSince1970])!
         time.timeStr = LXFChatMsgTimeHelper.shared.chatTimeString(with: time.creat_time?.timeIntervalSince1970)
         return time
         
@@ -488,14 +488,14 @@ extension CommunicationChatView{
         if self.chatBarView.keyboardType == .emotion || self.chatBarView.keyboardType == .more{
             self.moveBar(distance: 0){
                 let job = JobDetailViewController()
-                job.jobID = mes.contentToJson()!["jobID"].string!
+                //job.id = mes.contentToJson()!["jobID"].string!
                 job.hidesBottomBarWhenPushed = true
                 self.navigationController?.pushViewController(job, animated: true)
             }
         }
         else{
             let job = JobDetailViewController()
-            job.jobID = mes.contentToJson()!["jobID"].string!
+            //job.id = mes.contentToJson()!["jobID"].string!
             job.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(job, animated: true)
         }

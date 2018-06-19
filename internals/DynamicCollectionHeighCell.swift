@@ -26,7 +26,7 @@ fileprivate let itemHeight:CGFloat = 30
         return layout
     }()
     
-    private lazy var collectionView:UICollectionView = { [unowned self] in
+    internal lazy var collectionView:UICollectionView = { [unowned self] in
         let collection = UICollectionView.init(frame: self.bounds, collectionViewLayout: flowlayout)
         collection.backgroundColor = UIColor.white
         collection.contentInset = UIEdgeInsetsMake(10, 10, 10, 10)
@@ -145,7 +145,7 @@ private class itemCell:UICollectionViewCell{
         btn.layer.borderWidth = 0
         btn.layer.cornerRadius = 5
         btn.setTitleColor(UIColor.white, for: .selected)
-        btn.setTitleColor(UIColor.green, for: .normal)
+        btn.setTitleColor(UIColor.black, for: .normal)
         btn.titleLabel?.textAlignment  = .center
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         btn.backgroundColor = UIColor.lightGray

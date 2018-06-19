@@ -25,10 +25,27 @@ class CompuseRecruiteJobs :BaseModel{
     }
    internal var kind:jobType?
     
+   
+   // 职位诱惑 描述
+   internal var benefits:String?
     
-   internal var tag:[String] = [""]
-    // 关联的公司id  (必须)
-   internal var companyID:String?
+   // 关联的公司
+   internal var company:CompanyModel?
+    
+   // 发布者
+   internal var hr:HRPersonModel?
+    
+    
+   // 应聘者技能要求
+   internal var requirement:String?
+   // 职位工作内容
+   internal var works:String?
+    
+   // 职位类型 (对应筛选行业条件)
+   internal var classify:[String] = []
+    
+   // 对应公司里 职位筛选条件
+   internal var jobtags:[String] = []
     // 发布者ID
    internal var publisherID:String?
     
@@ -36,11 +53,14 @@ class CompuseRecruiteJobs :BaseModel{
    internal var isTalked:Bool?
    
    //浏览次数
-    internal var readNums:Int64 = 0
+   internal var readNums:Int64 = 0
     
+   // 工作城市
+   internal var addressCity:[String] = []
    
-   private var address:[String] = ["不限"]
+   internal var address:[String] = ["不限"]
     
+   // 工作地址
    internal var addressStr:String{
         get{
             // 最多5多个地址（前5个地址）
@@ -80,20 +100,21 @@ class CompuseRecruiteJobs :BaseModel{
     
     required init?(map: Map) {
         super.init(map: map)
-        if map.JSON["type"] == nil || map.JSON["companyID"] == nil ||
-            map.JSON["create_time"] == nil || map.JSON["isApply"] == nil || map.JSON["isTalked"] == nil {
+        
+        if map.JSON["type"] == nil || map.JSON["company"] == nil ||
+            map.JSON["create_time"] == nil || map.JSON["isApply"] == nil || map.JSON["isTalked"] == nil   {
             return nil
         }
+       
     }
     
     
     override func mapping(map: Map) {
       
         super.mapping(map: map)
-        tag <- map["tag"]
+        benefits <- map["benefits"]
         type <-  map["type"]
-        companyID <- map["companyID"]
-        publisherID <- map["publisherID"]
+        company <- map["company"]
         address <- map["address"]
         salary <- map["salary"]
         education <- map["education"]
@@ -103,6 +124,12 @@ class CompuseRecruiteJobs :BaseModel{
         isTalked <- map["isTalked"]
         applyEndTime <- (map["applyEndTime"], DateTransform())
         readNums <- map["readNums"]
+        hr <- map["hr"]
+        requirement <- map["requirement"]
+        works <- map["works"]
+        addressCity <- map["addressCity"]
+        classify <- map["classify"]
+        jobtags <- map["jobtags"]
         
         
     }

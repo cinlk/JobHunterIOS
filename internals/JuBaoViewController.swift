@@ -15,8 +15,9 @@ fileprivate let tableFootViewH:CGFloat = 200
 class JuBaoViewController: BaseViewController {
 
     //  举报那个job
-    var jobId:String?{
+    internal var target:(id:String,type: jobType)?{
         didSet{
+            
             loadData()
         }
     }
@@ -60,19 +61,19 @@ class JuBaoViewController: BaseViewController {
     
     private lazy var tableheader:UIView = {
         let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 30))
-        v.backgroundColor = UIColor.lightGray
+        v.backgroundColor = UIColor.clear
         let label = UILabel.init()
         label.text =  "请选择原因"
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
         v.addSubview(label)
         _ = label.sd_layout().leftSpaceToView(v,10)?.topSpaceToView(v,5)?.autoHeightRatio(0)
-        label.font = UIFont.systemFont(ofSize: 12)
+        label.font = UIFont.systemFont(ofSize: 14)
         return v
         
     }()
    
     private var details:String = ""
-    
+    private var selectIndex:Int = -1
     
     
     override func viewDidLoad() {
@@ -215,8 +216,6 @@ extension JuBaoViewController:UITableViewDelegate,UITableViewDataSource{
     }
 
     
-    
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return resonse?.count ?? 0
     }
@@ -227,18 +226,18 @@ extension JuBaoViewController:UITableViewDelegate,UITableViewDataSource{
             cell.textLabel?.text = text
             cell.textLabel?.textAlignment = .left
             cell.selectionStyle = .none
+            cell.textLabel?.textColor  = selectIndex == indexPath.row ? UIColor.blue : UIColor.black
+            cell.accessoryType = selectIndex == indexPath.row ? .checkmark : .none
         }
         return cell
     }
     
-    func tableView(_ tableView: UITableView, willDeselectRowAt indexPath: IndexPath) -> IndexPath? {
-        let cell = tableView.cellForRow(at: indexPath)
-        cell?.accessoryType = .none
-        return indexPath
-    }
+  
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath)
-        cell?.accessoryType = .checkmark
+        tableView.deselectRow(at: indexPath, animated: false)
+        selectIndex = indexPath.row
+        tableView.reloadData()
+        
     }
     
     
@@ -263,12 +262,7 @@ extension JuBaoViewController:UITableViewDelegate,UITableViewDataSource{
 
 extension JuBaoViewController{
     @objc func submit(){
-        if let index = self.table.indexPathsForSelectedRows{
-            print(index)
-            self.navigationController?.popViewController(animated: true)
-        }else{
-            print("alert 请选择")
-        }
+       print(selectIndex,details)
         
     }
 }

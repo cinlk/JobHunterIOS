@@ -115,7 +115,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
             }
             
             
-            company.text = mode.companyID
+            company.text = mode.company?.name
 
             jobName.text = mode.name
             
@@ -127,7 +127,6 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
             
             checkNums.text = "\(mode.readNums)人浏览"
             
-       
            
             self.setupAutoHeight(withBottomViewsArray: [address, degree], bottomMargin: 5)
             

@@ -21,6 +21,7 @@ class BaseSingleItemDropView: YNDropDownView {
         }
     }
     
+    
     internal var passData: ((_ cond:String) -> Void)?
     // currentSelected index
     private var index:IndexPath?
@@ -49,12 +50,16 @@ class BaseSingleItemDropView: YNDropDownView {
         return btn
     }()
     
+    
+    
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.addSubview(table)
         _ = table.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.topEqualToView(self)?.bottomEqualToView(self)
         
     }
+    
     
     required init?(coder aDecoder: NSCoder) {
          super.init(coder: aDecoder)
@@ -66,14 +71,18 @@ class BaseSingleItemDropView: YNDropDownView {
     override func dropDownViewOpened() {
         
         UIApplication.shared.keyWindow?.addSubview(backGroundBtn)
-        
+        // 设置为true 才有下拉展开效果
+        self.superview?.clipsToBounds = false
         self.getParentViewController()?.tabBarController?.tabBar.isHidden = true
     }
     
     override func dropDownViewClosed() {
         backGroundBtn.removeFromSuperview()
+        self.superview?.clipsToBounds = true
         self.getParentViewController()?.tabBarController?.tabBar.isHidden = false
     }
+    
+    
     
     
 }
@@ -105,16 +114,11 @@ extension BaseSingleItemDropView: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = table.dequeueReusableCell(withIdentifier: cellIdentity, for: indexPath)
+        
         cell.textLabel?.text = datas[indexPath.row]
+        
         cell.textLabel?.font = UIFont.systemFont(ofSize: 14)
         cell.selectionStyle = .none
-        if cell.isSelected {
-            cell.textLabel?.textColor = UIColor.blue
-            cell.accessoryType = .checkmark
-        }else{
-            cell.textLabel?.textColor = UIColor.black
-            cell.accessoryType = .none
-        }
         return cell
     }
     
@@ -130,7 +134,6 @@ extension BaseSingleItemDropView: UITableViewDelegate, UITableViewDataSource{
         index = indexPath
         
         if let name = cell?.textLabel?.text{
-            
             chooseItem(name:name)
         }
         
@@ -140,6 +143,7 @@ extension BaseSingleItemDropView: UITableViewDelegate, UITableViewDataSource{
         let cell = tableView.cellForRow(at: indexPath)
         cell?.textLabel?.textColor = UIColor.black
         cell?.accessoryType = .none
+        cell?.accessoryView?.tintColor = UIColor.black
     }
     
 

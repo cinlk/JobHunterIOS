@@ -118,11 +118,11 @@ extension  OnlineApplyViewController: UITableViewDataSource, UITableViewDelegate
             wbView.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(wbView, animated: true)
         }else{
-            // 内部网申数据 或 外部网申但是content有内容
+            // 内部网申
             let show = OnlineApplyShowViewController()
-            guard let id = mode.id else { return }
             // 传递id
-            show.onlineApplyID = id
+            show.onlineApplyID = mode.id
+            
             show.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(show, animated: true)
         }
@@ -143,13 +143,26 @@ extension OnlineApplyViewController{
         
         DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
             Thread.sleep(forTimeInterval: 3)
-            for _ in 0..<20{
+            // 站外数据
+            for _ in 0..<10{
                
-                // MARK  获取未过期的数据
-                self?.datas.append(Mapper<OnlineApplyModel>().map(JSON: ["id":"fq-4320-dqwd","companyModel":["id":"dqw-dqwd","name":"公司名",
-                "college":"北京大学","describe":"大哇多无多首先想到的肯定是结束减速的代理方法：scrollViewDscrollViewDidEndDecelerating代理方法的，如果做过用3个界面+scrollView实现循环滚动展示图片，那么基本上都会碰到这么问题。如何准确的监听翻页？我的解决的思路如下达瓦大文大无大无多无大无大无多哇大无多无飞啊飞分为飞飞飞达瓦大文大无大无多哇付达瓦大文大无付多无dwadwadadawdawde吊袜带挖多哇建外大街文档就frog忙不忙你有他们今天又摸排个人票买房可免费课时费\n个人个人，二哥，二\n吊袜带挖多，另外的码问了；吗\n","address":["地址1","地址2"],"icon":"sina","type":["教育","医疗","化工"],"webSite":"https://www.baidu.com","tags":["标签1","标签1测试","标签89我的当前","当前为多","迭代器","群无多当前为多群当前","达瓦大群无多", "当前为多当前的群","当前为多无", "当前为多群无多","杜德伟七多"],"isValidate":true,"isCollected":true,],"end_time":Date().timeIntervalSince1970 + TimeInterval(arc4random()%(3600*24*100)),"start_time":Date().timeIntervalSince1970 - TimeInterval(arc4random()%(3600*24*100)),"positionAddress":["成都","重庆"],"content":"dqwdqwdqwddqwdqwdqwddqwdqwdqwddqwdqwdqwdqwdqwdwqdqwdqwdqw","outer":true,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    "majors":["土木工程","软件工程","其他"],"positions":["设计","测试","销售"],"link":"http://campus.51job.com/padx2018/index.html","isApply":false,"isValidate":true,"isCollected":true,"name":"网申测试"])!)
                 
+                guard let data =  OnlineApplyModel(JSON: ["id":"sdqwd","isValidate":true,"isCollected":false,
+                                                          "name":"某某莫小元招聘网申","create_time":Date().timeIntervalSince1970 - TimeInterval(54364),"end_time":Date().timeIntervalSince1970 + TimeInterval(54631),"outer":true,"link":"https://www.xiaoyuanzhao.com/company/xri_y3y4pkvjtj3b?act=zw#1","address":["地点1","地点2"]])  else {
+                    continue
+                }
+                self?.datas.append(data)
+      
+                
+            }
+            
+            // 站内数据
+            for _ in 0..<10{
+                guard let data = OnlineApplyModel(JSON: ["id":"sdqwd","isValidate":true,"isCollected":false,
+                                                         "name":"某某莫小元招聘网申","create_time":Date().timeIntervalSince1970 - TimeInterval(54364),"end_time":Date().timeIntervalSince1970 + TimeInterval(54631),"outer":false,"address":["地点1","地点2"]]) else {
+                    continue
+                }
+                self?.datas.append(data)
             }
             
             

@@ -36,7 +36,7 @@ class DropInternCondtionView: YNDropDownView{
     
     // confirm button
     private lazy var clearAll:UIButton = {
-        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 150, height: 40))
+        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 150, height: 35))
         clear.setTitle("清空", for: .normal)
         clear.setTitleColor(UIColor.black, for: .normal)
         clear.backgroundColor = UIColor.white
@@ -47,7 +47,7 @@ class DropInternCondtionView: YNDropDownView{
     }()
     
     private lazy var confirm:UIButton = {
-        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 150, height: 40))
+        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 150, height: 35))
         confirm.setTitle("确定", for: .normal)
         confirm.setTitleColor(UIColor.white, for: .normal)
         confirm.backgroundColor = UIColor.blue
@@ -69,10 +69,10 @@ class DropInternCondtionView: YNDropDownView{
     private lazy var layout:UICollectionViewFlowLayout = { 
        
         let layout = UICollectionViewFlowLayout.init()
-        layout.itemSize  = CGSize.init(width: (ScreenW - 40)/3, height: 35)
+        layout.itemSize  = CGSize.init(width: (ScreenW - 50)/3, height: 35)
         layout.scrollDirection  = .vertical
         layout.minimumInteritemSpacing = 10
-        layout.minimumLineSpacing  = 20
+        layout.minimumLineSpacing  = 10
         layout.sectionHeadersPinToVisibleBounds = false
         
         //layout.sectionInset  = UIEdgeInsets.init(top: 10, left: 5, bottom: 20, right: 10)
@@ -85,10 +85,10 @@ class DropInternCondtionView: YNDropDownView{
         let collectionView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.backgroundColor = UIColor.viewBackColor()
-        collectionView.contentInset = UIEdgeInsets.init(top: 10, left: 10, bottom: 45, right: 10)
+        collectionView.backgroundColor = UIColor.white
+        collectionView.contentInset = UIEdgeInsets.init(top: 5, left: 10, bottom: 45, right: 10)
         collectionView.allowsMultipleSelection = false
-        
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.register(CollectionTextCell.self, forCellWithReuseIdentifier: CollectionTextCell.identity())
         collectionView.register(CollectionLabelHeaderView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: CollectionLabelHeaderView.identity())
        return collectionView
@@ -111,7 +111,7 @@ class DropInternCondtionView: YNDropDownView{
         self.addSubview(collectionView)
         self.addSubview(toolBar)
         
-        _ = toolBar.sd_layout().bottomEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(44)
+        _ = toolBar.sd_layout().bottomEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(40)
         _ = collectionView.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.topEqualToView(self)?.heightIs(self.bounds.height)
 
         
@@ -177,7 +177,7 @@ extension DropInternCondtionView{
         datas =  ["每周实习天数":["不限","1天","2天","3天","4天","5天"],
                   
                   "实习日薪":["不限","100以下","100-200","200以上"],
-                  "实习月数":["不限","1月","1-3月","3-6月","6月以上"],
+                  "实习月数":["不限","1月","1-6月","6月以上"],
                   "学历":["不限","大专","本科","硕士","博士"],
                   "是否转正":["不限","提供转正"],
         ]
@@ -228,7 +228,8 @@ extension DropInternCondtionView: UICollectionViewDelegate, UICollectionViewData
         if kind == UICollectionElementKindSectionHeader{
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CollectionLabelHeaderView.identity(), for: indexPath) as! CollectionLabelHeaderView
             header.titleLabel.text = keys[indexPath.section]
-            header.titleLabel.font = UIFont.systemFont(ofSize: 20)
+            header.titleLabel.font = UIFont.systemFont(ofSize: 16)
+            
             return header
         }
         
@@ -237,7 +238,7 @@ extension DropInternCondtionView: UICollectionViewDelegate, UICollectionViewData
     }
     // section size
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize.init(width: ScreenW, height: 60)
+        return CGSize.init(width: ScreenW, height: 45)
     }
     
     //
@@ -248,8 +249,6 @@ extension DropInternCondtionView: UICollectionViewDelegate, UICollectionViewData
         guard let name = cell.name.text else {return}
         // 每个section只有一个被选中
         conditions[keys[indexPath.section]] = name
-        cell.name.textColor = UIColor.blue
-        cell.name.layer.borderColor = UIColor.blue.cgColor
 
         collectionView.reloadData()
     }

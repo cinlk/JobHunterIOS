@@ -49,7 +49,7 @@ class BaseShowJobViewController: BaseViewController {
     // 分享barItem
     private lazy var shareBtn:UIButton = { [unowned self] in
         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 25, height: 25))
-        btn.setImage(#imageLiteral(resourceName: "share").changesize(size: CGSize.init(width: 25, height: 25)), for: .normal)
+        btn.setImage(#imageLiteral(resourceName: "share").changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate), for: .normal)
         btn.addTarget(self, action: #selector(share(_:)), for: .touchUpInside)
 
         return btn
@@ -59,7 +59,6 @@ class BaseShowJobViewController: BaseViewController {
      internal lazy var  shareapps:shareView = { [unowned self] in
         //放在最下方
         let view =  shareView(frame: CGRect(x: 0, y: ScreenH, width: ScreenW, height: shareViewH))
-        UIApplication.shared.keyWindow?.addSubview(view)
         ShareOriginY = view.origin.y
         //view.delegate = self
         return view
@@ -67,7 +66,7 @@ class BaseShowJobViewController: BaseViewController {
     
     private var ShareOriginY:CGFloat = 0
     
-    // share背景view
+    // 背景view
     private lazy var darkView :UIView = {
         let darkView = UIView()
         darkView.frame = CGRect(x: 0, y: 0, width:ScreenW, height:ScreenH)

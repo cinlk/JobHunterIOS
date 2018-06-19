@@ -9,6 +9,9 @@
 import UIKit
 import YNDropDownMenu
 
+fileprivate let maxCount:Int = 5
+fileprivate let addressPre:String = "当前地区: "
+
 class DropCollegeItemView: YNDropDownView {
 
     
@@ -22,27 +25,32 @@ class DropCollegeItemView: YNDropDownView {
         }
     }
     
+    // MARK app 定位到具体的省 或 直辖市
     private var currentCity:String = "北京"
     
     
     private lazy var addrese:UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(200)
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 100)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 16)
         return label
     }()
     
+    
+    
     private lazy var topAddressView:UIView = { [unowned self] in
+        
+        
         let top = UIView()
         top.backgroundColor = UIColor.white
-        
-        
+        top.isUserInteractionEnabled = true
         
         let downArrow = UIImageView()
-        downArrow.isUserInteractionEnabled = true
-        downArrow.image = #imageLiteral(resourceName: "arrow_nor")
+        downArrow.contentMode = .scaleAspectFit
+        downArrow.image = #imageLiteral(resourceName: "arrow_nor").withRenderingMode(.alwaysTemplate)
         downArrow.clipsToBounds = true
+        
         // 选择地区
         let gesture = UITapGestureRecognizer()
         gesture.numberOfTapsRequired = 1
@@ -50,22 +58,27 @@ class DropCollegeItemView: YNDropDownView {
         
         gesture.addTarget(self, action: #selector(chooseArea(_ :)))
         
-        downArrow.addGestureRecognizer(gesture)
+        top.addGestureRecognizer(gesture)
         
         top.addSubview(downArrow)
-        _ = downArrow.sd_layout().rightSpaceToView(top,10)?.centerYEqualToView(top)?.widthIs(20)?.heightRatioToView(top,0.5)
+        _ = downArrow.sd_layout().rightSpaceToView(top,10)?.centerYEqualToView(top)?.widthIs(15)?.heightIs(15)
+        
         let addressIcon = UIImageView()
-        addressIcon.image = #imageLiteral(resourceName: "locate")
+        addressIcon.image = #imageLiteral(resourceName: "locate").withRenderingMode(.alwaysTemplate)
+        addressIcon.clipsToBounds = true
+        addressIcon.contentMode = .scaleAspectFit
         top.addSubview(addressIcon)
-        _ = addressIcon.sd_layout().leftSpaceToView(top,10)?.centerYEqualToView(top)?.widthIs(20)?.heightRatioToView(top,0.5)
+        _ = addressIcon.sd_layout().leftSpaceToView(top,10)?.centerYEqualToView(top)?.widthIs(20)?.heightIs(15)
+        
         
         top.addSubview(addrese)
-        _ = addrese.sd_layout().leftSpaceToView(addressIcon,5)?.topEqualToView(addressIcon)?.bottomEqualToView(addressIcon)
+        _ = addrese.sd_layout().leftSpaceToView(addressIcon,5)?.centerYEqualToView(addressIcon)?.autoHeightRatio(0)
         
         let line = UIView()
         line.backgroundColor = UIColor.lightGray
         top.addSubview(line)
         _ = line.sd_layout().bottomEqualToView(top)?.leftEqualToView(top)?.rightEqualToView(top)?.heightIs(1)
+        
         
         return top
     }()
@@ -86,12 +99,12 @@ class DropCollegeItemView: YNDropDownView {
     private lazy var collection:UICollectionView = {
         
         let col = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: flowLayout)
-        col.contentInset = UIEdgeInsetsMake(0, 10, 45, 10)
+        col.contentInset = UIEdgeInsetsMake(5, 10, 45, 10)
         col.delegate = self
         col.dataSource = self
-        
         col.allowsMultipleSelection = false
         col.backgroundColor = UIColor.white
+        col.showsVerticalScrollIndicator = false
         col.showsHorizontalScrollIndicator = false
         col.register(CollectionTextCell.self, forCellWithReuseIdentifier: CollectionTextCell.identity())
         return col
@@ -101,21 +114,25 @@ class DropCollegeItemView: YNDropDownView {
     // 地区collectionView
     private lazy var areaView:AreaCollectionView = { [unowned self] in
         
-        let v = AreaCollectionView.init(frame: CGRect.zero)
+        let v = AreaCollectionView.init(frame: CGRect.init(x: 0, y: 40, width: ScreenW, height: 0))
+        
+        v.autoresizesSubviews = false
+
         v.selectedCity = { city in
             self.reloadCitys(name: city)
         }
+        
+        //v.isHidden = true
         
         return v
     }()
     
     
-    // 控制
-    private lazy var isTouch:Bool = false
+    private lazy var isOpenAreaView:Bool = false
     
     
     private lazy var clearAll:UIButton = {
-        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 150, height: 40))
+        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 150, height: 35))
         clear.setTitle("清空", for: .normal)
         clear.setTitleColor(UIColor.black, for: .normal)
         clear.backgroundColor = UIColor.white
@@ -126,7 +143,7 @@ class DropCollegeItemView: YNDropDownView {
     }()
     
     private lazy var confirm:UIButton = {
-        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 150, height: 40))
+        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 150, height: 35))
         confirm.setTitle("确定", for: .normal)
         confirm.setTitleColor(UIColor.white, for: .normal)
         confirm.backgroundColor = UIColor.blue
@@ -156,6 +173,7 @@ class DropCollegeItemView: YNDropDownView {
     
     
     
+    // 记录当前选择的大学集合
     private var selected:[String:[String]] = [:]
     
     var passData: ((_ colleges:[String]) -> Void)?
@@ -167,20 +185,22 @@ class DropCollegeItemView: YNDropDownView {
         self.addSubview(topAddressView)
         self.addSubview(collection)
         self.addSubview(toolBar)
+        
         self.addSubview(areaView)
         
         
-        addrese.text = "当前地区:" + currentCity
-        _ = toolBar.sd_layout().bottomEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(44)
-        _ = topAddressView.sd_layout().topEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(50)
+        addrese.text = addressPre + currentCity
+        _ = toolBar.sd_layout().bottomEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(40)
+        _ = topAddressView.sd_layout().topEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(40)
         
-        _ = collection.sd_layout().topSpaceToView(topAddressView,10)?.rightEqualToView(self)?.leftEqualToView(self)?.heightIs(self.frame.height - topAddressView.frame.height)
-        
-        
-        _ = areaView.sd_layout().topSpaceToView(topAddressView,0)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(0)
+        _ = collection.sd_layout().topSpaceToView(topAddressView,0)?.rightEqualToView(self)?.leftEqualToView(self)?.heightIs(self.frame.height - topAddressView.frame.height)
         
         
-        //areaView
+        
+        //
+ 
+        
+        
         
         let space = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
         space.width = 50
@@ -219,8 +239,22 @@ class DropCollegeItemView: YNDropDownView {
 
 extension DropCollegeItemView{
     private func loadData(){
-        datas = ["北京":["北京所有大学", "北京大学1", "北京大学2","北京大学3","北京大学4","北京大学5"],
-                 "成都":["成都所有大学","成都大学1","成都大学2","成都大学3"]]
+        var bj:[String] = []
+        for i in 0..<15{
+            bj.append("北京大学\(i)")
+        }
+        
+        var cd:[String] = []
+        for i in 0..<15{
+            cd.append("成都大学\(i)")
+        }
+        let randSeed:[String] = ["北京","测试","大青蛙","当前为多","当前为多","成都","北京1","测试1","大青蛙1","当前为多1","当前为多1","成都1","北京2","测试2","大青蛙2","当前为多2","当前为多2","成都2","北京2","测试2","大青蛙2","当前为多2","当前为多2","成都2","北京3","测试3","大青蛙3","当前为多3","当前为多3","成都3","北京3","测试3","大青蛙3","当前为多3","当前为多3","成都3"]
+        for i in 0..<randSeed.count{
+            datas[randSeed[i]] =  i%2 == 0 ? cd : bj
+        }
+        // 设置城市
+        areaView.datas = Array(datas.keys)
+        //datas = ["北京":bj,"测试":bj,"大青蛙":cd,"当前为多":cd,"当前为多":bj,"成都":cd]
     }
 }
 
@@ -232,6 +266,7 @@ extension DropCollegeItemView{
     }
     
     @objc private func done(_ btn:UIButton){
+        
         
         self.passData?(selected[currentCity]!)
         self.hideMenu()
@@ -251,34 +286,29 @@ extension DropCollegeItemView{
         //self.areaView
 
         // 收藏
-        if isTouch == true {
+        if isOpenAreaView {
             
-            UIView.animate(withDuration: 0.5, animations: {
-                _ = self.areaView.sd_layout().heightIs(0)
-                
-                self.layoutIfNeeded()
-                
-            }, completion: { _ in
+            self.areaView.frame = CGRect.init(x: 0, y: 40, width: ScreenW, height: 1)
+            
+            //UIView.transition(with: <#T##UIView#>, duration: <#T##TimeInterval#>, options: <#T##UIViewAnimationOptions#>, animations: <#T##(() -> Void)?##(() -> Void)?##() -> Void#>, completion: <#T##((Bool) -> Void)?##((Bool) -> Void)?##(Bool) -> Void#>)
+            UIView.animate(withDuration: 5, animations: {
+                //self.areaView.isHidden = true
+                self.areaView.layoutIfNeeded()
 
             })
-            
-
             
         }else{
-            
             // 展开
-            UIView.animate(withDuration: 0.5, animations: {
-                
-                _ = self.areaView.sd_layout().heightIs(self.bounds.height)
-                self.layoutIfNeeded()
-
-            },completion: { _ in
-                
-                
-            })
+            self.areaView.frame = CGRect.init(x: 0, y: 40, width: ScreenW, height: self.bounds.height - 40)
             
+            UIView.animate(withDuration: 5, animations: {
+               self.areaView.layoutIfNeeded()
+                //self.areaView.isHidden = false
+
+            })
         }
-        isTouch = !isTouch
+    
+        isOpenAreaView = !isOpenAreaView
        
     }
 }
@@ -287,17 +317,17 @@ extension DropCollegeItemView{
     private func reloadCitys(name:String){
         currentCity = name
         
-        addrese.text = "当前地区:" + currentCity
+        
         self.collection.reloadData()
+
         UIView.animate(withDuration: 0.5, animations: {
-            _ = self.areaView.sd_layout().heightIs(0)
-            self.layoutIfNeeded()
+           //self.areaView.isHidden = true
+        }, completion: { bool in
             
-        }, completion: { _ in
-            
-            
+            self.addrese.text = addressPre + name
         })
-        isTouch = false
+        
+        isOpenAreaView = false
         
     }
 }
@@ -309,7 +339,7 @@ extension DropCollegeItemView: UICollectionViewDataSource, UICollectionViewDeleg
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return datas[currentCity]!.count
+        return datas[currentCity]?.count ?? 0
     }
     
     
@@ -317,15 +347,21 @@ extension DropCollegeItemView: UICollectionViewDataSource, UICollectionViewDeleg
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionTextCell.identity(), for: indexPath) as! CollectionTextCell
         
         
-        cell.name.text = datas[currentCity]?[indexPath.row]
-        
-        // 默认选择第一个 全部大学
-        if selected[currentCity]!.isEmpty{
-            selected[currentCity]!.append(datas[currentCity]![0])
+        guard  selected[currentCity] != nil else {
+            return UICollectionViewCell()
         }
         
+        cell.name.text = datas[currentCity]?[indexPath.row]
+        
+        // 默认选择全部大学
+        if selected[currentCity]!.isEmpty{
+            selected[currentCity]!.append(datas[currentCity]![0])
+        
+        }
+        
+        
         if selected[currentCity]!.contains(datas[currentCity]![indexPath.row]){
-            // 已经被选中状态
+            // 被选中状态
             cell.name.textColor = UIColor.blue
             cell.name.layer.borderColor = UIColor.blue.cgColor
             
@@ -339,7 +375,11 @@ extension DropCollegeItemView: UICollectionViewDataSource, UICollectionViewDeleg
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard  selected[currentCity] != nil else {
+            return
+        }
         if  let cell = collectionView.cellForItem(at: indexPath) as? CollectionTextCell, let name = cell.name.text{
+            // 全选
             if indexPath.row == 0 {
                 selected[currentCity]!.removeAll()
                 selected[currentCity]!.append(name)
@@ -347,26 +387,27 @@ extension DropCollegeItemView: UICollectionViewDataSource, UICollectionViewDeleg
                 return
             }
             
+            // 去掉全部选择的cell
             if selected[currentCity]!.contains(datas[currentCity]![0]){
-                selected[currentCity]!.remove(at: selected[currentCity]!.index(of: datas[currentCity]![0])!)
-                let cell = collectionView.cellForItem(at: IndexPath.init(row: 0, section: 0)) as! CollectionTextCell
-                cell.name.textColor = UIColor.black
-                cell.name.layer.borderColor = UIColor.clear.cgColor
+                selected[currentCity]!.remove(at: 0)               
             }
+            
             
             
             if selected[currentCity]!.contains(name){
                 // 取消选择状态
                 selected[currentCity]!.remove(at: selected[currentCity]!.index(of: name)!)
-                cell.name.textColor = UIColor.black
-                cell.name.layer.borderColor = UIColor.clear.cgColor
                 
             }else{
+                if selected[currentCity]!.count >= maxCount{
+                    print("不能超过5个")
+                    return
+                }
                 selected[currentCity]!.append(name)
-                cell.name.textColor = UIColor.blue
-                cell.name.layer.borderColor = UIColor.blue.cgColor
             }
             
+            
+             collectionView.reloadData()
             
             
         }

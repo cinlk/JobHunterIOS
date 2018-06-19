@@ -58,7 +58,9 @@ class MessageBoby: NSObject, Mappable{
     
 
     required init?(map: Map) {
-       
+       if map.JSON["messageID"] == nil || map.JSON["type"] == nil || map.JSON["creat_time"] == nil {
+            return nil
+        }
     }
     
     func mapping(map: Map) {
@@ -69,6 +71,8 @@ class MessageBoby: NSObject, Mappable{
         // double 数据转Date
         creat_time <- (map["creat_time"], DateTransform())
         isRead <- map["isRead"]
+        sender <- map["sender"]
+        receiver <- map["receiver"]
        
     }
     
@@ -113,7 +117,7 @@ class  JobDescriptionlMessage:MessageBoby{
     
     var jobID:String?
     // 照片 base64String
-    var icon:String?
+    var icon:String = "job_default"
     var jobName: String?
     var company:String?
     var salary:String?
@@ -122,6 +126,9 @@ class  JobDescriptionlMessage:MessageBoby{
   
     required init?(map: Map) {
         super.init(map: map)
+        if map.JSON["jobID"] == nil {
+            return nil 
+        }
     }
     
     override func mapping(map: Map) {
@@ -154,7 +161,7 @@ class  JobDescriptionlMessage:MessageBoby{
     func JsonContentToDate()->Data?{
         
        
-        let jsonStr:JSON =  ["jobID":self.jobID!, "icon":self.icon!,"jobName":self.jobName!,
+        let jsonStr:JSON =  ["jobID":self.jobID!, "icon":self.icon,"jobName":self.jobName!,
                              "company":self.company!, "salary":self.salary!, "tags": self.tags!]
         if  let jsonData =  try? jsonStr.rawData(){
             return jsonData

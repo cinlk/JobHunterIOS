@@ -218,10 +218,7 @@ extension UIImageView{
 extension UIImage{
     
     func toBase64String()->String{
-        
-        if let data =  UIImagePNGRepresentation(self) {
-            return data.base64EncodedString()
-        }
+        // 只存储压缩的图片
         if let data = UIImageJPEGRepresentation(self, 0){
             return data.base64EncodedString()
         }

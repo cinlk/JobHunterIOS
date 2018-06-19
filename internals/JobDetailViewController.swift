@@ -15,6 +15,19 @@ import SwiftyJSON
 import Social
 
 
+fileprivate let req:String = """
+计算机、通信等相关专业本科及以上学历，熟悉计算机网络体系架构、Unix/Linux操作系统；
+熟悉C/C++、python、php、shell等常见语言的一种或多种；
+酷爱计算机软/硬件、系统、网络技术，具备强烈的钻研精神和自我学习能力；
+乐于尝试新事物，具有迎接挑战、克服困难的勇气；
+善于和他人合作，富有集体荣誉感；
+具备良好的责任心与服务意识
+"""
+
+fileprivate let works:String = "负责如QQ、微信、腾讯云、腾讯游戏等腾讯海量业务的技术支撑和服务。与优秀的工程师一起，通过优秀的IDC机房规划建设、网络规划、CDN加速网络、高性能数据库和云存储管理、高可用高性能主机应用、运维自动化及监控系统建设等解决如：中国及海外互联网用户跨地域、跨运营商等复杂网络下稳定、低延迟的接入及访问我们的产品！高效管理、服务数以十万计的服务器及云端用户，通过架构优化和容错建设保障业务不间断运行！通过立体化监控系统快速发现和处理故障，以及让故障自愈。加盟腾讯技术运营、服务团队，您将亲身参与打造中国最优质的互联网产品平台，与中国最优秀的互联网人才共同成长！"
+
+
+
 fileprivate let tableViewHeaderH:CGFloat  = 148
 fileprivate let sections:Int = 4
 fileprivate let bottomViewH:CGFloat = 50
@@ -22,38 +35,27 @@ fileprivate let bottomViewH:CGFloat = 50
 
 class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UITableViewDataSource {
     
-    private var mode:CompuseRecruiteJobs?{
+    private var mode:CompuseRecruiteJobs?
+    
+    var kind:(id:String, type:jobType)?{
         didSet{
-            jobheader.mode = mode!
-            isCollected = jobTable.isCollectedBy(id: jobID)
-            jobheader.layoutSubviews()
+            guard  let kind = kind  else {
+                return
+            }
+            self.id = kind.id
+            self.jobType = kind.type
+            loadData(id: kind.id, type: kind.type)
+            
         }
     }
+    private lazy var id:String = ""
+    private lazy var jobType:jobType = .none
     
     
+    private var HRModel:HRPersonModel?
     
-    // 校招job id
-    var jobID:String = ""{
-        didSet{
-            loadData(type:"graduate")
-            jobType = "graduate"
-        }
-    }
-    var internJobID:String = ""{
-        didSet{
-            loadData(type:"intern")
-            jobType = "intern"
-        }
-    }
+    private var firstLoad:Bool = false
     
-    private var companyModel:CompanyModel?
-    
-    private var jobType:String = ""
-    
-    
-    
-    
-    private var isCollected:Bool = false
     
     // job table
     private let jobTable = DBFactory.shared.getJobDB()
@@ -63,40 +65,16 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
     
     private lazy var jobheader:JobDetailHeader = { [unowned self] in
         
-       let jh = JobDetailHeader.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: tableViewHeaderH))
-        //infos!["类型"] = "社招"
-        jh.backgroundColor = UIColor.white
+        let jh = JobDetailHeader.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: tableViewHeaderH))
         
         return jh
     }()
     
     
-    private lazy var warnBtn:UIButton = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
+    private lazy var warnBtn:UIButton = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 25, height: 25))
+
 
     
-    // test string
-    private var needed =  "1 3年以上互联网产品工作经验，经历过较大体量用户前后端产品项目\n 2 思维活跃，有独立想法，有情怀，喜欢电影行业\n 3 善于业务整体规划、任务模块优先级拆解、能够主导产品生命周期全流程\n 4 具备良好的沟通技巧和团队合作精神，有带团队经验者优先 \n 5 高度执行力，能够独当一面，善于推动团队效率不断提升"
-    
-    private var desc = "1、负责租房频道整体流量运营及制定获客策略，辅助制定租房频道市场营销、推广和渠道合作策略；\n 2、合理的制定目标及市场预算分配 \n 3、负责对外媒体合作和商务拓展活动；\n 4、推动租房频道线上推广及线下活动的策划、组织和执行工作； \n 5、协调运营、产品及技术等团队推动产品优化提升获客效果 \n 6、对市场信息敏感，及时汇报且要做出预判投放解决方案。"
-    
-    private var address = "北京海淀区-"+"-北四环-" + "海淀北二街"
-    
-    
-    // 获取hr 信息
-    private var HRuserID:String = "654321"
-    private var HRname:String = "lucy"
-    private var Hricon:UIImage = #imageLiteral(resourceName: "sina")
-    private var HRposition:String = "hr manager"
-    private var HRtime:String = "2小时前"
-    private var HRCompany:String = "㝵橘"
-    private var HRRole:String = "admin"
-
-   
-    
-    var hr:PersonModel?
-    
-    // 第一次加载
-    private lazy var firstLoad = true
     
     
     // 举报vc
@@ -106,9 +84,10 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
     
     private lazy var apply:UIButton = {
         
-        let apply = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 100, height: (self.navigationController?.toolbar.height)!))
+        let apply = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 100, height: toolBarHeight))
         apply.addTarget(self, action: #selector(onlineApply(_:)), for: .touchUpInside)
         apply.setTitle("投递简历", for: .normal)
+        apply.setTitle("已投递简历", for: .selected)
         apply.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         apply.titleLabel?.textAlignment = .center
         apply.backgroundColor = UIColor.green
@@ -119,7 +98,8 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
     }()
     
     private lazy var talk:UIButton = {
-        let talk = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW - collectedBtn.width - apply.width + 20, height: (self.navigationController?.toolbar.height)!))
+        // 宽度加上20 填满整个view
+        let talk = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW - collectedBtn.width - apply.width + 20, height: toolBarHeight))
         talk.setTitle("和ta聊聊", for: .normal)
         talk.setTitle("继续沟通", for: .selected)
         talk.backgroundColor = UIColor.blue
@@ -138,11 +118,7 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
         self.setViews()
         
         
-        
-        // 初始hr信息
-        hr = HRPersonModel(JSON: ["userID":HRuserID,"name":HRname,"company":HRCompany,"icon":Hricon.toBase64String(),
-                                  "role":HRRole,"isShield":false,"ontime":Date.init().timeIntervalSinceReferenceDate,
-                                  "position":HRposition])
+ 
         
     }
 
@@ -153,8 +129,8 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
         super.viewWillAppear(animated)
         self.navigationItem.title = "职位详情"
         self.navigationController?.insertCustomerView()
-        self.navigationController?.setToolbarHidden(firstLoad, animated: true)
-        
+        self.navigationController?.setToolbarHidden(!firstLoad , animated: true)
+
         
     }
     
@@ -163,7 +139,7 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
         self.navigationItem.title = ""
         self.navigationController?.removeCustomerView()
         self.navigationController?.setToolbarHidden(true, animated: false)
-        firstLoad = false
+        firstLoad = true
 
 
     }
@@ -174,8 +150,7 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         _  = self.table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
-        _ = self.table.tableHeaderView?.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)
-        
+ 
         
         
     }
@@ -186,16 +161,17 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
         
         
         self.handleViews.append(warnBtn)
-        
         super.setViews()
     
         // 设置table
         table.delegate = self
-        table.register(UINib(nibName:"CompanySimpleCell", bundle:nil), forCellReuseIdentifier: "companyCell")
-        table.register(JobDescription.self, forCellReuseIdentifier: "JobDescription")
-        table.register(worklocateCell.self, forCellReuseIdentifier: "worklocate")
-        table.register(RecruiterCell.self, forCellReuseIdentifier: "RecruiterCell")
+        table.register(UINib(nibName:"CompanySimpleCell", bundle:nil), forCellReuseIdentifier: CompanySimpleCell.identity())
+        table.register(JobDescription.self, forCellReuseIdentifier: JobDescription.identity())
+        table.register(worklocateCell.self, forCellReuseIdentifier: worklocateCell.identity())
+        table.register(RecruiterCell.self, forCellReuseIdentifier: RecruiterCell.identity())
+        table.register(subIconAndTitleCell.self, forCellReuseIdentifier: subIconAndTitleCell.identity())
         table.backgroundColor = UIColor.viewBackColor()
+        table.contentInset = UIEdgeInsetsMake(0, 0, 15, 0)
         
         shareapps.delegate = self
         
@@ -209,26 +185,32 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
     
     
     override func didFinishloadData() {
+        
+       
         super.didFinishloadData()
+        
+        
+        // 获取数据失败怎么办
+        guard mode != nil else {
+            return
+        }
+        
+        jobheader.mode = mode
+        jobheader.layoutSubviews()
+        
         
         
         self.table.tableHeaderView = jobheader
         self.table.reloadData()
         // 是否关注
-        if mode?.isCollected == true {
-            collectedBtn.isSelected = true
-        }
-        if mode?.isApply == true {
-            apply.isSelected = true
-            apply.isUserInteractionEnabled = false
-            
-        }
+        collectedBtn.isSelected =  (mode?.isCollected)!
+        apply.isSelected = (mode?.isApply)!
+        apply.isUserInteractionEnabled = !(mode?.isApply)!
+        talk.isSelected = ( mode?.isTalked)!
         
-        if mode?.isTalked == true{
-            talk.isSelected = true
-        }
-        
-        self.navigationController?.setToolbarHidden(false, animated: true)
+        self.navigationController?.navigationBar.tintColor = UIColor.black
+        // 控制toolbar 界面加载完成后在显示
+        self.navigationController?.setToolbarHidden(firstLoad, animated: true)
 
         
     }
@@ -236,25 +218,17 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
     
     override func reload() {
         super.reload()
-        loadData(type: jobType)
+        loadData(id: id, type: jobType)
+
     }
     
     
     // 收藏
     override func collected(_ btn:UIButton){
-        if mode?.isCollected == true{
-            // 更新服务器数据
-            collectedBtn.isSelected = false
-            
-            showOnlyTextHub(message: "取消收藏", view: self.view)
-        }else{
-            // 更新服务器数据
-            collectedBtn.isSelected = true
-            
-            showOnlyTextHub(message: "收藏成功", view: self.view)
-        }
-        mode?.isCollected = !(mode?.isCollected)!
-        
+        let str =  (mode?.isCollected)! ? "取消收藏" : "收藏成功"
+        collectedBtn.isSelected = !(mode?.isCollected)!
+        showOnlyTextHub(message: str, view: self.view)
+        mode?.isCollected = collectedBtn.isSelected
         
     }
     
@@ -289,20 +263,18 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
             
             do{
                 
-                let contentData = try  JSON.init(["jobID":getUUID(),"icon": #imageLiteral(resourceName: "sina").toBase64String() ,"jobName":"产品开发","company":"霹雳火","salary":"面议","tags":["北京","本科","校招","户口"]]).rawData().base64EncodedString()
                 
-                if let  jobDescribeMessage = JobDescriptionlMessage(JSON: ["messageID":getUUID(),"creat_time":Date.init().timeIntervalSince1970,"type":MessgeType.jobDescribe.rawValue,"sender":myself,"receiver":hr!,"content":contentData,"isRead":true]){
-                    jobDescribeMessage.sender = myself
-                    jobDescribeMessage.receiver = hr
+                if let  jobDescribeMessage = JobDescriptionlMessage(JSON: ["messageID":getUUID(),"creat_time":Date.init().timeIntervalSince1970,"type":MessgeType.jobDescribe.rawValue,"isRead":true, "receiver": HRModel!.toJSON(), "sender":myself.toJSON(), "jobID":id,"icon": #imageLiteral(resourceName: "sina").toBase64String() ,"jobName":"产品开发","company":"霹雳火","salary":"面议","tags":["北京","本科","校招","户口"]]){
+                    
+                
                     
                     
                     // 打招呼消息
-                    let greetingMessage = MessageBoby(JSON: ["messageID":getUUID(),"content": GreetingMsg.data(using: String.Encoding.utf8)!.base64EncodedString(),
-                                                             "isRead":true,"creat_time":Date.init().timeIntervalSince1970,
-                                                             "type":MessgeType.text.rawValue,"sender":myself,"receiver":hr!])
+                    let greetingMessage = MessageBoby(JSON: ["messageID":getUUID(),"content": GreetingMsg.data(using: String.Encoding.utf8)!.base64EncodedString(),"receiver": HRModel!.toJSON(), "sender":myself.toJSON(),"isRead":true,"creat_time":Date.init().timeIntervalSince1970,
+                                                             "type":MessgeType.text.rawValue])
                     
                     greetingMessage?.sender = myself
-                    greetingMessage?.receiver = hr
+                    greetingMessage?.receiver = HRModel!
                     
                     var messages:[MessageBoby] = []
                     
@@ -316,8 +288,8 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
                     }else{
                         messages.append(jobDescribeMessage)
                     }
-                    conversationManager.firstChatWith(person: hr!, messages: messages)
-                    jobTable.talkedBy(id: jobID)
+                    conversationManager.firstChatWith(person: HRModel!, messages: messages)
+                    jobTable.talkedBy(id: id)
                     
                 }
                 
@@ -331,9 +303,10 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
             
             
         }
+        
         talk.isSelected = true 
         // 跳转到和hr的聊天界面
-        let chatView = CommunicationChatView(hr: hr!)
+        let chatView = CommunicationChatView(hr: HRModel!)
         
         chatView.hidesBottomBarWhenPushed = true
         
@@ -356,12 +329,10 @@ extension JobDetailViewController {
     func  addBarItems(){
         
         
-        let size = CGSize.init(width: 25, height: 25)
-        
         
         
         // 举报item
-        let warnIcon = UIImage.barImage(size: size, offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "warn")
+        let warnIcon = UIImage.init(named: "warn")?.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate)
         warnBtn.addTarget(self, action: #selector(warn), for: .touchUpInside)
         warnBtn.clipsToBounds = true
         warnBtn.setImage(warnIcon, for: .normal)
@@ -413,7 +384,7 @@ extension JobDetailViewController{
     }
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         
-        return  section == 0 ? 0: 10
+        return  10
     }
     
     
@@ -426,34 +397,22 @@ extension JobDetailViewController{
             // MARK 临时给 jobid
             let companyVC =  CompanyMainVC()
             companyVC.hidesBottomBarWhenPushed = true 
-            companyVC.companyID = jobID
+            companyVC.companyID = mode?.company?.id
+            
             self.navigationController?.pushViewController(companyVC, animated: true)
+        
             
-        case 2:
-            let address = "北京市融科资讯中心"
-            let geocoder = CLGeocoder()
-            var place:CLLocationCoordinate2D?
-            
-            geocoder.geocodeAddressString(address) {
-                (placemarks, error) in
-                guard error == nil else {
-                    print(error!)
-                    return
-                }
-                place = placemarks?.first?.location?.coordinate
-                let alert  =  PazNavigationApp.directionsAlertController(coordinate: place!, name: address, title: "选择地图", message: nil)
-                self.present(alert, animated: true, completion: nil)
-            }
-            
-        case 3:
+        case 1:
             // mode 修改 MARK
             let hrvc = publisherControllerView()
-            hrvc.hidesBottomBarWhenPushed = true 
-            //let mode = HRInfo.init(name: HRname, position: HRposition, lastLogin: HRtime, icon: "sina")
-            hrvc.userID  = "test-23123"
-            self.navigationController?.pushViewController(hrvc, animated: true)
+            hrvc.hidesBottomBarWhenPushed = true
+            guard let id = mode?.hr?.userID else {
+                return
+            }
+            hrvc.userID =  id 
             
-        
+            
+            self.navigationController?.pushViewController(hrvc, animated: true)
         default:
             break
         }
@@ -467,16 +426,17 @@ extension JobDetailViewController{
         case 0:
             return  CompanySimpleCell.cellHeight()
         case 1:
-            let mode = jobDetails.init(jobDescribe: desc, jobCondition: needed, address: address)
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: JobDescription.self, contentViewWidth: ScreenW)
+            
+            return tableView.cellHeight(for: indexPath, model: mode?.hr, keyPath: "mode", cellClass: RecruiterCell.self, contentViewWidth: ScreenW)
             
         case 2:
-            let mode = jobDetails.init(jobDescribe: desc, jobCondition: needed, address: address)
             
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: worklocateCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: JobDescription.self, contentViewWidth: ScreenW)
         case 3:
-            let mode = HRInfo.init(name: HRname, position: HRposition, lastLogin: HRtime, icon: "sina")
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: RecruiterCell.self, contentViewWidth: ScreenW)
+             return tableView.cellHeight(for: indexPath, model: mode?.address, keyPath: "mode", cellClass: worklocateCell.self, contentViewWidth: ScreenW)
+        case 4:
+            
+            return tableView.cellHeight(for: indexPath, model: mode?.endTime, keyPath: "mode", cellClass: subIconAndTitleCell.self, contentViewWidth: ScreenW) + 20
             
         default:
             return 45
@@ -489,35 +449,51 @@ extension JobDetailViewController{
         switch indexPath.section {
         // MARK: - 数据替换
         case 0:
-            let cell  = table.dequeueReusableCell(withIdentifier: "companyCell", for: indexPath) as! CompanySimpleCell
-            cell.mode = (image: "sina",companyName: "测试公司" , tags:"上市企业|1万人|不加班")
+            let cell  = table.dequeueReusableCell(withIdentifier: CompanySimpleCell.identity(), for: indexPath) as! CompanySimpleCell
+            cell.mode = mode?.company
+            
             return cell
             
         case 1:
-            
-            let cell  = table.dequeueReusableCell(withIdentifier: "JobDescription", for: indexPath) as! JobDescription
-            let mode = jobDetails.init(jobDescribe: desc, jobCondition: needed, address: address)
-            cell.mode = mode
-            
+            let cell = table.dequeueReusableCell(withIdentifier: RecruiterCell.identity(), for: indexPath) as! RecruiterCell
+            cell.mode = mode?.hr
             return cell
+            
         case 2:
-            let cell = table.dequeueReusableCell(withIdentifier: "worklocate", for: indexPath) as! worklocateCell
-            let mode = jobDetails.init(jobDescribe: desc, jobCondition: needed, address: address)
+            
+            let cell  = table.dequeueReusableCell(withIdentifier: JobDescription.identity(), for: indexPath) as! JobDescription
             cell.mode = mode
+            
             return cell
         case 3:
-            let cell = table.dequeueReusableCell(withIdentifier: "RecruiterCell", for: indexPath) as! RecruiterCell
-            let mode = HRInfo.init(name: HRname, position: HRposition, lastLogin: HRtime, icon: "sina")
-            cell.mode = mode
+            let cell = table.dequeueReusableCell(withIdentifier: worklocateCell.identity(), for: indexPath) as! worklocateCell
+            cell.mode = mode?.address
+            cell.chooseAddress = { address in
+                
+                let geocoder = CLGeocoder()
+                var place:CLLocationCoordinate2D?
+                
+                geocoder.geocodeAddressString(address) {
+                    (placemarks, error) in
+                    guard error == nil else {
+                        print(error!)
+                        return
+                    }
+                    place = placemarks?.first?.location?.coordinate
+                    let alert  =  PazNavigationApp.directionsAlertController(coordinate: place!, name: address, title: "选择地图", message: nil)
+                    self.present(alert, animated: true, completion: nil)
+                }
+                
+                
+            }
             return cell
         
         // 截止时间
         case 4:
-            let cell = UITableViewCell.init(style: .value1, reuseIdentifier: "cell")
-            
-            cell.textLabel?.text = "截止时间: "
-            cell.detailTextLabel?.text = mode!.endTime
-            
+            let cell =  tableView.dequeueReusableCell(withIdentifier: subIconAndTitleCell.identity(), for: indexPath) as! subIconAndTitleCell
+            cell.mode = mode?.endTime
+            cell.iconName.text = "截止时间"
+            cell.icon.image = #imageLiteral(resourceName: "clock")
             return cell
             
             
@@ -531,29 +507,40 @@ extension JobDetailViewController{
 
 extension JobDetailViewController{
     
-    // 获取数据后 在设置界面
-    private func loadData(type:String){
+    // 更加id  和 类型 获取job 信息
+    private func loadData(id:String,type:jobType){
+        
         
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             
-            Thread.sleep(forTimeInterval: 3)
+            Thread.sleep(forTimeInterval: 1)
             
             
             DispatchQueue.main.async(execute: {
                 
-                if type == "graduate"{
+                if type == .graduate{
                 // 这有ui操作
-                    self?.mode =  CompuseRecruiteJobs(JSON: ["id":self?.jobID,"type":type,"tag":["福利好","休息多"],
-                                                         "icon":"sina","companyID":"dqw-dqwdq4-124","name":"助理","address":"北京海淀","salary":"10-20K","create_time":Date.init().string(),"education":"本科","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false])
-                }else{
+                  if let data = CompuseRecruiteJobs(JSON: ["id":id,"type":type.rawValue,"benefits":"六险一金,鹅肠大神,海外手游扥等扥",
+                    "name":"助理","address":["北京玉渊潭公园","北京市丰台区丰台路丰管路16号院8号楼","北京融科资讯中心A座"],"create_time":Date().timeIntervalSince1970 - TimeInterval(2423),"applyEndTime":Date().timeIntervalSince1970,"requirement": req,"works":works,"education":"本科","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false, "company":["id":"dqwd","name":"公司名称","isCollected":false,"icon":"chrome","address":["地址1","地址2"],"industry":["行业1","行业2"],"staffs":"1000人以上"],"hr":["userID":"dqwd","name":"我是hr带我去的大青蛙","position":"HRBP","role":"招聘者","ontime": Date().timeIntervalSince1970 - TimeInterval(6514),"icon": #imageLiteral(resourceName: "jing").toBase64String(),"company":"公司名称"]]){
                     
-                    self?.mode = CompuseRecruiteJobs(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dq-434-dqwdqw","name":"码农","address":"北京","salary":"150-190元/天","create_time":Date().timeIntervalSince1970,"education":"本科","type":"intern"
-                        ,"applyEndTime":Date().timeIntervalSince1970,"perDay":"4天/周","months":"5个月","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false])!
+                      self?.mode =  data
+                    }
+                    
+                }else if type == .intern{
+                    if let data = CompuseRecruiteJobs(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dqwd-dqwdqwddqw","name":"码农","requirement":req,"works":works,"applyEndTime":Date().timeIntervalSince1970,"perDay":"5天/周","months":"3个月","salary":"100元/天","company":["id":"dqwd","name":"公司名称","isCollected":false,"icon":"chrome","address":["地址1","地址2"],"industry":["行业1","行业2"],"staffs":"1000人以上"],"address":["北京","地址2"],"create_time":Date().timeIntervalSince1970,"education":"本科","type":"intern","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false,"readNums":arc4random()%1000,"hr":["userID":"dqwd","name":"我是hr带我去的大青蛙","position":"HRBP","role":"招聘者","ontime": Date().timeIntervalSince1970 - TimeInterval(6514),"icon": #imageLiteral(resourceName: "jing").toBase64String(),"company":"公司名称"]]
+                        ){
+                        self?.mode = data
+                        
+                    }
+                    
                 }
+                
+                self?.HRModel = self?.mode?.hr
+                
         
                 // 获取数据成功
                 self?.didFinishloadData()
-                // 获取数据失败
+                // 获取数据失败 重新刷新
                 //self?.showError()
                
             })
@@ -621,7 +608,7 @@ extension JobDetailViewController{
         
         WarnViewController.hidesBottomBarWhenPushed = true
         // test
-        WarnViewController.jobId = "dwqdq"
+        WarnViewController.target = kind
         self.navigationController?.pushViewController(WarnViewController, animated: true)
     }
     

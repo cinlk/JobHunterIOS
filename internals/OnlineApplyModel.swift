@@ -14,7 +14,9 @@ class OnlineApplyModel: BaseModel {
     
     
     // 举办公司
-    internal var companyModel:CompanyModel?
+    internal var companyIcon:String = "default"
+    internal var companyName:String?
+    
     // 截止时间
     internal var end_time:Date?
     
@@ -38,7 +40,7 @@ class OnlineApplyModel: BaseModel {
     
     
     // 工作城市
-    internal var positionAddress:[String]?
+    internal var address:[String]?
     // 专业
     internal var majors:[String]?
     // 职位
@@ -57,26 +59,37 @@ class OnlineApplyModel: BaseModel {
     // 网申招聘描述（MARK）
     internal var content:String?
     
+    // cell 视图显示条件
+    internal var isSimple:Bool = false
+    
     
     
     required init?(map: Map) {
         super.init(map: map)
-//        if map.JSON["isApply"] == nil {
-//            return nil
-//        }
+      
+        if map.JSON["end_time"] == nil{
+            return nil
+        }
+        if map.JSON["outer"] != nil && (map.JSON["outer"] as! Bool) == true && map.JSON["link"] == nil{
+            return nil
+        }
+        
+        
     }
     
     override func mapping(map: Map) {
        
         super.mapping(map: map)
         end_time <- (map["end_time"], DateTransform())
-        companyModel <- map["companyModel"]
-        positionAddress <- map["positionAddress"]
+        companyIcon <- map["companyIcon"]
+        companyName <- map["companyName"]
+        address <- map["address"]
         positions <- map["positions"]
         majors <- map["majors"]
         content <- map["content"]
         outer <- map["outer"]
         link <- map["link"]
+        
         
     }
     

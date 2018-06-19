@@ -36,6 +36,7 @@ class baseWebViewController: UIViewController {
         let web = WKWebView.init(frame: CGRect.zero)
         web.navigationDelegate = self
         web.uiDelegate = self
+    
         return web
     }()
     
@@ -222,6 +223,10 @@ extension baseWebViewController: WKNavigationDelegate{
         }
     }
     
+    
+    
+    
+   
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         progressView.isHidden = true
         progressView.setProgress(0, animated: false)
@@ -229,6 +234,7 @@ extension baseWebViewController: WKNavigationDelegate{
         self.navigationItem.title = webView.title
     }
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        print("error ---> \(error)")
         progressView.isHidden = true
         progressView.setProgress(0, animated: false)
     }
@@ -253,6 +259,14 @@ extension baseWebViewController: WKUIDelegate{
             completionHandler(true)
         }))
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    // 内容加载 错误
+    func  webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        print("error ---> \(error)")
+        progressView.isHidden = true
+        progressView.setProgress(0, animated: false)
+        
     }
 }
 

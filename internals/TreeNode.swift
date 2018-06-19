@@ -16,6 +16,9 @@ fileprivate let condition_salary = ["不限","2000元/月以下","2000-5000元/�
 fileprivate let condition_internDay = ["2天/周","3天/周","4天/周","5天/周"]
 fileprivate let condition_internMonth = ["1个月","2个月","3个月","4个月","5个月","半年","半年以上"]
 
+// 日期
+
+
 
 enum nodeType {
     case root
@@ -425,7 +428,39 @@ class SelectItemUtil {
         creatTreeBy(name: "实习天数", target: condition_internDay)
         creatTreeBy(name: "实习时间", target: condition_internMonth)
         creatTreeBy(name: "实习薪水", target: condition_internSalary)
-        //
+        // test Picker 日期
+        
+        
+        var res = Dictionary<String,Dictionary<String,[String]>>()
+    
+        
+        let year = ["2017","2018","2019"]
+        var month:[String] = []
+        var days:[String] = []
+        for i in 0..<12{
+            month.append("\(i+1)月")
+        }
+        for i in 0..<31{
+            days.append("\(i+1)日")
+        }
+        
+        for y in year{
+            var dic:[String:[String]] = [:]
+            
+            for m in month{
+                dic[m] = days
+                
+            }
+            res[y] = dic
+            
+        }
+        
+         print(res)
+         creatTreeBy(name: "日期", target: res)
+         self.itemNode["日期"]?.printNodes()
+        
+       
+        
         
     }
     // 清理selected 状态

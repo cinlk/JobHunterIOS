@@ -62,3 +62,32 @@ func meetingTalkTime(time: Date) -> String{
 }
 
 
+
+func personOnlineTime(date:Date) -> String{
+    
+    let dateFormat = DateFormatter()
+    
+    let currentTime = Date()
+    
+    let subtime = -date.timeIntervalSince(currentTime)
+    let week = TimeInterval(60*68*24*7)
+    let oneday = TimeInterval(60*60*24)
+    let onehour = TimeInterval(60*60)
+    if subtime >= week{
+        dateFormat.dateFormat  = "yy-MM-dd"
+        return dateFormat.string(from: date)
+    }else if subtime < week && subtime >= oneday{
+        let day  = Int(floor(subtime / oneday))
+        return "\(day)天以前"
+    }else if subtime < oneday && subtime > onehour{
+        let hour =  Int(floor(subtime/onehour))
+        return "\(hour)小时以前"
+    }else{
+        var minu = Int(floor(subtime/TimeInterval(60)))
+        if minu == 0 {
+            minu = 1
+        }
+        return "\(minu)分钟以前"
+    }
+}
+

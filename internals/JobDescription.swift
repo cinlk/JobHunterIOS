@@ -60,13 +60,13 @@ import UIKit
         return line
     }()
     
-    dynamic var mode:jobDetails?{
+    dynamic var mode:CompuseRecruiteJobs?{
         didSet{
             topdescription.text = "职位描述"
             works.text = "工作职责"
-            workcontent.text = mode?.jobDescribe ?? ""
+            workcontent.text = mode?.works
             demand.text = "任职资格"
-            demandInfo.text = mode?.jobCondition ?? ""
+            demandInfo.text = mode?.requirement
             self.setupAutoHeight(withBottomView: demandInfo, bottomMargin: 10)
             
         }
@@ -89,6 +89,10 @@ import UIKit
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    class func identity()->String{
+        return "JobDescription"
     }
     
 }

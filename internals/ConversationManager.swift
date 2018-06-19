@@ -130,8 +130,7 @@ class ConversationManager: NSObject {
             return
         }
         do{
-            // ??
-            try items.forEach{ try messageTable.insertBaseMessage(message: $0)}
+            try items.forEach{ try messageTable.insertMessage(message: $0)}
         }catch{
             throw error
         }

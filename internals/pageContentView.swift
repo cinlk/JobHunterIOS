@@ -155,6 +155,11 @@ extension pageContentView{
        // print(collectionView.cellForItem(at: IndexPath.init(row: currentIndex, section: 0)))
     }
     
+    
+   
+    
+    
+    
 }
 
 

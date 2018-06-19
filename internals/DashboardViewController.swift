@@ -856,7 +856,7 @@ extension DashboardViewController{
         // 传递jobid  查询job 具体信息
         let detail = JobDetailViewController()
         detail.hidesBottomBarWhenPushed = true 
-        detail.jobID = jobModel.id!
+        //detail.jobID = jobModel.id!
         self.navigationController?.pushViewController(detail, animated: true)
         
     }

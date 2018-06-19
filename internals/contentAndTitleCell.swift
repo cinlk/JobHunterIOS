@@ -8,9 +8,8 @@
 
 import UIKit
 
-@objcMembers class introductionCell: UITableViewCell {
+@objcMembers class contentAndTitleCell: UITableViewCell {
 
-    
     
     private lazy var desc: UILabel = {
         let lable = UILabel.init()
@@ -59,6 +58,10 @@ import UIKit
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
+    }
+    
+    class func identity()->String{
+        return  "contentAndTitleCell"
     }
     
 }

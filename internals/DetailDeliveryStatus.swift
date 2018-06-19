@@ -194,7 +194,7 @@ extension DetailDeliveryStatus{
     // 跳转job详细界面 (校招，实习， 网申) MARK
     @objc func showJob(){
         let jobV = JobDetailViewController()
-        jobV.jobID = (mode?.id)!
+        //jobV.id = (mode?.id)!
         self.navigationController?.pushViewController(jobV, animated: true)
     }
 }

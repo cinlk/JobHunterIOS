@@ -20,7 +20,7 @@ class CompanyListViewController: BasePositionItemViewController {
     lazy var myDropMenu: YNDropDownMenu = { [unowned self] in
         
         
-        let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: dropMenuH), dropDownViews: [cityMenu,careerClassify], dropDownViewTitles: ["城市","行业分类"])
+        let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: dropMenuH), dropDownViews: [cityMenu,industryKind], dropDownViewTitles: ["城市","行业领域"])
         
         menu.setImageWhen(normal: UIImage(named: "arrow_nor"), selected: UIImage(named: "arrow_xl"), disabled: UIImage(named: "arrow_dim"))
         menu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
@@ -31,6 +31,8 @@ class CompanyListViewController: BasePositionItemViewController {
         menu.showMenuSpringWithDamping = 1
         menu.hideMenuSpringWithDamping = 1
         menu.bottomLine.isHidden = false
+        
+        menu.addSwipeGestureToBlurView()
         
         return menu
         
@@ -110,7 +112,7 @@ extension CompanyListViewController:UITableViewDataSource, UITableViewDelegate{
         tableView.deselectRow(at: indexPath, animated: false)
         let mode = self.datas[indexPath.row]
         let companyVC = CompanyMainVC()
-        companyVC.mode = mode
+        companyVC.companyID = mode.id
         companyVC.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(companyVC, animated: true)
     }

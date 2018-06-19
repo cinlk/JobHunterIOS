@@ -15,6 +15,10 @@ class UserLogginViewController: UIViewController {
 
     
     
+    private let  userTable = DBFactory.shared.getUserDB()
+    private let  personTable = DBFactory.shared.getPersonDB()
+    
+    
     private lazy var appImage:UIImageView = {
         let image = UIImageView.init()
         image.clipsToBounds = true
@@ -52,6 +56,7 @@ class UserLogginViewController: UIViewController {
         btn.layer.cornerRadius = 10
         btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
         btn.titleLabel?.textAlignment = .center
+        btn.addTarget(self, action: #selector(login), for: .touchUpInside)
         return btn
     }()
     
@@ -157,6 +162,17 @@ extension UserLogginViewController{
     @objc private func cancelEdit(){
         self.view.endEditing(true)
     }
+    
+    
+    @objc private func login(){
+        //  假设 用户d输入正确
+        self.userTable.insertUser(account: "123456", password: "123456", auto:true)
+        // 个人信息存入person 表
+        self.personTable.insertPerson(person: myself)
+        
+        self.performSegue(withIdentifier: "showMain", sender: nil)
+        
+    }
 }
 
 extension UserLogginViewController: pagetitleViewDelegate{
@@ -184,6 +200,8 @@ extension UserLogginViewController{
     @objc private func skip(){
         // 去主界面
         
+      
+        //
         //self.dismiss(animated: true, completion: nil)
         //self.present(main, animated: true, completion: nil)
         self.performSegue(withIdentifier: "showMain", sender: nil)

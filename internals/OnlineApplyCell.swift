@@ -13,7 +13,7 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
 
 @objcMembers class OnlineApplyCell: UITableViewCell {
 
-    private lazy var icon:UIImageView = {
+    internal lazy var icon:UIImageView = {
         let img = UIImageView()
         img.clipsToBounds = true
         img.contentMode = .scaleToFill
@@ -78,9 +78,14 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
 
             }
             
-            //jobName.addAttributes([NSAttributedStringKey.foregroundColor:UIColor.black], range: NSRange.init(location: 0, length: jobName.length))
+            if mode.isSimple{
+                 _ = self.icon.sd_layout().leftSpaceToView(self.contentView,0)?.topSpaceToView(self.contentView,5)?.widthIs(0)?.autoHeightRatio(1)
+                
+            }else{
+                self.icon.image = UIImage.init(named:  mode.companyIcon)
+            }
+           
             
-            self.icon.image = UIImage.init(named:  mode.companyModel?.icon  ?? "default")
             self.jobName.attributedText = jobName
             
             
@@ -88,7 +93,7 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
             endStr.insert(NSAttributedString.init(string:"截止") , at: 0)
             self.endTime.attributedText =  endStr
             
-            self.address.text = mode.positionAddress?.joined(separator: " ")
+            self.address.text = mode.address?.joined(separator: " ")
             self.setupAutoHeight(withBottomViewsArray: [icon, address], bottomMargin: 5)
             
         }

@@ -15,21 +15,25 @@ class AreaCollectionView: UIView {
     
     
     //test datas 地区
-    private var datas:[String] = ["北京","成都"]
+    internal var datas:[String] = []{
+        didSet{
+            self.collection.reloadData()
+        }
+    }
     
     
     internal var selectedCity:((_ city:String)->Void)?
     
     private lazy var layout:UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize.init(width: (ScreenW - 40) / 3 , height: 40)
+        layout.itemSize = CGSize.init(width: (ScreenW - 50) / 3 , height: 40)
         layout.minimumLineSpacing = 10
         layout.minimumInteritemSpacing = 10
         
         return layout
     }()
     
-    private lazy var collection:UICollectionView = { [unowned self] in
+    internal lazy var collection:UICollectionView = { [unowned self] in
         let col = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
         col.allowsMultipleSelection = false
         col.contentInset = UIEdgeInsetsMake(5, 10, 5, 10)
@@ -37,6 +41,9 @@ class AreaCollectionView: UIView {
         col.delegate = self
         col.backgroundColor = UIColor.white
         col.tag  = 10
+        col.autoresizesSubviews = false
+        col.layer.removeAllAnimations()
+        
         col.register(CollectionTextCell.self, forCellWithReuseIdentifier: CollectionTextCell.identity())
         return col
         
@@ -63,6 +70,10 @@ extension AreaCollectionView:UICollectionViewDataSource, UICollectionViewDelegat
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didUpdateFocusIn context: UICollectionViewFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator) {
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -96,6 +107,7 @@ extension AreaCollectionView:UICollectionViewDataSource, UICollectionViewDelegat
     }
     
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        
         if let cell = collectionView.cellForItem(at: indexPath) as? CollectionTextCell{
             cell.name.textColor = UIColor.black
             cell.name.layer.borderColor = UIColor.clear.cgColor

@@ -9,7 +9,7 @@
 import UIKit
 import ObjectMapper
 
-private let tsection = 2
+private let tsection = 3
 private let tHeaderHeight:CGFloat = 200
 
 class publisherControllerView: BaseTableViewController {
@@ -17,10 +17,9 @@ class publisherControllerView: BaseTableViewController {
     // MARK:-  不同类型职位
     private var publishJobs:[CompuseRecruiteJobs] = []
     
-    private lazy var jd:JobDetailViewController = JobDetailViewController()
     
     private lazy var headerView:personTableHeader = {
-        let h = personTableHeader.init(frame: CGRect.init(x: 0, y: 80, width: ScreenW, height: tHeaderHeight - 80))
+        let h = personTableHeader.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: tHeaderHeight - NavH))
         h.isHR = true 
         return h
     }()
@@ -57,21 +56,21 @@ class publisherControllerView: BaseTableViewController {
     private var  bview:UIView = UIView.init(frame: CGRect.zero)
     
     
-    var mode:HRInfo?{
+    internal var mode:HRPersonModel?
+    
+    internal var companyModel: CompanyModel?
+    
+    //用id 查询信息
+    var userID:String = ""{
         didSet{
-             headerView.mode = (image:mode?.icon ?? "", name: mode?.name ?? "", introduce: "C公司@HR")
-             (navigationBack.viewWithTag(1) as! UILabel).text = "C公司@HR"
+            loadData()
         }
     }
-    
-    //
-    var userID:String = ""
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
-        loadData()
         
     }
    
@@ -97,12 +96,6 @@ class publisherControllerView: BaseTableViewController {
     }
     
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        _ = self.tableView.tableHeaderView?.sd_layout().topEqualToView(self.tableView)?.leftEqualToView(self.tableView)?.rightEqualToView(self.tableView)?.heightIs(tHeaderHeight)
-        
-    }
-    
     
     override func setViews(){
         
@@ -114,10 +107,13 @@ class publisherControllerView: BaseTableViewController {
         self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 60, 0)
         self.tableView.tableFooterView = UIView.init()
-        self.tableView.register(UINib(nibName:"CompanySimpleCell", bundle:nil), forCellReuseIdentifier: "companyCell")
-        self.tableView.register(companyJobCell.self, forCellReuseIdentifier: companyJobCell.identity())
+        self.tableView.register(UINib(nibName:"CompanySimpleCell", bundle:nil), forCellReuseIdentifier: CompanySimpleCell.identity())
+        self.tableView.register(companySimpleJobCell.self, forCellReuseIdentifier: companySimpleJobCell.identity())
+        self.tableView.register(singleTextCell.self, forCellReuseIdentifier: singleTextCell.identity())
         self.setHeader()
         
+        self.handleViews.append(bview)
+        //self.handleViews.append(self.tableView)
         super.setViews()
         
     }
@@ -126,7 +122,16 @@ class publisherControllerView: BaseTableViewController {
     override func didFinishloadData(){
         super.didFinishloadData()
         self.tableView.reloadData()
-        self.mode = HRInfo(name: "测试---", position: "测试---", lastLogin: "02-21号", icon: "jodel")
+        
+        guard  let mode = mode  else {
+            return
+        }
+        let introduce = mode.company! + "@" + mode.position!
+        // icon TEST MARK!
+        headerView.mode = (image:  "chicken", name: mode.name!, introduce: introduce)
+        (navigationBack.viewWithTag(1) as! UILabel).text = introduce
+        
+        
     }
     
     override func showError(){
@@ -148,18 +153,32 @@ class publisherControllerView: BaseTableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return  section == 0 ? 1 : publishJobs.count
+        // 加载时 不显示cell
+        if section == 0  || section == 1{
+            return (companyModel != nil ?  1 : 0)
+        }
+        return publishJobs.count
+        
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch  indexPath.section {
         case 0:
-             let cell = tableView.dequeueReusableCell(withIdentifier: "companyCell", for: indexPath) as! CompanySimpleCell
-             cell.mode = (image: "sina", companyName:"公司x", tags:"行业|地点|人数ring")
+            
+             let cell = tableView.dequeueReusableCell(withIdentifier: CompanySimpleCell.identity(), for: indexPath) as! CompanySimpleCell
+             cell.mode = companyModel
              return cell
+            
         case 1:
+            let cell = tableView.dequeueReusableCell(withIdentifier: singleTextCell.identity(), for: indexPath) as!
+            singleTextCell
+            
+            return cell
+            
+        case 2:
 
-            let cell = tableView.dequeueReusableCell(withIdentifier: companyJobCell.identity(), for: indexPath) as! companyJobCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: companySimpleJobCell.identity(), for: indexPath) as! companySimpleJobCell
+            cell.selectionStyle = .none
             cell.mode =  publishJobs[indexPath.row]
             cell.useCellFrameCache(with: indexPath, tableView: tableView)
             return cell
@@ -173,8 +192,12 @@ class publisherControllerView: BaseTableViewController {
             return  CompanySimpleCell.cellHeight()
         }
         
+        if indexPath.section == 1{
+            return 30
+        }
+        
         let mode = publishJobs[indexPath.row]
-        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: companyJobCell.self, contentViewWidth: ScreenW)
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: companySimpleJobCell.self, contentViewWidth: ScreenW)
         
     }
     
@@ -185,19 +208,24 @@ class publisherControllerView: BaseTableViewController {
     }
    
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 10
+        
+        return section == 2 ? 0 : 10
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
         switch  indexPath.section {
         case 0:
-            let comp = CompanyMainVC()
-            comp.companyID  = "dqwdqw-324"
-            self.navigationController?.pushViewController(comp, animated: true)
+            let com = CompanyMainVC()
+            com.companyID  = companyModel?.id
+            self.navigationController?.pushViewController(com, animated: true)
         case 1:
             
-            jd.jobID = publishJobs[indexPath.row].id!
+            let mode = publishJobs[indexPath.row]
+            let jd = JobDetailViewController()
+            jd.kind = (id: mode.id!, type: mode.kind!)
             self.navigationController?.pushViewController(jd, animated: true)
+            
         default:
             break
         }
@@ -210,7 +238,7 @@ class publisherControllerView: BaseTableViewController {
 extension publisherControllerView{
     private func setHeader(){
         
-        let th = UIView.init(frame: CGRect.zero)
+        let th = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: tHeaderHeight))
         th.backgroundColor = UIColor.clear
         self.tableView.tableHeaderView = th
         // 用bview来管理headerview，并根据滑动拉伸headerview
@@ -233,16 +261,28 @@ extension publisherControllerView{
         
         DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
             
-            // 1 查询hr信息 mode
-            self?.userID = "4234-53453"
+            
+       
+            
             // 2 获取ta 发布的职位
-            Thread.sleep(forTimeInterval: 3)
+            Thread.sleep(forTimeInterval: 2)
             for _ in 0..<20{
-                let json =  ["id":"dwqd","jobName":"在线讲师","address":"北京","picture":"sina","type":"compuse","degree":"不限","create_time":"09:45","salary":"面议","tag":"市场","education":"本科"]
+                
+               
+                guard let jobData = CompuseRecruiteJobs(JSON: ["id":"dqwdqw-dqwd","type":"intern","benefits":"六险一金,鹅肠大神,海外手游扥等扥","name":"助理","address":["北京玉渊潭公园"],"create_time":Date().timeIntervalSince1970 - TimeInterval(2423),"applyEndTime":Date().timeIntervalSince1970,"education":"本科","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false, "company":["id":"dqwd","name":"公司名称","isCollected":false,"icon":"chrome","address":["地址1","地址2"],"industry":["行业1","行业2"],"staffs":"1000人以上"]]) else {
+                    continue
+                }
                
                 
-                self?.publishJobs.append(Mapper<CompuseRecruiteJobs>().map(JSON: json)!)
+                
+                self?.publishJobs.append(jobData)
             }
+            
+            //
+            self?.companyModel = CompanyModel(JSON:["id":"dqwd","name":"公司名称","isCollected":false,"icon":"chrome","address":["地址1","地址2"],"industry":["行业1","行业2"],"staffs":"1000人以上"])!
+            self?.mode = HRPersonModel(JSON:["userID":"dqwd","name":"我是hr","position":"HRBP","ontime": Date().timeIntervalSince1970 - TimeInterval(6514),"icon": #imageLiteral(resourceName: "jing").toBase64String(),"company":"公司名称","role":"招聘者"])!
+            
+            
             
             DispatchQueue.main.async(execute: {
                 
@@ -267,7 +307,7 @@ extension publisherControllerView{
         
         // 0 到 tHeaderHeight直接距离，headerview 向上移动
         if scrollView.contentOffset.y > 0 && scrollView.contentOffset.y < tHeaderHeight{
-            hframe.origin.y = 80 - scrollView.contentOffset.y
+            hframe.origin.y = NavH - scrollView.contentOffset.y
             scrollView.contentInset = UIEdgeInsetsMake(-scrollView.contentOffset.y, 0, 0, 0)
             if scrollView.contentOffset.y < 64{
                   navigationBack.alpha = scrollView.contentOffset.y / CGFloat(64)
@@ -285,11 +325,42 @@ extension publisherControllerView{
             frame.size.height = tHeaderHeight - scrollView.contentOffset.y
             navigationBack.alpha = 0
             // 变化速度
-            hframe.origin.y = 80 - scrollView.contentOffset.y / 2
+            hframe.origin.y = NavH - scrollView.contentOffset.y / 2
         }
         self.bImg.frame = frame
         self.headerView.frame = hframe
        
+    }
+}
+
+
+
+private class singleTextCell:UITableViewCell{
+    
+    private lazy var content:UILabel = {
+       let label = UILabel()
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.textAlignment = .left
+        label.textColor = UIColor.black
+        label.text = "发布的职位"
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        return label
+        
+    }()
+    
+    
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.contentView.addSubview(content)
+        _ = content.sd_layout().leftSpaceToView(self.contentView,10)?.centerYEqualToView(self.contentView)?.autoHeightRatio(0)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    class func identity()->String{
+        return "singleTextCell"
     }
 }
 

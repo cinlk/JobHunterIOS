@@ -9,6 +9,16 @@
 import Foundation
 import SQLite
 
+
+
+class DBError:Error{
+    var message :String
+    
+    init(message:String) {
+            self.message = message
+    }
+    
+}
 // 通过该类获取table操作对象
 class  DBFactory{
     
@@ -613,7 +623,7 @@ struct PersonTable {
 
 struct MessageTable {
     
-    static let message =  Table("Mesage")
+    static let message =  Table("message")
     // 自增的消息id 主键
     static let id = Expression<Int64>("id")
     // 唯一约束 索引
@@ -635,22 +645,6 @@ struct MessageTable {
     }
     
     
-    
-    func insertProxy(message:Any, type:MessgeType){
-        switch type {
-        case .text:
-            try? self.insertBaseMessage(message: message as! MessageBoby)
-        case .jobDescribe:
-            self.insertJobMessage(message: message as! JobDescriptionlMessage)
-        case .bigGif,.smallGif:
-            self.insertGifMessage(message: message as! GigImageMessageBody)
-        case .picture:
-            self.insertPictureMessage(message: message as! PicutreMessage)
-            
-        default:
-            break
-        }
-    }
     
     
     
@@ -715,6 +709,29 @@ struct MessageTable {
     }
     
     
+    
+
+    
+ 
+    
+func insertMessage(message: MessageBoby) throws {
+    do{
+        if message.isKind(of: JobDescriptionlMessage.self){
+            try self.insertJobMessage(message: message as! JobDescriptionlMessage)
+        }else if message.isKind(of: GigImageMessageBody.self){
+            try self.insertGifMessage(message: message as! GigImageMessageBody)
+        }else if message.isKind(of: PicutreMessage.self){
+            try self.insertPictureMessage(message: message as! PicutreMessage)
+        }else{
+            try self.insertBaseMessage(message: message)
+        }
+        
+    }catch{
+        throw error
+    }
+    
+    
+}
 func insertBaseMessage(message:MessageBoby) throws{
         do{
             guard let sender = message.sender else {
@@ -738,20 +755,24 @@ func insertBaseMessage(message:MessageBoby) throws{
         }
     }
     
-    private func insertJobMessage(message:JobDescriptionlMessage){
+    private func insertJobMessage(message:JobDescriptionlMessage) throws{
         do{
+            
+            print(message)
+
             guard let sender = message.sender else {
-                return
+                throw DBError.init(message: "sender invalidate")
             }
             guard  let receiver = message.receiver else {
-                return
+                throw DBError.init(message: "receiver invalidate")
             }
             
             
             // json 数据
             guard  let content =  message.JsonContentToDate()  else { return }
             
-            try self.dbManager.db?.run(MessageTable.message.insert(MessageTable.senderID <- sender.userID!,
+            try self.dbManager.db?.run(MessageTable.message.insert(
+                                        MessageTable.messageID <- message.messageID!,MessageTable.senderID <- sender.userID!,
                                         MessageTable.content <- content,
                                         MessageTable.create_time <-  message.creat_time!,
                                         MessageTable.isRead <- message.isRead!, MessageTable.type <- message.type!,
@@ -762,7 +783,7 @@ func insertBaseMessage(message:MessageBoby) throws{
         }
     }
     
-    private func insertGifMessage(message:GigImageMessageBody){
+    private func insertGifMessage(message:GigImageMessageBody) throws{
         do{
             guard let sender = message.sender else {
                 return
@@ -776,17 +797,19 @@ func insertBaseMessage(message:MessageBoby) throws{
             
             guard let data = content?.data(using: String.Encoding.utf8, allowLossyConversion: false) else { return }
             
-            try self.dbManager.db?.run(MessageTable.message.insert(MessageTable.senderID <- sender.userID!,
+            try self.dbManager.db?.run(MessageTable.message.insert(
+                                    MessageTable.messageID <- message.messageID!,
+                                    MessageTable.senderID <- sender.userID!,
                                     MessageTable.content <- data,
                                     MessageTable.create_time <- message.creat_time!,
                                     MessageTable.isRead <- message.isRead!, MessageTable.type <- message.type!,
                                     MessageTable.receiverID <- receiver.userID!, MessageTable.read_time <- Date()))
         }catch{
-            print(error)
+            throw error
         }
     }
     
-    private func insertPictureMessage(message: PicutreMessage){
+    private func insertPictureMessage(message: PicutreMessage) throws{
         do{
             guard let sender = message.sender else {
                 return
@@ -798,14 +821,16 @@ func insertBaseMessage(message:MessageBoby) throws{
             guard let imgPath = message.imageFilePath else { return }
             guard let data =  imgPath.data(using: String.Encoding.utf8, allowLossyConversion: false) else {return}
             
-            try self.dbManager.db?.run(MessageTable.message.insert(MessageTable.senderID <- sender.userID!,
+            try self.dbManager.db?.run(MessageTable.message.insert(
+                                     MessageTable.messageID <- message.messageID!,
+                                    MessageTable.senderID <- sender.userID!,
                                     MessageTable.content <- data,
                                     MessageTable.create_time <- message.creat_time!,
                                     MessageTable.isRead <- message.isRead!, MessageTable.type <- message.type!,
                                     MessageTable.receiverID <- receiver.userID!, MessageTable.read_time <- Date()))
             
         }catch{
-            print(error)
+            throw error
         }
     }
     
