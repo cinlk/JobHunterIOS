@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import SwiftDate
+
 
 func meetingTalkTime(time: Date) -> String{
     
@@ -63,6 +65,7 @@ func meetingTalkTime(time: Date) -> String{
 
 
 
+
 func personOnlineTime(date:Date) -> String{
     
     let dateFormat = DateFormatter()
@@ -91,3 +94,37 @@ func personOnlineTime(date:Date) -> String{
     }
 }
 
+
+func chatListTime(date:Date?) ->String?{
+    
+    guard let date = date  else {
+        return nil
+    }
+    
+    let now = DateInRegion()
+    let dateInRome = DateInRegion(absoluteDate: date)
+    
+    
+    let year = now.year - dateInRome.year
+    let day = now.day - dateInRome.day
+    
+    if year != 0 {
+        return String.init(format: "%d年%d月%d日", dateInRome.year, dateInRome.month,dateInRome.day)
+        
+    }else if year == 0 {
+        if day >= 2 {
+            return String.init(format: "%d月%d日", dateInRome.month, dateInRome.day)
+        }else if dateInRome.isYesterday{
+            return "昨天"
+        }else {
+            return String.init(format: "%d:%02d", dateInRome.hour, dateInRome.minute)
+        }
+        
+    }
+    
+    
+    return ""
+    
+    
+    
+}

@@ -49,8 +49,20 @@ class MessageBoby: NSObject, Mappable{
     var content:Data?
     // Double 转Date
     var creat_time:Date?
-    var isRead:Bool?
+    var isRead:Bool = false
     
+    var talkTime:String{
+        get{
+            guard let time = creat_time else {
+                return ""
+            }
+            
+            
+            return chatListTime(date: time) ?? ""
+            
+            
+        }
+    }
     var sender:PersonModel?
     var receiver:PersonModel?
     
@@ -89,7 +101,7 @@ class MessageBoby: NSObject, Mappable{
         case .text:
             return  String.init(data: data, encoding: String.Encoding.utf8) ?? ""
         case .picture:
-           let url =  URL.init(dataRepresentation: data, relativeTo: nil)
+           //let url =  URL.init(dataRepresentation: data, relativeTo: nil)
            return  "[图片]"
         case .smallGif,.bigGif:
             return String.init(data: data, encoding: String.Encoding.utf8) ?? ""

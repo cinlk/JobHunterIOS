@@ -10,34 +10,31 @@
 import Foundation
 import ObjectMapper
 
-private let contacts = "contacts"
-
-
 
 // 会话model
 class conversationModel:NSObject, Mappable{
     
     // 聊天对象
     var user:PersonModel?
-    var userID:String?
     // last message
     var message:MessageBoby?
-    var messageID:String?
     var unReadCount:Int?
     
     // 是否置顶会话
-    var isUP:Bool?
+    var isUP:Bool = false
+    // 最后一条消息时间
     var upTime:Date?
     
     required init?(map: Map) {
-        
+        if map.JSON["upTime"] == nil || map.JSON["message"] == nil || map.JSON["user"] == nil {
+            return nil
+        }
     }
+    
     
     func mapping(map: Map) {
         
         user <- map["user"]
-        userID <- map["userID"]
-        messageID <- map["messageID"]
         message <- map["message"]
         unReadCount <- map["unReadCount"]
         isUP <- map["isUP"]

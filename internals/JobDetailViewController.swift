@@ -310,9 +310,6 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
         
         chatView.hidesBottomBarWhenPushed = true
         
-        // 发送刷新 会话界面 新的消息？
-        NotificationCenter.default.post(name: NSNotification.Name.init("refreshChat"), object: nil)
-        
         self.navigationController?.pushViewController(chatView, animated: true)
         
         
@@ -521,13 +518,13 @@ extension JobDetailViewController{
                 if type == .graduate{
                 // 这有ui操作
                   if let data = CompuseRecruiteJobs(JSON: ["id":id,"type":type.rawValue,"benefits":"六险一金,鹅肠大神,海外手游扥等扥",
-                    "name":"助理","address":["北京玉渊潭公园","北京市丰台区丰台路丰管路16号院8号楼","北京融科资讯中心A座"],"create_time":Date().timeIntervalSince1970 - TimeInterval(2423),"applyEndTime":Date().timeIntervalSince1970,"requirement": req,"works":works,"education":"本科","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false, "company":["id":"dqwd","name":"公司名称","isCollected":false,"icon":"chrome","address":["地址1","地址2"],"industry":["行业1","行业2"],"staffs":"1000人以上"],"hr":["userID":"dqwd","name":"我是hr带我去的大青蛙","position":"HRBP","role":"招聘者","ontime": Date().timeIntervalSince1970 - TimeInterval(6514),"icon": #imageLiteral(resourceName: "jing").toBase64String(),"company":"公司名称"]]){
+                    "name":"助理","address":["北京玉渊潭公园","北京市丰台区丰台路丰管路16号院8号楼","北京融科资讯中心A座"],"create_time":Date().timeIntervalSince1970 - TimeInterval(2423),"applyEndTime":Date().timeIntervalSince1970,"requirement": req,"works":works,"education":"本科","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false, "company":["id":"dqwd","name":"公司名称","isCollected":false,"icon":"chrome","address":["地址1","地址2"],"industry":["行业1","行业2"],"staffs":"1000人以上"],"hr":["userID":getUUID(),"name":"我是hr带我去的大青蛙","position":"HRBP","role":"招聘者","ontime": Date().timeIntervalSince1970 - TimeInterval(6514),"icon": #imageLiteral(resourceName: "jing").toBase64String(),"company":"公司名称"]]){
                     
                       self?.mode =  data
                     }
                     
                 }else if type == .intern{
-                    if let data = CompuseRecruiteJobs(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dqwd-dqwdqwddqw","name":"码农","requirement":req,"works":works,"applyEndTime":Date().timeIntervalSince1970,"perDay":"5天/周","months":"3个月","salary":"100元/天","company":["id":"dqwd","name":"公司名称","isCollected":false,"icon":"chrome","address":["地址1","地址2"],"industry":["行业1","行业2"],"staffs":"1000人以上"],"address":["北京","地址2"],"create_time":Date().timeIntervalSince1970,"education":"本科","type":"intern","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false,"readNums":arc4random()%1000,"hr":["userID":"dqwd","name":"我是hr带我去的大青蛙","position":"HRBP","role":"招聘者","ontime": Date().timeIntervalSince1970 - TimeInterval(6514),"icon": #imageLiteral(resourceName: "jing").toBase64String(),"company":"公司名称"]]
+                    if let data = CompuseRecruiteJobs(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dqwd-dqwdqwddqw","name":"码农","requirement":req,"works":works,"applyEndTime":Date().timeIntervalSince1970,"perDay":"5天/周","months":"3个月","salary":"100元/天","company":["id":"dqwd","name":"公司名称","isCollected":false,"icon":"chrome","address":["地址1","地址2"],"industry":["行业1","行业2"],"staffs":"1000人以上"],"address":["北京","地址2"],"create_time":Date().timeIntervalSince1970,"education":"本科","type":"intern","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false,"readNums":arc4random()%1000,"hr":["userID":getUUID(),"name":"我是hr带我去的大青蛙","position":"HRBP","role":"招聘者","ontime": Date().timeIntervalSince1970 - TimeInterval(6514),"icon": #imageLiteral(resourceName: "jing").toBase64String(),"company":"公司名称"]]
                         ){
                         self?.mode = data
                         

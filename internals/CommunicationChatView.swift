@@ -159,12 +159,13 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     fileprivate let appImageManager = AppFileManager.shared
     
     
-    private var currentIndexPath:IndexPath?
+    // 从 聊天列表界面进入 记录当前行
+    private var currentRow:Int?
     
-    init(hr:PersonModel, index:IndexPath? = nil) {
-       
+    init(hr:PersonModel, row:Int? = nil) {
+        
         // 父类视图 对话cell 对应的row
-        self.currentIndexPath = index
+        self.currentRow = row
         self.hr = hr
        
         // 父类初始化
@@ -191,6 +192,8 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
         ]
         
         
+        self.navigationController?.delegate = self
+        
         
     }
 
@@ -200,7 +203,6 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
         super.viewWillAppear(animated)
         self.hidesBottomBarWhenPushed = true
         //self.navigationController?.insertCustomerView()
-        self.navigationController?.delegate = self
     }
     
     
@@ -223,15 +225,18 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     
 }
 
-// navigation delegate
-extension CommunicationChatView {
 
+
+extension CommunicationChatView{
+    
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        // 刷新 会话cell
-        if let vc = viewController as? ChatListViewController{
-            vc.refreshRow(indexPath: self.currentIndexPath!, userID: self.hr.userID!)
+        // 从job 跳转来的，返回后 需要刷新 chatlist
+        if self.currentRow == nil, viewController.isKind(of: JobDetailViewController.self){
+            
+            NotificationCenter.default.post(name: NSNotification.Name.init("refreshChat"), object: nil)
             
         }
+        
     }
 }
 
@@ -280,6 +285,9 @@ extension CommunicationChatView {
     }
     
 }
+
+
+
 
 
 // table
@@ -686,8 +694,12 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
         // 1 数据要在 tableview，根据网络 判断发送状态（sended??）并刷新显示发送失败状态
         // 2 是否可以删除发送失败的数据？
         do{
-            try self.conversationManager.insertMessageItem(items: [mes])
-            self.conversationManager.insertConversationItem(messageID: mes.messageID!, userID: self.hr!.userID!)
+            try SqliteManager.shared.db?.transaction(block: {
+                
+                try self.conversationManager.insertMessageItem(items: [mes])
+                self.conversationManager.updateConversationMessageID(messageID: mes.messageID!, userID: self.hr!.userID!, date: mes.creat_time!)
+                
+            })
             
             if LXFChatMsgTimeHelper.shared.needAddMinuteModel(preModel: self.tableSource.lastObject as! MessageBoby, curModel: mes){
                 self.tableSource.add(createTimeMsg(msg: mes))
@@ -698,6 +710,10 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
             let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
             self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)
             //3  数据插入本地数据库 后通知更新 converation 会话界面，显示内容
+            
+            if let row = currentRow{
+                NotificationCenter.default.post(name: NSNotification.Name.init("refreshChatRow"), object: nil, userInfo: ["row":row,"userID":hr.userID!])
+            }
             
         }catch{
             print(error)

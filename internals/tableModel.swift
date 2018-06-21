@@ -585,6 +585,8 @@ struct PersonTable {
     func deletePersonBy(userID:String){
         
         do{
+            //   （可能 sqlitedb 没有开启外键关联）
+         
             let target = PersonTable.person.filter(PersonTable.personID == userID)
             try self.dbManage.db?.run(target.delete())
             
@@ -592,7 +594,7 @@ struct PersonTable {
             print(error)
         }
         
-        
+    
         
     }
     // 获取所有的usemodel
@@ -656,10 +658,11 @@ struct MessageTable {
             if let item =  try self.dbManager.db?.pluck(one){
                 let contentString = item[MessageTable.content]?.base64EncodedString()
                 return MessageBoby(JSON: ["messageID":item[MessageTable.messageID],
-                                          "type":item[MessageTable.type],
-                                          "content": contentString,
-                                          "isRead":item[MessageTable.isRead],
-                                          "creat_time":item[MessageTable.create_time]])
+                    "type":item[MessageTable.type],
+                    "content": contentString,
+                    "isRead":item[MessageTable.isRead],
+                    // Date 时间转换
+                    "creat_time": item[MessageTable.create_time].timeIntervalSince1970 ])
                 
             }
         }catch{
@@ -712,6 +715,36 @@ struct MessageTable {
     
 
     
+// 获取未读的消息
+func getUnReadMessages(SenderID: String) -> Int?{
+    
+    do{
+        let query = MessageTable.message.filter(MessageTable.senderID == SenderID && MessageTable.isRead == false).count
+        if let count =  try self.dbManager.db?.scalar(query){
+            return count
+        }
+        
+    }catch{
+        print(error)
+    }
+    
+    return  nil
+}
+    
+// 清楚未读消息
+func clearUnReadeMessage(SenderID :String){
+    do{
+        
+        // TEST
+        let target = MessageTable.message.filter(MessageTable.senderID == SenderID && MessageTable.isRead == false)
+        try  self.dbManager.db?.run(target.update(MessageTable.isRead <- true))
+        
+        
+    }catch{
+        print(error)
+    }
+    
+}
  
     
 func insertMessage(message: MessageBoby) throws {
@@ -744,7 +777,7 @@ func insertBaseMessage(message:MessageBoby) throws{
            try self.dbManager.db?.run(MessageTable.message.insert(MessageTable.messageID <- message.messageID!,MessageTable.senderID <- sender.userID!,
                 MessageTable.content <-  message.content ?? Data(),
                 MessageTable.create_time <- message.creat_time!,
-                MessageTable.isRead <- message.isRead!, MessageTable.type <- message.type!,
+                MessageTable.isRead <- message.isRead, MessageTable.type <- message.type!,
                 MessageTable.receiverID <- receiver.userID!, MessageTable.read_time <- Date.init(timeIntervalSince1970: 0)))
             
             
@@ -775,7 +808,7 @@ func insertBaseMessage(message:MessageBoby) throws{
                                         MessageTable.messageID <- message.messageID!,MessageTable.senderID <- sender.userID!,
                                         MessageTable.content <- content,
                                         MessageTable.create_time <-  message.creat_time!,
-                                        MessageTable.isRead <- message.isRead!, MessageTable.type <- message.type!,
+                                        MessageTable.isRead <- message.isRead, MessageTable.type <- message.type!,
                                         MessageTable.receiverID <- receiver.userID!, MessageTable.read_time <- Date()))
             
         }catch{
@@ -802,7 +835,7 @@ func insertBaseMessage(message:MessageBoby) throws{
                                     MessageTable.senderID <- sender.userID!,
                                     MessageTable.content <- data,
                                     MessageTable.create_time <- message.creat_time!,
-                                    MessageTable.isRead <- message.isRead!, MessageTable.type <- message.type!,
+                                    MessageTable.isRead <- message.isRead, MessageTable.type <- message.type!,
                                     MessageTable.receiverID <- receiver.userID!, MessageTable.read_time <- Date()))
         }catch{
             throw error
@@ -826,11 +859,23 @@ func insertBaseMessage(message:MessageBoby) throws{
                                     MessageTable.senderID <- sender.userID!,
                                     MessageTable.content <- data,
                                     MessageTable.create_time <- message.creat_time!,
-                                    MessageTable.isRead <- message.isRead!, MessageTable.type <- message.type!,
+                                    MessageTable.isRead <- message.isRead, MessageTable.type <- message.type!,
                                     MessageTable.receiverID <- receiver.userID!, MessageTable.read_time <- Date()))
             
         }catch{
             throw error
+        }
+    }
+    
+    
+    func removeAllMessageBy(userID:String) {
+        
+        do{
+            let targets = MessageTable.message.filter(MessageTable.receiverID == userID || MessageTable.senderID == userID)
+            try self.dbManager.db?.run(targets.delete())
+            
+        }catch{
+            print(error)
         }
     }
     
@@ -869,7 +914,7 @@ struct  ConversationTable {
             
             for item in try self.dbManager.db!.prepare(ConversationTable.conversation.order(ConversationTable.upTime.desc, ConversationTable.id.asc)) {
                 res.append(["userID":item[ConversationTable.userID], "messageID":item[ConversationTable.messageID],
-                            "isUP":item[ConversationTable.isUP], "upTime":item[ConversationTable.upTime]])
+                            "isUP":item[ConversationTable.isUP], "upTime":item[ConversationTable.upTime].timeIntervalSince1970])
             }
             
             return res
@@ -882,11 +927,11 @@ struct  ConversationTable {
     }
     
     // 获取某个会话
-    func getOneConversation(userID:String)-> conversationModel?{
+    func getOneConversation(userID:String)-> [String:Any]?{
         do{
             let target = ConversationTable.conversation.filter(ConversationTable.userID == userID)
             if let row = try self.dbManager.db?.pluck(target){
-                return   conversationModel(JSON:["userID":row[ConversationTable.userID],"messageID":row[ConversationTable.messageID],"isUP":row[ConversationTable.isUP],"upTime":row[ConversationTable.upTime]])
+                return ["userID":row[ConversationTable.userID],"messageID":row[ConversationTable.messageID],"isUP":row[ConversationTable.isUP],"upTime":row[ConversationTable.upTime].timeIntervalSince1970]
                 
             }
             
@@ -896,29 +941,49 @@ struct  ConversationTable {
         
         return nil
     }
-    // 更新会话 如果 isUP 为true 则最新事件 ，否则为最小时间
-    func upDateConversationData(userID:String, messageID:String, isUP:Bool){
+    
+    
+    
+    // 插入数据
+    func insertConversationDate(userID:String, messageID:String, upTime:Date = Date(), isUP:Bool = false){
         do{
-            var date:Date?
-            if isUP == true{
-                date = Date()
-                
-            }else{
-                date =  Date.init(timeIntervalSince1970: 0)
-            }
-            let target = ConversationTable.conversation.filter(ConversationTable.userID == userID)
-            if try (self.dbManager.db?.run(target.update(ConversationTable.isUP <- isUP,ConversationTable.upTime <- date!,ConversationTable.messageID <- messageID)))! > 0 {
-                return
-            }else{
-                // 插入数据
-                try self.dbManager.db?.run(ConversationTable.conversation.insert(ConversationTable.userID <- userID,
+            
+            try self.dbManager.db?.run(ConversationTable.conversation.insert(ConversationTable.userID <- userID,
                                                                              ConversationTable.messageID <- messageID,
-                                                                             ConversationTable.isUP <- false))
-            }
+                                                                             ConversationTable.isUP <- isUP,
+                                                                             ConversationTable.upTime <- upTime))
+            
         }catch{
             print(error)
         }
     }
+    
+    // 更新 最后的会话id
+    func upDateConversationMessageID(userID:String, messageID:String, date:Date){
+        do{
+            
+            let target = ConversationTable.conversation.filter(ConversationTable.userID == userID)
+            try self.dbManager.db?.run(target.update(ConversationTable.upTime <- date,ConversationTable.messageID <- messageID))
+        }catch{
+            print(error)
+        }
+    }
+    
+    
+    // 更新置顶状态
+    func upDateConversationUpStatus(userID:String, isUP:Bool){
+        
+        do{
+            
+            let target = ConversationTable.conversation.filter(ConversationTable.userID == userID)
+            try self.dbManager.db?.run(target.update(ConversationTable.isUP <- isUP))
+            
+        }catch{
+            print(error)
+        }
+    }
+    
+    
     
     // 删除会话
     func deleteConversationBy(userID:String){
