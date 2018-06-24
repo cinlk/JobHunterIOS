@@ -90,7 +90,7 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
             
             
             let endStr = NSMutableAttributedString.init(string: mode.endTimeStr, attributes: [NSAttributedStringKey.foregroundColor: UIColor.red])
-            endStr.insert(NSAttributedString.init(string:"截止") , at: 0)
+            endStr.insert(NSAttributedString.init(string:"截止 ") , at: 0)
             self.endTime.attributedText =  endStr
             
             self.address.text = mode.address?.joined(separator: " ")

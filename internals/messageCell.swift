@@ -9,23 +9,50 @@
 import UIKit
 
 
+
+fileprivate let textWidth:CGFloat = 250
+// 根据文字计算的宽度不够，加上这
+fileprivate let extraWitdhTextView:CGFloat = 10
+fileprivate let fontSize:CGFloat = 16
+
+
 class messageCell: UITableViewCell {
 
-    private var avatar:UIImageView = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: avatarSize.width, height: avatarSize.height))
-    
-    private lazy var messageLabel:MessageLabel = {
-        let ml = MessageLabel.init(frame: CGRect.zero)
-        ml.font = UIFont.systemFont(ofSize: 16)
-        ml.textColor = UIColor.black
-        ml.numberOfLines = 0
-        ml.textAlignment = .left
-        ml.lineBreakMode = .byWordWrapping
-        return ml
+    private lazy  var avatar:UIImageView = {
+       let img = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: avatarSize.width, height: avatarSize.height))
+        img.clipsToBounds = true
+        img.backgroundColor = UIColor.clear
+        return img 
+        
     }()
+    
+    private lazy var messgeText:UITextView = {
+        let text = UITextView.init(frame: CGRect.zero)
+        text.isScrollEnabled = false
+        text.isEditable = false
+        text.font = UIFont.systemFont(ofSize: fontSize)
+        text.textAlignment = .left
+        text.textColor = UIColor.black
+        text.backgroundColor = UIColor.clear
+        text.delegate = self
+        text.clipsToBounds = true
+        // 取消与顶部的距离
+        text.textContainerInset = UIEdgeInsetsMake(2, 0, 0, 0)
+        // 取消拖动
+        if #available(iOS 11.0, *){
+            text.textDragInteraction?.isEnabled = false
+        }
+        
+        
+        return text
+        
+        
+    }()
+    
+    
     private var bubleBackGround: UIImageView = UIImageView.init(frame: CGRect.zero)
  
-    
-    
+
     // 代码初始化
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
        
@@ -34,25 +61,24 @@ class messageCell: UITableViewCell {
        
         self.selectionStyle = .none
         self.backgroundColor = UIColor.clear
-        
-        
-
-    
-    }
-    
-    override func layoutSubviews() {
-        
-        avatar.setCircle()
         self.contentView.clipsToBounds = true
-        self.contentView.addSubview(avatar)
-        self.contentView.addSubview(bubleBackGround)
-        self.contentView.addSubview(messageLabel)
-        // 取消view动画， 影藏keyboard后 table 向上滑动 出现cell 动画？
+        let views:[UIView] = [avatar,bubleBackGround,messgeText]
+        self.contentView.sd_addSubviews(views)
+        avatar.setCircle()
+
+
+        
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        messgeText.layer.removeAllAnimations()
         avatar.layer.removeAllAnimations()
-        messageLabel.layer.removeAllAnimations()
         bubleBackGround.layer.removeAllAnimations()
         bubleBackGround.isUserInteractionEnabled = true
-     }
+        
+    }
+
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -68,50 +94,66 @@ class messageCell: UITableViewCell {
         guard let content = messageInfo.content else { return 0 }
         guard let strs = String.init(data:  content, encoding: String.Encoding.utf8) else { return  0 }
         
-        let labelSize:CGSize = UILabel.sizeOfString(string: strs as NSString , font: UIFont.systemFont(ofSize: 16), maxWidth: ScreenW-10-20-avatarSize.width * 2)
         
+        let replaceStr =  GetChatEmotion.shared.findAttrStr(text: strs, font: UIFont.systemFont(ofSize: fontSize), replace:  true )
         
+        let labelSize:CGSize = UITextView.sizeOfString(string: replaceStr?.string as! NSString , font: UIFont.systemFont(ofSize: fontSize), maxWidth: textWidth)
         
-        if labelSize.height < avatarSize.height + 10{
-            return avatarSize.height + 10
+        if labelSize.height < avatarSize.height && labelSize.height <= UIFont.systemFont(ofSize: fontSize).lineHeight{
+            
+            return avatarSize.height + 10 + 5
         }
-        return labelSize.height + 10
+        return labelSize.height + 15 + 5 + 20
         
     }
     
-    // picture message setup
-    // text message setup
     
     
     func setupMessageCell(messageInfo:MessageBoby,chatUser:PersonModel){
         
-        guard let content = messageInfo.content else { return }
-        
-        guard let strs = String.init(data: content, encoding: String.Encoding.utf8) else { return   }
-        
-        self.messageLabel.attributedText = GetChatEmotion.shared.findAttrStr(text: strs, font: messageLabel.font)
-        
-        let labelSize = messageLabel.sizeThatFits(CGSize(width: ScreenW-10-20-avatarSize.width * 2, height: CGFloat(Float.greatestFiniteMagnitude)))
-        
-       
-        var h:CGFloat = 0
-        var y:CGFloat = 5
-        
-        // 只有一行字 居中显示
-        if labelSize.height < 20 {
-            h = avatarSize.height - 10
-            y = (avatarSize.height - labelSize.height) / 2
+        guard let content = messageInfo.content, let strs = String.init(data: content, encoding: String.Encoding.utf8), let attrStr =  GetChatEmotion.shared.findAttrStr(text: strs, font: UIFont.systemFont(ofSize: fontSize)) else {
             
+            avatar.isHidden = true
+            messgeText.isHidden = true
+            return
             
-        }else{
-            h = labelSize.height
-            y = 5
         }
         
+        let paragrahStyle = NSMutableParagraphStyle()
+        paragrahStyle.lineBreakMode = .byCharWrapping
+        attrStr.addAttributes([NSAttributedStringKey.paragraphStyle: paragrahStyle], range: NSRange.init(location: 0, length: attrStr.length))
+        self.messgeText.attributedText = attrStr
         
         
-        // 让labe 左右两边间隔5 像素 (25)
-        let bubleSize:CGSize = CGSize.init(width: labelSize.width + 20 + 5, height: h + 10)
+        let replaceStr =  GetChatEmotion.shared.findAttrStr(text: strs, font: UIFont.systemFont(ofSize: fontSize), replace:  true )
+        
+        
+        
+        var labelSize = UITextView.sizeOfString(string: replaceStr?.string as! NSString , font: UIFont.systemFont(ofSize: fontSize), maxWidth: textWidth)
+        
+        // 高度加5 textview 换行后内容正常显示
+        labelSize = CGSize.init(width: labelSize.width, height: labelSize.height + CGFloat(5))
+        
+        var h:CGFloat = 0
+        var y:CGFloat = 0
+        let line =  Int(labelSize.height / (messgeText.font?.lineHeight)!)
+        // 只有一行字 居中显示
+        if  line == 1 {
+            y = (avatarSize.height - labelSize.height) / 2
+ 
+        }else{
+            // 内容向下偏移
+            y = 5
+            if line >= 3 {
+                messgeText.textContainerInset = UIEdgeInsetsMake(3, 0, 0, 0)
+
+            }
+        }
+        
+        h = labelSize.height
+        
+        
+        let bubleSize:CGSize = CGSize.init(width: labelSize.width + 10 + 5 + extraWitdhTextView, height: h + 10)
 
         // 自己发的消息
         if messageInfo.sender?.userID  ==  myself.userID{
@@ -119,38 +161,40 @@ class messageCell: UITableViewCell {
             if let icon = myself.icon {
                 self.avatar.image = UIImage.init(data: icon)
             }else{
-                // default 头像
+                // 使用默认头像
                 self.avatar.image =  #imageLiteral(resourceName: "default")
             }
             
             self.avatar.frame = CGRect.init(x: ScreenW-avatarSize.width-5 , y: 0, width: avatarSize.width, height: avatarSize.height)
             
-           
-            // 图片左边15 不拉伸 上25不拉伸，其他部分拉伸
-            self.bubleBackGround.image = UIImage.init(named: "mebubble")?.stretchableImage(withLeftCapWidth: 15, topCapHeight: 25)
+            // 拉伸图片
+            self.bubleBackGround.image = UIImage.resizeableImage(name: "mebubble")
+            self.bubleBackGround.tintColor = UIColor.init(r: 136, g: 211, b: 67)
             
-            self.bubleBackGround.frame = CGRect.init(x: ScreenW-5-self.avatar.frame.width-5-bubleSize.width, y: 0, width: bubleSize.width, height: bubleSize.height)
-            self.messageLabel.frame = CGRect.init(x: ScreenW-5-self.avatar.frame.width-5-bubleSize.width + 10 , y: y, width: labelSize.width, height: labelSize.height)
+            
+            self.bubleBackGround.frame = CGRect.init(x: ScreenW-5-self.avatar.frame.width-5-bubleSize.width, y: y-5, width: bubleSize.width, height: bubleSize.height)
+            self.messgeText.frame = CGRect.init(x: ScreenW-5-self.avatar.frame.width-5-bubleSize.width + 5 , y: y, width: labelSize.width + extraWitdhTextView, height: h)
             
         }
-        // 别人发的消息 chatUserID
-            
+        // 别人发的消息
         else{
             
             if let icon = chatUser.icon {
                 self.avatar.image = UIImage.init(data: icon)
             }else{
-                // default 头像
                 self.avatar.image =  #imageLiteral(resourceName: "default")
             }
             self.avatar.frame = CGRect.init(x: 5, y: 0, width: avatarSize.width, height: avatarSize.height)
             
             
-            //self.bubleBackGround.image = UIImage.resizeableImage(name: "leftmessage")
+            // 拉伸图片
+            self.bubleBackGround.image = UIImage.resizeableImage(name: "yoububble")
+            self.bubleBackGround.tintColor = UIColor.init(r: 50, g: 195, b: 51)
             
-            self.bubleBackGround.image = UIImage.init(named: "yoububble")?.stretchableImage(withLeftCapWidth: 15, topCapHeight: 25)
-            self.bubleBackGround.frame = CGRect.init(x: 5 + self.avatar.frame.width + 5, y: 0, width: bubleSize.width, height: bubleSize.height)
-            self.messageLabel.frame = CGRect.init(x: 5 + self.avatar.frame.width + 5 + 10, y: y, width: labelSize.width, height: labelSize.height)
+            
+            self.bubleBackGround.frame = CGRect.init(x: 5 + self.avatar.frame.width + 5, y: y-5, width: bubleSize.width, height: bubleSize.height)
+            
+            self.messgeText.frame = CGRect.init(x: 5 + self.avatar.frame.width + 5 + 5, y: y, width: labelSize.width, height: labelSize.height)
             
         }
         
@@ -160,71 +204,19 @@ class messageCell: UITableViewCell {
 }
 
 
-// 自定义可复制的uilabe
-fileprivate class MessageLabel:UILabel{
-    
-    
-    override var canBecomeFirstResponder: Bool{
-        return true
-    }
-    
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.addGesture()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    
-    private func addGesture(){
-        isUserInteractionEnabled = true
-        let gesture = UILongPressGestureRecognizer.init(target: self, action: #selector(copyText))
-        gesture.minimumPressDuration = 3
-        gesture.numberOfTouchesRequired = 1
-        
-        self.addGestureRecognizer(gesture)
-    }
 
-     @objc private  func clickLable(){
-        
-        // 这里会 影藏键盘？？ 怎么禁止影藏？
-        becomeFirstResponder()
-        let menu = UIMenuController.shared
-        let copy = UIMenuItem.init(title: "复制", action: #selector(copyText))
-        menu.menuItems = [copy]
-        menu.setTargetRect(bounds, in: self)
-        menu.setMenuVisible(true, animated: true)
-        
-        
-    }
-    
-    
-    @objc private func copyText(){
-        
-        // 长按自动复制 文本
-        
-        // 复制富文 表情用[xxx] 表示的表情消息
-        UIPasteboard.general.string = self.getEmotionString()
-        // label 所在的viewController
-        if let view = self.getParentViewController()?.view{
-            showOnlyTextHub(message: "已复制到剪切板", view: view)
+extension messageCell: UITextViewDelegate{
+    func textView(_ textView: UITextView, shouldInteractWith textAttachment: NSTextAttachment, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        if textAttachment.isKind(of: ChatEmotionAttachment.self){
+            return false
         }
+        
+        return true 
     }
     
     
-    // 除了复制功能以外 其他交换禁止
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if action == #selector(copyText){
-            return true
-        }
-        return false
-    }
+    
 }
-
-
 
 extension messageCell{
     // bubble view 能点击

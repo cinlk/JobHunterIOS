@@ -16,15 +16,9 @@ protocol ReplyMessageDelegate: class {
 }
 
 
-fileprivate let sourceFileName = "replylist"
-
 class quickReplyView: UIView {
  
-    lazy var datasource:[String] = {
-        
-        return ChatEmotionHelper.getAllReplyMessages(fileName: sourceFileName)
-        
-    }()
+    private var datasource:[String] =  []
     
     
     // delegate
@@ -34,12 +28,11 @@ class quickReplyView: UIView {
     // 顶部 view
     lazy var banner:UIView = {
         var v =  UIView.init(frame: CGRect.zero)
-        
         v.backgroundColor = UIColor.blue
         var label = UILabel.init()
         label.text = "请选择快捷回复"
         label.textColor = UIColor.white
-        label.font = UIFont.systemFont(ofSize: 10)
+        label.font = UIFont.systemFont(ofSize: 16)
         label.textAlignment = .center
         label.setSingleLineAutoResizeWithMaxWidth(120)
         v.addSubview(label)
@@ -50,10 +43,11 @@ class quickReplyView: UIView {
     
     lazy var replyTable: UITableView = { [unowned self ] in
         var table = UITableView.init()
-        table.backgroundColor = UIColor.viewBackColor()
+        table.backgroundColor = UIColor.white
         table.delegate = self
         table.dataSource = self
         table.tableFooterView = UIView.init()
+        table.register(singleTextCell.self, forCellReuseIdentifier: singleTextCell.identity())
         table.showsVerticalScrollIndicator = false
         return table
         
@@ -63,6 +57,15 @@ class quickReplyView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+        
+        self.addSubview(banner)
+        self.addSubview(replyTable)
+        
+        _ = banner.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.topEqualToView(self)?.heightIs(40)
+        _ = replyTable.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.topSpaceToView(banner,0)?.bottomEqualToView(self)
+        
+        
+        loadData()
     }
     
     
@@ -70,29 +73,24 @@ class quickReplyView: UIView {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        self.addSubview(banner)
-        self.addSubview(replyTable)
-        
-        _ = banner.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.topEqualToView(self)?.heightIs(45)
-        _ = replyTable.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.topSpaceToView(banner,0)?.bottomEqualToView(self)
-        
-      
-    }
+
     
 }
 
+extension quickReplyView{
+    private func loadData(){
+        
+        datasource = ["回复以带我去的群无多无群多无多无群","当前为多无群多无群多无群多无群多无群多","当前为多无群多无群","当前为多无群多无群"]
+        self.replyTable.reloadData()
+        
+    }
+}
 
 extension quickReplyView: UITableViewDelegate,UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
-        let cell = tableView.cellForRow(at: indexPath)
-        cell?.accessoryType = .checkmark
         delegate?.didSelectedMessage(view: tableView, message: datasource[indexPath.row])
     }
     
@@ -101,11 +99,8 @@ extension quickReplyView: UITableViewDelegate,UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell.init(style: .default, reuseIdentifier: "cell")
-        cell.editingAccessoryType = .none
-        cell.textLabel?.textColor = UIColor.gray
-        cell.textLabel?.text = datasource[indexPath.row]
-        cell.textLabel?.font = UIFont.systemFont(ofSize: 14)
+        let cell = tableView.dequeueReusableCell(withIdentifier: singleTextCell.identity(), for: indexPath) as! singleTextCell
+        cell.mode = datasource[indexPath.row]
         
         return cell
         
@@ -116,12 +111,55 @@ extension quickReplyView: UITableViewDelegate,UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 45
+        
+        return tableView.cellHeight(for: indexPath, model: datasource[indexPath.row], keyPath: "mode", cellClass: singleTextCell.self, contentViewWidth: ScreenW)
     }
     
-    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath)
-        cell?.accessoryType = .none
+    
+}
+
+@objcMembers private class singleTextCell:UITableViewCell {
+    
+    
+    
+    private lazy var content:UILabel = { [unowned self] in
+        let lb = UILabel()
+        lb.textAlignment = .left
+        
+        lb.textColor = UIColor.black
+        lb.font = UIFont.systemFont(ofSize: 16)
+        lb.setSingleLineAutoResizeWithMaxWidth(250 - 30)
+        return lb
+    }()
+    
+    
+    dynamic var mode:String?{
+        didSet{
+            
+            self.content.text = mode!
+            
+            self.setupAutoHeight(withBottomView: content, bottomMargin: 5)
+        }
+        
     }
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.contentView.addSubview(content)
+        _ = content.sd_layout().leftSpaceToView(self.contentView,10)?.centerYEqualToView(self.contentView)?.autoHeightRatio(0)
+        
+        content.setMaxNumberOfLinesToShow(3)
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    class func identity()->String{
+        return "singleTextCell"
+    }
+    
+    
     
 }

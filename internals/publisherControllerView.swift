@@ -99,8 +99,6 @@ class publisherControllerView: BaseTableViewController {
     
     override func setViews(){
         
-        // 导航的view 为白色,tableview 是该vc的第一个view
-        self.navigationController?.view.backgroundColor = UIColor.white
         
         self.tableView.delegate = self
         self.tableView.dataSource = self

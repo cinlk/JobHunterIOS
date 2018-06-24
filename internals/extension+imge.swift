@@ -133,21 +133,6 @@ extension UIImage{
         return image
     }
     
-    class func barImage(size:CGSize, offset:CGPoint, renderMode:UIImageRenderingMode,name:String) -> UIImage{
-        
-        
-        let image = UIImage.init(named: name)?.withRenderingMode(renderMode)
-        
-        UIGraphicsBeginImageContextWithOptions(size, false, 0)
-        
-        image?.draw(in: CGRect(x: offset.x, y: offset.y, width: size.width - offset.x, height: size.height - offset.y))
-        
-        let newImage:UIImage = UIGraphicsGetImageFromCurrentImageContext()!
-        UIGraphicsEndImageContext()
-        
-        return newImage
-        
-    }
     
     // 改变图片大小
     func changesize(size:CGSize) -> UIImage{
@@ -163,12 +148,9 @@ extension UIImage{
     //拉伸图片
     class func resizeableImage(name:String)->UIImage{
         
-        let image = UIImage.init(named: name)?.withRenderingMode(.alwaysTemplate)
-        let top = (image?.size.height)! * 0.6
-        let bottom = (image?.size.height)! * 0.5
-        let lr = (image?.size.height)! * 0.5
-        
-        return (image?.resizableImage(withCapInsets: UIEdgeInsets.init(top: top, left: lr, bottom: bottom, right: lr), resizingMode: .stretch))!
+        let image = UIImage.init(named: name)!
+
+        return image.resizableImage(withCapInsets: UIEdgeInsets.init(top: 22, left: 26, bottom: 22, right: 26), resizingMode: .stretch).withRenderingMode(.alwaysTemplate)
         
     }
     
@@ -201,17 +183,7 @@ extension UIImage {
     }
 }
 
-extension UIImageView{
-    
-    // simple method
-    func setCircle(){
-        self.layer.cornerRadius = (self.frame.width / 2)
-        self.layer.masksToBounds = true
-        self.layer.borderWidth = 0.2
-    }
 
-    
-}
 
 
 // tobase64

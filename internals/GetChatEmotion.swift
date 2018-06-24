@@ -24,7 +24,8 @@ class GetChatEmotion: NSObject {
         gifEmotion3 = ChatEmotionHelper.getAllEmotion2(emotionName: "emotion3", type: ".gif")
     }
     // MARK:- 查找属性字符串的方法
-    func findAttrStr(text: String?, font: UIFont) -> NSMutableAttributedString? {
+    
+    func findAttrStr(text: String?, font: UIFont, replace:Bool = false) -> NSMutableAttributedString? {
         guard let text = text else {
             return nil
         }
@@ -37,6 +38,8 @@ class GetChatEmotion: NSObject {
         
         let resutlts = regex.matches(in: text, options: [], range: NSMakeRange(0, text.count))
         
+       
+        
         // 可变的
         let attrMStr = NSMutableAttributedString(string: text, attributes: [NSAttributedStringKey.font : font])
         
@@ -44,18 +47,36 @@ class GetChatEmotion: NSObject {
         // 替换表情符文本[xxx] 为表情符model 对应的image (bundle路径)
         for (_, result) in resutlts.enumerated().reversed() {
             //[xxx]
-            let emoStr = (text as NSString).substring(with: result.range)
-            guard let imgPath = findImgPath(emoStr: emoStr) else {
-                return nil
-            }
-            // 添加图片
-            let attachment = ChatEmotionAttachment()
-            attachment.text = emoStr
-            attachment.image = UIImage(contentsOfFile: imgPath)
-            attachment.bounds = CGRect(x: 0, y: -4, width: font.lineHeight, height: font.lineHeight)
-            let attrImageStr = NSAttributedString(attachment: attachment)
-            attrMStr.replaceCharacters(in: result.range, with: attrImageStr)
+            var emoStr = (text as NSString).substring(with: result.range)
             
+            // 计算高度和宽度 把表情字符 替换为一个字符来计算 才准确
+            if replace{
+                
+                if  let _ = findImgPath(emoStr: emoStr) {
+                    emoStr = "[a]"
+                    attrMStr.replaceCharacters(in: result.range, with: emoStr)
+                }
+              
+            }else{
+                
+                guard let imgPath = findImgPath(emoStr: emoStr) else {
+                    continue
+                }
+                
+                // 添加图片
+                let attachment = ChatEmotionAttachment()
+                attachment.text = emoStr
+            
+                attachment.image = UIImage(contentsOfFile: imgPath)
+                attachment.bounds = CGRect(x: 0, y: -4, width: font.lineHeight, height: font.lineHeight)
+                
+                let attrImageStr = NSAttributedString(attachment: attachment)
+                attrMStr.replaceCharacters(in: result.range, with: attrImageStr)
+                
+                
+            }
+            
+          
         }
         return attrMStr
     }
@@ -74,25 +95,31 @@ class GetChatEmotion: NSObject {
     func findGifImage(gifName:String, type: MessgeType)->String?{
         switch type {
         case .smallGif:
-            for gif in gifEmotion2{
-                if let text = gif.text, text == gifName{
-                    return gif.imgPath
+            
+           let target  =  gifEmotion2.filter {
+                if let text = $0.text, text == gifName{
+                    return true
                 }
+                return false
             }
-            return nil
+          
+           return target.count > 0 ?  target[0].imgPath : nil
+           
         case .bigGif:
-            for gif in gifEmotion3{
-                if let text = gif.text, text == gifName{
-                    return gif.imgPath
+            let target = gifEmotion3.filter {
+                if let text = $0.text, text == gifName{
+                    return true
                 }
+                return false
             }
-            return nil
+            
+            return target.count > 0 ? target[0].imgPath : nil
+            
         default:
-            break
+            return nil
         }
         
-    
-        return nil
+
     }
     
     

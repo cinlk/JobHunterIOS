@@ -25,16 +25,10 @@ class OnlineApplyModel: BaseModel {
         get{
             
             guard let time = self.end_time else { return "" }
-            let dateFormat = DateFormatter()
-            dateFormat.locale = Locale.current
-            
-            if time.year == Date().year{
-                dateFormat.dateFormat = "MM-dd"
-            }else{
-                dateFormat.dateFormat = "yyyy-MM-dd"
+            if let str = showMonthAndDay(date: time) {
+                return str
             }
-            let str = dateFormat.string(from: time)
-            return str
+            return ""
         }
     }
     

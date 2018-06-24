@@ -384,10 +384,14 @@ class baseSearchViewController: UISearchController{
 
 extension baseSearchViewController{
     @objc private func showItems(_ btn:UIButton){
+        
+        searchField.resignFirstResponder()
+        
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             UIApplication.shared.keyWindow?.addSubview(self.backgroundBtn)
         }, completion: { bool in
             self.popMenuView.show()
+            
         })
         
     }

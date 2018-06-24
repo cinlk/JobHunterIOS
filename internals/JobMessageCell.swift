@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import SwiftyJSON
 
 fileprivate let desText:String = "你刚刚投递了这个职位"
 fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
@@ -69,6 +68,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
         return lb
     }()
     
+    // 标题view
     private lazy var titleBackV:UIView = {
         let tbv = UIView.init(frame: CGRect.zero)
         tbv.backgroundColor = UIColor.init(r: 190.0, g: 190.0, b: 190.0)
@@ -78,8 +78,8 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
         
     }()
     
-    // info 背景view
-    private lazy var infoV:UIView = {
+    //  内容背景view
+    private lazy var container:UIView = {
         let v = UIView()
         v.backgroundColor = UIColor.white
         return v
@@ -92,28 +92,24 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
             var newFrame = frame
             newFrame.origin.x += 10
             newFrame.size.width -= 20
-            //newFrame.origin.y +=
             newFrame.size.height -= 10
             super.frame = newFrame
         }
     }
     
-   dynamic  var mode:MessageBoby?{
+   dynamic  var mode:JobDescriptionlMessage?{
         didSet{
         
-            guard let json = mode?.contentToJson() else {
+            guard let mode = mode else {
+                
                 return
             }
             
-            // 二进制数据
-            self.icon.image = UIImage.init(data:   Data.init(base64Encoded: json["icon"].stringValue)!)
-            self.company.text = json["company"].string
-            self.jobName.text = json["jobName"].string
-            // 数组数据
-            let tags:[String] =  json["tags"].arrayObject as! [String]
-            self.tags.text = tags.joined(separator: " ")
-            self.salary.text = json["salary"].string
-            
+            self.icon.image = UIImage.init(named: mode.icon)
+            self.company.text = mode.company
+            self.jobName.text = mode.jobName
+            self.tags.text = mode.tags.joined(separator: " ")
+            self.salary.text = mode.salary
             self.setupAutoHeight(withBottomView: self.tags, bottomMargin: 20)
        
            
@@ -125,7 +121,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
         self.backgroundColor = UIColor.clear
-        let views:[UIView] =  [infoV, icon, jobName, company, tags, salary, titleBackV]
+        let views:[UIView] =  [container, icon, jobName, company, tags, salary, titleBackV]
         
         self.contentView.sd_addSubviews(views)
         self.titleBackV.addSubview(desTilte)
@@ -135,14 +131,14 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
         _ = self.titleBackV.sd_layout().topSpaceToView(self.contentView,5)?.centerXEqualToView(self.contentView)?.widthIs(desTilte.width + 10)?.heightIs(desTilte.height + 10)
         _ = self.desTilte.sd_layout().centerXEqualToView(titleBackV)?.centerYEqualToView(titleBackV)?.autoHeightRatio(0)
         
-         _  = self.infoV.sd_layout().topSpaceToView(self.titleBackV,2)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.bottomEqualToView(self.contentView)
+         _  = self.container.sd_layout().topSpaceToView(self.titleBackV,5)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.bottomEqualToView(self.contentView)
         
         
         _ = self.icon.sd_layout().topSpaceToView(self.titleBackV,10)?.leftSpaceToView (self.contentView,5)?.widthIs(iconSize.width)?.autoHeightRatio(1)
         
         _ = self.jobName.sd_layout().topEqualToView(icon)?.leftSpaceToView(icon,5)?.autoHeightRatio(0)
-        _ = self.company.sd_layout().leftEqualToView(jobName)?.topSpaceToView(jobName,2.5)?.autoHeightRatio(0)
-        _ = self.tags.sd_layout().leftEqualToView(company)?.topSpaceToView(company,2.5)?.autoHeightRatio(0)
+        _ = self.company.sd_layout().leftEqualToView(jobName)?.topSpaceToView(jobName,5)?.autoHeightRatio(0)
+        _ = self.tags.sd_layout().leftEqualToView(company)?.topSpaceToView(company,5)?.autoHeightRatio(0)
         _ = self.salary.sd_layout().topEqualToView(icon)?.rightSpaceToView(self.contentView,10)?.autoHeightRatio(0)
         
     }

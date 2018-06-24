@@ -86,7 +86,7 @@ import UIKit
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = UIColor.clear
         self.selectionStyle = .none
-        avartar.setCircle()
+        avartar.sd_cornerRadiusFromWidthRatio = 0.5
         
         self.contentView.addSubview(avartar)
         self.contentView.addSubview(bubbleBackGround)

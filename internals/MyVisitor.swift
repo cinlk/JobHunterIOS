@@ -84,8 +84,8 @@ class MyVisitor: BaseTableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         tableView.deselectRow(at: indexPath, animated: false)
-        _ = publisherControllerView()
-        let vc = UIViewController()
+        let vc = publisherControllerView()
+        vc.userID = mode[indexPath.row].userID!
         vc.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(vc, animated: true)
         
@@ -102,10 +102,13 @@ extension MyVisitor{
         //self.data
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             
-            Thread.sleep(forTimeInterval: 3)
+            Thread.sleep(forTimeInterval: 1)
             
             for _ in 0..<10{
-                self?.mode.append(HRVisitorModel(JSON: ["userID":"dqw-4234-dqwd-dqwd","icon":"chicken","company":"小公司","name":"大u云", "position":"HRBP","visitTime":Date().timeIntervalSince1970,"companyID":"dqw-dqwfq-dqwd"])!)
+                if let data =  HRVisitorModel(JSON: ["userID":"dqw-4234-dqwd-dqwd","icon":"chicken","company":"小公司","name":"大u云", "position":"HRBP","visitTime":Date().timeIntervalSince1970,"companyID":"dqw-dqwfq-dqwd"]){
+                self?.mode.append(data)
+                }
+                
             }
             
             DispatchQueue.main.async(execute: {

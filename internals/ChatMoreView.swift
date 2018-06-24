@@ -13,6 +13,7 @@ enum ChatMoreType:String{
     case camera = "camera"
     //case mycard = "personCard"
     case feedback = "text"// 快捷回复
+    case voice = "voice"
     
 }
 
@@ -23,13 +24,14 @@ fileprivate let cellNumberOfOnePage = cellNumbeOfOneRow * CellRow
 
 
 
-protocol ChatMoreViewDelegate:class {
-    func chatMoreView(moreView: ChatMoreView,didSelectedType type: ChatMoreType)
+protocol chatMoreViewDelegate:class {
+    func  selectetType(moreView: ChatMoreView,didSelectedType type: ChatMoreType)
 }
+
 
 class ChatMoreView: UIView {
     
-    weak var delegate: ChatMoreViewDelegate?
+    weak var delegate: chatMoreViewDelegate?
     
     private lazy var moreView:UICollectionView = { [unowned self] in
         let collectView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: CollectionHorizontalLayout(
@@ -58,10 +60,7 @@ class ChatMoreView: UIView {
         super.layoutSubviews()
         
         self.addSubview(moreView)
-        _ = moreView.sd_layout().leftEqualToView(self)?.topEqualToView(self)?.rightEqualToView(self)?.heightIs(self.frame.height)
-        moreView.contentSize = CGSize.init(width: ScreenW, height: moreView.height)
-        
-        
+        _ = moreView.sd_layout().leftEqualToView(self)?.topEqualToView(self)?.rightEqualToView(self)?.bottomEqualToView(self)
         
     }
     
@@ -86,7 +85,7 @@ extension ChatMoreView: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let moreModel = moreDataSource?[indexPath.item]{
-            self.delegate?.chatMoreView(moreView: self, didSelectedType: moreModel.type)
+            self.delegate?.selectetType(moreView: self, didSelectedType: moreModel.type)
         }
     }
     

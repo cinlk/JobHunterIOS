@@ -29,7 +29,7 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
         
     }()
     
-    // 图片 切角，和 可点击放大 （拉钩的效果）？？？
+    // 图片 切角，和 可点击放大
     private lazy var imageV:UIImageView = { [unowned self] in
         var v = UIImageView()
         v.contentMode = .scaleToFill
@@ -43,19 +43,76 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
     
     
     
+    // 存储图片到本地
     var storeImage:((_ image:UIImage)->Void)?
     
         
     
     
     
-   dynamic  var mode:MessageBoby? {
+   dynamic var mode:PicutreMessage? {
         didSet{
             guard let mode = mode  else {
+                avartar.isHidden = true
+                imageV.isHidden = true
                 return
             }
             
-            setView(mode: mode)
+            guard let imageName = mode.imageFileName else {
+                avartar.isHidden = true
+                imageV.isHidden = true
+                
+                return
+            }
+            
+            
+            
+            self.avartar.image = UIImage.init(data: mode.sender!.icon!)
+            // 获取images
+            if let imageData =  appFileManger.getImageDataBy(userID: (mode.receiver?.userID)!, fileName: imageName){
+                self.imageV.image = UIImage.init(data: imageData)
+            }
+            imageV.sd_clearAutoLayoutSettings()
+            
+            // 背景图片拉伸
+            let stretchInset = UIEdgeInsetsMake(30, 28, 23, 28)
+            var stretchImage:UIImage!
+            var bubbleMaskImage:UIImage!
+            
+            // 自己发的消息
+            if mode.sender?.userID == myself.userID{
+                
+                stretchImage = UIImage.init(named: "senderImageMask")
+                bubbleMaskImage = stretchImage?.resizableImage(withCapInsets: stretchInset, resizingMode: .stretch)
+                
+                
+                
+                avartar.frame = CGRect.init(x: ScreenW - 45 - 5, y: 5, width: 45, height: 45)
+                _ = imageV.sd_layout().rightSpaceToView(avartar,10)?.topEqualToView(self.avartar)?.widthIs(imageSize.width)?.heightIs(imageSize.height)
+                
+                
+            }else{
+                stretchImage = UIImage.init(named: "receiverImageMask")
+                bubbleMaskImage = stretchImage?.resizableImage(withCapInsets: stretchInset, resizingMode: .stretch)
+                avartar.frame = CGRect.init(x: 5, y: 5, width: 45, height: 45)
+                _ = imageV.sd_layout().leftSpaceToView(avartar,10)?.topEqualToView(self.avartar)?.widthIs(imageSize.width)?.heightIs(imageSize.height)
+                
+            }
+            
+            
+            // 图片设置用裁减背景图片的图层
+            let layer = CALayer()
+            layer.contents = bubbleMaskImage?.cgImage
+            layer.contentsCenter = self.CGRectCenterRectForResizableImage(bubbleMaskImage!)
+            layer.frame = CGRect.init(x: 0, y: 0, width: imageSize.width, height: imageSize.height)
+            
+            layer.contentsScale = UIScreen.main.scale
+            layer.opacity = 1
+            self.imageV.layer.mask = layer
+            self.imageV.layer.masksToBounds = true
+            
+            
+            
             
             self.setupAutoHeight(withBottomView: imageV, bottomMargin: 10)
             
@@ -70,65 +127,14 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
         self.backgroundColor = UIColor.clear
         self.selectionStyle = .none
         avartar.setCircle()
+        
+        
       
 
     }
     
     
-    private func setView(mode: MessageBoby){
-        
-        guard let imageName = String.init(data: mode.content!, encoding: String.Encoding.utf8) else {
-            return
-        }
-        
-        
-        self.avartar.image = UIImage.init(data: mode.sender!.icon!)
-        // 获取images
-        if let imageData =  appFileManger.getImageDataBy(userID: (mode.receiver?.userID)!, fileName: imageName){
-            self.imageV.image = UIImage.init(data: imageData)
-        }
-        imageV.sd_clearAutoLayoutSettings()
-        
-        // 背景图片拉伸
-        let stretchInset = UIEdgeInsetsMake(30, 28, 23, 28)
-        var stretchImage:UIImage!
-        var bubbleMaskImage:UIImage!
-        
-        // 自己发的消息
-        if mode.sender?.userID == myself.userID{
-            
-            stretchImage = UIImage.init(named: "senderImageMask")
-            bubbleMaskImage = stretchImage?.resizableImage(withCapInsets: stretchInset, resizingMode: .stretch)
-            
-            
-            
-            avartar.frame = CGRect.init(x: ScreenW - 45 - 5, y: 5, width: 45, height: 45)
-            _ = imageV.sd_layout().rightSpaceToView(avartar,10)?.topEqualToView(self.avartar)?.widthIs(imageSize.width)?.heightIs(imageSize.height)
-            
-            
-        }else{
-            stretchImage = UIImage.init(named: "receiverImageMask")
-            bubbleMaskImage = stretchImage?.resizableImage(withCapInsets: stretchInset, resizingMode: .stretch)
-            avartar.frame = CGRect.init(x: 5, y: 5, width: 45, height: 45)
-            _ = imageV.sd_layout().leftSpaceToView(avartar,10)?.topEqualToView(self.avartar)?.widthIs(imageSize.width)?.heightIs(imageSize.height)
-            
-        }
-       
-        
-        // 图片设置用裁减背景图片的图层
-        let layer = CALayer()
-        layer.contents = bubbleMaskImage?.cgImage
-        layer.contentsCenter = self.CGRectCenterRectForResizableImage(bubbleMaskImage!)
-        layer.frame = CGRect.init(x: 0, y: 0, width: imageSize.width, height: imageSize.height)
-        
-        layer.contentsScale = UIScreen.main.scale
-        layer.opacity = 1
-        self.imageV.layer.mask = layer
-        self.imageV.layer.masksToBounds = true
-        
-        
-        
-    }
+ 
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

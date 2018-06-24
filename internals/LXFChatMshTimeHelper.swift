@@ -44,7 +44,7 @@ extension LXFChatMsgTimeHelper {
         let minute = curInRome.minute - preInRome.minute
         if yesr > 0 || month > 0 || day > 0 || hour > 0 {
             return true
-        } else if minute >= 5 {
+        } else if minute >= 3 {
             return true
         } else {
             return false

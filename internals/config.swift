@@ -15,6 +15,7 @@ import Foundation
 // 不同版本键盘高度不一样？？
 let KEYBOARD_HEIGHT:CGFloat = 216.0
 
+
 // navigationbar 高度
 let NavBarH:CGFloat = 44
 // navigation View 高度
@@ -33,7 +34,7 @@ let TableCellOffsetX:CGFloat = 16
 
 // url
 let GITHUB_API_URL:String = "https://api.github.com"
-let APP_JOB_URL:String = "http://192.168.199.113:8080"
+let APP_JOB_URL:String = "http://52.199.50.0:8080"
 
 
 

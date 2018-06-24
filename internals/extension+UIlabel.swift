@@ -15,7 +15,7 @@ extension UILabel{
         
         let size = string.boundingRect(with: CGSize.init(width: maxWidth, height: 1200), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font:font], context: nil).size
         // 与边框的距离
-        return CGSize.init(width: size.width + 15, height: size.height + 20)
+        return CGSize.init(width: size.width, height: size.height)
         
     }
     

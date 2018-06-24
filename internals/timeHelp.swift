@@ -121,9 +121,27 @@ func chatListTime(date:Date?) ->String?{
         }
         
     }
-    
-    
     return ""
+}
+
+
+func showMonthAndDay(date: Date?) ->String?{
+    guard let date = date  else {
+        return nil
+    }
+    
+    let now = DateInRegion()
+    let dateRoom = DateInRegion(absoluteDate: date)
+    let year = now.year - dateRoom.year
+    if year != 0{
+        return String.init(format: "%d年%d月%d日", dateRoom.year, dateRoom.month,dateRoom.day)
+        
+    }else{
+        return String.init(format: "%d月%d日", dateRoom.month, dateRoom.day)
+    }
+    
+    
+    
     
     
     

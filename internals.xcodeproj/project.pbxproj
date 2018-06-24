@@ -18,6 +18,9 @@
 		4A0BA74E20B053DD0099F332 /* SetFourItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA74D20B053DD0099F332 /* SetFourItemTableViewCell.swift */; };
 		4A0BA75020B13A700099F332 /* AddBaseInfoTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA74F20B13A700099F332 /* AddBaseInfoTableViewController.swift */; };
 		4A0BA75220B16D600099F332 /* ResumeItemsTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0BA75120B16D600099F332 /* ResumeItemsTypes.swift */; };
+		4A12436F20DE3B260038336F /* baseEmotionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A12436E20DE3B260038336F /* baseEmotionView.swift */; };
+		4A12437120DE3C450038336F /* gifOneEmotionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A12437020DE3C450038336F /* gifOneEmotionView.swift */; };
+		4A12437520DF34A50038336F /* ForumNavgationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A12437420DF34A50038336F /* ForumNavgationController.swift */; };
 		4A18E1EB202CA03F00B1038E /* TreeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A18E1EA202CA03F00B1038E /* TreeNode.swift */; };
 		4A1A502620773A500070B74D /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1A502520773A500070B74D /* CoreTelephony.framework */; };
 		4A1A502820773A5C0070B74D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1A502720773A5C0070B74D /* libz.tbd */; };
@@ -106,7 +109,6 @@
 		4A39A7C020CC01DB00953C1C /* DropDegreeMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A39A7BF20CC01DB00953C1C /* DropDegreeMenuView.swift */; };
 		4A3C8DAC2098C6530008C2A4 /* AddEventInCalender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A3C8DAB2098C6530008C2A4 /* AddEventInCalender.swift */; };
 		4A406B5F1FA4D3D900277AA0 /* PersonCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A406B5E1FA4D3D900277AA0 /* PersonCardCell.swift */; };
-		4A406B651FA5772100277AA0 /* PickImageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A406B641FA5772100277AA0 /* PickImageController.swift */; };
 		4A406B671FA5834F00277AA0 /* ImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A406B661FA5834F00277AA0 /* ImageCell.swift */; };
 		4A406B691FA58BDC00277AA0 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A406B681FA58BDC00277AA0 /* Message.swift */; };
 		4A4254F7203EB5A30049B237 /* changePhoneVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4254F6203EB5A30049B237 /* changePhoneVC.swift */; };
@@ -258,9 +260,10 @@
 		4AB8FFE91FDEC0720020F026 /* searchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB8FFE81FDEC0720020F026 /* searchViewModel.swift */; };
 		4AB97F3120D783570056AC64 /* CompanyCareerTalkVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB97F3020D783570056AC64 /* CompanyCareerTalkVC.swift */; };
 		4AB97F3520D966EC0056AC64 /* PPBadgeViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB97F3420D966EC0056AC64 /* PPBadgeViewHelper.swift */; };
+		4AB97F3720DBF46D0056AC64 /* extension+UIImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB97F3620DBF46D0056AC64 /* extension+UIImageView.swift */; };
 		4ABB98751F9CDB5300DD9AAB /* emotion2.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4ABB986F1F9CDB2B00DD9AAB /* emotion2.bundle */; };
-		4ABB98781F9CDB5300DD9AAB /* test.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4ADDDABE1F98F735001CB00F /* test.bundle */; };
-		4ABB987B1F9CDE8E00DD9AAB /* test.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4ABB987A1F9CDE6000DD9AAB /* test.plist */; };
+		4ABB98781F9CDB5300DD9AAB /* normalEmotion.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4ADDDABE1F98F735001CB00F /* normalEmotion.bundle */; };
+		4ABB987B1F9CDE8E00DD9AAB /* normalEmotion.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4ABB987A1F9CDE6000DD9AAB /* normalEmotion.plist */; };
 		4ABB987C1F9CDE8E00DD9AAB /* emotion2.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4ABB98791F9CDE3A00DD9AAB /* emotion2.plist */; };
 		4AC056311F93B46C00D5B739 /* ChatHorizontalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC056301F93B46C00D5B739 /* ChatHorizontalLayout.swift */; };
 		4AC2D4FC1F89242E00EF0845 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AC2D4FB1F89242E00EF0845 /* Security.framework */; };
@@ -272,7 +275,6 @@
 		4ACBD6F71F77DE6C00A5FD23 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ACBD6F61F77DE6C00A5FD23 /* Social.framework */; };
 		4ACBD6FC1F77E8F500A5FD23 /* shareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACBD6FB1F77E8F500A5FD23 /* shareView.swift */; };
 		4ACC6DB2205BF49100392252 /* SqliteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACC6DB1205BF49100392252 /* SqliteManager.swift */; };
-		4AD03AB81F9B45270077C15B /* InputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD03AB71F9B45270077C15B /* InputTextView.swift */; };
 		4AD03ABB1F9C7DD30077C15B /* GetChatEmotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD03ABA1F9C7DD30077C15B /* GetChatEmotion.swift */; };
 		4AD2C77520941EE9002F3486 /* SearchTypeMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD2C77420941EE9002F3486 /* SearchTypeMenuView.swift */; };
 		4AD2C77920973D28002F3486 /* CommonEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD2C77820973D28002F3486 /* CommonEnum.swift */; };
@@ -324,7 +326,6 @@
 		4AFCCD621F9E490400E0E168 /* gifCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFCCD611F9E490400E0E168 /* gifCell.swift */; };
 		4AFCCD6A1FA3837000E0E168 /* emotion3.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4AFCCD651FA37D8C00E0E168 /* emotion3.plist */; };
 		4AFCCD6B1FA3837000E0E168 /* emotion3.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4AFCCD631FA37D7000E0E168 /* emotion3.bundle */; };
-		4AFCCD721FA4AE8F00E0E168 /* replylist.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4AFCCD711FA4AE8F00E0E168 /* replylist.plist */; };
 		4AFCF84A208F847D00F5B96E /* DropValidTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFCF849208F847D00F5B96E /* DropValidTimeView.swift */; };
 		4AFF91A71F5C238400FE189F /* JobHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91A61F5C238400FE189F /* JobHeaderView.swift */; };
 		4AFF91A91F5C338800FE189F /* JobDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AFF91A81F5C338800FE189F /* JobDetailViewController.swift */; };
@@ -369,6 +370,9 @@
 		4A0BA74D20B053DD0099F332 /* SetFourItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetFourItemTableViewCell.swift; sourceTree = "<group>"; };
 		4A0BA74F20B13A700099F332 /* AddBaseInfoTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddBaseInfoTableViewController.swift; sourceTree = "<group>"; };
 		4A0BA75120B16D600099F332 /* ResumeItemsTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResumeItemsTypes.swift; sourceTree = "<group>"; };
+		4A12436E20DE3B260038336F /* baseEmotionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = baseEmotionView.swift; sourceTree = "<group>"; };
+		4A12437020DE3C450038336F /* gifOneEmotionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gifOneEmotionView.swift; sourceTree = "<group>"; };
+		4A12437420DF34A50038336F /* ForumNavgationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumNavgationController.swift; sourceTree = "<group>"; };
 		4A18E1EA202CA03F00B1038E /* TreeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeNode.swift; sourceTree = "<group>"; };
 		4A1A502520773A500070B74D /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		4A1A502720773A5C0070B74D /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -459,7 +463,6 @@
 		4A39A7BF20CC01DB00953C1C /* DropDegreeMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDegreeMenuView.swift; sourceTree = "<group>"; };
 		4A3C8DAB2098C6530008C2A4 /* AddEventInCalender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventInCalender.swift; sourceTree = "<group>"; };
 		4A406B5E1FA4D3D900277AA0 /* PersonCardCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonCardCell.swift; sourceTree = "<group>"; };
-		4A406B641FA5772100277AA0 /* PickImageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickImageController.swift; sourceTree = "<group>"; };
 		4A406B661FA5834F00277AA0 /* ImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCell.swift; sourceTree = "<group>"; };
 		4A406B681FA58BDC00277AA0 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		4A4254F6203EB5A30049B237 /* changePhoneVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = changePhoneVC.swift; sourceTree = "<group>"; };
@@ -615,9 +618,10 @@
 		4AB8FFE81FDEC0720020F026 /* searchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = searchViewModel.swift; sourceTree = "<group>"; };
 		4AB97F3020D783570056AC64 /* CompanyCareerTalkVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyCareerTalkVC.swift; sourceTree = "<group>"; };
 		4AB97F3420D966EC0056AC64 /* PPBadgeViewHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PPBadgeViewHelper.swift; sourceTree = "<group>"; };
+		4AB97F3620DBF46D0056AC64 /* extension+UIImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+UIImageView.swift"; sourceTree = "<group>"; };
 		4ABB986F1F9CDB2B00DD9AAB /* emotion2.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = emotion2.bundle; sourceTree = "<group>"; };
 		4ABB98791F9CDE3A00DD9AAB /* emotion2.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = emotion2.plist; sourceTree = "<group>"; };
-		4ABB987A1F9CDE6000DD9AAB /* test.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = test.plist; sourceTree = "<group>"; };
+		4ABB987A1F9CDE6000DD9AAB /* normalEmotion.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = normalEmotion.plist; sourceTree = "<group>"; };
 		4AC056301F93B46C00D5B739 /* ChatHorizontalLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatHorizontalLayout.swift; sourceTree = "<group>"; };
 		4AC2D4FB1F89242E00EF0845 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		4AC2D4FD1F89243700EF0845 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
@@ -629,7 +633,6 @@
 		4ACBD6F61F77DE6C00A5FD23 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		4ACBD6FB1F77E8F500A5FD23 /* shareView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = shareView.swift; sourceTree = "<group>"; };
 		4ACC6DB1205BF49100392252 /* SqliteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SqliteManager.swift; sourceTree = "<group>"; };
-		4AD03AB71F9B45270077C15B /* InputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputTextView.swift; sourceTree = "<group>"; };
 		4AD03ABA1F9C7DD30077C15B /* GetChatEmotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetChatEmotion.swift; sourceTree = "<group>"; };
 		4AD2C77420941EE9002F3486 /* SearchTypeMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTypeMenuView.swift; sourceTree = "<group>"; };
 		4AD2C77820973D28002F3486 /* CommonEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonEnum.swift; sourceTree = "<group>"; };
@@ -657,7 +660,7 @@
 		4ADDDAB21F97ABA4001CB00F /* ChatEmotionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEmotionView.swift; sourceTree = "<group>"; };
 		4ADDDAB41F98EF84001CB00F /* ChatEmotionCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEmotionCells.swift; sourceTree = "<group>"; };
 		4ADDDAB71F98F054001CB00F /* MChatEmotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MChatEmotion.swift; sourceTree = "<group>"; };
-		4ADDDABE1F98F735001CB00F /* test.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = test.bundle; sourceTree = "<group>"; };
+		4ADDDABE1F98F735001CB00F /* normalEmotion.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = normalEmotion.bundle; sourceTree = "<group>"; };
 		4ADDDAD41F98F9B3001CB00F /* ChatEmotionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEmotionHelper.swift; sourceTree = "<group>"; };
 		4ADDDAD71F9B1EE3001CB00F /* ChatEmotionAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEmotionAttachment.swift; sourceTree = "<group>"; };
 		4ADDDADB1F9B40A8001CB00F /* ChatBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBarView.swift; sourceTree = "<group>"; };
@@ -689,7 +692,6 @@
 		4AFCCD611F9E490400E0E168 /* gifCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gifCell.swift; sourceTree = "<group>"; };
 		4AFCCD631FA37D7000E0E168 /* emotion3.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = emotion3.bundle; sourceTree = "<group>"; };
 		4AFCCD651FA37D8C00E0E168 /* emotion3.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = emotion3.plist; sourceTree = "<group>"; };
-		4AFCCD711FA4AE8F00E0E168 /* replylist.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = replylist.plist; sourceTree = "<group>"; };
 		4AFCF849208F847D00F5B96E /* DropValidTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropValidTimeView.swift; sourceTree = "<group>"; };
 		4AFF91A61F5C238400FE189F /* JobHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobHeaderView.swift; sourceTree = "<group>"; };
 		4AFF91A81F5C338800FE189F /* JobDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobDetailViewController.swift; sourceTree = "<group>"; };
@@ -783,6 +785,15 @@
 				4A0BA74A20B01CED0099F332 /* ChatUsersTableViewCell.swift */,
 			);
 			name = Cell;
+			sourceTree = "<group>";
+		};
+		4A12436D20DE3B0E0038336F /* subEmotionView */ = {
+			isa = PBXGroup;
+			children = (
+				4A12436E20DE3B260038336F /* baseEmotionView.swift */,
+				4A12437020DE3C450038336F /* gifOneEmotionView.swift */,
+			);
+			name = subEmotionView;
 			sourceTree = "<group>";
 		};
 		4A1BA2BB208AE6D500CF8352 /* View */ = {
@@ -1217,6 +1228,7 @@
 				4A9543C520A6E42D009BCBE2 /* ViewModel */,
 				4A9543BA20A0B605009BCBE2 /* ViewController */,
 				4A9543B920A0B5FE009BCBE2 /* cells */,
+				4A12437420DF34A50038336F /* ForumNavgationController.swift */,
 			);
 			name = "论坛";
 			sourceTree = "<group>";
@@ -1587,7 +1599,6 @@
 				4ACBD6FA1F77E76D00A5FD23 /* ChatBar */,
 				4A9A0BE6200B1613008721F3 /* CommunicationCells */,
 				4A93C2BC1F80CEAA0022E97B /* CommunicationChatView.swift */,
-				4A406B641FA5772100277AA0 /* PickImageController.swift */,
 			);
 			name = "聊天界面";
 			sourceTree = "<group>";
@@ -1610,7 +1621,6 @@
 			children = (
 				4A2145C82078D039000959F4 /* MBHubUtils.swift */,
 				4A9CE36E1F72C2E6002A8FD5 /* myextension.swift */,
-				4ADDDAD71F9B1EE3001CB00F /* ChatEmotionAttachment.swift */,
 				4AD2C77A209752DA002F3486 /* ConfigDropItemView.swift */,
 				4A3C8DAB2098C6530008C2A4 /* AddEventInCalender.swift */,
 				4A4DBBEC20BBAE3A0036AD9D /* timeHelp.swift */,
@@ -1658,6 +1668,7 @@
 		4AD03AB91F9C7DA60077C15B /* help */ = {
 			isa = PBXGroup;
 			children = (
+				4ADDDAD71F9B1EE3001CB00F /* ChatEmotionAttachment.swift */,
 				4ADDDAD41F98F9B3001CB00F /* ChatEmotionHelper.swift */,
 				4AD03ABA1F9C7DD30077C15B /* GetChatEmotion.swift */,
 			);
@@ -1762,12 +1773,11 @@
 		4ADDDABD1F98F706001CB00F /* emotions */ = {
 			isa = PBXGroup;
 			children = (
-				4AFCCD711FA4AE8F00E0E168 /* replylist.plist */,
 				4AFCCD651FA37D8C00E0E168 /* emotion3.plist */,
-				4ABB987A1F9CDE6000DD9AAB /* test.plist */,
+				4ABB987A1F9CDE6000DD9AAB /* normalEmotion.plist */,
 				4ABB98791F9CDE3A00DD9AAB /* emotion2.plist */,
 				4ABB986F1F9CDB2B00DD9AAB /* emotion2.bundle */,
-				4ADDDABE1F98F735001CB00F /* test.bundle */,
+				4ADDDABE1F98F735001CB00F /* normalEmotion.bundle */,
 				4AFCCD631FA37D7000E0E168 /* emotion3.bundle */,
 			);
 			name = emotions;
@@ -1776,12 +1786,12 @@
 		4ADDDAD91F9B3F68001CB00F /* View */ = {
 			isa = PBXGroup;
 			children = (
+				4A12436D20DE3B0E0038336F /* subEmotionView */,
 				4AFCCD6C1FA4ABBE00E0E168 /* cellViews */,
 				4ADADAAA1FA4C09400134AAE /* quickReplyView.swift */,
 				4ADDDAB21F97ABA4001CB00F /* ChatEmotionView.swift */,
 				4ADDDADB1F9B40A8001CB00F /* ChatBarView.swift */,
 				4ADDDADF1F9B426C001CB00F /* ChatMoreView.swift */,
-				4AD03AB71F9B45270077C15B /* InputTextView.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -1838,6 +1848,7 @@
 				4AD8F752206E874C003969ED /* extension+UIlabel.swift */,
 				4A2145CC2078FB56000959F4 /* extension+UIResponder.swift */,
 				4A5C7C0D20D12E04009F548C /* Extension+YNDropMenuView.swift */,
+				4AB97F3620DBF46D0056AC64 /* extension+UIImageView.swift */,
 			);
 			name = extension;
 			sourceTree = "<group>";
@@ -2088,15 +2099,14 @@
 			files = (
 				4AFCCD6A1FA3837000E0E168 /* emotion3.plist in Resources */,
 				4AFCCD6B1FA3837000E0E168 /* emotion3.bundle in Resources */,
-				4ABB987B1F9CDE8E00DD9AAB /* test.plist in Resources */,
+				4ABB987B1F9CDE8E00DD9AAB /* normalEmotion.plist in Resources */,
 				4ABB987C1F9CDE8E00DD9AAB /* emotion2.plist in Resources */,
 				4ABB98751F9CDB5300DD9AAB /* emotion2.bundle in Resources */,
-				4ABB98781F9CDB5300DD9AAB /* test.bundle in Resources */,
+				4ABB98781F9CDB5300DD9AAB /* normalEmotion.bundle in Resources */,
 				4ADCC75A1F511DD3001A4E9F /* LaunchScreen.storyboard in Resources */,
 				4A5E3FB5202DF14D009C1A6B /* address.plist in Resources */,
 				4A0261411FD2EB2200747B30 /* citys.plist in Resources */,
 				4A93C2B91F80AC590022E97B /* messageItemCell.xib in Resources */,
-				4AFCCD721FA4AE8F00E0E168 /* replylist.plist in Resources */,
 				4ADCC7571F511DD3001A4E9F /* Assets.xcassets in Resources */,
 				4A444ED11F8E5789006AE83D /* contactlist.xib in Resources */,
 				4A5E3FB9202ECD86009C1A6B /* birthDate.plist in Resources */,
@@ -2235,7 +2245,7 @@
 				4A6BC22C1FC312A7002C17B6 /* RegistryViewModel.swift in Sources */,
 				4A2145C92078D039000959F4 /* MBHubUtils.swift in Sources */,
 				4A88590A1FEFF0390009D73D /* JobTagsCell.swift in Sources */,
-				4AD03AB81F9B45270077C15B /* InputTextView.swift in Sources */,
+				4A12437520DF34A50038336F /* ForumNavgationController.swift in Sources */,
 				4A406B691FA58BDC00277AA0 /* Message.swift in Sources */,
 				4A5E3FC72031D7AC009C1A6B /* modifyitemsView.swift in Sources */,
 				4A1BA2E1208B7EF000CF8352 /* CompanyListViewController.swift in Sources */,
@@ -2336,6 +2346,7 @@
 				4AAB084720B5C8D900BEF38A /* innerTextFiledCell.swift in Sources */,
 				4ADADAAB1FA4C09400134AAE /* quickReplyView.swift in Sources */,
 				4AD03ABB1F9C7DD30077C15B /* GetChatEmotion.swift in Sources */,
+				4AB97F3720DBF46D0056AC64 /* extension+UIImageView.swift in Sources */,
 				4A1BA2F8208CE3C000CF8352 /* CollectionTextCell.swift in Sources */,
 				4A4DBBD420B796B80036AD9D /* customerTextField.swift in Sources */,
 				4A93C2C31F80CF080022E97B /* markTestSocketView.swift in Sources */,
@@ -2367,6 +2378,7 @@
 				4A6BC22E1FC711EB002C17B6 /* ChangePasswordModeView.swift in Sources */,
 				4AFCF84A208F847D00F5B96E /* DropValidTimeView.swift in Sources */,
 				4AFF91C11F5DC18000FE189F /* worklocateCell.swift in Sources */,
+				4A12436F20DE3B260038336F /* baseEmotionView.swift in Sources */,
 				4A76162A1FFE5DB600FC6A58 /* deliveryItemCell.swift in Sources */,
 				4AC056311F93B46C00D5B739 /* ChatHorizontalLayout.swift in Sources */,
 				4A86792720D4CDD90039D36B /* JobHomeNavigation.swift in Sources */,
@@ -2388,6 +2400,7 @@
 				4AA637662067CCC000DAE9A9 /* ConversationManager.swift in Sources */,
 				4ADDDADC1F9B40A8001CB00F /* ChatBarView.swift in Sources */,
 				4A6BC2301FC856D7002C17B6 /* PersonViewController.swift in Sources */,
+				4A12437120DE3C450038336F /* gifOneEmotionView.swift in Sources */,
 				4AAB084320B59D6800BEF38A /* DynamicCollectionHeighCell.swift in Sources */,
 				4A8858FF1FEBE89A0009D73D /* JuBaoViewController.swift in Sources */,
 				4A9543C020A6974C009BCBE2 /* ForumTopicTypeViewController.swift in Sources */,
@@ -2473,7 +2486,6 @@
 				4A1BA302208EAA6A00CF8352 /* AreaCollectionView.swift in Sources */,
 				4A8F7BF420CEBFC6009D7037 /* others.swift in Sources */,
 				4A9543D420A87B6D009BCBE2 /* PostHeaderView.swift in Sources */,
-				4A406B651FA5772100277AA0 /* PickImageController.swift in Sources */,
 				4A1BA2E3208B806A00CF8352 /* CompanyItemCell.swift in Sources */,
 				4A2210322039463D000BDC70 /* extension+array.swift in Sources */,
 				4A2210372039BE88000BDC70 /* feedBackVC.swift in Sources */,

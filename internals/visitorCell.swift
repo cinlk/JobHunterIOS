@@ -9,7 +9,7 @@
 import UIKit
 
 
-fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
+fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
 
 @objcMembers class visitorCell: UITableViewCell {
 
@@ -21,7 +21,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
         
     }()
     
-    private lazy var titleName:UILabel = {
+    private lazy var hrName:UILabel = {
         let label = UILabel()
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
         label.textAlignment = .left
@@ -36,7 +36,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
         let label = UILabel()
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
         label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = UIColor.lightGray
         return label
         
@@ -51,6 +51,14 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
         return label
     }()
     
+    private lazy var postion: UILabel = {
+        let label = UILabel()
+        label.setSingleLineAutoResizeWithMaxWidth(120)
+        label.textAlignment = .left
+        label.textColor = UIColor.lightGray
+        label.font = UIFont.systemFont(ofSize: 14)
+        return label
+    }()
     
     
     override var frame: CGRect{
@@ -65,7 +73,6 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
     }
     
     
-   
    dynamic var mode:HRVisitorModel?{
         didSet{
             guard let mode = mode else {
@@ -73,8 +80,9 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
             }
             avartar.image = UIImage.init(named: mode.icon)
             visite_time.text = mode.visitTimeStr
-            titleName.text = mode.name! + "看过你"
+            hrName.text = mode.name! + "看过你"
             company.text = mode.company
+            postion.text = mode.position
             
             self.setupAutoHeight(withBottomViewsArray: [avartar, company], bottomMargin: 10)
             
@@ -83,19 +91,21 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        let views:[UIView] = [avartar, visite_time, company, titleName ]
+        let views:[UIView] = [avartar, visite_time, company, hrName, postion]
         self.contentView.sd_addSubviews(views)
         
-        _ = avartar.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(iconSize.width)?.heightEqualToWidth()
-        _ = titleName.sd_layout().leftSpaceToView(avartar,10)?.topEqualToView(avartar)?.autoHeightRatio(0)
+        _ = avartar.sd_layout().leftSpaceToView(self.contentView,10)?.centerYEqualToView(self.contentView)?.widthIs(iconSize.width)?.heightEqualToWidth()
+        _ = hrName.sd_layout().leftSpaceToView(avartar,10)?.topSpaceToView(self.contentView,15)?.autoHeightRatio(0)
         
-        _ = company.sd_layout().leftEqualToView(titleName)?.topSpaceToView(titleName,10)?.autoHeightRatio(0)
+        _ = company.sd_layout().leftEqualToView(hrName)?.topSpaceToView(hrName,5)?.autoHeightRatio(0)
+        _ = postion.sd_layout().leftSpaceToView(company,10)?.topEqualToView(company)?.autoHeightRatio(0)
         
-        _ = visite_time.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(titleName)?.autoHeightRatio(0)
+        _ = visite_time.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(hrName)?.autoHeightRatio(0)
         
         avartar.sd_cornerRadiusFromHeightRatio = 0.5
-        titleName.setMaxNumberOfLinesToShow(1)
+        hrName.setMaxNumberOfLinesToShow(1)
         company.setMaxNumberOfLinesToShow(1)
+        postion.setMaxNumberOfLinesToShow(1)
        
         
     }

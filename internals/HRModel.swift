@@ -24,7 +24,8 @@ class HRModel: NSObject, Mappable, Comparable {
     
     
     required init?(map: Map) {
-        if map.JSON["userID"] == nil || map.JSON["name"] == nil || map.JSON["company"] == nil{
+        if map.JSON["userID"] == nil || map.JSON["name"] == nil || map.JSON["companyID"] == nil ||
+            map.JSON["position"] == nil{
             return nil
         }
     }
@@ -62,12 +63,10 @@ class HRVisitorModel:HRModel{
     internal var visitTimeStr:String{
         get{
             guard let time = self.visitTime else { return "" }
-            let dateFormat = DateFormatter()
-            dateFormat.locale = Locale.current
-            dateFormat.dateFormat = "yyyy-MM-dd"
-            
-            let str = dateFormat.string(from: time)
-            return str
+            if let  str =  showMonthAndDay(date: time){
+                return str
+            }
+            return ""
         }
     }
     

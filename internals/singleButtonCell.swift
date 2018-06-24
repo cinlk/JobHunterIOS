@@ -32,7 +32,12 @@ class singleButtonCell: UITableViewCell {
             case .delete:
                 btn.setTitle("删除", for: .normal)
                 btn.backgroundColor = UIColor.red
-                btn.setImage(UIImage.barImage(size: CGSize.init(width: btnImgSize.width, height: btnImgSize.height), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "delete"), for: .normal)
+                
+                
+                
+                
+                btn.setImage(UIImage.init(named: "delete")!.changesize(size: btnImgSize).withRenderingMode(.alwaysTemplate), for: .normal)
+                
             case .logout:
                 btn.setTitle("退出当前账号", for: .normal)
                 btn.backgroundColor = UIColor.blue
@@ -40,7 +45,9 @@ class singleButtonCell: UITableViewCell {
                 btn.setTitleColor(UIColor.blue, for: .normal)
             case .add:
                 btn.backgroundColor = UIColor.clear
-                btn.setImage(UIImage.barImage(size: CGSize.init(width: btnImgSize.width, height: btnImgSize.height), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "plus"), for: .normal)
+                
+                
+                btn.setImage(UIImage.init(named: "plus")!.changesize(size: btnImgSize).withRenderingMode(.alwaysTemplate), for: .normal)
                 btn.setTitleColor(UIColor.blue, for: .normal)
                 self.contentView.backgroundColor = UIColor.white
                 

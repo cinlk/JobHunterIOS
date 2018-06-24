@@ -16,21 +16,32 @@ class MainTabBarViewController: UITabBarController {
      // 自定义tabbarimg
      private func getTabBarImages() -> [(UIImage,UIImage)]{
         
-        let offset = CGPoint(x: 0, y: 0)
-        let home = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Home_Img)
-        let selectHome = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Select_Home_Img)
-        let jobs = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Job_Img)
-        let selectJobs = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Select_Job_Img)
-        
-        let message = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Message_Img)
-        let selectMessage = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Select_Message_Img)
-        
-        let person  =  UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Person_Img)
-        
-        let selectPerson = UIImage.barImage(size: BarImg_Size, offset: offset, renderMode: .alwaysOriginal, name: Select_Person_Img)
+    
+        let home = UIImage.init(named: Home_Img)!.changesize(size: BarImg_Size).withRenderingMode(.alwaysTemplate)
         
         
-        return [(home, selectHome),(jobs, selectJobs),(message,selectMessage),(person,selectPerson)]
+        let selectHome = UIImage.init(named: Select_Home_Img)!.changesize(size: BarImg_Size).withRenderingMode(.alwaysTemplate)
+      
+        let jobs =  UIImage.init(named: Job_Img)!.changesize(size: BarImg_Size).withRenderingMode(.alwaysTemplate)
+      
+        let selectJobs = UIImage.init(named: Select_Job_Img)!.changesize(size: BarImg_Size).withRenderingMode(.alwaysTemplate)
+        
+        let message = UIImage.init(named: Message_Img)!.changesize(size: BarImg_Size).withRenderingMode(.alwaysTemplate)
+        
+        let selectMessage = UIImage.init(named: Select_Message_Img)!.changesize(size: BarImg_Size).withRenderingMode(.alwaysTemplate)
+        
+        let forum = UIImage.init(named: "forum")!.changesize(size: BarImg_Size).withRenderingMode(.alwaysTemplate)
+        let selectForum = UIImage.init(named: "forum")!.changesize(size: BarImg_Size).withRenderingMode(.alwaysTemplate)
+
+        let person = UIImage.init(named: Person_Img)!.changesize(size: BarImg_Size).withRenderingMode(.alwaysTemplate)
+        
+        
+        let selectPerson = UIImage.init(named: Select_Person_Img)!.changesize(size: BarImg_Size).withRenderingMode(.alwaysTemplate)
+        
+        
+        
+        
+        return [(home, selectHome),(jobs, selectJobs),(message,selectMessage),(forum, selectForum), (person,selectPerson)]
     
     }
     
@@ -44,6 +55,15 @@ class MainTabBarViewController: UITabBarController {
     // 加载bar icon 图标
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let selectedColor   = UIColor(red: 246.0/255.0, green: 155.0/255.0, blue: 13.0/255.0, alpha: 1.0)
+        let unselectedColor = UIColor(red: 16.0/255.0, green: 224.0/255.0, blue: 223.0/255.0, alpha: 1.0)
+        
+        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedStringKey.foregroundColor: unselectedColor], for: .normal)
+        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedStringKey.foregroundColor: selectedColor], for: .selected)
+        
+        self.tabBar.barTintColor = UIColor.white
+        self.tabBar.backgroundColor = UIColor.clear
         
         if let items = self.tabBar.items {
             let tabBarImages = getTabBarImages()
@@ -59,27 +79,17 @@ class MainTabBarViewController: UITabBarController {
         }
         
         
-        let forum = ForumViewController()
-        let forumNavigate = UINavigationController(rootViewController: forum)
-        
-        forumNavigate.tabBarItem.imageInsets = UIEdgeInsetsMake(0, 0, 0, 0)
-        forumNavigate.tabBarItem.image = UIImage.barImage(size: BarImg_Size, offset: CGPoint.zero, renderMode: .automatic, name: "forum")
-        
-        forumNavigate.tabBarItem.title = "论坛"
-        //self.selectedIndex = 0
-        
-        addChildViewController(forumNavigate)
         
         
-        // #TODO 被通知加载 显示圆点
-//        self.tabBar.items![1].pp.addBadge(text: "···")
-//        self.tabBar.items![1].pp.setBadgeLabel(attributes: { (lable) in
-//            lable.font = UIFont.systemFont(ofSize: 10)
-//            lable.textColor = UIColor.white
-//        })
+//        let forum = ForumViewController()
+//        let forumNavigate = UINavigationController(rootViewController: forum)
+//
+//        forumNavigate.tabBarItem.imageInsets = UIEdgeInsetsMake(0, 0, 0, 0)
+//
+//        forumNavigate.tabBarItem.image =  UIImage.init(named: "forum")!.changesize(size: BarImg_Size).withRenderingMode(.alwaysTemplate)
+//        forumNavigate.tabBarItem.title = "论坛"
+//        addChildViewController(forumNavigate)
         
-        //self.tabBar.items![2].pp.addDot(color: UIColor.red)
-        //self.tabBar.items![2].pp.hiddenBadge()
     }
 
     

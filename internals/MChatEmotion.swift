@@ -25,8 +25,12 @@ import UIKit
     var isEmpty: Bool = false
     // ".bundle"
     var bundle: String = ""
-    // ".xxx"
+    // ".xxx" 文件类型
     var imageType: String = ""
+    
+    // 自定义类型
+    var type:MessgeType = .none
+    
     
     override init() {
         super.init()

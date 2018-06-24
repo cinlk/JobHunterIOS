@@ -681,30 +681,89 @@ struct MessageTable {
             let query = MessageTable.message.select([MessageTable.messageID,MessageTable.type,MessageTable.content, MessageTable.isRead,MessageTable.senderID, MessageTable.create_time]).filter((MessageTable.senderID == chatWith.userID! && MessageTable.receiverID == myself.userID!)||(MessageTable.senderID == myself.userID! && MessageTable.receiverID == chatWith.userID!)).order(MessageTable.create_time.desc, MessageTable.id.desc).limit(limit, offset: start)
             
             for item in try self.dbManager.db!.prepare(query){
-                let contentStr = item[MessageTable.content]?.base64EncodedString()
-                let mb =  MessageBoby(JSON: ["messageID":item[MessageTable.messageID],
+                
+                guard let messageType = MessgeType(rawValue: item[MessageTable.type]) else {
+                    continue
+                }
+                
+                var mb:MessageBoby?
+                
+                
+                // 转为具体的消息类型
+                switch  messageType {
+                    case .bigGif, .smallGif:
+                        guard let path = String.init(data: item[MessageTable.content]!, encoding: String.Encoding.utf8) else {
+                            continue
+                        }
+                        
+                        mb =  GigImageMessage(JSON: ["messageID":item[MessageTable.messageID],
+                                                 "type":item[MessageTable.type],
+                                                 "localGifPath":path,
+                                                 "isRead":item[MessageTable.isRead],
+                                                 "creat_time": item[MessageTable.create_time].timeIntervalSince1970])
+                    
+                case .picture:
+                    guard let path = String.init(data: item[MessageTable.content]!, encoding: String.Encoding.utf8) else {
+                        continue
+                    }
+                    mb = PicutreMessage(JSON: ["messageID":item[MessageTable.messageID],
+                                                   "type":item[MessageTable.type],
+                                                   "imageFileName":path,
+                                                   "isRead":item[MessageTable.isRead],
+                                                   "creat_time": item[MessageTable.create_time].timeIntervalSince1970])
+                case .text:
+                    
+                    mb =  MessageBoby(JSON: ["messageID":item[MessageTable.messageID],
                                              "type":item[MessageTable.type],
-                                             "content":contentStr!,
+                                             "content":item[MessageTable.content]!.base64EncodedString(),
                                              "isRead":item[MessageTable.isRead],
-                                             "creat_time": item[MessageTable.create_time].timeIntervalSince1970])!
-                
-                
+                                             "creat_time": item[MessageTable.create_time].timeIntervalSince1970])
+                case .jobDescribe:
+                   
+                    guard let content = item[MessageTable.content] else {
+                        continue
+                    }
+                    
+                    let json = try JSONSerialization.jsonObject(with: content, options: []) as? [String : Any]
+
             
+                    mb = JobDescriptionlMessage(JSON: ["messageID":item[MessageTable.messageID],
+                                    "type":item[MessageTable.type],
+                                    "content":item[MessageTable.content]!.base64EncodedString(),
+                                    "isRead":item[MessageTable.isRead],
+                                    "creat_time":item[MessageTable.create_time].timeIntervalSince1970,
+                                    "jobID":json!["jobID"]!,"jobTypeDes":json?["jobTypeDes"] ?? "", "icon":json?["icon"] ?? "default","jobName":json!["jobName"]!,
+                                    "company":json?["company"] ?? "","salary":json?["salary"]  ?? "","tags":json?["tags"] ?? ""])
+                    
+                    
+                    
+                   
+                    
+                default:
+                        break
+                }
+                
+          
                 
                 if item[MessageTable.senderID]  == chatWith.userID {
-                    mb.sender = chatWith
-                    mb.receiver = myself
+                    mb?.sender = chatWith
+                    mb?.receiver = myself
                     
                 }else if item[MessageTable.senderID] == myself.userID{
-                    mb.sender = myself
-                    mb.receiver = chatWith
+                    mb?.sender = myself
+                    mb?.receiver = chatWith
                 }
-               
-                res.append(mb)
+                
+                
+                if let mb = mb {
+                    res.append(mb)
+                }
                 
             }
             // 翻转排序，从时间低到高顺序
             return res.reversed()
+            
+            
         }catch{
             print(error)
         }
@@ -751,8 +810,8 @@ func insertMessage(message: MessageBoby) throws {
     do{
         if message.isKind(of: JobDescriptionlMessage.self){
             try self.insertJobMessage(message: message as! JobDescriptionlMessage)
-        }else if message.isKind(of: GigImageMessageBody.self){
-            try self.insertGifMessage(message: message as! GigImageMessageBody)
+        }else if message.isKind(of: GigImageMessage.self){
+            try self.insertGifMessage(message: message as! GigImageMessage)
         }else if message.isKind(of: PicutreMessage.self){
             try self.insertPictureMessage(message: message as! PicutreMessage)
         }else{
@@ -791,8 +850,6 @@ func insertBaseMessage(message:MessageBoby) throws{
     private func insertJobMessage(message:JobDescriptionlMessage) throws{
         do{
             
-            print(message)
-
             guard let sender = message.sender else {
                 throw DBError.init(message: "sender invalidate")
             }
@@ -816,7 +873,7 @@ func insertBaseMessage(message:MessageBoby) throws{
         }
     }
     
-    private func insertGifMessage(message:GigImageMessageBody) throws{
+    private func insertGifMessage(message:GigImageMessage) throws{
         do{
             guard let sender = message.sender else {
                 return
@@ -826,9 +883,11 @@ func insertBaseMessage(message:MessageBoby) throws{
             }
             
             
-            let content = message.localGifPath
+            guard let content = message.localGifPath else {
+                return
+            }
             
-            guard let data = content?.data(using: String.Encoding.utf8, allowLossyConversion: false) else { return }
+            guard let data = content.data(using: String.Encoding.utf8, allowLossyConversion: false) else { return }
             
             try self.dbManager.db?.run(MessageTable.message.insert(
                                     MessageTable.messageID <- message.messageID!,
@@ -851,8 +910,8 @@ func insertBaseMessage(message:MessageBoby) throws{
                 return
             }
             // 文件路径
-            guard let imgPath = message.imageFilePath else { return }
-            guard let data =  imgPath.data(using: String.Encoding.utf8, allowLossyConversion: false) else {return}
+            guard let imgName = message.imageFileName else { return }
+            guard let data =  imgName.data(using: String.Encoding.utf8, allowLossyConversion: false) else {return}
             
             try self.dbManager.db?.run(MessageTable.message.insert(
                                      MessageTable.messageID <- message.messageID!,

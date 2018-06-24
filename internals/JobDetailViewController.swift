@@ -56,6 +56,8 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
     
     private var firstLoad:Bool = false
     
+    // 记录当前颜色
+    private var navTintColor:UIColor = UIColor.clear
     
     // job table
     private let jobTable = DBFactory.shared.getJobDB()
@@ -116,7 +118,10 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
         super.viewDidLoad()
         
         self.setViews()
-        
+        if let color = self.navigationController?.navigationBar.tintColor{
+            navTintColor = color
+        }
+
         
  
         
@@ -130,6 +135,8 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
         self.navigationItem.title = "职位详情"
         self.navigationController?.insertCustomerView()
         self.navigationController?.setToolbarHidden(!firstLoad , animated: true)
+        self.navigationController?.navigationBar.tintColor = UIColor.black
+
 
         
     }
@@ -140,6 +147,7 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
         self.navigationController?.removeCustomerView()
         self.navigationController?.setToolbarHidden(true, animated: false)
         firstLoad = true
+        self.navigationController?.navigationBar.tintColor = navTintColor
 
 
     }
@@ -208,7 +216,6 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
         apply.isUserInteractionEnabled = !(mode?.isApply)!
         talk.isSelected = ( mode?.isTalked)!
         
-        self.navigationController?.navigationBar.tintColor = UIColor.black
         // 控制toolbar 界面加载完成后在显示
         self.navigationController?.setToolbarHidden(firstLoad, animated: true)
 
@@ -264,7 +271,7 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
             do{
                 
                 
-                if let  jobDescribeMessage = JobDescriptionlMessage(JSON: ["messageID":getUUID(),"creat_time":Date.init().timeIntervalSince1970,"type":MessgeType.jobDescribe.rawValue,"isRead":true, "receiver": HRModel!.toJSON(), "sender":myself.toJSON(), "jobID":id,"icon": #imageLiteral(resourceName: "sina").toBase64String() ,"jobName":"产品开发","company":"霹雳火","salary":"面议","tags":["北京","本科","校招","户口"]]){
+                if let  jobDescribeMessage = JobDescriptionlMessage(JSON: ["messageID":getUUID(),"creat_time":Date.init().timeIntervalSince1970,"type":MessgeType.jobDescribe.rawValue,"isRead":true, "receiver": HRModel!.toJSON(), "sender":myself.toJSON(), "jobID":id,"jobTypeDes":jobType.rawValue, "icon": "sina" ,"jobName":"产品开发","company":"公司名称","salary":"薪水面议","tags":["标签1","标签2","标签3","标签4"]]){
                     
                 
                     

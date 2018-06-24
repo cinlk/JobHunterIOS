@@ -11,23 +11,47 @@ import MobileCoreServices
 import Photos
 
 
-enum  cellType:String {
-    case card = "card"
-    case chat = "chat"
-    case jobDetail = "jobDetail"
-}
-
-enum ShowType:Int {
-    case keyboard
-    case moreView
-    case emotion
-    case none
-}
-
+fileprivate let charMoreViewH:CGFloat = 216
 
 // 聊天对话 界面
 class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
 
+    
+    
+    
+    // 聊天对象
+    private var hr:PersonModel!
+    
+    // 聊天对话数据集合
+    private var tableSource:NSMutableArray = []
+    
+    // 记录 device keyboard frame
+    private var keyboardFrame:CGRect?
+    
+    // 记录输入框高度
+    private var currentChatBarHright:CGFloat = ChatInputBarH
+    
+   
+    
+    
+    // 会话数据库管理操作
+    private lazy var conversationManager:ConversationManager = ConversationManager.shared
+    
+    // 会话显示启示位置（0 表示最后一位）
+    private var startMessageIndex:Int = 0
+    // 每次获取会话 的个数(每次table 上拉刷新)
+    private var limit:Int = 10
+    
+    private var firstLoad:Bool = true
+    
+    // 本地文件管理
+    fileprivate let appImageManager = AppFileManager.shared
+    
+    
+    private var navTitle:String = ""
+    
+    // 聊天列表界面跳转来 记录行
+    private var currentRow:Int?
     
     
     private lazy var tableView:UITableView = { [unowned self] in
@@ -36,18 +60,17 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
        
         tb.delegate = self
         tb.dataSource = self
-        //tb.estimatedRowHeight = UITableViewAutomaticDimension
         tb.showsHorizontalScrollIndicator = false
         tb.showsVerticalScrollIndicator = true
         tb.tableFooterView = UIView.init()
         tb.register(messageCell.self, forCellReuseIdentifier: messageCell.reuseidentify())
         tb.register(JobMessageCell.self, forCellReuseIdentifier: JobMessageCell.identitiy())
         tb.register(gifCell.self, forCellReuseIdentifier: gifCell.reuseidentify())
-        tb.register(PersonCardCell.self, forCellReuseIdentifier: PersonCardCell.reuseidentity())
         tb.register(ImageCell.self, forCellReuseIdentifier: ImageCell.reuseIdentify())
         tb.register(ChatTimeCell.self, forCellReuseIdentifier: ChatTimeCell.identity())
         tb.separatorStyle = .none
         tb.backgroundColor = UIColor.viewBackColor()
+        tb.contentInset = UIEdgeInsetsMake(5, 0, 0, 0)
         
         // 滑动tableview 影藏键盘
         tb.keyboardDismissMode = .onDrag
@@ -55,16 +78,9 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
         return tb
     }()
     
-    // 是否drag
-    private var isDrag = false
     
-    
-    // 第一次进入页面tableview滚动到底部
-    private var table2Bottom = false
-    
-    // charbat - bottom
+    // 底部聊天输入框
     private lazy var chatBarView:ChatBarView = {
-        
         let cbView = ChatBarView()
         cbView.delegate = self
         return cbView
@@ -72,105 +88,78 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     
     
     
-    // more
+    // 更多界面(图片,照相,快捷回复)
     private lazy var moreView:ChatMoreView  = { [unowned self] in
         let moreV = ChatMoreView()
         moreV.delegate = self
         
+        moreV.moreDataSource = [
+            (name: "照片",icon: #imageLiteral(resourceName: "picture"), type: ChatMoreType.pic),
+            (name: "相机",icon: #imageLiteral(resourceName: "camera"), type: ChatMoreType.camera),
+            (name: "快捷回复",icon: #imageLiteral(resourceName: "autoMessage"), type: ChatMoreType.feedback)
+        ]
+        
         return moreV
     }()
     
-    // emotion
+    
+    // 动态表情界面
     private lazy var emotion:ChatEmotionView = {
        let emojView = ChatEmotionView()
-       emojView.backgroundColor = UIColor.gray
        emojView.delegate = self
        return emojView
     }()
     
-    //replyMessageView
+    //快捷回复界面
     private lazy var replyView:quickReplyView = {
-       let v = quickReplyView.init(frame: CGRect.zero)
+       let v = quickReplyView.init(frame: CGRect.init(x: (ScreenW - 250)/2, y: (ScreenH - 300)/2, width: 250, height: 300))
        v.delegate = self
+       v.layer.masksToBounds = true
+       v.layer.cornerRadius = 10
+        
        return v
     }()
     
     
     
-    //backgroudView
-    private lazy var darkView:UIView = { [unowned self] in
-        var  v = UIView()
-        v.frame = CGRect(x: 0, y: 0, width:UIScreen.main.bounds.size.width, height:UIScreen.main.bounds.size.height)
-        v.backgroundColor = UIColor(red: 0 / 255.0, green: 0 / 255.0, blue: 0 / 255.0, alpha: 0.5) // 设置半透明颜色
-        
-        v.isUserInteractionEnabled = true // 打开用户交互
-        
-        let singTap = UITapGestureRecognizer(target: self, action:#selector(handleReplyView)) // 添加点击事件
-        singTap.numberOfTouchesRequired = 1
-        v.addGestureRecognizer(singTap)
-        return v
-        
+    
+    // 背景btn
+    private lazy var backgroundBtn:UIButton = {
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
+        btn.addTarget(self, action: #selector(handleReplyView), for: .touchUpInside)
+        btn.alpha = 0.7
+        btn.backgroundColor = UIColor.lightGray
+        return btn
     }()
     
 
-    // moreAction
+    
     private lazy var alertView:UIAlertController = { [unowned self] in
         let alertV = UIAlertController.init(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
-        //let actions =
         alertV.addAction(UIAlertAction.init(title: "查看TA的名片", style: UIAlertActionStyle.default, handler: { (action) in
             // MARK
             let pubHR = publisherControllerView()
-            
             pubHR.userID = self.hr.userID!
             self.navigationController?.pushViewController(pubHR, animated: true)
         }))
         alertV.addAction(UIAlertAction.init(title: "屏蔽TA", style: .default, handler: { (action) in
             print("屏蔽TA")
+            // 更新服务器数据
+            
             
         }))
-        alertV.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: { (action) in
-            print("取消")
-        }))
-        
+        alertV.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: nil))
         return alertV
     }()
     
-    // showtype
-    private var st: ShowType = ShowType.none
-    
-    // 聊天对象
-    private var hr:PersonModel!
-    
-    // chat message and card info
-    private var tableSource:NSMutableArray = []
-    
-    private var keyboardFrame:CGRect?
-    
-    private var currentChatBarHright:CGFloat = ChatInputBarH
-    
-    // 数据库查询
-    private lazy var conversationManager:ConversationManager = ConversationManager.shared
-    
-    private var startMessageIndex:Int = 0
-    private var limit:Int = 10
-    private var firstLoadView:Bool = true
-    
-    // image文件操作
-    fileprivate let appImageManager = AppFileManager.shared
-    
-    
-    // 从 聊天列表界面进入 记录当前行
-    private var currentRow:Int?
+
     
     init(hr:PersonModel, row:Int? = nil) {
         
-        // 父类视图 对话cell 对应的row
         self.currentRow = row
         self.hr = hr
-       
-        // 父类初始化
         super.init(nibName: nil, bundle: nil)
-        self.chatRecordLoad()
+        
     }
     
     
@@ -182,15 +171,9 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setViews()
-        // more view 数据
-        moreView.moreDataSource = [
-            (name: "照片",icon: #imageLiteral(resourceName: "picture"), type: ChatMoreType.pic),
-            (name: "相机",icon: #imageLiteral(resourceName: "camera"), type: ChatMoreType.camera),
-           // (name: "个人名片",icon: #imageLiteral(resourceName: "mycard"), type: ChatMoreType.mycard),
-            (name: "快捷回复",icon: #imageLiteral(resourceName: "autoMessage"), type: ChatMoreType.feedback)
-        ]
         
+        self.setViews()
+        self.chatRecordLoad()
         
         self.navigationController?.delegate = self
         
@@ -201,8 +184,9 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.hidesBottomBarWhenPushed = true
-        //self.navigationController?.insertCustomerView()
+        self.navigationItem.title = navTitle
+        self.navigationController?.insertCustomerView(UIColor.white)
+        
     }
     
     
@@ -211,13 +195,12 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationItem.title = ""
-        //self.navigationController?.removeCustomerView()
+        self.navigationController?.removeCustomerView()
 
     }
     
    
     
-    // remove self when destroied
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
@@ -227,27 +210,17 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
 
 
 
-extension CommunicationChatView{
-    
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        // 从job 跳转来的，返回后 需要刷新 chatlist
-        if self.currentRow == nil, viewController.isKind(of: JobDetailViewController.self){
-            
-            NotificationCenter.default.post(name: NSNotification.Name.init("refreshChat"), object: nil)
-            
-        }
-        
-    }
-}
-
 extension CommunicationChatView {
     
     
     private func setViews(){
         
         self.view.backgroundColor = UIColor.backGroundColor()
-        let hrDes = hr.name! + "@" + hr.company!
-        self.setupNavigate(title: hrDes)
+        
+        navTitle = hr.name! + "@" + hr.company!
+        self.navigationItem.title = navTitle
+        
+        self.setupNavigateBtn()
         
         self.view.addSubview(tableView)
         self.view.addSubview(chatBarView)
@@ -258,12 +231,11 @@ extension CommunicationChatView {
         
         _  = chatBarView.sd_layout().leftEqualToView(self.view)?.yIs(ScreenH - ChatInputBarH)?.rightEqualToView(self.view)?.heightIs(ChatInputBarH)
         
-        _ = emotion.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.chatBarView,0)?.heightIs(KEYBOARD_HEIGHT)
+        _ = emotion.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.chatBarView,0)?.heightIs(charMoreViewH)
         
-        // 用约束 动画才能移动subview
-        _ = moreView.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.chatBarView,0)?.heightIs(KEYBOARD_HEIGHT)
+        _ = moreView.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.chatBarView,0)?.heightIs(charMoreViewH)
         
-        // 监听文本keyborad 变化
+        // 监听keyborad
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardhidden), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
@@ -271,21 +243,30 @@ extension CommunicationChatView {
     }
     
     
-    func setupNavigate(title:String){
-        
- 
-        let titleLabel:UILabel = UILabel.init(frame: CGRect.init(x: 50, y: 0, width: 220, height: 44))
-        titleLabel.text = title
-        titleLabel.textColor = UIColor.black
-        titleLabel.textAlignment = .center
-        titleLabel.backgroundColor = UIColor.clear
-        titleLabel.font = UIFont.systemFont(ofSize: 18)
-        self.navigationItem.titleView = titleLabel
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "more"), style: .plain, target: self, action: #selector(moreButton))
+    func setupNavigateBtn(){
+       
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(image:  UIImage.init(named: "more")!.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(moreButton))
     }
     
 }
 
+
+
+
+extension CommunicationChatView{
+    
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        // 从job 跳转来的，返回后 需要刷新 chatlist
+        if self.currentRow == nil, viewController.isKind(of: JobDetailViewController.self){
+            NotificationCenter.default.post(name: NSNotification.Name.init("refreshChat"), object: nil)
+        }
+        
+        
+        
+    }
+    
+    
+}
 
 
 
@@ -306,45 +287,35 @@ extension CommunicationChatView: UITableViewDelegate,UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         
-        
-        if let message = self.tableSource.object(at: indexPath.row) as? MessageBoby{
+        if let message  = self.tableSource.object(at: indexPath.row) as? MessageBoby{
             
-            switch message.messageType{
-            case .text:
+            if message.isKind(of: GigImageMessage.self){
+                let cell = tableView.dequeueReusableCell(withIdentifier: gifCell.reuseidentify(), for: indexPath) as! gifCell
+                cell.setupPictureCell(messageInfo: message as! GigImageMessage , chatUser: hr)
+                return cell
+            }else if message.isKind(of: JobDescriptionlMessage.self){
+                let cell = tableView.dequeueReusableCell(withIdentifier: JobMessageCell.identitiy(), for: indexPath) as! JobMessageCell
+                cell.mode = message as? JobDescriptionlMessage
+                return cell
+            }else if message.isKind(of: PicutreMessage.self){
+                let cell = tableView.dequeueReusableCell(withIdentifier: ImageCell.reuseIdentify(), for: indexPath) as! ImageCell
+                cell.mode = message as? PicutreMessage
+                cell.storeImage = storeImageFromCell
+                return cell
+            }else if message.isKind(of: TimeMessage.self){
+                let cell = tableView.dequeueReusableCell(withIdentifier: ChatTimeCell.identity(), for: indexPath) as! ChatTimeCell
+                cell.model = message as? TimeMessage
+                return cell
+                
+            // 文本数据
+            }else{
+                
                 let cell = tableView.dequeueReusableCell(withIdentifier: messageCell.reuseidentify(), for: indexPath) as! messageCell
                 cell.setupMessageCell(messageInfo: message, chatUser: hr)
                 return cell
-                
-            case .smallGif, .bigGif:
-                let cell = tableView.dequeueReusableCell(withIdentifier: gifCell.reuseidentify(), for: indexPath) as! gifCell
-                cell.setupPictureCell(messageInfo: message , chatUser: hr)
-                //cell.useCellFrameCache(with: indexPath, tableView: tableView)
-                return cell
-                
-            case .jobDescribe:
-                let cell = tableView.dequeueReusableCell(withIdentifier: JobMessageCell.identitiy(), for: indexPath) as! JobMessageCell
-                cell.mode = message
-                //cell.useCellFrameCache(with: indexPath, tableView: tableView)
-                return cell
-                
-            case .picture:
-                let cell = tableView.dequeueReusableCell(withIdentifier: ImageCell.reuseIdentify(), for: indexPath) as! ImageCell
-                cell.mode = message
-                cell.storeImage = storeImageFromCell
-                // 缓存图片高度
-                //cell.useCellFrameCache(with: indexPath, tableView: tableView)
-                return cell
-            case .time:
-                let cell = tableView.dequeueReusableCell(withIdentifier: ChatTimeCell.identity(), for: indexPath) as! ChatTimeCell
-                cell.model = message as? TimeBody
-                //cell.useCellFrameCache(with: indexPath, tableView: tableView)
-                return cell
-            default:
-                break
             }
-            
-        }
-     
+
+    }
         return UITableViewCell()
         
         
@@ -357,16 +328,18 @@ extension CommunicationChatView: UITableViewDelegate,UITableViewDataSource{
             
             switch message.messageType{
             case .text:
-                return messageCell.heightForCell(messageInfo: message)
+                return messageCell.heightForCell(messageInfo: message)    
                 
             case .smallGif,.bigGif:
-                return gifCell.heightForCell(messageInfo: message)
+                // 计算得到的值
+                return message.messageType == .bigGif ? 120 : 80
+                
             case .picture:
-                let message = self.tableSource.object(at: indexPath.row) as! MessageBoby
+                let message = self.tableSource.object(at: indexPath.row) as! PicutreMessage
                  return tableView.cellHeight(for: indexPath, model: message, keyPath: "mode", cellClass: ImageCell.self, contentViewWidth: ScreenW)
                 
             case .jobDescribe:
-                let message = self.tableSource.object(at: indexPath.row) as! MessageBoby
+                let message = self.tableSource.object(at: indexPath.row) as! JobDescriptionlMessage
                 return tableView.cellHeight(for: indexPath, model: message, keyPath: "mode", cellClass: JobMessageCell.self, contentViewWidth: ScreenW)
                 
              case .time:
@@ -376,40 +349,26 @@ extension CommunicationChatView: UITableViewDelegate,UITableViewDataSource{
             }
         }
         
-        return 44.5
+        return 0
     }
+    
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        
-        if let mes = self.tableSource.object(at: indexPath.row) as? MessageBoby{
-            
-            switch mes.type!{
-            case MessgeType.jobDescribe.rawValue:
-                showJobView(mes: mes)
-                
-            case MessgeType.text.rawValue:
-                break
-            default:
-                break
-            }
+        if let mes = self.tableSource.object(at: indexPath.row) as? JobDescriptionlMessage{
+            showJobView(mes: mes)
         }
         
     }
     
-    // 判断 tableview 加载完成
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row == tableView.indexPathsForVisibleRows?.last?.row && firstLoadView{
+        // 加载最后可见cell 后，第一次进入view时滚动到最底部的cell
+        if indexPath.row == tableView.indexPathsForVisibleRows?.last?.row && firstLoad{
+            tableView.scrollToRow(at: IndexPath.init(row: self.tableSource.count - 1, section: 0), at: .bottom, animated: true)
+            firstLoad = false
             
-            firstLoadView = false
-            DispatchQueue.main.async(execute: {
-                tableView.scrollToRow(at: IndexPath.init(row: self.tableSource.count - 1, section: 0), at: .bottom, animated: true)
-
-            })
         }
-        
-        
     }
     
     
@@ -423,7 +382,6 @@ extension CommunicationChatView{
         //
         let mes = conversationManager.getLatestMessageBy(chatWith: hr, start: startMessageIndex, limit: limit)
         
-        //print(mes)
         if mes.count > 0 {
             // 添加time 消息
             let after = addTimeMsg(mes:mes)
@@ -443,7 +401,7 @@ extension CommunicationChatView{
             if index == 0 {
                 res.append(createTimeMsg(msg: mes[index]))
             }else{
-                // 满足时间间隔 才添加时间 message
+                // 2个消息间隔时间超过指定时间 才添加时间
                 if (LXFChatMsgTimeHelper.shared.needAddMinuteModel(preModel: mes[index - 1], curModel: mes[index])){
                     res.append(createTimeMsg(msg: mes[index]))
                 }
@@ -454,10 +412,10 @@ extension CommunicationChatView{
     }
     
     // 获取时间 message
-    fileprivate func createTimeMsg(msg: MessageBoby) -> TimeBody{
+    fileprivate func createTimeMsg(msg: MessageBoby) -> TimeMessage{
         
         // 时间消息
-        let time = TimeBody(JSON: ["messageID":getUUID(), "type":MessgeType.time.rawValue,"creat_time":msg.creat_time!.timeIntervalSince1970])!
+        let time = TimeMessage(JSON: ["messageID":getUUID(), "type":MessgeType.time.rawValue,"creat_time":msg.creat_time!.timeIntervalSince1970])!
         time.timeStr = LXFChatMsgTimeHelper.shared.chatTimeString(with: time.creat_time?.timeIntervalSince1970)
         return time
         
@@ -469,7 +427,6 @@ extension CommunicationChatView{
        // 影藏textfield的 keyboard
         self.chatBarView.inputText.resignFirstResponder()
 
-        // 影藏 emotion 和 more 输入view
         if self.chatBarView.keyboardType == .emotion || self.chatBarView.keyboardType == .more{
             self.moveBar(distance: 0, complete: complete)
         }
@@ -481,6 +438,8 @@ extension CommunicationChatView{
         
         // 隐藏键盘
         self.hiddenChatBarView()
+        
+        
         self.present(alertView, animated: true, completion: nil)
     }
     
@@ -488,88 +447,98 @@ extension CommunicationChatView{
     
     // 显示jod详细界面
     
-    private func showJobView(mes:MessageBoby){
+    private func showJobView(mes:JobDescriptionlMessage){
         
         self.chatBarView.inputText.resignFirstResponder()
         
         // 影藏 emotion 和 more 输入view
         if self.chatBarView.keyboardType == .emotion || self.chatBarView.keyboardType == .more{
+            // 先改变view 后 在显示vc
             self.moveBar(distance: 0){
                 let job = JobDetailViewController()
-                //job.id = mes.contentToJson()!["jobID"].string!
-                job.hidesBottomBarWhenPushed = true
+                job.kind = (id: mes.jobID!, type: mes.jobtype)
                 self.navigationController?.pushViewController(job, animated: true)
             }
-        }
-        else{
+        }else{
+    
             let job = JobDetailViewController()
-            //job.id = mes.contentToJson()!["jobID"].string!
-            job.hidesBottomBarWhenPushed = true
+            job.kind = (id: mes.jobID!, type: mes.jobtype)
             self.navigationController?.pushViewController(job, animated: true)
+            
         }
-        
         self.chatBarView.keyboardType = .none
         
     }
-    
     
 }
 
 
 
 
-extension CommunicationChatView: ChatMoreViewDelegate{
+extension CommunicationChatView: chatMoreViewDelegate{
     
-    func chatMoreView(moreView: ChatMoreView, didSelectedType type: ChatMoreType) {
+    func selectetType(moreView: ChatMoreView, didSelectedType type: ChatMoreType) {
         
         switch type {
         // MARK
         case .pic:
             
-            if self.getPhotoLibraryAuthorization(){
+            
+            if self.getPhotoLibraryAuthorization() == false{
                 
-                if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
-                    //初始化图片控制器
-                    let picker = UIImagePickerController()
-                    
-                    //设置代理
-                    picker.delegate = self
-                    
-                    //设置媒体类型
-                    //picker.mediaTypes = [kUTTypeImage as String,kUTTypeVideo as String]
-                    picker.mediaTypes = [kUTTypeImage as String]
-                    //设置允许编辑
-                    picker.allowsEditing = true
-                    
-                    //指定图片控制器类型
-                    picker.sourceType = .photoLibrary
-                    
-                    //弹出控制器,显示界面
-                    self.present(picker, animated: true, completion: nil)
-                    
-                }else{
-                    print("请在iphone的 \"设置-隐私-照片\" 选择中，允许xxx访问你的照片")
-                    
-                }
-            }else{
                 let alert = UIAlertController(title: "温馨提示", message: "没有相册的访问权限，请在应用设置中开启权限", preferredStyle: .alert)
                 
                 let cancelAction = UIAlertAction(title: "确定", style: .cancel, handler: nil)
                 alert.addAction(cancelAction)
                 
                 self.present(alert, animated: true, completion: nil)
+                return
             }
+            
+            
+            if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
+                //初始化图片控制器
+                let picker = UIImagePickerController()
+                
+                //设置代理
+                picker.delegate = self
+                
+                //设置媒体类型
+                //picker.mediaTypes = [kUTTypeImage as String,kUTTypeVideo as String]
+                picker.mediaTypes = [kUTTypeImage as String]
+                
+                //设置允许编辑
+                picker.allowsEditing = true
+                
+                //指定图片控制器类型
+                picker.sourceType = .photoLibrary
+                
+                //弹出控制器,显示界面
+                self.present(picker, animated: true, completion: nil)
+                
+            }
+            
+            
         case .feedback:
             // 显示
           
-            self.navigationController?.view.addSubview(self.darkView)
+            self.navigationController?.view.addSubview(self.backgroundBtn)
             self.navigationController?.view.addSubview(self.replyView)
-              _ = replyView.sd_layout().centerXEqualToView(self.view)?.centerYEqualToView(self.view)?.widthIs(230)?.heightIs(300)
             
         // 模拟器相机不能用
         case .camera:
-            if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
+            if self.getPhotoLibraryAuthorization() == false{
                 
+                let alert = UIAlertController(title: "温馨提示", message: "没有相册的访问权限，请在应用设置中开启权限", preferredStyle: .alert)
+                
+                let cancelAction = UIAlertAction(title: "确定", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
+             
+            if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
                 //初始化图片控制器
                 let picker = UIImagePickerController()
                 
@@ -580,7 +549,7 @@ extension CommunicationChatView: ChatMoreViewDelegate{
                 picker.mediaTypes = [kUTTypeImage as String,kUTTypeVideo as String]
                 
                 //设置来源
-                picker.sourceType = UIImagePickerControllerSourceType.camera
+                picker.sourceType = .camera
                 
                 //设置镜头 front:前置摄像头  Rear:后置摄像头
                 if UIImagePickerController.isCameraDeviceAvailable(UIImagePickerControllerCameraDevice.rear) {
@@ -589,20 +558,16 @@ extension CommunicationChatView: ChatMoreViewDelegate{
                     picker.cameraDevice = UIImagePickerControllerCameraDevice.front
                 }
                 
-                
                 //设置闪光灯(On:开、Off:关、Auto:自动)
                 picker.cameraFlashMode = UIImagePickerControllerCameraFlashMode.auto
-                
                 //允许编辑
                 picker.allowsEditing = true
-                
                 //打开相机
                 self.present(picker, animated: true, completion: nil)
             }
-            else{
-                print("找不到相机")
-            }
             
+        default:
+            break
      
         }
     }
@@ -617,6 +582,7 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
         
     }
     
+    // 插入表情
     func chatEmotionView(emotionView: ChatEmotionView, didSelectedEmotion emotion: MChatEmotion) {
         self.chatBarView.inputText.insertEmotion(emotion: emotion)
         
@@ -631,6 +597,10 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
         
         // 获取富文本  消息
         var message = self.chatBarView.inputText.getEmotionString()
+        
+        // 恢复 chatbarView 输入框高度
+        self.chatBarUpdateHeight(height: 0)
+        self.chatBarView.inputText.frame = CGRect.init(x: 5, y: 5, width: ScreenW - 60 - 20, height: 35)
         
         message = message.trimmingCharacters(in: CharacterSet.init(charactersIn: " "))
         guard !message.isEmpty else {
@@ -648,10 +618,13 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
         
     }
     
-    //   gif 图片
+    //   gif 图片路径
     func sendGifMessage(emotion: MChatEmotion, type:MessgeType){
         
-        if  let message = MessageBoby(JSON: ["messageID":getUUID(), "type":type.rawValue,"content":emotion.text?.data(using: String.Encoding.utf8, allowLossyConversion: false)?.base64EncodedString() ,"creat_time":Date.init().timeIntervalSince1970,"isRead":true]){
+        guard let path = emotion.text else {
+            return
+        }
+        if  let message = GigImageMessage(JSON: ["messageID":getUUID(), "type":type.rawValue,"localGifPath":path,"creat_time":Date.init().timeIntervalSince1970,"isRead":true]){
             message.sender = myself
             message.receiver = self.hr
             self.reloads(mes: message)
@@ -672,14 +645,11 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
     }
     
 
-    // 发送照片
     
     func sendImage(Data:Data, imageName: String){
-        // 数据发送到服务器
-        // 本地存储 占时
-        if let message = MessageBoby(JSON: ["messageID":getUUID(),"type":MessgeType.picture.rawValue,
+        if let message = PicutreMessage(JSON: ["messageID":getUUID(),"type":MessgeType.picture.rawValue,
                                             "creat_time":Date.init().timeIntervalSince1970,
-                                            "isRead":true,"content":imageName.data(using: String.Encoding.utf8)!.base64EncodedString()]){
+                                            "isRead":true,"imageFileName": imageName]){
             message.sender = myself
             message.receiver = self.hr
             self.reloads(mes: message)
@@ -701,9 +671,11 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
                 
             })
             
+            // 判断时间间隔
             if LXFChatMsgTimeHelper.shared.needAddMinuteModel(preModel: self.tableSource.lastObject as! MessageBoby, curModel: mes){
                 self.tableSource.add(createTimeMsg(msg: mes))
             }
+            
             self.tableSource.add(mes)
             
             self.tableView.reloadData()
@@ -719,61 +691,48 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
             print(error)
         }
         
-        // 存入本地
-        //Contactlist.shared.usersMessage[(hr?.id)!]?.addMessageByMes(newMes: mes)
     }
     
     
 }
 
-// 实现代理
+// chatbar代理 切换视图
 
 extension CommunicationChatView: ChatBarViewDelegate{
 
-    
     func showEmotionKeyboard() {
        
-        
         self.emotion.isHidden = false
         self.moreView.isHidden = true
-        self.moveBar(distance: 216)
+        self.moveBar(distance: charMoreViewH)
     }
     
     func showMoreKeyboard() {
+        
         self.emotion.isHidden = true
         self.moreView.isHidden = false
-        
-        self.moveBar(distance: 216)
+        self.moveBar(distance: charMoreViewH)
     }
     
     func chatBarUpdateHeight(height: CGFloat) {
-        
-        var y:CGFloat = ChatKeyBoardH
+        var y:CGFloat = 0
         
         if self.chatBarView.keyboardType == .emotion || self.chatBarView.keyboardType == .more{
-            y = KEYBOARD_HEIGHT  // 216 高度
+            y = charMoreViewH  // 216 高度
+        }else{
+            y = keyboardFrame?.height ?? 0
         }
-        
-        if self.currentChatBarHright != height{
-            
-            // 调整chatBarview frame 和 缩小 tableview frame 高度
-            _ = self.chatBarView.sd_layout().yIs(ScreenH - y - height)?.heightIs(height)
-            
-            self.tableView.frame = CGRect.init(x: 0, y: NavH, width: ScreenW, height: ScreenH - NavH - height - y)
-            
-            let row = IndexPath.init(row: self.tableSource.count - 1   , section: 0)
-            self.tableView.scrollToRow(at: row, at: .none, animated: true)
-        }
-        
+        let height = ChatInputBarH + height
+        _ = self.chatBarView.sd_layout().yIs(ScreenH - y - height)?.heightIs(height)
+        self.tableView.frame = CGRect.init(x: 0, y: NavH, width: ScreenW, height: ScreenH - NavH - height - y)
+        let row = IndexPath.init(row: self.tableSource.count - 1   , section: 0)
+        self.tableView.scrollToRow(at: row, at: .none, animated: true)
         self.currentChatBarHright =  height
         
     }
-
     
     func chatBarSendMessage() {
         self.sendMessage()
-        // MARK sdk sendmessage
-        
     }
     
     
@@ -781,32 +740,26 @@ extension CommunicationChatView: ChatBarViewDelegate{
 
 extension CommunicationChatView{
     
-    // 
+
     func moveBar(distance: CGFloat, complete:(()->Void)? = nil ) {
         
         //一起移动 inputview 和emotion 和 moreview 和 tableview 的位置
 
-        UIView.animate(withDuration: 0.3, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             // 改变table 大小
             self.tableView.frame = CGRect.init(x: 0, y: NavH, width: ScreenW, height: ScreenH - NavH - self.currentChatBarHright - distance)
             //改变 chatbar 位置和大小
             self.chatBarView.frame  = CGRect.init(x: 0, y: ScreenH - distance - self.currentChatBarHright, width: ScreenW, height: self.currentChatBarHright)
             
-            self.emotion.frame = CGRect.init(x: 0, y: ScreenH - distance, width: ScreenW, height: 216)
-            self.moreView.frame = CGRect.init(x: 0, y: ScreenH - distance, width: ScreenW, height: 216)
-            
-            
-            // 点击了输入view 把tableview滑动到底部
+            // tableview滑动到底部
             if distance != 0 {
                 let path = IndexPath.init(row: self.tableSource.count-1, section: 0)
                 self.tableView.scrollToRow(at: path, at: .bottom, animated: true)
             }
- 
-        }, completion: {  bool in
-             complete?()
-        })
+        }) { bool in
+            complete?()
+        }
         
-    
         
     }
     
@@ -826,14 +779,15 @@ extension CommunicationChatView{
     // 显示文本输入框
     @objc  func keyboardShow(sender:NSNotification){
         
-        keyboardFrame = sender.userInfo![UIKeyboardFrameEndUserInfoKey] as? CGRect
-        if chatBarView.keyboardType == .emotion || chatBarView.keyboardType == .more{
+        guard  let h =  sender.userInfo?[UIKeyboardFrameEndUserInfoKey] as? CGRect else {
             return
         }
+        keyboardFrame =  h
+    
+        
         // 影藏
         self.emotion.isHidden = true
         self.moreView.isHidden = true
-        
         self.moveBar(distance: keyboardFrame?.height ?? 0)
         
     }
@@ -841,13 +795,13 @@ extension CommunicationChatView{
 
 
     @objc func handleReplyView(){
-        self.darkView.removeFromSuperview()
+        self.backgroundBtn.removeFromSuperview()
         self.replyView.removeFromSuperview()
-        self.navigationController?.view.willRemoveSubview(darkView)
-        self.navigationController?.view.willRemoveSubview(replyView)
     }
-    // picture 授权  Photos module
-    func getPhotoLibraryAuthorization() -> Bool {
+    
+    
+    // 相册使用权判断
+   private  func getPhotoLibraryAuthorization() -> Bool {
         let authorizationStatus = PHPhotoLibrary.authorizationStatus()
         
         switch authorizationStatus {
@@ -857,14 +811,14 @@ extension CommunicationChatView{
         case .notDetermined:
             print("不确定是否授权")
             // 请求授权
-            PHPhotoLibrary.requestAuthorization({ (status) in })
-        case .denied:
-            print("拒绝授权")
-        case .restricted:
-            print("限制授权")
+            PHPhotoLibrary.requestAuthorization { status in
+                 return status == .authorized
+            }
+        default:
             break
         }
-        
+    
+    
         return false
     }
     
@@ -873,9 +827,6 @@ extension CommunicationChatView{
 
 extension CommunicationChatView {
     
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
-    }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         
@@ -884,22 +835,12 @@ extension CommunicationChatView {
         }
     }
     
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        
-    }
     
 }
 
 // 手势代理
 extension CommunicationChatView: UIGestureRecognizerDelegate{
     
-    // cell 点击不拦截，但是效果不明显
-//    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-//        if NSStringFromClass((touch.view?.classForCoder)!) == "UITableViewCellContentView" {
-//            return false
-//        }
-//        return true
-//    }
 
     // 允许 tableview 上多个手势执行
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -909,12 +850,10 @@ extension CommunicationChatView: UIGestureRecognizerDelegate{
         return false
     }
     
-    
-    
 }
 
 
-// reply delegate
+// 快捷回复 delegate
 extension CommunicationChatView: ReplyMessageDelegate{
     
     func didSelectedMessage(view: UITableView, message: String) {
@@ -923,16 +862,10 @@ extension CommunicationChatView: ReplyMessageDelegate{
     }
 }
 
-
-
 // camera 照片
 extension CommunicationChatView: UIImagePickerControllerDelegate{
     
     
-
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        
-    }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         //查看info对象
@@ -979,7 +912,7 @@ extension CommunicationChatView: UIImagePickerControllerDelegate{
             }
             
             do{
-                // 交谈得对象 创建对应images目录
+                // 图片存在聊天对象 本地文件夹
                 try  appImageManager.createImageFile(userID: self.hr.userID!,fileName: imageName, image: imageData!)
                 self.sendImage(Data: imageData!, imageName: imageName)
                 
@@ -1002,7 +935,7 @@ extension CommunicationChatView: UIImagePickerControllerDelegate{
 
 extension CommunicationChatView{
     
-    func  storeImageFromCell(image:UIImage){
+    private func  storeImageFromCell(image:UIImage){
         let AlertVC = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
         
         let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
@@ -1022,15 +955,9 @@ extension CommunicationChatView{
     @objc  private func saveImage(image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: AnyObject){
         if error != nil{
               showOnlyTextHub(message: "保存失败", view: self.tableView)
-//            SVProgressHUD.showError(withStatus: "保存失败")
-//            SVProgressHUD.setDefaultMaskType(.black)
-//            SVProgressHUD.dismiss(withDelay: 1)
+
         }else{
             showOnlyTextHub(message: "保存成功", view: self.tableView)
-
-//            SVProgressHUD.showSuccess(withStatus: "保存成功")
-//            SVProgressHUD.setDefaultMaskType(.black)
-//            SVProgressHUD.dismiss(withDelay: 1)
         }
     }
 }

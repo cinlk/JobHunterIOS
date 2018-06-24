@@ -102,7 +102,11 @@ class myAccount: BaseTableViewController {
             if indexPath.row == 1{
                 cell.accessoryType = .disclosureIndicator
                 cell.textLabel?.text = "修改密码"
-                cell.imageView?.image = UIImage.barImage(size: CGSize.init(width: 30, height: 30), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "password")
+               
+                
+                cell.imageView?.image =   UIImage.init(named: "password")!.changesize(size: CGSize.init(width: 30, height: 30)).withRenderingMode(.alwaysTemplate)
+                
+                
             }else{
                 // 修改手机号
                 cell.textLabel?.text = IsModifyPhone ? "修改手机号码" : "绑定手机号码"
@@ -115,14 +119,20 @@ class myAccount: BaseTableViewController {
                 label.textAlignment = .right
                 label.sizeToFit()
                 cell.accessoryView = label
-                cell.imageView?.image = UIImage.barImage(size: CGSize.init(width: 30, height: 30), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "iPhoneIcon")
+              
+                
+                
+                cell.imageView?.image =    UIImage.init(named: "iPhoneIcon")!.changesize(size: CGSize.init(width: 30, height: 30)).withRenderingMode(.alwaysTemplate)
             }
             
         }else{
             let item = datas[indexPath.row]
             
             // 处理图片默认值
-            cell.imageView?.image = UIImage.barImage(size: CGSize.init(width: 30, height: 30), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: item.imageName!)
+     
+            cell.imageView?.image = UIImage.init(named: item.imageName!)!.changesize(size: CGSize.init(width: 30, height: 30)).withRenderingMode(.alwaysTemplate)
+            
+            
             
             cell.textLabel?.text = item.apptype?.des ?? ""
             if item.isBind ?? false{

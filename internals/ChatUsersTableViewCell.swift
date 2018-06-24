@@ -75,7 +75,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
             self.icon.image = UIImage.init(data: iconData) ?? #imageLiteral(resourceName: "default")
             self.name.text =  user.name! + "@" + user.company!
             
-            self.content.text = mes.getContent(isConversion: true) as? String
+            self.content.text = mes.getDescribe()
             
             self.time.text =  mes.talkTime
             self.setupAutoHeight(withBottomViewsArray: [icon,content], bottomMargin: 10)

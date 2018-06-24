@@ -73,17 +73,21 @@ class messageMain: UIViewController {
         
         setViews()
         
+        self.navigationController?.navigationBar.settranslucent(true)
+        
         
      }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.navigationController?.insertCustomerView(UIColor.white)
+        
         
      }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+        self.navigationController?.removeCustomerView()
         
     }
     
@@ -115,6 +119,8 @@ extension messageMain {
         collections.frame = CGRect.init(x: 0, y: NavH, width: ScreenW, height: ScreenH - NavH)
         
         self.navigationItem.titleView = segeMentView
+        self.navigationController?.view.backgroundColor = UIColor.white
+
         currentItem = 0
         
     

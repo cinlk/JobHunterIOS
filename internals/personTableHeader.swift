@@ -16,7 +16,8 @@ class personTableHeader: UIView {
     private lazy var avatarImg:UIImageView = { [unowned self] in
         
  
-        let img = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: avatarSize.width + 15, height: avatarSize.height + 15))
+        let img = UIImageView.init(frame: CGRect.zero)
+        
         img.contentMode = .scaleToFill
         img.clipsToBounds = true
         return img
@@ -79,7 +80,8 @@ class personTableHeader: UIView {
     private func hrlayout(){
         
         self.backgroundColor = UIColor.clear
-        _ = avatarImg.sd_layout().centerXEqualToView(self)?.topSpaceToView(self,10)
+        _ = avatarImg.sd_layout().centerXEqualToView(self)?.topSpaceToView(self,10)?.widthIs(60)?.heightIs(60)
+        
         _ = nameTitle.sd_layout().topSpaceToView(avatarImg,5)?.centerXEqualToView(avatarImg)?.autoHeightRatio(0)
         _ = introduce.sd_layout().topSpaceToView(nameTitle,5)?.centerXEqualToView(avatarImg)?.autoHeightRatio(0)
         

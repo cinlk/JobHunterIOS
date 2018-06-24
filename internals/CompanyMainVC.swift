@@ -28,13 +28,19 @@ class CompanyMainVC: BaseViewController {
     
     private lazy var collectedBtn:UIButton = {
         // 收藏
-        let collected = UIImage.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "heart")
+        
+      
+
+        let collected = UIImage.init(named: "heart")!.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate)
         
         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
         btn.addTarget(self, action: #selector(collectedCompany(btn:)), for: .touchUpInside)
         btn.setImage(collected, for: .normal)
         
-        let selectedCollection = UIImage.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "selectedHeart")
+       
+        
+        let selectedCollection =  UIImage.init(named: "selectedHeart")!.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate)
+        
         
         btn.setImage(selectedCollection, for: .selected)
         btn.clipsToBounds = true
@@ -256,7 +262,9 @@ extension CompanyMainVC{
     private func addSharedBarItem(){
         
         // 分享
-        let up =  UIImage.barImage(size: CGSize.init(width: 25, height: 25), offset: CGPoint.zero, renderMode: .alwaysOriginal, name: "upload")
+  
+        
+        let up =  UIImage.init(named: "upload")!.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate)
         
         let shareBtn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
         

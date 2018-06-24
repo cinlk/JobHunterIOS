@@ -8,7 +8,6 @@
 
 import Foundation
 import ObjectMapper
-import SwiftyJSON
 
 enum MessgeType:String {
     case none = "none"
@@ -67,6 +66,7 @@ class MessageBoby: NSObject, Mappable{
     var receiver:PersonModel?
     
     var messageType:MessgeType = .none
+
     
 
     required init?(map: Map) {
@@ -89,7 +89,7 @@ class MessageBoby: NSObject, Mappable{
     }
     
     // MARK 处理异常返回 ？？
-    func getContent(isConversion:Bool) -> Any{
+    func getDescribe() -> String{
         // 可能是图片 json 数据，或string
         
          guard let data = content else { return "" }
@@ -97,7 +97,7 @@ class MessageBoby: NSObject, Mappable{
         switch messageType {
             
         case .jobDescribe:
-            return  isConversion == true ? "[职位]" : JSON(data: data)
+            return   "[职位]"
         case .text:
             return  String.init(data: data, encoding: String.Encoding.utf8) ?? ""
         case .picture:
@@ -114,12 +114,7 @@ class MessageBoby: NSObject, Mappable{
         return ""
     }
     
-    // 对job message，获取job描述内容
-    func contentToJson() ->JSON?{
-    
-        return JSON.init(data:  content!)
-    }
-    
+  
     
 }
 
@@ -131,14 +126,29 @@ class  JobDescriptionlMessage:MessageBoby{
     // 照片 base64String
     var icon:String = "job_default"
     var jobName: String?
-    var company:String?
-    var salary:String?
-    var tags:[String]?
+    var company:String = ""
+    var salary:String = ""
+    var tags:[String] = []
+    
+    // 职位类型
+    var jobtype:jobType{
+        get{
+            if let type =  jobType(rawValue: jobTypeDes){
+                return type
+            }
+            return .none
+        }
+    }
+    
+    
+    
+    var jobTypeDes:String = ""
     
   
     required init?(map: Map) {
         super.init(map: map)
-        if map.JSON["jobID"] == nil {
+        if map.JSON["jobID"] == nil || map.JSON["jobName"] == nil || map.JSON["company"] == nil
+        || map.JSON["jobTypeDes"] == nil {
             return nil 
         }
     }
@@ -151,46 +161,44 @@ class  JobDescriptionlMessage:MessageBoby{
         company <- map["company"]
         salary <- map["salary"]
         tags <- map["tags"]
+        jobTypeDes <- map["jobTypeDes"]
+        
     }
 
+    
 
     
-    override var description: String{
-        let s1 =  super.description
-        guard let jobName = self.jobName, let company = self.company else {
-            return s1
-        }
-        return s1  + " < " + jobName + company + " > "
-       
-    }
-    
-    // job描述内容 转换为字典
-//    func contentToJson() ->JSON?{
-//
-//        return JSON.init(data: Data.init(base64Encoded: content!)!)
-//    }
-    
+    //  json 转为 data 放到content 中
     func JsonContentToDate()->Data?{
         
        
-        let jsonStr:JSON =  ["jobID":self.jobID!, "icon":self.icon,"jobName":self.jobName!,
-                             "company":self.company!, "salary":self.salary!, "tags": self.tags!]
-        if  let jsonData =  try? jsonStr.rawData(){
-            return jsonData
+        let jsonStr:[String:Any] =  ["jobID":self.jobID!, "icon":self.icon,"jobName":self.jobName!,
+                                     "company":self.company , "salary":self.salary, "tags": self.tags,"jobTypeDes":self.jobTypeDes]
+        
+
+        
+        if let data =  try? JSONSerialization.data(withJSONObject: jsonStr, options: .prettyPrinted){
+            return data
         }
         return nil
     }
+    
+    
+    
 }
 
 
 //  gif image消息
 
-class  GigImageMessageBody:MessageBoby{
-    // 用本地的gif 图片？？还是data 数据
+class  GigImageMessage:MessageBoby{
+    // 用本地的gif 资源路径
     var localGifPath:String?
     
     required init?(map: Map) {
          super.init(map: map)
+        if map.JSON["localGifPath"] == nil{
+            return nil
+        }
     }
     
     override func mapping(map: Map) {
@@ -201,23 +209,11 @@ class  GigImageMessageBody:MessageBoby{
 
 }
 
-extension GigImageMessageBody{
-    
-    override var description: String{
-        
-        let s1 =  super.description
-        guard let gifPath = self.localGifPath else {
-            return s1
-        }
-        return s1  + " < " + gifPath  + " > "
-        
-    }
-}
 
 
 
 // 时间消息 单独抽取显示cell
-class TimeBody: MessageBoby{
+class TimeMessage: MessageBoby{
     
     var timeStr:String?
     required init?(map: Map) {
@@ -235,16 +231,20 @@ class TimeBody: MessageBoby{
 // 图片消息
 class PicutreMessage:MessageBoby{
     
-    // 存储文件路径
-    var imageFilePath:String?
+    // 存储照片名字（文件系统查找指定路劲下的名字）
+    var imageFileName:String?
     
     required init?(map: Map) {
         super.init(map: map)
+        if map.JSON["imageFileName"] == nil{
+            return
+        }
+        
     }
     
     override func mapping(map: Map) {
         super.mapping(map: map)
-        imageFilePath <- map["imageFilePath"]
+        imageFileName <- map["imageFileName"]
     }
 
     
