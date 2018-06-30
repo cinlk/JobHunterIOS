@@ -53,6 +53,23 @@ class DashboardViewController: BaseViewController{
     private weak var searchController:baseSearchViewController?
     
    
+    // 附件职位 btn
+    private lazy var  nearBtn:UIButton = {
+        let btn = UIButton.init(frame: CGRect.init(x: 3, y: 0, width: 60, height: searchBarH))
+        btn.semanticContentAttribute = .forceLeftToRight
+        
+        btn.setImage(#imageLiteral(resourceName: "nearby").changesize(size: CGSize.init(width: 20, height: 20)), for: .normal)
+        btn.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 10)
+        btn.setTitle("周边", for: .normal)
+        btn.contentMode = .center
+        btn.setTitleColor(UIColor.blue, for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        btn.backgroundColor = UIColor.clear
+        btn.setImage(#imageLiteral(resourceName: "nearby").changesize(size: CGSize.init(width: 20, height: 20)), for: .highlighted)
+        btn.addTarget(self, action: #selector(showNear), for: .touchUpInside)
+        
+        return btn
+    }()
  
     // 轮播图数据
     private var rotateText:[String] = []
@@ -210,6 +227,9 @@ class DashboardViewController: BaseViewController{
         
         searchBarContainer.addSubview((searchController?.searchBar)!)
         
+        searchController?.searchField.addSubview(nearBtn)
+        // 调整搜索框偏移
+        searchController?.searchBar.setPositionAdjustment(UIOffset.init(horizontal: nearBtn.width, vertical: 0), for: .search)
         
         self.navigationItem.titleView = searchBarContainer
         
@@ -497,7 +517,8 @@ extension DashboardViewController: UISearchControllerDelegate{
         
         self.searchController?.searchBar.setPositionAdjustment(UIOffset.init(horizontal: 60, vertical: 0), for: .search)
         self.searchController?.setSearchBar(open: true)
-        
+        nearBtn.isHidden  = true
+
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.barTintColor = UIColor.init(r: 192, g: 192, b: 192)
         self.tabBarController?.tabBar.isHidden = true
@@ -515,7 +536,11 @@ extension DashboardViewController: UISearchControllerDelegate{
         
         self.navigationController?.navigationBar.settranslucent(true)
         self.tabBarController?.tabBar.isHidden = false
+        nearBtn.isHidden  = false
 
+        // 调整搜索框偏移
+        self.searchController?.searchBar.setPositionAdjustment(UIOffset.init(horizontal: nearBtn.width, vertical: 0), for: .search)
+        
         (self.navigationController as? DashboardNavigationVC)?.currentStyle = .lightContent
 
     }
@@ -551,6 +576,15 @@ extension DashboardViewController: UISearchBarDelegate{
 
 
 
+
+// 周边的数据
+extension DashboardViewController{
+    @objc private func showNear(){
+        let show = NearByViewController()
+        show.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(show, animated: true)
+    }
+}
 
 
 // scroll

@@ -421,7 +421,7 @@ fileprivate class  singleHeaderView:PostHeaderView{
             let replyStr = String(mode.reply)
             let replySize = NSString(string: replyStr).size(withAttributes: [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12)])
             self.reply.setTitle(replyStr, for: .normal)
-            _ = self.reply.sd_layout().widthIs(25 + replySize.width + 5)
+            _ = self.reply.sd_layout().widthIs(25 + replySize.width )
             let thumbStr = String(mode.thumbUP)
             let thumbSize = NSString(string: thumbStr).size(withAttributes: [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12)])
             _ = self.thumbUP.sd_layout().widthIs(25 + thumbSize.width + 5)

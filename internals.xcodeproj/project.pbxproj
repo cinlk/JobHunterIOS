@@ -150,6 +150,9 @@
 		4A5304E41F52A6ED0000F1E9 /* MainTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5304E31F52A6ED0000F1E9 /* MainTabBarViewController.swift */; };
 		4A5304E81F52A7720000F1E9 /* DashboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5304E71F52A7720000F1E9 /* DashboardViewController.swift */; };
 		4A5C664920E7353600A4C647 /* extension+UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5C664820E7353600A4C647 /* extension+UIViewController.swift */; };
+		4A5C664B20E77EFB00A4C647 /* NearByViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5C664A20E77EFB00A4C647 /* NearByViewController.swift */; };
+		4A5C664E20E782B400A4C647 /* NearCareerTalkMeetinVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5C664D20E782B400A4C647 /* NearCareerTalkMeetinVC.swift */; };
+		4A5C665020E7837800A4C647 /* NearCompanyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5C664F20E7837800A4C647 /* NearCompanyViewController.swift */; };
 		4A5C7C0E20D12E04009F548C /* Extension+YNDropMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5C7C0D20D12E04009F548C /* Extension+YNDropMenuView.swift */; };
 		4A5E3FB5202DF14D009C1A6B /* address.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4A5E3FB4202DF14D009C1A6B /* address.plist */; };
 		4A5E3FB7202ECA57009C1A6B /* degrees.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4A5E3FB6202ECA57009C1A6B /* degrees.plist */; };
@@ -327,7 +330,6 @@
 		4AF3D35C2061376E0012EB6E /* baseWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF3D35B2061376E0012EB6E /* baseWebViewController.swift */; };
 		4AF3D35E20629FB00012EB6E /* subscribeConditionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF3D35D20629FB00012EB6E /* subscribeConditionModel.swift */; };
 		4AF3D3602062B7C10012EB6E /* sectionCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF3D35F2062B7C10012EB6E /* sectionCellView.swift */; };
-		4AF6C8031F571D1F0059496B /* CitysView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C8021F571D1F0059496B /* CitysView.swift */; };
 		4AF6C8051F5A98940059496B /* MainJobCategoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C8041F5A98940059496B /* MainJobCategoryCell.swift */; };
 		4AF6C80B1F5AEB880059496B /* MainColumnistCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C80A1F5AEB880059496B /* MainColumnistCell.swift */; };
 		4AF74432204D8C8A00BC52DB /* personRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF74431204D8C8A00BC52DB /* personRouter.swift */; };
@@ -512,6 +514,9 @@
 		4A5304E31F52A6ED0000F1E9 /* MainTabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabBarViewController.swift; sourceTree = "<group>"; };
 		4A5304E71F52A7720000F1E9 /* DashboardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardViewController.swift; sourceTree = "<group>"; };
 		4A5C664820E7353600A4C647 /* extension+UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+UIViewController.swift"; sourceTree = "<group>"; };
+		4A5C664A20E77EFB00A4C647 /* NearByViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearByViewController.swift; sourceTree = "<group>"; };
+		4A5C664D20E782B400A4C647 /* NearCareerTalkMeetinVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearCareerTalkMeetinVC.swift; sourceTree = "<group>"; };
+		4A5C664F20E7837800A4C647 /* NearCompanyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearCompanyViewController.swift; sourceTree = "<group>"; };
 		4A5C7C0D20D12E04009F548C /* Extension+YNDropMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+YNDropMenuView.swift"; sourceTree = "<group>"; };
 		4A5E3FB4202DF14D009C1A6B /* address.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = address.plist; sourceTree = "<group>"; };
 		4A5E3FB6202ECA57009C1A6B /* degrees.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = degrees.plist; sourceTree = "<group>"; };
@@ -701,7 +706,6 @@
 		4AF3D35B2061376E0012EB6E /* baseWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = baseWebViewController.swift; sourceTree = "<group>"; };
 		4AF3D35D20629FB00012EB6E /* subscribeConditionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = subscribeConditionModel.swift; sourceTree = "<group>"; };
 		4AF3D35F2062B7C10012EB6E /* sectionCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sectionCellView.swift; sourceTree = "<group>"; };
-		4AF6C8021F571D1F0059496B /* CitysView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CitysView.swift; sourceTree = "<group>"; };
 		4AF6C8041F5A98940059496B /* MainJobCategoryCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainJobCategoryCell.swift; sourceTree = "<group>"; };
 		4AF6C80A1F5AEB880059496B /* MainColumnistCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainColumnistCell.swift; sourceTree = "<group>"; };
 		4AF74431204D8C8A00BC52DB /* personRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = personRouter.swift; sourceTree = "<group>"; };
@@ -879,9 +883,9 @@
 		4A1BA2CE208B274600CF8352 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				4A5C664C20E7829D00A4C647 /* 周边 */,
 				4A30EBE42081A82F00231D11 /* SpecialJobVC.swift */,
 				4A5304E71F52A7720000F1E9 /* DashboardViewController.swift */,
-				4AF6C8021F571D1F0059496B /* CitysView.swift */,
 				4A4DBBEA20BB8C520036AD9D /* DashboardNavigationVC.swift */,
 			);
 			name = ViewController;
@@ -1271,6 +1275,16 @@
 				4A82A0CC2026D88C00185E8B /* view+controller */,
 			);
 			name = "个人主页";
+			sourceTree = "<group>";
+		};
+		4A5C664C20E7829D00A4C647 /* 周边 */ = {
+			isa = PBXGroup;
+			children = (
+				4A5C664A20E77EFB00A4C647 /* NearByViewController.swift */,
+				4A5C664D20E782B400A4C647 /* NearCareerTalkMeetinVC.swift */,
+				4A5C664F20E7837800A4C647 /* NearCompanyViewController.swift */,
+			);
+			name = "周边";
 			sourceTree = "<group>";
 		};
 		4A686A862040054100571EB0 /* 隐私设置 */ = {
@@ -2265,7 +2279,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4A686A8A204011AE00571EB0 /* PrivacyCellView.swift in Sources */,
-				4AF6C8031F571D1F0059496B /* CitysView.swift in Sources */,
 				4AE4AFC11F5131AE00B5F509 /* ForgetPasswordController.swift in Sources */,
 				4A9543D220A879B2009BCBE2 /* SingleReplyViewController.swift in Sources */,
 				4A6BC23B1FC92BA3002C17B6 /* mainPageViewModel.swift in Sources */,
@@ -2350,6 +2363,7 @@
 				4A1BA2B8208A2C0F00CF8352 /* CommonJobDetailCellView.swift in Sources */,
 				4AFF91A91F5C338800FE189F /* JobDetailViewController.swift in Sources */,
 				4A9A0BD32003BEA8008721F3 /* MyVisitor.swift in Sources */,
+				4A5C664B20E77EFB00A4C647 /* NearByViewController.swift in Sources */,
 				4A82A0E8202B4DB400185E8B /* itemPickerView.swift in Sources */,
 				4A30EBDC207CE68A00231D11 /* companyTableProtocol.swift in Sources */,
 				4A4DBBCD20B6FDEA0036AD9D /* UserLogginViewController.swift in Sources */,
@@ -2370,6 +2384,7 @@
 				4ADDDAD51F98F9B3001CB00F /* ChatEmotionHelper.swift in Sources */,
 				4A82A0E42029D38B00185E8B /* modifyPersonInfoVC.swift in Sources */,
 				4A93C2BB1F80CE5F0022E97B /* deliveredHistory.swift in Sources */,
+				4A5C665020E7837800A4C647 /* NearCompanyViewController.swift in Sources */,
 				4AD8F751206E6CA4003969ED /* extension+UITextView.swift in Sources */,
 				4A6BC2431FCB12A3002C17B6 /* mainPageModel.swift in Sources */,
 				4A82A0E62029D7BF00185E8B /* modifyPersonInfoCell.swift in Sources */,
@@ -2377,6 +2392,7 @@
 				4A1BA2C0208AEB1500CF8352 /* BaseScrollerTableViewCell.swift in Sources */,
 				4A12437E20E1DB070038336F /* AskSectionVC.swift in Sources */,
 				4A5C664920E7353600A4C647 /* extension+UIViewController.swift in Sources */,
+				4A5C664E20E782B400A4C647 /* NearCareerTalkMeetinVC.swift in Sources */,
 				4A4DBBE520B9AB090036AD9D /* UserGuidePageItem.swift in Sources */,
 				4A12438220E1DBD80038336F /* HelpSectionVC.swift in Sources */,
 				4A22A3A72073D1CE00024C2B /* resumePersonInfoCell.swift in Sources */,

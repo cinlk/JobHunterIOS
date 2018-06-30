@@ -7,14 +7,16 @@
 //
 
 import UIKit
-
+import CoreLocation
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
+    // 地理位置
+    var locateManager = CLLocationManager()
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
        
@@ -25,6 +27,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.makeKeyAndVisible()
         window?.rootViewController = enter
         
+        
+        loadLoacation()
         
         // load contacts
        // Contactlist.shared.removeAll()
@@ -111,6 +115,73 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
-
 }
+
+extension AppDelegate: CLLocationManagerDelegate{
+    
+    
+    private func loadLoacation(){
+        locateManager.delegate = self
+        locateManager.desiredAccuracy = kCLLocationAccuracyBest
+        locateManager.distanceFilter = kCLLocationAccuracyKilometer
+        if   #available(iOS 8.0, *){
+            locateManager.requestAlwaysAuthorization()
+            locateManager.requestWhenInUseAuthorization()
+        }
+        
+        locateManager.startUpdatingLocation()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location:CLLocation = locations.last, location.horizontalAccuracy > 0{
+            print("纬度\(location.coordinate.latitude)")
+            print("经度\(location.coordinate.longitude)")
+            getCity(location: location)
+            locateManager.stopUpdatingLocation()
+        }
+        
+    }
+    
+    
+    private func getCity(location: CLLocation){
+        let geocoder:CLGeocoder = CLGeocoder()
+        
+        geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
+            if  error == nil{
+                if let place = placemarks?.first{
+                    print("地址\(place.name)")
+                    print("城市\(place.locality)")
+                    print("区\(place.subLocality)")
+                }else{
+                    print("获取不到位置")
+                }
+            }
+        }
+        
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
+        print(error)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        manager.stopUpdatingLocation()
+        switch (error as NSError).code {
+        case 0:
+            print("位置不可用")
+        case 1:
+            print("用户关闭")
+        default:
+            break
+        }
+        print(error)
+        
+    }
+    
+    
+    
+}
+
+
+
 

@@ -63,7 +63,7 @@ class PostHeaderView: UIView {
         btn.clipsToBounds = true
         btn.contentHorizontalAlignment = .left
         //btn.tintColor = UIColor.lightGray
-        
+        btn.contentMode = .left
         btn.imageView?.contentMode = .scaleAspectFit
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 12)
         btn.setTitleColor(UIColor.lightGray, for: .normal)
@@ -81,7 +81,7 @@ class PostHeaderView: UIView {
         btn.setTitle("", for: .normal)
         // 左对齐
         btn.contentHorizontalAlignment = .left
-        
+        btn.contentMode = .right
         btn.imageView?.contentMode = .scaleAspectFit
         btn.clipsToBounds = true
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 12)

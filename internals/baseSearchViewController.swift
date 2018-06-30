@@ -334,11 +334,10 @@ class baseSearchViewController: UISearchController{
         searchField.layer.masksToBounds = true
         
  
-        // 搜索框内左侧添加btn 调整位置
-        //searchField.addSubview(self.cityButton)
+         //searchField.addSubview(self.cityButton)
         searchField.addSubview(chooseTypeBtn)
         
-      
+        
        
         //
         currentDropMenuView = [searchItem.onlineApply: OnLineApplydropDownMenu, .company: company, .intern: intern, .graduate: graduate, .meeting: meeting]
