@@ -26,7 +26,9 @@ class pagetitleView: UIView {
     var labelTitles:[UILabel] = []
     var startIndex:Int = 0
     var titles:[String]?
-    var lineCenter:Bool = false
+    private var lineCenter:Bool = false
+    private var itemWidth:CGFloat = 0
+    private var horizontalEdgeInset:CGFloat = 30
     
     weak var delegate:pagetitleViewDelegate?
     
@@ -45,10 +47,16 @@ class pagetitleView: UIView {
     }()
     
     
-    init(frame:CGRect, titles:[String], lineCenter:Bool = false) {
+    init(frame:CGRect, titles:[String], lineCenter:Bool = false, itemWidth:CGFloat = 60,horizontalEdgeInset:CGFloat = 30, kNormalColor:(CGFloat, CGFloat, CGFloat) = (85, 85, 85),
+         kSelectColor:(CGFloat, CGFloat, CGFloat) = (255, 128, 0)) {
         super.init(frame: frame)
         self.titles = titles
         self.lineCenter = lineCenter
+        self.itemWidth = itemWidth
+        self.horizontalEdgeInset = horizontalEdgeInset
+        self.kNormalColor = kNormalColor
+        self.kSelectColor = kSelectColor
+        
         self.setViews()
         
         
@@ -89,11 +97,7 @@ extension pagetitleView{
             return
         }
         
-        if lineCenter{
-            kNormalColor = (50,50,50)
-            kSelectColor = (255,255,255)
-            
-        }
+       
         let count = labels.count
         // 以4为单位
        
@@ -122,9 +126,9 @@ extension pagetitleView{
         if count >= 4{
             if self.lineCenter{
                 // 缩短间隔距离
-                self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: 60, verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: 30)
+                self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: itemWidth, verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: horizontalEdgeInset)
             }else{
-                self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: (ScreenW - 20) / CGFloat(count), verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: 5)
+                self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: (ScreenW - 20) / CGFloat(count), verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: horizontalEdgeInset)
             }
         }else{
              let diff = 4 - count

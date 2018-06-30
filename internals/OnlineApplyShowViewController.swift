@@ -250,7 +250,6 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
         self.navigationController?.setToolbarHidden(true, animated: false)
         naviBackView.removeFromSuperview()
         self.navigationController?.navigationBar.tintColor = UIColor.black

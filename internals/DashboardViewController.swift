@@ -108,10 +108,6 @@ class DashboardViewController: BaseViewController{
         
     }()
     
-
-    // 选择城市VC
-    private lazy var cityVC:CityViewController = CityViewController()
-    
   
     
     
@@ -221,6 +217,9 @@ class DashboardViewController: BaseViewController{
         
         self.handleViews.append(tables)
         self.handleViews.append(searchBarContainer)
+        
+        
+        errorView.reload = reload
         super.setViews()
     }
     
@@ -284,9 +283,8 @@ extension DashboardViewController: UITableViewDelegate{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0{
             // 显示头条界面
-            let news = MagazineViewController()
+            let news = MagazMainViewController()
             news.hidesBottomBarWhenPushed = true
-            news.dataType = .toutiao(name: "测试", url: "测试")
             
             self.navigationController?.pushViewController(news, animated: true)
         }
@@ -857,6 +855,7 @@ extension DashboardViewController{
         let detail = JobDetailViewController()
         detail.hidesBottomBarWhenPushed = true 
         //detail.jobID = jobModel.id!
+        detail.kind = (id: jobModel.id!, type: jobModel.kind!)
         self.navigationController?.pushViewController(detail, animated: true)
         
     }

@@ -37,6 +37,9 @@ class MyVisitor: BaseTableViewController {
         self.tableView.tableFooterView = UIView.init()
         self.tableView.register(visitorCell.self, forCellReuseIdentifier: visitorCell.identity())
         
+     
+        
+        
         super.setViews()
     }
     

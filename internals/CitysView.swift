@@ -33,6 +33,7 @@ class CityViewController:UICollectionViewController, UICollectionViewDelegateFlo
         return button
     }()
 
+    // 定位
     private lazy var locationM: CLLocationManager = {
         let locationM = CLLocationManager()
         locationM.delegate = self

@@ -11,12 +11,7 @@ import UIKit
 class MagazineViewController: BaseViewController {
 
     
-    internal var dataType:newsType  = .none{
-        didSet{
-            
-            loadData()
-        }
-    }
+    private lazy var dataType:newsType = .none
     
     
     private var modes:[MagazineModel] = []
@@ -33,27 +28,34 @@ class MagazineViewController: BaseViewController {
         
     }()
     
+    
+     
+    init(dataType:newsType) {
+        super.init(nibName: nil, bundle: nil)
+        self.dataType = dataType
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
+        loadData()
         
-        
-
-        // Do any additional setup after loading the view.
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.insertCustomerView(UIColor.orange)
+ 
         
-        self.title = "专栏"
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationController?.removeCustomerView()
+ 
         
-        self.title = ""
     }
     
     
@@ -87,6 +89,8 @@ class MagazineViewController: BaseViewController {
 extension MagazineViewController{
     
     private func loadData(){
+        
+        print(self.dataType)
         
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             Thread.sleep(forTimeInterval: 2)

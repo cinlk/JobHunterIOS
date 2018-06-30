@@ -14,23 +14,23 @@ import ObjectMapper
 
 class PostBaseModel: NSObject, Mappable{
     
-    
-    
     var id:String?
     var title:String?
     var authorID:String?
     var authorName:String?
+    var colleage:String?
+    
     var authorIcon:String = "default"
     var createTime:Date?
+    
+    
     var createTimeStr:String{
         get{
-            guard let time = self.createTime else { return "" }
-            let dateFormat = DateFormatter()
-            dateFormat.locale = Locale.current
-            dateFormat.dateFormat = "yyyy-MM-dd HH:MM"
-            
-            let str = dateFormat.string(from: time)
-            return str
+            guard let time = self.createTime else { return ""}
+            if let str = forumArticleDate(date: time){
+                return str
+            }
+            return ""
         }
     }
     
@@ -43,7 +43,7 @@ class PostBaseModel: NSObject, Mappable{
     
     
     required init?(map: Map) {
-        if map.JSON["id"] == nil  || map.JSON["authorID"] == nil || map.JSON["createTime"] == nil || map.JSON["authorName"] == nil {
+        if map.JSON["id"] == nil  || map.JSON["authorID"] == nil || map.JSON["createTime"] == nil || map.JSON["authorName"] == nil || map.JSON["colleage"] == nil {
             return nil
         }
     }
@@ -54,6 +54,7 @@ class PostBaseModel: NSObject, Mappable{
         title <- map["title"]
         authorID <- map["authorID"]
         authorName <- map["authorName"]
+        colleage <- map["colleage"]
         authorIcon <- map["authorIcon"]
         createTime <- (map["createTime"],DateTransform())
         thumbUP <- map["thumbUP"]
@@ -69,6 +70,7 @@ class PostArticleModel: PostBaseModel {
     var kind:String?
     //var content:String?
     
+    var showTag:Bool = false
     
     
     var type:forumType{
@@ -101,15 +103,17 @@ class PostArticleModel: PostBaseModel {
 class PostContentModel:PostBaseModel{
     
     
-   
     // 自己是否点赞
     var isLike:Bool = false
+    var collected:Bool = false
     var content:String?
+    // 内容带图片？？ MARK
     var images:[String]?
     
     required init?(map: Map) {
         super.init(map: map)
-        if map.JSON["content"] == nil ||  map.JSON["title"] == nil || map.JSON["isLike"] == nil {
+        if map.JSON["content"] == nil ||  map.JSON["title"] == nil || map.JSON["isLike"] == nil  ||
+            map.JSON["collected"] == nil {
             return nil
         }
     }
@@ -119,6 +123,7 @@ class PostContentModel:PostBaseModel{
         content <- map["content"]
         images <- map["images"]
         isLike <- map["isLike"]
+        collected <- map["collected"]
     }
     
     
@@ -148,27 +153,24 @@ class FirstReplyModel: PostBaseModel{
 }
 
 // 子回复(第二层)
-class SecondReplyModel: NSObject, Mappable{
+class SecondReplyModel: FirstReplyModel{
     
     var parentReplyID:String?
-    var sender:String?
     var receiver:String?
-    var content:String?
     
     
     required init?(map: Map) {
-        if map.JSON["parentReplyID"] == nil ||  map.JSON["sender"] == nil || map.JSON["receiver"] == nil
-            || map.JSON["content"] == nil {
+        super.init(map: map)
+        if map.JSON["parentReplyID"] == nil || map.JSON["receiver"] == nil{
             return nil
         }
     }
     
-    func mapping(map: Map) {
-        
+    override func mapping(map: Map) {
+        super.mapping(map: map)
         parentReplyID <- map["parentReplyID"]
-        sender <- map["sender"]
         receiver <- map["receiver"]
-        content <- map["content"]
+        
         
     }
 }

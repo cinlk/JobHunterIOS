@@ -17,7 +17,7 @@ class SpecialJobVC: BaseTableViewController {
     var queryName:String?{
         didSet{
             self.loadData()
-            self.navigationItem.title = queryName!
+            self.title = queryName!
         }
     }
     
@@ -42,7 +42,6 @@ class SpecialJobVC: BaseTableViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
         self.navigationController?.removeCustomerView()
     }
     
@@ -101,7 +100,10 @@ class SpecialJobVC: BaseTableViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
-        // MARK
+        let mode = items[indexPath.row]
+        let detail = JobDetailViewController()
+        detail.kind = (id: mode.id!, type: mode.kind!)
+        self.navigationController?.pushViewController(detail, animated: true)
     }
     
 }
@@ -115,9 +117,7 @@ extension SpecialJobVC{
             Thread.sleep(forTimeInterval: 3)
             
             // 更加名字查询jobs
-            self?.items = [Mapper<CompuseRecruiteJobs>().map(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dqwd-dqwdqwddqw","name":"码农","address":"北京","create_time":Date().timeIntervalSince1970,"education":"本科","readNums":
-                75687,"type":"graduate","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false])!, Mapper<CompuseRecruiteJobs>().map(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dqwd-dqwdqwddqw","name":"码农","address":"北京","readNums":
-                75687,"create_time":Date().timeIntervalSince1970,"education":"本科","type":"graduate","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false])!]
+            self?.items = [Mapper<CompuseRecruiteJobs>().map(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dqwd-dqwdqwddqw","name":"码农","company":["id":"dqwd","name":"公司名称","isCollected":false,"icon":"chrome","address":["地址1","地址2"],"industry":["行业1","行业2"],"staffs":"1000人以上"],"address":["北京","地址2"],"create_time":Date().timeIntervalSince1970,"education":"本科","type":"intern","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false,"readNums":arc4random()%1000])!]
             
             DispatchQueue.main.async(execute: {
                 self?.didFinishloadData()

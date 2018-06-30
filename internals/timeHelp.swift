@@ -140,9 +140,23 @@ func showMonthAndDay(date: Date?) ->String?{
         return String.init(format: "%d月%d日", dateRoom.month, dateRoom.day)
     }
     
+}
     
     
+func forumArticleDate(date: Date?) -> String?{
+    guard let date = date else {
+        return nil
+    }
     
+    let now = DateInRegion()
+    let dateRoom = DateInRegion(absoluteDate: date)
     
+    let year = now.year - dateRoom.year
+    if year != 0 {
+        return String.init(format: "%d年%d月%d日 %d:%02d", dateRoom.year, dateRoom.month, dateRoom.day, dateRoom.hour,
+                                        dateRoom.minute)
+    }else{
+        return String.init(format: "%d月%d日 %d:%02d", dateRoom.month, dateRoom.day, dateRoom.hour, dateRoom.minute)
+    }
     
 }

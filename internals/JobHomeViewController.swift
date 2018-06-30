@@ -130,7 +130,7 @@ class JobHomeVC: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.removeCustomerView()
-        self.navigationItem.title = ""
+         
     }
     
     
@@ -145,6 +145,10 @@ extension JobHomeVC {
         
         // searchController 占时新的控制视图时，显示在当前视图上
         self.definesPresentationContext  = true
+        
+        // 影藏返回按钮文字
+        navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
+
         
         // 保证Controller 和 搜索container 高度一致, 搜索框左右圆角正常
         searchController.height = searchBarH

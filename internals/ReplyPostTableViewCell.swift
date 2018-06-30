@@ -9,11 +9,8 @@
 import UIKit
 
 
-
 class ReplyPostTableViewCell: ForumBaseCell {
 
-
-    
     dynamic  var mode: FirstReplyModel?{
         didSet{
             guard let mode = mode else {
@@ -22,8 +19,13 @@ class ReplyPostTableViewCell: ForumBaseCell {
             
             self.creatTime.text = mode.createTimeStr
             self.authorIcon.image = UIImage.init(named: mode.authorIcon)
-            self.authorName.text = mode.authorName
             self.postType.text = ""
+            
+            
+            let authNameStr = NSMutableAttributedString.init(string: mode.authorName!, attributes: [NSAttributedStringKey.foregroundColor:UIColor.black, NSAttributedStringKey.font:UIFont.systemFont(ofSize: 14)])
+            authNameStr.append(NSAttributedString.init(string: " " + mode.colleage!, attributes: [NSAttributedStringKey.foregroundColor:UIColor.lightGray, NSAttributedStringKey.font:UIFont.systemFont(ofSize: 14)]))
+            
+            self.authorName.attributedText = authNameStr
             
             
             // 回复内容

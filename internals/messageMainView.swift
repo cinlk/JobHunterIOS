@@ -121,6 +121,9 @@ extension messageMain {
         self.navigationItem.titleView = segeMentView
         self.navigationController?.view.backgroundColor = UIColor.white
 
+        // 影藏返回按钮文字
+        navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
+        
         currentItem = 0
         
     

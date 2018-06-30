@@ -177,32 +177,37 @@ enum ResumeDeliveryStatus:String {
 
 // 论坛分类
 enum forumType:String{
-    case popular = "popular"
-    case jobs = "jobs"
+    
+    case interview = "interview"
+    case ask = "ask"
+    case offers = "offers"
+    case help = "help"
     case life = "life"
-    case roast = "roast"
     case none = ""
     
-    //
+    // 自己的帖子
     case mypost = "mypost"
     
     
     static var items:[forumType]{
         get{
-            return [forumType.jobs, forumType.life, forumType.roast]
+            return [forumType.interview, forumType.ask, forumType.offers, forumType.help]
         }
     }
     
     var describe:String{
         switch self {
-        case .popular:
-            return "热门"
-        case .jobs:
-            return "求职"
+
+        case .interview:
+            return "笔记面经"
+        case .ask:
+            return "热门问题"
+        case .offers:
+            return "offer比较"
+        case .help:
+            return "帮助"
         case .life:
             return "生活"
-        case .roast:
-            return "吐槽"
         case .mypost:
             return "我的帖子"
         case .none:
@@ -213,15 +218,20 @@ enum forumType:String{
 }
 
 
-// 新闻类型
+// 专栏 类型
 enum newsType {
+    
+    
     case toutiao(name:String, url:String)
     case zhuanlan(name:String, url:String)
-    
+    case test1(name:String, url:String)
+    case test2(name:String, url:String)
     case none 
 }
 
 
+
+// 订阅类型
 enum subscribeType:String {
     case graduate = "校招"
     case intern = "实习"

@@ -9,6 +9,9 @@
 import UIKit
 
 
+fileprivate let titles:[String] = ["热门","笔经面经","我要提问","offer比较","互助"]
+fileprivate let nvaTitle:String = "论坛"
+
 class ForumViewController: UIViewController {
 
     
@@ -35,7 +38,8 @@ class ForumViewController: UIViewController {
     //
     
     private lazy var pageTitle:pagetitleView = {
-        let pageTitle = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: 45), titles: ["热门","求职","生活","吐槽","专栏"], lineCenter: true)
+        let pageTitle = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: 45), titles: titles, lineCenter: true,itemWidth: 70, horizontalEdgeInset:5)
+        
         pageTitle.delegate = self
         pageTitle.backgroundColor = UIColor.init(r: 105, g: 105, b: 105)
         return pageTitle
@@ -44,26 +48,25 @@ class ForumViewController: UIViewController {
     private lazy var pageContent:pageContentView = { [unowned self] in
         var vcs:[UIViewController] = []
         // 热门
-        let hot = BasePostItemsViewController()
-        hot.type = .popular
-        
+        let hot = PopularSectionVC()
         vcs.append(hot)
         
-        // 求职
-        let qz = BasePostItemsViewController()
-        qz.type = .jobs
+        // 笔经面经
+        let qz = InterviewSectionVC()
         vcs.append(qz)
-        // 生活
-        let life = BasePostItemsViewController()
-        life.type = .life
-        vcs.append(life)
-        // 吐槽
-        let talk = BasePostItemsViewController()
-        talk.type = .roast
-        vcs.append(talk)
-        // 专栏
-        let article = MagazineViewController()
-        vcs.append(article)
+        
+        // 我要提问
+        let ask = AskSectionVC()
+        vcs.append(ask)
+        
+        // offer比较
+        let offer = OfferSectionVC()
+        vcs.append(offer)
+        
+        // 互助
+        let help = HelpSectionVC()
+        vcs.append(help)
+        
         
         let pageContent = pageContentView.init(frame: CGRect.init(x: 0, y: NavH+45, width: ScreenW, height: ScreenH - (NavH+45)), childVCs: vcs, pVC: self)
         
@@ -99,17 +102,18 @@ class ForumViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationItem.title = "论坛"
         self.tabBarController?.tabBar.isHidden = false
+        self.navigationController?.insertCustomerView(UIColor.lightGray)
 
         self.navigationController?.navigationBar.tintColor = UIColor.green
+ 
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
+        self.navigationController?.removeCustomerView()
         self.navigationController?.navigationBar.tintColor = UIColor.black
-
+ 
     }
     
     override func viewWillLayoutSubviews() {
@@ -127,17 +131,19 @@ class ForumViewController: UIViewController {
 extension ForumViewController{
     
     private func setViews(){
+        self.title = nvaTitle
+        
+        // 影藏返回按钮文字
+        navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
+        
         self.view.addSubview(pageTitle)
         self.view.addSubview(pageContent)
         self.view.backgroundColor = UIColor.white
         //
         self.navigationController?.navigationBar.settranslucent(true)
-        //self.navigationController?.hidesBarsOnSwipe = true
         self.definesPresentationContext = true
         searchController.height = searchBarH
-        // searchBar 放入containerview
         searchBarContainer.addSubview(searchController.searchBar)
-        //searchController.popMenuView.datas = []
         // 不显示搜索分类
         searchController.chooseTypeBtn.isHidden = true
         searchController.searchField?.placeholder = "搜索帖子"
@@ -159,9 +165,7 @@ extension ForumViewController{
 extension ForumViewController{
     @objc private func newPost(){
         let post = EditPostViewController()
-        //self.navigationController?.navigationBar.settranslucent(false)
-        self.tabBarController?.tabBar.isHidden = true
-
+        post.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(post, animated: true)
     }
     @objc private func search(){
@@ -198,11 +202,12 @@ extension ForumViewController: UISearchControllerDelegate {
     
     func willPresentSearchController(_ searchController: UISearchController) {
 //        self.searchController.searchBar.setPositionAdjustment(UIOffset.init(horizontal: 60, vertical: 0), for: .search)
-        self.navigationController?.navigationBar.settranslucent(false)
+        //self.navigationController?.navigationBar.settranslucent(false)
 
         
         self.searchController.showRecordView = true
         self.navigationItem.rightBarButtonItems = nil
+        
         self.tabBarController?.tabBar.isHidden = true
         
     }
@@ -211,11 +216,11 @@ extension ForumViewController: UISearchControllerDelegate {
 
         self.searchController.showRecordView = false
         //self.searchController.setSearchBar(open: false)
-        self.navigationItem.title = "论坛"
+        self.navigationItem.title = nvaTitle
         self.navigationItem.titleView = nil
         self.navigationItem.rightBarButtonItems = [UIBarButtonItem.init(customView: publish),
                                                    UIBarButtonItem.init(customView: searchBtn)]
-        self.navigationController?.navigationBar.settranslucent(true)
+        //self.navigationController?.navigationBar.settranslucent(true)
         self.tabBarController?.tabBar.isHidden = false
     }
 }
@@ -233,6 +238,7 @@ extension ForumViewController: UISearchResultsUpdating{
             // 历史搜索记录
             self.searchController.serchRecordVC.showHistory()
         }
+        // 处理view
         self.searchController.showRecordView = true
         
         

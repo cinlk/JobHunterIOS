@@ -10,6 +10,20 @@ import UIKit
 
 class ForumNavgationController: UINavigationController {
 
+    
+    var currentStyle = UIStatusBarStyle.default{
+        didSet{
+            setNeedsStatusBarAppearanceUpdate()
+        }
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle{
+        get{
+            return currentStyle
+        }
+    }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 

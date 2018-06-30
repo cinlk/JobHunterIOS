@@ -422,11 +422,9 @@ extension baseSearchViewController{
 
 
 
-// 搜索历史记录 代理实现
+// 搜索历史记录view  代理实现
 extension baseSearchViewController:SearchResultDelegate,UISearchBarDelegate{
     
-
-
     func ShowSearchResults(word: String) {
         
         // 添加到搜索历史
@@ -434,22 +432,11 @@ extension baseSearchViewController:SearchResultDelegate,UISearchBarDelegate{
             return
         }
         
-       
-        DBFactory.shared.getSearchDB().insertSearch(type: self.serchRecordVC.searchType,name: word)
-        //localData.shared.appendSearchHistories(value: word)
-        
-        // 影藏当前所有dropMenu
-        currentDropMenuView.values.forEach{
-            $0.isHidden = true
+        if self.searchType == .forum{
+            startPostSearch(word: word)
+        }else{
+            startSearch(word: word)
         }
-        
-        // MARK 什么时候执行这个？？
-        self.searchShowVC?.startSearch(type: currentMenuType, word: "load", complete: { bool in
-            if bool == true {
-                self.setDropMenu(item: self.currentMenuType, isHidden: false)
-            }
-
-        })
         
 
         self.searchBar.text = word
@@ -465,14 +452,12 @@ extension baseSearchViewController:SearchResultDelegate,UISearchBarDelegate{
     
 }
 
-// 搜索处理
+//点击键盘search   搜索帖子 或 其他职位
 extension baseSearchViewController{
     open func startSearch(word:String){
         
         
-        //self.searchController.serchRecordView.view.isHidden = true
         self.showRecordView = false
-        
         // 查找新的item 然后 查询数据刷新搜索结果界面
         //self.popMenuView.dismiss()
         DBFactory.shared.getSearchDB().insertSearch(type: self.serchRecordVC.searchType,name: word)
@@ -493,6 +478,10 @@ extension baseSearchViewController{
      open func startPostSearch(word:String){
          self.showRecordView = false
          DBFactory.shared.getSearchDB().insertSearch(type: self.serchRecordVC.searchType,name: word)
+         currentDropMenuView.values.forEach{
+            $0.isHidden = true
+        }
+        self.searchShowVC?.startSearch(type: .forum, word: "test", complete: nil)
         
     }
 }

@@ -22,6 +22,7 @@ class PostHeaderView: UIView {
         label.textAlignment = .left
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
         label.font = UIFont.systemFont(ofSize: 14)
+        label.isAttributedContent = true 
         return label
     }()
     
@@ -29,7 +30,7 @@ class PostHeaderView: UIView {
     internal lazy var createTime:UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 60)
         label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = UIColor.lightGray
         return label
@@ -55,12 +56,13 @@ class PostHeaderView: UIView {
     internal lazy var thumbUP:UIButton = {
         let btn = UIButton()
         btn.setImage(UIImage.init(named: "thumbup")?.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate), for: .normal)
+        btn.setImage(UIImage.init(named: "selectedthumbup")?.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate), for: .selected)
         
         btn.semanticContentAttribute = .forceLeftToRight
         btn.setTitle("", for: .normal)
         btn.clipsToBounds = true
         btn.contentHorizontalAlignment = .left
-        btn.tintColor = UIColor.lightGray
+        //btn.tintColor = UIColor.lightGray
         
         btn.imageView?.contentMode = .scaleAspectFit
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 12)
@@ -74,13 +76,13 @@ class PostHeaderView: UIView {
         let btn = UIButton()
         
         btn.setImage(UIImage.init(named: "comment")?.changesize(size: CGSize.init(width: 20, height: 20)).withRenderingMode(.alwaysTemplate), for: .normal)
+        
         btn.semanticContentAttribute = .forceLeftToRight
         btn.setTitle("", for: .normal)
         // 左对齐
         btn.contentHorizontalAlignment = .left
         
         btn.imageView?.contentMode = .scaleAspectFit
-        btn.tintColor = UIColor.lightGray
         btn.clipsToBounds = true
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 12)
         btn.setTitleColor(UIColor.lightGray, for: .normal)
@@ -100,7 +102,7 @@ class PostHeaderView: UIView {
         _ = userName.sd_layout().leftSpaceToView(userIcon,10)?.topEqualToView(userIcon)?.autoHeightRatio(0)
         _ = createTime.sd_layout().leftEqualToView(userName)?.topSpaceToView(userName,5)?.autoHeightRatio(0)
         
-        _ = contentText.sd_layout().topSpaceToView(userIcon,20)?.leftEqualToView(userIcon)?.rightSpaceToView(self,10)?.heightIs(0)
+        _ = contentText.sd_layout().topSpaceToView(createTime,10)?.leftEqualToView(userIcon)?.rightSpaceToView(self,10)?.heightIs(0)
         _ = lines.sd_layout().topSpaceToView(contentText,15)?.leftEqualToView(contentText)?.rightEqualToView(contentText)?.heightIs(1)
         
         _ = thumbUP.sd_layout().leftEqualToView(contentText)?.topSpaceToView(contentText,20)?.widthIs(0)?.heightIs(25)

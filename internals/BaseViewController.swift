@@ -42,8 +42,10 @@ class BaseViewController: UIViewController {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.white
         self.view.insertSubview(errorView,at: 0)
-        //setViews()
-        // Do any additional setup after loading the view.
+        
+        // 影藏返回按钮文字
+        navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
+
     }
 
     
@@ -64,12 +66,14 @@ class BaseViewController: UIViewController {
     //获取数据后正常显示
     func didFinishloadData(){
         
+        
         hub.hide(animated: true)
         self.handleViews.forEach{
             $0.isHidden = false
         }
         errorView.isHidden = true
-        hub.removeFromSuperview()
+        
+        hub.isHidden = true 
         
         
     }
@@ -79,6 +83,7 @@ class BaseViewController: UIViewController {
         self.handleViews.forEach{
             $0.isHidden = true
         }
+        
         hub.hide(animated: true)
         errorView.isHidden = false
     }

@@ -19,10 +19,17 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 30, height: 30)
                 return
             }
             self.postTitle.text = mode.title
-            self.postType.text = "[" + mode.type.describe + "]"
+            if mode.showTag{
+                self.postType.text = "[" + mode.type.describe + "]"
+            }else{
+                self.postType.text = ""
+            }
             self.creatTime.text = mode.createTimeStr
             self.authorIcon.image = UIImage.init(named: mode.authorIcon)
-            self.authorName.text = mode.authorName
+            let authNameStr = NSMutableAttributedString.init(string: mode.authorName!, attributes: [NSAttributedStringKey.foregroundColor:UIColor.black, NSAttributedStringKey.font:UIFont.systemFont(ofSize: 14)])
+            authNameStr.append(NSAttributedString.init(string: " " + mode.colleage!, attributes: [NSAttributedStringKey.foregroundColor:UIColor.lightGray, NSAttributedStringKey.font:UIFont.systemFont(ofSize: 14)]))
+            
+            self.authorName.attributedText = authNameStr
             
             
             

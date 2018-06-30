@@ -8,39 +8,36 @@
 
 import UIKit
 
-fileprivate let textContentH:CGFloat = 40
+fileprivate let textContentH:CGFloat = TOOLBARH - 10
+fileprivate let maxWordCount:Int = 200
 
 protocol ChatInputViewDelegate: class  {
     
     func changeBarHeight(textView:UITextView, height:CGFloat)
     func sendMessage(textView:UITextView)
-    
-    
 }
 
 
 class ChatInputView: UIView {
-
-    
     
     internal var defaultText:String = ""
     
     // 默认值
     internal lazy var plashold:UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 20)
+        label.font = UIFont.systemFont(ofSize: 16)
         label.textAlignment = .left
         label.textColor = UIColor.lightGray
-        
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
+        label.lineBreakMode = .byCharWrapping
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 100)
         return label
         
     }()
     // 输入框
     internal lazy var chatView:UITextView = { [unowned self] in
-        let text = UITextView()
-        text.font = UIFont.systemFont(ofSize: 20)
-        text.contentMode = .left
+        let text = UITextView(frame: CGRect.init(x: 5, y: 5, width: self.bounds.width - 10, height: textContentH))
+        
+        text.font = UIFont.systemFont(ofSize: 16)
         text.textColor = UIColor.black
         text.layer.backgroundColor = UIColor.white.cgColor
         text.layer.borderWidth = 0.5
@@ -49,23 +46,24 @@ class ChatInputView: UIView {
         text.layer.cornerRadius = 5.0
         text.returnKeyType = .send
         text.showsVerticalScrollIndicator = true
-        
+        text.contentInset = UIEdgeInsetsMake(0, 0, 0, 0)
         return text
         
     }()
+    
     // 代理
     weak var delegate:ChatInputViewDelegate?
     
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = UIColor.clear
+        self.backgroundColor = UIColor.red
         self.addSubview(chatView)
         chatView.addSubview(plashold)
-        _ = chatView.sd_layout().topSpaceToView(self,2.5)?.leftSpaceToView(self,5)?.rightSpaceToView(self,5)?.heightIs(textContentH)
+       
         _ = plashold.sd_layout().centerYEqualToView(chatView)?.leftSpaceToView(chatView,5)?.autoHeightRatio(0)
         
-        
+        plashold.setMaxNumberOfLinesToShow(1)
         
     }
     
@@ -82,14 +80,14 @@ extension ChatInputView:UITextViewDelegate{
     }
     
     func textViewDidChange(_ textView: UITextView) {
+        
+        
         if textView.text.isEmpty{
             plashold.text = defaultText
-            _ = textView.sd_layout().heightIs(textContentH)
-            delegate?.changeBarHeight(textView: textView, height: 0)
-            
-            return
+        }else{
+             plashold.text = ""
         }
-        plashold.text = ""
+       
         
         // 调整高度
         
@@ -100,48 +98,44 @@ extension ChatInputView:UITextViewDelegate{
         if line <= 3 && line > 1{
             let height = textView.font!.lineHeight * (line - 1)
             delegate?.changeBarHeight(textView: textView, height: height )
-            _ = textView.sd_layout().heightIs(textContentH + height)
+            //textView.frame.size.height = textContentH + height
+            textView.frame = CGRect.init(x: 5, y: 5, width: self.bounds.width - 10 , height: textContentH + height)
+
             
         }else if line > 3  {
             // 不改变frame
         }else{
-            _ = textView.sd_layout().heightIs(textContentH)
             delegate?.changeBarHeight(textView: textView, height: 0)
+            //textView.frame.size.height = textContentH
+            textView.frame = CGRect.init(x: 5, y: 5, width: self.bounds.width - 10 , height: textContentH)
  
         }
+        
         textView.scrollRangeToVisible(textView.selectedRange)
+
     }
     
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.text.isEmpty{
-            plashold.text = defaultText
-            return
-        }
-        plashold.text = ""
-        
-        
-    }
+    
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        if textView.text.isEmpty{
-            return
-        }
-        //delegate?.sendMessage(textView: textView)
         
+        if textView.text.isEmpty{
+            plashold.text = defaultText
+        }else{
+            plashold.text = ""
+        }
     }
-    
-    
-  
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if text == "\n"{
             textView.endEditing(true)
             // 恢复初始状态
-            _ = textView.sd_layout().heightIs(textContentH)
+            textView.frame = CGRect.init(x: 5, y: 5, width: self.bounds.width - 10, height: textContentH)
             delegate?.changeBarHeight(textView: textView, height: 0)
             delegate?.sendMessage(textView: textView)
             textView.text = ""
             plashold.text = defaultText
+            
             return false
         }
         return true

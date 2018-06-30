@@ -46,12 +46,14 @@ class CareerTalkShowViewController: BaseShowJobViewController {
         super.viewDidLoad()
         setViews()
 
+       
+
         // Do any additional setup after loading the view.
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationItem.title = viewTitle
+        //self.navigationItem.title = viewTitle
         self.navigationController?.insertCustomerView()
         self.navigationController?.setToolbarHidden(firstLoad == false, animated: false)
 
@@ -61,7 +63,7 @@ class CareerTalkShowViewController: BaseShowJobViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.removeCustomerView()
-        self.navigationItem.title = ""
+        //self.navigationItem.title = ""
         self.navigationController?.setToolbarHidden(true, animated: false)
     }
     
@@ -71,7 +73,7 @@ class CareerTalkShowViewController: BaseShowJobViewController {
        
         
         super.setViews()
-        
+        self.title = viewTitle
         table.delegate = self
         table.dataSource = self
         // 公司cell

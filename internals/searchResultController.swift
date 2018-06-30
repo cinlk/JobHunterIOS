@@ -23,6 +23,7 @@ class searchResultController: BaseViewController {
         tb.register(CareerTalkCell.self, forCellReuseIdentifier: CareerTalkCell.identity())
         tb.register(OnlineApplyCell.self, forCellReuseIdentifier: OnlineApplyCell.identity())
         tb.register(CompanyItemCell.self, forCellReuseIdentifier: CompanyItemCell.identity())
+        tb.register(listPostItemCell.self, forCellReuseIdentifier: listPostItemCell.identity())
     
         tb.tableFooterView = UIView.init()
         tb.delegate = self
@@ -131,7 +132,12 @@ extension searchResultController:UITableViewDataSource, UITableViewDelegate{
                 cell.mode = datas[currentType]?[indexPath.row] as? CareerTalkMeetingModel
                 return cell
             }
-            
+        // 论坛帖子
+        case .forum:
+            if let cell = tableView.dequeueReusableCell(withIdentifier: listPostItemCell.identity(), for: indexPath) as? listPostItemCell{
+                cell.mode = datas[currentType]?[indexPath.row] as? PostArticleModel
+                return cell
+            }
         default:
             break
         }
@@ -160,6 +166,11 @@ extension searchResultController:UITableViewDataSource, UITableViewDelegate{
             if let mode = datas[currentType]?[indexPath.row] as? CareerTalkMeetingModel{
                 return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CareerTalkCell.self, contentViewWidth: ScreenW)
             }
+        case .forum:
+            if let mode = datas[currentType]?[indexPath.row] as? PostArticleModel{
+                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: listPostItemCell.self, contentViewWidth: ScreenW)
+            }
+            
         default:
             break
         }
@@ -277,6 +288,19 @@ extension searchResultController{
                 complete?(true)
                 
             }, onError: nil, onCompleted: nil, onDisposed: nil)
+        
+        case .forum:
+            var res:[PostArticleModel] = []
+            for _ in 0..<10{
+                
+                if let data = PostArticleModel(JSON: ["id":"dqwd-dqwdqwd","title":"标题题","authorID":"dqwddqwdd","authorName":"我的名字","authorIcon":"chicken","createTime":Date().timeIntervalSince1970,"kind":"jobs","thumbUP":2303,"reply":101]){
+                    res.append(data)
+                    
+                }
+            }
+            self.datas[type] = res
+            self.didFinishloadData()
+            complete?(true)
         default:
             break
         }

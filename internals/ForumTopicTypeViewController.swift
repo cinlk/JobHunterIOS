@@ -9,16 +9,12 @@
 import UIKit
 
 
-fileprivate let titleName:String = "选择主题分类"
+fileprivate let titleName:String = "选择板块"
 
 class ForumTopicTypeViewController: UITableViewController {
 
     
-    
-    
     private let datas:[forumType] = forumType.items
-    
-    
     internal var getType:((_ type:forumType)->Void)?
     
     // currentSelect
@@ -27,27 +23,21 @@ class ForumTopicTypeViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = titleName
         self.tableView.tableFooterView = UIView()
         self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         self.tableView.backgroundColor = UIColor.viewBackColor()
-       
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
 
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationItem.title = titleName
         self.navigationController?.insertCustomerView()
         
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
         self.navigationController?.removeCustomerView()
     }
 

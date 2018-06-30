@@ -130,7 +130,7 @@ class CompanyMainVC: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationItem.title = "公司详情"
+        //self.navigationItem.title = "公司详情"
         self.navigationController?.insertCustomerView()
         UIApplication.shared.keyWindow?.addSubview(shareapps)
 
@@ -140,7 +140,7 @@ class CompanyMainVC: BaseViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
+        //self.navigationItem.title = ""
         self.navigationController?.removeCustomerView()
         shareapps.removeFromSuperview()
         
@@ -148,6 +148,8 @@ class CompanyMainVC: BaseViewController {
     }
     
     override func setViews() {
+        
+        self.title = "公司详情"
         self.view.backgroundColor = UIColor.viewBackColor()
         self.addChildViewController(companyDetail)
         self.addChildViewController(companyJobs)

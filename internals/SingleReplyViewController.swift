@@ -9,23 +9,35 @@
 import UIKit
 
 
-fileprivate let viewTitle:String = "评论"
+fileprivate let viewTitle:String = "回帖"
 
 class SingleReplyViewController: UIViewController {
 
     
+    private lazy var keyboardH:CGFloat = 0
+    private lazy var InputViewHeigh:CGFloat = TOOLBARH
     
-    // 当前回复
-    private var currentSenderName:String = ""
-    private var currentReceiverName:String = ""
+    
+    
+    //
+    private var currentSenderName:String = ""{
+        didSet{
+            
+            self.inputText.defaultText = "回复\(currentSenderName)"
+            //self.inputText.plashold.text = "回复\(currentSenderName)"
+        }
+    }
+    private var currentSelecteCell:Int = -1
+    
+    
     
     internal var mode:FirstReplyModel?{
         didSet{
             headerView.mode = mode
             currentSenderName = mode!.authorName!
-            
             headerView.layoutSubviews()
             self.table.tableHeaderView = headerView
+        
             self.loadData()
             
         }
@@ -50,12 +62,14 @@ class SingleReplyViewController: UIViewController {
         tb.backgroundColor = UIColor.viewBackColor()
         tb.dataSource = self
         tb.delegate = self
+        tb.keyboardDismissMode = .onDrag
+        tb.contentInset = UIEdgeInsetsMake(0, 0, InputViewHeigh + 10, 0)
         tb.register(contentCell.self, forCellReuseIdentifier: contentCell.identity())
         
         return tb
     }()
     
-    // 状态进度
+    // 回复数据加载 状态进度
     private lazy var  progressView:UIActivityIndicatorView = {
        let pv = UIActivityIndicatorView.init(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
         pv.center = CGPoint.init(x: ScreenW/2, y: ScreenH/2)
@@ -65,43 +79,67 @@ class SingleReplyViewController: UIViewController {
     }()
     
     
-    private lazy var alertVC:UIAlertController = {
-        let vc = UIAlertController.init(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
-        let report = UIAlertAction.init(title: "举报", style: UIAlertActionStyle.default, handler:{ action in
-            print("action")
+  
+ 
+    
+    // 点击cell 显示
+    private lazy var selectAlert:UIAlertController = {
+        let vc = UIAlertController.init(title: "请选择", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+        let thumbUP = UIAlertAction.init(title: "赞", style: UIAlertActionStyle.default, handler: { action in
+            if  self.allSubReplys[self.currentSelecteCell].isLike{
+                self.allSubReplys[self.currentSelecteCell].thumbUP -= 1
+            }else{
+                self.allSubReplys[self.currentSelecteCell].thumbUP += 1
+
+            }
+            self.allSubReplys[self.currentSelecteCell].isLike = !self.allSubReplys[self.currentSelecteCell].isLike
+            
+            
+            self.table.reloadRows(at: [IndexPath.init(row: self.currentSelecteCell, section: 0)], with: .automatic)
+
         })
-        vc.addAction(report)
+        
+        let comment = UIAlertAction.init(title: "评论", style: .default, handler: { action in
+            let name  = self.allSubReplys[self.currentSelecteCell].authorName!
+            
+            self.resetPlashold(name: name)
+
+            self.inputText.chatView.becomeFirstResponder()
+        })
+        
+        let warn = UIAlertAction.init(title: "举报", style: UIAlertActionStyle.default, handler:{ action in
+            
+        })
+        let delete = UIAlertAction.init(title: "删除", style: UIAlertActionStyle.destructive, handler: { action in
+            self.allSubReplys.remove(at: self.currentSelecteCell)
+            self.table.reloadData()
+        })
+        
+        vc.addAction(thumbUP)
+        vc.addAction(comment)
+        vc.addAction(warn)
+        vc.addAction(delete)
         vc.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: nil))
         
-        
+    
         return vc
-    }()
-    
-    
-    // 底部按钮
-    private lazy var replyBtn:UIButton = {   [unowned self] in
-        let btn = UIButton.init(type: .custom)
-        btn.frame = CGRect.init(x: 0, y: 0, width: 100, height: TOOLBARH)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 12)
-        btn.addTarget(self, action: #selector(reply), for: .touchUpInside)
-        btn.tintColor = UIColor.blue
-        // 调整image在上 title 在下
-        btn.setPositionWith(image: #imageLiteral(resourceName: "comment").changesize(size: CGSize.init(width: 20, height: 20)).withRenderingMode(.alwaysTemplate), title: "回复", titlePosition: .bottom, additionalSpacing: 5, state: .normal, offsetY: -10)
-        
-        return btn
         
     }()
     
-    private lazy var likeBtn:UIButton = {  [unowned self] in
-        let btn = UIButton.init(type: .custom)
-        btn.frame = replyBtn.frame
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 12)
-        btn.setPositionWith(image: UIImage.init(named: "thumbup")?.changesize(size: CGSize.init(width: 20, height: 20)).withRenderingMode(.alwaysTemplate), title: "点赞", titlePosition: .bottom, additionalSpacing: 5, state: .normal, offsetY: -10)
-        
-        btn.tintColor = UIColor.blue
-        btn.addTarget(self, action: #selector(like), for: .touchUpInside)
-        return btn
+    
+    
+    
+    // 底部输入框view
+    private lazy var inputText:ChatInputView = {
+        let text = ChatInputView.init(frame: CGRect.init(x: 0, y: ScreenH - InputViewHeigh , width: ScreenW, height: InputViewHeigh))
+        text.plashold.text = "回复\(currentSenderName)"
+        text.delegate = self
+        return text
     }()
+    
+    
+    
+    
     
     
 
@@ -116,18 +154,19 @@ class SingleReplyViewController: UIViewController {
         super.viewWillAppear(animated)
         self.navigationController?.insertCustomerView()
         self.navigationItem.title = viewTitle
-        self.navigationController?.setToolbarHidden(false, animated: true)
+        UIApplication.shared.keyWindow?.addSubview(inputText)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.removeCustomerView()
         self.navigationItem.title = ""
-        self.navigationController?.setToolbarHidden(true, animated: true)
-
-        
+        inputText.removeFromSuperview()
     }
 
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 
 }
 
@@ -162,16 +201,12 @@ extension SingleReplyViewController: UITableViewDataSource, UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let mode = allSubReplys[indexPath.row]
-        currentReceiverName = mode.sender!
+        self.inputText.chatView.endEditing(true)
+        //currentReceiverName = mode.authorName!
+        currentSelecteCell = indexPath.row
         
-        let commentVC = PostCommentViewController()
-        commentVC.title = "回复\(mode.sender!)"
-        commentVC.postBack = { content in
-    
-            self.addNewMessage(content)
-        }
-        self.present(commentVC, animated: true, completion: nil)
+        self.present(selectAlert, animated: true, completion: nil)
+     
     }
     
     //section
@@ -191,21 +226,18 @@ extension SingleReplyViewController{
     private func setViews(){
         self.view.addSubview(table)
         self.table.addSubview(progressView)
-        
-        // 添加navBtn
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: UIImage.init(named: "more")?.changesize(size: CGSize.init(width: 20, height: 20)).withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(warn))
-        
-        
-        self.toolbarItems = [UIBarButtonItem.init(customView: replyBtn)]
-        let fixSpace = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
-        fixSpace.width = ScreenW - 2*100
-        self.toolbarItems?.append(fixSpace)
-        // 点赞
-        self.toolbarItems?.append(UIBarButtonItem.init(customView: likeBtn))
-        
-       
+//        if  myself.userID == mode?.authorID{
+//
+//        }
         
         _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
+        
+        
+        
+        //简体键盘
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHidden), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        
         
     }
     
@@ -213,6 +245,9 @@ extension SingleReplyViewController{
         progressView.stopAnimating()
         self.table.reloadData()
     }
+    
+    
+   
 }
 
 
@@ -224,12 +259,10 @@ extension SingleReplyViewController{
             headerView.thumbUP.setTitle(String(mode!.thumbUP), for: .normal)
             //tableHeader.thumbUP.isSelected = false
             headerView.thumbUP.tintColor = UIColor.lightGray
-            likeBtn.tintColor = UIColor.blue
-            return
+             return
             
         }
         // 上传到服务器
-        likeBtn.tintColor = UIColor.red
         mode?.isLike = true
         mode?.thumbUP += 1
         headerView.thumbUP.setTitle(String(mode!.thumbUP), for: .normal)
@@ -238,26 +271,104 @@ extension SingleReplyViewController{
     }
     
     @objc private func reply(){
-        let commentVC = PostCommentViewController()
-        commentVC.title = "回复\(mode!.authorName!)"
-        currentReceiverName = (mode?.authorName)!
-        
-        commentVC.postBack = { content in
-            self.addNewMessage(content)
+        if self.inputText.chatView.isFirstResponder{
+            self.inputText.chatView.resignFirstResponder()
+            return
         }
+        self.inputText.chatView.becomeFirstResponder()
         
-        self.present(commentVC, animated: true, completion: nil)
+        
+        self.resetPlashold(name: self.mode!.authorName!)
+      
         
     }
     
     
-    @objc private func warn(){
-        self.present(alertVC, animated: true, completion: nil)
+   
+    
+}
 
+
+extension SingleReplyViewController{
+    
+    @objc private func keyboardShow(notify:NSNotification){
+        
+        
+        let kframe = notify.userInfo![UIKeyboardFrameEndUserInfoKey] as! CGRect
+        let duration = notify.userInfo![UIKeyboardAnimationDurationUserInfoKey] as! NSNumber
+        let curve = notify.userInfo![UIKeyboardAnimationCurveUserInfoKey] as! NSNumber
+        
+        keyboardH = kframe.height
+        
+        UIView.animate(withDuration: TimeInterval(truncating: duration), delay: 0, options: [UIViewAnimationOptions.init(rawValue: UInt(truncating: curve))], animations: {
+            
+            self.inputText.frame.origin.y = ScreenH - self.keyboardH  - self.InputViewHeigh
+            
+            
+        }, completion: nil)
+        
+        
+        
+    }
+    
+    @objc private func keyboardHidden(notify:NSNotification){
+        
+        let duration = notify.userInfo![UIKeyboardAnimationDurationUserInfoKey] as! NSNumber
+        let curve = notify.userInfo![UIKeyboardAnimationCurveUserInfoKey] as! NSNumber
+        keyboardH = 0
+        
+ 
+        
+        UIView.animate(withDuration: TimeInterval(truncating: duration), delay: 0, options: [.curveEaseIn,UIViewAnimationOptions.init(rawValue: UInt(truncating: curve))], animations: {
+            self.inputText.frame.origin.y = ScreenH - self.InputViewHeigh
+            
+            
+        }, completion: { bool in
+             
+            //self.currentSelecteCell = -1
+            self.resetPlashold(name: self.mode!.authorName!)
+            
+        })
+        
+    }
+    
+    // 更新 发送对象
+    private func resetPlashold(name:String){
+        self.currentSenderName = name
+        if self.self.inputText.chatView.text.isEmpty{
+            self.inputText.plashold.text = "回复\(self.currentSenderName)"
+        }
+
+        
     }
     
 }
 
+extension SingleReplyViewController: ChatInputViewDelegate{
+    
+    func changeBarHeight(textView: UITextView, height: CGFloat) {
+        let pointY:CGFloat = ScreenH - keyboardH - TOOLBARH - height
+        //print(height)
+        if height == 0 {
+            InputViewHeigh = TOOLBARH
+            
+            self.inputText.frame = CGRect.init(x: 0, y: pointY, width: ScreenW, height: InputViewHeigh)
+        }else{
+            InputViewHeigh = TOOLBARH + height
+            self.inputText.frame = CGRect.init(x: 0, y: pointY, width: ScreenW, height: InputViewHeigh)
+        }
+        
+    }
+    
+    func sendMessage(textView: UITextView) {
+        if let text = textView.text, let new = SecondReplyModel(JSON: ["id":getUUID(), "parentReplyID":self.mode?.id,"replyContent":text,"receiver":currentSenderName,"authorID":self.mode?.authorID,"authorName":self.mode?.authorName,"authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":0,"reply":0]){
+            allSubReplys.append(new)
+            self.table.reloadData()
+        }
+    }
+    
+    
+}
 // 获取数据
 extension SingleReplyViewController{
     private func loadData(){
@@ -267,11 +378,12 @@ extension SingleReplyViewController{
             
             Thread.sleep(forTimeInterval: 3)
             for _ in 0..<6{
-                self?.allSubReplys.append(SecondReplyModel(JSON: ["parentReplyID":"dqwd-dqw-dqwd","sender":"小红","receiver":"佩奇","content":"我看你才是🐽"])!)
+                
+                self?.allSubReplys.append(SecondReplyModel(JSON: ["id":"dwqdw", "parentReplyID":"dqwd-dqwdqwd","replyContent":"当前为多群多低级趣味的精品区当前为多dqwdqwdqwd   当前为多群 当前为多群 dqdqw","receiver":"小猪啊","authorID":"dqwddqwdd","authorName":"我的名字当","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":2303,"reply":101])!)
                 
             }
             for _ in 0..<5{
-                self?.allSubReplys.append(SecondReplyModel(JSON: ["parentReplyID":"dqwd-dqw-dqwd","sender":"楼主","receiver":"小红","content":"啥子喔当前为多群 当前为多群多群多群无多  \n 当前为多群当前为多群无-dqwd当前为多群多"])!)
+                self?.allSubReplys.append(SecondReplyModel(JSON: ["id":"dwqdw","parentReplyID":"dqwd-dqwdqwd","replyContent":"当前为多群多低级趣味的精品区 当前为多   dqwdqwdqwd   当前为多群 当前为多群 dqdqw","receiver":"小猪啊","authorID":"dqwddqwdd","authorName":"我的名字当前为多","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":2303,"reply":101] )!)
             }
             
             
@@ -284,24 +396,6 @@ extension SingleReplyViewController{
     }
 }
 
-
-extension SingleReplyViewController:UIScrollViewDelegate{
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        //self.inputText.chatView.endEditing(true)
-    }
-    
-    func addNewMessage(_ content:String){
-        
-        if !content.trimmingCharacters(in: CharacterSet.init(charactersIn: " \n")).isEmpty{
-            let message = SecondReplyModel(JSON: ["parentReplyID":"dwqd-dqwdq","sender":self.currentSenderName,
-                                                  "content":content,"receiver":self.currentReceiverName])!
-            self.allSubReplys.append(message)
-            self.table.reloadData()
-            
-        }
-    }
-}
 
 
 
@@ -327,22 +421,29 @@ fileprivate class  singleHeaderView:PostHeaderView{
             let replyStr = String(mode.reply)
             let replySize = NSString(string: replyStr).size(withAttributes: [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12)])
             self.reply.setTitle(replyStr, for: .normal)
-            _ = self.reply.sd_layout().widthIs(25 + replySize.width + 20)
+            _ = self.reply.sd_layout().widthIs(25 + replySize.width + 5)
             let thumbStr = String(mode.thumbUP)
             let thumbSize = NSString(string: thumbStr).size(withAttributes: [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12)])
-            _ = self.thumbUP.sd_layout().widthIs(25 + thumbSize.width + 20)
+            _ = self.thumbUP.sd_layout().widthIs(25 + thumbSize.width + 5)
             self.thumbUP.setTitle(thumbStr, for: .normal)
             
+            userName.setSingleLineAutoResizeWithMaxWidth(ScreenW - 45 - 10  -  thumbUP.width - reply.width)
             
-            
-            
-            self.setupAutoHeight(withBottomView: self.thumbUP, bottomMargin: 10)
-            
-            
+            self.setupAutoHeight(withBottomView: self.contentText, bottomMargin: 10)
         }
     }
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
+        
+        thumbUP.sd_clearAutoLayoutSettings()
+        reply.sd_clearAutoLayoutSettings()
+        userName.setMaxNumberOfLinesToShow(2)
+        lines.isHidden = true
+        _ = thumbUP.sd_layout().rightSpaceToView(self,15)?.topEqualToView(userName)?.widthIs(0)?.heightIs(25)
+        _ = reply.sd_layout().rightSpaceToView(thumbUP,0)?.topEqualToView(thumbUP)?.heightRatioToView(thumbUP,1)?.widthIs(0)
+        
+       
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -353,53 +454,79 @@ fileprivate class  singleHeaderView:PostHeaderView{
 
 
 // cell
-@objcMembers fileprivate class contentCell:UITableViewCell{
+@objcMembers fileprivate class contentCell:ForumBaseCell{
     
     
-   
-    private lazy var content:UILabel = {
-        let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20)
-        label.font = UIFont.systemFont(ofSize: 16)
-        label.textAlignment = .left
-        
-        return label
-    }()
-    
-    
+
     dynamic internal var mode:SecondReplyModel?{
         didSet{
             guard let mode = mode else {
                 return
             }
-            let sender = NSMutableAttributedString.init(string: mode.sender!)
-            sender.addAttributes([NSAttributedStringKey.foregroundColor: UIColor.blue], range: NSRange.init(location: 0, length: mode.sender!.count))
+         
+            self.creatTime.text = mode.createTimeStr
+            self.authorIcon.image = UIImage.init(named: mode.authorIcon)
+            self.postType.text = ""
+            
+            let authNameStr = NSMutableAttributedString.init(string: mode.authorName!, attributes: [NSAttributedStringKey.foregroundColor:UIColor.black, NSAttributedStringKey.font:UIFont.systemFont(ofSize: 14)])
+            authNameStr.append(NSAttributedString.init(string: " " + mode.colleage!, attributes: [NSAttributedStringKey.foregroundColor:UIColor.lightGray, NSAttributedStringKey.font:UIFont.systemFont(ofSize: 14)]))
+            
+            self.authorName.attributedText = authNameStr
+            
+            
             
             let talkto = NSAttributedString.init(string: " 回复 ")
             let receiver = NSMutableAttributedString.init(string: mode.receiver!)
             receiver.addAttributes([NSAttributedStringKey.foregroundColor: UIColor.blue], range: NSRange.init(location: 0, length: mode.receiver!.count))
             receiver.append(NSAttributedString.init(string: ": "))
             
-            let content = NSMutableAttributedString.init(string: mode.content!)
+            let content = NSMutableAttributedString.init(string: mode.replyContent!)
             
             
             
             let attrStr = NSMutableAttributedString.init()
-            attrStr.append(sender)
             attrStr.append(talkto)
             attrStr.append(receiver)
             attrStr.append(content)
-            self.content.attributedText = attrStr
-            self.setupAutoHeight(withBottomView: self.content, bottomMargin: 10)
+            self.postTitle.attributedText = attrStr
+            
+            
+            
+            // 点赞
+            let ts = String(mode.thumbUP)
+            let thumbStr = NSMutableAttributedString.init(string: ts)
+            thumbStr.addAttributes([NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12)], range: NSRange.init(location: 0, length: ts.count))
+            let attch = NSTextAttachment.init()
+            if mode.isLike{
+                 attch.image = UIImage.init(named: "selectedHeart")?.withRenderingMode(.alwaysTemplate).imageWithColor(color: UIColor.red)
+            }else{
+                 attch.image = UIImage.init(named: "heart")?.withRenderingMode(.alwaysTemplate).imageWithColor(color: UIColor.lightGray)
+            }
+           
+            // 图片和文字水平对齐
+            attch.bounds = CGRect.init(x: 0, y: (UIFont.systemFont(ofSize: 12).capHeight - 15)/2, width: 15, height: 15)
+            
+            let tmp = NSMutableAttributedString.init(attributedString: NSAttributedString.init(attachment: attch))
+            tmp.append(thumbStr)
+            let width1 = tmp.boundingRect(with: CGSize.init(width: 100, height: CGFloat(MAXFLOAT)), options: .usesLineFragmentOrigin, context: nil).width + 10
+            
+            self.thumbs.attributedText = tmp
+            _ = self.thumbs.sd_layout().widthIs(width1)
+            
+            
+            self.setupAutoHeight(withBottomView: self.creatTime, bottomMargin: 10)
         }
     }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.contentView.addSubview(content)
-        _ = content.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,10)?.autoHeightRatio(0)
-        content.setMaxNumberOfLinesToShow(0)
+        self.postType.isHidden = true
+        self.reply.isHidden = true
+        self.postType.isAttributedContent = true
+        self.postTitle.font = UIFont.systemFont(ofSize: 16)
+        self.postTitle.setMaxNumberOfLinesToShow(-1)
         
+     
        
     }
     

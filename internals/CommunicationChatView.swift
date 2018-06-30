@@ -184,7 +184,6 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationItem.title = navTitle
         self.navigationController?.insertCustomerView(UIColor.white)
         
     }
@@ -194,7 +193,6 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
         self.navigationController?.removeCustomerView()
 
     }
@@ -218,7 +216,10 @@ extension CommunicationChatView {
         self.view.backgroundColor = UIColor.backGroundColor()
         
         navTitle = hr.name! + "@" + hr.company!
-        self.navigationItem.title = navTitle
+        self.title = navTitle
+        
+        // 影藏返回按钮文字
+        navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
         
         self.setupNavigateBtn()
         

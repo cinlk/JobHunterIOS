@@ -51,6 +51,8 @@ class BaseTableViewController: UITableViewController {
     
     func setViews(){
                 
+        // 影藏返回按钮文字
+        navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
         
         hub.show(animated: true)
         self.handleViews.forEach{

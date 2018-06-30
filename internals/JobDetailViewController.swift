@@ -132,7 +132,7 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationItem.title = "职位详情"
+        
         self.navigationController?.insertCustomerView()
         self.navigationController?.setToolbarHidden(!firstLoad , animated: true)
         self.navigationController?.navigationBar.tintColor = UIColor.black
@@ -143,7 +143,7 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
+        
         self.navigationController?.removeCustomerView()
         self.navigationController?.setToolbarHidden(true, animated: false)
         firstLoad = true
@@ -170,7 +170,7 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
         
         self.handleViews.append(warnBtn)
         super.setViews()
-    
+        self.title = "职位详情"
         // 设置table
         table.delegate = self
         table.register(UINib(nibName:"CompanySimpleCell", bundle:nil), forCellReuseIdentifier: CompanySimpleCell.identity())

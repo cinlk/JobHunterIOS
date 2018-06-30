@@ -11,12 +11,12 @@ import UIKit
 class BasePostItemsViewController: BaseViewController {
 
     
-    private var modes:[PostArticleModel] = []
+    internal var modes:[PostArticleModel] = []
     
     // 帖子主题类型
     internal var type:forumType?
     
-    private lazy var table:UITableView = { [unowned self] in
+    internal lazy var table:UITableView = { [unowned self] in
         let table = UITableView()
         table.tableFooterView = UIView()
         table.dataSource = self
@@ -30,7 +30,7 @@ class BasePostItemsViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
-        loadData()
+        //loadData()
     }
     
    
@@ -61,7 +61,7 @@ class BasePostItemsViewController: BaseViewController {
     
     override func reload() {
         super.reload()
-        self.loadData()
+        //self.loadData()
     }
 
 
@@ -109,27 +109,4 @@ extension BasePostItemsViewController: UITableViewDataSource, UITableViewDelegat
     
 }
 
-extension BasePostItemsViewController{
-    
-    private func loadData(){
-        
-        
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            Thread.sleep(forTimeInterval: 3)
-            
-            for _ in 0..<10{
-                self?.modes.append(PostArticleModel(JSON: ["id":"dqwd-dqwdqwd","title":"标题题","authorID":"dqwddqwdd","authorName":"我的名字","authorIcon":"chicken","createTime":Date().timeIntervalSince1970,"kind":"jobs","thumbUP":2303,"reply":101])!)
-            }
-            
-            DispatchQueue.main.async {
-                self?.didFinishloadData()
-            }
-            
-            
-        }
-        
-        
-       
-        
-    }
-}
+

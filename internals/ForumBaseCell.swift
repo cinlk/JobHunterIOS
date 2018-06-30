@@ -27,6 +27,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 30, height: 30)
         let label = UILabel()
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 30 - 30)
         label.textAlignment = .left
+        label.isAttributedContent = true 
         label.font = UIFont.systemFont(ofSize: 14)
         return label
         
@@ -61,6 +62,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 30, height: 30)
         label.textAlignment = .center
         label.textColor = UIColor.lightGray
         label.tintColor = UIColor.lightGray
+        label.isAttributedContent = true
         return label
     }()
     
@@ -68,6 +70,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 30, height: 30)
         let label = UILabel()
         label.textAlignment = .center
         label.textColor = UIColor.lightGray
+        label.isAttributedContent = true
         label.tintColor = UIColor.lightGray
         return label
     }()
@@ -80,13 +83,14 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 30, height: 30)
         
         _ = authorIcon.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(iconSize.width)?.heightEqualToWidth()
         
-        _ = authorName.sd_layout().topEqualToView(authorIcon)?.leftSpaceToView(authorIcon,10)?.autoHeightRatio(0)
+        _ = authorName.sd_layout().topSpaceToView(self.contentView,12)?.leftSpaceToView(authorIcon,10)?.autoHeightRatio(0)
         _ = postType.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(authorIcon)?.autoHeightRatio(0)
         _ = postTitle.sd_layout().leftEqualToView(authorName)?.topSpaceToView(authorName,5)?.autoHeightRatio(0)
         _ = creatTime.sd_layout().topSpaceToView(postTitle,10)?.leftEqualToView(postTitle)?.autoHeightRatio(0)
         _ = thumbs.sd_layout().topEqualToView(creatTime)?.rightSpaceToView(self.contentView,10)?.widthIs(0)?.heightIs(15)
         _ = reply.sd_layout().rightSpaceToView(thumbs,5)?.topEqualToView(thumbs)?.widthIs(0)?.heightIs(15)
         
+        authorName.setMaxNumberOfLinesToShow(2)
         postTitle.setMaxNumberOfLinesToShow(3)
         authorIcon.sd_cornerRadiusFromWidthRatio = 0.5
         

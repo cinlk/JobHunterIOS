@@ -15,7 +15,7 @@ class EditPostViewController: UIViewController {
 
 
     // post data test
-    struct postBody {
+    private struct postBody {
         var title:String
         var content:String
         var type:String
@@ -26,6 +26,7 @@ class EditPostViewController: UIViewController {
             self.type = type
         }
     }
+    
     
     private lazy var data: postBody = postBody(title: "", content: "", type: "")
  
@@ -49,12 +50,8 @@ class EditPostViewController: UIViewController {
         view.placehold.font = UIFont.systemFont(ofSize: 16)
         view.delegate = self
         view.vc = self
+        view.words.text = "0"
         view.total.text = "/10000"
-        // 顶部横线
-//        let border = CALayer()
-//        border.borderColor = UIColor.lightGray.cgColor
-//        border.frame = CGRect.init(x: 10, y: 0, width: ScreenW - 10, height: 1)
-//        border.borderWidth = 0.5
         view.layer.borderWidth = 0.5
         view.layer.borderColor = UIColor.lightGray.cgColor
         //view.layer.addSublayer(border)
@@ -72,7 +69,7 @@ class EditPostViewController: UIViewController {
         vc.getType = { type in
             self.contentView.postType.title = type.describe
             self.titleView.postType.title = type.describe
-            self.data.type = type.describe
+            self.data.type = type.rawValue
         }
         return vc
     }()
@@ -88,14 +85,12 @@ class EditPostViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.insertCustomerView()
-        self.navigationItem.title = "发布帖子"
-    }
+     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.removeCustomerView()
-        self.navigationItem.title = ""
-    }
+     }
 
    
 
@@ -104,6 +99,11 @@ class EditPostViewController: UIViewController {
 
 extension EditPostViewController{
     private func setViews(){
+        
+        self.title = "发布帖子"
+        // 影藏返回按钮文字
+        navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
+        
         self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "发布", style: .plain, target: self, action: #selector(post))
         self.view.addSubview(titleView)
         self.view.addSubview(contentView)
@@ -151,8 +151,6 @@ extension EditPostViewController:UITextViewDelegate{
             if text == "\n" || text == "\t" {
                 return false
             }
-            
-            
         }
         
         return true
@@ -227,9 +225,24 @@ extension EditPostViewController:UITextViewDelegate{
 
 extension EditPostViewController{
     @objc private func post(){
-        // 检查字数
+        // 检查字数  和条件
+        self.view.endEditing(true)
+        if data.title == "" || data.content == "" || data.type == ""{
+            return
+        }
         
-        print(data.content,data.type,data.title)
+        // 发送到服务七 获取id数据 和 icon 等数据
+        
+        // 构造postArticle 数据
+        if let article = PostArticleModel(JSON: ["id":getUUID(),"title":"文字标题等等","authorID":myself.userID,
+                                                 "authorName":myself.name,"colleage":"我的大学","authorIcon":myself.icon,"createTime":Date().timeIntervalSince1970,"kind":data.type]){
+            
+            NotificationCenter.default.post(name: Notification.Name.init(data.type), object: nil, userInfo: ["mode":article])
+
+        }
+        // 通知 不同的板块刷新
+        
+        //print(data.content,data.type,data.title)
         self.navigationController?.popViewController(animated: true)
     }
 }
@@ -249,7 +262,7 @@ extension EditPostViewController{
 
 private class mytext:UITextView{
     
-    internal var vc:EditPostViewController?
+    internal weak var vc:EditPostViewController?
     
     internal var placehold:UILabel = {
         let label = UILabel()
@@ -268,7 +281,7 @@ private class mytext:UITextView{
     }()
     
     //类型选择
-    internal  lazy var postType:UIBarButtonItem = UIBarButtonItem.init(title: "选择职位类型", style: .plain, target: vc, action: "chooseType")
+    internal  lazy var postType:UIBarButtonItem = UIBarButtonItem.init(title: "选择板块", style: .plain, target: vc, action: "chooseType")
     // 图片
     
     
