@@ -10,7 +10,6 @@ import UIKit
 
 
 
-fileprivate let DescribeViewH:CGFloat =  70
 fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
 fileprivate let cellIdentity:String = "status"
 
@@ -71,20 +70,21 @@ class DetailDeliveryStatus: UIViewController {
         
         super.viewDidLoad()
         
-        self.navigationItem.title  = "投递记录"
+        self.title = "历史记录"
         self.view.addSubview(table)
-       
+        navigationItem.backBarButtonItem = UIBarButtonItem.init(title: "", style: .plain, target: nil, action: nil)
+        
         
         _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-    }
+     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+ 
     }
 
 }
@@ -193,9 +193,21 @@ extension DetailDeliveryStatus{
     
     // 跳转job详细界面 (校招，实习， 网申) MARK
     @objc func showJob(){
-        let jobV = JobDetailViewController()
-        //jobV.id = (mode?.id)!
-        self.navigationController?.pushViewController(jobV, animated: true)
+        guard  let mode = mode  else {
+            return
+        }
+        if mode.jobtype == .onlineApply{
+            let apply = OnlineApplyShowViewController()
+            apply.onlineApplyID = "test-id"
+            self.navigationController?.pushViewController(apply, animated: true)
+            
+        }else if mode.jobtype == .graduate || mode.jobtype == .intern{
+            let jobV = JobDetailViewController()
+           
+            
+            jobV.kind = (id: mode.id!, type: mode.jobtype)
+            self.navigationController?.pushViewController(jobV, animated: true)
+        }
     }
 }
 
@@ -205,40 +217,34 @@ extension DetailDeliveryStatus{
 @objcMembers fileprivate  class feedBackCell:UITableViewCell{
     
     
-    private lazy var leftLabel:UILabel = {
+    private lazy var feedBack:UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.font = UIFont.systemFont(ofSize: 18)
-        label.setSingleLineAutoResizeWithMaxWidth(120)
-        label.text = "投递反馈: "
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20)
+        label.isAttributedContent = true
+        
         return label
     }()
     
-    // 反馈描述
-    private lazy var rightLabel:UILabel = {
-        let label = UILabel()
-        label.textAlignment = .left
-        label.font = UIFont.systemFont(ofSize: 18)
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 100)
-        return label
-    }()
     
     dynamic var mode:String?{
         didSet{
-            rightLabel.text = mode ?? ""
-            self.setupAutoHeight(withBottomViewsArray: [leftLabel, rightLabel], bottomMargin: 5)
+            let attr = NSMutableAttributedString.init(string: "投递反馈: ", attributes: [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFont.systemFont(ofSize: 14)])
+            attr.append(NSAttributedString.init(string: mode ?? "", attributes: [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 14)]))
+            self.feedBack.attributedText = attr
+            self.setupAutoHeight(withBottomView: feedBack, bottomMargin: 5)
         }
     }
     
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.contentView.addSubview(leftLabel)
-        self.contentView.addSubview(rightLabel)
-        _ = leftLabel.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.autoHeightRatio(0)
-        _ = rightLabel.sd_layout().leftSpaceToView(leftLabel,10)?.topEqualToView(leftLabel)?.autoHeightRatio(0)
-        
-        rightLabel.setMaxNumberOfLinesToShow(3)
+        self.contentView.addSubview(feedBack)
+        self.selectionStyle = .none 
+        _ = feedBack.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.autoHeightRatio(0)
+      
+        feedBack.setMaxNumberOfLinesToShow(-1)
         
     }
     
@@ -281,7 +287,7 @@ private class tableHeaderView:UIView{
     
     private lazy var company:UILabel = {
         let company = UILabel.init()
-        company.font = UIFont.systemFont(ofSize: 16)
+        company.font = UIFont.systemFont(ofSize: 14)
         company.textAlignment = .left
         company.textColor = UIColor.black
         company.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
@@ -290,23 +296,13 @@ private class tableHeaderView:UIView{
     
     private lazy var address:UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 10)
+        label.font = UIFont.systemFont(ofSize: 12)
         label.textAlignment = .left
         label.textColor = UIColor.lightGray
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
         return label
     }()
     
-    // 行业类型
-    private lazy var business:UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 10)
-        label.textAlignment = .left
-        label.textColor = UIColor.lightGray
-        
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
-        return label
-    }()
     
     var mode:DeliveredJobsModel?{
         didSet{
@@ -317,10 +313,8 @@ private class tableHeaderView:UIView{
             jobName.text = mode.title
             company.text = mode.companyName
             address.text =  mode.address?.joined(separator: " ")
-            business.text = mode.business?.joined(separator: " ")
            
-            setView(type: mode.jobtype)
-            
+            self.setupAutoHeight(withBottomView: address, bottomMargin: 5)
         }
     }
     
@@ -328,11 +322,19 @@ private class tableHeaderView:UIView{
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        let views:[UIView] = [icon, rightArrow, jobName, company, address, business]
+        let views:[UIView] = [icon, rightArrow, jobName, company, address]
         self.sd_addSubviews(views)
         
-        _ = icon.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(self,10)?.widthIs(iconSize.width)?.heightIs(iconSize.height)
-        _ = rightArrow.sd_layout().rightSpaceToView(self,10)?.centerYEqualToView(self)?.widthIs(15)?.heightEqualToWidth()
+        _ = icon.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(self,5)?.widthIs(iconSize.width)?.heightIs(iconSize.height)
+        _ = rightArrow.sd_layout().rightSpaceToView(self,5)?.centerYEqualToView(self)?.widthIs(15)?.heightEqualToWidth()
+        
+        _ = jobName.sd_layout().leftSpaceToView(icon,10)?.topEqualToView(icon)?.autoHeightRatio(0)
+        _ = company.sd_layout().leftEqualToView(jobName)?.topSpaceToView(jobName,5)?.autoHeightRatio(0)
+        _ = address.sd_layout().leftEqualToView(jobName)?.topSpaceToView(company,5)?.autoHeightRatio(0)
+        jobName.setMaxNumberOfLinesToShow(1)
+        company.setMaxNumberOfLinesToShow(1)
+        address.setMaxNumberOfLinesToShow(2)
+        
         
     }
     
@@ -345,39 +347,6 @@ private class tableHeaderView:UIView{
         self.backgroundColor = UIColor.white
     }
     
-    private func setView(type:jobType){
-        
-    
-       
-        switch type {
-        case .intern, .graduate:
-            
-              _ = jobName.sd_layout().leftSpaceToView(icon,10)?.topEqualToView(icon)?.autoHeightRatio(0)
-              _ = company.sd_layout().leftEqualToView(jobName)?.topSpaceToView(jobName,5)?.autoHeightRatio(0)
-              _ = address.sd_layout().leftEqualToView(jobName)?.topSpaceToView(company,5)?.autoHeightRatio(0)
-              jobName.setMaxNumberOfLinesToShow(1)
-
-              self.setupAutoHeight(withBottomViewsArray: [icon, address], bottomMargin: 10)
-            
-            
-        case .onlineApply:
-            
-              _ = company.sd_layout().leftSpaceToView(icon,10)?.topEqualToView(icon)?.autoHeightRatio(0)
-              _ = address.sd_layout().leftEqualToView(company)?.topSpaceToView(company,5)?.autoHeightRatio(0)
-              _ = business.sd_layout().leftEqualToView(address)?.topSpaceToView(address,5)?.autoHeightRatio(0)
-              business.setMaxNumberOfLinesToShow(2)
-              
-              self.setupAutoHeight(withBottomViewsArray: [icon, business], bottomMargin: 10)
-
-        default:
-            return
-        }
-        
-        company.setMaxNumberOfLinesToShow(1)
-        address.setMaxNumberOfLinesToShow(2)
-        
-        
-    }
 }
 
 

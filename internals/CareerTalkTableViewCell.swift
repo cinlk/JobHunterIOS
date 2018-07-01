@@ -19,6 +19,7 @@ import UIKit
             self.titleName.text = mode.company
             self.content.text = mode.content
             self.time.text = mode.creatTimeStr
+            self.rightArrow.isHidden = true 
             self.setupAutoHeight(withBottomView: content, bottomMargin: 10)
         }
     }

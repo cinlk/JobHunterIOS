@@ -37,7 +37,6 @@ class JobInviteViewController: BaseTableViewController {
         self.tableView.separatorStyle = .none
         self.tableView.register(JobInviteTableViewCell.self, forCellReuseIdentifier: JobInviteTableViewCell.identity())
         // 调整状态背景view 高度
-        self.handleViews.append(tableView)
 
         
         super.setViews()
@@ -84,6 +83,22 @@ class JobInviteViewController: BaseTableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
+        let mode = datas[indexPath.row]
+        if mode.type == .onlineApply{
+            
+            let apply = OnlineApplyShowViewController()
+            apply.onlineApplyID = "test-id"
+            self.navigationController?.pushViewController(apply, animated: true)
+
+            
+        }else if mode.type == .graduate || mode.type == .intern{
+            let jobV = JobDetailViewController()
+            
+            
+            jobV.kind = (id: mode.jobID!, type: mode.type)
+            self.navigationController?.pushViewController(jobV, animated: true)
+        }
+        
     }
 
 
@@ -94,13 +109,16 @@ extension JobInviteViewController{
     private func loadData(){
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             
-            
-            for _ in 0..<12{
-                self?.datas.append(JobInviteModel(JSON: ["hr":"hr名字","content":"邀请投递网申",
-                    "jobID":"dqwddqwd-432dwa","time":Date().timeIntervalSince1970,"jobtype":jobType.onlineApply.rawValue])!)
+            Thread.sleep(forTimeInterval: 3)
+            for _ in 0..<5{
+                self?.datas.append(JobInviteModel(JSON: ["hr":"hr名字","content":"邀请投递网申","jobID":"dqwddqwd-432dwa","time":Date().timeIntervalSince1970,"jobtype":jobType.onlineApply.rawValue])!)
                 
             }
-            Thread.sleep(forTimeInterval: 3)
+            
+            for _ in 0..<5{
+                self?.datas.append(JobInviteModel(JSON: ["hr":"hr名字","content":"邀请投投递 职位","jobID":"dqwddqwd-432dwa","time":Date().timeIntervalSince1970,"jobtype":jobType.graduate.rawValue])!)
+            }
+            
             DispatchQueue.main.async(execute: {
                 self?.didFinishloadData()
             })

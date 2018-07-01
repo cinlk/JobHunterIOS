@@ -21,8 +21,6 @@ protocol selectedItemDelegate: class {
 class SetFourItemTableViewCell: UITableViewCell {
 
     
-    
-    
     weak var delegate:selectedItemDelegate?
     
     
@@ -31,7 +29,7 @@ class SetFourItemTableViewCell: UITableViewCell {
         sk.axis = .horizontal
         sk.alignment = .fill
         sk.distribution = .fillEqually
-        sk.backgroundColor = UIColor.red
+        sk.backgroundColor = UIColor.clear
         sk.spacing = 0
         sk.tintColor = UIColor.black
         return sk
@@ -43,8 +41,6 @@ class SetFourItemTableViewCell: UITableViewCell {
     private lazy var deliveryView:UIView = { [unowned self] in
         
         let v = UIView()
-        
-        
         let btn = UIButton.init()
         btn.setImage(#imageLiteral(resourceName: "delivery").changesize(size: CGSize.init(width: 40, height: 45)), for: .normal)
         btn.setImage(#imageLiteral(resourceName: "delivery").changesize(size: CGSize.init(width: 40, height: 45)), for: .highlighted)

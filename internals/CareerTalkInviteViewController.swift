@@ -23,23 +23,25 @@ class CareerTalkInviteViewController: BaseTableViewController {
         // Do any additional setup after loading the view.
     }
 
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
     }
-    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        
+        
     }
     
+    
     override func setViews() {
+        
         self.tableView.contentInset = UIEdgeInsetsMake(10, 0, 0, 0)
         self.tableView.tableFooterView = UIView.init()
         self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.separatorStyle = .none
         
-        self.handleViews.append(tableView)
-
         self.tableView.register( CareerTalkTableViewCell.self, forCellReuseIdentifier: CareerTalkTableViewCell.identity())
         
         super.setViews()
@@ -86,6 +88,12 @@ class CareerTalkInviteViewController: BaseTableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
+        let mode = datas[indexPath.row]
+        let show = CareerTalkShowViewController()
+        show.meetingID =  mode.meetingID
+        self.navigationController?.pushViewController(show, animated: true)
+       
+        
     }
 
 }
@@ -93,14 +101,15 @@ class CareerTalkInviteViewController: BaseTableViewController {
 
 extension CareerTalkInviteViewController{
     private func loadData(){
+        
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             
-            
+            Thread.sleep(forTimeInterval: 1)
+
             for _ in 0..<12{
-                self?.datas.append(CarrerTalkInviteModel(JSON: ["company":"公司名称","content":"如今随着流媒体和云端存储越来越成熟，版权内容越来越丰富，我们已经愈发不需要下载视频了。只要有网络，想看什么内容，基本都能找到在线播放。但总有些时候，是你特别想把视频下载下来的——比如网速不给力或者没有网络的时候，再比如想反复揣摩学习某些动作片视频资料的时候。",
-                                "meetingID":"dqwddqwd-432dwa","time":Date().timeIntervalSince1970])!)
+                self?.datas.append(CarrerTalkInviteModel(JSON: ["company":"公司名称","content":"邀请你给参加 xxx 宣讲会","meetingID":"dqwddqwd-432dwa","time":Date().timeIntervalSince1970])!)
             }
-            Thread.sleep(forTimeInterval: 3)
+            
             DispatchQueue.main.async(execute: {
                 self?.didFinishloadData()
             })

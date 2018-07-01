@@ -37,12 +37,12 @@ class invitationSettingViewController: BaseTableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.title = viewTitle
+ 
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.title = ""
+ 
         
     }
     
@@ -55,8 +55,8 @@ class invitationSettingViewController: BaseTableViewController {
         self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentity)
         self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.register(switchCell.self, forCellReuseIdentifier: switchCell.identity())
-        //self.navigationItem.rightBarButtonItem
-        
+        self.title = viewTitle
+       
         super.setViews()
         
     }
@@ -163,8 +163,8 @@ extension invitationSettingViewController{
             
             
             Thread.sleep(forTimeInterval: 3)
-            self?.mode = InvitationModel(JSON: ["permit":false, "openEmail":true,"openSms":false])
-            //self?.data = greetingModel(JSON: ["isOn":true,"des":["默认第一条","第二条","第三条","第四条","第五条"],"currentIndex":0])
+            self?.mode = InvitationModel(JSON: ["permit":true, "openEmail":true,"openSms":false])
+            
             DispatchQueue.main.async(execute: {
                 self?.didFinishloadData()
             })

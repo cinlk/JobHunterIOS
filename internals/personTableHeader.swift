@@ -94,7 +94,7 @@ class personTableHeader: UIView {
     private func normallayout(){
         
         self.backgroundColor = UIColor.orange
-        _ = avatarImg.sd_layout().centerXEqualToView(self)?.centerYEqualToView(self)
+        _ = avatarImg.sd_layout().centerXEqualToView(self)?.centerYEqualToView(self)?.widthIs(45)?.heightIs(45)
         _ = nameTitle.sd_layout().topSpaceToView(avatarImg,5)?.centerXEqualToView(avatarImg)?.autoHeightRatio(0)
         _ = introduce.sd_layout().topSpaceToView(nameTitle,5)?.centerXEqualToView(avatarImg)?.autoHeightRatio(0)
         

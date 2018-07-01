@@ -17,7 +17,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     // 控制 标签显示
     internal var showTag:Bool = true
     
-    private lazy var icon:UIImageView = {
+    internal lazy var icon:UIImageView = {
         let image = UIImageView.init()
         image.contentMode = .scaleAspectFit
         image.clipsToBounds = true
@@ -25,7 +25,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     }()
     
     
-    private lazy var company:UILabel = {
+    internal lazy var company:UILabel = {
         let label = UILabel.init()
         label.textAlignment = .left
         label.font = UIFont.boldSystemFont(ofSize: 16)
@@ -46,7 +46,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
         return label
         
     }()
-    private lazy var jobName:UILabel = {
+    internal lazy var jobName:UILabel = {
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: 12)
         label.textAlignment = .left
@@ -56,7 +56,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
         return label
     }()
     
-    private lazy var address:UILabel = {
+    internal lazy var address:UILabel = {
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = UIColor.lightGray
@@ -66,7 +66,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     }()
     
     
-    private lazy var  degree:UILabel = {
+    internal lazy var  degree:UILabel = {
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = UIColor.lightGray
@@ -77,7 +77,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     
     
     
-    private lazy var  create_time:UILabel = {
+    internal lazy var  create_time:UILabel = {
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = UIColor.blue
@@ -88,7 +88,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     
     
     // 浏览次数
-    private lazy var checkNums:UILabel = {
+    internal lazy var checkNums:UILabel = {
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = UIColor.lightGray

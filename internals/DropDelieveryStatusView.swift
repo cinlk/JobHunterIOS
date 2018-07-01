@@ -24,7 +24,7 @@ class DropDelieveryStatusView: BaseSingleItemDropView {
 
 extension DropDelieveryStatusView{
     private func loadData(){
-        datas =  [ResumeDeliveryStatus.delivery.describe, ResumeDeliveryStatus.read.describe,ResumeDeliveryStatus.test.describe, ResumeDeliveryStatus.interview.describe,ResumeDeliveryStatus.offer.describe, ResumeDeliveryStatus.out.describe]
+        datas =  [ResumeDeliveryStatus.all.describe, ResumeDeliveryStatus.delivery.describe, ResumeDeliveryStatus.read.describe,ResumeDeliveryStatus.test.describe, ResumeDeliveryStatus.interview.describe,ResumeDeliveryStatus.offer.describe, ResumeDeliveryStatus.reject.describe]
         
     }
 

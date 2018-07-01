@@ -63,7 +63,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
         let label = UILabel.init()
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
         label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 16)
+        label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = UIColor.black
         
         return label
@@ -93,7 +93,9 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
             company.text = mode.companyName
             type.text = mode.jobtype.describe
             time.text = mode.createTimeStr
-            status.text = "[" + (mode.deliveryStatus.describe ?? "") + "]"
+            if   !mode.deliveryStatus.describe.isEmpty{
+                 status.text = "[" + mode.deliveryStatus.describe + "]"
+            }
             
             self.setupAutoHeight(withBottomViewsArray: [type,icon], bottomMargin: 10)
         }

@@ -243,7 +243,7 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
         self.navigationController?.setToolbarHidden(mode == nil, animated: false)
         self.navigationController?.navigationBar.tintColor = UIColor.white
         self.navigationController?.view.insertSubview(naviBackView, at: 1)
-        UIApplication.shared.keyWindow?.addSubview(showJobsView)
+         UIApplication.shared.keyWindow?.addSubview(showJobsView)
 
         (self.navigationController as? JobHomeNavigation)?.currentStyle = .lightContent
     }
@@ -253,7 +253,7 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
         self.navigationController?.setToolbarHidden(true, animated: false)
         naviBackView.removeFromSuperview()
         self.navigationController?.navigationBar.tintColor = UIColor.black
-
+ 
         (self.navigationController as? JobHomeNavigation)?.currentStyle = .default
         
         showJobsView.removeFromSuperview()
@@ -303,7 +303,7 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
         headerView.layoutSubviews()
         table.tableHeaderView = headerView
         table.reloadData()
-        
+
         collectedBtn.isSelected =  mode!.isCollected!
         
         self.navigationController?.setToolbarHidden(false, animated: true)

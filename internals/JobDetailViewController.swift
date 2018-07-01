@@ -133,8 +133,7 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        self.navigationController?.insertCustomerView()
-        self.navigationController?.setToolbarHidden(!firstLoad , animated: true)
+         self.navigationController?.setToolbarHidden(!firstLoad , animated: true)
         self.navigationController?.navigationBar.tintColor = UIColor.black
 
 
@@ -144,8 +143,7 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        self.navigationController?.removeCustomerView()
-        self.navigationController?.setToolbarHidden(true, animated: false)
+         self.navigationController?.setToolbarHidden(true, animated: false)
         firstLoad = true
         self.navigationController?.navigationBar.tintColor = navTintColor
 

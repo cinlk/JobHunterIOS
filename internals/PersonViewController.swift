@@ -47,6 +47,9 @@ class PersonViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.clear
+        (self.navigationController as! PersonNavViewController).currentStatusStyle = .lightContent
+        navigationItem.backBarButtonItem = UIBarButtonItem.init(title: "", style: .plain, target: nil, action: nil)
+        
         
      }
     
@@ -56,24 +59,26 @@ class PersonViewController: UIViewController {
         self.table.contentInsetAdjustmentBehavior = .never
         self.navigationController?.navigationBar.settranslucent(true)
         self.navigationController?.navigationBar.isHidden = true
-        self.navigationController?.removeCustomerView()
+
 
     }
-   
+
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.navigationBar.isHidden = false
-        //self.tabBarController?.tabBar.isHidden = true
-        self.navigationController?.insertCustomerView()
+
 
         
     }
     
+  
+    
+    
+    
     override func viewWillLayoutSubviews() {
         self.view.addSubview(table)
         self.table.tableHeaderView = tableHeader
-        //tableHeader.avatarImg.image = UIImage.init(named: "chicken")
-        //tableHeader.nameTitle.text = "我的名字"
         
     }
 
@@ -89,11 +94,10 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 || section == 1{
-            return 1
-        }
-        return self.mode.count
+       
+        return section == 0 || section == 1 ? 1 : self.mode.count
     }
+    
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {

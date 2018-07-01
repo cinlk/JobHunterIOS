@@ -22,6 +22,9 @@ class BaseSingleItemDropView: YNDropDownView {
     }
     
     
+    internal var showTabBar:Bool = true
+    
+    
     internal var passData: ((_ cond:String) -> Void)?
     // currentSelected index
     private var index:IndexPath?
@@ -73,13 +76,17 @@ class BaseSingleItemDropView: YNDropDownView {
         UIApplication.shared.keyWindow?.addSubview(backGroundBtn)
         // 设置为true 才有下拉展开效果
         self.superview?.clipsToBounds = false
-        self.getParentViewController()?.tabBarController?.tabBar.isHidden = true
+        if showTabBar {
+            self.getParentViewController()?.tabBarController?.tabBar.isHidden = true
+        }
     }
     
     override func dropDownViewClosed() {
         backGroundBtn.removeFromSuperview()
         self.superview?.clipsToBounds = true
-        self.getParentViewController()?.tabBarController?.tabBar.isHidden = false
+        if showTabBar{
+            self.getParentViewController()?.tabBarController?.tabBar.isHidden = false
+        }
     }
     
     

@@ -10,7 +10,7 @@ import UIKit
 
 fileprivate let ViewTitle:String = "我的邀约"
 fileprivate let pageTitleH:CGFloat = 45
-fileprivate let subItems:[String] = ["宣讲会邀请","职位邀请","HR邀约"]
+fileprivate let subItems:[String] = ["宣讲会邀请","职位邀请"]
 
 
 class InvitationViewController: UIViewController {
@@ -19,7 +19,7 @@ class InvitationViewController: UIViewController {
     
     // 子栏目
     private lazy var pageTitle:pagetitleView = { [unowned self] in
-        let titles = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: pageTitleH), titles: subItems)
+        let titles = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: pageTitleH) ,titles: subItems, itemWidth: 120)
         titles.delegate = self
         return titles
     }()
@@ -34,10 +34,6 @@ class InvitationViewController: UIViewController {
         //
         let jobInvite = JobInviteViewController()
         ChildVC.append(jobInvite)
-        
-        let vc = UIViewController()
-        vc.view.backgroundColor = UIColor.randomeColor()
-        ChildVC.append(vc)
             
         
         let content = pageContentView.init(frame: CGRect.init(x: 0, y: NavH + pageTitleH, width: ScreenW, height: ScreenH - (NavH + pageTitleH)), childVCs: ChildVC, pVC: self)
@@ -61,32 +57,56 @@ class InvitationViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setViews()
         
+        self.setViews()
+      
         // Do any additional setup after loading the view.
     }
 
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.title = ViewTitle
-    }
+        self.navigationController?.insertCustomerView(UIColor.orange)
+
+     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
-    }
+     }
 
     
     private func setViews() {
+        
+        self.title = ViewTitle
+        self.view.backgroundColor = UIColor.white
+        
+        navigationItem.backBarButtonItem = UIBarButtonItem.init(title: "", style: .plain, target: nil, action: nil)
+        self.navigationController?.delegate = self
+        
+        
         self.view.addSubview(pageTitle)
         self.view.addSubview(pageContent)
+        
         navigationItem()
         
     }
     
     
+    
+    
 }
+
+extension InvitationViewController: UINavigationControllerDelegate{
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        
+        if viewController.isKind(of: PersonViewController.self) || viewController.isKind(of: OnlineApplyShowViewController.self){
+            self.navigationController?.removeCustomerView()
+            
+            
+        }
+    }
+}
+
 
 
 // 设置navigation item

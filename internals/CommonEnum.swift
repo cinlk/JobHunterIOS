@@ -119,7 +119,7 @@ enum ResumeDeliveryStatus:String {
     case test = "test"
     case interview = "interview"
     case offer = "offer"
-    case out = "out"
+    case reject = "reject"
     case all = "all"
     case none = "none"
     
@@ -138,7 +138,7 @@ enum ResumeDeliveryStatus:String {
                 return "面试"
             case .offer:
                 return "录取"
-            case .out:
+            case .reject:
                 return "不合适"
             case .all:
                 return "全部"
@@ -164,7 +164,7 @@ enum ResumeDeliveryStatus:String {
         }else if name == "录取"{
             return .offer
         }else if name == "不合适"{
-            return .out
+            return .reject
         }
         
         return .none

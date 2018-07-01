@@ -11,7 +11,9 @@ import ObjectMapper
 
 class DeliveredJobsModel: NSObject, Mappable, Comparable {
     
+    // 职位id
     internal var id:String?
+    // 职位类型
     internal var type:String?{
         didSet{
             guard let item = jobType(rawValue: type!)  else {
@@ -26,20 +28,24 @@ class DeliveredJobsModel: NSObject, Mappable, Comparable {
     internal var jobtype:jobType = .none
     
     
+    // 公司icon
     internal var icon:String = "default"
+    // 职位名称
     internal var title:String?
+    // 公司名称
     internal var companyName:String?
+    // 投递日期
     internal var create_time:Date?
     internal var createTimeStr:String{
         get{
             guard let time = self.create_time else { return "" }
-            let dateFormat = DateFormatter()
-            dateFormat.locale = Locale.current
-            dateFormat.dateFormat = "yyyy-MM-dd"
-            let str = dateFormat.string(from: time)
-            return str
+            if let time = showMonthAndDay(date: time){
+                return time
+            }
+            return ""
         }
     }
+    // 当前状态
     internal var currentStatus:String?
     internal var deliveryStatus:ResumeDeliveryStatus{
         
@@ -52,22 +58,19 @@ class DeliveredJobsModel: NSObject, Mappable, Comparable {
     }
     
 
-    // 当前反馈状态
-    internal var feedBack:String = "[投递成功]"
+    // 当前反馈 信息（hr 来填写）
+    internal var feedBack:String = ""
     // 历史投递状态(状态 和 时间 YYYY-MM-DD HH:MM)
     internal var historyStatus:[(status:String,time:String)]?
     
     
-    // 地址
+    // 地址（城市）
     internal var address:[String]?
-    // 专业
-    internal var business:[String]?
-    
-    
+  
     
     required init?(map: Map) {
         if map.JSON["id"] == nil || map.JSON["type"] == nil || map.JSON["title"] == nil
-            || map.JSON["companyName"] == nil || map.JSON["currentStatus"] == nil ||  map.JSON["historyStatus"] == nil{
+        || map.JSON["companyName"] == nil || map.JSON["currentStatus"] == nil ||  map.JSON["historyStatus"] == nil || map.JSON["create_time"] == nil  || map.JSON["address"] == nil{
             return nil
         }
         
@@ -85,10 +88,6 @@ class DeliveredJobsModel: NSObject, Mappable, Comparable {
         feedBack <- map["feedBack"]
         historyStatus <- map["historyStatus"]
         address <- map["address"]
-        business <- map["business"]
-        
-        
-        
     }
 }
 

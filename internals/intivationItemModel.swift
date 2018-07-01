@@ -98,11 +98,10 @@ class BaseInviteModel:NSObject, Mappable{
     internal var creatTimeStr:String{
         get{
             guard let time = self.time else { return "" }
-            let dateFormat = DateFormatter()
-            dateFormat.locale = Locale.current
-            dateFormat.dateFormat = "yyyy-MM-dd"
-            let str = dateFormat.string(from: time)
-            return str
+            if let str = showMonthAndDay(date: time){
+                return str
+            }
+            return ""
         }
     }
     
@@ -143,12 +142,14 @@ class CarrerTalkInviteModel:BaseInviteModel{
 }
 
 
+// 职位邀请
 class JobInviteModel: BaseInviteModel{
     
     
     internal var jobID:String?
     internal var jobtype:String?
     
+    // 职位类型
     internal var type:jobType{
         get{
             guard let type = jobType(rawValue: jobtype!) else {

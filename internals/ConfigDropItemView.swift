@@ -10,11 +10,11 @@ import Foundation
 import YNDropDownMenu
 
 
-public func configDropMenu(items: [YNDropDownView], titles:[String], height:CGFloat) -> YNDropDownMenu{
+public func configDropMenu(items: [YNDropDownView], titles:[String], height:CGFloat, originY:CGFloat = 0 ) -> YNDropDownMenu{
     
     
     let items:[YNDropDownView] = items
-    let dropDownMenu = YNDropDownMenu(frame: CGRect(x:0,y:0,width:ScreenW,height:height) , dropDownViews: items, dropDownViewTitles: titles)
+    let dropDownMenu = YNDropDownMenu(frame: CGRect(x:0,y:originY,width:ScreenW,height:height) , dropDownViews: items, dropDownViewTitles: titles)
     dropDownMenu.isHidden = true 
      // 被选中iamge 方向向下，程序会自动翻转iamge
     dropDownMenu.setImageWhen(normal: UIImage(named: "arrow_nor"), selected: UIImage(named: "arrow_xl"), disabled: UIImage(named: "arrow_dim"))
@@ -24,8 +24,6 @@ public func configDropMenu(items: [YNDropDownView], titles:[String], height:CGFl
     // 禁止回弹效果
     dropDownMenu.hideMenuSpringWithDamping = 1
     dropDownMenu.showMenuSpringWithDamping = 1
-    // tag
-    dropDownMenu.tag = 10
     
     dropDownMenu.backgroundBlurEnabled = true
     dropDownMenu.bottomLine.isHidden = false

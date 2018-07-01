@@ -12,13 +12,14 @@ import Foundation
 extension UINavigationController{
     
     
-    func insertCustomerView(_ color: UIColor? = nil){
+    func insertCustomerView(_ color: UIColor? = nil, alpha:CGFloat = 1){
         
-        if self.view.viewWithTag(10) == nil{
+        if self.view.viewWithTag(1999) == nil{
             let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH))
             // naviagtionbar 默认颜色
             v.backgroundColor =  color ?? UIColor.navigationBarColor()
-            v.tag  = 10
+            v.tag  = 1999
+            v.alpha = alpha
             self.view.insertSubview(v, at: 1)
         }
         
@@ -27,7 +28,7 @@ extension UINavigationController{
     
     
     func removeCustomerView(){
-        if let v = self.view.viewWithTag(10){
+        if let v = self.view.viewWithTag(1999){
             v.removeFromSuperview()
             self.view.willRemoveSubview(v)
         }

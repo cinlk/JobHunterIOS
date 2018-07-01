@@ -131,9 +131,9 @@ extension pagetitleView{
                 self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: (ScreenW - 20) / CGFloat(count), verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: horizontalEdgeInset)
             }
         }else{
-             let diff = 4 - count
+             //let diff = 4 - count
              // horizoneEdge 与最近父view的边距
-             self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: (ScreenW - 20) / CGFloat(4)  , verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: CGFloat(diff*30))
+             self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: itemWidth, verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: horizontalEdgeInset)
         }
             
     }

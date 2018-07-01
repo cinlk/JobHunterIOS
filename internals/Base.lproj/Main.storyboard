@@ -213,7 +213,7 @@
         <!--个人-->
         <scene sceneID="wf7-h1-gBQ">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="0h4-Pk-wXT" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="0h4-Pk-wXT" customClass="PersonNavViewController" customModule="internals" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="个人" id="KED-Lf-gMB"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="naN-X5-twB">
