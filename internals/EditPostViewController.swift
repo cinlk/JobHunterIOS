@@ -9,7 +9,7 @@
 import UIKit
 
 fileprivate let titleTextH:CGFloat = 38
-fileprivate let contentTextH:CGFloat = 250
+fileprivate var contentTextH:CGFloat = 250
 
 class EditPostViewController: UIViewController {
 
@@ -84,14 +84,18 @@ class EditPostViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.insertCustomerView()
+        //self.navigationController?.insertCustomerView()
      }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationController?.removeCustomerView()
+        //self.navigationController?.removeCustomerView()
      }
 
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
    
 
 }
@@ -113,13 +117,13 @@ extension EditPostViewController{
         
         _ = contentView.sd_layout().topSpaceToView(titleView,0)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.heightIs(contentTextH)
         
+        
+         NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+
+        
     }
     
-    
 }
-
-
-
 
 
 extension EditPostViewController:UITextViewDelegate{
@@ -222,6 +226,23 @@ extension EditPostViewController:UITextViewDelegate{
 }
 
 
+
+extension EditPostViewController{
+    
+    @objc private func keyboardShow(notify:NSNotification){
+        
+        
+        let kframe = notify.userInfo![UIKeyboardFrameEndUserInfoKey] as! CGRect
+        // 加上toolbar 高度30
+        if contentTextH + NavH + titleTextH > ScreenH - (kframe.height + 30){
+            _ = contentView.sd_resetLayout()
+            contentTextH = ScreenH - (kframe.height + 30) - NavH - titleTextH
+            _ = contentView.sd_layout().topSpaceToView(titleView,0)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.heightIs(contentTextH)
+            
+        }
+      
+    }
+}
 
 extension EditPostViewController{
     @objc private func post(){

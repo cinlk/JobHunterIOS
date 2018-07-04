@@ -254,3 +254,25 @@ enum subscribeType:String {
     }
 }
 
+// 帖子分级
+enum postKind:String {
+    case post = "post"
+    case reply = "reply"
+    case subReply = "subReply"
+    case none
+    
+    var describe:String{
+        get{
+            switch  self {
+            case .post:
+                return "帖子"
+            case .reply:
+                return "回帖"
+            case .subReply:
+                return "评论"
+            default:
+                return ""
+            }
+        }
+    }
+}

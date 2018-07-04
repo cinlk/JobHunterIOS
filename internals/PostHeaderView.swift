@@ -102,7 +102,7 @@ class PostHeaderView: UIView {
         _ = userName.sd_layout().leftSpaceToView(userIcon,10)?.topEqualToView(userIcon)?.autoHeightRatio(0)
         _ = createTime.sd_layout().leftEqualToView(userName)?.topSpaceToView(userName,5)?.autoHeightRatio(0)
         
-        _ = contentText.sd_layout().topSpaceToView(createTime,10)?.leftEqualToView(userIcon)?.rightSpaceToView(self,10)?.heightIs(0)
+        _ = contentText.sd_layout().topSpaceToView(createTime,10)?.leftEqualToView(userName)?.rightSpaceToView(self,10)?.heightIs(0)
         _ = lines.sd_layout().topSpaceToView(contentText,15)?.leftEqualToView(contentText)?.rightEqualToView(contentText)?.heightIs(1)
         
         _ = thumbUP.sd_layout().leftEqualToView(contentText)?.topSpaceToView(contentText,20)?.widthIs(0)?.heightIs(25)

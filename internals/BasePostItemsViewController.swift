@@ -10,9 +10,7 @@ import UIKit
 
 class BasePostItemsViewController: BaseViewController {
 
-    
     internal var modes:[PostArticleModel] = []
-    
     // 帖子主题类型
     internal var type:forumType?
     
@@ -36,14 +34,12 @@ class BasePostItemsViewController: BaseViewController {
    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationItem.title =    type == .mypost ? "我的帖子" : ""
-        
+ 
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
-    }
+     }
     
     
     override func setViews() {
@@ -98,9 +94,14 @@ extension BasePostItemsViewController: UITableViewDataSource, UITableViewDelegat
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
         let post = PostContentViewController()
-        post.postID = "ddqw-dwqdq"
-        // 如果是自己的帖子 可以删除
-        post.mypost =  type == .mypost
+        let mode = modes[indexPath.row]
+        post.mode = (data:mode, row: indexPath.row)
+        post.deleteSelf = { row in
+            self.modes.remove(at: row)
+            self.table.reloadData()
+        }
+        
+        
         post.hidesBottomBarWhenPushed = true 
         self.navigationController?.pushViewController(post, animated: true)
         

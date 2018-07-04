@@ -41,8 +41,15 @@ extension PopularSectionVC{
         DispatchQueue.global(qos: .userInteractive).async { [weak self] in
             Thread.sleep(forTimeInterval: 3)
             
-            for _ in 0..<10{
-                if let data = PostArticleModel(JSON: ["id":"dqwd-dqwdqwd","title":"标题题","authorID":"dqwddqwdd","authorName":"我的名字","colleage":"北京大学","authorIcon":"chicken","createTime":Date().timeIntervalSince1970,"kind":forumType.interview.rawValue,"thumbUP":2303,"reply":101]){
+            for _ in 0..<5{
+                if let data = PostArticleModel(JSON: ["id":"dqwd-dqwdqwd","title":"标题题","authorID":"dqwddqwdd","authorName":"我的名字","colleage":"北京大学","authorIcon":"chicken","createTime":Date().timeIntervalSince1970,"kind":forumType.interview.rawValue,"thumbUP":12,"reply":33]){
+                    data.showTag =  self?.type == .none ? true : false
+                    self?.modes.append(data)
+                }
+            }
+            
+            for _ in 0..<5{
+                if let data = PostArticleModel(JSON: ["id":"dqwd-dqwdqwd","title":"标题题","authorID":"123456","authorName":"当前为多群","colleage":"北京大学","authorIcon":"chicken","createTime":Date().timeIntervalSince1970,"kind":forumType.interview.rawValue,"thumbUP":16,"reply":8]){
                     data.showTag =  self?.type == .none ? true : false
                     self?.modes.append(data)
                 }

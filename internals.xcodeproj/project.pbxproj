@@ -179,7 +179,6 @@
 		4A6BC23D1FC92C26002C17B6 /* mainPageHttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC23C1FC92C26002C17B6 /* mainPageHttpServer.swift */; };
 		4A6BC2431FCB12A3002C17B6 /* mainPageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC2421FCB12A3002C17B6 /* mainPageModel.swift */; };
 		4A76162A1FFE5DB600FC6A58 /* deliveryItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7616281FFE5DB600FC6A58 /* deliveryItemCell.swift */; };
-		4A82A0D12026DF4300185E8B /* personTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0D02026DF4300185E8B /* personTableCell.swift */; };
 		4A82A0D32026F6CA00185E8B /* personResumeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0D22026F6CA00185E8B /* personResumeTable.swift */; };
 		4A82A0D82027042B00185E8B /* resume_personInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0D72027042B00185E8B /* resume_personInfoCell.swift */; };
 		4A82A0DA202709B700185E8B /* person_resume.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0D9202709B700185E8B /* person_resume.swift */; };
@@ -194,6 +193,13 @@
 		4A86792920D4DB2C0039D36B /* ShowApplyJobsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A86792820D4DB2C0039D36B /* ShowApplyJobsView.swift */; };
 		4A86792B20D5F95D0039D36B /* iconAndTitleTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A86792A20D5F95D0039D36B /* iconAndTitleTableCell.swift */; };
 		4A86792D20D5FA590039D36B /* subIconAndTitleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A86792C20D5FA590039D36B /* subIconAndTitleCell.swift */; };
+		4A871ADD20E9E3FD00E76E39 /* ForumMessageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A871ADC20E9E3FD00E76E39 /* ForumMessageVC.swift */; };
+		4A871AE020E9EE7300E76E39 /* ForumMessageBaseVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A871ADF20E9EE7300E76E39 /* ForumMessageBaseVC.swift */; };
+		4A871AE220E9EE8A00E76E39 /* MyCommentVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A871AE120E9EE8A00E76E39 /* MyCommentVC.swift */; };
+		4A871AE420E9EEA500E76E39 /* ReplyToMeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A871AE320E9EEA500E76E39 /* ReplyToMeVC.swift */; };
+		4A871AE620E9F88A00E76E39 /* ForumMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A871AE520E9F88A00E76E39 /* ForumMessage.swift */; };
+		4A871AE820EA09EF00E76E39 /* ForumMesageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A871AE720EA09EF00E76E39 /* ForumMesageCell.swift */; };
+		4A871AEA20EB0AB800E76E39 /* commentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A871AE920EB0AB800E76E39 /* commentViewController.swift */; };
 		4A8858F31FE550D40009D73D /* searchResultController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8858F21FE550D40009D73D /* searchResultController.swift */; };
 		4A8858FA1FE8076C0009D73D /* RecruiterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8858F81FE8076C0009D73D /* RecruiterCell.swift */; };
 		4A8858FF1FEBE89A0009D73D /* JuBaoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8858FE1FEBE89A0009D73D /* JuBaoViewController.swift */; };
@@ -248,7 +254,6 @@
 		4A9543D020A83C8E009BCBE2 /* ChatInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543CF20A83C8E009BCBE2 /* ChatInputView.swift */; };
 		4A9543D220A879B2009BCBE2 /* SingleReplyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543D120A879B2009BCBE2 /* SingleReplyViewController.swift */; };
 		4A9543D420A87B6D009BCBE2 /* PostHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543D320A87B6D009BCBE2 /* PostHeaderView.swift */; };
-		4A9543D620A8927F009BCBE2 /* PostCommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9543D520A8927F009BCBE2 /* PostCommentViewController.swift */; };
 		4A96B52F205C14CE0028C096 /* tableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A96B52E205C14CE0028C096 /* tableModel.swift */; };
 		4A96B533205CB7830028C096 /* extension+toolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A96B532205CB7830028C096 /* extension+toolBar.swift */; };
 		4A9A0BD32003BEA8008721F3 /* MyVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9A0BD22003BEA8008721F3 /* MyVisitor.swift */; };
@@ -277,6 +282,7 @@
 		4ABB987B1F9CDE8E00DD9AAB /* normalEmotion.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4ABB987A1F9CDE6000DD9AAB /* normalEmotion.plist */; };
 		4ABB987C1F9CDE8E00DD9AAB /* emotion2.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4ABB98791F9CDE3A00DD9AAB /* emotion2.plist */; };
 		4AC056311F93B46C00D5B739 /* ChatHorizontalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC056301F93B46C00D5B739 /* ChatHorizontalLayout.swift */; };
+		4AC167B020EC58C70081273D /* ThumbUPVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC167AF20EC58C70081273D /* ThumbUPVC.swift */; };
 		4AC2D4FC1F89242E00EF0845 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AC2D4FB1F89242E00EF0845 /* Security.framework */; };
 		4AC2D4FE1F89243700EF0845 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AC2D4FD1F89243700EF0845 /* CFNetwork.framework */; };
 		4AC2D5001F89244300EF0845 /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AC2D4FF1F89244300EF0845 /* libicucore.tbd */; };
@@ -542,7 +548,6 @@
 		4A6BC23C1FC92C26002C17B6 /* mainPageHttpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mainPageHttpServer.swift; sourceTree = "<group>"; };
 		4A6BC2421FCB12A3002C17B6 /* mainPageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mainPageModel.swift; sourceTree = "<group>"; };
 		4A7616281FFE5DB600FC6A58 /* deliveryItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = deliveryItemCell.swift; sourceTree = "<group>"; };
-		4A82A0D02026DF4300185E8B /* personTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = personTableCell.swift; sourceTree = "<group>"; };
 		4A82A0D22026F6CA00185E8B /* personResumeTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = personResumeTable.swift; sourceTree = "<group>"; };
 		4A82A0D72027042B00185E8B /* resume_personInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = resume_personInfoCell.swift; sourceTree = "<group>"; };
 		4A82A0D9202709B700185E8B /* person_resume.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = person_resume.swift; sourceTree = "<group>"; };
@@ -557,6 +562,13 @@
 		4A86792820D4DB2C0039D36B /* ShowApplyJobsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowApplyJobsView.swift; sourceTree = "<group>"; };
 		4A86792A20D5F95D0039D36B /* iconAndTitleTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iconAndTitleTableCell.swift; sourceTree = "<group>"; };
 		4A86792C20D5FA590039D36B /* subIconAndTitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = subIconAndTitleCell.swift; sourceTree = "<group>"; };
+		4A871ADC20E9E3FD00E76E39 /* ForumMessageVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumMessageVC.swift; sourceTree = "<group>"; };
+		4A871ADF20E9EE7300E76E39 /* ForumMessageBaseVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumMessageBaseVC.swift; sourceTree = "<group>"; };
+		4A871AE120E9EE8A00E76E39 /* MyCommentVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCommentVC.swift; sourceTree = "<group>"; };
+		4A871AE320E9EEA500E76E39 /* ReplyToMeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyToMeVC.swift; sourceTree = "<group>"; };
+		4A871AE520E9F88A00E76E39 /* ForumMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumMessage.swift; sourceTree = "<group>"; };
+		4A871AE720EA09EF00E76E39 /* ForumMesageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumMesageCell.swift; sourceTree = "<group>"; };
+		4A871AE920EB0AB800E76E39 /* commentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = commentViewController.swift; sourceTree = "<group>"; };
 		4A8858F21FE550D40009D73D /* searchResultController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = searchResultController.swift; sourceTree = "<group>"; };
 		4A8858F81FE8076C0009D73D /* RecruiterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecruiterCell.swift; sourceTree = "<group>"; };
 		4A8858FE1FEBE89A0009D73D /* JuBaoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JuBaoViewController.swift; sourceTree = "<group>"; };
@@ -615,7 +627,6 @@
 		4A9543CF20A83C8E009BCBE2 /* ChatInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInputView.swift; sourceTree = "<group>"; };
 		4A9543D120A879B2009BCBE2 /* SingleReplyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleReplyViewController.swift; sourceTree = "<group>"; };
 		4A9543D320A87B6D009BCBE2 /* PostHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostHeaderView.swift; sourceTree = "<group>"; };
-		4A9543D520A8927F009BCBE2 /* PostCommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCommentViewController.swift; sourceTree = "<group>"; };
 		4A96B52E205C14CE0028C096 /* tableModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tableModel.swift; sourceTree = "<group>"; };
 		4A96B532205CB7830028C096 /* extension+toolBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+toolBar.swift"; sourceTree = "<group>"; };
 		4A9A0BD22003BEA8008721F3 /* MyVisitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyVisitor.swift; sourceTree = "<group>"; };
@@ -643,6 +654,7 @@
 		4ABB98791F9CDE3A00DD9AAB /* emotion2.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = emotion2.plist; sourceTree = "<group>"; };
 		4ABB987A1F9CDE6000DD9AAB /* normalEmotion.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = normalEmotion.plist; sourceTree = "<group>"; };
 		4AC056301F93B46C00D5B739 /* ChatHorizontalLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatHorizontalLayout.swift; sourceTree = "<group>"; };
+		4AC167AF20EC58C70081273D /* ThumbUPVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbUPVC.swift; sourceTree = "<group>"; };
 		4AC2D4FB1F89242E00EF0845 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		4AC2D4FD1F89243700EF0845 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		4AC2D4FF1F89244300EF0845 /* libicucore.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libicucore.tbd; path = usr/lib/libicucore.tbd; sourceTree = SDKROOT; };
@@ -802,6 +814,7 @@
 			isa = PBXGroup;
 			children = (
 				4A0BA74A20B01CED0099F332 /* ChatUsersTableViewCell.swift */,
+				4A871AE720EA09EF00E76E39 /* ForumMesageCell.swift */,
 			);
 			name = Cell;
 			sourceTree = "<group>";
@@ -818,6 +831,7 @@
 		4A12437820E1D7880038336F /* 板块 */ = {
 			isa = PBXGroup;
 			children = (
+				4A9543C320A6E3FD009BCBE2 /* BasePostItemsViewController.swift */,
 				4A12437920E1D7AA0038336F /* PopularSectionVC.swift */,
 				4A12437B20E1D9030038336F /* InterviewSectionVC.swift */,
 				4A12437D20E1DB070038336F /* AskSectionVC.swift */,
@@ -1385,7 +1399,6 @@
 			isa = PBXGroup;
 			children = (
 				4A502CF820B1CBB900BB71FD /* resumeSubItemCell */,
-				4A82A0D02026DF4300185E8B /* personTableCell.swift */,
 				4A82A0E52029D7BF00185E8B /* modifyPersonInfoCell.swift */,
 				4A5E3FCA2031E271009C1A6B /* singleButtonCell.swift */,
 				4A5E3FD020329792009C1A6B /* AddItemCell.swift */,
@@ -1407,6 +1420,19 @@
 				4A0BA74F20B13A700099F332 /* AddBaseInfoTableViewController.swift */,
 			);
 			name = "简历";
+			sourceTree = "<group>";
+		};
+		4A871ADB20E9E3A000E76E39 /* 论坛消息 */ = {
+			isa = PBXGroup;
+			children = (
+				4A871ADC20E9E3FD00E76E39 /* ForumMessageVC.swift */,
+				4A871ADF20E9EE7300E76E39 /* ForumMessageBaseVC.swift */,
+				4A871AE120E9EE8A00E76E39 /* MyCommentVC.swift */,
+				4A871AE320E9EEA500E76E39 /* ReplyToMeVC.swift */,
+				4A871AE920EB0AB800E76E39 /* commentViewController.swift */,
+				4AC167AF20EC58C70081273D /* ThumbUPVC.swift */,
+			);
+			name = "论坛消息";
 			sourceTree = "<group>";
 		};
 		4A8858F41FE6A9CE0009D73D /* job信息界面 */ = {
@@ -1461,6 +1487,7 @@
 			children = (
 				4A0BA74820B01C880099F332 /* ChatListViewController.swift */,
 				4A93C2B41F80AB900022E97B /* messageMainView.swift */,
+				4A871ADB20E9E3A000E76E39 /* 论坛消息 */,
 				4AF7DCD8200398C6009047F5 /* 来访者 */,
 				4A9A0BE52009DE5E008721F3 /* 聊天界面 */,
 			);
@@ -1480,6 +1507,7 @@
 			children = (
 				4ADDDAB71F98F054001CB00F /* MChatEmotion.swift */,
 				4A406B681FA58BDC00277AA0 /* Message.swift */,
+				4A871AE520E9F88A00E76E39 /* ForumMessage.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -1607,12 +1635,10 @@
 			isa = PBXGroup;
 			children = (
 				4A12437820E1D7880038336F /* 板块 */,
-				4A9543C320A6E3FD009BCBE2 /* BasePostItemsViewController.swift */,
 				4A9543CB20A72A8F009BCBE2 /* PostContentViewController.swift */,
 				4A9543CF20A83C8E009BCBE2 /* ChatInputView.swift */,
 				4A9543D120A879B2009BCBE2 /* SingleReplyViewController.swift */,
 				4A9543D320A87B6D009BCBE2 /* PostHeaderView.swift */,
-				4A9543D520A8927F009BCBE2 /* PostCommentViewController.swift */,
 			);
 			name = "帖子";
 			sourceTree = "<group>";
@@ -2312,6 +2338,7 @@
 				4A1BA2BA208A2F7600CF8352 /* CommonJobColletionCell.swift in Sources */,
 				4A9CE3681F715F1D002A8FD5 /* DropCarrerClassifyView.swift in Sources */,
 				4A1BA2E7208C3A6B00CF8352 /* OnlineApplyShowViewController.swift in Sources */,
+				4A871AE020E9EE7300E76E39 /* ForumMessageBaseVC.swift in Sources */,
 				4A4DBBE020B9A8EB0036AD9D /* AdvertiseViewController.swift in Sources */,
 				4A5E3FBD2031474B009C1A6B /* extension+dictonary.swift in Sources */,
 				4ADCC7521F511DD3001A4E9F /* logViewController.swift in Sources */,
@@ -2346,16 +2373,17 @@
 				4AFF91B91F5DB8A900FE189F /* CompanySimpleCell.swift in Sources */,
 				4A4DBBE920B9B3050036AD9D /* UserGuideLogginCell.swift in Sources */,
 				4A82A0DE2027493E00185E8B /* jobInfoCell.swift in Sources */,
+				4AC167B020EC58C70081273D /* ThumbUPVC.swift in Sources */,
 				4A9543B6209DE9C6009BCBE2 /* JobInviteTableViewCell.swift in Sources */,
 				4A30EBEB2083685800231D11 /* ScrollerNewsCell.swift in Sources */,
 				4A0BA74B20B01CED0099F332 /* ChatUsersTableViewCell.swift in Sources */,
-				4A9543D620A8927F009BCBE2 /* PostCommentViewController.swift in Sources */,
 				4A2145C12077C3DE000959F4 /* BindAccountVC.swift in Sources */,
 				4AF3D354205E7D2F0012EB6E /* DeliveredJobsModel.swift in Sources */,
 				4A1BA2D4208B460700CF8352 /* OnlineApplyViewController.swift in Sources */,
 				4A4DBBD020B707D80036AD9D /* QuickLoggingViewController.swift in Sources */,
 				4ADDDAB31F97ABA4001CB00F /* ChatEmotionView.swift in Sources */,
 				4A20EEF5203E70DF0021843B /* accountInfo.swift in Sources */,
+				4A871AE220E9EE8A00E76E39 /* MyCommentVC.swift in Sources */,
 				4A30EBDA207BB8C900231D11 /* CompanyMainVC.swift in Sources */,
 				4A8858F31FE550D40009D73D /* searchResultController.swift in Sources */,
 				4A1BA2B8208A2C0F00CF8352 /* CommonJobDetailCellView.swift in Sources */,
@@ -2412,10 +2440,12 @@
 				4A9543BE20A350F8009BCBE2 /* EditPostViewController.swift in Sources */,
 				4A444ECB1F8A168B006AE83D /* searchRequest.pb.swift in Sources */,
 				4A406B5F1FA4D3D900277AA0 /* PersonCardCell.swift in Sources */,
+				4A871AE820EA09EF00E76E39 /* ForumMesageCell.swift in Sources */,
 				4A95439A209C9969009BCBE2 /* DropDelieveryStatusView.swift in Sources */,
 				4A9CE36F1F72C2E6002A8FD5 /* myextension.swift in Sources */,
 				4A4DBBED20BBAE3A0036AD9D /* timeHelp.swift in Sources */,
 				4AE0DEA61FFBC5CD00A16ED4 /* pageContentView.swift in Sources */,
+				4A871AE420E9EEA500E76E39 /* ReplyToMeVC.swift in Sources */,
 				4A0BA74520ADCA880099F332 /* MagineTableViewCell.swift in Sources */,
 				4A1BA2DD208B76D900CF8352 /* CareerTalkMeetingViewController.swift in Sources */,
 				4AF3D35C2061376E0012EB6E /* baseWebViewController.swift in Sources */,
@@ -2442,6 +2472,7 @@
 				4A12438420E725E20038336F /* MagazMainViewController.swift in Sources */,
 				4A1BA2F0208C832E00CF8352 /* applyJobsCell.swift in Sources */,
 				4A502CF320B1C98B00BB71FD /* studentWorkCell.swift in Sources */,
+				4A871AE620E9F88A00E76E39 /* ForumMessage.swift in Sources */,
 				4A1BA2CA208B1F0E00CF8352 /* CareerTalkMeetingModel.swift in Sources */,
 				4A88590C1FF12A950009D73D /* companySimpleJobCell.swift in Sources */,
 				4AB97F3520D966EC0056AC64 /* PPBadgeViewHelper.swift in Sources */,
@@ -2469,7 +2500,7 @@
 				4A30EBF120838FC400231D11 /* simpleRecruitCell.swift in Sources */,
 				4A30EBD6207BAFAC00231D11 /* CompanyDetailVC.swift in Sources */,
 				4AF3D356205EB2760012EB6E /* extension+navigation.swift in Sources */,
-				4A82A0D12026DF4300185E8B /* personTableCell.swift in Sources */,
+				4A871AEA20EB0AB800E76E39 /* commentViewController.swift in Sources */,
 				4A93C2B51F80AB900022E97B /* messageMainView.swift in Sources */,
 				4AD2C77B209752DA002F3486 /* ConfigDropItemView.swift in Sources */,
 				4A39A7C020CC01DB00953C1C /* DropDegreeMenuView.swift in Sources */,
@@ -2499,6 +2530,7 @@
 				4A9543AB209DDD75009BCBE2 /* CareerTalkInviteViewController.swift in Sources */,
 				4AE4D6B520358E0D00BC87FE /* textViewCell.swift in Sources */,
 				4AB8FFE91FDEC0720020F026 /* searchViewModel.swift in Sources */,
+				4A871ADD20E9E3FD00E76E39 /* ForumMessageVC.swift in Sources */,
 				4A93C2CC1F81FD330022E97B /* DetailDeliveryStatus.swift in Sources */,
 				4A221040203D1B5E000BDC70 /* greetingVC.swift in Sources */,
 				4A686A8820400C5F00571EB0 /* PrivacySetting.swift in Sources */,

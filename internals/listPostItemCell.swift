@@ -39,7 +39,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 30, height: 30)
             let thumbStr = NSMutableAttributedString.init(string: ts)
             thumbStr.addAttributes([NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12)], range: NSRange.init(location: 0, length: ts.count))
             let attch = NSTextAttachment.init()
-            attch.image = UIImage.init(named: "heart")?.withRenderingMode(.alwaysTemplate).imageWithColor(color: UIColor.lightGray)
+            attch.image = UIImage.init(named: "thumbup")?.withRenderingMode(.alwaysTemplate).imageWithColor(color: UIColor.lightGray)
             // 图片和文字水平对齐
             attch.bounds = CGRect.init(x: 0, y: (UIFont.systemFont(ofSize: 12).capHeight - 15)/2, width: 15, height: 15)
             

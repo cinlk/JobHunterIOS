@@ -221,3 +221,52 @@ extension PersonViewController:selectedItemDelegate{
     
 }
 
+
+fileprivate class  personTableCell: TitleTableViewCell{
+    
+    
+    internal var mode:(image:UIImage, title:String)?{
+        didSet{
+            guard  let mode = mode else {
+                return
+            }
+            iconName.text = mode.title
+            icon.image = mode.image
+            
+        }
+    }
+    
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.selectionStyle = .none
+        self.line.isHidden = true
+        self.icon.sd_resetNewLayout()
+        self.iconName.sd_resetNewLayout()
+        self.iconName.font = UIFont.systemFont(ofSize: 16)
+        _ = icon.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(40)?.heightIs(40)
+        
+        _ = iconName.sd_layout().leftSpaceToView(icon,10)?.centerYEqualToView(icon)?.autoHeightRatio(0)
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    
+    
+    class func identity()->String{
+        return "personcell"
+    }
+    
+    class func cellHeight()->CGFloat{
+        return 50
+    }
+    
+    
+}
+
+
+
+

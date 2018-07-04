@@ -84,6 +84,7 @@ class publisherControllerView: BaseTableViewController {
         }
         self.navigationItem.title = ""
        
+        self.navigationController?.removeCustomerView()
         self.navigationController?.view.insertSubview(navigationBack, at: 1)
     }
     
@@ -92,7 +93,7 @@ class publisherControllerView: BaseTableViewController {
         navigationBack.removeFromSuperview()
         self.navigationController?.view.willRemoveSubview(navigationBack)
         
-        
+
     }
     
     

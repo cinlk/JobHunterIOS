@@ -11,7 +11,7 @@ import UIKit
 
 fileprivate let viewTitle:String = "回帖"
 
-class SingleReplyViewController: UIViewController {
+class SingleReplyViewController: BaseViewController {
 
     
     private lazy var keyboardH:CGFloat = 0
@@ -19,10 +19,13 @@ class SingleReplyViewController: UIViewController {
     
     
     
+    
+    // 自己的回贴 可以删除
+    internal var mycomment:Bool = false
     //
-    private var currentSenderName:String = ""{
+    internal var currentSenderName:String = ""{
         didSet{
-            
+        
             self.inputText.defaultText = "回复\(currentSenderName)"
             //self.inputText.plashold.text = "回复\(currentSenderName)"
         }
@@ -30,24 +33,30 @@ class SingleReplyViewController: UIViewController {
     private var currentSelecteCell:Int = -1
     
     
+    // 子评论id
+    internal var subReplyID:String?
+    
+    // MARK 上拉刷新 获取回帖内容 和 回复内容, 忽略是回帖 还是自子评论 ！！！
+    // 子评论 不能下拉刷新
+    // 都可以发布评论
     
     internal var mode:FirstReplyModel?{
         didSet{
+            mycomment = mode?.authorID == myself.userID
             headerView.mode = mode
             currentSenderName = mode!.authorName!
             headerView.layoutSubviews()
             self.table.tableHeaderView = headerView
-        
-            self.loadData()
             
+            loadData()
         }
     }
+    
     // 子回复
-    private lazy var allSubReplys:[SecondReplyModel] = []
+    internal lazy var allSubReplys:[SecondReplyModel] = []
     
-    
-    
-    private lazy var headerView:singleHeaderView = {
+
+    internal lazy var headerView:singleHeaderView = {
         let view = singleHeaderView()
         view.thumbUP.addTarget(self, action: #selector(like), for: .touchUpInside)
         view.reply.addTarget(self, action: #selector(reply), for: .touchUpInside)
@@ -56,7 +65,7 @@ class SingleReplyViewController: UIViewController {
     }()
     
     
-    private lazy var table:UITableView = { [unowned self] in
+    internal lazy var table:UITableView = { [unowned self] in
         let tb = UITableView()
         tb.tableFooterView = UIView()
         tb.backgroundColor = UIColor.viewBackColor()
@@ -70,7 +79,7 @@ class SingleReplyViewController: UIViewController {
     }()
     
     // 回复数据加载 状态进度
-    private lazy var  progressView:UIActivityIndicatorView = {
+    internal lazy var  progressView:UIActivityIndicatorView = {
        let pv = UIActivityIndicatorView.init(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
         pv.center = CGPoint.init(x: ScreenW/2, y: ScreenH/2)
         pv.color = UIColor.orange
@@ -80,50 +89,24 @@ class SingleReplyViewController: UIViewController {
     
     
   
- 
     
-    // 点击cell 显示
-    private lazy var selectAlert:UIAlertController = {
-        let vc = UIAlertController.init(title: "请选择", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
-        let thumbUP = UIAlertAction.init(title: "赞", style: UIAlertActionStyle.default, handler: { action in
-            if  self.allSubReplys[self.currentSelecteCell].isLike{
-                self.allSubReplys[self.currentSelecteCell].thumbUP -= 1
-            }else{
-                self.allSubReplys[self.currentSelecteCell].thumbUP += 1
-
-            }
-            self.allSubReplys[self.currentSelecteCell].isLike = !self.allSubReplys[self.currentSelecteCell].isLike
-            
-            
-            self.table.reloadRows(at: [IndexPath.init(row: self.currentSelecteCell, section: 0)], with: .automatic)
-
-        })
-        
-        let comment = UIAlertAction.init(title: "评论", style: .default, handler: { action in
-            let name  = self.allSubReplys[self.currentSelecteCell].authorName!
-            
-            self.resetPlashold(name: name)
-
-            self.inputText.chatView.becomeFirstResponder()
-        })
-        
-        let warn = UIAlertAction.init(title: "举报", style: UIAlertActionStyle.default, handler:{ action in
-            
-        })
-        let delete = UIAlertAction.init(title: "删除", style: UIAlertActionStyle.destructive, handler: { action in
-            self.allSubReplys.remove(at: self.currentSelecteCell)
-            self.table.reloadData()
-        })
-        
-        vc.addAction(thumbUP)
-        vc.addAction(comment)
-        vc.addAction(warn)
-        vc.addAction(delete)
-        vc.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: nil))
-        
+    // 回调父界面 删除数据
+    internal var deleteSelf:((_ row: Int)->())?
+    internal var row:Int = -1
     
-        return vc
+    
+    private lazy var deleteAlert:UIAlertController = { [unowned self] in
+        let alert = UIAlertController.init(title: "确认删除", message: "数据将无法恢复", preferredStyle: UIAlertControllerStyle.alert)
         
+        let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
+        let delete = UIAlertAction.init(title: "确认", style: UIAlertActionStyle.default, handler: { action in
+            self.deleteMyself()
+        })
+        
+        
+        alert.addAction(cancel)
+        alert.addAction(delete)
+        return alert
     }()
     
     
@@ -134,14 +117,9 @@ class SingleReplyViewController: UIViewController {
         let text = ChatInputView.init(frame: CGRect.init(x: 0, y: ScreenH - InputViewHeigh , width: ScreenW, height: InputViewHeigh))
         text.plashold.text = "回复\(currentSenderName)"
         text.delegate = self
+        text.isHidden = true
         return text
     }()
-    
-    
-    
-    
-    
-    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -152,22 +130,61 @@ class SingleReplyViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.insertCustomerView()
+        //self.navigationController?.insertCustomerView()
         self.navigationItem.title = viewTitle
         UIApplication.shared.keyWindow?.addSubview(inputText)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationController?.removeCustomerView()
+        //self.navigationController?.removeCustomerView()
         self.navigationItem.title = ""
         inputText.removeFromSuperview()
     }
 
+    
+    override func setViews(){
+
+        self.view.addSubview(table)
+        self.handleViews.append(table)
+        self.table.addSubview(progressView)
+        
+        _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
+        
+        
+        
+        //简体键盘
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHidden), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        
+        super.setViews()
+        
+        
+    }
+    
+    override func didFinishloadData(){
+        super.didFinishloadData()
+        progressView.stopAnimating()
+        
+        if mycomment{
+            navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: #imageLiteral(resourceName: "rabbish"), style: .plain, target: self, action: #selector(showAlert))
+        }
+        self.inputText.isHidden = false
+        
+        self.table.reloadData()
+    }
+    
+    override func reload() {
+        super.reload()
+        self.loadData()
+    }
+    
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
 
+    
+    
 }
 
 
@@ -205,8 +222,12 @@ extension SingleReplyViewController: UITableViewDataSource, UITableViewDelegate{
         //currentReceiverName = mode.authorName!
         currentSelecteCell = indexPath.row
         
-        self.present(selectAlert, animated: true, completion: nil)
-     
+        if  allSubReplys[indexPath.row].authorID == myself.userID{
+            buildAlert(showDelete: true)
+        }
+        buildAlert(showDelete: false)
+      
+
     }
     
     //section
@@ -222,33 +243,57 @@ extension SingleReplyViewController: UITableViewDataSource, UITableViewDelegate{
     
 }
 
+
+
 extension SingleReplyViewController{
-    private func setViews(){
-        self.view.addSubview(table)
-        self.table.addSubview(progressView)
-//        if  myself.userID == mode?.authorID{
-//
-//        }
+    
+    private func buildAlert(showDelete:Bool){
         
-        _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
+        let vc = UIAlertController.init(title: "请选择", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+        let thumbUP = UIAlertAction.init(title: "赞", style: UIAlertActionStyle.default, handler: { action in
+            if  self.allSubReplys[self.currentSelecteCell].isLike{
+                self.allSubReplys[self.currentSelecteCell].thumbUP -= 1
+            }else{
+                self.allSubReplys[self.currentSelecteCell].thumbUP += 1
+                
+            }
+            self.allSubReplys[self.currentSelecteCell].isLike = !self.allSubReplys[self.currentSelecteCell].isLike
+            
+            
+            self.table.reloadRows(at: [IndexPath.init(row: self.currentSelecteCell, section: 0)], with: .automatic)
+            
+        })
+        
+        let comment = UIAlertAction.init(title: "评论", style: .default, handler: { action in
+            let name  = self.allSubReplys[self.currentSelecteCell].authorName!
+            
+            self.resetPlashold(name: name)
+            
+            self.inputText.chatView.becomeFirstResponder()
+        })
+        
+        // 自己的评论
+        let delete = UIAlertAction.init(title: "删除", style: UIAlertActionStyle.destructive, handler: { action in
+            // 服务器端删除
+            self.allSubReplys.remove(at: self.currentSelecteCell)
+            self.table.reloadData()
+        })
         
         
+        vc.addAction(thumbUP)
+        vc.addAction(comment)
+        if showDelete{
+            vc.addAction(delete)
+        }
+        vc.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: nil))
         
-        //简体键盘
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHidden), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-        
-        
+        self.present(vc, animated: true, completion: nil)
+
     }
     
-    private func didFinishLoad(){
-        progressView.stopAnimating()
-        self.table.reloadData()
-    }
-    
-    
-   
 }
+
+
 
 
 extension SingleReplyViewController{
@@ -283,7 +328,19 @@ extension SingleReplyViewController{
         
     }
     
+    @objc private func showAlert(){
+        self.present(deleteAlert, animated: true, completion: nil)
+
+    }
     
+    private func deleteMyself(){
+        
+        // 服务器删除
+        // 返回父界面
+        self.navigationController?.popViewController(animated: true)
+        self.deleteSelf?(self.row)
+        
+    }
    
     
 }
@@ -338,8 +395,6 @@ extension SingleReplyViewController{
         if self.self.inputText.chatView.text.isEmpty{
             self.inputText.plashold.text = "回复\(self.currentSenderName)"
         }
-
-        
     }
     
 }
@@ -361,7 +416,7 @@ extension SingleReplyViewController: ChatInputViewDelegate{
     }
     
     func sendMessage(textView: UITextView) {
-        if let text = textView.text, let new = SecondReplyModel(JSON: ["id":getUUID(), "parentReplyID":self.mode?.id,"replyContent":text,"receiver":currentSenderName,"authorID":self.mode?.authorID,"authorName":self.mode?.authorName,"authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":0,"reply":0]){
+        if let text = textView.text, let new = SecondReplyModel(JSON: ["id":self.mode?.id,"replyID":self.mode?.replyID, "subreplyID":getUUID(),"replyContent":text,"receiver":currentSenderName,"authorID":self.mode?.authorID,"authorName":self.mode?.authorName,"authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":0,"reply":0]){
             allSubReplys.append(new)
             self.table.reloadData()
         }
@@ -371,25 +426,42 @@ extension SingleReplyViewController: ChatInputViewDelegate{
 }
 // 获取数据
 extension SingleReplyViewController{
-    private func loadData(){
+    internal func loadData(){
         
         progressView.startAnimating()
+        
         DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
             
             Thread.sleep(forTimeInterval: 3)
-            for _ in 0..<6{
+            
+            
+            if self?.subReplyID == nil {
                 
-                self?.allSubReplys.append(SecondReplyModel(JSON: ["id":"dwqdw", "parentReplyID":"dqwd-dqwdqwd","replyContent":"当前为多群多低级趣味的精品区当前为多dqwdqwdqwd   当前为多群 当前为多群 dqdqw","receiver":"小猪啊","authorID":"dqwddqwdd","authorName":"我的名字当","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":2303,"reply":101])!)
                 
+                // 获取部分回复（最旧的的5条）
+                for _ in 0..<5{
+                    self?.allSubReplys.append(SecondReplyModel(JSON: ["id":"dwqdw","replyID":getUUID(), "subreplyID":"dqwd-dqwdqwd","replyContent":"当前为多群多低级趣味的精品区 当前为多   dqwdqwdqwd   当前为多群 当前为多群 dqdqw","receiver":"小猪啊","authorID":"dqwddqwdd","authorName":"我的名字当前为多","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":10,"reply":22] )!)
+                }
+                
+                
+            }else if let subReplyID =  self?.subReplyID{
+                // 根据评论id  获取它附件部分回复，（不显示回帖）
+                    for _ in 0..<2{
+                        self?.allSubReplys.append(SecondReplyModel(JSON: ["id":"dwqdw","replyID":getUUID(), "subreplyID":"123dqwdqwd456","replyContent":"当前为多群多低级趣味的精品区 当前为多   dqwdqwdqwd   当前为多群 当前为多群 dqdqw","receiver":"小猪啊","authorID":"123456","authorName":"我的名字当前为多","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":2303,"reply":101] )!)
+                    }
+                    
+                    self?.allSubReplys.append(SecondReplyModel(JSON: ["id":"dwqdw","replyID":getUUID(), "subreplyID":subReplyID,"replyContent":"当前为多群多低级趣味的精品区 当前为多   dqwdqwdqwd   当前为多群 当前为多群 dqdqw","receiver":"小猪啊","authorID":"123456","authorName":"我的名字当前为多","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":2303,"reply":101] )!)
+                    
+                    for _ in 0..<5{
+                        self?.allSubReplys.append(SecondReplyModel(JSON: ["id":"dwqdw","replyID":getUUID(), "subreplyID":"123dqwdqwd456","replyContent":"当前为多群多低级趣味的精品区 当前为多   dqwdqwdqwd   当前为多群 当前为多群 dqdqw","receiver":"小猪啊","authorID":"123456","authorName":"我的名字当前为多","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":2303,"reply":101] )!)
+                    }
             }
-            for _ in 0..<5{
-                self?.allSubReplys.append(SecondReplyModel(JSON: ["id":"dwqdw","parentReplyID":"dqwd-dqwdqwd","replyContent":"当前为多群多低级趣味的精品区 当前为多   dqwdqwdqwd   当前为多群 当前为多群 dqdqw","receiver":"小猪啊","authorID":"dqwddqwdd","authorName":"我的名字当前为多","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":2303,"reply":101] )!)
-            }
+            
+           
             
             
             DispatchQueue.main.async(execute: {
-                self?.didFinishLoad()
-                
+                self?.didFinishloadData()
                 // 错误处理！！！
             })
         }
@@ -399,7 +471,7 @@ extension SingleReplyViewController{
 
 
 
-fileprivate class  singleHeaderView:PostHeaderView{
+internal class  singleHeaderView:PostHeaderView{
  
     
     internal var mode:FirstReplyModel?{
@@ -421,10 +493,11 @@ fileprivate class  singleHeaderView:PostHeaderView{
             let replyStr = String(mode.reply)
             let replySize = NSString(string: replyStr).size(withAttributes: [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12)])
             self.reply.setTitle(replyStr, for: .normal)
-            _ = self.reply.sd_layout().widthIs(25 + replySize.width )
+            // 25 是image 的长度
+            _ = self.reply.sd_layout().widthIs(25 + replySize.width)
             let thumbStr = String(mode.thumbUP)
             let thumbSize = NSString(string: thumbStr).size(withAttributes: [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12)])
-            _ = self.thumbUP.sd_layout().widthIs(25 + thumbSize.width + 5)
+            _ = self.thumbUP.sd_layout().widthIs(25 + thumbSize.width)
             self.thumbUP.setTitle(thumbStr, for: .normal)
             
             userName.setSingleLineAutoResizeWithMaxWidth(ScreenW - 45 - 10  -  thumbUP.width - reply.width)
@@ -440,10 +513,9 @@ fileprivate class  singleHeaderView:PostHeaderView{
         reply.sd_clearAutoLayoutSettings()
         userName.setMaxNumberOfLinesToShow(2)
         lines.isHidden = true
-        _ = thumbUP.sd_layout().rightSpaceToView(self,15)?.topEqualToView(userName)?.widthIs(0)?.heightIs(25)
+        _ = thumbUP.sd_layout().rightSpaceToView(self,10)?.topEqualToView(userName)?.widthIs(0)?.heightIs(25)
         _ = reply.sd_layout().rightSpaceToView(thumbUP,0)?.topEqualToView(thumbUP)?.heightRatioToView(thumbUP,1)?.widthIs(0)
         
-       
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -454,10 +526,8 @@ fileprivate class  singleHeaderView:PostHeaderView{
 
 
 // cell
-@objcMembers fileprivate class contentCell:ForumBaseCell{
+@objcMembers internal class contentCell:ForumBaseCell{
     
-    
-
     dynamic internal var mode:SecondReplyModel?{
         didSet{
             guard let mode = mode else {
@@ -498,9 +568,9 @@ fileprivate class  singleHeaderView:PostHeaderView{
             thumbStr.addAttributes([NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12)], range: NSRange.init(location: 0, length: ts.count))
             let attch = NSTextAttachment.init()
             if mode.isLike{
-                 attch.image = UIImage.init(named: "selectedHeart")?.withRenderingMode(.alwaysTemplate).imageWithColor(color: UIColor.red)
+                 attch.image = UIImage.init(named: "selectedthumbup")?.withRenderingMode(.alwaysTemplate)
             }else{
-                 attch.image = UIImage.init(named: "heart")?.withRenderingMode(.alwaysTemplate).imageWithColor(color: UIColor.lightGray)
+                 attch.image = UIImage.init(named: "thumbup")?.withRenderingMode(.alwaysTemplate).imageWithColor(color: UIColor.lightGray)
             }
            
             // 图片和文字水平对齐
@@ -515,6 +585,20 @@ fileprivate class  singleHeaderView:PostHeaderView{
             
             
             self.setupAutoHeight(withBottomView: self.creatTime, bottomMargin: 10)
+        }
+    }
+    
+    
+    override var isHighlighted: Bool{
+        didSet{
+            if isHighlighted{
+                UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                    self.backgroundColor = UIColor.orange
+                }) { bool in
+                    self.backgroundColor = UIColor.white
+                    self.isHighlighted = false
+                }
+            }
         }
     }
     

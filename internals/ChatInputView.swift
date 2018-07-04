@@ -13,8 +13,8 @@ fileprivate let maxWordCount:Int = 200
 
 protocol ChatInputViewDelegate: class  {
     
-    func changeBarHeight(textView:UITextView, height:CGFloat)
-    func sendMessage(textView:UITextView)
+     func changeBarHeight(textView:UITextView, height:CGFloat)
+     func sendMessage(textView:UITextView)
 }
 
 
@@ -23,13 +23,14 @@ class ChatInputView: UIView {
     internal var defaultText:String = ""
     
     // 默认值
-    internal lazy var plashold:UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 16)
+    internal lazy var plashold:UILabel = {  [unowned self] in
+        let label = UILabel(frame: CGRect.init(x: 10, y:  5 + (textContentH - 25)/2, width: self.bounds.width - 40 , height: 25))
+        label.font = UIFont.systemFont(ofSize: 14)
         label.textAlignment = .left
         label.textColor = UIColor.lightGray
         label.lineBreakMode = .byCharWrapping
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 100)
+        label.numberOfLines = 1
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
         return label
         
     }()
@@ -61,9 +62,6 @@ class ChatInputView: UIView {
         self.addSubview(chatView)
         chatView.addSubview(plashold)
        
-        _ = plashold.sd_layout().centerYEqualToView(chatView)?.leftSpaceToView(chatView,5)?.autoHeightRatio(0)
-        
-        plashold.setMaxNumberOfLinesToShow(1)
         
     }
     

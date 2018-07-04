@@ -53,7 +53,11 @@ class messageMain: UIViewController {
         
         sg.insertSegment(withTitle: "聊天", at: 0, animated: false)
         sg.insertSegment(withTitle: "看过我", at: 1, animated: false)
+        sg.insertSegment(withTitle: "论坛", at: 2, animated: false)
         sg.selectedSegmentIndex = 0
+        sg.backgroundColor = UIColor.orange
+        sg.tintColor = UIColor.white
+        
         sg.addTarget(self, action: #selector(switchItem(_:)), for: .valueChanged)
         return sg
         
@@ -66,6 +70,8 @@ class messageMain: UIViewController {
     // 看过我vc
     private lazy var visitorVC:MyVisitor = MyVisitor()
     
+    // 论坛消息
+    private lazy var forume:ForumMessageVC = ForumMessageVC()
     
     
     override func viewDidLoad() {
@@ -80,14 +86,14 @@ class messageMain: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.insertCustomerView(UIColor.white)
+        self.navigationController?.insertCustomerView(UIColor.orange)
         
         
      }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationController?.removeCustomerView()
+        //self.navigationController?.removeCustomerView()
         
     }
     
@@ -99,8 +105,21 @@ class messageMain: UIViewController {
 extension messageMain{
     
     @objc private func switchItem(_ sender:UISegmentedControl){
+        
         currentItem =  sender.selectedSegmentIndex
         
+        // TEST 测试
+        if let target =  sender.titleForSegment(at: currentItem!){
+            sender.subviews[currentItem!].subviews.forEach { view in
+                if let lb = view as? UILabel, lb.text == "聊天"{
+                    view.pp.addDot(color: UIColor.red)
+                    view.pp.moveBadge(x: 2, y: 0)
+                    view.pp.setBadgeHeight(points: 5)
+                }
+            }
+            
+            
+        }
     }
 }
 
@@ -111,6 +130,7 @@ extension messageMain {
         
         chidVCs.append(chatVC)
         chidVCs.append(visitorVC)
+        chidVCs.append(forume)
         chidVCs.forEach{
             self.addChildViewController($0)
             $0.didMove(toParentViewController: self)

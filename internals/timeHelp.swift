@@ -143,7 +143,7 @@ func showMonthAndDay(date: Date?) ->String?{
 }
     
     
-func forumArticleDate(date: Date?) -> String?{
+func showDayAndHour(date: Date?) -> String?{
     guard let date = date else {
         return nil
     }

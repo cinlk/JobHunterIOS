@@ -14,6 +14,7 @@ import ObjectMapper
 
 class PostBaseModel: NSObject, Mappable{
     
+    // 帖子id
     var id:String?
     var title:String?
     var authorID:String?
@@ -27,7 +28,7 @@ class PostBaseModel: NSObject, Mappable{
     var createTimeStr:String{
         get{
             guard let time = self.createTime else { return ""}
-            if let str = forumArticleDate(date: time){
+            if let str = showDayAndHour(date: time){
                 return str
             }
             return ""
@@ -132,6 +133,10 @@ class PostContentModel:PostBaseModel{
 // 第一层回帖
 class FirstReplyModel: PostBaseModel{
     
+    
+    // 自己的id
+    var replyID:String?
+    
     // 自己是否点赞
     var isLike:Bool = false
     var replyContent:String?
@@ -145,6 +150,7 @@ class FirstReplyModel: PostBaseModel{
     
     override func mapping(map: Map) {
         super.mapping(map: map)
+        replyID <- map["replyID"]
         replyContent <- map["replyContent"]
         isLike <- map["isLike"]
     }
@@ -155,21 +161,24 @@ class FirstReplyModel: PostBaseModel{
 // 子回复(第二层)
 class SecondReplyModel: FirstReplyModel{
     
-    var parentReplyID:String?
+
+   
     var receiver:String?
+    var subreplyID:String?
     
     
     required init?(map: Map) {
         super.init(map: map)
-        if map.JSON["parentReplyID"] == nil || map.JSON["receiver"] == nil{
+        if map.JSON["subreplyID"] == nil || map.JSON["receiver"] == nil{
             return nil
         }
     }
     
     override func mapping(map: Map) {
         super.mapping(map: map)
-        parentReplyID <- map["parentReplyID"]
+        
         receiver <- map["receiver"]
+        subreplyID <- map["subreplyID"]
         
         
     }

@@ -11,6 +11,8 @@ import UIKit
  
 fileprivate let viewTitle:String = "帖子详情"
 
+
+
 class PostContentViewController: BaseTableViewController {
 
     
@@ -18,13 +20,9 @@ class PostContentViewController: BaseTableViewController {
     private lazy var InputViewHeigh:CGFloat = TOOLBARH
     
     
-    private lazy var alertTitle = "举报"
-    
-    internal var mypost:Bool = false{
-        didSet{
-            alertTitle = mypost ? "删除" : "举报"
-        }
-    }
+ 
+    // 自己的帖子 可以删除
+    internal var mypost:Bool = false
     
     private lazy var tableHeader:contentHeaderView = {
         let header = contentHeaderView()
@@ -36,24 +34,28 @@ class PostContentViewController: BaseTableViewController {
     }()
     
     // 发帖内容数据
-    private  var contentMode:PostContentModel?{
-        didSet{
-            DispatchQueue.main.async {
-                self.tableHeader.mode = self.contentMode!
-                self.tableHeader.layoutSubviews()
-                self.tableView.tableHeaderView = self.tableHeader
-            }
-        }
-    }
+    private  var contentMode:PostContentModel?
     // 回帖数据
     private  var replyModels:[FirstReplyModel] = []
     
     
+    //
+    internal var mode:(data:PostArticleModel, row:Int)?{
+        didSet{
+            self.loadData()
+        }
+    }
+    
+    
+    // 来自消息界面
     internal var postID:String?{
         didSet{
             self.loadData()
         }
     }
+    
+    
+    
     
     
     // 分享view
@@ -82,7 +84,26 @@ class PostContentViewController: BaseTableViewController {
         text.defaultText = self.defaultText
         text.plashold.text = self.defaultText
         text.delegate = self
+        text.isHidden = true
         return text
+    }()
+    
+    
+    // 论坛列表父界面 删除数据
+    internal var deleteSelf:((_ row: Int)->())?
+    
+    private lazy var deleteAlert:UIAlertController = { [unowned self] in
+        let alert = UIAlertController.init(title: "确认删除", message: "数据将无法恢复", preferredStyle: UIAlertControllerStyle.alert)
+        
+        let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
+        let delete = UIAlertAction.init(title: "确认", style: UIAlertActionStyle.default, handler: { action in
+            self.deleteMyself()
+        })
+        
+        
+        alert.addAction(cancel)
+        alert.addAction(delete)
+        return alert
     }()
     
     override func viewDidLoad() {
@@ -94,7 +115,7 @@ class PostContentViewController: BaseTableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.insertCustomerView()
+        //self.navigationController?.insertCustomerView()
         UIApplication.shared.keyWindow?.addSubview(shareV)
         UIApplication.shared.keyWindow?.addSubview(inputText)
 
@@ -104,7 +125,6 @@ class PostContentViewController: BaseTableViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationController?.removeCustomerView()
         shareV.removeFromSuperview()
         inputText.removeFromSuperview()
         
@@ -114,6 +134,7 @@ class PostContentViewController: BaseTableViewController {
     override func setViews() {
         
         self.title = viewTitle
+        
         self.tableView.tableFooterView = UIView()
         self.tableView.keyboardDismissMode = .onDrag
         self.tableView.backgroundColor = UIColor.viewBackColor()
@@ -126,19 +147,41 @@ class PostContentViewController: BaseTableViewController {
         
         //self.navigationController?.toolbar.autoresizingMask = [.flexibleHeight, .flexibleTopMargin]
         
- 
+        
         super.setViews()
     }
     
     
     
+    
+    
     override func didFinishloadData() {
         super.didFinishloadData()
+        
+        self.tableHeader.mode = self.contentMode!
+        self.tableHeader.layoutSubviews()
+        self.tableView.tableHeaderView = self.tableHeader
+        self.mypost = contentMode?.authorID == myself.userID
+        self.inputText.isHidden = false
+        
+        if mypost{
+            navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: #imageLiteral(resourceName: "rabbish"), style: .plain, target: self, action: #selector(showAlert))
+        }
+        
         self.tableView.reloadData()
         
     }
     
     
+    private func notFound(){
+        super.didFinishloadData()
+        
+        showOnlyTextHub(message: "没有找找404", view: self.tableView)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self.navigationController?.popViewController(animated: true)
+
+        }
+    }
     
     override func reload() {
         super.reload()
@@ -178,7 +221,13 @@ class PostContentViewController: BaseTableViewController {
         self.inputText.chatView.endEditing(true)
         // 跳转到子回复界面
         let vc  = SingleReplyViewController()
+        
         vc.mode = replyModels[indexPath.row]
+        vc.row = indexPath.row
+        vc.deleteSelf = { row in
+            self.replyModels.remove(at: row)
+            self.tableView.reloadData()
+        }
         self.navigationController?.pushViewController(vc, animated: true)
         
         
@@ -201,6 +250,39 @@ class PostContentViewController: BaseTableViewController {
     
 
 }
+
+
+
+extension PostContentViewController{
+    @objc private func showAlert(){
+        self.present(deleteAlert, animated: true, completion: nil)
+        
+        
+    }
+    
+    private func deleteMyself(){
+        
+        // 服务器删除
+        
+        
+        // 从论坛界面操作
+        if mode != nil {
+            self.navigationController?.popViewController(animated: true)
+            self.deleteSelf?((self.mode?.row)!)
+        }
+       
+        
+        
+        // 从消息界面操作, 返回论坛消息
+        if postID != nil,  let count = self.navigationController?.viewControllers.count, count  >= 3 {
+            let target = self.navigationController?.viewControllers[count - 3]
+            self.navigationController?.popToViewController(target!, animated: true)
+
+        }
+        
+    }
+}
+
 
 
 
@@ -354,8 +436,6 @@ extension PostContentViewController: ChatInputViewDelegate{
             if let new = FirstReplyModel(JSON: ["id":"dqwd-dqwdqwd","title":"我的测试","replyContent":text,"authorID":"dqwddqwdd","authorName":"就是我","authorIcon":"chrome","colleage":"天津大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":0,"reply":0]){
                 
                 
-                
-                
                 replyModels.append(new)
                 self.tableView.reloadData()
                 // 滑动出现 contentoffset 偏移过多
@@ -381,13 +461,17 @@ extension PostContentViewController{
         DispatchQueue.global(qos: .userInteractive).async { [weak self] in
             Thread.sleep(forTimeInterval: 1)
             
-            self?.contentMode = PostContentModel(JSON: ["id":"dqwd-dqwdqwd","collected":false,"isLike":false,"title":"标题题","content":"发帖内容当前为多群多群 \n 当前的群无多 \n 当前为多群无","colleage":"北京大学", "authorID":"dqwddqwdd","authorName":"dqwdw","authorIcon":"chicken","createTime":Date().timeIntervalSince1970,"kind":"jobs","thumbUP":2303,"reply":101])!
+            // 根据post id 加载
             
+            self?.contentMode = PostContentModel(JSON: ["id":"dqwd-dqwdqwd","collected":false,"isLike":false,"title":"标题题","content":"发帖内容当前为多群多群 \n 当前的群无多 \n 当前为多群无","colleage":"北京大学", "authorID":"123456","authorName":"dqwdw","authorIcon":"chicken","createTime":Date().timeIntervalSince1970,"kind":"jobs","thumbUP":56,"reply":12])!
+
             for _ in 0..<10{
-                self?.replyModels.append(FirstReplyModel(JSON: ["id":"dqwd-dqwdqwd","title":"标题题","replyContent":"当前为多群多低级趣味的精品区\n 当前为多      \t     dqwdqwdqwd   当前为多群\n 当前为多群 dqdqw","authorID":"dqwddqwdd","authorName":"我的名字当前为多群无多群","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":2303,"reply":101])!)
+                self?.replyModels.append(FirstReplyModel(JSON: ["id":"dqwd-dqwdqwd","replyID":getUUID(),"title":"标题题","replyContent":"当前为多群多低级趣味的精品区\n 当前为多      \t     dqwdqwdqwd   当前为多群\n 当前为多群 dqdqw","authorID":"123456","authorName":"我的名字当前为多群无多群dqwddqwd 当前为多群无多群无当前的群","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":15,"reply":89])!)
             }
             
+            
             DispatchQueue.main.async(execute: {
+                //self?.notFound()
                 self?.didFinishloadData()
             })
             

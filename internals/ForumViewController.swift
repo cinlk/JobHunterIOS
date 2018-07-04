@@ -9,12 +9,11 @@
 import UIKit
 
 
-fileprivate let titles:[String] = ["热门","笔经面经","我要提问","offer比较","互助"]
+fileprivate let titles:[String] = ["热门","攻略","提问","offer","互助"]
 fileprivate let nvaTitle:String = "论坛"
 
 class ForumViewController: UIViewController {
 
-    
     
     private lazy var publish:UIButton = {
         let btn = UIButton.init(frame: CGRect.zero)
@@ -111,7 +110,7 @@ class ForumViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationController?.removeCustomerView()
+        //self.navigationController?.removeCustomerView()
         self.navigationController?.navigationBar.tintColor = UIColor.black
  
     }
@@ -141,6 +140,7 @@ extension ForumViewController{
         self.view.backgroundColor = UIColor.white
         //
         self.navigationController?.navigationBar.settranslucent(true)
+        
         self.definesPresentationContext = true
         searchController.height = searchBarH
         searchBarContainer.addSubview(searchController.searchBar)
