@@ -17,12 +17,13 @@ class LXFChatMsgTimeHelper: NSObject {
         let helper = LXFChatMsgTimeHelper()
         return helper
     }()
+   
     
     override init() {
         super.init()
         // 设置时区
-        let regionRome = Region(tz: TimeZoneName.asiaShanghai, cal: CalendarName.gregorian, loc: LocaleName.chinese)
-        Date.setDefaultRegion(regionRome)
+    
+   
     }
 }
 
@@ -33,9 +34,10 @@ extension LXFChatMsgTimeHelper {
         let curTime = curModel.creat_time!
         
         let preDate = preTime
-        let preInRome = DateInRegion(absoluteDate: preDate)
+        
+        let preInRome =  DateInRegion.init(preDate, region: regionRome)
         let curDate = curTime
-        let curInRome = DateInRegion(absoluteDate: curDate)
+        let curInRome =  DateInRegion.init(curDate, region: regionRome)
         
         let yesr = curInRome.year - preInRome.year
         let month = curInRome.month - preInRome.month
@@ -61,7 +63,8 @@ extension LXFChatMsgTimeHelper {
         }
         // 消息时间
         let date = Date(timeIntervalSince1970: time)
-        let dateInRome = DateInRegion(absoluteDate: date)
+        let dateInRome = DateInRegion.init(date, region: regionRome)
+            
         // 当前时间
         let now = DateInRegion()
         
@@ -85,7 +88,7 @@ extension LXFChatMsgTimeHelper {
             if month > 0 || day > 7 {
                 return String(format: "%d月%d日 %d:%02d", dateInRome.month, dateInRome.day, dateInRome.hour, dateInRome.minute)
             } else if day > 2 {
-                return String(format: "%@ %d:%02d", dateInRome.weekdayName, dateInRome.hour, dateInRome.minute)
+                return String(format: "%@ %d:%02d", dateInRome.weekdayName(.default), dateInRome.hour, dateInRome.minute)
             } else if day == 2 {
                 return String(format: "前天 %d:%d", dateInRome.hour, dateInRome.minute)
             } else if dateInRome.isYesterday {

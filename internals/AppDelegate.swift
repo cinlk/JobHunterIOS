@@ -48,25 +48,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // 从服务器获取打招呼语句
         GreetingMsg = "默认第一条"
         // root controller
-        // 友盟初始化
+        
+        
+        // 友盟初始化 测试
         
         UMConfigure.initWithAppkey("5ac6ed8bb27b0a7ba6000059", channel: nil)
         // ****用的别人测试账号 *****
         // 微信好友
         UMSocialManager.default().setPlaform(.wechatSession, appKey: "wxd795d58c78ac222b", appSecret: "779c58188ca57046f76353ea1e84412c", redirectURL: "http://mobile.umeng.com/social")
-        
+
         // 微信朋友圈
         UMSocialManager.default().setPlaform(.wechatTimeLine, appKey: "wxd795d58c78ac222b", appSecret: "779c58188ca57046f76353ea1e84412c", redirectURL: "http://mobile.umeng.com/social")
         // 自己的账号
         UMSocialManager.default().setPlaform(.sina, appKey: "879467986", appSecret: "a426356a2f770cba1c2fd88564635206", redirectURL: "https://api.weibo.com/oauth2/default.html")
-        
-        //UMSocialManager.default().setPlaform(.sms, appKey: nil, appSecret: nil, redirectURL: "http://mobile.umeng.com/social")
-        //UMSocialManager.default().setPlaform(.email, appKey: nil, appSecret: nil, redirectURL: "http://mobile.umeng.com/social")
+
+
         // qq 是自己的账号
         UMSocialManager.default().setPlaform(.QQ, appKey: "1106824184", appSecret: "V0zSNqtNlo2wPIo7", redirectURL: "http://mobile.umeng.com/social")
         UMSocialManager.default().setPlaform(.qzone, appKey: "1106824184", appSecret: "V0zSNqtNlo2wPIo7", redirectURL: "http://mobile.umeng.com/social")
         
         
+        
+        //
+        getLocalApps()
         
         return true
     }
@@ -196,6 +200,25 @@ extension AppDelegate{
 }
 
 
+
+
+
+//   获取手机安装的 app(用于第三方登录 和 分享)
+extension AppDelegate{
+    
+    private func getLocalApps(){
+        let weixin = UIApplication.shared.canOpenURL(URL.init(string: "weixin://")!)
+        
+        let weibo = UIApplication.shared.canOpenURL(URL.init(string: "sinaweibo://")!)
+        let qq = UIApplication.shared.canOpenURL(URL.init(string: "mqq://")!)
+        let qqZone = UIApplication.shared.canOpenURL(URL.init(string: "mqzone://")!)
+        let alipay = UIApplication.shared.canOpenURL(URL.init(string: "alipay://")!)
+        print(weixin,weibo,qq,qqZone, alipay)
+        
+    }
+}
+
+//  获取地理位置
 
 extension AppDelegate: CLLocationManagerDelegate{
     

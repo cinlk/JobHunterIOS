@@ -76,6 +76,7 @@
 	<string>1</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>alipay</string>
 		<string>mqqopensdkapiV3</string>
 		<string>mqqopensdkapiV2</string>
 		<string>mqqapiwallet</string>

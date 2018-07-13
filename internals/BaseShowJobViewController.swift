@@ -59,12 +59,8 @@ class BaseShowJobViewController: BaseViewController {
      internal lazy var  shareapps:shareView = { [unowned self] in
         //放在最下方
         let view =  shareView(frame: CGRect(x: 0, y: ScreenH, width: ScreenW, height: shareViewH))
-        ShareOriginY = view.origin.y
-        //view.delegate = self
         return view
     }()
-    
-    private var ShareOriginY:CGFloat = 0
     
   
     

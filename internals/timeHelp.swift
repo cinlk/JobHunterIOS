@@ -102,7 +102,10 @@ func chatListTime(date:Date?) ->String?{
     }
     
     let now = DateInRegion()
-    let dateInRome = DateInRegion(absoluteDate: date)
+    
+    
+    let dateInRome =  DateInRegion.init(date, region: regionRome)
+    
     
     
     let year = now.year - dateInRome.year
@@ -131,7 +134,8 @@ func showMonthAndDay(date: Date?) ->String?{
     }
     
     let now = DateInRegion()
-    let dateRoom = DateInRegion(absoluteDate: date)
+    //DateInRegion.init(date)
+    let dateRoom = DateInRegion.init(date)
     let year = now.year - dateRoom.year
     if year != 0{
         return String.init(format: "%d年%d月%d日", dateRoom.year, dateRoom.month,dateRoom.day)
@@ -149,7 +153,7 @@ func showDayAndHour(date: Date?) -> String?{
     }
     
     let now = DateInRegion()
-    let dateRoom = DateInRegion(absoluteDate: date)
+    let dateRoom = DateInRegion.init(date, region: regionRome)
     
     let year = now.year - dateRoom.year
     if year != 0 {

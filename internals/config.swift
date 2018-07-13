@@ -7,10 +7,15 @@
 //
 
 import Foundation
-
+import SwiftDate
 
 
 /* 定义全局的变量 */
+
+// 时区
+
+let  regionRome =  Region.init(calendar: Calendars.gregorian, zone: Zones.asiaShanghai, locale: Locales.chinese)
+
 
 // 不同版本键盘高度不一样？？
 let KEYBOARD_HEIGHT:CGFloat = 216.0

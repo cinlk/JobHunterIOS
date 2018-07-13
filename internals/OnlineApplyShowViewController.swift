@@ -329,22 +329,6 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
 }
 
 
-//
-
-//extension OnlineApplyShowViewController: UINavigationControllerDelegate{
-//
-//    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-//
-//    }
-//
-//    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-//
-//    }
-//
-//
-//}
-
-
 extension OnlineApplyShowViewController: showApplyJobsDelegate{
     
     func cancel(view: ShowApplyJobsView) {
@@ -378,8 +362,47 @@ extension OnlineApplyShowViewController{
 // share分享代理实现
 extension OnlineApplyShowViewController:shareViewDelegate{
     
-    
     func handleShareType(type: UMSocialPlatformType) {
+        
+        
+        switch type {
+        case .copyLink:
+            print("已经复制链接\(mode?.link)")
+        case .more:
+            // 文本
+            let text = "分享内容描述"
+            let website = mode?.link ?? ""
+            let activityVC = UIActivityViewController.init(activityItems: [text, website], applicationActivities: nil)
+            activityVC.popoverPresentationController?.sourceView =  self.view
+            present(activityVC, animated: true, completion: nil)
+        
+        
+        case .wechatTimeLine, .wechatSession, .QQ, .qzone, .sina:
+            
+            let mesObj = UMSocialMessageObject.init()
+            
+            let sharedObj = UMShareWebpageObject.init()
+            
+            sharedObj.title = "设置标题"
+            sharedObj.descr = "xxx的个人名片"
+            sharedObj.thumbImage = "https://www.elinknet.cn/img/logo.png"
+            sharedObj.webpageUrl = "http://video.sina.com.cn/p/sports/cba/v/2013-10-22/144463050817.html"
+            mesObj.shareObject = sharedObj
+            
+            
+            UMSocialManager.default().share(to: type, messageObject: mesObj, currentViewController: self) { (data, error) in
+                if error != nil{
+                    showOnlyTextHub(message: "请先安装应用", view: self.view)
+                    print("出现错误\(error)")
+                }else{
+                    
+                }
+            }
+            
+        default:
+           break
+            
+        }
     }
 }
 

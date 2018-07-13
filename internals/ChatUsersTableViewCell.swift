@@ -67,7 +67,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
             
             if let num = mode?.unReadCount{
                 self.outerIconView.pp.addBadge(number: num)
-                self.outerIconView.pp.setBadgeHeight(points: 15)
+                self.outerIconView.pp.setBadge(height: 15)
                 self.outerIconView.pp.moveBadge(x: -5, y: 5)
             }
             

@@ -186,8 +186,8 @@ extension CareerTalkShowViewController{
                 let event = EKEvent(eventStore: store)
                 
                 event.title = mode.name
-                event.startDate = dateFormat.date(from:  (mode.start_time?.string())!)
-                event.endDate =   dateFormat.date(from:  (mode.end_time?.string())!)
+                event.startDate = dateFormat.date(from:  (mode.start_time?.toString())!)
+                event.endDate =   dateFormat.date(from:  (mode.end_time?.toString())!)
                 event.location =  mode.college!   + "-" + mode.address!
                 
                 if let url = mode.url{

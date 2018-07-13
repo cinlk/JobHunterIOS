@@ -19,8 +19,8 @@ protocol shareViewDelegate: class {
 }
 
 
-class shareView: UIView {
 
+class shareView: UIView {
     
     // MARK 判断是否安装应用？？ UMSocialManager.default().isInstall(.wechatSession)
     
@@ -30,11 +30,9 @@ class shareView: UIView {
         ShareItem.init(name: "微信朋友圈", image: "friendCircle", type: UMSocialPlatformType.wechatTimeLine, bubbles: nil),
         
         ShareItem.init(name: "QQ空间", image: "qqZone", type: UMSocialPlatformType.qzone, bubbles: nil),
-        ShareItem.init(name: "复制链接", image: "copyIcon", type: UMSocialPlatformType.init(rawValue: 1001), bubbles: nil),
+        ShareItem.init(name: "复制链接", image: "copyIcon", type: UMSocialPlatformType.copyLink, bubbles: nil),
         // 短信报错： 分享失败 Optional(Error Domain=UMSocialPlatformErrorDomain Code=2001 "(null)" UserInfo={message=未配置完成SDK，请检查 'build setting'中 -ObjC参数})
-        ShareItem.init(name: "更多", image: "moreShare", type: UMSocialPlatformType.init(rawValue: 1002), bubbles: nil)]
-    
-    
+        ShareItem.init(name: "更多", image: "moreShare", type: UMSocialPlatformType.more, bubbles: nil)]
     
     
     // shareView的背景
@@ -48,7 +46,7 @@ class shareView: UIView {
     
     
     
-    var delegate:shareViewDelegate?
+    weak var delegate:shareViewDelegate?
     
     
     private lazy var line:UIView = {
@@ -56,6 +54,7 @@ class shareView: UIView {
         v.backgroundColor = UIColor.lightGray
         return v
     }()
+    
     private lazy var cancelBtn:UIButton = {  [unowned self] in
         let btn = UIButton.init()
         btn.setTitle("取 消", for: .normal)
@@ -155,6 +154,7 @@ extension shareView:UICollectionViewDelegate, UICollectionViewDataSource, UIColl
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print(indexPath)
+        
         let mode = showItems[indexPath.row]
         self.sharedToUM(type: mode.type)
         

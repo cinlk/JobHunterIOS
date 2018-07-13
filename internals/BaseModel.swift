@@ -15,6 +15,9 @@ class BaseModel:NSObject, Mappable, Comparable{
     // 唯一号 (必须)
     internal var id:String?
     
+    // 数据展示 对应的 website 界面url地址（用于分享）
+    internal var website:String?
+    
     // 名字 （必须）
     internal var name:String?
     
@@ -59,6 +62,7 @@ class BaseModel:NSObject, Mappable, Comparable{
         isApply <- map["isApply"]
         create_time <- (map["create_time"], DateTransform())
         icon <- map["icon"]
+        website <- map["website"]
         
     }
     

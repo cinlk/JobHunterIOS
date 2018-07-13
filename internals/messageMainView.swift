@@ -114,7 +114,7 @@ extension messageMain{
                 if let lb = view as? UILabel, lb.text == "聊天"{
                     view.pp.addDot(color: UIColor.red)
                     view.pp.moveBadge(x: 2, y: 0)
-                    view.pp.setBadgeHeight(points: 5)
+                    view.pp.setBadge(height: 5)
                 }
             }
             
