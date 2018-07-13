@@ -143,7 +143,7 @@ internal class baseSubScribleCell:UITableViewCell{
         
         _ = salary.sd_layout().leftSpaceToView(degree,15)?.centerYEqualToView(degree)?.autoHeightRatio(0)
         
-        _ = internDay.sd_layout().leftSpaceToView(salary,15)?.centerYEqualToView(salary)?.autoHeightRatio(0)
+        _ = internDay.sd_layout().leftEqualToView(locate)?.topSpaceToView(locate,10)?.autoHeightRatio(0)
         _ = internMonth.sd_layout().leftSpaceToView(internDay,15)?.centerYEqualToView(internDay)?.autoHeightRatio(0)
         
         

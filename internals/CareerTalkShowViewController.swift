@@ -159,9 +159,7 @@ extension CareerTalkShowViewController {
 
 extension CareerTalkShowViewController: shareViewDelegate{
     
-    func hiddenShareView(view:UIView){
-        self.handleSingleTapGesture()
-    }
+
     func handleShareType(type: UMSocialPlatformType) {
     }
 }

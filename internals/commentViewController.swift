@@ -96,8 +96,9 @@ extension commentViewController{
             let delete = UIAlertAction.init(title: "删除", style: .destructive) { action in
                 // 服务器删除
                 // 返回，不删除跳转原来记录（海需要关联删除很多记录）
-                self.navigationController?.popViewController(animated: true)
-            }
+                self.navigationController?.popvc(animated: true)
+
+             }
             alert.addAction(delete)
         }
         

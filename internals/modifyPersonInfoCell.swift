@@ -48,6 +48,7 @@ class modifyPersonInfoCell: UITableViewCell {
         textField.adjustsFontSizeToFitWidth = false
         textField.clearButtonMode = .whileEditing
         textField.keyboardType = .default
+        textField.returnKeyType = .done
         textField.delegate = self
         
         
@@ -85,6 +86,7 @@ class modifyPersonInfoCell: UITableViewCell {
             guard  let mode = mode  else {
                 return
             }
+            
             self.leftTitle.text = mode.type.describe
             
            
@@ -181,28 +183,45 @@ extension modifyPersonInfoCell: UITextFieldDelegate{
     
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+       
+    
         return true
+    }
+    
+    
+     // 通知vc 进入编辑
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: modifyPersonNotifyName), object: nil, userInfo: ["edit":true])
+        
     }
     
     
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        // 通知vc 结束编辑
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: modifyPersonNotifyName), object: nil, userInfo: ["edit":false])
         return true
     }
+    
     func textFieldDidEndEditing(_ textField: UITextField) {
-        
         if onlyPickerResumeType.contains(mode!.type){
             return
         }
-        
-        if let text = textField.text, !text.isEmpty{
+        if let text = textField.text{
+            // 这里不判断，在vc 里判断空值
             self.delegate?.changeBasicInfo(type: mode!.type, value: text)
         }
+        return
     }
+    
+    
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: modifyPersonNotifyName), object: nil, userInfo: ["edit":false])
         return true
     }
+    
     
 }
 

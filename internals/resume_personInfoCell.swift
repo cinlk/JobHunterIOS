@@ -128,8 +128,8 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
             birthday.text = mode.birthday
             email.text = mode.email
             
-            lable1.text = mode.gender + "|" + mode.city + "|" + mode.degree + "|" + mode.birthday
-            lable2.text = mode.phone + "|" + mode.email
+            lable1.text = mode.gender! + "|" + mode.city + "|" + mode.degree! + "|" + mode.birthday!
+            lable2.text = mode.phone! + "|" + mode.email!
             
             // cell 自适应高度
             self.setupAutoHeight(withBottomViewsArray: [touxaing,lable1,lable2], bottomMargin: 10)

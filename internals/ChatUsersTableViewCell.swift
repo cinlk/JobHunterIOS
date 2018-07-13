@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import PPBadgeViewSwift
 
 fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
 

@@ -53,19 +53,10 @@ class baseWebViewController: UIViewController {
     //share
     private lazy var sharedView:shareView = {
         let share = shareView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: shareViewH))
-        UIApplication.shared.keyWindow?.addSubview(share)
         share.delegate = self
         return share
     }()
     
-    
-    private lazy var backGroudView:UIButton = { [unowned self] in
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
-        btn.alpha = 0.5
-        btn.backgroundColor = UIColor.lightGray
-        btn.addTarget(self, action: #selector(clooseShareView), for: .touchUpInside)
-        return btn
-    }()
     
     private lazy var btnBack:UIBarButtonItem = { [unowned self] in
         
@@ -123,12 +114,14 @@ class baseWebViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        UIApplication.shared.keyWindow?.addSubview(sharedView)
+
         self.navigationController?.insertCustomerView(UIColor.blue)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        sharedView.removeFromSuperview()
         self.navigationController?.removeCustomerView()
     }
     
@@ -178,36 +171,19 @@ extension baseWebViewController{
         if self.webView.canGoBack{
             self.webView.goBack()
         }else{
-            self.navigationController?.popViewController(animated: true)
-        }
+            self.navigationController?.popvc(animated: true)
+         }
     }
     
     @objc func cancel(){
-        self.navigationController?.popViewController(animated: true)
-    }
+        self.navigationController?.popvc(animated: true)
+     }
     @objc func share(){
-        self.navigationController?.view.addSubview(backGroudView)
-        
-        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            self.sharedView.origin.y = ScreenH  - shareViewH
-
-        }, completion: nil)
+        self.sharedView.showShare()
        
     }
     
-    @objc func clooseShareView(){
-        
-        backGroudView.removeFromSuperview()
-        self.navigationController?.view.willRemoveSubview(backGroudView)
-        
-        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-            self.sharedView.origin.y = ScreenH
-        }, completion: nil)
-        
-       
-            
-           
-    }
+  
     
 }
 
@@ -273,9 +249,6 @@ extension baseWebViewController: WKUIDelegate{
 //share 代理
 extension baseWebViewController: shareViewDelegate{
     
-    func hiddenShareView(view: UIView) {
-        self.clooseShareView()
-    }
     
     func handleShareType(type: UMSocialPlatformType) {
         

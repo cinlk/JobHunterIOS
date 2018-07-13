@@ -41,38 +41,19 @@ class SettingVC: UIViewController {
     }()
     
     
-    // logoutAlert
-    private lazy var logoutView:UIAlertController = { [unowned self] in
-        let alertVC = UIAlertController.init(title: "是否退出登录", message: nil, preferredStyle: UIAlertControllerStyle.alert)
-        let cancl = UIAlertAction.init(title: "取消", style: UIAlertActionStyle.cancel, handler: nil)
-        alertVC.addAction(cancl)
-        let confirm = UIAlertAction.init(title: "确认", style: UIAlertActionStyle.default, handler: { (action) in
-            self.logout()
-        })
-        alertVC.addAction(confirm)
-        
-        return alertVC
-    }()
-    
+  
     private lazy var items:[Int:[SettingCellItem]] = [0:[.myAccount,.messageSetting,.greeting,.feedBack],1:[.clearCache,.aboutUS,.evaluationUS], 2:[.logout]]
     
+  
     
-    private lazy var label:UILabel = {
-        let label = UILabel.init(frame: CGRect.zero)
-        label.text = ""
-        label.textColor = UIColor.black
-        label.textAlignment = .right
-        return label
-        
-    }()
-    
-    
+    // 获取 缓存 还有其他内容？
     private lazy var cacheSize:String = "2.13MB"
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         initView()
+ 
         // Do any additional setup after loading the view.
     }
 
@@ -83,13 +64,10 @@ class SettingVC: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationItem.title = "设置"
-     }
+        self.navigationController?.insertCustomerView(UIColor.orange)
+      }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
-     }
+  
     
     
 
@@ -99,12 +77,16 @@ class SettingVC: UIViewController {
 extension SettingVC {
     
     private func initView(){
-        
+        self.title = "设置"
         self.view.addSubview(tableView)
         _  = tableView.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
         
+        navigationItem.backBarButtonItem = UIBarButtonItem.init(title: "", style: .plain, target: nil, action: nil)
+        
     }
 }
+
+
 
 
 
@@ -122,8 +104,10 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
+ 
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
         
+    
         let item = items[indexPath.section]?[indexPath.row]
         cell.textLabel?.text = item?.rawValue
         cell.selectionStyle = .none
@@ -131,18 +115,26 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource{
         
         // 清理缓存
         if item == .clearCache {
+            
+            //
+            let label = UILabel.init(frame: CGRect.zero)
+            label.textColor = UIColor.black
+            label.textAlignment = .right
             label.text = cacheSize
             label.sizeToFit()
-            cell.accessoryView = label
-            return cell
+            cell.accessoryView  = label
+            
+            
         // 退出cell
         }else if item == .logout{
             cell.textLabel?.textAlignment = .center
             cell.textLabel?.textColor = UIColor.blue
-            return cell
+        }else{
+            cell.accessoryType = .disclosureIndicator
+            cell.textLabel?.textAlignment = .left
+
         }
-        cell.accessoryType = .disclosureIndicator
-        cell.textLabel?.textAlignment = .left
+        
         return cell
     }
     
@@ -183,11 +175,30 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource{
             let greet = greetingVC(style: .grouped)
             self.navigationController?.pushViewController(greet, animated: true)
         case .clearCache:
-            clearCache()
+            
+            let cell = tableView.cellForRow(at: indexPath)
+          
+            cell?.presentAlert(type: .alert, title: "清理缓存", message: nil, items: [actionEntity.init(title: "确定", selector: #selector(clearCache), args: indexPath)], target: self, complete: { alert in
+                self.present(alert, animated: true, completion: nil)
+            })
+            
+            
         case .logout:
-            logoutAlertShow()
+            
+            let cell = tableView.cellForRow(at: indexPath)
+            cell?.presentAlert(type: .alert, title: nil, message: "是否退出登录", items: [actionEntity.init(title: "退出", selector: #selector(logout), args: nil)], target: self, complete: { alert in
+                self.present(alert, animated: true, completion: nil)
+            })
+            
+        
         case .evaluationUS:
-            evaluationApp()
+            //evaluationApp()
+            let cell = tableView.cellForRow(at: indexPath)
+            cell?.presentAlert(type: .alert, title: "觉得好用的话，给我个评价吧！", message: nil, items: [actionEntity.init(title: "好的", selector: #selector(evaluationApp), args: "itms-apps://itunes.apple.com/app/id444934666")], target: self, complete: { alert in
+                self.present(alert, animated: true, completion: nil)
+                
+            })
+            
         case .feedBack:
             let problem = feedBackVC()
             self.navigationController?.pushViewController(problem, animated: true)
@@ -219,31 +230,28 @@ extension SettingVC: UIScrollViewDelegate{
 extension SettingVC {
     
     // 清理缓存
-    private func clearCache(){
+    @objc private func clearCache(_ params: IndexPath?){
         
-          
+          guard  let index = params else {
+            return
+          }
           showOnlyTextHub(message: "清楚完成", view: self.view)
-          self.cacheSize = ""
-          //self.tableView.reloadSections([1], animationStyle: .automatic)
-          self.tableView.reloadData()
-
+          self.cacheSize = "0.00MB"
+          self.tableView.reloadRows(at: [index], with: .automatic)
+        
     }
     
     // 评价app
-    private func evaluationApp(){
+   @objc  private func evaluationApp(_ url:String){
         
-        openApp(appURL: "id444934666") { (bool) in
+        openApp(appURL: url) { (bool) in
             print("open success \(bool)")
         }
     }
     
-    // 退出提示
-    private func logoutAlertShow(){
-        self.present(logoutView, animated: true, completion: nil)
-    }
+   
     
-    
-    private func logout(){
+   @objc  private func logout(){
         
       
          // 禁止自动登录

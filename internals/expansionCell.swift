@@ -58,6 +58,8 @@ import UIKit
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         let views:[UIView] = [title, icon, detailLabel]
+        self.layer.masksToBounds = true
+        self.selectionStyle = .none
         self.contentView.sd_addSubviews(views)
         _ = title.sd_layout().leftSpaceToView(self.contentView,16)?.topSpaceToView(self.contentView,10)?.autoHeightRatio(0)
         _ = icon.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(title)?.widthIs(15)?.heightIs(10)

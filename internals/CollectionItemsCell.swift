@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import PPBadgeViewSwift
 
 
 class CollectionItemsCell: UICollectionViewCell {
@@ -34,17 +33,15 @@ class CollectionItemsCell: UICollectionViewCell {
         didSet{
             titleLabel.text = mode?.name
             iconImage.image = UIImage.init(named: mode?.image ?? "default")
-            self.setupAutoWidth(withRightView: titleLabel, rightMargin: 10)
-            // 添加右上叫 气泡
-            iconImage.pp.addBadge(number: mode?.bubbles ?? 0)
+           
         }
     }
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.addSubview(iconImage)
-        self.addSubview(titleLabel)
+        self.contentView.addSubview(iconImage)
+        self.contentView.addSubview(titleLabel)
         
-        _ = iconImage.sd_layout().centerXEqualToView(self)?.centerYEqualToView(self)?.widthIs(45)?.heightIs(45)
+        _ = iconImage.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(self.contentView,5)?.widthIs(45)?.heightIs(45)
         _ = titleLabel.sd_layout().topSpaceToView(iconImage,5)?.centerXEqualToView(iconImage)?.autoHeightRatio(0)
         
     }

@@ -24,19 +24,10 @@ class greetingVC: BaseTableViewController {
         loadData()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.navigationItem.title = "打招呼语"
-     }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
- 
-    }
     
     
     override func setViews() {
+        self.title = "打招呼语"
         self.tableView.tableFooterView = UIView.init()
         self.tableView.allowsMultipleSelection = false
         self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentity)
@@ -78,7 +69,8 @@ class greetingVC: BaseTableViewController {
         if let data = data{
             return  data.isOn ? data.des.count : 0
         }
-        return 0 
+        return 0
+        
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
@@ -93,11 +85,14 @@ class greetingVC: BaseTableViewController {
             return cell
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentity, for: indexPath)
+        cell.selectionStyle = .none
         
         if indexPath.row == data?.currentIndex{
             cell.accessoryType = .checkmark
+            cell.textLabel?.textColor = UIColor.blue
             tableView.selectRow(at: indexPath, animated: false, scrollPosition: .top)
         }else{
+            cell.textLabel?.textColor = UIColor.black
             cell.accessoryType = .none
         }
         cell.textLabel?.text = data?.des[indexPath.row]
@@ -109,7 +104,6 @@ class greetingVC: BaseTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         if indexPath.section == 1{
             
             updateGreeting(){ bool in
@@ -117,6 +111,8 @@ class greetingVC: BaseTableViewController {
                     self.data?.currentIndex = indexPath.row
                     let cell = tableView.cellForRow(at: indexPath)
                     cell?.accessoryType = .checkmark
+                    cell?.textLabel?.textColor = UIColor.blue
+
                 }
             }
            
@@ -132,6 +128,8 @@ class greetingVC: BaseTableViewController {
         if indexPath.section == 1{
             let cell = tableView.cellForRow(at: indexPath)
             cell?.accessoryType = .none
+            cell?.textLabel?.textColor = UIColor.black
+
         }
     }
     
@@ -146,9 +144,9 @@ class greetingVC: BaseTableViewController {
             label.textAlignment = .left
             label.text = "请选择打招呼语"
             label.textColor = UIColor.lightGray
-            label.sizeToFit()
+            label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20)
             view.addSubview(label)
-            _ = label.sd_layout().leftSpaceToView(view,10)?.rightSpaceToView(view,10)?.bottomSpaceToView(view,10)?.heightIs(20)
+            _ = label.sd_layout().leftSpaceToView(view,TableCellOffsetX)?.bottomSpaceToView(view,10)?.autoHeightRatio(0)
         }
         return view
     }
@@ -175,8 +173,8 @@ extension greetingVC{
         // 服务器更新数据
         self.tableView.reloadSections([1], animationStyle: .none)
         
-        //print(tableView.indexPathsForSelectedRows)
-    }
+     }
+    
     // 服务器更新数据 回调执行结果
     private func updateGreeting(complete:@escaping ((_ :Bool)->Void)){
         
@@ -207,7 +205,7 @@ extension greetingVC{
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
            
             
-            Thread.sleep(forTimeInterval: 3)
+            Thread.sleep(forTimeInterval: 1)
             self?.data = greetingModel(JSON: ["isOn":true,"des":["默认第一条","第二条","第三条","第四条","第五条"],"currentIndex":0])
             DispatchQueue.main.async(execute: {
                 self?.didFinishloadData()

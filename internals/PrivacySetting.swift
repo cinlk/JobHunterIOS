@@ -10,43 +10,60 @@ import UIKit
 
 
 
-fileprivate let headerViewH:CGFloat = 50
-fileprivate let headerTitle:String = "简历隐私设置"
 
-class PrivacySetting: BaseTableViewController {
+fileprivate let cellIdentity:String = "cell"
+// 全局 记录总的屏蔽公司数量
+var currentBlacklistCount:Int = 0
 
 
+class PrivacySetting: BaseViewController {
 
-    private var currentSelectedRow:Int = 0
-    // 选择数据
-    private var mode:privateMode?{
-        didSet{
-            privateViewMode.shared.mode = mode!
-        }
-    }
+    
+    
+    // popView
+    
+    private lazy var popCompanyView:popView = { [unowned self] in
+        let v = popView.init(frame: CGRect.init(x: -200, y: (ScreenH - 100)/2 , width: 200, height: 60))
+        v.layer.cornerRadius = 10
+        v.layer.masksToBounds = true
+        v.backgroundColor = UIColor.white
+        return v
+    }()
     
 
-    private lazy var headerView:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: headerViewH))
-        v.backgroundColor = UIColor.white
-        let label = UILabel.init(frame: CGRect.zero)
-        label.font = UIFont.boldSystemFont(ofSize: 18)
-        label.textAlignment = .left
-        label.text = headerTitle
-        label.textColor = UIColor.black
-        label.sizeToFit()
-        v.addSubview(label)
-        
-        _ = label.sd_layout().leftSpaceToView(v,TableCellOffsetX)?.bottomSpaceToView(v,10)?.rightSpaceToView(v,20)
-        
-        return v
-        
+    
+    private lazy var table:UITableView = {
+        let tb = UITableView.init(frame: CGRect.zero, style: .grouped)
+        tb.dataSource = self
+        tb.delegate = self
+        tb.backgroundColor = UIColor.viewBackColor()
+        tb.tableFooterView = UIView.init()
+        tb.separatorStyle = .singleLine
+        tb.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentity)
+        tb.register(singleButtonCell.self, forCellReuseIdentifier: singleButtonCell.identity())
+        return tb
     }()
     
     
-    // 由于tableview reloadindex 有bug，加入moreCell 指向
-    // 屏蔽公司的cell
-    private var moreCell:PrivacyCellView?
+    private var currentSelected:Int?
+    private var keys:[String]  = []
+    
+    private var mode:ResumePrivacyModel?{
+        didSet{
+            guard  let mode = mode else {
+                return
+            }
+            keys  = Array(mode.listItem!.keys)
+            
+            for i in 0..<keys.count{
+                if mode.listItem![keys[i]] == true{
+                    currentSelected = i
+                }
+            }
+            
+        }
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,30 +71,25 @@ class PrivacySetting: BaseTableViewController {
         loadData()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationItem.title = "隐私设置"
+        self.navigationController?.insertCustomerView(UIColor.orange)
+        UIApplication.shared.keyWindow?.addSubview(popCompanyView)
+        
     }
-    
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
-        
+        popCompanyView.removeFromSuperview()
     }
     
     override func setViews(){
-        self.tableView.backgroundColor = UIColor.viewBackColor()
-        self.tableView.tableHeaderView = headerView
-        self.tableView.tableFooterView = UIView.init()
-        self.tableView.separatorStyle = .none
-        self.tableView.register(PrivacyCellView.self, forCellReuseIdentifier: PrivacyCellView.identity())
+        self.title = "隐私设置"
+        self.view.addSubview(table)
         
+         _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
+        self.handleViews.append(table)
         
         super.setViews()
         
@@ -86,7 +98,9 @@ class PrivacySetting: BaseTableViewController {
     override func didFinishloadData(){
         
         super.didFinishloadData()
-        self.tableView.reloadData()
+        currentBlacklistCount = mode?.companyBlacklist.count ?? 0
+        
+        self.table.reloadData()
     }
     
     override func showError(){
@@ -99,75 +113,206 @@ class PrivacySetting: BaseTableViewController {
         
     }
     
+}
 
-
+extension PrivacySetting: UITableViewDataSource, UITableViewDelegate{
+    
     // MARK: - Table view data source
-
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 1
+        return 2
     }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return mode?.list?.count ?? 0
-    }
-
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        guard let lists = mode?.list else {
-            return UITableViewCell()
+        if section == 0 {
+            return self.mode?.listItem?.count ?? 0
+        }else{
+            if let row = currentSelected, keys[row] == "屏蔽指定公司"{
+                return (self.mode?.companyBlacklist.count ?? 0) + 1
+            }
+            return 0 
+            
+            
         }
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        if let  cell = tableView.dequeueReusableCell(withIdentifier: PrivacyCellView.identity(), for: indexPath) as?
-            PrivacyCellView{
-            
-            cell.delegate = self
-            
-            
-            let item = lists[indexPath.row]
-            if item.isOn == true{
-                currentSelectedRow = indexPath.row
+        
+        if indexPath.section == 1 && indexPath.row == self.mode?.companyBlacklist.count {
+            let cell = singleButtonCell()
+            cell.btnType = .add
+            cell.btn.setTitle("添加屏蔽企业", for: .normal)
+            cell.addMoreItem = {
+                self.addCompany()
             }
-            // 显示屏蔽公司的cell
-            if item.showCompany == true{
-                moreCell = cell
-            }
-            
-            cell.mode = item
-            cell.useCellFrameCache(with: indexPath, tableView: tableView)
-            
             return cell
+        }
             
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentity, for: indexPath)
+        cell.selectionStyle = .none
+        
+        if indexPath.section == 0 {
+            cell.textLabel?.text =  keys[indexPath.row]
+          
+            setCellaccessView(cell: cell, selected: currentSelected == indexPath.row)
+        }else{
+                cell.textLabel?.text = self.mode?.companyBlacklist[indexPath.row].companyName
+                addCancelBtn(cell: cell, index: indexPath)
         }
-     
-        return UITableViewCell()
+        
+        return cell
         
     }
     
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let item = mode?.list else {
-            return 0
-        }
-
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 45
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-       return tableView.cellHeight(for: indexPath, model: item[indexPath.row], keyPath: "mode", cellClass: PrivacyCellView.self, contentViewWidth: ScreenW)
-       
-    }
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-       
-        if currentSelectedRow != indexPath.row{
-            mode?.list?[currentSelectedRow].isOn = false
+        if indexPath.section == 0  && currentSelected != indexPath.row{
+            // 影藏简历判断
+            if keys[indexPath.row] == "影藏简历"{
+                let cell = tableView.cellForRow(at: indexPath)
+                cell?.presentAlert(type: .alert, title: nil, message: "隐藏简历后, 不会被推荐已经其他hr查看到你的简历", items: [actionEntity.init(title: "确认", selector: #selector(hiddenResume), args: indexPath)], target: self, complete: { alert in
+                    self.present(alert, animated: true, completion: nil)
+                })
+            }else{
+                changeCell(indexPath: indexPath)
+            }
         }
-        mode?.list?[indexPath.row].isOn = true
-        tableView.reloadData()
+        
+        // 显示公司名称
+        if indexPath.section  == 1{
+            if let cell = tableView.cellForRow(at: indexPath), let text = cell.textLabel?.text{
+                showCompanyPop(name: text)
+            }
+        }
     }
     
-  
+    
+    
+    
+    
+    //section
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let v = UIView()
+        v.backgroundColor = UIColor.clear
+        let label = UILabel()
+        label.text = section == 0 ?  "影藏类型" : "屏蔽以下企业"
+        label.textAlignment = .left
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        v.addSubview(label)
+        _ = label.sd_layout().bottomSpaceToView(v,5)?.leftSpaceToView(v,TableCellOffsetX)?.autoHeightRatio(0)
+        return v
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == 0 {
+            return 25
+        }
+        if let row = currentSelected, keys[row] == "屏蔽指定公司"{
+            return 10
+        }
+        return  0
+    }
     
 }
 
+
+extension PrivacySetting{
+    @objc private func hiddenResume(_ indexPath:IndexPath){
+        changeCell(indexPath: indexPath)
+    }
+    
+    private func changeCell(indexPath:IndexPath){
+        
+        self.mode?.listItem?[keys[indexPath.row]] = true
+        
+        currentSelected = indexPath.row
+        table.reloadData()
+        
+    }
+}
+
+extension PrivacySetting{
+    private func setCellaccessView(cell:UITableViewCell, selected:Bool){
+        
+        let imagev = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 25, height: 25))
+        imagev.contentMode = .scaleAspectFill
+        imagev.image = selected ?  #imageLiteral(resourceName: "selectedRound") :  #imageLiteral(resourceName: "round")
+        cell.accessoryView  =  imagev
+    }
+    
+    private func addCancelBtn(cell:UITableViewCell, index:IndexPath){
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 20, height: 20))
+        btn.setImage(#imageLiteral(resourceName: "cancel").withRenderingMode(.alwaysTemplate), for: .normal)
+        btn.tintColor = UIColor.lightGray
+        btn.tag = index.row
+        btn.addTarget(self, action: #selector(deleteCompany), for: .touchUpInside)
+        cell.accessoryView = btn
+    }
+    
+    
+    @objc private func deleteCompany(_ sender:UIButton){
+        self.mode?.companyBlacklist.remove(at: sender.tag)
+        currentBlacklistCount -= 1
+        self.table.reloadData()
+    }
+    
+    
+    private func showCompanyPop(name:String){
+        let label = UILabel()
+        label.setSingleLineAutoResizeWithMaxWidth(popCompanyView.bounds.width - 10)
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.textAlignment = .center
+        label.text = name
+        
+        popCompanyView.setTitleAndView(title: "公司名称", view: label)
+        let size = UILabel.sizeOfString(string: name as NSString , font: label.font, maxWidth: popCompanyView.bounds.width - 10)
+        
+        popCompanyView.showPop(height: size.height + 35)
+       
+    }
+    
+   
+    
+    private func addCompany(){
+        //
+        
+        let addBlacklist = AddBlacklistVC()
+        addBlacklist.delegate = self
+        addBlacklist.hidesBottomBarWhenPushed = true
+    
+        self.navigationController?.pushViewController(addBlacklist , animated: true)
+    }
+}
+
+
+extension PrivacySetting: companyBlackDelegate{
+    
+    func updateBlacklist(lists: [BlackistCompanyModel]) {
+        guard  lists.count > 0 else { return }
+        currentBlacklistCount += lists.count
+        
+        let lastOne = self.mode?.companyBlacklist.count ?? 0
+        
+        self.mode?.companyBlacklist.append(contentsOf: lists)
+        
+        self.table.beginUpdates()
+        for i in 0..<lists.count{
+            self.table.insertRows(at: [IndexPath.init(row: lastOne + i, section: 1)], with: .automatic)
+        }
+        self.table.endUpdates()
+        
+        self.table.scrollToRow(at: IndexPath.init(row:  self.mode?.companyBlacklist.count ?? 0, section: 1), at: .bottom, animated: true)
+    }
+}
 
 // 这里加载
 extension PrivacySetting{
@@ -175,15 +320,16 @@ extension PrivacySetting{
         
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             
-            Thread.sleep(forTimeInterval: 3)
+            Thread.sleep(forTimeInterval: 1)
+            self?.mode = ResumePrivacyModel(JSON: ["listItem":["所有公司可见":true,"投递公司可见":false,"屏蔽指定公司":false,"影藏简历":false],"companyBlacklist":
+                [
+                    ["companyID":getUUID(),"companyName":"公司名称1","validate":true],
+                    ["companyID":getUUID(),"companyName":"公司名称2","validate":true],
+                    ["companyID":getUUID(),"companyName":"公司名称3","validate":true],
+                ]
+            ])
             DispatchQueue.main.async(execute: {
-                
-                
-                self?.mode = privateMode(JSON: ["list":[["name":"所有公司可见","isOn":false,"showCompany":false],["name":"只有投递公司可见","isOn":true,"showCompany":false],
-                                                        ["name":"屏蔽指定公司","isOn":false,"showCompany":true],["name":"影藏简历","isOn":false,"showCompany":false]],
-                                                "backListComp":["公司1","公司2","公司3"]])
-                
-                
+        
                 self?.didFinishloadData()
                 
             })
@@ -193,35 +339,5 @@ extension PrivacySetting{
     }
 }
 
-extension PrivacySetting{
-    
-    // 等待 tableview 刷新后在执行
-    private func refreshAfterAddItem(){
-     
-         self.tableView.reloadData()
-         self.moreCell?.subItem.reloadData()
-        
-    }
-}
 
-// cell delegate
 
-extension PrivacySetting: changeItems{
-    
-    func reloadCell(at index: Int) {
-        self.tableView.reloadData()
-        //self.tableView.reloadRows(at: [IndexPath.init(row: index, section: 0)], with: .automatic)
-    }
-    
-    func addCompany(){
-        let v = ignoreCompanyVC()
-        
-        // v 的回调函数 来刷新table界面
-        v.refresh = refreshAfterAddItem
-        self.present(v, animated: true, completion: nil)
-        
-    }
-    
-    
-    
-}

@@ -19,6 +19,9 @@ class subscribleItem: BaseTableViewController {
     private lazy var internData:[internSubscribeModel]  = []
     private lazy var compuseData:[graduateSubscribeModel] = []
     
+    
+    
+    
     private lazy var addBtn:UIButton = { [unowned self] in
         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30 , height: 30))
         btn.setImage(UIImage.init(named: "plus")?.changesize(size: imageSize).withRenderingMode(.alwaysTemplate), for: .normal)
@@ -37,16 +40,17 @@ class subscribleItem: BaseTableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationItem.title = "我的订阅"
         self.navigationController?.insertCustomerView(UIColor.orange)
+        
+        //self.navigationController?.insertCustomerView(UIColor.orange)
         //self.loadData()
        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationController?.removeCustomerView()
-        self.navigationItem.title = ""
+        //self.navigationController?.removeCustomerView()
+        
        
     }
     
@@ -69,6 +73,7 @@ class subscribleItem: BaseTableViewController {
         self.tableView.tableHeaderView = UIView.init()
         self.tableView.tableFooterView = UIView()
         self.tableView.separatorStyle = .none
+        self.title = "我的订阅"
         
         self.tableView.register(subScribeInternCell.self, forCellReuseIdentifier: subScribeInternCell.identity())
         self.tableView.register(subScribeGraduateCell.self, forCellReuseIdentifier: subScribeGraduateCell.identity())
@@ -113,13 +118,14 @@ extension subscribleItem{
             
             self?.internData.removeAll()
             self?.compuseData.removeAll()
-            Thread.sleep(forTimeInterval: 3)
+            Thread.sleep(forTimeInterval: 1)
             
             
-            self?.internData.append(internSubscribeModel(JSON: ["type":"实习","locate":"成都","internSalary":"200/天","business":"计算机","internDay":"4天/周","internMonth":"半年", "degree":"大专"])!)
+            // 根据type类型 构建不同的数据
+            self?.internData.append(internSubscribeModel(JSON: ["id":getUUID(),"type":"intern","locate":"成都","internSalary":"200/天","business":"计算机","internDay":"4天/周","internMonth":"半年", "degree":"大专"])!)
             
-            self?.compuseData.append(graduateSubscribeModel(JSON: ["type":"校招","locate":"北京","salary":"10-12K/月","business":"人工智能","degree":"本科"])!)
-            self?.compuseData.append(graduateSubscribeModel(JSON: ["type":"校招",
+            self?.compuseData.append(graduateSubscribeModel(JSON: ["id":getUUID(),"type":"graduate","locate":"北京","salary":"10-12K/月","business":"人工智能","degree":"本科"])!)
+                self?.compuseData.append(graduateSubscribeModel(JSON: ["id":getUUID(),"type":"graduate",
                                                               "locate":"北京","salary":"20-30K/月","business":"学前教育", "degree":"硕士"])!)
             DispatchQueue.main.async {
                 self?.didFinishloadData()
@@ -135,11 +141,12 @@ extension subscribleItem{
     
     @objc func addItem(){
         if  internData.count + compuseData.count  >= maxCount{
-            print("最多设置5个")
+            showOnlyTextHub(message: "达到上限", view: self.view)
             return
         }
         
         let condition:subconditions = subconditions()
+        condition.navTitle = "新增订阅条件"
         condition.delegate = self
         self.present(condition, animated: true, completion: nil)
         
@@ -226,6 +233,7 @@ extension subscribleItem{
         
         //let type =  indexPath.section == 0 ? subscribeType.graduate : subscribeType.intern
         let editView:subconditions = subconditions()
+        editView.navTitle = "修改订阅条件"
         editView.delegate = self
         
         self.present(editView, animated: true, completion: nil)
@@ -233,11 +241,11 @@ extension subscribleItem{
         if indexPath.section  == 0 {
             let data = self.compuseData[indexPath.row - 1]
             //editView.editData =  data
-            editView.editData = (type:.graduate,  data:data, row: indexPath.row - 1)
+            editView.editData = (type:.graduate,  data:data, index:  IndexPath.init(row: indexPath.row - 1, section: indexPath.section))
             
         }else{
             let data = self.internData[indexPath.row - 1]
-            editView.editData = (type:.intern,  data:data, row: indexPath.row - 1)
+            editView.editData = (type:.intern,  data:data, index:  IndexPath.init(row: indexPath.row - 1, section: indexPath.section))
             
             
         }
@@ -260,16 +268,17 @@ extension subscribleItem{
         let edit = UITableViewRowAction(style: .normal, title: "编辑") { action, index in
             
             let editView:subconditions = subconditions()
+            editView.navTitle = "修改订阅条件"
             editView.delegate = self
             
             if indexPath.section  == 0 {
                 let data = self.compuseData[indexPath.row - 1]
                 //editView.editData =  data
-                editView.editData = (type:.graduate,  data:data, row: indexPath.row - 1)
+                editView.editData = (type:.graduate,  data:data, index:  IndexPath.init(row: indexPath.row - 1, section: indexPath.section))
              
             }else{
                 let data = self.internData[indexPath.row - 1]
-                editView.editData = (type:.intern,  data:data, row: indexPath.row - 1)
+                editView.editData = (type:.intern,  data:data, index:  IndexPath.init(row: indexPath.row - 1, section: indexPath.section))
 
                 
             }
@@ -290,7 +299,8 @@ extension subscribleItem{
                 self.internData.remove(at: indexPath.row - 1)
             }
             
-            tableView.reloadData()
+            tableView.reloadSections([indexPath.section], animationStyle: .automatic)
+
             
         }
         delete.backgroundColor = UIColor.red
@@ -305,17 +315,21 @@ extension subscribleItem{
         
         let deleteAction = UIContextualAction.init(style: UIContextualAction.Style.destructive, title: "删除", handler: { (action, view, completion) in
             //TODO: Delete
+          
+            
             if indexPath.section == 0{
                 self.compuseData.remove(at: indexPath.row - 1)
             }else{
                 self.internData.remove(at: indexPath.row - 1)
             }
-            tableView.reloadData()
+            
+            tableView.reloadSections([indexPath.section], animationStyle: .automatic)
             completion(true)
         })
         
         
         let editView:subconditions = subconditions()
+        editView.navTitle = "修改订阅条件"
         editView.delegate = self
         
         let editAction = UIContextualAction.init(style: UIContextualAction.Style.normal, title: "编辑", handler: { [unowned self]  (action, view, completion) in
@@ -324,11 +338,11 @@ extension subscribleItem{
 
             if indexPath.section  == 0 {
                 let data = self.compuseData[indexPath.row - 1]
-                editView.editData = (type:.graduate,  data:data, row: indexPath.row - 1)
+                editView.editData = (type:.graduate,  data:data, index: IndexPath.init(row: indexPath.row - 1, section: indexPath.section) )
 
             }else{
                 let data = self.internData[indexPath.row - 1]
-                editView.editData = (type:.intern,  data:data, row: indexPath.row - 1)
+                editView.editData = (type:.intern,  data:data, index:  IndexPath.init(row: indexPath.row - 1, section: indexPath.section))
 
                 
             }
@@ -351,32 +365,35 @@ extension subscribleItem{
 
 extension subscribleItem: subconditionDelegate{
     
-    func modifyCondition(row: Int, item: BaseSubscribeModel) {
-        if item.type == "校招"{
+    func modifyCondition(index: IndexPath, item: BaseSubscribeModel) {
+        if item.kind == .graduate{
             
-            compuseData.remove(at: row)
-            compuseData.insert(item as! graduateSubscribeModel, at: row)
+            compuseData.remove(at: index.row)
+            compuseData.insert(item as! graduateSubscribeModel, at: index.row)
 
             
         }else{
-            internData.remove(at: row)
-            internData.insert(item as! internSubscribeModel, at: row)
+            internData.remove(at: index.row)
+            internData.insert(item as! internSubscribeModel, at: index.row)
 
          }
          // 这样刷新 数据才更新
-         self.tableView.reloadData()
+         self.tableView.reloadSections([index.section], animationStyle: .automatic)
         
     }
     
     
     func addNewConditionItem(item: BaseSubscribeModel) {
         
-        if item.type == "校招"{
+        if item.kind == .graduate{
             compuseData.append(item as! graduateSubscribeModel)
+             self.tableView.reloadSections([0], animationStyle: .automatic)
         }else{
             internData.append(item as! internSubscribeModel)
+            self.tableView.reloadSections([1], animationStyle: .automatic)
+
         }
-        self.tableView.reloadData()
+       
     }
     
     

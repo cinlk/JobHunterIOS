@@ -22,6 +22,7 @@ class textViewCell: UITableViewCell {
         tv.textAlignment = .left
         tv.backgroundColor = UIColor.white
         tv.font = UIFont.systemFont(ofSize: 15)
+        tv.returnKeyType = .done
         tv.delegate = self
         return tv
     }()
@@ -113,14 +114,19 @@ extension textViewCell: UITextViewDelegate{
     }
     
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: addResumeInfoNotify), object: nil, userInfo: ["edit":true])
+
         return true
     }
     func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
         textView.resignFirstResponder()
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: addResumeInfoNotify), object: nil, userInfo: ["edit":false])
+
         return true
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: addResumeInfoNotify), object: nil, userInfo: ["edit":true])
         placeHolderLabel.isHidden =  textView.text.isEmpty == true ? false : true
 
         
@@ -131,9 +137,8 @@ extension textViewCell: UITextViewDelegate{
             return
         }
         placeHolderLabel.isHidden =  text.isEmpty == true ? false : true
-        if !text.isEmpty{
-            self.updateText?(text)
-        }
+        self.updateText?(text)
+        
         
     }
     

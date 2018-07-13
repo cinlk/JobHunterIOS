@@ -19,6 +19,10 @@ enum searchItem:String{
     case company = "company"
     case forum = "forum"
     case none = "none"
+    // 简历添加类型
+    case online = "online"
+    case attachment = "attachment"
+    
     
     
     var describe:String{
@@ -36,6 +40,10 @@ enum searchItem:String{
                 return "论坛"
             case .company:
                 return "公司"
+            case .online:
+                return "在线简历"
+            case .attachment:
+                return "附件简历"
             default:
                 return ""
             }
@@ -233,8 +241,8 @@ enum newsType {
 
 // 订阅类型
 enum subscribeType:String {
-    case graduate = "校招"
-    case intern = "实习"
+    case graduate = "graduate"
+    case intern = "intern"
     case none
     
     var describe:String{
@@ -276,3 +284,82 @@ enum postKind:String {
         }
     }
 }
+
+
+// 简历分类
+enum resumeType:String {
+    case online = "online"
+    case attachment = "attachment"
+    case none = ""
+    
+    var describe:String{
+        get{
+            switch self {
+            case .online:
+                return "在线简历"
+            case .attachment:
+                return "附件简历"
+            default:
+                return ""
+                }
+        }
+    }
+}
+
+
+// 第三方app 类型
+enum appType:String {
+    
+    case weixin = "weixin"
+    case weibo = "weibo"
+    case qq = "qq"
+    case none = ""
+    
+    
+    var des:String{
+        get{
+            switch self {
+            case .weibo:
+                return "微博账号"
+            case .weixin:
+                return "微信账号"
+            case .qq:
+                return "QQ账号"
+            default:
+                return ""
+            }
+        }
+    }
+    
+}
+
+
+// 消息提醒类型
+enum notifyType:String {
+    case subscribe = "subscribe"
+    case text = "text"
+    case applyProgress = "applyProgress"
+    case invitation = "invitation"
+    case night = "night"
+    case none = ""
+    
+    var des:String{
+        get{
+            switch self {
+            case .subscribe:
+                return "新的职位通知"
+            case .text:
+                return "聊天消息通知"
+            case .applyProgress:
+                return "投递状态消息通知"
+            case .invitation:
+                return "邀约消息通知"
+            case .night:
+                return "夜间免打扰"
+            default:
+                return ""
+            }
+        }
+    }
+}
+

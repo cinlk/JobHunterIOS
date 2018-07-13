@@ -13,8 +13,33 @@ import ObjectMapper
 
 
 class BaseSubscribeModel: NSObject, Mappable{
-    var type:String = "校招"
-    var locate:String = "不限"
+    
+    // 订阅id
+    var id:String = ""
+    
+    var create_time:Date?
+    var createTime:String?{
+        get{
+            guard  let time = create_time else {
+                return ""
+            }
+            
+            return showMonthAndDay(date: time)
+        }
+    }
+    
+    var type:String = ""
+    
+    var kind:subscribeType{
+        get{
+            if let type = subscribeType(rawValue: self.type) {
+                return type
+            }
+            return .none
+        }
+    }
+    
+    var locate:String = ""
     var business:String = "不限"
     
     required init?(map: Map) {
@@ -22,6 +47,8 @@ class BaseSubscribeModel: NSObject, Mappable{
     }
     
     func mapping(map: Map) {
+        id <- map["id"]
+        create_time <- (map["create_time"], DateTransform())
         type <- map["type"]
         locate <- map["locate"]
         business <- map["business"]
@@ -60,8 +87,8 @@ class graduateSubscribeModel: BaseSubscribeModel{
     }
     
     override func getTypeValue() -> [subscribeItemType : String] {
-        self.type = "校招"
-        return [.type:self.type, .locate:self.locate, .business: self.business,
+        
+        return [.type:self.kind.rawValue, .locate:self.locate, .business: self.business,
                 .salary: self.salary, .degree: self.degree]
     }
     
@@ -78,17 +105,20 @@ class internSubscribeModel: BaseSubscribeModel{
     
     
 
-    var internDay:String = "不限"
+    var internDay:String = ""
     var degree:String = "不限"
-    var internMonth:String = "不限"
+    var internMonth:String = ""
     var internSalary:String = "不限"
     
     required init?(map: Map) {
         super.init(map: map)
+        
     }
     
     override func mapping(map: Map) {
         super.mapping(map: map)
+        
+        
         internDay <- map["internDay"]
         degree <- map["degree"]
         internMonth <- map["internMonth"]
@@ -97,8 +127,8 @@ class internSubscribeModel: BaseSubscribeModel{
     }
     
     override func getTypeValue() -> [subscribeItemType : String] {
-        self.type = "实习"
-        return [.type:self.type, .locate:self.locate, .business: self.business,
+        
+        return [.type:self.kind.rawValue, .locate:self.locate, .business: self.business,
                 .internDay: self.internDay, .degree: self.degree, .internMonth: self.internMonth,
                 .internSalary: self.internSalary]
     }

@@ -10,13 +10,13 @@ import UIKit
 
 
 fileprivate let cellIdentity = "cell"
-fileprivate let cellH: CGFloat = 30
+fileprivate let cellH: CGFloat = 45
 
 class SelectedOneTablView:UIView,UITableViewDelegate,UITableViewDataSource{
     
     
     // 回调传值
-    var call:((_ name:String,_ value:String, _ row:Int)->Void)?
+    var call:((_ value:String, _ row:Int)->Void)?
     
     
     private lazy var table:UITableView = { [unowned self] in
@@ -121,7 +121,7 @@ class SelectedOneTablView:UIView,UITableViewDelegate,UITableViewDataSource{
         // 被选中节点
         let currentNode = dataList[indexPath.row]
         currentNode.selected = true
-        self.call?(title.text!, currentNode.key, mode!.row)
+        self.call?(currentNode.key, mode!.row)
         
         
         

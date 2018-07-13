@@ -66,17 +66,7 @@ class BaseShowJobViewController: BaseViewController {
     
     private var ShareOriginY:CGFloat = 0
     
-    // 背景view
-    private lazy var darkView :UIView = {
-        let darkView = UIView()
-        darkView.frame = CGRect(x: 0, y: 0, width:ScreenW, height:ScreenH)
-        darkView.backgroundColor = UIColor(red: 0 / 255.0, green: 0 / 255.0, blue: 0 / 255.0, alpha: 0.5) // 设置半透明颜色
-        darkView.isUserInteractionEnabled = true // 打开用户交互
-        let singTap = UITapGestureRecognizer(target: self, action:#selector(self.handleSingleTapGesture)) // 添加点击事件
-        singTap.numberOfTouchesRequired = 1
-        darkView.addGestureRecognizer(singTap)
-        return darkView
-    }()
+  
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -126,25 +116,14 @@ class BaseShowJobViewController: BaseViewController {
    
    @objc func share(_ btn:UIButton){
     
-        self.navigationController?.view.addSubview(darkView)
+        shareapps.showShare()
     
-        UIView.animate(withDuration: 0.3, animations: {
-            self.shareapps.frame = CGRect(x: 0, y: ScreenH - shareViewH, width: ScreenW, height: shareViewH)
-        }, completion: nil)
     }
     
     @objc func collected(_ btn:UIButton){
         
     }
 
-    @objc func  handleSingleTapGesture(){
-        
-        darkView.removeFromSuperview()
-        UIView.animate(withDuration: 0.5, animations: {
-            
-            self.shareapps.origin.y =  self.ShareOriginY
-        }, completion: nil)
-    }
     
 }
 

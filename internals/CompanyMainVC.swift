@@ -84,18 +84,6 @@ class CompanyMainVC: BaseViewController {
     
     
     
-    private lazy var backGroundBtn:UIButton = {
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
-        btn.backgroundColor = UIColor.lightGray
-        btn.alpha = 0.5
-        
-        btn.addTarget(self, action: #selector(self.handleSingleTapGesture), for: .touchUpInside)
-        
-        return btn
-        
-    }()
-    
-    
     private lazy var headerView:CompanyHeaderView = {
         let header = CompanyHeaderView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: 0))
         header.backgroundColor = UIColor.white
@@ -283,19 +271,10 @@ extension CompanyMainVC{
         
     }
     
-    
-    @objc func share(){
-        
-        
-                UIView.animate(withDuration: 0.5, animations: {
-        
-                    self.shareapps.frame = CGRect(x: 0, y: ScreenH - shareViewH, width: ScreenW, height: shareViewH)
-                }, completion: { bool in
-                    self.navigationController?.view.addSubview(self.backGroundBtn)
-                    
-                })
-        
+    @objc private func share(){
+        shareapps.showShare()
     }
+
     
     @objc func collectedCompany(btn:UIButton){
         // MARK 修改公司状态 已经为收藏
@@ -308,15 +287,6 @@ extension CompanyMainVC{
         
     }
     
-        @objc func handleSingleTapGesture() {
-            // 点击移除半透明的View
-            backGroundBtn.removeFromSuperview()
-            UIView.animate(withDuration: 0.5, animations: {
-                self.shareapps.frame = CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: shareViewH)
-                
-            }, completion: nil)
-    
-        }
 }
 
 
@@ -329,15 +299,16 @@ extension CompanyMainVC: CompanyHeaderViewDelegate{
         self.collectionView.setContentOffset(CGPoint.init(x: offsetX, y: 0), animated: true)
         
     }
+    
+    
 }
 
 
 
 // shareView代理
 extension CompanyMainVC: shareViewDelegate{
-    func hiddenShareView(view:UIView){
-        self.handleSingleTapGesture()
-    }
+  
+    
     func handleShareType(type: UMSocialPlatformType) {
         if type.rawValue == 1002{
             let activiController = UIActivityViewController.init(activityItems: ["dwdwqd"], applicationActivities: nil)

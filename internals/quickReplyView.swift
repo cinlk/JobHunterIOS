@@ -15,60 +15,20 @@ protocol ReplyMessageDelegate: class {
     
 }
 
-
-class quickReplyView: UIView {
+class quickReplyView: UITableView {
  
     private var datasource:[String] =  []
     
-    
-    // delegate
-    weak var delegate:ReplyMessageDelegate?
+    weak var selecteDelagate:ReplyMessageDelegate?
     
     
-    // 顶部 view
-    lazy var banner:UIView = {
-        var v =  UIView.init(frame: CGRect.zero)
-        v.backgroundColor = UIColor.blue
-        var label = UILabel.init()
-        label.text = "请选择快捷回复"
-        label.textColor = UIColor.white
-        label.font = UIFont.systemFont(ofSize: 16)
-        label.textAlignment = .center
-        label.setSingleLineAutoResizeWithMaxWidth(120)
-        v.addSubview(label)
-        _ = label.sd_layout().centerXEqualToView(v)?.centerYEqualToView(v)?.autoHeightRatio(0)
-        return v
-        
-    }()
-    
-    lazy var replyTable: UITableView = { [unowned self ] in
-        var table = UITableView.init()
-        table.backgroundColor = UIColor.white
-        table.delegate = self
-        table.dataSource = self
-        table.tableFooterView = UIView.init()
-        table.register(singleTextCell.self, forCellReuseIdentifier: singleTextCell.identity())
-        table.showsVerticalScrollIndicator = false
-        return table
-        
-    }()
-    
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        
-        self.addSubview(banner)
-        self.addSubview(replyTable)
-        
-        _ = banner.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.topEqualToView(self)?.heightIs(40)
-        _ = replyTable.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.topSpaceToView(banner,0)?.bottomEqualToView(self)
-        
-        
+    override init(frame: CGRect, style: UITableViewStyle) {
+        super.init(frame: frame, style: style)
+        setView()
         loadData()
+        
     }
-    
-    
+
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -78,20 +38,31 @@ class quickReplyView: UIView {
 }
 
 extension quickReplyView{
+    
+    
+    private func setView(){
+        self.backgroundColor = UIColor.white
+        self.delegate = self
+        self.dataSource = self
+        self.tableFooterView = UIView.init()
+        self.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+    }
+    
+    
     private func loadData(){
         
-        datasource = ["回复以带我去的群无多无群多无多无群","当前为多无群多无群多无群多无群多无群多","当前为多无群多无群","当前为多无群多无群"]
-        self.replyTable.reloadData()
+        datasource = ["回复以带我去的群无多无群多无多无群","当前为多无群多无群多无群多无群多无群多","当前为多无群多无群","当前为多无群多无群","当前的群当前为多群多群无当前为多群无多无群当前为多群无当前为多群无多群当前为多群无多", "当前为多群无dqwdqw","当前为多无群多群无dqwdqwdqw"]
+        self.reloadData()
         
     }
 }
 
-extension quickReplyView: UITableViewDelegate,UITableViewDataSource {
+extension quickReplyView: UITableViewDataSource, UITableViewDelegate{
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
-        delegate?.didSelectedMessage(view: tableView, message: datasource[indexPath.row])
+        selecteDelagate?.didSelectedMessage(view: tableView, message: datasource[indexPath.row])
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -99,9 +70,12 @@ extension quickReplyView: UITableViewDelegate,UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: singleTextCell.identity(), for: indexPath) as! singleTextCell
-        cell.mode = datasource[indexPath.row]
-        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        cell.textLabel?.lineBreakMode = .byWordWrapping
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.font = UIFont.systemFont(ofSize: 14)
+        cell.textLabel?.text  = datasource[indexPath.row]
+        cell.textLabel?.textAlignment = .left
         return cell
         
     }
@@ -111,55 +85,11 @@ extension quickReplyView: UITableViewDelegate,UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        
-        return tableView.cellHeight(for: indexPath, model: datasource[indexPath.row], keyPath: "mode", cellClass: singleTextCell.self, contentViewWidth: ScreenW)
-    }
-    
-    
-}
-
-@objcMembers private class singleTextCell:UITableViewCell {
-    
-    
-    
-    private lazy var content:UILabel = { [unowned self] in
-        let lb = UILabel()
-        lb.textAlignment = .left
-        
-        lb.textColor = UIColor.black
-        lb.font = UIFont.systemFont(ofSize: 16)
-        lb.setSingleLineAutoResizeWithMaxWidth(250 - 30)
-        return lb
-    }()
-    
-    
-    dynamic var mode:String?{
-        didSet{
-            
-            self.content.text = mode!
-            
-            self.setupAutoHeight(withBottomView: content, bottomMargin: 5)
-        }
+        let str = datasource[indexPath.row]
+        let size = UILabel.sizeOfString(string: str as NSString, font: UIFont.systemFont(ofSize: 14), maxWidth: self.bounds.width - 10)
+        return size.height + 10
         
     }
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.contentView.addSubview(content)
-        _ = content.sd_layout().leftSpaceToView(self.contentView,10)?.centerYEqualToView(self.contentView)?.autoHeightRatio(0)
-        
-        content.setMaxNumberOfLinesToShow(3)
-        
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    
-    class func identity()->String{
-        return "singleTextCell"
-    }
-    
     
     
 }

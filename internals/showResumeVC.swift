@@ -84,28 +84,28 @@ class showResumeVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.view.insertSubview(nagView, at: 1)
+        self.navigationController?.view.viewWithTag(1999)?.alpha = 0
         
     }
     
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        self.navigationItem.title = ""
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         nagView.removeFromSuperview()
+        self.navigationController?.view.viewWithTag(1999)?.alpha = 1
     }
+ 
 
 }
 
 extension showResumeVC{
     private func loadData(){
         
-        if let personInfo = pManager.mode?.basicinfo{
-            tabHeader.mode = (image: personInfo.tx, name:personInfo.name, introduce:"")
-            (nagView.viewWithTag(1) as! UILabel).text = personInfo.name
-            
-            tabHeader.layoutSubviews()
-            table.tableHeaderView = tabHeader
-        }
+       
+        tabHeader.mode = (image: resumeBaseinfo.tx, name:resumeBaseinfo.name!, introduce:"")
+        (nagView.viewWithTag(1) as! UILabel).text = resumeBaseinfo.name
+        tabHeader.layoutSubviews()
+        table.tableHeaderView = tabHeader
         
         
     }
@@ -123,6 +123,7 @@ extension showResumeVC: UIScrollViewDelegate{
                 nagView.alpha = 1
             }else{
                 nagView.alpha = 0
+                scrollView.contentOffset = CGPoint.zero
             }
         }
     }
@@ -137,54 +138,12 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        switch viewType[section] {
-            
-        case .personInfo:
+        
+        if viewType[section] == .personInfo{
             return 2
-        case .education:
-            if pManager.mode?.educationInfo.count  == 0 {
-                return 0
-            }
-            return (pManager.mode?.educationInfo.count ?? 0) + 1
-        case .works:
-            if pManager.mode?.internInfo.count  == 0 {
-                return 0
-            }
-            
-            return (pManager.mode?.internInfo.count ?? 0) + 1
-        case .project:
-            if pManager.mode?.projectInfo.count  == 0 {
-                return 0
-            }
-            return (pManager.mode?.projectInfo.count ?? 0) + 1
-        case .schoolWork:
-            if pManager.mode?.studentWorkInfo.count  == 0 {
-                return 0
-            }
-            return (pManager.mode?.studentWorkInfo.count ?? 0) + 1
-        case .practice:
-            if pManager.mode?.practiceInfo.count  == 0 {
-                return 0
-            }
-            return (pManager.mode?.practiceInfo.count ?? 0) + 1
-        case .skills:
-            if pManager.mode?.skills.count  == 0 {
-                return 0
-            }
-            return (pManager.mode?.skills.count ?? 0) + 1
-        case .other:
-            if pManager.mode?.resumeOtherInfo.count  == 0 {
-                return 0
-            }
-            return (pManager.mode?.resumeOtherInfo.count ?? 0) + 1
-        case .selfEvaludate:
-            if let content = pManager.mode?.estimate?.content{
-                return content.isEmpty ? 0 : 2
-            }
-            return 0
-        default:
-            return 0
         }
+        let count = pManager.getCountBy(type: viewType[section])
+        return count == 0 ? 0: count + 1
         
     }
     
@@ -211,63 +170,85 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
             
         case .personInfo:
             let cell = tableView.dequeueReusableCell(withIdentifier: resumePersonInfoCell.identity(), for: indexPath) as! resumePersonInfoCell
-            cell.mode = pManager.mode?.basicinfo
+            cell.mode = resumeBaseinfo
             
             return cell
             
         case .education:
             
             let cell = tableView.dequeueReusableCell(withIdentifier: educationInfoCell.identity(), for: indexPath) as! educationInfoCell
-            cell.mode = pManager.mode?.educationInfo[indexPath.row - 1]
-            cell.showResume = true
-            return cell
+            if let ed = pManager.getItemBy(type: .education) as?  [personEducationInfo]{
+                cell.mode = ed[indexPath.row - 1]
+                cell.showResume = true
+                return cell
+            }
             
         case .works:
             let cell = tableView.dequeueReusableCell(withIdentifier: jobInfoCell.identity(), for: indexPath) as! jobInfoCell
-            cell.showResume = true
-            cell.mode = pManager.mode?.internInfo[indexPath.row - 1]
+            if let wk = pManager.getItemBy(type: .works) as? [personInternInfo]{
+                cell.showResume = true
+                cell.mode = wk[indexPath.row - 1]
+                return cell
+            }
            
-            return cell
         case .project:
             let cell = tableView.dequeueReusableCell(withIdentifier: projectInfoCell.identity(), for: indexPath) as! projectInfoCell
-            cell.showResume = true
-            cell.mode = pManager.mode?.projectInfo[indexPath.row - 1]
-            return cell
+            if let pj = pManager.getItemBy(type: .project) as? [personProjectInfo]{
+                cell.showResume = true
+                cell.mode = pj[indexPath.row - 1]
+                return cell
+            }
+           
         case .schoolWork:
             
             let cell = tableView.dequeueReusableCell(withIdentifier: studentWorkCell.identity(), for: indexPath) as! studentWorkCell
-            cell.showResume = true
-            cell.mode = pManager.mode?.studentWorkInfo[indexPath.row - 1]
-            return cell
+            if let sh = pManager.getItemBy(type: .schoolWork) as? [studentWorkInfo]{
+                cell.showResume = true
+                cell.mode = sh[indexPath.row - 1]
+                return cell
+            }
+          
         
         case .practice:
             
             let cell = tableView.dequeueReusableCell(withIdentifier: SocialPracticeCell.identity(), for: indexPath) as! SocialPracticeCell
-            cell.showResume = true
-            cell.mode = pManager.mode?.practiceInfo[indexPath.row - 1]
-            return cell
+            if let pc = pManager.getItemBy(type: .practice) as? [socialPracticeInfo]{
+                cell.showResume = true
+                cell.mode = pc[indexPath.row - 1]
+                return cell
+            }
+           
             
         case .skills:
 
             let cell = tableView.dequeueReusableCell(withIdentifier: person_skillCell.identity(), for: indexPath) as! person_skillCell
-            cell.showResume = true
-            cell.mode = pManager.mode?.skills[indexPath.row - 1]
-            
-            return cell
+            if let sk = pManager.getItemBy(type: .skills) as? [personSkillInfo]{
+                cell.showResume = true
+                cell.mode = sk[indexPath.row - 1]
+                
+                return cell
+            }
+           
         
         case .other:
             let cell = tableView.dequeueReusableCell(withIdentifier: ResumeOtherCell.identity(), for: indexPath) as! ResumeOtherCell
-            cell.showResume = true
-            cell.mode = pManager.mode?.resumeOtherInfo[indexPath.row - 1]
-            
-            return cell
+            if let ot = pManager.getItemBy(type: .other) as? [resumeOther]{
+                cell.showResume = true
+                cell.mode = ot[indexPath.row - 1]
+                
+                return cell
+            }
+          
             
         case .selfEvaludate:
             
             let cell = tableView.dequeueReusableCell(withIdentifier: person_evaluateCell.identity(), for: indexPath) as! person_evaluateCell
-            cell.mode = pManager.mode?.estimate
-            //cell.mode?.isOpen = true
-            return cell
+            if let es = pManager.getItemBy(type: .selfEvaludate) as? selfEstimateModel{
+                cell.mode = es
+                //cell.mode?.isOpen = true
+                return cell
+            }
+            
         default:
             break
         }
@@ -288,71 +269,76 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
         case .personInfo:
            
             // 必须有值
-            guard let mode = pManager.mode?.basicinfo  else {
-                return 0
-            }
-            
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: resumePersonInfoCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: resumeBaseinfo, keyPath: "mode", cellClass: resumePersonInfoCell.self, contentViewWidth: ScreenW)
             
         case .education:
-            guard let mode = pManager.mode?.educationInfo[indexPath.row - 1] else {
+            guard let list = pManager.getItemBy(type: .education) as? [personEducationInfo] else {
                 return 0
             }
+            
+            let mode = list[indexPath.row - 1]
             mode.isOpen = true
             return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: educationInfoCell.self, contentViewWidth: ScreenW)
             
         case .works:
             
-            guard let mode =  pManager.mode?.internInfo[indexPath.row - 1] else {
+            guard let list =  pManager.getItemBy(type: .works) as? [personInternInfo] else {
                 return 0
             }
+            let mode = list[indexPath.row - 1]
             mode.isOpen = true
             return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: jobInfoCell.self, contentViewWidth: ScreenW)
         
         case .project:
             
-            guard let mode = pManager.mode?.projectInfo[indexPath.row - 1] else {
+            guard let list = pManager.getItemBy(type: .project) as? [personProjectInfo] else {
                 return 0
             }
+            let mode = list[indexPath.row - 1]
             mode.isOpen = true
             return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: projectInfoCell.self, contentViewWidth: ScreenW)
             
         case .schoolWork:
             
-            guard let mode = pManager.mode?.studentWorkInfo[indexPath.row - 1] else {
+            guard let list = pManager.getItemBy(type: .schoolWork) as? [studentWorkInfo]  else {
                 return 0
             }
+            let mode = list[indexPath.row - 1]
             mode.isOpen = true
             return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: studentWorkCell.self, contentViewWidth: ScreenW)
             
         case .practice:
             
-            guard let mode = pManager.mode?.practiceInfo[indexPath.row - 1] else {
+            guard let list = pManager.getItemBy(type: .practice) as? [socialPracticeInfo] else {
                 return 0
             }
+            let mode = list[indexPath.row - 1]
             mode.isOpen = true
             return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: SocialPracticeCell.self, contentViewWidth: ScreenW)
         
             
         case .skills:
             
-            guard let mode = pManager.mode?.skills[indexPath.row - 1] else {
+            guard let list = pManager.getItemBy(type: .skills) as? [personSkillInfo] else {
                 return 0
             }
+            let mode = list[indexPath.row - 1]
+            
             mode.isOpen = true
             return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: person_skillCell.self, contentViewWidth: ScreenW)
         
         case .other:
             
-            guard let mode = pManager.mode?.resumeOtherInfo[indexPath.row - 1] else {
+            guard let list = pManager.getItemBy(type: .other) as? [resumeOther] else {
                 return 0
             }
+            let mode = list[indexPath.row - 1]
             mode.isOpen = true
             return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: ResumeOtherCell.self, contentViewWidth: ScreenW)
             
         case .selfEvaludate:
             
-            guard let mode = pManager.mode?.estimate, !mode.content.isEmpty else {
+            guard let mode = pManager.getItemBy(type: .selfEvaludate) as? selfEstimateModel, !mode.content.isEmpty else {
                 return 0
             }
             
@@ -381,51 +367,13 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         
         let type = viewType[section]
-        switch type {
-        case .personInfo:
+        if type == .personInfo{
             return 20
-        case .education:
-            if let mode = pManager.mode?.educationInfo, mode.count > 0 {
-                return 20
-            }
-        case .works:
-            if let mode = pManager.mode?.internInfo, mode.count > 0{
-                return 20
-            }
-        case .project:
-            if let mode = pManager.mode?.projectInfo, mode.count > 0{
-                return 20
-            }
-        case .schoolWork:
-            if let mode = pManager.mode?.studentWorkInfo, mode.count > 0{
-                return 20
-            }
-        case .practice:
-            if let mode = pManager.mode?.practiceInfo, mode.count > 0{
-                return 20
-            }
-        case .skills:
-            if let mode = pManager.mode?.skills, mode.count > 0{
-               return 20
-            }
-        case .other:
-            if let mode = pManager.mode?.resumeOtherInfo, mode.count > 0{
-                return 20
-            }
-        case .selfEvaludate:
-            if let content = pManager.mode?.estimate, !content.content.isEmpty{
-                return 20
-            }
-        default:
-            break
         }
-            
-        return 0
         
+        let count = pManager.getCountBy(type: type)
+        return count > 0 ? 20 : 0
         
-        
-        
-       
     }
     
     

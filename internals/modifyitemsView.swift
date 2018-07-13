@@ -17,11 +17,9 @@ protocol modifyItemDelegate: class {
 
 
 
-class modifyitemView: UITableViewController {
 
-    
-  
-    
+
+class modifyitemView: BaseActionResumeVC {
     
     // 修改的行数
     private var modifyIndexPath:IndexPath?
@@ -29,13 +27,11 @@ class modifyitemView: UITableViewController {
     weak var delegate:modifyItemDelegate?
     
    
-    private var diction:[ResumeInfoType:String] = [:]
-    private var keys:[ResumeInfoType] = []
-    private var onlyPickerResumeType:[ResumeInfoType] = []
     private var placeholdStr:String = ""
     
     
     private var infosDict:Dictionary<ResumeSubItems,[Any]> = [:]
+    
     
     var mode:(viewType:ResumeSubItems, indexPath:IndexPath, data:Any)?{
         didSet{
@@ -46,6 +42,7 @@ class modifyitemView: UITableViewController {
             
             self.modifyIndexPath = mode.indexPath
             
+            self.title =  "修改" + self.mode!.viewType.describe
             switch mode.viewType {
             case .education:
                 
@@ -91,6 +88,7 @@ class modifyitemView: UITableViewController {
         super.viewDidLoad()
         self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "保存", style: .plain, target: self, action: #selector(save))
     
+        
         tableView.bounces = false
         tableView.keyboardDismissMode = .onDrag
         tableView.backgroundColor = UIColor.viewBackColor()
@@ -99,23 +97,56 @@ class modifyitemView: UITableViewController {
         tableView.register(AddItemCell.self, forCellReuseIdentifier: AddItemCell.identity())
         tableView.register(textViewCell.self, forCellReuseIdentifier: textViewCell.identity())
         
-    }
-    
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.navigationItem.title = "修改" + self.mode!.viewType.describe
-        self.navigationController?.insertCustomerView()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-         self.navigationItem.title = ""
-         self.navigationController?.removeCustomerView()
         
-     }
+        NotificationCenter.default.addObserver(self, selector: #selector(editStatus), name: NSNotification.Name.init(addResumeInfoNotify), object: nil)
+        
+    }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     
+    override func currentViewControllerShouldPop() -> Bool {
+        
+        
+        if self.isEdit{
+            let alertController = UIAlertController(title: nil, message: "编辑尚未结束，确定返回吗？", preferredStyle: .alert)
+            let alertAction = UIAlertAction(title: "继续编辑", style: .default) { (_) in
+                
+            }
+            alertController.addAction(alertAction)
+            let cancelAction = UIAlertAction(title: "放弃修改", style: .cancel) { (_) in
+                self.navigationController?.popvc(animated: true)
+            }
+            alertController.addAction(cancelAction)
+            self.present(alertController, animated: true, completion: nil)
+            
+            return false
+            
+        }
+        
+        // 未保存
+        if self.isChange{
+            
+            let alertController = UIAlertController(title: nil, message: "修改尚未保存，确定返回吗？", preferredStyle: .alert)
+            let alertAction = UIAlertAction(title: "保存并返回", style: .default) { (_) in
+                self.save()
+            }
+            alertController.addAction(alertAction)
+            let cancelAction = UIAlertAction(title: "放弃保存", style: .cancel) { (_) in
+                self.navigationController?.popvc(animated: true)
+            }
+            alertController.addAction(cancelAction)
+            self.present(alertController, animated: true, completion: nil)
+            
+            return false
+        }
+        
+        return true 
+ 
+        
+    }
+
 
 }
 
@@ -123,7 +154,10 @@ class modifyitemView: UITableViewController {
 
 extension modifyitemView{
     private func setData(_ data:reumseInfoAction){
-        diction = data.getTypeValue()
+        guard let kv = data.getTypeValue() else {
+            return
+        }
+        diction = kv
         keys = data.getItemList()
         onlyPickerResumeType = data.getPickerResumeType()
         placeholdStr = data.placeHolder
@@ -159,6 +193,7 @@ extension modifyitemView{
             
             cell.textView.text = diction[.describe]
             cell.updateText = { value in
+                self.isChange = true
                 self.diction[.describe] =  value
                 self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
@@ -202,6 +237,7 @@ extension modifyitemView: AddItemCellUpdate{
     
     func updateTextfield(value: String, type: ResumeInfoType){
         diction[type] = value
+        isChange = true 
         self.tableView.reloadRows(at: [IndexPath.init(row: keys.index(of: type)!, section: 0)], with: .automatic)
     }
 
@@ -212,13 +248,8 @@ extension modifyitemView: AddItemCellUpdate{
 extension modifyitemView {
     
     @objc func save(){
-        // 放在第一行，保证更新数据
-        self.view.endEditing(true)
-        
-        
-        var res:[String:Any] = [:]
-        diction.forEach{
-            res[$0.key.rawValue] = $0.value
+        if super.checkValue() == false{
+            return
         }
         
         
@@ -229,50 +260,11 @@ extension modifyitemView {
         
         
         let row = indexPath.row
-        switch  mode.viewType {
-        case .education:
-             if let data = personEducationInfo(JSON: res){
-               print(data.toJSON())
-               personModelManager.shared.mode?.educationInfo[row] = data
-             }
-        case .works:
-             if let data = personInternInfo(JSON: res){
-                personModelManager.shared.mode?.internInfo[row] = data
-
-             }
-            
-        case .project:
-            if let data = personProjectInfo(JSON: res){
-                 personModelManager.shared.mode?.projectInfo[row] = data
-            }
-           
-        case .practice:
-            if  let data = socialPracticeInfo(JSON: res){
-                personModelManager.shared.mode?.practiceInfo[row] = data
-            }
-            
-        case .other:
-            if let data = resumeOther(JSON: res){
-                personModelManager.shared.mode?.resumeOtherInfo[row] = data
-            }
-            
-        case .schoolWork:
-             if let data = studentWorkInfo(JSON: res){
-                 personModelManager.shared.mode?.studentWorkInfo[row] = data
-             }
-           
-        case .skills:
-            if  let data = personSkillInfo(JSON: res){
-                personModelManager.shared.mode?.skills[row] = data
-            }
-            
-        default:
-            break
-        }
+        pManager.modifyItemBy(type: mode.viewType, row: row, res: res)
         
         self.delegate?.modifiedItem(indexPath: indexPath)
         
-        self.navigationController?.popViewController(animated: true)
+        self.navigationController?.popvc(animated: true)
 
     }
     
@@ -285,29 +277,13 @@ extension modifyitemView {
             return
         }
         let row = indexPath.row
-        switch  mode.viewType {
-        case .education:
-            personModelManager.shared.mode?.educationInfo.remove(at: row)
-        case .works:
-            personModelManager.shared.mode?.internInfo.remove(at: row)
-        case .project:
-            personModelManager.shared.mode?.projectInfo.remove(at: row)
-        case .practice:
-            personModelManager.shared.mode?.practiceInfo.remove(at: row)
-        case .other:
-            personModelManager.shared.mode?.resumeOtherInfo.remove(at: row)
-        case .schoolWork:
-            personModelManager.shared.mode?.studentWorkInfo.remove(at: row)
-        case .skills:
-            personModelManager.shared.mode?.skills.remove(at: row)
-        default:
-            break
-        }
+        
+        pManager.deleteItemBy(type: mode.viewType, row: row)
         
         
         self.delegate?.deleteItem(indexPath: indexPath)
         
-        self.navigationController?.popViewController(animated: true)
+        self.navigationController?.popvc(animated: true)
 
     }
     

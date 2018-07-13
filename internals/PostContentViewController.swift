@@ -65,15 +65,6 @@ class PostContentViewController: BaseTableViewController {
         return share
     }()
     
-    // share背景 btn
-    private lazy var backBtn:UIButton = {
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
-    
-        btn.backgroundColor = UIColor.lightGray
-        btn.addTarget(self, action: #selector(hiddenShare), for: .touchUpInside)
-        btn.alpha = 0.5
-        return btn
-    }()
     
     
     internal var defaultText:String = "输入评论(不能超过200字)"
@@ -178,7 +169,7 @@ class PostContentViewController: BaseTableViewController {
         
         showOnlyTextHub(message: "没有找找404", view: self.tableView)
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.navigationController?.popViewController(animated: true)
+            self.navigationController?.popvc(animated: true)
 
         }
     }
@@ -260,6 +251,11 @@ extension PostContentViewController{
         
     }
     
+    @objc private func showShare(){
+        shareV.showShare()
+        
+    }
+    
     private func deleteMyself(){
         
         // 服务器删除
@@ -267,7 +263,8 @@ extension PostContentViewController{
         
         // 从论坛界面操作
         if mode != nil {
-            self.navigationController?.popViewController(animated: true)
+            self.navigationController?.popvc(animated: true)
+
             self.deleteSelf?((self.mode?.row)!)
         }
        
@@ -319,34 +316,7 @@ extension PostContentViewController{
         self.inputText.chatView.becomeFirstResponder()
     }
     
-    @objc private func showShare(){
  
-        // 影藏键盘  键盘挡住shareview
-        self.inputText.chatView.endEditing(true)
-        inputText.isHidden = true
-        // 不能放navigationcontroller 里 不然 toobar frame 恢复初值
-        UIApplication.shared.keyWindow?.insertSubview(backBtn, belowSubview: shareV)
-        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            
-            self.shareV.frame.origin.y = ScreenH - shareViewH
-            
-        }, completion: { bool in
-          
-        })
-    }
-    
-    @objc private func hiddenShare(){
-        
-        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            
-            self.shareV.frame.origin.y = ScreenH
-            
-        }, completion: { bool in
-            self.backBtn.removeFromSuperview()
-            self.inputText.isHidden = false
-
-        })
-    }
     
     @objc private func collect(){
         tableHeader.collected.isSelected = !(contentMode?.collected)!
@@ -360,10 +330,7 @@ extension PostContentViewController{
 // 分享代理实现
 extension PostContentViewController: shareViewDelegate{
     
-    func hiddenShareView(view:UIView){
-        hiddenShare()
-        
-    }
+   
     func handleShareType(type: UMSocialPlatformType){
         
     }
@@ -435,15 +402,11 @@ extension PostContentViewController: ChatInputViewDelegate{
            
             if let new = FirstReplyModel(JSON: ["id":"dqwd-dqwdqwd","title":"我的测试","replyContent":text,"authorID":"dqwddqwdd","authorName":"就是我","authorIcon":"chrome","colleage":"天津大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":0,"reply":0]){
                 
-                
                 replyModels.append(new)
                 self.tableView.reloadData()
                 // 滑动出现 contentoffset 偏移过多
                 //self.tableView.scrollToRow(at: IndexPath.init(row: replyModels.count - 1, section: 0), at: .bottom, animated: true)
-                
             }
-            
-         
         }
         // 发送 数据  刷新table
        

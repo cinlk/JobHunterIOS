@@ -9,50 +9,23 @@
 import UIKit
 
 fileprivate let btnSizeWidth:CGFloat = 80
-fileprivate let placeholdStr:String = "写入反馈"
+fileprivate let maxWords:Int = 500
+
+protocol TextAndPhontoCellDelegate: class {
+    func getTextContent(text:String)
+}
+
 
 class TextAndPhontoCell: UITableViewCell {
-
     
     
-    internal var imageOne:UIImage?{
+    weak var delegate:TextAndPhontoCellDelegate?
+    
+    internal var placeholdStr:String = ""{
         didSet{
-            guard let image = imageOne else {
-                
-                (pickerImageBtn1.viewWithTag(20) as! UIButton).isHidden = true
-                pickerImageBtn1.isSelected = false
-                pickerImageBtn1.setBackgroundImage(nil, for: .normal)
-                pickerImageBtn1.setPositionWith(image: #imageLiteral(resourceName: "plus").changesize(size: CGSize.init(width: 30, height: 30)).withRenderingMode(.alwaysTemplate), title: "上传图片", titlePosition: .bottom, additionalSpacing: 5, state: .normal, offsetY:  -10)
-                return
-            }
-            (pickerImageBtn1.viewWithTag(20) as! UIButton).isHidden = false
-            pickerImageBtn1.setTitle(nil, for: .normal)
-            pickerImageBtn1.setImage(nil, for: .normal)
-            pickerImageBtn1.isSelected = true
-            pickerImageBtn1.setBackgroundImage(image, for: .normal)
+            placehold.text = placeholdStr
         }
     }
-    internal var imageTwo:UIImage?{
-        didSet{
-            guard  let image = imageTwo else {
-                
-                (pickerImageBtn2.viewWithTag(20) as! UIButton).isHidden = true
-
-                pickerImageBtn2.isSelected = false
-                pickerImageBtn2.setBackgroundImage(nil, for: .normal)
-                pickerImageBtn2.setPositionWith(image: #imageLiteral(resourceName: "plus").changesize(size: CGSize.init(width: 30, height: 30)).withRenderingMode(.alwaysTemplate), title: "上传图片", titlePosition: .bottom, additionalSpacing: 5, state: .normal, offsetY:  -10)
-                return
-            }
-            (pickerImageBtn2.viewWithTag(20) as! UIButton).isHidden = false
-            pickerImageBtn2.setTitle(nil, for: .normal)
-            pickerImageBtn2.setImage(nil, for: .normal)
-            pickerImageBtn2.isSelected = true
-            pickerImageBtn2.setBackgroundImage(image, for: .normal)
-        }
-    }
-    
-    internal var setImage:(()->Void)?
-
     
     
     private lazy var placehold:UILabel = {
@@ -80,71 +53,6 @@ class TextAndPhontoCell: UITableViewCell {
         
     }()
     
-    // delete image icon
-    private lazy var deletBtn:UIButton = {
-        let btn = UIButton()
-        btn.backgroundColor = UIColor.lightGray
-        btn.alpha = 0.5
-        btn.setImage(#imageLiteral(resourceName: "delete"), for: .normal)
-        return btn
-    }()
-    private lazy var pickerImageBtn1:UIButton = { [unowned self] in
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: btnSizeWidth, height: btnSizeWidth * 6/5))
-        btn.layer.borderWidth = 1
-        btn.layer.borderColor = UIColor.lightGray.cgColor
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 10)
-        btn.setTitleColor(UIColor.lightGray, for: .normal)
-        btn.imageView?.contentMode = .scaleAspectFill
-       
-        btn.setPositionWith(image: #imageLiteral(resourceName: "plus").changesize(size: CGSize.init(width: 30, height: 30)).withRenderingMode(.alwaysTemplate), title: "上传图片", titlePosition: .bottom, additionalSpacing: 5, state: .normal, offsetY:  -10)
-        btn.tintColor = UIColor.lightGray
-        btn.addTarget(self, action: #selector(setPictureOne), for: .touchUpInside)
-        
-        // delete Btn
-        let iconDelete = UIButton()
-        iconDelete.backgroundColor = UIColor.lightGray
-        iconDelete.alpha = 0.8
-        iconDelete.setImage(#imageLiteral(resourceName: "delete").changesize(size: CGSize.init(width: 10, height: 10)).withRenderingMode(.alwaysTemplate), for: .normal)
-        iconDelete.tintColor = UIColor.red
-        iconDelete.tag = 20
-        iconDelete.isHidden = true
-        iconDelete.isUserInteractionEnabled = false
-        btn.addSubview(iconDelete)
-        _ = iconDelete.sd_layout().rightEqualToView(btn)?.topEqualToView(btn)?.widthIs(15)?.heightIs(15)
-        
-        return btn
-        
-    }()
-    
-    private lazy var pickerImageBtn2:UIButton = { [unowned self] in
-        // 这里给出了大小，title才有frame
-         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: btnSizeWidth, height: btnSizeWidth * 6/5))
-        btn.layer.borderWidth = 1
-        btn.layer.borderColor = UIColor.lightGray.cgColor
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 10)
-        btn.setTitleColor(UIColor.lightGray, for: .normal)
-        btn.imageView?.contentMode = .scaleAspectFill
-        
-        
-        btn.setPositionWith(image: #imageLiteral(resourceName: "plus").changesize(size: CGSize.init(width: 30, height: 30)).withRenderingMode(.alwaysTemplate), title: "上传图片", titlePosition: .bottom, additionalSpacing: 5, state: .normal, offsetY:  -10)
-        btn.tintColor = UIColor.lightGray
-        btn.addTarget(self, action: #selector(setPictureTow), for: .touchUpInside)
-        
-        let iconDelete = UIButton()
-        iconDelete.backgroundColor = UIColor.lightGray
-        iconDelete.alpha = 0.8
-        iconDelete.setImage(#imageLiteral(resourceName: "delete").changesize(size: CGSize.init(width: 10, height: 10)).withRenderingMode(.alwaysTemplate), for: .normal)
-        iconDelete.tintColor = UIColor.red
-        iconDelete.tag = 20
-        iconDelete.isHidden = true
-        iconDelete.isUserInteractionEnabled = false
-
-        btn.addSubview(iconDelete)
-        _ = iconDelete.sd_layout().rightEqualToView(btn)?.topEqualToView(btn)?.widthIs(15)?.heightIs(15)
-        
-        
-        return btn
-    }()
     
     
     private lazy var words:UILabel = {
@@ -153,7 +61,7 @@ class TextAndPhontoCell: UITableViewCell {
         word.textColor = UIColor.lightGray
         word.textAlignment = .left
         word.setSingleLineAutoResizeWithMaxWidth(100)
-        word.text = "0/500"
+        word.text = "0/\(maxWords)"
         return word
     }()
     
@@ -162,19 +70,13 @@ class TextAndPhontoCell: UITableViewCell {
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
-        let views:[UIView] = [textView, pickerImageBtn1, pickerImageBtn2,words]
+        let views:[UIView] = [textView,  words]
         self.contentView.sd_addSubviews(views)
         textView.addSubview(placehold)
         _ = placehold.sd_layout().leftSpaceToView(textView,15)?.topSpaceToView(textView,10)?.autoHeightRatio(0)
+        _ = textView.sd_layout().topEqualToView(self.contentView)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.bottomEqualToView(self.contentView)
         
-        
-        // 在设置x和y位置 和改变大小
-        _ = pickerImageBtn1.sd_layout().bottomSpaceToView(self.contentView,10)?.leftSpaceToView(self.contentView,10)?.widthIs(btnSizeWidth)?.autoHeightRatio(6/5)
-        _ = pickerImageBtn2.sd_layout().leftSpaceToView(pickerImageBtn1,20)?.topEqualToView(pickerImageBtn1)?.widthRatioToView(pickerImageBtn1,1)?.heightRatioToView(pickerImageBtn1,1)
-        
-        _ = textView.sd_layout().topEqualToView(self.contentView)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.bottomSpaceToView(pickerImageBtn1,10)
-        
-        _ = words.sd_layout().rightSpaceToView(self.contentView,10)?.bottomEqualToView(pickerImageBtn1)?.autoHeightRatio(0)
+        _ = words.sd_layout().rightSpaceToView(self.contentView,10)?.bottomEqualToView(self.contentView)?.autoHeightRatio(0)
         
         
     }
@@ -188,7 +90,7 @@ class TextAndPhontoCell: UITableViewCell {
     }
     
     class func cellHeight()->CGFloat{
-        return 280
+        return 160
         
     }
 
@@ -202,23 +104,7 @@ extension TextAndPhontoCell{
         self.textView.resignFirstResponder()
     }
     
-    @objc private func setPictureOne(){
-        if imageOne == nil {
-            self.setImage?()
-            return
-        }
-        imageOne = nil
-        
-        
-    }
-    
-    @objc private func setPictureTow(){
-        if imageTwo == nil{
-            self.setImage?()
-            return
-        }
-        imageTwo = nil
-    }
+   
 }
 
 
@@ -234,22 +120,35 @@ extension TextAndPhontoCell:UITextViewDelegate{
         
         placehold.isHidden =  textView.text.isEmpty ? false : true
         let wordCount = textView.text.count
-        words.text = "\(wordCount)/500"
+        words.text = "\(wordCount)/\(maxWords)"
+        if wordCount > maxWords{
+            let start = textView.text.startIndex
+            let end = textView.text.index(start, offsetBy: maxWords)
+            textView.text = String(textView.text[start..<end])
+            words.text = "\(maxWords)/\(maxWords)"
+            return
+        }
         
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
+        NotificationCenter.default.post(name: NSNotification.Name.init(feedBackEditNotify), object: nil, userInfo: ["edit":true])
+        
         placehold.isHidden =  textView.text.isEmpty ? false : true
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        placehold.isHidden =  textView.text.isEmpty ? false : true
-        
+         placehold.isHidden =  textView.text.isEmpty ? false : true
+        if !textView.text.isEmpty{
+            self.delegate?.getTextContent(text: textView.text)
+        }
         
     }
     
     func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
         textView.resignFirstResponder()
+        
+        NotificationCenter.default.post(name: NSNotification.Name.init(feedBackEditNotify), object: nil, userInfo: ["edit":false])
         return true
     }
     

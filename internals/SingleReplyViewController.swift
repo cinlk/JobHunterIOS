@@ -337,8 +337,9 @@ extension SingleReplyViewController{
         
         // 服务器删除
         // 返回父界面
-        self.navigationController?.popViewController(animated: true)
-        self.deleteSelf?(self.row)
+        self.navigationController?.popvc(animated: true)
+
+         self.deleteSelf?(self.row)
         
     }
    

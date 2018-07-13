@@ -14,25 +14,23 @@ fileprivate let headerViewH:CGFloat = 160
 fileprivate let cellIdentiy:String = "default"
 fileprivate let cellItem:[AboutUsModel.item] = [.serviceLaw, .wechat, .weibo, .serviceCall, .share]
 fileprivate let footViewH:CGFloat = ScreenH - headerViewH - (CGFloat(cellItem.count) * 45) - NavH
-fileprivate let CelloffsetX:CGFloat = 16.0
 
 
 class aboutUS: BaseViewController {
 
-    
     // mode
     private var mode:AboutUsModel?
     
     // header
-    private lazy var header:aboutUSHeaderView = {
-        let v = aboutUSHeaderView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: headerViewH))
-        v.backgroundColor = UIColor.lightGray
+    private lazy var header:personTableHeader = {
+        let v = personTableHeader.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: headerViewH))
+        v.isHR = false
         return v
     }()
     // footer
     private lazy var footer:aboutUSFootView = {
         let v = aboutUSFootView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: footViewH))
-        v.backgroundColor = UIColor.lightGray
+        v.backgroundColor = UIColor.viewBackColor()
         return v
     }()
     
@@ -51,34 +49,15 @@ class aboutUS: BaseViewController {
         return tb
     }()
     
-    //phone call Alert
-    private lazy var phoneAlert:UIAlertController = { [unowned self] in
-        let alert = UIAlertController.init(title: "呼叫电话 \(self.mode!.servicePhone)", message: nil, preferredStyle: .alert)
-        let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
-        let call = UIAlertAction.init(title: "呼叫", style: .default, handler: { (action) in
-            self.callPhone()
-        })
-        alert.addAction(cancel)
-        alert.addAction(call)
-        return alert
-    }()
+   
     
     // sharedView
     private lazy var share:shareView = {
         let v = shareView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: shareViewH))
-        UIApplication.shared.keyWindow?.addSubview(v)
         v.delegate = self
         return v
     }()
     
-     // shareView的背景
-    lazy var sharebackBtn: UIButton = {  [unowned self] in
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
-        btn.alpha = 0.5
-        btn.backgroundColor = UIColor.lightGray
-        btn.addTarget(self, action: #selector(hiddenShare), for: .touchUpInside)
-        return btn
-    }()
     
    
     
@@ -89,18 +68,18 @@ class aboutUS: BaseViewController {
       
     }
     
-
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationItem.title = "关于我们"
+        UIApplication.shared.keyWindow?.addSubview(share)
     }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
+        share.removeFromSuperview()
     }
     
     override func setViews() {
+        self.title = "关于我们"
         
         self.view.addSubview(tableView)
         _ = tableView.sd_layout().topSpaceToView(self.view, NavH)?.rightEqualToView(self.view)?.leftEqualToView(self.view)?.bottomEqualToView(self.view)
@@ -111,9 +90,10 @@ class aboutUS: BaseViewController {
     override func  didFinishloadData() {
         super.didFinishloadData()
         
-        self.header.mode = (icon: UIImage.init(named: mode!.appIcon!)!,name:mode?.appName ?? "" , desc:mode!.appDes ?? "")
-        self.footer.mode =  (company:mode!.company ?? "",version: mode!.version ?? "", copyRight:mode!.copyRight ?? "")
+        self.header.mode = (image: mode?.appIcon ?? "default", name:mode?.appName ?? "" , introduce: mode?.appDes ?? "")
+        self.header.backgroundColor = UIColor.viewBackColor()
         
+        self.footer.mode =  (company:mode!.company ?? "",version: mode!.version ?? "", copyRight:mode!.copyRight ?? "")
         self.tableView.reloadData()
     }
     
@@ -148,7 +128,7 @@ extension aboutUS:UITableViewDataSource, UITableViewDelegate{
         let item = cellItem[indexPath.row]
         switch item {
         case .wechat, .serviceCall:
-            cell.accessoryType = .disclosureIndicator
+           
             cell.textLabel?.textAlignment = .left
             cell.textLabel?.translatesAutoresizingMaskIntoConstraints = false
             cell.textLabel?.text = item.des
@@ -160,7 +140,6 @@ extension aboutUS:UITableViewDataSource, UITableViewDelegate{
             cell.detailTextLabel?.textAlignment = .right
             cell.detailTextLabel?.textColor = UIColor.lightGray
             cell.detailTextLabel?.font = UIFont.systemFont(ofSize: 16)
-            _ = cell.detailTextLabel?.sd_layout().rightEqualToView(cell.contentView)?.widthIs(200)
             
         default:
             cell.accessoryType = .disclosureIndicator
@@ -179,9 +158,12 @@ extension aboutUS:UITableViewDataSource, UITableViewDelegate{
         let item = cellItem[indexPath.row]
         switch item {
         case .serviceLaw:
-            let serviceTerm = ServiceTerm()
-            serviceTerm.serviceURL = mode?.serviceRuleURL ?? ""
+            guard let url = mode?.serviceRuleURL else {
+                return
+            }
             
+            let serviceTerm = ServiceTerm()
+            serviceTerm.serviceURL =  url
             self.navigationController?.pushViewController(serviceTerm, animated: true)
         case .wechat:
             wechat()
@@ -191,7 +173,10 @@ extension aboutUS:UITableViewDataSource, UITableViewDelegate{
             self.shared()
             
         case .serviceCall:
-            self.present(phoneAlert, animated: true, completion: nil)
+            let cell = tableView.cellForRow(at: indexPath)
+            cell?.presentAlert(type: .alert, title: "呼叫电话\(mode!.servicePhone!)", message: nil, items: [actionEntity.init(title: "呼叫", selector: #selector(callPhone), args: nil)], target: self, complete: { alert in
+                    self.present(alert, animated: true, completion: nil)
+            })
             
         }
     }
@@ -204,7 +189,7 @@ extension aboutUS{
     private func loadData(){
      
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            Thread.sleep(forTimeInterval: 3)
+            Thread.sleep(forTimeInterval: 1)
             
             self?.mode = AboutUsModel(JSON: ["wecaht":"wechat12345","servicePhone":"400-546-6754","appId":"1234566","appIcon":"evil",
                                              "appName":"校招","appDes":"中国最好的校招平台","company":"xxxxx 版权所有","version":"Version 1.1.0","copyRight":"xxx.com @CopyRight 2018 ","serviceRuleURL":"http://www.baidu.com"])
@@ -223,27 +208,13 @@ extension aboutUS{
         // 复制到粘贴版
        
         
-         // 使用tableview  和 view 点击后 cell frame 错误?
-        // 换成 self.navigationController?.view 没问题
-        let hub = MBProgressHUD.showAdded(to: (self.navigationController?.view)!, animated: false)
-        hub.mode = .text
-        hub.label.text = "微信账号已经复制, 跳转到微信"
-        // 黑色半透明
-        hub.bezelView.backgroundColor = UIColor.backAlphaColor()
-        hub.margin = 5
-        hub.label.textColor = UIColor.white
-        hub.removeFromSuperViewOnHide = true
-
-        hub.hide(animated: false, afterDelay: 2)
-        
-        
+        // nav 的view 没问题！
+        showOnlyTextHub(message: "微信账号已经复制, 跳转到微信", view: (self.navigationController?.view)!)
         let paste = UIPasteboard.general
         paste.string = mode?.wecaht ?? ""
-        //showOnlyTextHub(message: "微信账号已经复制, 跳转到微信", view: self.tableView, second: 2)
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
              openApp(appURL: "weixin://") { (res) in
                 print("打开微信应用 \(res)")
-                hub.hide(animated: true)
             }
         }
 
@@ -258,7 +229,7 @@ extension aboutUS{
     
     
     // 客服电话拨打
-    private func callPhone(){
+    @objc private func callPhone(){
         guard let phone = mode?.servicePhone else {return}
         let phoneNumber =  phone.replacingOccurrences(of: "-", with: "")
         let phoneStr = "tel://" + phoneNumber
@@ -269,26 +240,12 @@ extension aboutUS{
     }
     // shared
     private func shared(){
-        // navigation最外层
-        self.navigationController?.view.addSubview(sharebackBtn)
-        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            self.share.frame.origin.y = ScreenH - shareViewH
-            
-        }, completion: nil)
-    
+        share.showShare()
+        
+
     }
     
-    @objc private func hiddenShare(){
-       
-        
-        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            self.share.frame.origin.y = ScreenH
-            
-            self.navigationController?.view.willRemoveSubview(self.sharebackBtn)
-            self.sharebackBtn.removeFromSuperview()
-        }, completion: nil)
-        
-    }
+
     
     
     
@@ -296,9 +253,6 @@ extension aboutUS{
 // share view 代理
 extension aboutUS: shareViewDelegate{
     
-    func hiddenShareView(view: UIView) {
-        self.hiddenShare()
-    }
     
     func handleShareType(type: UMSocialPlatformType) {
         
@@ -306,65 +260,6 @@ extension aboutUS: shareViewDelegate{
     
     
 }
-
-private class  aboutUSHeaderView:UIView{
-    
-    private lazy var  icon:UIImageView = {
-        let icon = UIImageView.init(frame: CGRect.zero)
-        icon.contentMode = .scaleAspectFill
-        icon.clipsToBounds = true
-        return icon
-    }()
-    
-    private  lazy var name:UILabel = {
-        let label = UILabel.init(frame: CGRect.zero)
-        label.font = UIFont.systemFont(ofSize: 20)
-        label.textColor = UIColor.black
-        label.textAlignment = .center
-        return label
-    }()
-    
-    private lazy var describe:UILabel = {
-        let label = UILabel.init(frame: CGRect.zero)
-        label.font = UIFont.systemFont(ofSize: 16)
-        label.textColor = UIColor.black
-        label.textAlignment = .center
-        return label
-    }()
-    
-    
-    var mode:(icon:UIImage, name:String, desc:String)?{
-        didSet{
-            self.icon.image = mode?.icon
-            self.name.text = mode?.name
-            self.describe.text = mode?.desc
-        }
-    }
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        initView()
-        
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    private func initView(){
-        
-        self.addSubview(icon)
-        self.addSubview(name)
-        self.addSubview(describe)
-        
-        _ = icon.sd_layout().centerXEqualToView(self)?.centerYEqualToView(self)?.topSpaceToView(self,40)?.widthIs(50)?.heightIs(50)
-        _ = name.sd_layout().topSpaceToView(icon,2)?.centerXEqualToView(icon)?.leftSpaceToView(self,10)?.rightSpaceToView(self,10)?.heightIs(20)
-        _ = describe.sd_layout().topSpaceToView(name,2)?.centerXEqualToView(icon)?.leftEqualToView(name)?.rightEqualToView(name)?.heightIs(20)
-        
-    }
-}
-
-
 
 private class aboutUSFootView:UIView{
     

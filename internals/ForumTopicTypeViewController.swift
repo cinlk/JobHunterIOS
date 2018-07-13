@@ -76,8 +76,9 @@ class ForumTopicTypeViewController: UITableViewController {
         
         currentIndex = indexPath.row
         self.getType?(datas[indexPath.row])
-        self.navigationController?.popViewController(animated: true)
-        tableView.reloadData()
+        self.navigationController?.popvc(animated: true)
+
+         tableView.reloadData()
      }
     
     

@@ -65,6 +65,7 @@ let avatarSize:CGSize = CGSize.init(width: 45, height: 45)
 let myself:PersonModel = PersonModel(JSON: ["userID":"123456","company":"","name":"来自地球大于6","role":"求职","icon": #imageLiteral(resourceName: "evil").toBase64String()])!
 
 
+
 // global greeting msg
 var GreetingMsg:String = ""
 var IsGreeting:Bool = true 
@@ -74,6 +75,14 @@ var IsGreeting:Bool = true
 let shareViewH:CGFloat = 240
 
 
+
+
+// APP 启动获取的全局信息
+// 个人基本信息
+var resumeBaseinfo =  personalBasicalInfo(JSON: ["tx":"chrome","name":"lk","gender":"男",
+                                                 "city":"北京","colleage":"北大","degree":"专科","phone":"13718754627","email":"dqwd@163.com","birthday":"1990-01"])!
+
+var phoneNumber:String = ""
 
 
 

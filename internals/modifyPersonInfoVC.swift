@@ -13,23 +13,18 @@ import MBProgressHUD
 
 
 fileprivate let VCtitle:String = "修改个人信息"
+let modifyPersonNotifyName:String = "modifyBaseInfo"
 
+class modifyPersonInfoVC: BaseActionResumeVC {
 
-class modifyPersonInfoVC: UITableViewController {
-
-    
-    private var diction:[ResumeInfoType:String] = [:]
-    private var keys:[ResumeInfoType] = []
-    private var onlyPickerResumeType:[ResumeInfoType] = []
-    
     
     var mode:(indexPath:IndexPath, info:personalBasicalInfo)?{
         didSet{
-            guard  let mode = mode else {
+            guard  let mode = mode, let kv =  mode.info.getTypeValue() else {
                 return
             }
             
-            diction = mode.info.getTypeValue()
+            diction = kv
             keys = mode.info.getItemList()
             onlyPickerResumeType = mode.info.getPickerResumeType()
             
@@ -69,32 +64,65 @@ class modifyPersonInfoVC: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = VCtitle
+        
         self.tableView.tableFooterView = UIView.init()
         self.tableView.keyboardDismissMode = .onDrag
         self.tableView.bounces = false
         self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "保 存", style: .plain, target: self, action: #selector(save))
         
+        
         self.tableView.register(modifyPersonInfoCell.self, forCellReuseIdentifier: modifyPersonInfoCell.identity())
         
+        NotificationCenter.default.addObserver(self, selector: #selector(editStatus), name: NSNotification.Name.init(modifyPersonNotifyName), object: nil)
     }
 
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 
-    
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.navigationItem.title = VCtitle
-        self.navigationController?.insertCustomerView()
+    // 编辑状态
+    override func currentViewControllerShouldPop() -> Bool {
+       
+        if self.isEdit{
+            let alertController = UIAlertController(title: nil, message: "编辑尚未结束，确定返回吗？", preferredStyle: .alert)
+            let alertAction = UIAlertAction(title: "继续编辑", style: .default) { (_) in
+                
+            }
+            alertController.addAction(alertAction)
+            let cancelAction = UIAlertAction(title: "放弃修改", style: .cancel) { (_) in
+                self.navigationController?.popvc(animated: true)
+            }
+            alertController.addAction(cancelAction)
+            self.present(alertController, animated: true, completion: nil)
+            
+            return false
+            
+        }
+        
+        // 未保存
+        if self.isChange{
+            
+            let alertController = UIAlertController(title: nil, message: "修改尚未保存，确定返回吗？", preferredStyle: .alert)
+            let alertAction = UIAlertAction(title: "保存并返回", style: .default) { (_) in
+                self.save()
+            }
+            alertController.addAction(alertAction)
+            let cancelAction = UIAlertAction(title: "放弃保存", style: .cancel) { (_) in
+                self.navigationController?.popvc(animated: true)
+            }
+            alertController.addAction(cancelAction)
+            self.present(alertController, animated: true, completion: nil)
+            
+            return false
+        }
+        
+        return false
+        
         
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
-        self.navigationController?.removeCustomerView()
-        
-        
-    }
+    
  
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -108,17 +136,11 @@ class modifyPersonInfoVC: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        if let cell = tableView.dequeueReusableCell(withIdentifier: modifyPersonInfoCell.identity(), for: indexPath) as?
-            modifyPersonInfoCell{
-            cell.onlyPickerResumeType = onlyPickerResumeType
-            cell.mode = (type: keys[indexPath.row], title: diction[keys[indexPath.row]]!)
-            cell.delegate = self
-            return cell
-        }
-        
-        return UITableViewCell()
-        
-    
+        let cell = modifyPersonInfoCell()
+        cell.onlyPickerResumeType = onlyPickerResumeType
+        cell.mode = (type: keys[indexPath.row], title: diction[keys[indexPath.row]]!)
+        cell.delegate = self
+        return cell
     }
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -134,13 +156,19 @@ class modifyPersonInfoVC: UITableViewController {
     }
     
 
+    
 }
+
+
+
+
 
 
 extension modifyPersonInfoVC: changeDataDelegate{
     
     func changeBasicInfo(type: ResumeInfoType, value: String) {
         diction[type] = value
+        isChange = true
         
         self.tableView.reloadRows(at: [IndexPath.init(row: keys.index(of: type)!, section: 0)], with: .automatic)
     }
@@ -156,20 +184,19 @@ extension modifyPersonInfoVC{
     // 保存修改
     @objc func save(){
         
-        self.view.endEditing(true)
-        
-        var res:[String:Any] = [:]
-        diction.forEach{
-            res[$0.key.rawValue] = $0.value
+        if super.checkValue() == false{
+            return
         }
         
         if let data = personalBasicalInfo(JSON: res){
-            personModelManager.shared.mode?.basicinfo = data
+            resumeBaseinfo = data
             self.delegate?.modifiedItem(indexPath: mode!.indexPath)
             
         }
-        self.navigationController?.popViewController(animated: true)
+        self.navigationController?.popvc(animated: true)
     }
+    
+ 
     
 }
 

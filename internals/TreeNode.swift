@@ -11,10 +11,10 @@ fileprivate let condition_business =  ["不限":[],"IT/互联网":["互联网/�
 fileprivate let condition_jobs:[String:Any] = ["销售/客服":["销售业务":["销售代表","客户代表","项目执行","代理销售","保险销售"],"销售管理":["客户经理/主管","大客户销售经理","招商总监","团购经理/主管"],"销售行政":["销售行政专员/助理","商务专员/助理","业务分析师/主管"],"客服":["VIP专员","网络客服","客服总监"]],"技术":["前端开发":["web开发","JavaScript","HTML5","Flash"],"后端开发":["Java","Python","PHP",".NET","C#","C/C++","Golang"]],"产品/设计/运营":["产品":["产品助理","网页产品"],"设计":["网页设计","UI设计","美术设计"],"运营":["数据运营","产品运营"]],"项目管理/质量管理":["项目管理/项目协调","质量管理/安全防护"]]
 
 
-fileprivate let condition_internSalary =  ["不限","80/天","100/天","150/天","200/天","250/天"]
+fileprivate let condition_internSalary =  ["不限","小于80元/天","80-120元/天","120-180元/天","大于180元/天"]
 fileprivate let condition_salary = ["不限","2000元/月以下","2000-5000元/月","5000-10000元/月","10000-15000元/月","15000元/月以上"]
 fileprivate let condition_internDay = ["2天/周","3天/周","4天/周","5天/周"]
-fileprivate let condition_internMonth = ["1个月","2个月","3个月","4个月","5个月","半年","半年以上"]
+fileprivate let condition_internMonth = ["3个月以下","3-6个月","6-12个月","一年以上"]
 
 // 日期
 
@@ -361,6 +361,8 @@ class SelectItemUtil {
         let rootNode = component.init(type: .root, key: name, parent: nil, item: [], point:(0,0))
         
         tree.buildData(node: rootNode)
+        // 如果包含不限，放到第一个孩子节点
+   
         
         recurese(obj: target, parent: rootNode, tree: tree, level:1)
         self.itemNode[name] = tree
@@ -370,9 +372,17 @@ class SelectItemUtil {
     // 子节点必须为string数组
     private func recurese(obj:Any, parent:component, tree:nodes, level:Int){
         var index = 0
-        if let res =  obj as? Dictionary<String,[String]>{
-           
+        if var res =  obj as? Dictionary<String,[String]>{
+            if res.keys.contains("不限"){
+                
+                let node = component.init(type: .children, key: "不限", parent: parent, item: [], point:(level,index))
+                tree.buildData(node: node)
+                res.removeValue(forKey: "不限")
+                index += 1
+            }
+            
             for (key, values) in res{
+                
                 let node = component.init(type: .children, key: key, parent: parent, item: [], point:(level,index))
                 tree.buildData(node: node)
                 recurese(obj: values, parent: node, tree: tree, level: level+1)
@@ -380,7 +390,13 @@ class SelectItemUtil {
             }
             return
         }
-        if let res = obj as? [String]{
+        if var res = obj as? [String]{
+            if res.contains("不限"){
+                let node = component.init(type: .children, key: "不限", parent: parent, item: [], point:(level,index))
+                tree.buildData(node: node)
+                index += 1
+                res.remove(at: res.index(of: "不限")!)
+            }
             for item in res{
                 let node = component.init(type: .children, key: item, parent: parent, item: [], point:(level,index))
                 tree.buildData(node: node)
@@ -389,7 +405,16 @@ class SelectItemUtil {
             return
         }
         
-        if let res = obj as? Dictionary<String, Any>{
+        if var res = obj as? Dictionary<String, Any>{
+            
+            if res.keys.contains("不限"){
+                
+                let node = component.init(type: .children, key: "不限", parent: parent, item: [], point:(level,index))
+                tree.buildData(node: node)
+                res.removeValue(forKey: "不限")
+                index += 1
+            }
+            
             for (key,value) in res{
                 let node = component.init(type: .children, key: key, parent: parent, item: [], point:(level,index))
                 tree.buildData(node: node)
@@ -455,9 +480,9 @@ class SelectItemUtil {
             
         }
         
-         print(res)
+         //print(res)
          creatTreeBy(name: "日期", target: res)
-         self.itemNode["日期"]?.printNodes()
+         //self.itemNode["日期"]?.printNodes()
         
        
         

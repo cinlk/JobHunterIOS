@@ -553,13 +553,8 @@ extension JobDetailViewController{
 
 
 extension JobDetailViewController: shareViewDelegate{
-    func hiddenShareView(view:UIView){
-        self.handleSingleTapGesture()
-    }
     
     func handleShareType(type: UMSocialPlatformType) {
-        // 影藏分享界面
-        self.handleSingleTapGesture()
         
         //开始分享
         if type.rawValue  == 1001{

@@ -142,8 +142,9 @@ extension ResetPasswordViewController{
         
         
         self.present(vc, animated: true, completion: nil)
-        self.navigationController?.popViewController(animated: true)
-        
+        self.navigationController?.popvc(animated: true)
+
+ 
         
     }
     

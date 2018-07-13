@@ -12,11 +12,11 @@ import UIKit
 
 fileprivate let BottomViewH:CGFloat = 300
 fileprivate let cellIdentity:String = "cell"
-fileprivate let cellH:CGFloat = 40
+fileprivate let cellH:CGFloat = 55
 
 protocol subconditionDelegate: class {
     func addNewConditionItem(item: BaseSubscribeModel)
-    func modifyCondition(row:Int, item: BaseSubscribeModel )
+    func modifyCondition(index:IndexPath, item: BaseSubscribeModel )
 }
 
 class subconditions: UIViewController {
@@ -42,6 +42,7 @@ class subconditions: UIViewController {
         
         let title =  UILabel()
         title.text = "新增订阅条件"
+        title.tag  = 10
         title.font = UIFont.boldSystemFont(ofSize: 14)
         title.textColor = UIColor.white
         title.textAlignment = .center
@@ -112,13 +113,19 @@ class subconditions: UIViewController {
         }
     }
     
+    internal var navTitle:String?{
+        didSet{
+            (self.tableHeaderView.viewWithTag(10) as! UILabel).text = navTitle
+        }
+    }
     
     // 修改数据界面不能切换 职位类型
     private var isEdit = false
     // 父view修改订阅条件所在的行数
-    private var row:Int = 0
+    private var indexPath:IndexPath?
+    
     // 默认显示校招 条目
-    private var type:subscribeType = .none
+    private var type:subscribeType = .graduate
     
     private var currentItems:BaseSubscribeModel?{
         didSet{
@@ -136,13 +143,13 @@ class subconditions: UIViewController {
     // 代理回传数据
     weak var delegate:subconditionDelegate?
     
-    var editData:(type:subscribeType, data:BaseSubscribeModel, row:Int)?{
+    var editData:(type:subscribeType, data:BaseSubscribeModel, index:IndexPath)?{
         didSet{
             guard let edit  = editData else {
                 return
             }
             isEdit = true
-            self.row = edit.row
+            self.indexPath = edit.index
             
             type = edit.type
             // 编辑数据 对应table 数据
@@ -159,8 +166,8 @@ class subconditions: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // 默认是校招
-        type = .graduate
-        currentItems = graduateSubscribeModel(JSON: [:])
+        
+        currentItems = graduateSubscribeModel(JSON: ["type":self.type.rawValue])
         
         self.setViews()
         
@@ -193,7 +200,18 @@ extension  subconditions:UITableViewDelegate,UITableViewDataSource{
         cell.selectionStyle = .none
         cell.accessoryType = .disclosureIndicator
         cell.textLabel?.text =  keys[indexPath.row].describe
-        cell.detailTextLabel?.text = data[keys[indexPath.row]]
+        if data[keys[indexPath.row]] == subscribeType.graduate.rawValue{
+             cell.detailTextLabel?.text = subscribeType.graduate.describe
+        }else if data[keys[indexPath.row]] == subscribeType.intern.rawValue{
+            cell.detailTextLabel?.text = subscribeType.intern.describe
+
+        }else if data[keys[indexPath.row]]!.isEmpty{
+            cell.detailTextLabel?.text = "(必须填写)"
+        }else {
+            cell.detailTextLabel?.text = data[keys[indexPath.row]]
+
+        }
+       
         cell.detailTextLabel?.textColor = UIColor.lightGray
         
         return cell
@@ -263,18 +281,20 @@ extension subconditions{
     
 
     // 回调方法
-    func selectOneItem(name:String,value:String, row:Int){
+    func selectOneItem(value:String, row:Int){
         
         self.hidenView()
         
         if row == 0 {
             // 切换数据
             if value != type.describe{
-                type  = subscribeType(rawValue: value)!
-                if type == .intern{
-                    currentItems =  internSubscribeModel(JSON: [:])
+                
+                if value == "实习"{
+                    type = .intern
+                    currentItems =  internSubscribeModel(JSON: ["type":type.rawValue])
                 }else{
-                    currentItems = graduateSubscribeModel(JSON: [:])
+                    type = .graduate
+                    currentItems = graduateSubscribeModel(JSON: ["type":type.rawValue])
                 }
                 clearNodeStatus()
                 self.table.reloadData()
@@ -311,16 +331,40 @@ extension subconditions{
         
         switch type {
         case .intern:
+            
+            // 检查条件
+            if res[subscribeItemType.locate.rawValue]!.isEmpty{
+                showOnlyTextHub(message: "请选择城市", view: self.view)
+                return
+            }
+            if res[subscribeItemType.internDay.rawValue]!.isEmpty{
+                showOnlyTextHub(message: "请选择实习天数", view: self.view)
+                return
+            }
+            if res[subscribeItemType.internMonth.rawValue]!.isEmpty{
+                showOnlyTextHub(message: "请选择实习时间", view: self.view)
+                return
+            }
+            
+            
             currentItems = internSubscribeModel(JSON: res)
         case .graduate:
+             // 检查条件
+            if res[subscribeItemType.locate.rawValue]!.isEmpty{
+                showOnlyTextHub(message: "请选择城市", view: self.view)
+                return
+            }
+            
             currentItems = graduateSubscribeModel(JSON: res)
+           
+            
         default:
             break
         }
         
 
         if isEdit{
-            self.delegate?.modifyCondition(row: self.row, item: currentItems!)
+            self.delegate?.modifyCondition(index: self.indexPath!, item: currentItems!)
         }else{
             self.delegate?.addNewConditionItem(item: currentItems!)
         }

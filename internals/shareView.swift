@@ -15,7 +15,6 @@ fileprivate let btnHeight:CGFloat = 45
 
 
 protocol shareViewDelegate: class {
-    func hiddenShareView(view:UIView)
     func handleShareType(type: UMSocialPlatformType)
 }
 
@@ -38,6 +37,16 @@ class shareView: UIView {
     
     
     
+    // shareView的背景
+    private lazy var sharebackBtn: UIButton = {  [unowned self] in
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
+        btn.alpha = 0.5
+        btn.backgroundColor = UIColor.lightGray
+        btn.addTarget(self, action: #selector(dismiss), for: .touchUpInside)
+        return btn
+    }()
+    
+    
     
     var delegate:shareViewDelegate?
     
@@ -53,7 +62,7 @@ class shareView: UIView {
         btn.backgroundColor = UIColor.clear
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 18)
         btn.setTitleColor(UIColor.black, for: .normal)
-        btn.addTarget(self, action: #selector(cancel), for: .touchUpInside)
+        btn.addTarget(self, action: #selector(dismiss), for: .touchUpInside)
         return btn
     }()
     
@@ -100,6 +109,27 @@ class shareView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+}
+
+
+extension shareView{
+    func showShare(){
+        UIApplication.shared.keyWindow?.insertSubview(sharebackBtn, belowSubview: self)
+            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                    self.frame.origin.y = ScreenH - shareViewH
+        
+                }, completion: nil)
+    }
+    
+   @objc private  func dismiss(){
+        sharebackBtn.removeFromSuperview()
+        
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.frame.origin.y = ScreenH
+            
+        }, completion: nil)
+        
+    }
 }
 
 extension shareView:UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
@@ -162,12 +192,6 @@ extension shareView{
     }
 }
 
-
-extension shareView{
-    @objc func cancel(){
-        self.delegate?.hiddenShareView(view: self)
-    }
-}
 
 
 

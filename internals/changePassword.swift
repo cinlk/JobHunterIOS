@@ -78,31 +78,22 @@ class changePassword: UIViewController {
         return tap
     }()
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.navigationItem.title = "修改密码"
-    }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
-    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         initView()
         // Do any additional setup after loading the view.
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+    
     
 
 }
 extension changePassword{
     
     private func initView(){
+        self.title = "修改密码"
         self.view.addGestureRecognizer(tap)
         self.view.backgroundColor =  UIColor.init(r: 246, g: 246, b: 246)
         self.view.addSubview(oldPassWordView)

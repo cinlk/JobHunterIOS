@@ -122,7 +122,7 @@ class JobHomeVC: UIViewController {
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        _ = searchController.searchBar.sd_layout().leftSpaceToView(searchBarContainer,10)?.rightSpaceToView(searchBarContainer,10)?.topEqualToView(searchBarContainer)?.bottomEqualToView(searchBarContainer)
+        _ = searchController.searchBar.sd_layout().leftSpaceToView(searchBarContainer,0)?.rightSpaceToView(searchBarContainer,0)?.topEqualToView(searchBarContainer)?.bottomEqualToView(searchBarContainer)
         
         
         

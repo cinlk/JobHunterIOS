@@ -12,7 +12,7 @@ import Photos
 
 
 fileprivate let charMoreViewH:CGFloat = 216
-
+fileprivate let popViewH:CGFloat = 200
 // 聊天对话 界面
 class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
 
@@ -111,26 +111,14 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     }()
     
     //快捷回复界面
-    private lazy var replyView:quickReplyView = {
-       let v = quickReplyView.init(frame: CGRect.init(x: (ScreenW - 250)/2, y: (ScreenH - 300)/2, width: 250, height: 300))
-       v.delegate = self
+    private lazy var replyPopView:popView = {
+       let v = popView.init(frame: CGRect.init(x: -300, y: (ScreenH - 200)/2, width: 200, height: popViewH))
        v.layer.masksToBounds = true
        v.layer.cornerRadius = 10
-        
        return v
     }()
     
-    
-    
-    
-    // 背景btn
-    private lazy var backgroundBtn:UIButton = {
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
-        btn.addTarget(self, action: #selector(handleReplyView), for: .touchUpInside)
-        btn.alpha = 0.7
-        btn.backgroundColor = UIColor.lightGray
-        return btn
-    }()
+
     
 
     
@@ -185,6 +173,7 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.insertCustomerView(UIColor.white)
+        UIApplication.shared.keyWindow?.addSubview(replyPopView)
         
     }
     
@@ -194,6 +183,7 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.removeCustomerView()
+        replyPopView.removeFromSuperview()
 
     }
     
@@ -522,9 +512,7 @@ extension CommunicationChatView: chatMoreViewDelegate{
             
         case .feedback:
             // 显示
-          
-            self.navigationController?.view.addSubview(self.backgroundBtn)
-            self.navigationController?.view.addSubview(self.replyView)
+            showReplyPopView()
             
         // 模拟器相机不能用
         case .camera:
@@ -795,10 +783,7 @@ extension CommunicationChatView{
     
 
 
-    @objc func handleReplyView(){
-        self.backgroundBtn.removeFromSuperview()
-        self.replyView.removeFromSuperview()
-    }
+   
     
     
     // 相册使用权判断
@@ -836,6 +821,13 @@ extension CommunicationChatView {
         }
     }
     
+    private func showReplyPopView(){
+        let replyTable  =  quickReplyView(frame: CGRect.zero)
+        replyTable.selecteDelagate  = self
+        replyPopView.setTitleAndView(title: "选择回复内容", view: replyTable)
+        replyPopView.showPop(height: popViewH)
+    }
+    
     
 }
 
@@ -858,7 +850,7 @@ extension CommunicationChatView: UIGestureRecognizerDelegate{
 extension CommunicationChatView: ReplyMessageDelegate{
     
     func didSelectedMessage(view: UITableView, message: String) {
-        self.handleReplyView()
+        self.replyPopView.dismiss()
         self.sendReply(content: message)
     }
 }

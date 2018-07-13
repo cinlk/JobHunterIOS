@@ -17,13 +17,9 @@ protocol addResumeItenDelegate: class {
 }
 
 
+let addResumeInfoNotify:String = "addResumeInfoNotify"
 
-class AddBaseInfoTableViewController: UITableViewController {
-    
-    
-    
-    private let pManager = personModelManager.shared
-    
+class AddBaseInfoTableViewController: BaseActionResumeVC {
     
     internal var itemType:ResumeSubItems = .none{
         didSet{
@@ -72,14 +68,6 @@ class AddBaseInfoTableViewController: UITableViewController {
     
     
     internal var placeholder:String = "输入专业描述,500子以内"
-    
-    internal var diction:[ResumeInfoType:String] = [:]
-    internal var keys:[ResumeInfoType] = []
-    internal var onlyPickerResumeType:[ResumeInfoType] = []
-    
-    
-    
-
     // 添加item代理
     weak var delegate:addResumeItenDelegate?
     
@@ -93,16 +81,55 @@ class AddBaseInfoTableViewController: UITableViewController {
         
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.navigationController?.insertCustomerView()
+    
+    override func currentViewControllerShouldPop() -> Bool {
+        
+        
+        if self.isEdit{
+            let alertController = UIAlertController(title: nil, message: "编辑尚未结束，确定返回吗？", preferredStyle: .alert)
+            let alertAction = UIAlertAction(title: "继续编辑", style: .default) { (_) in
+                
+            }
+            alertController.addAction(alertAction)
+            let cancelAction = UIAlertAction(title: "放弃修改", style: .cancel) { (_) in
+                self.navigationController?.popvc(animated: true)
+            }
+            alertController.addAction(cancelAction)
+            self.present(alertController, animated: true, completion: nil)
+            
+            return false
+            
+        }
+        
+        // 未保存
+        if self.isChange{
+            
+            let alertController = UIAlertController(title: nil, message: "修改尚未保存，确定返回吗？", preferredStyle: .alert)
+            let alertAction = UIAlertAction(title: "保存并返回", style: .default) { (_) in
+                self.save()
+            }
+            alertController.addAction(alertAction)
+            let cancelAction = UIAlertAction(title: "放弃保存", style: .cancel) { (_) in
+                self.navigationController?.popvc(animated: true)
+            }
+            alertController.addAction(cancelAction)
+            self.present(alertController, animated: true, completion: nil)
+            
+            return false
+        }
+        
+        return true
+
+        
+
         
     }
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        self.navigationController?.removeCustomerView()
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
+  
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
@@ -120,6 +147,7 @@ class AddBaseInfoTableViewController: UITableViewController {
             
             cell.textView.text = diction[.describe]
             cell.updateText = { value in
+                self.isChange = true
                 self.diction[.describe] =  value
                 self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
@@ -155,7 +183,10 @@ class AddBaseInfoTableViewController: UITableViewController {
 extension AddBaseInfoTableViewController{
     
     private func setData(_ data:reumseInfoAction){
-        diction = data.getTypeValue()
+        guard  let kv = data.getTypeValue()  else {
+            return
+        }
+        diction =  kv 
         keys = data.getItemList()
         onlyPickerResumeType = data.getPickerResumeType()
         placeholder = data.placeHolder
@@ -174,7 +205,9 @@ extension AddBaseInfoTableViewController{
         self.tableView.register(AddItemCell.self, forCellReuseIdentifier: AddItemCell.identity())
         self.tableView.register(textViewCell.self, forCellReuseIdentifier: textViewCell.identity())
         
+        NotificationCenter.default.addObserver(self, selector: #selector(editStatus), name: NSNotification.Name.init(addResumeInfoNotify), object: nil)
     }
+    
 }
 
 // pciker
@@ -184,72 +217,29 @@ extension AddBaseInfoTableViewController: AddItemCellUpdate{
  
     func updateTextfield(value: String, type: ResumeInfoType){
         diction[type] = value
+        isChange = true 
         self.tableView.reloadRows(at: [IndexPath.init(row: keys.index(of: type)!, section: 0)], with: .automatic)
      }
-    
-    
 
-    
 }
 //save
 
 extension AddBaseInfoTableViewController{
     
-    @objc func save(){
+    @objc private  func save(){
         
-        self.view.endEditing(true)
-        
-        var res:[String:Any] = [:]
-        diction.forEach{
-            res[$0.key.rawValue] = $0.value
+        if super.checkValue() == false{
+            return 
         }
-        
-        switch itemType {
-        case .education:
-            
-            if let mode = personEducationInfo(JSON: res){
-                pManager.mode?.educationInfo.append(mode)
-            }
-            
-            
-        case .works:
-            
-            if let mode = personInternInfo(JSON: res){
-                pManager.mode?.internInfo.append(mode)
-            }
-        
-        case .project:
-            if let mode = personProjectInfo(JSON: res){
-                pManager.mode?.projectInfo.append(mode)
-            }
-            
-        case .schoolWork:
-            if let mode = studentWorkInfo(JSON: res){
-                pManager.mode?.studentWorkInfo.append(mode)
-            }
-        case .practice:
-            if  let mode = socialPracticeInfo(JSON: res){
-                pManager.mode?.practiceInfo.append(mode)
-            }
-            
-        case .skills:
-            if  let mode = personSkillInfo(JSON: res){
-                pManager.mode?.skills.append(mode)
-            }
-        case .other:
-            if let mode = resumeOther(JSON: res){
-                pManager.mode?.resumeOtherInfo.append(mode)
-            }
-            
-        default:
-            break
-        }
+        // 添加到服务器
+        pManager.addItemBy(itemType: itemType, res: res)
         
         delegate?.addNewItem(type: itemType)
-        self.navigationController?.popViewController(animated: true)
+        self.navigationController?.popvc(animated: true)
     
-        
     }
+    
+   
 }
 
 

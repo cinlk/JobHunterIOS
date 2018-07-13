@@ -2,31 +2,32 @@
 
 protocol headerCollectionViewDelegate: class {
     
-    func chooseItem(name:String)
+    func chooseItem(name:String, row: Int)
     
 }
 
 class HeaderCollectionView:UIView{
     
     
-    private lazy var layout:UICollectionViewLayout = { [unowned self] in
+    internal lazy var layout:UICollectionViewFlowLayout = { [unowned self] in
         let layout = UICollectionViewFlowLayout.init()
         layout.itemSize = CGSize.init(width: self.itemWidth, height: self.itemHeight)
-        layout.minimumLineSpacing = 10
-        layout.minimumInteritemSpacing = 10
-        
+        layout.minimumLineSpacing = 0
+        layout.minimumInteritemSpacing = 0
+        layout.scrollDirection = .horizontal
         return layout
     }()
     
     private lazy var collectionView:UICollectionView = { [unowned self] in
         
         
-        let collection = UICollectionView.init(frame: CGRect.init(x: 0, y: 0, width: self.bounds.width, height: self.bounds.height - 10), collectionViewLayout: self.layout)
-        collection.contentInset = UIEdgeInsetsMake(0, 15, 0, 10)
+        let collection = UICollectionView.init(frame: CGRect.init(x: 0, y: 0, width: self.bounds.width, height: self.bounds.height), collectionViewLayout: self.layout)
+       // collection.contentInset = UIEdgeInsetsMake(0, 15, 0, 10)
         collection.autoresizingMask = [.flexibleBottomMargin, .flexibleTopMargin]
         collection.register(CollectionItemsCell.self, forCellWithReuseIdentifier: CollectionItemsCell.identity())
         collection.delegate = self
         collection.dataSource = self
+        
         collection.backgroundColor = UIColor.white
         collection.showsHorizontalScrollIndicator = false
         collection.showsVerticalScrollIndicator = false
@@ -88,11 +89,12 @@ extension HeaderCollectionView:UICollectionViewDelegateFlowLayout, UICollectionV
         return cell
     }
     
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard  let name = mode?[indexPath.row].name else {
             return
         }
-        self.delegate?.chooseItem(name: name)
+        self.delegate?.chooseItem(name: name, row: indexPath.row)
     }
     
     

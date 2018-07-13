@@ -11,21 +11,20 @@ import UIKit
 fileprivate let placeHolder:String = "个人评价，500字以内"
 fileprivate let limitWords:Int = 500
 
-class evaluateSelfVC: UITableViewController {
+class evaluateSelfVC: BaseActionResumeVC {
 
 
     internal var section:Int = 0
     
-    private var  cacheCell:textViewCell?
-    private var pManager:personModelManager = personModelManager.shared
-    
-    private  lazy var content:String = pManager.mode?.estimate?.content ?? ""
+ 
+    private  lazy var content:String = pManager.getEstimate()
     
     weak var delegate:modifyItemDelegate?
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "修改个人评价"
         self.tableView.tableFooterView = UIView.init()
         self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.isScrollEnabled = false
@@ -33,25 +32,57 @@ class evaluateSelfVC: UITableViewController {
         self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "保存", style: .plain, target: self, action: #selector(save))
         
         self.tableView.register(textViewCell.self, forCellReuseIdentifier: textViewCell.identity())
+        
+        
+         NotificationCenter.default.addObserver(self, selector: #selector(editStatus), name: NSNotification.Name.init(addResumeInfoNotify), object: nil)
     }
 
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.navigationItem.title = "修改个人评价"
+    override func currentViewControllerShouldPop() -> Bool {
         
-        self.navigationController?.insertCustomerView()
+        if self.isEdit{
+            let alertController = UIAlertController(title: nil, message: "编辑尚未结束，确定返回吗？", preferredStyle: .alert)
+            let alertAction = UIAlertAction(title: "继续编辑", style: .default) { (_) in
+                
+            }
+            alertController.addAction(alertAction)
+            let cancelAction = UIAlertAction(title: "放弃修改", style: .cancel) { (_) in
+                self.navigationController?.popvc(animated: true)
+            }
+            alertController.addAction(cancelAction)
+            self.present(alertController, animated: true, completion: nil)
+            
+            return false
+            
+        }
         
-    }
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        self.navigationItem.title = ""
-        self.navigationController?.removeCustomerView()
+        // 未保存
+        if self.isChange{
+            
+            let alertController = UIAlertController(title: nil, message: "修改尚未保存，确定返回吗？", preferredStyle: .alert)
+            let alertAction = UIAlertAction(title: "保存并返回", style: .default) { (_) in
+                self.save()
+            }
+            alertController.addAction(alertAction)
+            let cancelAction = UIAlertAction(title: "放弃保存", style: .cancel) { (_) in
+                self.navigationController?.popvc(animated: true)
+            }
+            alertController.addAction(cancelAction)
+            self.present(alertController, animated: true, completion: nil)
+            
+            return false
+        }
+        
+        return true
+
         
     }
     
     
-   
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
 
     // MARK: - Table view data source
 
@@ -69,11 +100,16 @@ class evaluateSelfVC: UITableViewController {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: textViewCell.identity(), for: indexPath) as!
             textViewCell
-        cacheCell = cell
+         cell.updateText = { content in
+            self.isChange = true 
+            self.content = content
+            self.tableView.reloadData()
+            
+        }
         cell.placeHolderLabel.text = placeHolder
-        cell.textView.delegate = self
+        cell.placeHolderLabel.isHidden = content.isEmpty ? false : true 
         cell.textView.text = content
-        cacheCell?.placeHolderLabel.isHidden = content.isEmpty ? false : true
+        
         return cell
     }
     
@@ -90,43 +126,13 @@ class evaluateSelfVC: UITableViewController {
 extension evaluateSelfVC{
     
     @objc func save(){
+        isChange = false
+        
         self.view.endEditing(true)
-        pManager.mode?.estimate?.content = content
+        pManager.setEstimate(text:content)
         self.delegate?.modifiedItem(indexPath: IndexPath.init(row: 0, section: self.section))
-        self.navigationController?.popViewController(animated: true)
+        self.navigationController?.popvc(animated: true)
         
     }
-}
-extension evaluateSelfVC: UITextViewDelegate{
-    
-    
-    
-    func textViewDidChange(_ textView: UITextView) {
-        
-        cacheCell?.placeHolderLabel.isHidden =  textView.text.isEmpty ? false : true
-        
-    }
-    
-    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        
-        return true
-    }
-    
-    func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
-        textView.resignFirstResponder()
-        return true
-    }
-    
-    
-    func textViewDidEndEditing(_ textView: UITextView) {
-        cacheCell?.placeHolderLabel.isHidden =  textView.text.isEmpty ? false : true
-        
-        content = textView.text
-        
-        self.tableView.reloadData()
-    
-        
-    }
-    
 }
 

@@ -25,7 +25,7 @@ class PersonViewController: UIViewController {
         table.dataSource = self
         table.register(SetFourItemTableViewCell.self, forCellReuseIdentifier: SetFourItemTableViewCell.identity())
         
-        table.register(personTableCell.self, forCellReuseIdentifier: personTableCell.identity())
+        //table.register(personTableCell.self, forCellReuseIdentifier: personTableCell.identity())
         return table
     }()
     
@@ -33,6 +33,7 @@ class PersonViewController: UIViewController {
     private lazy var tableHeader: personTableHeader = {
         let v = personTableHeader.init(frame:CGRect.init(x: 0, y: 0, width: ScreenW, height: tableHeaderH))
         v.isHR = false
+        v.backgroundColor = UIColor.orange
         // test 用个人信息
         v.mode = (image:"chicken",name:"名字", introduce:"")
         v.layoutSubviews()
@@ -59,7 +60,7 @@ class PersonViewController: UIViewController {
         self.table.contentInsetAdjustmentBehavior = .never
         self.navigationController?.navigationBar.settranslucent(true)
         self.navigationController?.navigationBar.isHidden = true
-
+        self.navigationController?.removeCustomerView()
 
     }
 
@@ -107,13 +108,17 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
             cell.delegate = self
             return cell
         case 1:
-            let cell =  tableView.dequeueReusableCell(withIdentifier: personTableCell.identity(), for: indexPath) as! personTableCell
-            cell.mode = (image:#imageLiteral(resourceName: "personResume"),title:"我的简历")
+            let cell = UITableViewCell.init(style: .value1, reuseIdentifier: "cell")
+            cell.imageView?.image = #imageLiteral(resourceName: "feedback").changesize(size: CGSize.init(width: 40, height: 40))
+            cell.textLabel?.text = "我的简历"
             return cell
             
         case 2:
-            let cell =  tableView.dequeueReusableCell(withIdentifier: personTableCell.identity(), for: indexPath) as! personTableCell
-            cell.mode = self.mode[indexPath.row]
+            let cell = UITableViewCell.init(style: .value1, reuseIdentifier: "cell")
+            cell.imageView?.image = self.mode[indexPath.row].image.changesize(size: CGSize.init(width: 40, height: 40))
+            cell.textLabel?.text = self.mode[indexPath.row].title
+            
+          
             return cell
         default:
             return UITableViewCell.init()
@@ -134,18 +139,19 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return indexPath.section == 0 ? SetFourItemTableViewCell.cellHeight() : personTableCell.cellHeight()
+        return indexPath.section == 0 ? SetFourItemTableViewCell.cellHeight() : 50
        
     }
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        tableView.deselectRow(at: indexPath, animated: false)
         switch indexPath.section {
         case 0:
             return
         case 1:
-            let resumeView = personResumeTable()
+            let resumeView = ResumePageViewController()
             resumeView.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(resumeView, animated: true)
         case 2:
@@ -155,8 +161,9 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
             switch row{
             case 0:
                 // 我的订阅
-                let subscrible = subconditions()
-                self.present(subscrible, animated: true, completion: nil)
+                let subscrible = subscribleItem()
+                subscrible.hidesBottomBarWhenPushed = true
+                self.navigationController?.pushViewController(subscrible, animated: true)
             case 1:
                 // 帮助中心
                 let help  = HelpsVC()
@@ -220,53 +227,4 @@ extension PersonViewController:selectedItemDelegate{
     
     
 }
-
-
-fileprivate class  personTableCell: TitleTableViewCell{
-    
-    
-    internal var mode:(image:UIImage, title:String)?{
-        didSet{
-            guard  let mode = mode else {
-                return
-            }
-            iconName.text = mode.title
-            icon.image = mode.image
-            
-        }
-    }
-    
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.selectionStyle = .none
-        self.line.isHidden = true
-        self.icon.sd_resetNewLayout()
-        self.iconName.sd_resetNewLayout()
-        self.iconName.font = UIFont.systemFont(ofSize: 16)
-        _ = icon.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(40)?.heightIs(40)
-        
-        _ = iconName.sd_layout().leftSpaceToView(icon,10)?.centerYEqualToView(icon)?.autoHeightRatio(0)
-        
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    
-    
-    
-    class func identity()->String{
-        return "personcell"
-    }
-    
-    class func cellHeight()->CGFloat{
-        return 50
-    }
-    
-    
-}
-
-
-
 

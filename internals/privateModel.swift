@@ -10,43 +10,46 @@ import Foundation
 import ObjectMapper
 
 
-
-
-
-
-class privateMode: Mappable{
+class  BlackistCompanyModel: NSObject, Mappable{
     
-    var list:[privateListModel]?
-    var backListComp:[String]?
+    var companyID:String?
+    var companyName:String?
+    // 表示已经添加（黑名单 搜索结果vc 显示需要）
+    var validate:Bool?
     
     required init?(map: Map) {
-        
+        if map.JSON["companyID"] == nil || map.JSON["companyName"] == nil || map.JSON["validate"] == nil {
+            return nil
+        }
     }
     
     func mapping(map: Map) {
-        list <- map["list"]
-        backListComp <- map["backListComp"]
+        companyID <- map["companyID"]
+        companyName <- map["companyName"]
+        validate <- map["validate"]
     }
 }
 
-class privateListModel: NSObject, Mappable{
+
+class ResumePrivacyModel: NSObject, Mappable{
     
-    var name:String?
-    var isOn:Bool?
-    var showCompany:Bool?
+    
+    // 设置条件
+    var listItem:[String:Bool]?
+    
+    // 屏蔽的公司 名称
+    var companyBlacklist:[BlackistCompanyModel] = []
     
     required init?(map: Map) {
-        
+        if map.JSON["listItem"] == nil  {
+            return nil
+        }
     }
-    
+   
     func mapping(map: Map) {
-        name <- map["name"]
-        isOn <- map["isOn"]
-        showCompany <- map["showCompany"]
-        
+        listItem <- map["listItem"]
+        companyBlacklist <- map["companyBlacklist"]
     }
-    
-    
     
 }
 

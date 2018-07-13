@@ -14,6 +14,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
+    var shareInBox:String = "Inbox"
+    
+    var fileManager = FileManager.default
+    
     // 地理位置
     var locateManager = CLLocationManager()
     
@@ -69,6 +73,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // 系统回调
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+        // 简历文档 获取
+        // 判断用户权限
+        if url.scheme == "file"{
+        
+            let targetVC = PreShowPDFVC()
+            targetVC.fileURL = URL.init(fileURLWithPath: url.path) 
+            print(url)
+            
+            if let vc =  self.getResumePageVC(){
+                vc.hidesBottomBarWhenPushed = true
+                vc.navigationController?.pushViewController(targetVC, animated: true)
+            }
+            return true
+        }
+        
+        // 第三方登录
         let result = UMSocialManager.default().handleOpen(url)
         let urlKey: String = options[UIApplicationOpenURLOptionsKey.sourceApplication] as! String
 
@@ -79,6 +99,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         return result
     }
+    
+    // IOS 9
     // 新浪微博的H5网页登录回调需要实现这个方法，页面分享后，会崩溃？？
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
         // 这里的URL Schemes是配置在 info -> URL types中, 添加的新浪微博的URL schemes
@@ -113,9 +135,67 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        // 删除文件
+        let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
+        guard let inbox = url.last?.appendingPathComponent(shareInBox) else {
+            return
+        }
+        
+        do{
+            if fileManager.fileExists(atPath: inbox.path){
+                try fileManager.removeItem(at: inbox)
+            }
+            
+        }catch{
+            
+        }
+        
     }
+    
+    
 
 }
+
+
+// 文件共享
+extension AppDelegate{
+    
+    private func getResumePageVC() -> UIViewController?{
+        let root = UIApplication.shared.keyWindow?.rootViewController
+        
+        let currentVC = findTarget(rootVC: root!)
+        
+        
+        return currentVC
+    }
+    
+    private func findTarget(rootVC:  UIViewController) -> UIViewController?{
+        var tmp = rootVC
+        
+        var currentVC:UIViewController?
+        if tmp.presentedViewController != nil {
+            tmp = tmp.presentedViewController!
+        }
+        
+        if let tab = tmp as? UITabBarController{
+            tab.selectedIndex = 4
+            let nav  = (tab.selectedViewController as? UINavigationController)
+            if let visibelVC = nav?.visibleViewController, visibelVC.isKind(of: ResumePageViewController.self){
+                return nav?.visibleViewController
+            }
+            nav?.popToRootViewController(animated: true)
+            currentVC = ResumePageViewController()
+            nav?.pushViewController(currentVC!, animated: false)
+            
+        }
+        
+        return currentVC
+    }
+    
+    
+}
+
+
 
 extension AppDelegate: CLLocationManagerDelegate{
     

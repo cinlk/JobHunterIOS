@@ -28,7 +28,7 @@ class SearchTypeMenuView: UIView {
     
     private var arrowWidth:CGFloat = 15
     private var arrowHeight:CGFloat = 10
-    private var arrowLeftMargin:CGFloat = 15
+    internal var arrowLeftMargin:CGFloat = 15
     
     weak var delegate:SearchMenuDelegate?
     
@@ -49,7 +49,7 @@ class SearchTypeMenuView: UIView {
     }()
     
     // 内容
-    private lazy var table:UITableView = {  [unowned self] in
+    internal lazy var table:UITableView = {  [unowned self] in
         let table = UITableView(frame: CGRect.init(x: 0, y: arrowHeight , width: self.frame.width - 30, height: self.frame.height - arrowHeight))
         table.tableHeaderView = UIView()
         table.backgroundColor = UIColor.white
@@ -66,8 +66,10 @@ class SearchTypeMenuView: UIView {
     }()
 
     
-    override init(frame: CGRect) {
+     init(frame: CGRect, arrowLeftMargin:CGFloat = 15) {
+        self.arrowLeftMargin = arrowLeftMargin
         super.init(frame: frame)
+        
         self.addSubview(table)
         self.addSubview(arrow)
       
@@ -85,7 +87,9 @@ class SearchTypeMenuView: UIView {
 extension SearchTypeMenuView{
     
     open func show(){
-            UIApplication.shared.keyWindow?.addSubview(self)
+        
+        UIApplication.shared.keyWindow?.addSubview(self)
+
     }
     
     

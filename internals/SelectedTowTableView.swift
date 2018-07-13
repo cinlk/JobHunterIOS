@@ -11,6 +11,8 @@ import UIKit
 fileprivate let cellIdentity:String = "cell"
 fileprivate let all:String = "不限"
 
+
+
 class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
     
     
@@ -45,6 +47,18 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
         return label
     }()
     
+    
+    private lazy var confirm:UIButton = {
+        let confirm = UIButton.init()
+        confirm.setTitle("确定", for: .normal)
+        confirm.addTarget(self, action: #selector(save), for: .touchUpInside)
+        confirm.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
+        confirm.setTitleColor(UIColor.blue, for: .normal)
+        confirm.isHidden = true
+        return confirm
+    }()
+    
+    
     private lazy  var line:UIView = {
         let v = UIView()
         v.backgroundColor = UIColor.lightGray
@@ -53,9 +67,14 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
     }()
     
     // 数据回传回调
-    var call:((_ name:String,_ value: String, _ row:Int)->Void)?
+    var call:((_ value: String, _ row:Int)->Void)?
     
     private var node:nodes?
+    
+    // 如果是城市可以选择多个？？
+    var citys:[String] = []
+    
+    
     
     
     private lazy var first:[component] = []
@@ -65,6 +84,12 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
         didSet{
             guard let mode = mode else {
                 return
+            }
+            
+            if mode.name == "城市"{
+                righttable.allowsMultipleSelection = true
+                confirm.isHidden = false
+                
             }
             
             guard let   node = SelectItemUtil.shared.getItems(name: mode.name) else {
@@ -108,11 +133,13 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
     private func setViews(){
         
         self.backgroundColor = UIColor.white
-        let views:[UIView] = [title, line, lefttable, righttable]
+        let views:[UIView] = [title, line, confirm,lefttable, righttable]
         self.sd_addSubviews(views)
         
         
         _ = title.sd_layout().topSpaceToView(self,10)?.centerXEqualToView(self)?.autoHeightRatio(0)
+        _ = confirm.sd_layout().rightSpaceToView(self,5)?.centerYEqualToView(title)?.widthIs(50)?.heightRatioToView(title,1.5)
+        
         _ = line.sd_layout().topSpaceToView(title,5)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(1)
         _ = lefttable.sd_layout().leftEqualToView(self)?.topSpaceToView(line,0)?.widthIs(ScreenW / 2 )?.bottomEqualToView(self)
         // MARK  这里如果用rightEqualToView(self) 约束，大小是对的，但是reloadtable 不生效？？ 换成widthIs(ScreenW / 2 ) 有效？
@@ -131,7 +158,7 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
         return 1
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 30
+        return 40
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -178,7 +205,9 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let cell = tableView.cellForRow(at: indexPath)
+        guard   let cell = tableView.cellForRow(at: indexPath) else {
+            return
+        }
         
         if tableView  == lefttable{
            
@@ -186,15 +215,22 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
             leftValue  =  currentNode.key
             // 返回数据
             if leftValue == all{
-                self.call?(title.text!, leftValue, mode!.row)
+                self.call?(leftValue, mode!.row)
                 return
             }
-            cell?.textLabel?.isHighlighted = true
+            cell.textLabel?.isHighlighted = true
             // 刷新第二个table
             second = currentNode.item
             self.righttable.reloadData()
             
         }else{
+       
+            if mode?.name == "城市"{
+                selectedItems(row: indexPath.row, cell: cell)
+                return
+            }
+            
+            
             // 取消之前被选中节点状态,包括子节点
             for node in first{
                 resetTableItemStatus(node: node)
@@ -203,7 +239,8 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
             currentNode.selected = true
             
             // 选中第二个table 中的数据 并返回
-            self.call?(title.text!, currentNode.key, mode!.row)
+            self.call?(currentNode.key, mode!.row)
+            
         }
         
     }
@@ -219,4 +256,55 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
     
 }
 
+
+
+extension SelectedTowTableView{
+    
+    @objc private func save(){
+        if citys.isEmpty{
+            return
+        }
+        self.call?(citys.joined(separator: "+"), mode!.row)
+    }
+}
+
+// 多选
+extension SelectedTowTableView{
+    
+    
+    private func selectedItems(row:Int, cell: UITableViewCell){
+        
+        let currentNode = second[row]
+        // 再次点击取消
+        if currentNode.selected == true, let text = cell.textLabel?.text{
+            if let  index = citys.index(of: text){
+                citys.remove(at: index)
+            }
+            
+            
+        }else{
+            // 提示最多选择3个
+            if citys.count >= 3{
+                showOnlyTextHub(message: "最多选择3个城市", view: self)
+                //SVProgressHUD.show(#imageLiteral(resourceName: "warn"), status: "最多选择5个")
+                //SVProgressHUD.dismiss(withDelay: 2)
+                return
+            }
+            if let text = cell.textLabel?.text{
+                citys.append(text)
+            }
+            
+        }
+        //更新父节点选中状态
+        currentNode.selected = !currentNode.selected
+        cell.textLabel?.isHighlighted  = currentNode.selected
+        cell.accessoryType  = currentNode.selected ? .checkmark : .none
+        
+        
+        self.lefttable.reloadData()
+        
+    }
+    
+    
+}
 

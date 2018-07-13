@@ -11,7 +11,7 @@ import UIKit
 fileprivate let VCtitle:String = "简历完整度"
 
 
-
+// 在线简历VC
 class personResumeTable: BaseViewController {
     
     
@@ -41,6 +41,14 @@ class personResumeTable: BaseViewController {
         return tb
     }()
     
+    internal var resumeID:String?{
+        didSet{
+            guard let _  = resumeID else {
+                return
+            }
+            loadData()
+        }
+    }
     // 进入页面时 要刷新数据
     private var pManager:personModelManager = personModelManager.shared
     // 初始化subitem类型
@@ -48,10 +56,7 @@ class personResumeTable: BaseViewController {
    
     private var datas:[ResumeSubItems:Any?]{
         get{
-            return [.personInfo:pManager.mode?.basicinfo ,.education: pManager.mode?.educationInfo,
-                    .works: pManager.mode?.internInfo, .project: pManager.mode?.projectInfo,.schoolWork: pManager.mode?.studentWorkInfo,
-                    .practice:pManager.mode?.practiceInfo,.skills: pManager.mode?.skills,.other: pManager.mode?.resumeOtherInfo,
-                    .selfEvaludate: pManager.mode?.estimate]
+            return pManager.getDatas()
         }
     }
     
@@ -63,37 +68,19 @@ class personResumeTable: BaseViewController {
     
     private lazy var barBtn:UIButton = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 60, height: 25))
 
-    // 简历完善度
-    private var progress:Int = 20
-    
+ 
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setViews()
-        loadData()
+       
         
     }
 
     
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.navigationItem.title = VCtitle +  "\(progress)%"
-        self.navigationController?.insertCustomerView()
-        
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
-        self.navigationController?.removeCustomerView()
-        
-        
-    }
-    
     override func setViews(){
         
-      
+       
         self.view.addSubview(tableView)
         _ = tableView.sd_layout().topSpaceToView(self.view,NavH)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
         
@@ -110,6 +97,7 @@ class personResumeTable: BaseViewController {
     
     override func didFinishloadData(){
         
+        self.title  = VCtitle +  "\(pManager.integrity)%"
         super.didFinishloadData()
         self.tableView.reloadData()
     }
@@ -283,9 +271,6 @@ extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
-        
-        
-
         if indexPath.section == 0 {
             guard let mode = datas[viewType[0]] as? personalBasicalInfo else {
                 return 0
@@ -493,7 +478,7 @@ extension personResumeTable{
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             Thread.sleep(forTimeInterval: 1)
             
-            self?.pManager.initialData()
+            self?.pManager.getOnlineResume(resumeID: (self?.resumeID)!)
             DispatchQueue.main.async {
                 self?.didFinishloadData()
             }

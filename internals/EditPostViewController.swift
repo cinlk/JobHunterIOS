@@ -264,8 +264,9 @@ extension EditPostViewController{
         // 通知 不同的板块刷新
         
         //print(data.content,data.type,data.title)
-        self.navigationController?.popViewController(animated: true)
-    }
+        self.navigationController?.popvc(animated: true)
+
+     }
 }
 
 extension EditPostViewController{

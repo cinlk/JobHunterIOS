@@ -165,7 +165,8 @@ class DashboardViewController: BaseViewController{
         
         _ = self.tables.tableHeaderView?.sd_layout().leftEqualToView(self.tables)?.rightEqualToView(self.tables)?.heightIs(tableViewH)?.topEqualToView(self.tables)
         
-        _ =  searchController?.searchBar.sd_layout().leftSpaceToView(searchBarContainer,10)?.topEqualToView(searchBarContainer)?.bottomEqualToView(searchBarContainer)?.rightSpaceToView(searchBarContainer,10)
+        _ =  searchController?.searchBar.sd_layout().leftSpaceToView(searchBarContainer,0)?.topEqualToView(searchBarContainer)?.bottomEqualToView(searchBarContainer)?.rightSpaceToView(searchBarContainer,0)
+        
          // 这里设置page的
          page.frame = CGRect(x: (self.view.centerX - 60), y: self.imagescroller.frame.height-20, width: 120, height: 10)
         
@@ -221,7 +222,6 @@ class DashboardViewController: BaseViewController{
         searchController?.delegate =  self
         searchController?.searchBar.delegate = self
         
-        //searchController?.cityDelegate = self
         searchController?.height = searchBarH
         searchController?.searchType = .company
         

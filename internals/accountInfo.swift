@@ -11,50 +11,6 @@ import Foundation
 import ObjectMapper
 
 
-enum appType:String {
-    
-    case weixin
-    case weibo
-    case qq
-    case none
-    
-    
-    var des:String{
-        get{
-            switch self {
-            case .weibo:
-                return "绑定微博账号"
-            case .weixin:
-                return "绑定微信账号"
-            case .qq:
-                return "绑定QQ账号"
-            default:
-                return ""
-            }
-        }
-    }
-    
-}
-
-class  myAccountInfo: Mappable{
-    
-    
-    var itemName: [String:[AccountBase]]?
-    
-    init() {
-        
-    }
-    
-    required init?(map: Map) {
-        
-    }
-    
-    func mapping(map: Map) {
-        itemName <- map["itemName"]
-    }
-    
-}
-
 
 class AccountBase: Mappable{
     
@@ -100,16 +56,22 @@ class AccountSecurity: AccountBase{
 class AccountBinds: AccountBase{
     
     var isBind:Bool? = false
-    var type:String?{
-        didSet{
-            apptype = appType.init(rawValue: type!)
+    var type:String?
+    var kind:appType{
+        get{
+            guard let type = appType(rawValue: self.type!) else {
+                    return .none
+            }
+            return type
         }
     }
-    var apptype:appType?
     
     
     required init?(map: Map) {
         super.init(map: map)
+        if map.JSON["isBind"] == nil || map.JSON["type"] == nil{
+            return nil
+        }
     }
     
    override func mapping(map: Map) {
@@ -126,19 +88,29 @@ class AccountBinds: AccountBase{
 
 class  notifyMesModel:Mappable{
     
-    var name:String?
+    var type:String?
     var isOn:Bool? = false
-    var sectionTag:Int?
+ 
+    var kind:notifyType{
+        get{
+            guard let type = notifyType(rawValue: self.type!) else  {
+                return .none
+            }
+            return type
+        }
+    }
     
     required init?(map: Map) {
-        
+        if map.JSON["type"] == nil || map.JSON["isOn"] == nil{
+            return nil
+        }
     }
     
     func mapping(map: Map) {
         
-        name <- map["name"]
+        type <- map["type"]
         isOn <- map["isOn"]
-        sectionTag <- map["sectionTag"]
+        
     }
     
     
@@ -186,7 +158,7 @@ class HelpGuidModel:NSObject, Mappable{
     var name:String?
     var image:String?
     // 查询具体的数据
-    var guideId:String?
+    var guideURL:String?
     
     required init?(map: Map) {
         
@@ -195,7 +167,7 @@ class HelpGuidModel:NSObject, Mappable{
     func mapping(map: Map) {
         name <- map["name"]
         image <- map["image"]
-        guideId <- map["guideId"]
+        guideURL <- map["guideURL"]
     }
     
 }

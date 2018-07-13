@@ -114,10 +114,86 @@ enum ResumeInfoType:String{
 
 
 
+
+
+// 简历分类
+
+class reumseKind: NSObject,Mappable{
+    
+    
+    // 简历名称
+    var name:String?
+    // 默认简历
+    var isDefault:Bool?
+    
+    // 简历id
+    var id:String?
+    
+    // 创建时间
+    var create_time:Date?
+    
+    
+    var createTime:String{
+        get{
+            guard let ct = create_time, let time = showMonthAndDay(date: ct) else {
+                return ""
+            }
+            return time
+        }
+    }
+    // 简历类型
+    var kind:String?
+    
+    var type:resumeType{
+        get{
+            guard let kind = kind, let t = resumeType(rawValue: kind) else {
+                return .none
+            }
+            return t
+        }
+    }
+    
+    //在线简历内容
+//    var content:ResumeMode?
+//
+//    // 附件链接 打开浏览？
+//    var attachment:String?
+
+    
+    required init?(map: Map) {
+        if map.JSON["name"] == nil || map.JSON["isDefault"] == nil || map.JSON["id"] == nil ||
+            map.JSON["create_time"] == nil || map.JSON["kind"] == nil  {
+            return nil
+        }
+        
+//        if (map.JSON["kind"] as! String) == "attachment" && map.JSON["attachment"] == nil{
+//            return nil
+//        }
+        
+//        if (map.JSON["kind"] as! String) == "online" && map.JSON["content"] == nil {
+//            return nil
+//        }
+    }
+    
+    
+    func mapping(map: Map) {
+        name <- map["name"]
+        isDefault <- map["isDefault"]
+        id <- map["id"]
+        create_time <- (map["create_time"],DateTransform())
+        kind <- map["kind"]
+        //content <- map["content"]
+        
+    }
+
+    
+}
+
+
 protocol reumseInfoAction: class {
     
     
-    func getTypeValue()->[ResumeInfoType:String]
+    func getTypeValue()->[ResumeInfoType:String]?
     
     func getPickerResumeType()->[ResumeInfoType]
     
@@ -167,8 +243,8 @@ class  personBaseInfo:NSObject, Mappable, reumseInfoAction{
         describe <- map["describe"]
     }
     
-    func getTypeValue()->[ResumeInfoType:String]{
-        return [:]
+    func getTypeValue()->[ResumeInfoType:String]?{
+        return nil
     }
     
     func getPickerResumeType()->[ResumeInfoType]{
@@ -186,16 +262,24 @@ class  personBaseInfo:NSObject, Mappable, reumseInfoAction{
 class personalBasicalInfo: personBaseInfo {
     
     var tx:String = "default"
-    var name:String = ""
-    var gender:String = ""
+    var name:String?
+    var colleage:String?
+    var gender:String?
     var city:String = ""
-    var degree:String = ""
-    var birthday:String = ""
-    var phone:String = ""
-    var email:String = ""
+    var degree:String?
+    var birthday:String?
+    var phone:String?
+    var email:String?
+    
     
     required init?(map: Map) {
         super.init(map: map)
+        if map.JSON["name"] == nil || map.JSON["colleage"] == nil || map.JSON["gender"] == nil ||
+            map.JSON["degree"] == nil || map.JSON["birthday"] == nil || map.JSON["phone"] == nil ||
+            map.JSON["email"] == nil {
+            return nil
+        }
+        
     }
     
     override func mapping(map: Map) {
@@ -203,6 +287,7 @@ class personalBasicalInfo: personBaseInfo {
         tx <- map["tx"]
         name <- map["name"]
         gender <- map["gender"]
+        colleage <- map["colleage"]
         city <- map["city"]
         degree <- map["degree"]
         birthday <- map["birthday"]
@@ -212,13 +297,17 @@ class personalBasicalInfo: personBaseInfo {
     }
     
     override func getItemList()->[ResumeInfoType]{
-        return [ResumeInfoType.tx,ResumeInfoType.name,ResumeInfoType.gender,ResumeInfoType.city
-            ,ResumeInfoType.degree, ResumeInfoType.birthday,ResumeInfoType.phone
+        return [ResumeInfoType.tx,ResumeInfoType.name,ResumeInfoType.gender,ResumeInfoType.colleage, ResumeInfoType.city,ResumeInfoType.degree, ResumeInfoType.birthday,ResumeInfoType.phone
             ,ResumeInfoType.email]
     }
     
-    override func getTypeValue() -> [ResumeInfoType : String] {
-        return [ResumeInfoType.tx:self.tx,ResumeInfoType.name:self.name,ResumeInfoType.gender:self.gender,ResumeInfoType.city:self.city,ResumeInfoType.degree:self.degree,ResumeInfoType.birthday:self.birthday, ResumeInfoType.phone:self.phone, ResumeInfoType.email: self.email]
+    override func getTypeValue() -> [ResumeInfoType : String]? {
+        
+        guard  let name = self.name, let  colleage = self.colleage, let  gender = self.gender, let degree = self.degree, let birthday = self.birthday, let  phone = self.phone,  let email = self.email
+            else {
+                return nil
+        }
+        return [ResumeInfoType.tx:self.tx,ResumeInfoType.name:name,ResumeInfoType.gender:gender,.colleage: colleage, ResumeInfoType.city:self.city,ResumeInfoType.degree:degree,ResumeInfoType.birthday: birthday, ResumeInfoType.phone: phone, ResumeInfoType.email: email]
         
     }
     override func getPickerResumeType() -> [ResumeInfoType] {
@@ -351,7 +440,7 @@ class personSkillInfo: NSObject, Mappable, reumseInfoAction{
     }
     
     required init?(map: Map) {
-        
+       
     }
     
     func mapping(map: Map) {
@@ -387,8 +476,9 @@ class personSkillInfo: NSObject, Mappable, reumseInfoAction{
         return [ResumeInfoType.skill,ResumeInfoType.describe]
     }
     
-    func getTypeValue() -> [ResumeInfoType : String] {
-        return [ResumeInfoType.skill: self.skill, .describe:self.describe]
+    func getTypeValue() -> [ResumeInfoType : String]? {
+        
+        return [ResumeInfoType.skill: self.skill, .describe: self.describe]
         
     }
     func getPickerResumeType() -> [ResumeInfoType] {
@@ -575,7 +665,7 @@ class selfEstimateModel:NSObject, Mappable{
 
 class  ResumeMode:NSObject, Mappable{
     
-    var basicinfo:personalBasicalInfo?
+    //var basicinfo:personalBasicalInfo?
     var educationInfo:[personEducationInfo] = []
     
     var internInfo:[personInternInfo] = []
@@ -589,11 +679,11 @@ class  ResumeMode:NSObject, Mappable{
     var estimate:selfEstimateModel?
     
     required init?(map: Map) {
-        
+       
     }
     
     func mapping(map: Map) {
-        basicinfo <- map["basicinfo"]
+       // basicinfo <- map["basicinfo"]
         educationInfo <- map["educationInfo"]
         projectInfo <- map["projectInfo"]
         internInfo <- map["educationInfo"]
@@ -607,4 +697,6 @@ class  ResumeMode:NSObject, Mappable{
     }
     
 }
+
+
 

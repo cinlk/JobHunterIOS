@@ -19,7 +19,6 @@ fileprivate let leftDistance:CGFloat = 40
 fileprivate let dropViewH:CGFloat = 40
 fileprivate let dropmenus = ["公司筛选","职位筛选","行业领域"]
 fileprivate let SearchPlaceholder:String = "搜索公司/职位/宣讲会"
-fileprivate let defaultSearchCity:String = "全国"
 
 
 
@@ -218,17 +217,6 @@ class baseSearchViewController: UISearchController{
         }
     }
     
-    //
-    private lazy  var cityButton:UIButton = {
-        let button = UIButton.init(title: (defaultSearchCity, .normal), fontSize: 12, alignment: .center, bColor: UIColor.clear)
-        button.setTitleColor(UIColor.gray, for: .normal)
-        button.titleLabel?.adjustsFontSizeToFitWidth = false
-        button.autoresizesSubviews = true
-        button.frame = CGRect.init(x: 5, y: 4.5, width: 30, height: 20)
-        //button.addTarget(self, action: #selector(cityClick), for: .touchUpInside)
-        return button
-        
-    }()
     
     // 类型选择btn
     internal lazy var chooseTypeBtn:UIButton = {
@@ -306,9 +294,8 @@ class baseSearchViewController: UISearchController{
         self.dimsBackgroundDuringPresentation = true
         
         self.definesPresentationContext = true
+    
         self.searchBar.showsCancelButton = false
-        self.searchBar.showsBookmarkButton = false
-        self.searchBar.searchBarStyle = .default
         self.searchBar.placeholder = SearchPlaceholder
         
         self.searchBar.tintColor = UIColor.blue
@@ -328,9 +315,9 @@ class baseSearchViewController: UISearchController{
         searchField.layer.borderWidth = 1
         searchField.layer.backgroundColor  = UIColor.white.cgColor
         searchField.backgroundColor = UIColor.clear
-        searchField.layer.cornerRadius = 14.0
+        searchField.layer.cornerRadius = searchBarH/2
         searchField.borderStyle  = .roundedRect
-        searchField.tintColor = UIColor.black
+        searchField.textColor = UIColor.darkGray
         searchField.layer.masksToBounds = true
         
  

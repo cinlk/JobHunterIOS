@@ -8,14 +8,45 @@
 
 import UIKit
 
-extension UIView{
+
+
+struct actionEntity {
+    var title:String
+    var selector:Selector?
+    var args:Any?
     
-    
-    func copyView<T: UIView>() -> T {
-        return NSKeyedUnarchiver.unarchiveObject(with: NSKeyedArchiver.archivedData(withRootObject: self)) as! T
+    init(title:String, selector:Selector?, args:Any?) {
+        self.title = title
+        self.selector = selector
+        self.args = args
     }
     
 }
 
 
+
+extension UIView{
+    
+    func presentAlert(type: UIAlertControllerStyle, title:String?, message:String?, items:[actionEntity],  target:AnyObject?, complete:(( _ alert:UIAlertController )->Void)){
+        
+        let alertVC = UIAlertController.init(title: title, message: message, preferredStyle: type)
+        
+        
+        for actionItem in items{
+            let action = UIAlertAction.init(title: actionItem.title, style: .default) { action in
+                if let selector = actionItem.selector{
+                    
+                    target?.performSelector(onMainThread: selector, with: actionItem.args, waitUntilDone: true)
+                }
+            }
+            alertVC.addAction(action)
+        }
+        let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
+        alertVC.addAction(cancel)
+        complete(alertVC)
+        
+    }
+    
+    
+}
 

@@ -59,6 +59,7 @@ class AddItemCell: UITableViewCell {
         textField.adjustsFontSizeToFitWidth = false
         textField.clearButtonMode = .whileEditing
         textField.keyboardType = .default
+        textField.returnKeyType = .done
         textField.textAlignment = .left
         textField.rightViewMode = UITextFieldViewMode.always
         textField.delegate = self
@@ -158,7 +159,7 @@ extension AddItemCell: UITextFieldDelegate{
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         guard  let mode = mode  else {
-            return true
+            return false
         }
         
         if onlyPickerResumeType.contains(mode.type){
@@ -171,10 +172,18 @@ extension AddItemCell: UITextFieldDelegate{
     }
     
     
+    
+    
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+         NotificationCenter.default.post(name: NSNotification.Name(rawValue: addResumeInfoNotify), object: nil, userInfo: ["edit":false])
         return true
     }
     
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: addResumeInfoNotify), object: nil, userInfo: ["edit":true])
+        
+    }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard  let mode = mode,let text = textField.text  else {
@@ -187,10 +196,13 @@ extension AddItemCell: UITextFieldDelegate{
         delegate?.updateTextfield(value: text, type: mode.type)
      }
     
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        return true
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: addResumeInfoNotify), object: nil, userInfo: ["edit":false])
+        return true 
     }
+    
     
 }
 

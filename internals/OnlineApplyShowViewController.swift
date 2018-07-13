@@ -378,9 +378,7 @@ extension OnlineApplyShowViewController{
 // share分享代理实现
 extension OnlineApplyShowViewController:shareViewDelegate{
     
-    func hiddenShareView(view:UIView){
-        self.handleSingleTapGesture()
-    }
+    
     func handleShareType(type: UMSocialPlatformType) {
     }
 }
