@@ -13,8 +13,6 @@ fileprivate let text = "登录代表你同意 "
 class QuickLoggingViewController: UITableViewController {
 
    
-
-    
     private lazy var userIcon:UIImageView = {
         let imageV = UIImageView(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
         imageV.contentMode = .scaleAspectFill
@@ -101,11 +99,7 @@ class QuickLoggingViewController: UITableViewController {
         self.view.endEditing(true)
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
+
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }

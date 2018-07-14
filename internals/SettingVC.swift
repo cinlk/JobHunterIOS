@@ -255,7 +255,7 @@ extension SettingVC {
         
       
          // 禁止自动登录
-         DBFactory.shared.getUserDB().setLoginAuto(auto: false)
+    DBFactory.shared.getUserDB().setLoginAuto(account: "123456", auto: false)
         // 登录界面进入
         if  let _ = self.presentingViewController as? LoginNavigationController{
             self.dismiss(animated: true, completion: nil)

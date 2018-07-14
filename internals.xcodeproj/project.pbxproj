@@ -1225,7 +1225,6 @@
 		4A50F8091FC1E53000011AA5 /* utils */ = {
 			isa = PBXGroup;
 			children = (
-				4A5304DA1F527D090000F1E9 /* loginUtils.swift */,
 			);
 			name = utils;
 			sourceTree = "<group>";
@@ -1720,6 +1719,7 @@
 		4A9CE36D1F72C2B3002A8FD5 /* utils */ = {
 			isa = PBXGroup;
 			children = (
+				4A5304DA1F527D090000F1E9 /* loginUtils.swift */,
 				4A2145C82078D039000959F4 /* MBHubUtils.swift */,
 				4A9CE36E1F72C2E6002A8FD5 /* myextension.swift */,
 				4AD2C77A209752DA002F3486 /* ConfigDropItemView.swift */,

@@ -15,8 +15,6 @@ import UIKit
 class ConversationManager: NSObject {
 
     
-    
-    private lazy var personTable = DBFactory.shared.getPersonDB()
     private lazy var messageTable = DBFactory.shared.getMessageDB()
     private lazy var conversationTable = DBFactory.shared.getConversationDB()
     
@@ -29,21 +27,18 @@ class ConversationManager: NSObject {
     
     
     // 获取某个会话
-    open func getConversationBy(usrID:String)->conversationModel?{
+    open func getConversationBy(userID:String)->conversationModel?{
         
-        guard var item = conversationTable.getOneConversation(userID: usrID) else {
+        guard var item = conversationTable.getOneConversation(userID: userID) else {
             return nil
         }
         guard let mes = messageTable.getMessageByID(msgID: (item["messageID"] as! String)) else {
             return nil
         }
         
-        guard let user = personTable.GetUserById(userId: (item["userID"] as! String)) else {
-            return nil
-        }
-        
+        // 更加userID 获取用户信息
+        item["user"] = ["userID":userID,"company":"大大大","name":"我是hr","role":"hr","icon": #imageLiteral(resourceName: "hr").toBase64String()]
         item["message"] = mes.toJSON()
-        item["user"] = user.toJSON()
         
         
         // 判断数据是否存在
@@ -51,9 +46,7 @@ class ConversationManager: NSObject {
             return nil
             
         }
-        
-        //conversationTable.upDateConversationData(userID: <#T##String#>, messageID: <#T##String#>, isUP: <#T##Bool#>)
-        
+                
         return one
         
     }
@@ -74,12 +67,13 @@ class ConversationManager: NSObject {
                 item["message"] = mes.toJSON()
             }
             // 聊天对象id
-            if let user = personTable.GetUserById(userId: item["userID"] as! String){
-                    //mode.user =
-                item["user"] = user.toJSON()
+            if let userID =  item["userID"] as? String{
+                // 从服务器获取 用户信息
+               
+                item["user"] = ["userID":userID,"company":"大大大","name":"我是hr","role":"hr","icon": #imageLiteral(resourceName: "hr").toBase64String()]
                 
                  // 获取 发送者未读的消息
-                if let unReadCount =  messageTable.getUnReadMessages(SenderID: user.userID!){
+                if let unReadCount =  messageTable.getUnReadMessages(SenderID: userID){
                     item["unReadCount"] = unReadCount
                     unReadMes = true
                 }
@@ -113,14 +107,20 @@ class ConversationManager: NSObject {
         
     }
     // 删除会话 删除聊天对象记录 和 消息历史记录
-    open func removeConversationBy(userID:String){
-            //conversationTable.deleteConversationBy(userID: userID)
-            // person 表级联删除数据
+    open func removeConversationBy(userID:String, complete:((_ bool:Bool)->Void)){
+        
+        
+        
         // MARK 原子操作??
-        personTable.deletePersonBy(userID: userID)
-        messageTable.removeAllMessageBy(userID: userID)
+        if let error =  DBFactory.shared.deteletAllMessage(userID: userID){
+            complete(false)
+            return 
+        }
+        
         // 删除对话存储的images
         AppFileManager.shared.deleteDirBy(userID: userID)
+        complete(true)
+        
         
     }
     
@@ -135,12 +135,7 @@ class ConversationManager: NSObject {
         
     }
     
-    
 
-    // 添加到 person 表
-    open func insertPerson(person:PersonModel){
-        personTable.insertPerson(person: person)
-    }
     // 添加到communication 表 (默认不是置顶的)
     open func insertConversationItem(messageID:String,userID:String, date:Date){
         conversationTable.insertConversationDate(userID: userID, messageID: messageID, upTime: date)
@@ -186,7 +181,6 @@ class ConversationManager: NSObject {
         do{
            
            try SqliteManager.shared.db?.transaction(block: {
-                self.insertPerson(person: person)
                 try self.insertMessageItem(items: messages)
             self.insertConversationItem(messageID: (messages.last?.messageID!)!, userID: person.userID!, date: (messages.last?.creat_time)!)
             

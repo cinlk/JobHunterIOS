@@ -59,8 +59,7 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
     // 记录当前颜色
     private var navTintColor:UIColor = UIColor.clear
     
-    // job table
-    private let jobTable = DBFactory.shared.getJobDB()
+   
     // 数据库
     private let conversationManager = ConversationManager.shared
     
@@ -294,7 +293,7 @@ class JobDetailViewController: BaseShowJobViewController,UITableViewDelegate,UIT
                         messages.append(jobDescribeMessage)
                     }
                     conversationManager.firstChatWith(person: HRModel!, messages: messages)
-                    jobTable.talkedBy(id: id)
+                    
                     
                 }
                 

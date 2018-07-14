@@ -258,11 +258,11 @@ extension ChatListViewController{
         }
         
         
-        if let new = cManager.getConversationBy(usrID: userID){
+        if let new = cManager.getConversationBy(userID: userID){
             cModel[row] = new
             
             self.sortMode(datas: &cModel)
-            self.tableView.reloadData()
+            self.tableView.reloadRows(at: [IndexPath.init(row: row, section: 0)], with: .automatic)
             
         }
         
@@ -294,9 +294,23 @@ extension ChatListViewController{
     private func deleteMode(row:Int){
         
         let user = self.cModel[row]
-        self.cModel.remove(at: row)
-        self.cManager.removeConversationBy(userID: (user.user?.userID)!)
-        tableView.reloadData()
+        guard  let userID = user.user?.userID else {
+            return
+        }
+        
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            self?.cManager.removeConversationBy(userID: userID, complete:  { bool in
+                if bool{
+                    DispatchQueue.main.async {
+                        self?.cModel.remove(at: row)
+                        self?.tableView.deleteRows(at: [IndexPath.init(row: row, section: 0)], with: .automatic)
+                    }
+                    
+                }
+            })
+        }
+      
+       
     }
     
 }

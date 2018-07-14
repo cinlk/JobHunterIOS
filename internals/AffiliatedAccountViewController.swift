@@ -15,8 +15,6 @@ fileprivate let describe:String = "填写你已经注册的账号或注册新的
 class AffiliatedAccountViewController: UIViewController {
 
     
-    
-    
     private lazy var userIcon:UIImageView = {
         let imageV = UIImageView(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
         imageV.contentMode = .scaleAspectFill
@@ -115,15 +113,12 @@ class AffiliatedAccountViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationItem.title = navTitle
-        self.navigationController?.insertCustomerView()
-        self.navigationController?.view.viewWithTag(10)?.backgroundColor = UIColor.orange
+        self.navigationController?.insertCustomerView(UIColor.orange)
     }
     
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
         self.navigationController?.removeCustomerView()
 
     }
@@ -137,7 +132,7 @@ extension AffiliatedAccountViewController{
     private func serViews(){
         
         self.view.backgroundColor = UIColor.viewBackColor()
-        
+        self.title = navTitle
         let views:[UIView] = [accountText, verifyCode, confirmBtn, introduce]
         self.view.sd_addSubviews(views)
         

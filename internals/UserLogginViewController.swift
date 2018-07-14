@@ -14,11 +14,6 @@ fileprivate let contentViewH:CGFloat = 140
 class UserLogginViewController: UIViewController {
 
     
-    
-    private let  userTable = DBFactory.shared.getUserDB()
-    private let  personTable = DBFactory.shared.getPersonDB()
-    
-    
     private lazy var appImage:UIImageView = {
         let image = UIImageView.init()
         image.clipsToBounds = true
@@ -38,6 +33,7 @@ class UserLogginViewController: UIViewController {
     
     
     private lazy var contentView: pageContentView = { [unowned self] in
+        
         let vc1 = QuickLoggingViewController()
         
         let vc2 = PasswordLoggingViewController()
@@ -118,6 +114,7 @@ class UserLogginViewController: UIViewController {
 extension UserLogginViewController{
     private func setViews(){
         
+        self.navigationItem.backBarButtonItem = UIBarButtonItem.init(title: "", style: .plain, target: nil, action: nil)
         self.view.backgroundColor = UIColor.white
         let views:[UIView] = [appImage, itemTitleView,contentView,loggingBtn, skipBtn, socialAppLoginView]
         self.view.sd_addSubviews(views)
@@ -167,10 +164,15 @@ extension UserLogginViewController{
     
     
     @objc private func login(){
-        //  假设 用户d输入正确
-        self.userTable.insertUser(account: "123456", password: "123456", auto:true)
-        // 个人信息存入person 表
-        self.personTable.insertPerson(person: myself)
+        
+        
+        anonymous = false
+        
+        // 假设 用户d输入正确
+        DispatchQueue.global(qos: .userInteractive).async {
+            
+            DBFactory.shared.getUserDB().insertUser(account: "123456", password: "123456", auto:true)
+        }
         
         self.performSegue(withIdentifier: "showMain", sender: nil)
         
@@ -201,11 +203,7 @@ extension UserLogginViewController: PageContentViewScrollDelegate{
 extension UserLogginViewController{
     @objc private func skip(){
         // 去主界面
-        
-      
-        //
-        //self.dismiss(animated: true, completion: nil)
-        //self.present(main, animated: true, completion: nil)
+        anonymous = true
         self.performSegue(withIdentifier: "showMain", sender: nil)
         
     }

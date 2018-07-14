@@ -22,24 +22,11 @@ class DBError:Error{
 // 通过该类获取table操作对象
 class  DBFactory{
     
-    enum DBName {
-        case user
-        case search
-        case job
-        case cmessage
-        case cuser
-        
-    }
-    
     private let dbManager:SqliteManager = SqliteManager.shared
     
     private let userTable:LoginUserTable
     private let searchTable:SearchHistory
-    private let jobTable:JobTable
-    private let companyTable:CompanyTable
-    
     // 消息
-    private let personTable:PersonTable
     private let messageTable:MessageTable
     private let conversationTable:ConversationTable
     
@@ -48,27 +35,8 @@ class  DBFactory{
     private  init() {
         userTable = LoginUserTable.init(dbManager: self.dbManager)
         searchTable = SearchHistory.init(dbManager: self.dbManager)
-        jobTable = JobTable.init(dbManager: self.dbManager)
-        companyTable = CompanyTable.init(dbManage: self.dbManager)
-        personTable = PersonTable.init(dbManage: self.dbManager)
         messageTable = MessageTable.init(dbManage: self.dbManager)
         conversationTable = ConversationTable.init(dbManage: self.dbManager)
-    }
-    
-    
-    
-    open func proxy(type:DBName) -> Any{
-        switch type {
-        case .cmessage:
-            return messageTable
-        case .user:
-            return personTable
-        case .cuser:
-            return conversationTable
-        default:
-            break
-        }
-        return ""
     }
     
     open func getUserDB()->LoginUserTable{
@@ -79,17 +47,6 @@ class  DBFactory{
         return self.searchTable
     }
     
-    open func getJobDB()->JobTable{
-        return self.jobTable
-    }
-    
-    open func getCompanyDB()->CompanyTable{
-        return self.companyTable
-    }
-    
-    open func getPersonDB()->PersonTable{
-        return self.personTable
-    }
     open func getMessageDB()->MessageTable{
         return self.messageTable
     }
@@ -103,7 +60,32 @@ class  DBFactory{
 }
 
 
-// version 0.1
+
+
+extension DBFactory{
+    
+    // 删除会话原子操作
+    func deteletAllMessage(userID: String)-> Error?{
+
+        
+        do{
+            try self.dbManager.db?.transaction(block: {
+                try conversationTable.deleteConversationBy(userID: userID)
+                try messageTable.removeAllMessageBy(userID: userID)
+            })
+        }catch{
+            
+            return error
+        }
+        
+        return nil
+        
+    }
+}
+
+
+
+// 存储用户的账号，如果有多个账号（选择最新的账号进行自动登录）
 struct LoginUserTable{
     
     static let user = Table("user")
@@ -113,6 +95,10 @@ struct LoginUserTable{
     // 开启自动登录
     static let auto = Expression<Bool>("auto")
     
+    // 更新时间
+    static let latestTime = Expression<Date>("time")
+    
+    
     private let dbManager:SqliteManager
     init(dbManager:SqliteManager) {
         self.dbManager = dbManager
@@ -120,204 +106,51 @@ struct LoginUserTable{
     
     
     
-    func currentUser()->(account:String, password:String, auto:Bool){
+    func currentUser()->((account:String, password:String, auto:Bool)?, Error?){
         
         do{
-            // 选择第一行
-            if let user = try dbManager.db?.pluck(LoginUserTable.user){
-                return (user[LoginUserTable.account], user[LoginUserTable.password], user[LoginUserTable.auto])
+            // 选择最新更新时间行
+           
+            if let user = try dbManager.db?.pluck(LoginUserTable.user.order(LoginUserTable.latestTime.desc)){
+                return ((user[LoginUserTable.account], user[LoginUserTable.password], user[LoginUserTable.auto]), nil)
             }
         }catch{
-            print(error)
+    
+            return (nil, error)
         }
         
-        return ("", "", false)
+        return (nil, nil)
     }
     
     func insertUser(account:String, password:String, auto:Bool){
         
+        do{
+             try dbManager.db?.run(LoginUserTable.user.insert(or: OnConflict.replace, LoginUserTable.account <- account, LoginUserTable.password <- password,LoginUserTable.auto <- auto, LoginUserTable.latestTime <- Date()))
+            
+        // 失败记录日志
+        }catch{
+            //NSLog(<#T##format: String##String#>, <#T##args: CVarArg...##CVarArg#>)
+            print(error)
+        }
+    }
+    
+    func deleteUser(account:String){
         
+        do{
+            try dbManager.db?.run(LoginUserTable.user.filter(LoginUserTable.account == account).delete())
+        }catch{
         
+        }
+    }
+    
+    
+    func setLoginAuto(account:String, auto:Bool){
         do{
-            try dbManager.db?.transaction {
-                try dbManager.db?.run(LoginUserTable.user.delete())
-                try dbManager.db?.run(LoginUserTable.user.insert(LoginUserTable.account <- account, LoginUserTable.password <- password,LoginUserTable.auto <- auto))
-            }
-            
+            try dbManager.db?.run(LoginUserTable.user.filter(LoginUserTable.account == account).update(LoginUserTable.auto <- auto))
         }catch{
             print(error)
         }
     }
-    
-    func deleteUser(){
-        do{
-            try dbManager.db?.run(LoginUserTable.user.delete())
-        }catch{
-            print(error)
-        }
-    }
-    
-    
-    func setLoginAuto(auto:Bool){
-        do{
-            try dbManager.db?.run(LoginUserTable.user.update(LoginUserTable.auto <- auto))
-        }catch{
-            print(error)
-        }
-    }
-    
-}
-
-
-
-// 职位
-struct JobTable {
-    
-    static let job = Table("job")
-    static let jobID = Expression<String>("jobID")
-    static let collected = Expression<Bool>("collected")
-    static let sendedResume = Expression<Bool>("sendedResume")
-    static let validate = Expression<Bool>("validate")
-    static let talked = Expression<Bool>("talk")
-    
-    
-    private let dbManager:SqliteManager
-    init(dbManager:SqliteManager) {
-        self.dbManager = dbManager
-    }
-    
-    
-    // 是否被收藏
-    func isCollectedBy(id:String)->Bool{
-        do{
-            
-            let target =  JobTable.job.where(JobTable.jobID == id)
-            // 一条记录
-            if let result = try dbManager.db?.pluck(target){
-                return  try result.get(JobTable.collected)
-            }
-        }catch{
-            print(error)
-        }
-        return false
-    }
-    
-    func collectedJobBy(id:String){
-        do{
-            try dbManager.db?.transaction {
-                // 先查找 如果有更新
-                let target = JobTable.job.where(JobTable.jobID == id)
-                if try (dbManager.db?.run(target.update(JobTable.collected <- true)))! > 0{
-                    return
-                }
-                // 没有数据插入
-                try dbManager.db?.run(JobTable.job.insert(JobTable.jobID <- id, JobTable.collected <- true))
-            }
-           
-        }catch{
-            print(error)
-        }
-    }
-    
-    func uncollectedJobBy(id:String){
-        do{
-            try dbManager.db?.transaction(block: {
-                let target = JobTable.job.filter(JobTable.jobID == id)
-                try dbManager.db?.run(target.update(JobTable.collected <- false))
-            })
-            
-        }catch{
-            print(error)
-        }
-    }
-    
-    func talkedBy(id:String){
-        do{
-            
-            try dbManager.db?.transaction {
-                // 先查找 如果有更新
-                let target = JobTable.job.where(JobTable.jobID == id)
-                if try (dbManager.db?.run(target.update(JobTable.talked <- true)))! > 0{
-                    return
-                }
-                // 没有数据插入
-                try dbManager.db?.run(JobTable.job.insert(JobTable.jobID <- id, JobTable.talked <- true))
-            }
-            
-        }catch{
-            print(error)
-        }
-    }
-    
-    func sendResumeJob(id:String){
-        do{
-            try dbManager.db?.transaction(block: {
-                
-                // 先查找 如果有更新
-                let target = JobTable.job.where(JobTable.jobID == id)
-                if try (dbManager.db?.run(target.update(JobTable.sendedResume <- true)))! > 0{
-                    return
-                }
-                // 没有数据插入
-                try dbManager.db?.run(JobTable.job.insert(JobTable.jobID <- id, JobTable.sendedResume <- true))
-            })
-            
-        }catch{
-            print(error)
-        }
-    }
-    
-    
-    // 判断是否已近投递
-    func isSendedResume(id:String)->Bool{
-        do{
-            
-            let target =  JobTable.job.where(JobTable.jobID == id)
-            if let result = try dbManager.db?.pluck(target){
-                 return try result.get(JobTable.sendedResume)
-            }
-           
-        }catch{
-            print(error)
-        }
-        return false
-    }
-    
-    // 已经和HR 沟通过
-    func isTalked(id:String)->Bool{
-        do{
-            
-            let target =  JobTable.job.where(JobTable.jobID == id)
-            if let result = try dbManager.db?.pluck(target){
-                return try result.get(JobTable.talked)
-            }
-            
-        }catch{
-            print(error)
-            
-        }
-        return false
-    }
-    
-    // 获取已经收藏职位
-    func getCollectedIDs()->[String]{
-        guard  let db = self.dbManager.db else {
-            return []
-        }
-        do{
-            var res = [String]()
-            for item in try db.prepare(JobTable.job.select(JobTable.jobID).where(JobTable.collected == true)){
-                res.append(item[JobTable.jobID])
-            }
-            return res
-            
-        }catch{
-            print(error)
-            return []
-        }
-    }
-    
-    
     
 }
 
@@ -404,221 +237,6 @@ struct SearchHistory {
     
 }
 
-
-
-// 公司 表
-
-struct CompanyTable {
-    
-    static let company = Table("company")
-    static let companyID = Expression<String>("companyID")
-    static let Iscollected = Expression<Bool>("Iscollected")
-    static let validated = Expression<Bool>("validated")
-    
-    
-    private let dbManage: SqliteManager
-    
-    fileprivate init(dbManage:SqliteManager) {
-        self.dbManage = dbManage
-    }
-    
-    // 设置被收藏
-    func setCollectedBy(id:String){
-        do{
-            try dbManage.db?.transaction {
-                let target = CompanyTable.company.filter(CompanyTable.companyID == id)
-                if try (dbManage.db?.run(target.update(CompanyTable.Iscollected <- true)))! > 0 {
-                    return
-                }
-                try dbManage.db?.run(CompanyTable.company.insert(CompanyTable.companyID <- id, CompanyTable.Iscollected <- true))
-                
-            }
-            
-        }catch{
-            print(error)
-        }
-        
-    }
-    
-    // 取消收藏
-    func unCollected(id:String){
-        do{
-            let target = CompanyTable.company.filter(CompanyTable.companyID == id )
-            try dbManage.db?.run(target.update(CompanyTable.Iscollected <- false))
-            
-        }catch{
-            print(error)
-        }
-    }
-    
-    // 判断是否被收藏
-    func isCollectedBy(id:String)->Bool{
-        do{
-            let target = CompanyTable.company.filter(CompanyTable.companyID == id)
-            if let result = try dbManage.db?.pluck(target){
-                return  try result.get(CompanyTable.Iscollected)
-            }
-            
-        }catch{
-            print(error)
-        }
-        return false
-    }
-    
-    // 全部收藏
-    func allCollectedByIDs()->[String]{
-        do{
-            guard  let db =  dbManage.db else {
-                return []
-            }
-            var res:[String] = []
-            
-            for item in try db.prepare(CompanyTable.company.select(CompanyTable.companyID).where(CompanyTable.Iscollected == true)){
-                res.append(item[CompanyTable.companyID])
-            }
-            return res
-            
-        }catch{
-            print(error)
-        }
-        return []
-    }
-    
-    
-}
-
-
-// ********************************** //
-
-// 聊天记录表
-
-//  聊天个人信息表
-
-
-struct PersonTable {
-    
-    
-    static let person =  Table("person")
-    static let personID = Expression<String>("id")
-    static let personName = Expression<String>("name")
-    static let company = Expression<String>("company")
-    static let icon = Expression<Data?>("icon")
-    static let role = Expression<String>("role")
-    
-    //屏蔽
-    static let isShield = Expression<Bool>("isShield")
-    // 是否存在
-    static let isExist = Expression<Bool>("isExist")
-    
-    
-    
-    private let dbManage: SqliteManager
-    
-    fileprivate init(dbManage:SqliteManager) {
-        self.dbManage = dbManage
-    }
-    
-    
-    func GetUserById(userId:String) -> PersonModel?{
-        do{
-            let target = PersonTable.person.filter(PersonTable.personID == userId)
-            if let item = try dbManage.db?.pluck(target){
-                // data 转为base64string
-                let iconString = item[PersonTable.icon]?.base64EncodedString()
-                return  PersonModel(JSON: ["userID":item[PersonTable.personID],
-                                           "name":item[PersonTable.personName],
-                                           "company":item[PersonTable.company],
-                                           "icon":iconString ?? "",
-                                           "role":item[PersonTable.role],
-                                           "isShield":item[PersonTable.isShield],
-                                           "isExist":item[PersonTable.isExist]])
-                
-            }
-        }catch{
-            print(error)
-        }
-        
-        return nil
-    }
-    
-    // 更新
-    func updatePerson(){
-        
-    }
-    
-    
-    // 什么时候跟新 会调用??
-    func updatePerson(person: PersonModel?){
-        guard let person = person else { return }
-        
-        do{
-            let target = PersonTable.person.filter(PersonTable.personID == person.userID!)
-            try dbManage.db?.run(target.update(PersonTable.company <- person.company ?? "", PersonTable.personName <- person.name!,PersonTable.icon <- person.icon ?? UIImagePNGRepresentation(#imageLiteral(resourceName: "default"))!, PersonTable.isExist <- person.isExist!))
-            
-            
-        }catch{
-            print(error)
-        }
-    }
-    
-    func insertPerson(person:PersonModel?){
-        
-        guard let Person = person else { return }
-        
-        do{
-            //insert 或 replace（可能头像会更新)??? 
-            
-            let target = PersonTable.person.filter(PersonTable.personID == Person.userID!)
-            // 存在
-            if let _ = try dbManage.db?.pluck(target){
-                return
-            }
-            
-            try dbManage.db?.run(PersonTable.person.insert(PersonTable.personID <- Person.userID!, PersonTable.company <- Person.company ?? "", PersonTable.personName <- Person.name!,
-                PersonTable.icon <- Person.icon ?? UIImagePNGRepresentation(#imageLiteral(resourceName: "default"))!, PersonTable.role <- Person.role!))
-            
-        }catch{
-            print(error)
-        }
-    }
-    
-    func deletePersonBy(userID:String){
-        
-        do{
-            //   （可能 sqlitedb 没有开启外键关联）
-         
-            let target = PersonTable.person.filter(PersonTable.personID == userID)
-            try self.dbManage.db?.run(target.delete())
-            
-        }catch{
-            print(error)
-        }
-        
-    
-        
-    }
-    // 获取所有的usemodel
-    
-    func selecteAll()->[PersonModel]{
-        var persons:[PersonModel] = []
-        do{
-            for item in try dbManage.db!.prepare(PersonTable.person){
-                persons.append(PersonModel(JSON: ["personID":item[PersonTable.personID], "name":item[PersonTable.personName], "company":item[PersonTable.company],
-                    "role":item[PersonTable.role],
-                    "iconURL":item[PersonTable.icon]!])!)
-            }
-            
-            return persons
-            
-        }catch{
-            print(error)
-        }
-        
-        return []
-    }
-    
-    
-}
 
 
 // 消息数据库表
@@ -927,15 +545,11 @@ func insertBaseMessage(message:MessageBoby) throws{
     }
     
     
-    func removeAllMessageBy(userID:String) {
+    func removeAllMessageBy(userID:String)  throws{
         
-        do{
-            let targets = MessageTable.message.filter(MessageTable.receiverID == userID || MessageTable.senderID == userID)
-            try self.dbManager.db?.run(targets.delete())
-            
-        }catch{
-            print(error)
-        }
+        let targets = MessageTable.message.filter(MessageTable.receiverID == userID || MessageTable.senderID == userID)
+        try self.dbManager.db?.run(targets.delete())
+        
     }
     
     
@@ -1045,14 +659,10 @@ struct  ConversationTable {
     
     
     // 删除会话
-    func deleteConversationBy(userID:String){
-        do{
-            let target = ConversationTable.conversation.filter(ConversationTable.userID == userID)
-            try self.dbManager.db?.run(target.delete())
-            
-        }catch{
-            print(error)
-        }
+    func deleteConversationBy(userID:String) throws{
+       
+        let target = ConversationTable.conversation.filter(ConversationTable.userID == userID)
+        try self.dbManager.db?.run(target.delete())
     }
     
     

@@ -74,6 +74,8 @@ let avatarSize:CGSize = CGSize.init(width: 45, height: 45)
 // 本地 登录后自己的信息 （用于测试）
 let myself:PersonModel = PersonModel(JSON: ["userID":"123456","company":"","name":"来自地球大于6","role":"求职","icon": #imageLiteral(resourceName: "evil").toBase64String()])!
 
+// 匿名用户
+var anonymous = false
 
 
 // global greeting msg

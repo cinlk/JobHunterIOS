@@ -59,7 +59,7 @@ class  SqliteManager{
             db?.trace{ print($0)}
             // 开启外键约束 (sqlite 默认没开启)
             try db?.execute("PRAGMA foreign_keys = ON;")
-            try db?.execute("PRAGMA foreign_keys;")
+            //try db?.execute("PRAGMA foreign_keys;")
         } catch {
             print(error)
         }
@@ -71,10 +71,7 @@ class  SqliteManager{
         // test table
         createUserTable()
         createSearchTable()
-        createJobTable()
-        createCompanyTable()
-        //
-        createPersonTable()
+        
         createMessageTable()
         createConversationTable()
         
@@ -93,6 +90,7 @@ extension SqliteManager{
                 //t.column(UserTable.id, primaryKey: true)
                 t.column(LoginUserTable.password, check: LoginUserTable.password.length>=6, defaultValue: "")
                 t.column(LoginUserTable.account, unique: true, check: nil, defaultValue: "")
+                t.column(LoginUserTable.latestTime, defaultValue: Date.init(timeIntervalSince1970: 0))
                 t.column(LoginUserTable.auto, defaultValue: false)
                 t.check(LoginUserTable.account.length >= 6)
                 
@@ -130,71 +128,9 @@ extension SqliteManager{
     
 }
 
-//  job 表
-extension SqliteManager{
-    
-    private func  createJobTable(){
-        do{
-            try db?.run(JobTable.job.create(temporary: false, ifNotExists: true, withoutRowid: false, block: { (t) in
-                t.column(JobTable.jobID, primaryKey: true, check: JobTable.jobID.length > 6)
-                t.column(JobTable.collected, defaultValue: false)
-                t.column(JobTable.sendedResume, defaultValue: false)
-                t.column(JobTable.validate, defaultValue: true)
-                t.column(JobTable.talked, defaultValue: false)
-            }))
-            
-        }catch{
-            print(error)
-        }
-    }
-}
 
 
-// compay 表
-extension SqliteManager{
-    
-    private func createCompanyTable(){
-        do{
-            try db?.run(CompanyTable.company.create(temporary: false, ifNotExists: true, withoutRowid: false, block: { (t) in
-                t.column(CompanyTable.companyID, primaryKey: true, check: CompanyTable.companyID.length >= 6)
-                t.column(CompanyTable.Iscollected, defaultValue: false)
-                t.column(CompanyTable.validated, defaultValue: true)
-                
-            }))
-            
-        }catch{
-            print(error)
-        }
-    }
-}
 
-
-//person 表
-extension SqliteManager{
-    
-    private func createPersonTable(){
-        do{
-            try db?.run(PersonTable.person.create(temporary: false, ifNotExists: true, withoutRowid: false, block: { (t) in
-                //t.column(<#T##name: Expression<Value>##Expression<Value>#>, primaryKey: PrimaryK)
-                t.column(PersonTable.personID, primaryKey: true)
-                t.column(PersonTable.personName, check: PersonTable.personName.length >= 6)
-                t.column(PersonTable.company, defaultValue: "")
-                t.column(PersonTable.icon)
-                t.column(PersonTable.role)
-                t.column(PersonTable.isShield, defaultValue: false)
-                t.column(PersonTable.isExist, defaultValue: true)
-            }))
-            
-            // 添加字段
-             //try db?.run(PersonTable.person.addColumn(PersonTable.isShield, defaultValue: false))
-//            try db?.run(ComunicationPerson.person.addColumn(ComunicationPerson.isUp, defaultValue: false))
-//            try db?.run(ComunicationPerson.person.addColumn(ComunicationPerson.upTime, defaultValue: Date()))
-            
-        }catch{
-            print(error)
-        }
-    }
-}
 
 // IM message  表
 extension SqliteManager{
@@ -214,16 +150,6 @@ extension SqliteManager{
                 t.column(MessageTable.isRead)
                 t.column(MessageTable.create_time)
                 t.column(MessageTable.read_time, defaultValue: Date.init(timeIntervalSince1970: 0))
-                
-                // 先创建colum 在设置外键， person 被删除后，对应的聊天记录也需要删除
-                t.foreignKey(MessageTable.senderID, references: PersonTable.person, PersonTable.personID, update: TableBuilder.Dependency.noAction, delete: TableBuilder.Dependency.cascade)
-                t.foreignKey(MessageTable.receiverID, references: PersonTable.person, PersonTable.personID, update: TableBuilder.Dependency.noAction, delete: TableBuilder.Dependency.cascade)
-                
-                //t.foreignKey(MessageTable.senderID, references: PersonTable.person, PersonTable.personID, delete: TableBuilder.Dependency.cascade)
-                //t.foreignKey(MessageTable.receiverID, references: PersonTable.person, PersonTable.personID,delete: TableBuilder.Dependency.cascade)
-                
-                
-               
                 
             }))
             //  messageID 作为索引
@@ -251,7 +177,6 @@ extension SqliteManager{
                 t.column(ConversationTable.isUP, defaultValue: false)
                 t.column(ConversationTable.upTime, defaultValue: Date.init(timeIntervalSince1970: 0))
                
-                t.foreignKey(ConversationTable.userID, references: PersonTable.person, PersonTable.personID, update: TableBuilder.Dependency.noAction, delete: TableBuilder.Dependency.cascade)
                 
             }))
             // userID索引
@@ -263,6 +188,8 @@ extension SqliteManager{
         }
     }
 }
+
+
 
 
 
