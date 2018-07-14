@@ -30,7 +30,7 @@ class UserLogginViewController: UIViewController {
     
     
     private lazy var itemTitleView:pagetitleView = {
-        let title = pagetitleView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW - 20, height: 25), titles: ["快捷登录","密码登录"])
+        let title = pagetitleView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW - 20, height: 25), titles: ["快捷登录","密码登录"],itemWidth: 100)
         title.delegate = self
         
         return title
@@ -117,11 +117,13 @@ class UserLogginViewController: UIViewController {
 
 extension UserLogginViewController{
     private func setViews(){
+        
         self.view.backgroundColor = UIColor.white
         let views:[UIView] = [appImage, itemTitleView,contentView,loggingBtn, skipBtn, socialAppLoginView]
         self.view.sd_addSubviews(views)
         
-        _ = appImage.sd_layout().topSpaceToView(self.view,NavH)?.centerXEqualToView(self.view)?.widthIs(140)?.autoHeightRatio(8/7)
+        _ = appImage.sd_layout().topSpaceToView(self.view,NavH)?.centerXEqualToView(self.view)?.heightIs(ScreenH/4)?.widthIs(160)
+        
         _ = itemTitleView.sd_layout().topSpaceToView(appImage,10)?.centerXEqualToView(self.view)?.widthIs(ScreenW - 20)?.heightIs(25)
         _ = contentView.sd_layout().topSpaceToView(itemTitleView,0)?.centerXEqualToView(self.view)?.widthRatioToView(itemTitleView,1)?.heightIs(contentViewH)
        
@@ -233,11 +235,9 @@ extension UserLogginViewController: SocialAppLoginDelegate{
     
     func verifyLoggable(view: UIView, type: UMSocialPlatformType, respons: UMSocialUserInfoResponse) {
         // 判断response 已经有绑定的手机号？
-        
         // 如果没有绑定对应的账号（手机或邮箱）
         let setVC = AffiliatedAccountViewController()
         self.navigationController?.pushViewController(setVC, animated: true)
-        
     }
     
     func showError(view: UIView, message: String) {

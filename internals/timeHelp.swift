@@ -10,9 +10,15 @@ import Foundation
 import SwiftDate
 
 
-func meetingTalkTime(time: Date) -> String{
+func meetingTalkTime(times: Date) -> String{
+    
+    // 改变系统
+    let dd = DateInRegion.init(times, region: regionRome)
+    let time = dd.date
     
     let dateFormat = DateFormatter()
+    
+    
     //dateFormat.locale = Locale.current
     // 今天起始时间
     let startDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date())
@@ -135,7 +141,7 @@ func showMonthAndDay(date: Date?) ->String?{
     
     let now = DateInRegion()
     //DateInRegion.init(date)
-    let dateRoom = DateInRegion.init(date)
+    let dateRoom = DateInRegion.init(date, region: regionRome)
     let year = now.year - dateRoom.year
     if year != 0{
         return String.init(format: "%d年%d月%d日", dateRoom.year, dateRoom.month,dateRoom.day)

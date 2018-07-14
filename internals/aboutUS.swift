@@ -254,7 +254,28 @@ extension aboutUS{
 extension aboutUS: shareViewDelegate{
     
     
-    func handleShareType(type: UMSocialPlatformType) {
+    func handleShareType(type: UMSocialPlatformType, view: UIView) {
+        
+        switch type {
+        case .copyLink:
+            self.copyToPasteBoard(text: "这是文本内容")
+            
+        case .more:
+            // 文本
+            self.openMore(text: "打开的内容", site: URL.init(string: "http://www.baidu.com"))
+            
+            
+            
+        case .wechatTimeLine, .wechatSession, .QQ, .qzone, .sina:
+            self.shareToApp(type: type, view: view, title: "分享标题", des: "分享描述", url: "http://www.hangge.com/blog/cache/detail_641.html", image: UIImage.init(named: "chrome"))
+            
+            
+        default:
+            break
+            
+        }
+        // 影藏shareview
+        share.dismiss()
         
     }
     

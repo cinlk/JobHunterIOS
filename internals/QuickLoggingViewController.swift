@@ -67,8 +67,9 @@ class QuickLoggingViewController: UITableViewController {
         userProtocal.titleLabel?.textAlignment = .left
         userProtocal.addTarget(self, action: #selector(showProtocal), for: .touchUpInside)
         v.addSubview(userProtocal)
-        _ = lb.sd_layout().leftSpaceToView(v,80)?.centerYEqualToView(v)?.autoHeightRatio(0)
-        _ = userProtocal.sd_layout().leftSpaceToView(lb,5)?.centerYEqualToView(lb)?.widthIs(118)
+        _ = userProtocal.sd_layout().rightSpaceToView(v,10)?.centerYEqualToView(v)?.widthIs(118)
+        _ = lb.sd_layout().rightSpaceToView(userProtocal,10)?.centerYEqualToView(userProtocal)?.autoHeightRatio(0)
+        
         
         return v
         

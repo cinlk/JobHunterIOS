@@ -19,6 +19,7 @@ protocol SocialAppLoginDelegate: class {
     
 }
 
+// 固定的 第三方登录btn
 class ThirdPartLoginView: UIView {
 
     
@@ -110,8 +111,16 @@ class ThirdPartLoginView: UIView {
 extension ThirdPartLoginView{
     // 第三方登录  判断用户是否安装weibo - app？？？
     @objc private func loginWeixin(){
-        self.delegate?.verifyLoggable(view: self, type: .QQ, respons: UMSocialUserInfoResponse.init())
-
+        //self.delegate?.verifyLoggable(view: self, type: .QQ, respons: UMSocialUserInfoResponse.init())
+        
+        UMSocialManager.default().getUserInfo(with: .wechatSession, currentViewController: nil) { (res, error) in
+            if error != nil {
+                print(error)
+            }else{
+                print(res)
+            }
+        }
+        
         // 获取能够登录的 用户信息
 //        UMSocialManager.default().getUserInfo(with: .wechatSession, currentViewController: nil) { (res, error) in
 //            if error != nil {
@@ -128,7 +137,7 @@ extension ThirdPartLoginView{
         
         UMSocialManager.default().getUserInfo(with: .sina, currentViewController: nil) { (res, error) in
             if error != nil {
-                
+                print(error)
             }else{
                 if let response = res as? UMSocialUserInfoResponse{
                     print(response)
@@ -140,8 +149,8 @@ extension ThirdPartLoginView{
         
         UMSocialManager.default().getUserInfo(with: .QQ, currentViewController: nil) { (res, error) in
             if error != nil {
-                
-                self.delegate?.showError(view: self, message: error.debugDescription)
+                print(error)
+               // self.delegate?.showError(view: self, message: error.debugDescription)
                 
             }else{
                 if let response = res as? UMSocialUserInfoResponse{
@@ -166,7 +175,7 @@ extension ThirdPartLoginView{
                     
                     // 否则弹出界面 关联手机号，在登录
                     
-                    self.delegate?.verifyLoggable(view: self, type: .QQ, respons: response)
+                    //self.delegate?.verifyLoggable(view: self, type: .QQ, respons: response)
                 }
             }
         }

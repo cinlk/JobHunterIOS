@@ -15,24 +15,13 @@ fileprivate let btnHeight:CGFloat = 45
 
 
 protocol shareViewDelegate: class {
-    func handleShareType(type: UMSocialPlatformType)
+    func handleShareType(type: UMSocialPlatformType, view:UIView)
 }
-
 
 
 class shareView: UIView {
     
     // MARK 判断是否安装应用？？ UMSocialManager.default().isInstall(.wechatSession)
-    
-    private var showItems:[ShareItem] = [ShareItem.init(name: "QQ", image: "qqCircle",type: UMSocialPlatformType.QQ,  bubbles: nil),
-        ShareItem.init(name: "sina", image: "sina", type: UMSocialPlatformType.sina, bubbles: nil),
-        ShareItem.init(name: "微信好友", image: "wechat",type:UMSocialPlatformType.wechatSession,bubbles: nil),
-        ShareItem.init(name: "微信朋友圈", image: "friendCircle", type: UMSocialPlatformType.wechatTimeLine, bubbles: nil),
-        
-        ShareItem.init(name: "QQ空间", image: "qqZone", type: UMSocialPlatformType.qzone, bubbles: nil),
-        ShareItem.init(name: "复制链接", image: "copyIcon", type: UMSocialPlatformType.copyLink, bubbles: nil),
-        // 短信报错： 分享失败 Optional(Error Domain=UMSocialPlatformErrorDomain Code=2001 "(null)" UserInfo={message=未配置完成SDK，请检查 'build setting'中 -ObjC参数})
-        ShareItem.init(name: "更多", image: "moreShare", type: UMSocialPlatformType.more, bubbles: nil)]
     
     
     // shareView的背景
@@ -120,7 +109,7 @@ extension shareView{
                 }, completion: nil)
     }
     
-   @objc private  func dismiss(){
+   @objc open  func dismiss(){
         sharebackBtn.removeFromSuperview()
         
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
@@ -138,27 +127,21 @@ extension shareView:UICollectionViewDelegate, UICollectionViewDataSource, UIColl
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return showItems.count
+        return shareItems.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: shareItemCell.identity(), for: indexPath) as! shareItemCell
-        let mode = showItems[indexPath.row]
-        
+        let mode = shareItems[indexPath.row]
         cell.mode = (image: UIImage.init(named: mode.image ?? "default")! , name: mode.name!)
-        
         return cell
     }
     
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print(indexPath)
-        
-        let mode = showItems[indexPath.row]
+        let mode = shareItems[indexPath.row]
         self.sharedToUM(type: mode.type)
-        
-    
     }
     
     
@@ -172,7 +155,7 @@ extension shareView{
         guard let type = type  else {
             return
         }
-        delegate?.handleShareType(type: type)
+        delegate?.handleShareType(type: type ,view: sharebackBtn)
         
     }
     

@@ -207,21 +207,34 @@ extension AppDelegate{
 extension AppDelegate{
     
     private func getLocalApps(){
+        
         let weixin = UIApplication.shared.canOpenURL(URL.init(string: "weixin://")!)
-        
         let weibo = UIApplication.shared.canOpenURL(URL.init(string: "sinaweibo://")!)
-        let qq = UIApplication.shared.canOpenURL(URL.init(string: "mqq://")!)
-        let qqZone = UIApplication.shared.canOpenURL(URL.init(string: "mqzone://")!)
+        let qq = UIApplication.shared.canOpenURL(URL.init(string: "mqqapi://")!)
+        // 暂时不用
         let alipay = UIApplication.shared.canOpenURL(URL.init(string: "alipay://")!)
-        print(weixin,weibo,qq,qqZone, alipay)
-        
+        if weixin{
+            shareItems.append(ShareItem.init(name: "微信好友", image: "wechat",type:UMSocialPlatformType.wechatSession,bubbles: nil))
+            shareItems.append( ShareItem.init(name: "微信朋友圈", image: "friendCircle", type: UMSocialPlatformType.wechatTimeLine, bubbles: nil))
+        }
+        if weibo{
+            shareItems.append( ShareItem.init(name: "sina", image: "sina", type: UMSocialPlatformType.sina, bubbles: nil))
+        }
+        if qq{
+            shareItems.append( ShareItem.init(name: "QQ空间", image: "qqZone", type: UMSocialPlatformType.qzone, bubbles: nil))
+            shareItems.append(        ShareItem.init(name: "QQ", image: "qqCircle",type: UMSocialPlatformType.QQ,  bubbles: nil))
+        }
+        shareItems.append(  ShareItem.init(name: "复制链接", image: "copyIcon", type: UMSocialPlatformType.copyLink, bubbles: nil))
+        shareItems.append( ShareItem.init(name: "更多", image: "moreShare", type: UMSocialPlatformType.more, bubbles: nil))
+        if shareItems.count <= 4{
+            shareViewH -= 87.5
+        }
     }
 }
 
 //  获取地理位置
 
 extension AppDelegate: CLLocationManagerDelegate{
-    
     
     private func loadLoacation(){
         locateManager.delegate = self

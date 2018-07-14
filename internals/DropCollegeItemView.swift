@@ -11,6 +11,8 @@ import YNDropDownMenu
 
 fileprivate let maxCount:Int = 5
 fileprivate let addressPre:String = "当前地区: "
+fileprivate let spaceWidth:CGFloat = 25
+
 
 class DropCollegeItemView: YNDropDownView {
 
@@ -132,7 +134,7 @@ class DropCollegeItemView: YNDropDownView {
     
     
     private lazy var clearAll:UIButton = {
-        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 150, height: 35))
+        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (ScreenW - spaceWidth - 10)/2, height: 35))
         clear.setTitle("清空", for: .normal)
         clear.setTitleColor(UIColor.black, for: .normal)
         clear.backgroundColor = UIColor.white
@@ -143,7 +145,7 @@ class DropCollegeItemView: YNDropDownView {
     }()
     
     private lazy var confirm:UIButton = {
-        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 150, height: 35))
+        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width:  (ScreenW - spaceWidth - 10)/2, height: 35))
         confirm.setTitle("确定", for: .normal)
         confirm.setTitleColor(UIColor.white, for: .normal)
         confirm.backgroundColor = UIColor.blue
@@ -203,7 +205,7 @@ class DropCollegeItemView: YNDropDownView {
         
         
         let space = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
-        space.width = 50
+        space.width = spaceWidth
         toolBar.items?.append(contentsOf: [UIBarButtonItem.init(customView: clearAll),space, UIBarButtonItem.init(customView: confirm)])
         
         

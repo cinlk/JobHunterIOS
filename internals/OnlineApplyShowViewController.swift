@@ -362,47 +362,30 @@ extension OnlineApplyShowViewController{
 // share分享代理实现
 extension OnlineApplyShowViewController:shareViewDelegate{
     
-    func handleShareType(type: UMSocialPlatformType) {
+    func handleShareType(type: UMSocialPlatformType, view: UIView) {
         
         
         switch type {
         case .copyLink:
-            print("已经复制链接\(mode?.link)")
+            self.copyToPasteBoard(text: "这是文本内容")
+            
         case .more:
             // 文本
-            let text = "分享内容描述"
-            let website = mode?.link ?? ""
-            let activityVC = UIActivityViewController.init(activityItems: [text, website], applicationActivities: nil)
-            activityVC.popoverPresentationController?.sourceView =  self.view
-            present(activityVC, animated: true, completion: nil)
+            self.openMore(text: "打开的内容", site: URL.init(string: "http://www.baidu.com"))
+            
         
         
         case .wechatTimeLine, .wechatSession, .QQ, .qzone, .sina:
-            
-            let mesObj = UMSocialMessageObject.init()
-            
-            let sharedObj = UMShareWebpageObject.init()
-            
-            sharedObj.title = "设置标题"
-            sharedObj.descr = "xxx的个人名片"
-            sharedObj.thumbImage = "https://www.elinknet.cn/img/logo.png"
-            sharedObj.webpageUrl = "http://video.sina.com.cn/p/sports/cba/v/2013-10-22/144463050817.html"
-            mesObj.shareObject = sharedObj
-            
-            
-            UMSocialManager.default().share(to: type, messageObject: mesObj, currentViewController: self) { (data, error) in
-                if error != nil{
-                    showOnlyTextHub(message: "请先安装应用", view: self.view)
-                    print("出现错误\(error)")
-                }else{
-                    
-                }
-            }
+            self.shareToApp(type: type, view: view, title: "分享标题", des: "分享描述", url: "http://www.hangge.com/blog/cache/detail_641.html", image: UIImage.init(named: "chrome"))
+          
             
         default:
            break
             
         }
+        // 影藏shareview
+        shareapps.dismiss()
+        
     }
 }
 

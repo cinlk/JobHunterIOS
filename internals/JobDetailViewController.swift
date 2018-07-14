@@ -554,43 +554,29 @@ extension JobDetailViewController{
 
 extension JobDetailViewController: shareViewDelegate{
     
-    func handleShareType(type: UMSocialPlatformType) {
+    func handleShareType(type: UMSocialPlatformType, view: UIView) {
         
-        //开始分享
-        if type.rawValue  == 1001{
+        switch type {
+        case .copyLink:
+            self.copyToPasteBoard(text: "这是文本内容")
             
-            return
+        case .more:
+            // 文本
+            self.openMore(text: "打开的内容", site: URL.init(string: "http://www.baidu.com"))
+            
+            
+            
+        case .wechatTimeLine, .wechatSession, .QQ, .qzone, .sina:
+            self.shareToApp(type: type, view: view, title: "分享标题", des: "分享描述", url: "http://www.hangge.com/blog/cache/detail_641.html", image: UIImage.init(named: "chrome"))
+            
+            
+        default:
+            break
+            
         }
-        
-        if type.rawValue == 1002{
-            let activiController = UIActivityViewController.init(activityItems: ["dwdwqd"], applicationActivities: nil)
-            activiController.excludedActivityTypes = [UIActivityType.postToTencentWeibo, UIActivityType.postToWeibo]
-            self.present(activiController, animated: true, completion: nil)
-            return
-        }
-        
-        
-        // 网页分享消息
-        let mesObj = UMSocialMessageObject.init()
-        mesObj.text = "友盟网页分享测试"
-        let sharedObj = UMShareWebpageObject.init()
-        sharedObj.title = "设置标题"
-        sharedObj.descr = "xxx的个人名片"
-        sharedObj.thumbImage = UIImage.init(named: "default")
-        sharedObj.webpageUrl = "http://video.sina.com.cn/p/sports/cba/v/2013-10-22/144463050817.html"
-        mesObj.shareObject = sharedObj
-        
-        // 分享到不同的平台
-        
-        UMSocialManager.default().share(to: type, messageObject: mesObj, currentViewController: self) { (res, error) in
-            if error != nil{
-                print("分享失败 \(String(describing: error))")
-            }else{
-                self.shareapps.getUserInfo(platformType: type, vc: self)
-            }
-        }
-    
-        
+        // 影藏shareview
+        shareapps.dismiss()
+   
     }
     
     

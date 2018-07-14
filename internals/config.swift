@@ -14,7 +14,12 @@ import SwiftDate
 
 // 时区
 
-let  regionRome =  Region.init(calendar: Calendars.gregorian, zone: Zones.asiaShanghai, locale: Locales.chinese)
+let regionRome =  Region.init(calendar: Calendars.gregorian, zone: Zones.asiaShanghai, locale: Locales.chinese)
+
+// 手机安装的app 来第三方分享登录
+var shareItems:[ShareItem] = []
+//shareView Height
+var shareViewH:CGFloat = 240
 
 
 // 不同版本键盘高度不一样？？
@@ -76,8 +81,7 @@ var GreetingMsg:String = ""
 var IsGreeting:Bool = true 
 
 
-//shareView Height
-let shareViewH:CGFloat = 240
+
 
 
 

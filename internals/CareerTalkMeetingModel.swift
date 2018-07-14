@@ -45,7 +45,7 @@ class CareerTalkMeetingModel: BaseModel  {
         get{
             guard let time = self.start_time else { return "" }
            
-            return meetingTalkTime(time:time)
+            return meetingTalkTime(times:time)
             
         }
     }

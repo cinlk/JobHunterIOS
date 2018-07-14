@@ -309,12 +309,30 @@ extension CompanyMainVC: CompanyHeaderViewDelegate{
 extension CompanyMainVC: shareViewDelegate{
   
     
-    func handleShareType(type: UMSocialPlatformType) {
-        if type.rawValue == 1002{
-            let activiController = UIActivityViewController.init(activityItems: ["dwdwqd"], applicationActivities: nil)
-            activiController.excludedActivityTypes = [UIActivityType.postToTencentWeibo, UIActivityType.postToWeibo]
-            self.present(activiController, animated: true, completion: nil)
+    func handleShareType(type: UMSocialPlatformType, view: UIView) {
+       
+        switch type {
+        case .copyLink:
+            self.copyToPasteBoard(text: "这是文本内容")
+            
+        case .more:
+            // 文本
+            self.openMore(text: "打开的内容", site: URL.init(string: "http://www.baidu.com"))
+            
+            
+            
+        case .wechatTimeLine, .wechatSession, .QQ, .qzone, .sina:
+            self.shareToApp(type: type, view: view, title: "分享标题", des: "分享描述", url: "http://www.hangge.com/blog/cache/detail_641.html", image: UIImage.init(named: "chrome"))
+            
+            
+        default:
+            break
+            
         }
+        // 影藏shareview
+        shareapps.dismiss()
+        
+        
     }
     
 }

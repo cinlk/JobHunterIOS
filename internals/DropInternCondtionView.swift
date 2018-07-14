@@ -11,6 +11,7 @@ import YNDropDownMenu
 
 
 
+fileprivate let spaceWidth:CGFloat = 25
 // 实习条件
 class DropInternCondtionView: YNDropDownView{
     
@@ -36,7 +37,7 @@ class DropInternCondtionView: YNDropDownView{
     
     // confirm button
     private lazy var clearAll:UIButton = {
-        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 150, height: 35))
+        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (ScreenW - spaceWidth - 10)/2, height: 35))
         clear.setTitle("清空", for: .normal)
         clear.setTitleColor(UIColor.black, for: .normal)
         clear.backgroundColor = UIColor.white
@@ -47,7 +48,7 @@ class DropInternCondtionView: YNDropDownView{
     }()
     
     private lazy var confirm:UIButton = {
-        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 150, height: 35))
+        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (ScreenW - spaceWidth - 10)/2, height: 35))
         confirm.setTitle("确定", for: .normal)
         confirm.setTitleColor(UIColor.white, for: .normal)
         confirm.backgroundColor = UIColor.blue
@@ -116,7 +117,7 @@ class DropInternCondtionView: YNDropDownView{
 
         
         let space = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
-        space.width = 50
+        space.width = spaceWidth
         toolBar.items?.append(contentsOf: [UIBarButtonItem.init(customView: clearAll),space, UIBarButtonItem.init(customView: confirm)])
         
         loadData()

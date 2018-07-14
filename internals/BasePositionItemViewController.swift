@@ -27,7 +27,7 @@ class BasePositionItemViewController: BaseViewController {
     
     // 选择城市
     internal lazy var cityMenu:DropItemCityView = {
-        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
+        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 200))
         // 覆盖指定高度
         
         city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
@@ -53,7 +53,7 @@ class BasePositionItemViewController: BaseViewController {
     
     // 大学
     internal lazy var colleges: DropCollegeItemView = {
-        let college = DropCollegeItemView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
+        let college = DropCollegeItemView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 200))
         college.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
 
         return college
@@ -90,7 +90,7 @@ class BasePositionItemViewController: BaseViewController {
     
     // 实习条件
     internal lazy var  internCondition:DropInternCondtionView = { [unowned self] in
-        let v1 = DropInternCondtionView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
+        let v1 = DropInternCondtionView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 200))
         
         v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
 

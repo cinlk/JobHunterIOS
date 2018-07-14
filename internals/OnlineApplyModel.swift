@@ -11,8 +11,6 @@ import ObjectMapper
 
 class OnlineApplyModel: BaseModel {
     
-    
-    
     // 举办公司
     internal var companyIcon:String = "default"
     internal var companyName:String?
