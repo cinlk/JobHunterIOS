@@ -23,21 +23,20 @@ class  personModelManager {
     // 简历完整度
     open var integrity:Int = 0
     //test
-    var initialFirst = false
+    //var initialFirst = false
     private init(){}
     
     
     open func getOnlineResume(resumeID:String){
         // 从服务器湖获取数据
         self.currentResumeID = resumeID
-        if initialFirst == false{
-            mode[currentResumeID] = ResumeMode(JSON: ["educationInfo":[],"internInfo":[],"skills":[],"projectInfo":[],
+       
+        mode[currentResumeID] = ResumeMode(JSON: ["educationInfo":[],"internInfo":[],"skills":[],"projectInfo":[],
                                      "studentWorkInfo":[],"practiceInfo":[],"resumeOtherInfo":[],"estimate": selfEstimateModel(JSON: [:])?.toJSON()])
-        }
         
         integrity = 58
         
-        initialFirst = true 
+        //initialFirst = true 
         
     }
     

@@ -8,11 +8,9 @@
 
 import UIKit
 
-@objcMembers class projectInfoCell: BaseResumeInfoCell {
+@objcMembers class projectInfoCell: BaseResumeInfoCell<personProjectInfo> {
 
-    
-    
-    dynamic var mode:personProjectInfo?{
+    override dynamic var mode:personProjectInfo?{
         didSet{
             guard let mode = mode else{
                 return

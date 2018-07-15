@@ -8,10 +8,10 @@
 
 import UIKit
 
-@objcMembers class SocialPracticeCell: BaseResumeInfoCell {
+@objcMembers class SocialPracticeCell: BaseResumeInfoCell<socialPracticeInfo> {
 
    
-    dynamic var mode:socialPracticeInfo?{
+    override dynamic var mode:socialPracticeInfo?{
         didSet{
             guard let mode = mode else{
                 return

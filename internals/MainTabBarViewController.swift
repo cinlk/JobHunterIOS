@@ -78,24 +78,11 @@ class MainTabBarViewController: UITabBarController {
             }
         }
         
-        
-        
-        
-//        let forum = ForumViewController()
-//        let forumNavigate = UINavigationController(rootViewController: forum)
-//
-//        forumNavigate.tabBarItem.imageInsets = UIEdgeInsetsMake(0, 0, 0, 0)
-//
-//        forumNavigate.tabBarItem.image =  UIImage.init(named: "forum")!.changesize(size: BarImg_Size).withRenderingMode(.alwaysTemplate)
-//        forumNavigate.tabBarItem.title = "论坛"
-//        addChildViewController(forumNavigate)
-        
     }
 
     
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-        //tabBar.setItems([item], animated: fa)
-        print(self.selectedIndex)
+    
     }
     
     

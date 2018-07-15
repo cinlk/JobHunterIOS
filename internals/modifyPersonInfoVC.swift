@@ -281,9 +281,7 @@ extension modifyPersonInfoVC: UIImagePickerControllerDelegate,UINavigationContro
             
         }
         if resultImage != nil{
-            self.tableView.beginUpdates()
             self.tableView.reloadRows(at: [IndexPath.init(row: 0, section: 0)], with: .none)
-            self.tableView.endUpdates()
         }
        
         

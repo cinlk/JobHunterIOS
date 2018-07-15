@@ -102,8 +102,9 @@ import UIKit
     }()
     
     // 设置
-    internal var setting:(()->Void)?
+    internal var setting:((_ btn:UIButton)->Void)?
     
+  
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -131,6 +132,6 @@ import UIKit
 
 extension ResumePageCell{
     @objc private func choose(){
-        self.setting?()
+        self.setting?(moreBtn)
     }
 }

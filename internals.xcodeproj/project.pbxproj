@@ -30,6 +30,8 @@
 		4A12438420E725E20038336F /* MagazMainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A12438320E725E20038336F /* MagazMainViewController.swift */; };
 		4A14078220F62BC500F4E88E /* AddBlacklistVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A14078120F62BC500F4E88E /* AddBlacklistVC.swift */; };
 		4A14078420F8537F00F4E88E /* SearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A14078320F8537F00F4E88E /* SearchBarView.swift */; };
+		4A14078620FA08B000F4E88E /* ImageScrollerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A14078520FA08B000F4E88E /* ImageScrollerView.swift */; };
+		4A14078820FA4ED500F4E88E /* BaseTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A14078720FA4ED500F4E88E /* BaseTableView.swift */; };
 		4A18E1EB202CA03F00B1038E /* TreeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A18E1EA202CA03F00B1038E /* TreeNode.swift */; };
 		4A1A502620773A500070B74D /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1A502520773A500070B74D /* CoreTelephony.framework */; };
 		4A1A502820773A5C0070B74D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1A502720773A5C0070B74D /* libz.tbd */; };
@@ -101,7 +103,6 @@
 		4A30EBDA207BB8C900231D11 /* CompanyMainVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBD9207BB8C900231D11 /* CompanyMainVC.swift */; };
 		4A30EBDC207CE68A00231D11 /* companyTableProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBDB207CE68A00231D11 /* companyTableProtocol.swift */; };
 		4A30EBE1207E66AD00231D11 /* BaseTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBE0207E66AD00231D11 /* BaseTableViewController.swift */; };
-		4A30EBE3207FADFD00231D11 /* privateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBE2207FADFD00231D11 /* privateViewModel.swift */; };
 		4A30EBE52081A82F00231D11 /* SpecialJobVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBE42081A82F00231D11 /* SpecialJobVC.swift */; };
 		4A30EBE820834CBF00231D11 /* JobHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBE720834CBF00231D11 /* JobHomeViewController.swift */; };
 		4A30EBEB2083685800231D11 /* ScrollerNewsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBEA2083685800231D11 /* ScrollerNewsCell.swift */; };
@@ -403,6 +404,8 @@
 		4A12438320E725E20038336F /* MagazMainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagazMainViewController.swift; sourceTree = "<group>"; };
 		4A14078120F62BC500F4E88E /* AddBlacklistVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddBlacklistVC.swift; sourceTree = "<group>"; };
 		4A14078320F8537F00F4E88E /* SearchBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBarView.swift; sourceTree = "<group>"; };
+		4A14078520FA08B000F4E88E /* ImageScrollerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageScrollerView.swift; sourceTree = "<group>"; };
+		4A14078720FA4ED500F4E88E /* BaseTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTableView.swift; sourceTree = "<group>"; };
 		4A18E1EA202CA03F00B1038E /* TreeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeNode.swift; sourceTree = "<group>"; };
 		4A1A502520773A500070B74D /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		4A1A502720773A5C0070B74D /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -476,7 +479,6 @@
 		4A30EBD9207BB8C900231D11 /* CompanyMainVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyMainVC.swift; sourceTree = "<group>"; };
 		4A30EBDB207CE68A00231D11 /* companyTableProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = companyTableProtocol.swift; sourceTree = "<group>"; };
 		4A30EBE0207E66AD00231D11 /* BaseTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTableViewController.swift; sourceTree = "<group>"; };
-		4A30EBE2207FADFD00231D11 /* privateViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = privateViewModel.swift; sourceTree = "<group>"; };
 		4A30EBE42081A82F00231D11 /* SpecialJobVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecialJobVC.swift; sourceTree = "<group>"; };
 		4A30EBE720834CBF00231D11 /* JobHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobHomeViewController.swift; sourceTree = "<group>"; };
 		4A30EBEA2083685800231D11 /* ScrollerNewsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollerNewsCell.swift; sourceTree = "<group>"; };
@@ -864,6 +866,7 @@
 				4A1BA2C1208B021800CF8352 /* BaseCollectionHorizonView.swift */,
 				4A4DBBD320B796B80036AD9D /* customerTextField.swift */,
 				4A14078320F8537F00F4E88E /* SearchBarView.swift */,
+				4A14078720FA4ED500F4E88E /* BaseTableView.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -1062,6 +1065,7 @@
 				4A1BA2C4208B1DDD00CF8352 /* Model */,
 				4A1BA2C3208B07A300CF8352 /* layout */,
 				4A1BA2BE208AEAFB00CF8352 /* Cell */,
+				4A9CE36D1F72C2B3002A8FD5 /* utils */,
 				4A1BA2BB208AE6D500CF8352 /* View */,
 				4A2145D1207A4FFC000959F4 /* ViewController */,
 			);
@@ -1238,7 +1242,6 @@
 				4AD2C77720973D04002F3486 /* Enum */,
 				4AE0DEA21FFBC57700A16ED4 /* views */,
 				4A444EC91F8A166A006AE83D /* protobuf */,
-				4A9CE36D1F72C2B3002A8FD5 /* utils */,
 				4AFF91C31F5EF40000FE189F /* mapApp.swift */,
 				4A9CE36B1F716101002A8FD5 /* progressHUB.swift */,
 			);
@@ -1413,7 +1416,6 @@
 			isa = PBXGroup;
 			children = (
 				4A22A3A820750A9E00024C2B /* personViewModel.swift */,
-				4A30EBE2207FADFD00231D11 /* privateViewModel.swift */,
 			);
 			name = viewModel;
 			sourceTree = "<group>";
@@ -1921,6 +1923,7 @@
 				4A6389F720668C7B00C4B4D0 /* SelectedThreeTableView.swift */,
 				4A2145CE20790ED5000959F4 /* ErrorPageView.swift */,
 				4A1BA2B7208A2C0F00CF8352 /* CommonJobDetailCellView.swift */,
+				4A14078520FA08B000F4E88E /* ImageScrollerView.swift */,
 			);
 			name = views;
 			sourceTree = "<group>";
@@ -2405,6 +2408,7 @@
 				4AFF91B91F5DB8A900FE189F /* CompanySimpleCell.swift in Sources */,
 				4A5FFC0A20ED184800DD6FD4 /* ResumePageViewController.swift in Sources */,
 				4A4DBBE920B9B3050036AD9D /* UserGuideLogginCell.swift in Sources */,
+				4A14078620FA08B000F4E88E /* ImageScrollerView.swift in Sources */,
 				4A82A0DE2027493E00185E8B /* jobInfoCell.swift in Sources */,
 				4AC167B020EC58C70081273D /* ThumbUPVC.swift in Sources */,
 				4A9543B6209DE9C6009BCBE2 /* JobInviteTableViewCell.swift in Sources */,
@@ -2527,6 +2531,7 @@
 				4AFF9DCA203819AC000ADBAF /* MyCollectionVC.swift in Sources */,
 				4A9543B820A0B52F009BCBE2 /* ForumViewController.swift in Sources */,
 				4A18E1EB202CA03F00B1038E /* TreeNode.swift in Sources */,
+				4A14078820FA4ED500F4E88E /* BaseTableView.swift in Sources */,
 				4AE0DEA41FFBC5AC00A16ED4 /* pagetitleView.swift in Sources */,
 				4A4DBBE720B9AC480036AD9D /* UserGuideItemCell.swift in Sources */,
 				4A9A0BD62003BFB3008721F3 /* visitorCell.swift in Sources */,
@@ -2558,7 +2563,6 @@
 				4AA6376420674FAD00DAE9A9 /* extension+sqlite.swift in Sources */,
 				4A9543CA20A6E92D009BCBE2 /* listPostItemCell.swift in Sources */,
 				4A5304E41F52A6ED0000F1E9 /* MainTabBarViewController.swift in Sources */,
-				4A30EBE3207FADFD00231D11 /* privateViewModel.swift in Sources */,
 				4AD8F753206E874C003969ED /* extension+UIlabel.swift in Sources */,
 				4AF3D3602062B7C10012EB6E /* sectionCellView.swift in Sources */,
 				4A0BA75220B16D600099F332 /* ResumeItemsTypes.swift in Sources */,

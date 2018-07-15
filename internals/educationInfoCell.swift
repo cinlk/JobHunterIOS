@@ -9,10 +9,10 @@
 import UIKit
 
 
-@objcMembers class educationInfoCell: BaseResumeInfoCell {
+@objcMembers class educationInfoCell: BaseResumeInfoCell<personEducationInfo> {
     
     
-    dynamic var mode:personEducationInfo?{
+  override  dynamic var mode:personEducationInfo?{
         didSet{
             guard let mode = mode else {
                 return

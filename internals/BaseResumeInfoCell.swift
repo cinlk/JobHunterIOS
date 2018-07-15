@@ -11,7 +11,7 @@ import UIKit
 fileprivate let iconSize:CGSize = CGSize.init(width: 25, height: 25)
 
 
-class BaseResumeInfoCell: UITableViewCell {
+@objcMembers class BaseResumeInfoCell<U>: UITableViewCell {
 
  
     internal lazy var modifyIcon:UIImageView = {
@@ -62,6 +62,10 @@ class BaseResumeInfoCell: UITableViewCell {
             }
         }
     }
+    
+    
+    dynamic var mode:U!
+    
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

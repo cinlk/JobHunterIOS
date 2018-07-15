@@ -211,7 +211,7 @@ extension modifyPersonInfoCell: UITextFieldDelegate{
             // 这里不判断，在vc 里判断空值
             self.delegate?.changeBasicInfo(type: mode!.type, value: text)
         }
-        return
+        
     }
     
     

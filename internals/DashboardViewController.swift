@@ -38,7 +38,7 @@ class DashboardViewController: BaseViewController{
     
     //scrollview  偏移值
     private var marginTop:CGFloat = 0
-    private var timer:Timer?
+    //private var timer:Timer?
     private var startContentOffsetX:CGFloat = 0
     private var EndContentOffsetX:CGFloat = 0
     private var WillEndContentOffsetX:CGFloat = 0
@@ -91,28 +91,12 @@ class DashboardViewController: BaseViewController{
     }()
     
     // 轮播图view
-    private lazy var imagescroller:UIScrollView = { [unowned self] in
-        
-        let imagescroller =  UIScrollView()
+    private lazy var imagescroller:ImageScrollerView = { [unowned self] in
+        let imagescroller =  ImageScrollerView(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: tableViewH))
         imagescroller.delegate = self
-        imagescroller.translatesAutoresizingMaskIntoConstraints = false
-        imagescroller.bounces = false
-        imagescroller.isPagingEnabled = true
-        imagescroller.scrollsToTop = false
-        imagescroller.showsHorizontalScrollIndicator = false
-        imagescroller.showsVerticalScrollIndicator = false
-        imagescroller.isUserInteractionEnabled = true
         return imagescroller
     }()
     
-    private lazy var  page:UIPageControl = {
-        let page = UIPageControl.init()
-        page.backgroundColor = UIColor.clear
-        page.isEnabled  = false
-        page.pageIndicatorTintColor = UIColor.gray
-        page.currentPageIndicatorTintColor = UIColor.blue
-        return page
-    }()
     
     
     // 搜索框外部view，滑动影藏搜索框
@@ -162,13 +146,7 @@ class DashboardViewController: BaseViewController{
                 self.automaticallyAdjustsScrollViewInsets = false
             }
         
-        
-        _ = self.tables.tableHeaderView?.sd_layout().leftEqualToView(self.tables)?.rightEqualToView(self.tables)?.heightIs(tableViewH)?.topEqualToView(self.tables)
-        
         _ =  searchController?.searchBar.sd_layout().leftSpaceToView(searchBarContainer,0)?.topEqualToView(searchBarContainer)?.bottomEqualToView(searchBarContainer)?.rightSpaceToView(searchBarContainer,0)
-        
-         // 这里设置page的
-         page.frame = CGRect(x: (self.view.centerX - 60), y: self.imagescroller.frame.height-20, width: 120, height: 10)
         
        
         
@@ -177,7 +155,6 @@ class DashboardViewController: BaseViewController{
     override func viewWillDisappear(_ animated: Bool) {
         self.navigationView.removeFromSuperview()
         self.navigationController?.view.willRemoveSubview(navigationView)
-        self.navigationItem.title = ""
          
         
     }
@@ -203,7 +180,10 @@ class DashboardViewController: BaseViewController{
         
         //self.tables.register(jobdetailCell.self, forCellReuseIdentifier: jobdetailCell.identity())
         self.tables.tableHeaderView  = imagescroller
-        self.tables.insertSubview(page, aboveSubview: self.tables.tableHeaderView!)
+        
+        
+        // page 放这里
+        self.tables.insertSubview(imagescroller.page, aboveSubview: self.tables.tableHeaderView!)
         self.tables.contentInset = UIEdgeInsetsMake(0, 0, tableBottomInset, 0)
         self.tables.tableFooterView = UIView()
         self.tables.separatorStyle = .singleLine
@@ -240,6 +220,7 @@ class DashboardViewController: BaseViewController{
         
         
         errorView.reload = reload
+        
         super.setViews()
     }
     
@@ -653,10 +634,7 @@ extension DashboardViewController{
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         if scrollView == self.imagescroller{
             startContentOffsetX = scrollView.contentOffset.x
-            // 取消轮播
-            self.timer?.invalidate()
-            //self.timer = nil
-            
+            imagescroller.stopAutoScroller()
         }
     }
     
@@ -674,64 +652,28 @@ extension DashboardViewController{
         // MARK 判断滑动方向
         if (scrollView  == self.imagescroller) {
             EndContentOffsetX = scrollView.contentOffset.x
-            var animated = true
+           
             //左移动
             if (EndContentOffsetX < WillEndContentOffsetX && WillEndContentOffsetX < startContentOffsetX){
-                
-                if self.page.currentPage == 0 {
-                    animated = false
-                    self.page.currentPage = self.page.numberOfPages - 1
-                }else{
-                    self.page.currentPage -=  1
-                }
-                
-                imagescroller.setContentOffset(CGPoint.init(x: (CGFloat(page.currentPage + 1)) * self.view.size.width,y: 0), animated: animated)
+                imagescroller.moveToLeft()
+               
                 
                 //右移动
             }else if (EndContentOffsetX > WillEndContentOffsetX && WillEndContentOffsetX > startContentOffsetX){
-                if self.page.currentPage == self.page.numberOfPages-1{
-                    animated = false
-                    self.page.currentPage = 0
-                    
-                }else{
-                    self.page.currentPage += 1
-                    
-                }
-                imagescroller.setContentOffset(CGPoint.init(x: (CGFloat(page.currentPage + 1)) * self.view.size.width,y: 0), animated: animated)
-                
+              
+                imagescroller.moveToRight()
             }
+            
+            imagescroller.createTimer()
+            
             //开启timer 轮播
-            self.creatTimer()
+            //self.creatTimer()
         }
         
         
     }
     
     
-    
-    
-    //创建轮播图定时器 MARK
-    private func creatTimer() {
-        // pass value in userinfo (Any)
-        
-        timer =  Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.change), userInfo: nil, repeats: true)
-        RunLoop.current.add(timer!, forMode: RunLoopMode.commonModes)
-        
-    }
-    
-    
-    //创建定时器管理者
-    
-    @objc func change(timer:Timer) {
-        //设置偏移量
-        if page.currentPage == page.numberOfPages - 1 {
-            page.currentPage = 0
-        } else if page.currentPage < page.numberOfPages - 1 {
-            page.currentPage += 1
-        }
-        imagescroller.setContentOffset(CGPoint.init(x: (CGFloat(page.currentPage + 1)) * self.view.size.width,y: 0), animated: true)
-        
-    }
     
 }
 
@@ -801,7 +743,8 @@ extension DashboardViewController{
         
         self.tables.mj_header  = MJRefreshNormalHeader.init { [weak self] in
             print(" 下拉刷新 -----")
-            self?.timer?.invalidate()
+            //self?.timer?.invalidate()
+            self?.imagescroller.stopAutoScroller()
             self?.vm.refreshData.onNext(true)
         }
         
@@ -821,7 +764,9 @@ extension DashboardViewController{
         
         
         vm.driveBanner.debug().drive(onNext: { [unowned self]  (rotates) in
-            self.page.numberOfPages = rotates.count
+            //self.page.numberOfPages = rotates.count
+            
+            
             let width = self.imagescroller.width
             let height = self.imagescroller.height
             // 存储iamge 的 body
@@ -869,8 +814,10 @@ extension DashboardViewController{
                 self.imagescroller.contentOffset = CGPoint.init(x: self.view.frame.width, y: 0)
                 
                 //
-                self.creatTimer()
-                self.page.currentPage = 0
+                self.imagescroller.createTimer()
+                self.imagescroller.pageCount = rotates.count
+                //self.creatTimer()
+                //self.page.currentPage = 0
             }
             
             }, onCompleted: {

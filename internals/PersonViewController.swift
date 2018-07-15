@@ -12,37 +12,14 @@ import UIKit
 
 fileprivate let SectionN = 3
 fileprivate let tableHeaderH:CGFloat = ScreenH / 4
+fileprivate let delegateNotify = NSNotification.Name.init("tableDelegateImplement")
 
 
 class PersonViewController: UIViewController {
 
-    private lazy var table:UITableView = { [unowned self] in
-        let table = UITableView.init(frame: self.view.bounds)
-        table.isScrollEnabled = false
-        table.tableFooterView = UIView.init()
-        table.backgroundColor = UIColor.viewBackColor()
-        table.delegate = self
-        table.dataSource = self
-        table.register(SetFourItemTableViewCell.self, forCellReuseIdentifier: SetFourItemTableViewCell.identity())
-        
-        //table.register(personTableCell.self, forCellReuseIdentifier: personTableCell.identity())
-        return table
-    }()
-    
-    
-    private lazy var tableHeader: personTableHeader = {
-        let v = personTableHeader.init(frame:CGRect.init(x: 0, y: 0, width: ScreenW, height: tableHeaderH))
-        v.isHR = false
-        v.backgroundColor = UIColor.orange
-        // test 用个人信息
-        v.mode = (image:"chicken",name:"名字", introduce:"")
-        v.layoutSubviews()
-        return v
-        
-    }()
-    
-    private var mode:[(image:UIImage, title:String)] = [(#imageLiteral(resourceName: "namecard"),"我的订阅"),(#imageLiteral(resourceName: "settings"),"帮助中心"),(#imageLiteral(resourceName: "collection"),"设置"),(#imageLiteral(resourceName: "private"),"隐私设置")]
-    
+  
+    private  var table:personTable!
+    private var mode:[(image:UIImage, title:String)]?
     
     
     override func viewDidLoad() {
@@ -50,8 +27,8 @@ class PersonViewController: UIViewController {
         self.view.backgroundColor = UIColor.clear
         (self.navigationController as! PersonNavViewController).currentStatusStyle = .lightContent
         navigationItem.backBarButtonItem = UIBarButtonItem.init(title: "", style: .plain, target: nil, action: nil)
-        
-        
+        loadData()
+        bindNotify()
      }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -68,34 +45,119 @@ class PersonViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.navigationBar.isHidden = false
-
-
-        
     }
-    
-  
-    
     
     
     override func viewWillLayoutSubviews() {
         self.view.addSubview(table)
-        self.table.tableHeaderView = tableHeader
-        
     }
 
-
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 }
 
 
-extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
+extension PersonViewController{
+    private func bindNotify(){
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNotify), name: delegateNotify, object: nil)
+    }
+    
+    @objc private func handleNotify(_ sender: Notification){
+        if let info = sender.userInfo as? [String:Any], let action = info["action"] as? String{
+            if action == "push", let vc = info["target"] as? UIViewController{
+                vc.hidesBottomBarWhenPushed = true
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+        }
+    }
+}
+
+extension PersonViewController{
+    private func loadData(){
+        mode = [(#imageLiteral(resourceName: "namecard"),"我的订阅"),(#imageLiteral(resourceName: "settings"),"帮助中心"),(#imageLiteral(resourceName: "collection"),"设置"),(#imageLiteral(resourceName: "private"),"隐私设置")]
+        
+        //  构建table 或 view
+        table =  personTable.init(frame: self.view.bounds, style: .plain)
+        table.setHeaderView(data:  (image:"chicken",name:"名字", introduce:""))
+        table.mode = mode
+        
+    }
+}
+
+
+
+fileprivate class personTable:BaseTableView<[(image:UIImage, title:String)]>{
+    
+    override internal var mode:[(image:UIImage, title:String)]!{
+        didSet{
+            setDelegate()
+            self.reloadData()
+        }
+    }
+    
+    private  var implement:tableDelegateImplement?
+    
+
+    override init(frame: CGRect, style: UITableViewStyle) {
+        super.init(frame: frame, style: style)
+        self.register(SetFourItemTableViewCell.self, forCellReuseIdentifier: SetFourItemTableViewCell.identity())
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+
+    
+    override func setHeaderView(data:Any?) {
+        
+        if let data = data as? (image:String,name:String, introduce:String){
+            let head  = personTableHeader.init(frame:CGRect.init(x: 0, y: 0, width: ScreenW, height: tableHeaderH))
+            head.isHR = false
+            head.backgroundColor = UIColor.orange
+            // test 用个人信息
+            head.mode = data
+            head.layoutSubviews()
+            self.tableHeaderView = head
+        }
+    }
+    
+    override internal func setDelegate(){
+        
+        implement = tableDelegateImplement(mode: mode,section: SectionN)
+        self.dataSource = implement
+        self.delegate = implement
+    }
+    
+}
+
+
+
+fileprivate class tableDelegateImplement: NSObject{
+    
+    private var mode:[(image:UIImage, title:String)]!
+    private var section:Int!
+    
+    init(mode: [(image:UIImage, title:String)], section:Int) {
+        self.mode = mode
+        self.section = section
+        super.init()
+       
+    }
+}
+
+extension tableDelegateImplement:UITableViewDelegate, UITableViewDataSource{
+    
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return SectionN
+        return self.section
     }
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-       
+        
         return section == 0 || section == 1 ? 1 : self.mode.count
     }
     
@@ -118,7 +180,7 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
             cell.imageView?.image = self.mode[indexPath.row].image.changesize(size: CGSize.init(width: 40, height: 40))
             cell.textLabel?.text = self.mode[indexPath.row].title
             
-          
+            
             return cell
         default:
             return UITableViewCell.init()
@@ -140,7 +202,7 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return indexPath.section == 0 ? SetFourItemTableViewCell.cellHeight() : 50
-       
+        
     }
     
     
@@ -151,9 +213,9 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
         case 0:
             return
         case 1:
-            let resumeView = ResumePageViewController()
-            resumeView.hidesBottomBarWhenPushed = true
-            self.navigationController?.pushViewController(resumeView, animated: true)
+          
+            NotificationCenter.default.post(name: delegateNotify, object: self, userInfo: ["target":ResumePageViewController(),"action":"push"])
+            
         case 2:
             
             
@@ -161,25 +223,20 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
             switch row{
             case 0:
                 // 我的订阅
-                let subscrible = subscribleItem()
-                subscrible.hidesBottomBarWhenPushed = true
-                self.navigationController?.pushViewController(subscrible, animated: true)
+               
+                 NotificationCenter.default.post(name: delegateNotify, object: self, userInfo: ["target":subscribleItem(),"action":"push"])
             case 1:
                 // 帮助中心
-                let help  = HelpsVC()
-                help.hidesBottomBarWhenPushed = true
-                self.navigationController?.pushViewController(help, animated: true)
+                NotificationCenter.default.post(name: delegateNotify, object: self, userInfo: ["target":HelpsVC(),"action":"push"])
             case 2:
                 // 设置
-                let setting = SettingVC()
-                setting.hidesBottomBarWhenPushed = true
-                self.navigationController?.pushViewController(setting, animated: true)
+              
+                
+                NotificationCenter.default.post(name: delegateNotify, object: self, userInfo: ["target":SettingVC(),"action":"push"])
             case 3:
                 // 隐私设置
-                let privicy = PrivacySetting()
-                privicy.hidesBottomBarWhenPushed = true
-                self.navigationController?.pushViewController(privicy, animated: true)
                 
+                NotificationCenter.default.post(name: delegateNotify, object: self, userInfo: ["target":PrivacySetting(),"action":"push"])
                 break
             default:
                 break
@@ -190,41 +247,38 @@ extension PersonViewController: UITableViewDelegate, UITableViewDataSource{
             return
         }
         
-      
+        
     }
     
 }
 
 
-// 代理实现
-extension PersonViewController:selectedItemDelegate{
+extension tableDelegateImplement:selectedItemDelegate{
+    
     
     func showdelivery() {
-        let vc = deliveredHistory()
-        vc.hidesBottomBarWhenPushed = true
-        
-        self.navigationController?.pushViewController(vc, animated: true)
+       
+        NotificationCenter.default.post(name: delegateNotify, object: self, userInfo: ["target":deliveredHistory(),"action":"push"])
     }
     
     func showInvitation() {
-        let vc = InvitationViewController()
-        vc.hidesBottomBarWhenPushed = true
-        self.navigationController?.pushViewController(vc, animated: true)
+ 
+        
+        NotificationCenter.default.post(name: delegateNotify, object: self, userInfo: ["target":InvitationViewController(),"action":"push"])
     }
     
     func showollections() {
-        let vc = MyCollectionVC()
-        vc.hidesBottomBarWhenPushed = true
-        self.navigationController?.pushViewController(vc, animated: true)
+ 
+        NotificationCenter.default.post(name: delegateNotify, object: self, userInfo: ["target":MyCollectionVC(),"action":"push"])
     }
     
     func showPostArticle() {
         let vc =  MyPostViewController()
-        vc.hidesBottomBarWhenPushed = true
         vc.type = .mypost
-        self.navigationController?.pushViewController(vc, animated: true)
+        NotificationCenter.default.post(name: delegateNotify, object: self, userInfo: ["target":vc,"action":"push"])
     }
     
     
 }
+
 

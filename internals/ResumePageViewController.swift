@@ -11,76 +11,22 @@ import UIKit
 
 fileprivate let maxCount = 5
 
+fileprivate let delegateNotify = Notification.Name.init("ResumePageViewController")
 
 class ResumePageViewController: BaseTableViewController {
 
-    // 默认投递只有一个
-    private  var defaultResumeRow:Int?
-    // 当前行
-    private  var selectedrow:Int?
+  
     private lazy var myResumes:[reumseKind] = []
     
 
-    // 控制 编辑内容
-    private lazy var isEdit:Bool = false
+    private  var isEdit:Bool = false
+    private var tableDelegate:delegateHandler!
     
-    
-    
-    
-    // 在线简历显示的操作
-    private lazy var alertOnlineVC:UIAlertController = {
-        let alert = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
-        let defaults = UIAlertAction.init(title: "设置为默认", style: UIAlertActionStyle.default, handler: { action in
-                self.setDefaultItem()
-        })
-        let rename = UIAlertAction.init(title: "重命名", style: UIAlertActionStyle.default, handler: { action in
-                self.renameItem()
-            
-        })
-        let copy = UIAlertAction.init(title: "复制", style: UIAlertActionStyle.default, handler: { action in
-                self.copyItem()
-        })
-        
-        let delete = UIAlertAction.init(title: "删除", style: UIAlertActionStyle.destructive, handler: { action in
-                self.deleteItem()
-        })
-       
-        let cancel =  UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
-        alert.addAction(defaults)
-        alert.addAction(rename)
-        alert.addAction(copy)
-        alert.addAction(delete)
-        alert.addAction(cancel)
-        return alert
-    }()
-    
-    // 附件简历显示的操作
-    private lazy var alertAttachVC:UIAlertController = {
-        let alert = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
-        let defaults = UIAlertAction.init(title: "设置为默认", style: UIAlertActionStyle.default, handler: { action in
-            self.setDefaultItem()
-        })
-        let rename = UIAlertAction.init(title: "重命名", style: UIAlertActionStyle.default, handler: { action in
-            self.renameItem()
-            
-        })
-        
-        let delete = UIAlertAction.init(title: "删除", style: UIAlertActionStyle.destructive, handler: { action in
-            self.deleteItem()
-        })
-        
-        let cancel =  UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
-        alert.addAction(defaults)
-        alert.addAction(rename)
-        alert.addAction(delete)
-        alert.addAction(cancel)
-        return alert
-    }()
     
     
     private lazy var menu:SearchTypeMenuView = {
         let m = SearchTypeMenuView.init(frame: CGRect.init(x: ScreenW - 100 , y: NavH, width: 120, height: 70),arrowLeftMargin: 65)
-        m.delegate = self
+        //m.delegate = self
         m.table.layer.cornerRadius = 0
         m.datas = [.online, .attachment]
         return m
@@ -99,7 +45,9 @@ class ResumePageViewController: BaseTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
+        bindNotify()
         loadData()
+        
      }
 
     
@@ -127,15 +75,9 @@ class ResumePageViewController: BaseTableViewController {
         
         
         tableView.tableFooterView = UIView()
-        tableView.dataSource = self
-        tableView.delegate = self
         tableView.backgroundColor = UIColor.viewBackColor()
         tableView.register(ResumePageCell.self, forCellReuseIdentifier: ResumePageCell.identity())
-        
         self.navigationController?.delegate = self
-        
-        
-       
         _ = menu.sd_layout().topSpaceToView(self.view,NavH)?.rightSpaceToView(self.view,10)?.widthIs(100)?.heightIs(60)
         
         super.setViews()
@@ -145,6 +87,13 @@ class ResumePageViewController: BaseTableViewController {
     override func didFinishloadData() {
         super.didFinishloadData()
         navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: #imageLiteral(resourceName: "plus").changesize(size: CGSize.init(width: 20, height: 20)), style: .plain, target: self, action: #selector(addMore))
+        
+        
+        tableDelegate = delegateHandler.init(resumes: myResumes, table: self.tableView)
+        
+        tableView.dataSource = tableDelegate
+        tableView.delegate = tableDelegate
+        menu.delegate = tableDelegate
         
         
         self.tableView.reloadData()
@@ -178,15 +127,210 @@ class ResumePageViewController: BaseTableViewController {
         return true
         
     }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 
 }
 
 
 
 
-extension ResumePageViewController: SearchMenuDelegate{
+
+
+extension ResumePageViewController: UINavigationControllerDelegate{
+    
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        
+        if viewController.isKind(of: PersonViewController.self){
+            navigationController.removeCustomerView()
+        }
+    }
+    
+    
+    private func bindNotify(){
+        NotificationCenter.default.addObserver(self, selector: #selector(notifyHandler), name: delegateNotify, object: nil)
+    }
+}
+
+
+extension ResumePageViewController{
+    
+    @objc private func notifyHandler(_ sender: Notification){
+        if let info = sender.userInfo as? [String:Bool]{
+            if let edit = info["edit"]{
+                self.isEdit = edit
+            }else if let hidden = info["hiddenMenu"], hidden{
+                self.hiddenPopMenu()
+            }
+        }else if let info = sender.userInfo as? [String:Any]{
+            if let action = info["action"] as? String, let vc = info["target"] as? UIViewController{
+                if action == "push"{
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }else if action == "present"{
+                    self.present(vc, animated: true, completion: nil)
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
+extension ResumePageViewController{
+    
+    @objc private func addMore(){
+        if self.isEdit{
+            return
+        }
+        
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.navigationController?.view.addSubview(self.backgroundBtn)
+        }, completion: { bool in
+            self.menu.show()
+            
+        })
+        
+    }
+    
+    @objc private func  hiddenPopMenu(){
+        
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            
+            self.menu.dismiss()
+            
+        }) { bool in
+            self.backgroundBtn.removeFromSuperview()
+            
+        }
+    }
+    
+}
+
+
+
+
+extension ResumePageViewController{
+    private func loadData(){
+        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+            
+            Thread.sleep(forTimeInterval: 1)
+            
+            
+            //  MARK ！附件简历 显示pdf 没有固定格式数据
+            for _ in 0..<2{
+                if let data = reumseKind(JSON: ["name":"我的简历","isDefault":false,"id":getUUID(),
+                                                "create_time":Date().timeIntervalSince1970,"kind":"attachment"]){
+                    self?.myResumes.append(data)
+
+                }
+            }
+            
+            DispatchQueue.main.async(execute: {
+                self?.didFinishloadData()
+            })
+            
+        }
+    }
+}
+
+
+
+
+
+// 自定义class
+
+fileprivate class  operatorHandler:NSObject{
+    
+    
+    // 默认投递只有一个
+    internal  var defaultResumeRow:Int?
+    // 当前行
+    internal  var selectedrow:Int?
+    
+    internal  var myResumes:[reumseKind] = []
+    
+    // 控制 编辑内容
+    internal  var isEdit:Bool = false{
+        didSet{
+            NotificationCenter.default.post(name: delegateNotify, object: self, userInfo: ["edit":isEdit])
+
+        }
+    }
+    
+    internal var tableView:UITableView!
+    
+    
+    // 在线简历显示的操作
+    internal lazy var alertOnlineVC:UIAlertController = {
+        let alert = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
+        let defaults = UIAlertAction.init(title: "设置为默认", style: UIAlertActionStyle.default, handler: { action in
+            self.setDefaultItem()
+        })
+        let rename = UIAlertAction.init(title: "重命名", style: UIAlertActionStyle.default, handler: { action in
+            self.renameItem()
+            
+        })
+        let copy = UIAlertAction.init(title: "复制", style: UIAlertActionStyle.default, handler: { action in
+            self.copyItem()
+        })
+        
+        let delete = UIAlertAction.init(title: "删除", style: UIAlertActionStyle.destructive, handler: { action in
+            self.deleteItem()
+        })
+        
+        let cancel =  UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
+        alert.addAction(defaults)
+        alert.addAction(rename)
+        alert.addAction(copy)
+        alert.addAction(delete)
+        alert.addAction(cancel)
+        return alert
+    }()
+    
+    // 附件简历显示的操作
+    internal lazy var alertAttachVC:UIAlertController = {
+        let alert = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
+        let defaults = UIAlertAction.init(title: "设置为默认", style: UIAlertActionStyle.default, handler: { action in
+            self.setDefaultItem()
+        })
+        let rename = UIAlertAction.init(title: "重命名", style: UIAlertActionStyle.default, handler: { action in
+            self.renameItem()
+            
+        })
+        
+        let delete = UIAlertAction.init(title: "删除", style: UIAlertActionStyle.destructive, handler: { action in
+            self.deleteItem()
+        })
+        
+        let cancel =  UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
+        alert.addAction(defaults)
+        alert.addAction(rename)
+        alert.addAction(delete)
+        alert.addAction(cancel)
+        return alert
+    }()
+    
+    
+    
+    init(resumes: [reumseKind], table:UITableView) {
+        self.myResumes = resumes
+        self.tableView = table
+        super.init()
+    }
+    
+    
+    
+}
+
+
+
+extension operatorHandler: SearchMenuDelegate{
     func selectedItem(item: searchItem){
-       
+        
         self.hiddenPopMenu()
         
         // 添加在线简历
@@ -197,10 +341,10 @@ extension ResumePageViewController: SearchMenuDelegate{
             }
             
             if let resume = reumseKind(JSON: ["name":"我的简历","isDefault":false,"id":getUUID(),
-                            "create_time":Date().timeIntervalSince1970,"kind":item.rawValue]){
+                                              "create_time":Date().timeIntervalSince1970,"kind":item.rawValue]){
                 
                 self.myResumes.append(resume)
-                self.tableView.reloadSections([0], animationStyle: .automatic)
+                self.tableView.insertRows(at: [IndexPath.init(row: myResumes.count - 1, section: 0)], with: .automatic)
                 
             }
             
@@ -218,90 +362,22 @@ extension ResumePageViewController: SearchMenuDelegate{
             alert.addAction(fromPC)
             alert.addAction(fromPhone)
             alert.addAction(cancel)
-            self.present(alert, animated: true, completion: nil)
+            NotificationCenter.default.post(name: delegateNotify, object: self, userInfo: ["action":"present","target":alert])
             
         }
-       
+        
     }
+    
+    
+    @objc private func hiddenPopMenu(){
+        
+        NotificationCenter.default.post(name: delegateNotify, object: self, userInfo: ["hiddenMenu":true])
+
+    }
+    
 }
 
-
-extension ResumePageViewController: UINavigationControllerDelegate{
-    
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        
-        if viewController.isKind(of: PersonViewController.self){
-            navigationController.removeCustomerView()
-        }
-    }
-}
-
-
-extension ResumePageViewController{
-    
-    
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-       
-        return myResumes.count
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: ResumePageCell.identity(), for: indexPath) as! ResumePageCell
-        cell.textTitle.delegate = self
-        
-        let mode = myResumes[indexPath.row]
-        if mode.isDefault == true{
-            defaultResumeRow =  indexPath.row
-        }
-        cell.mode = mode
-        cell.setting = {
-            
-            if !self.isEdit{
-                self.selectedrow = indexPath.row
-                if mode.type == .online{
-                    self.present(self.alertOnlineVC, animated: true, completion: nil)
-                }else {
-                    self.present(self.alertAttachVC, animated: true, completion: nil)
-
-                }
-            }
-        }
-        return cell
-    }
-    
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if self.isEdit{
-            return
-        }
-        tableView.deselectRow(at: indexPath, animated: false)
-        let mode = myResumes[indexPath.row]
-        if mode.type == .online{
-            let vc = personResumeTable()
-            vc.resumeID = mode.id
-        
-            self.navigationController?.pushViewController(vc, animated: true)
-        }else{
-            
-            let vc = ShowPDFResumeVC()
-            vc.url = "http://127.0.0.1:9090/test.pdf"
-            self.navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-    
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let mode = myResumes[indexPath.row]
-        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: ResumePageCell.self, contentViewWidth: ScreenW)
-    }
-}
-
-
-extension  ResumePageViewController{
+extension operatorHandler{
     
     private func setDefaultItem(){
         if let row = self.selectedrow, row != self.defaultResumeRow{
@@ -309,15 +385,16 @@ extension  ResumePageViewController{
             myResumes[row].isDefault = true
             // 默认的index 改变
             if let df = self.defaultResumeRow{
-                 myResumes[df].isDefault = false
+                myResumes[df].isDefault = false
             }
             self.defaultResumeRow = row
-            self.tableView.reloadSections([0], animationStyle: .automatic)
+            self.tableView.reloadData()
         }
     }
     
     // 编辑简历 名字
-    private func renameItem(){
+    private func renameItem(){        
+        
         if let row = self.selectedrow{
             let cell = tableView.cellForRow(at: IndexPath.init(row: row, section: 0)) as! ResumePageCell
             cell.startEdit = true
@@ -348,10 +425,11 @@ extension  ResumePageViewController{
                                             "create_time":Date().timeIntervalSince1970,"kind":target.type.rawValue]){
                 
                 myResumes.append(data)
-                self.tableView.reloadSections([0], animationStyle: .automatic)
+                self.tableView.insertRows(at: [IndexPath.init(row: myResumes.count - 1, section: 0)], with: .automatic)
+                
                 
             }
-           
+            
             
         }
         
@@ -371,27 +449,37 @@ extension  ResumePageViewController{
                 if row == self.defaultResumeRow{
                     self.defaultResumeRow = nil
                 }
-                self.tableView.reloadSections([0], animationStyle: .automatic)
+              
+                
+                self.tableView.deleteRows(at: [IndexPath.init(row: row, section: 0)], with: .automatic)
+                
             }
             
         }
         let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
         alert.addAction(cancel)
         alert.addAction(confirm)
+        NotificationCenter.default.post(name: delegateNotify, object: self, userInfo: ["action":"present","target":alert])
+ 
         
-        self.present(alert, animated: true, completion: nil)
         
-        
-       
     }
+}
+
+
+
+fileprivate class delegateHandler:operatorHandler{
+    
+     override init(resumes: [reumseKind], table:UITableView) {
+        super.init(resumes: resumes, table: table)
+    }
+    
     
 }
 
 
-// 编辑textfield
-extension ResumePageViewController: UITextFieldDelegate{
+extension delegateHandler: UITextFieldDelegate{
     
-
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         return true
     }
@@ -419,6 +507,7 @@ extension ResumePageViewController: UITextFieldDelegate{
     }
     
     private func updateName(_ text: String){
+       
         // 更新d简历名称
         if let row = self.selectedrow{
             myResumes[row].name = text
@@ -426,55 +515,88 @@ extension ResumePageViewController: UITextFieldDelegate{
         }
         
     }
-    
 }
 
-extension ResumePageViewController{
-    @objc private func addMore(){
+extension delegateHandler:UITableViewDataSource, UITableViewDelegate{
+    
+    
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        return myResumes.count
+    }
+    
+    
+    
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: ResumePageCell.identity(), for: indexPath) as! ResumePageCell
+        cell.textTitle.delegate = self
+        
+        let mode = myResumes[indexPath.row]
+        if mode.isDefault == true{
+            defaultResumeRow =  indexPath.row
+        }
+        
+        
+        cell.mode = mode
+        cell.setting = { btn in 
+            
+            if !self.isEdit{
+                
+                let v = btn.superview
+                //  index 表示其它cell有添加删除后，该cell 实际对应的位置
+                if let cell = v?.superview as? ResumePageCell, let index = tableView.indexPath(for: cell){
+                        self.selectedrow = index.row
+                        print(index)
+                }
+                
+                if mode.type == .online{
+                    NotificationCenter.default.post(name: delegateNotify, object: self, userInfo: ["action":"present","target":self.alertOnlineVC])
+
+                 }else {
+                    NotificationCenter.default.post(name: delegateNotify, object: self, userInfo: ["action":"present","target":self.alertAttachVC])
+ 
+                }
+            }
+        }
+        return cell
+    }
+    
+
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if self.isEdit{
             return
         }
         
-        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            self.navigationController?.view.addSubview(self.backgroundBtn)
-        }, completion: { bool in
-            self.menu.show()
+        tableView.deselectRow(at: indexPath, animated: false)
+        let mode = myResumes[indexPath.row]
+        if mode.type == .online{
+            let vc = personResumeTable()
+            vc.resumeID = mode.id
+             NotificationCenter.default.post(name: delegateNotify, object: self, userInfo: ["action":"push","target":vc])
+         }else{
             
-        })
-        
+            let vc = ShowPDFResumeVC()
+            vc.url = "http://127.0.0.1:9090/test.pdf"
+            NotificationCenter.default.post(name: delegateNotify, object: self, userInfo: ["action":"push","target":vc])
+
+         }
     }
     
-    @objc private func hiddenPopMenu(){
-        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            self.menu.dismiss()
-            
-        }) { bool in
-            self.backgroundBtn.removeFromSuperview()
-            
-        }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let mode = myResumes[indexPath.row]
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: ResumePageCell.self, contentViewWidth: ScreenW)
     }
+    
+    
 }
 
-extension ResumePageViewController{
-    private func loadData(){
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            
-            Thread.sleep(forTimeInterval: 1)
-            
-            
-            //  MARK ！附件简历 显示pdf 没有固定格式数据
-            for _ in 0..<2{
-                if let data = reumseKind(JSON: ["name":"我的简历","isDefault":false,"id":getUUID(),
-                                                "create_time":Date().timeIntervalSince1970,"kind":"attachment"]){
-                    self?.myResumes.append(data)
 
-                }
-            }
-            
-            DispatchQueue.main.async(execute: {
-                self?.didFinishloadData()
-            })
-            
-        }
-    }
-}
+
