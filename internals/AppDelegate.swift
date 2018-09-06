@@ -68,6 +68,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UMSocialManager.default().setPlaform(.qzone, appKey: "1106824184", appSecret: "V0zSNqtNlo2wPIo7", redirectURL: "http://mobile.umeng.com/social")
         
         
+        // test  user-agent
+        // testUserAgent()
         
         //
         getLocalApps()
@@ -298,6 +300,69 @@ extension AppDelegate: CLLocationManagerDelegate{
     
 }
 
+
+
+
+
+extension AppDelegate{
+    func testUserAgent(){
+        
+        if let url = URL.init(string: "https://192.168.199.113:9090/jobs"){
+            httpsGET(request: NSMutableURLRequest.init(url: url))
+        }
+        
+       
+    }
+    
+    func httpsGET(request:  NSMutableURLRequest){
+        request.setValue("ios+android", forHTTPHeaderField: "User-Agent")
+        let config = URLSessionConfiguration.default
+        
+        let session = URLSession.init(configuration: config, delegate: self, delegateQueue: OperationQueue.main)
+        
+        let task = session.dataTask(with: request as URLRequest) { (data, res, error) in
+            if error != nil{
+                print(error)
+            }else{
+                let str = String.init(data: data!, encoding: String.Encoding.utf8)
+                print(str)
+            }
+            
+        }
+        task.resume()
+        
+    }
+}
+
+extension AppDelegate: URLSessionDelegate{
+    
+    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        // 服务端验证
+        if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust{
+            let serverTrust:SecTrust = challenge.protectionSpace.serverTrust!
+            let ceritificate = SecTrustGetCertificateAtIndex(serverTrust, 0)
+            let remoteCertificateData = CFBridgingRetain(SecCertificateCopyData(ceritificate!))
+            
+            // 获取证书
+            let cerpath = Bundle.main.path(forResource: "server", ofType: "cert")
+            if let cerData = try? Data.init(contentsOf: URL.init(fileURLWithPath: cerpath!)){
+                if remoteCertificateData?.isEqual(cerData) == true {
+                     let credential = URLCredential.init(trust: serverTrust)
+                     challenge.sender?.use(credential, for: challenge)
+                    completionHandler(.useCredential,credential)
+                    
+                }else{
+                    completionHandler(.cancelAuthenticationChallenge,nil)
+                }
+                
+            }
+            
+        }else{
+            completionHandler(.cancelAuthenticationChallenge,nil)
+        }
+        
+    }
+}
 
 
 

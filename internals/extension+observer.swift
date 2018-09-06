@@ -14,19 +14,6 @@ import ObjectMapper
 
 
 
-// 成为观察者
-extension Reactive where Base: UILabel{
-    
-    var rxob: Binder<Result>{
-        return Binder.init(self.base){ (label, v) in
-            
-                label.textColor = v.textColor
-                label.text = v.describtion
-                
-            }
-    }
-    
-}
 
 extension Reactive where Base: UIScrollView{
     
@@ -44,15 +31,18 @@ extension Reactive where Base: UIScrollView{
 }
 
 
-extension Reactive where Base: UIButton{
-    
-    var rxob: Binder<Result>{
-        return Binder.init(self.base, binding: { (button, v) in
-            button.isEnabled = v.validate
-            button.alpha = v.validate ? 1: 0.5
+
+
+extension Reactive where Base: UIButton {
+    var rxEnable: Binder<Bool>{
+        return Binder.init(self.base, binding: { (btn, r) in
+            btn.isEnabled = r
+            btn.alpha = r ? 1 : 0.5
         })
     }
 }
+
+
 
 
 extension ObservableConvertibleType{

@@ -6,12 +6,12 @@
 //  Copyright © 2017年 lk. All rights reserved.
 //
 
+
 import Foundation
 import SwiftDate
 
 
 /* 定义全局的变量 */
-
 // 时区
 
 let regionRome =  Region.init(calendar: Calendars.gregorian, zone: Zones.asiaShanghai, locale: Locales.chinese)
@@ -44,7 +44,7 @@ let TableCellOffsetX:CGFloat = 16
 
 // url
 let GITHUB_API_URL:String = "https://api.github.com"
-let APP_JOB_URL:String = "http://52.199.50.0:8080"
+let APP_JOB_URL:String = "http://18.179.132.85:8080"
 
 
 

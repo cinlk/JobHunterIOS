@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import RxCocoa
+import RxSwift
 
 class ResetPasswordViewController: UIViewController {
 
@@ -33,7 +35,7 @@ class ResetPasswordViewController: UIViewController {
         
     }()
     
-    private lazy var resetBtn:UIButton = {
+    lazy var resetBtn:UIButton = {
         let btn = UIButton.init()
         btn.setTitle("重置密码", for: .normal)
         btn.titleLabel?.textAlignment = .center
@@ -66,7 +68,7 @@ class ResetPasswordViewController: UIViewController {
         
     }()
     
-    private lazy var inputPassword:customerTextField = { [unowned self] in
+    lazy var inputPassword:customerTextField = { [unowned self] in
         let tx = customerTextField()
         tx.placeholder = "输入新的密码(6至20位)"
         tx.borderStyle = .roundedRect
@@ -91,10 +93,21 @@ class ResetPasswordViewController: UIViewController {
     private  lazy var codeNumber:ValidateNumber =  ValidateNumber(button: verifyBtn)!
     
     
+    var isResetPwd:Bool = false
+    
+    //rxswift
+    private var account:Variable<String> = Variable<String>("")
+    private var verifyCode:Variable<String> = Variable<String>("")
+    private var password:Variable<String> = Variable<String>("")
+    private var dispose:DisposeBag = DisposeBag()
+    
+    private var loginViewModel =  QuickLoginViewModel()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
+        setViewModel()
         // Do any additional setup after loading the view.
     }
     
@@ -136,13 +149,13 @@ extension ResetPasswordViewController{
         inputPassword.isSecureTextEntry = btn.isSelected ? false : true
     }
     @objc  private func reset(){
-        self.view.endEditing(true)
-        // 测试登录
-        let vc =  UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "main") as! MainTabBarViewController
-        
-        
-        self.present(vc, animated: true, completion: nil)
-        self.navigationController?.popvc(animated: true)
+//        self.view.endEditing(true)
+//        // 测试登录
+//        let vc =  UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "main") as! MainTabBarViewController
+//
+//
+//        self.present(vc, animated: true, completion: nil)
+//        self.navigationController?.popvc(animated: true)
 
  
         
@@ -161,5 +174,81 @@ extension ResetPasswordViewController{
         codeNumber.start()
     }
   
+}
+
+
+
+// viewmodel
+extension ResetPasswordViewController{
+    
+    private func setViewModel(){
+        
+        inputAccount.rx.text.orEmpty.bind(to: account).disposed(by: dispose)
+        
+        let verifyBtnConfirm = Observable.combineLatest(account.asObservable().map{
+            $0.count > 6
+            }.share(), codeNumber.obCount.asObservable(), resultSelector: { $0 && $1}).share()
+        
+        verifyBtnConfirm.bind(to: verifyBtn.rx.rxEnable).disposed(by: dispose)
+        
+        inputVerifyCode.rx.text.orEmpty.bind(to: verifyCode).disposed(by: dispose)
+        
+        inputPassword.rx.text.orEmpty.bind(to: password).disposed(by: dispose)
+        
+        
+        let resetBtnConfirm = Observable.combineLatest(account.asObservable().map{
+            $0.count > 6
+            }.share(), verifyCode.asObservable().map{
+                if $0.count == 6 {
+                    if let _ = Int($0){
+                        return true
+                    }
+                }
+                return false
+                }.share(), password.asObservable().map{
+                 $0.count >= 6 && $0.count < 20}.share(), resultSelector: {$0 && $1 && $2})
+        
+        resetBtnConfirm.bind(to: resetBtn.rx.rxEnable).disposed(by: dispose)
+        
+        
+        // 发送验证码
+        verifyBtn.rx.tap.asDriver().drive(onNext: {
+            // test
+            self.loginViewModel.sendAccountCode(account:self.account.value, type:"email").subscribe(onNext: { res in
+                print("code model \(res)")
+            }, onError: { (err) in
+                print("send code error \(err)")
+            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+            
+        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        
+        
+        if isResetPwd{
+            // 重置密码
+            resetBtn.rx.tap.asDriver().drive(onNext: {
+                self.loginViewModel.resetPassword(account: self.account.value, code: self.verifyCode.value, pwd: self.password.value).debug().subscribe(onNext: { (res) in
+                    print(res)
+                    // TODO 自动登录
+                }, onError: { (err) in
+                    print("update password error \(err)")
+                }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+            }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+            
+        }else{
+            // 注册账号
+            resetBtn.rx.tap.asDriver().drive(onNext: {
+                self.loginViewModel.registryAccount(account: self.account.value, code: self.verifyCode.value, pwd: self.password.value).subscribe(onNext: { (res) in
+                    print("registry success \(res)")
+                }, onError: { (err) in
+                    print("registry failed \(err)")
+                }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+                
+            }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        }
+        
+        
+        
+        
+    }
     
 }

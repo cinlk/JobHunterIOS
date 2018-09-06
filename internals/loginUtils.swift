@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import RxCocoa
+import RxSwift
 
 class ValidateNumber {
     
@@ -28,6 +30,9 @@ class ValidateNumber {
     
     
     var coundDown:Timer?
+  
+    
+    var obCount:Variable<Bool> = Variable<Bool>(true)
     
     var isCounting = false{
         willSet{
@@ -36,14 +41,18 @@ class ValidateNumber {
                 remainSeconds = 10
                 RunLoop.main.add(coundDown!, forMode: .commonModes)
                 self.b?.backgroundColor = UIColor.clear
+                obCount.value = false
             }
                 
             else{
                 coundDown?.invalidate()
                 coundDown = nil
                 self.b?.backgroundColor = UIColor.clear
+                obCount.value = true
             }
-            self.b?.isEnabled = !newValue
+            
+            //self.b?.isEnabled = !newValue
+            
             
         }
         
@@ -63,6 +72,13 @@ class ValidateNumber {
     }
     
     func start(){
+       
+        
         self.isCounting = true
     }
+    
+    func stop(){
+        self.remainSeconds = 0
+    }
+    
 }

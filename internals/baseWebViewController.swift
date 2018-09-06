@@ -105,6 +105,9 @@ class baseWebViewController: UIViewController {
             loadData(url:mode!)
         }
     }
+    // 控制右上角btn 显示
+    var showRightBtn:Bool = true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         initView()
@@ -160,7 +163,9 @@ extension baseWebViewController {
     
     private func addBarItem(){
         self.navigationItem.leftBarButtonItems = [btnBack,btnCancel]
-        self.navigationItem.rightBarButtonItem = shareBtn
+        if showRightBtn{
+            self.navigationItem.rightBarButtonItem = shareBtn
+        }
     }
     
 }

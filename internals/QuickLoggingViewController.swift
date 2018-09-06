@@ -7,12 +7,18 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 fileprivate let text = "登录代表你同意 "
 
 class QuickLoggingViewController: UITableViewController {
 
    
+    
+    weak var parentVC:UserLogginViewController?
+    
+    
     private lazy var userIcon:UIImageView = {
         let imageV = UIImageView(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
         imageV.contentMode = .scaleAspectFill
@@ -75,19 +81,29 @@ class QuickLoggingViewController: UITableViewController {
     }()
     
     
-//    // 协议显示
-//    private lazy var showUserProtocal:UIButton = {
-//
-//    }()
-//
+    
+    // rxSwift
+    private var dispose = DisposeBag()
+    private var phoneNumber:Variable<String> = Variable<String>("")
+    private var verifyCode:Variable<String> = Variable<String>("")
+    
+    private var quickVM = QuickLoginViewModel()
+    
+    
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
+        setViewModel()
         
-        // Do any additional setup after loading the view.
+    
     }
+    
+    
+    
+    
+   
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -115,16 +131,24 @@ class QuickLoggingViewController: UITableViewController {
                 cell.textFiled.placeholder = "请输入手机号"
                  
                 cell.textFiled.leftImage = userIcon
+                // 监听账号值
+                cell.textFiled.rx.text.orEmpty.share().bind(to: phoneNumber).disposed(by: dispose)
+                
+                
             }else if indexPath.row == 1{
                 cell.textFiled.placeholder = "请输入验证码"
                 cell.textFiled.leftImage = numberIcon
                 cell.textFiled.rightBtn = verifyBtn
                 cell.textFiled.righPadding = 10
+                cell.textFiled.rx.text.orEmpty.share().bind(to: verifyCode).disposed(by: dispose)
+
             }
             cell.textFiled.leftView?.tintColor = UIColor.orange
             cell.textFiled.keyboardType = .numberPad
             cell.textFiled.leftPadding = 10
-           
+            
+            
+            
             return cell
         }
         
@@ -158,18 +182,82 @@ extension QuickLoggingViewController{
 
 extension QuickLoggingViewController{
     @objc private func showProtocal(){
-        
-        let vc = UIViewController()
-        vc.view.backgroundColor = UIColor.randomeColor()
-        self.navigationController?.pushViewController(vc, animated: true)
-        
+        // webview
+        let webVc = baseWebViewController()
+        webVc.mode = "http://www.immomo.com/agreement.html"
+        webVc.showRightBtn = false
+        self.navigationController?.pushViewController(webVc, animated: true)
     }
 }
 
 //
 extension QuickLoggingViewController{
     @objc private func validateCode(){
-        
          codeNumber.start()
     }
 }
+
+
+// viewmodel
+
+extension QuickLoggingViewController{
+    
+    private func setViewModel(){
+        
+        let verifyBtnValid =  Observable.combineLatest(phoneNumber.asObservable().map{
+            $0.count > 6
+        }.share(), codeNumber.obCount.asObservable()){ $0 && $1 }.share()
+        
+        // 验证码btn 可用
+        verifyBtnValid.asObservable().debug().bind(to: self.verifyBtn.rx.rxEnable).disposed(by: dispose)
+        
+        // 发送验证码
+        self.verifyBtn.rx.tap.subscribe(onNext: {
+            _ = self.quickVM.sendCode(phone: self.phoneNumber.value).subscribe(onNext: { (obj:CodeSuccess) in
+                showOnlyTextHub(message: "发送成功", view: self.view)
+            }, onError: { (err) in
+                showOnlyTextHub(message: "发送失败", view: self.view)
+                self.codeNumber.stop()
+                
+            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+            
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        
+    
+        
+        // 登录按钮可用
+        let obCode = verifyCode.asObservable().map{ (v) -> Bool in
+            if v.count == 6{
+                if let _ = Int(v){
+                    return true
+                }
+            }
+            return false
+        }.share()
+        
+        
+        let verifyLoginBtn = Observable.combineLatest(self.phoneNumber.asObservable().map{
+                $0.count > 6
+        }.share(), obCode) { $0 && $1 }.share()
+        
+        verifyLoginBtn.asObservable().debug().bind(to: self.parentVC!.loggingBtn.rx.rxEnable).disposed(by: dispose)
+        
+        // 验证码登录
+        
+        self.parentVC?.loggingBtn.rx.tap.subscribe(onNext: {
+            self.quickVM.quickLogin(phone:self.phoneNumber.value, code: self.verifyCode.value).subscribe(onNext: { (res) in
+                // TODO 判断账号是否绑定了身份，没有显示界面绑定身份
+                self.parentVC?.quickLogin(token: res.token ?? "")
+            }, onError: { (err) in
+                print("err \(err)")
+                
+            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+            
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        
+    
+    }
+    
+}
+
+

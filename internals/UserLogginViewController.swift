@@ -7,10 +7,7 @@
 //
 
 import UIKit
-
-
 fileprivate let contentViewH:CGFloat = 140
-
 class UserLogginViewController: UIViewController {
 
     
@@ -19,10 +16,8 @@ class UserLogginViewController: UIViewController {
         image.clipsToBounds = true
         image.contentMode = .scaleAspectFit
         image.image = #imageLiteral(resourceName: "ali")
-        
         return image
     }()
-    
     
     private lazy var itemTitleView:pagetitleView = {
         let title = pagetitleView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW - 20, height: 25), titles: ["快捷登录","密码登录"],itemWidth: 100)
@@ -31,20 +26,19 @@ class UserLogginViewController: UIViewController {
         return title
     }()
     
-    
     private lazy var contentView: pageContentView = { [unowned self] in
         
         let vc1 = QuickLoggingViewController()
-        
+        vc1.parentVC = self 
         let vc2 = PasswordLoggingViewController()
-       
+        vc2.parentVC = self 
         
         let content = pageContentView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW - 20, height: contentViewH), childVCs: [vc1,vc2], pVC: self)
         content.delegate = self
         return content
     }()
     
-    private lazy var loggingBtn:UIButton = {
+     lazy var loggingBtn:UIButton = {
         let btn = UIButton.init()
         btn.setTitle("登 录", for: .normal)
         btn.setTitleColor(UIColor.white, for: .normal)
@@ -52,10 +46,11 @@ class UserLogginViewController: UIViewController {
         btn.layer.cornerRadius = 10
         btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
         btn.titleLabel?.textAlignment = .center
-        btn.addTarget(self, action: #selector(login), for: .touchUpInside)
+        //btn.addTarget(self, action: #selector(login), for: .touchUpInside)
         return btn
     }()
     
+    // 匿名登录
     private lazy var skipBtn:UIButton = {
         let btn = UIButton.init(frame: CGRect.zero)
         btn.setBackgroundImage(#imageLiteral(resourceName: "cancel").withRenderingMode(.alwaysTemplate), for: .normal)
@@ -163,18 +158,31 @@ extension UserLogginViewController{
     }
     
     
-    @objc private func login(){
+    func quickLogin(token:String, hasIdentity:Bool = false){
+        // 验证码登录
+        let queue = DispatchQueue(label: "myqueue")
+        queue.sync {
+            //showProgressHun(message: "登录成功", view: self.view)
+            
+            self.performSegue(withIdentifier: "showMain", sender: nil)
+        }
+      
         
+    }
+    @objc private func login(anoymous:Bool = true){
+        // 默认匿名用户登录
         
-        anonymous = false
+        //
+        
+    //    anonymous = false
         
         // 假设 用户d输入正确
-        DispatchQueue.global(qos: .userInteractive).async {
-            
-            DBFactory.shared.getUserDB().insertUser(account: "123456", password: "123456", auto:true)
-        }
-        
-        self.performSegue(withIdentifier: "showMain", sender: nil)
+//        DispatchQueue.global(qos: .userInteractive).async {
+//
+//            DBFactory.shared.getUserDB().insertUser(account: "123456", password: "123456", auto:true)
+//        }
+//
+//        self.performSegue(withIdentifier: "showMain", sender: nil)
         
     }
 }
@@ -204,6 +212,7 @@ extension UserLogginViewController{
     @objc private func skip(){
         // 去主界面
         anonymous = true
+        
         self.performSegue(withIdentifier: "showMain", sender: nil)
         
     }
@@ -218,6 +227,7 @@ override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     
     if segue.identifier == "showMain"{
         let _ = segue.destination as? MainTabBarViewController
+        
         //传入用户信息
         //MARK 存储或更新个人信息到本地
         
