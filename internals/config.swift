@@ -54,14 +54,11 @@ let CITYS:String = "citys"
 
 // tabBarImage and Size
 let BarImg_Size = CGSize.init(width: 27, height: 26)
-let Home_Img = "home"
-let Select_Home_Img = "selectedHome"
-let Job_Img = "graduation"
-let Select_Job_Img = "selectedGraduation"
-let Message_Img = "message"
-let Select_Message_Img = "selectedMessage"
-let Person_Img = "person"
-let Select_Person_Img = "selectedPerson"
+// TabBArImages Tuple
+let TabItemImages:[(UIImage,UIImage)] = [(#imageLiteral(resourceName: "home"), #imageLiteral(resourceName: "selectedHome")),(#imageLiteral(resourceName: "graduation"), #imageLiteral(resourceName: "selectedGraduation")),(#imageLiteral(resourceName: "message"),#imageLiteral(resourceName: "selectedMessage")),(#imageLiteral(resourceName: "forum"), #imageLiteral(resourceName: "forum")),(#imageLiteral(resourceName: "person"), #imageLiteral(resourceName: "selectedPerson"))]
+let selectedColor   = UIColor(red: 246.0/255.0, green: 155.0/255.0, blue: 13.0/255.0, alpha: 1.0)
+let unselectedColor = UIColor(red: 16.0/255.0, green: 224.0/255.0, blue: 223.0/255.0, alpha: 1.0)
+
 
 
 // chat bar
@@ -94,6 +91,11 @@ var resumeBaseinfo =  personalBasicalInfo(JSON: ["tx":"chrome","name":"lk","gend
                                                  "city":"北京","colleage":"北大","degree":"专科","phone":"13718754627","email":"dqwd@163.com","birthday":"1990-01"])!
 
 var phoneNumber:String = ""
+
+
+
+
+
 
 
 

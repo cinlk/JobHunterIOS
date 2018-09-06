@@ -134,15 +134,15 @@ extension UIImage{
     }
     
     
-    // 改变图片大小
-    func changesize(size:CGSize) -> UIImage{
+    // 改变图片大小和render mode
+    func changesize(size:CGSize, renderMode: UIImageRenderingMode = .alwaysTemplate) -> UIImage{
         
         UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
         self.draw(in: CGRect.init(x: 0, y: 0, width: size.width, height: size.height))
         
         let newImage:UIImage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
-        return newImage
+        return newImage.withRenderingMode(renderMode)
     }
     
     //拉伸图片

@@ -1724,14 +1724,14 @@
 			name = "我的帖子";
 			sourceTree = "<group>";
 		};
-		4AAB084820B6FD2400BEF38A /* 新登录界面  */ = {
+		4AAB084820B6FD2400BEF38A /* 登录  */ = {
 			isa = PBXGroup;
 			children = (
 				4ACCADCF213B82500017EA3A /* ViewModel */,
 				4A4DBBCE20B6FE080036AD9D /* View */,
 				4A4DBBCB20B6FDAC0036AD9D /* ViewController */,
 			);
-			name = "新登录界面 ";
+			name = "登录 ";
 			sourceTree = "<group>";
 		};
 		4ACBD6FA1F77E76D00A5FD23 /* ChatBar */ = {
@@ -1835,7 +1835,7 @@
 				4A6BC2351FC86446002C17B6 /* config */,
 				4AEDFE841FBFE78A0071F4D8 /* extension */,
 				4A93C2E51F88B8C90022E97B /* socketim */,
-				4AAB084820B6FD2400BEF38A /* 新登录界面  */,
+				4AAB084820B6FD2400BEF38A /* 登录  */,
 				4ADCC74F1F511DD3001A4E9F /* AppDelegate.swift */,
 				4ADCC7531F511DD3001A4E9F /* Main.storyboard */,
 				4ADCC7561F511DD3001A4E9F /* Assets.xcassets */,

@@ -74,6 +74,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //
         getLocalApps()
         
+        // 设置TabBaritem 颜色
+        
+        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedStringKey.foregroundColor: unselectedColor], for: .normal)
+        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedStringKey.foregroundColor: selectedColor], for: .selected)
+        
+        
         return true
     }
 
