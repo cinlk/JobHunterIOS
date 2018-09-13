@@ -42,7 +42,8 @@ class CompuseRecruiteJobs :BaseModel{
    internal var works:String?
     
    // 职位类型 (对应筛选行业条件)
-   internal var classify:[String] = []
+   internal var industry:[String] = []
+    internal var major:[String] = []
     
    // 对应公司里 职位筛选条件
    internal var jobtags:[String] = []
@@ -102,7 +103,7 @@ class CompuseRecruiteJobs :BaseModel{
         super.init(map: map)
         
         if map.JSON["type"] == nil || map.JSON["company"] == nil ||
-            map.JSON["create_time"] == nil || map.JSON["isApply"] == nil || map.JSON["isTalked"] == nil   {
+            map.JSON["create_time"] == nil || map.JSON["is_apply"] == nil || map.JSON["is_talk"] == nil   {
             return nil
         }
        
@@ -118,18 +119,19 @@ class CompuseRecruiteJobs :BaseModel{
         address <- map["address"]
         salary <- map["salary"]
         education <- map["education"]
-        perDay <- map["perDay"]
-        months <- map["months"]
-        isStuff <- map["isStuff"]
-        isTalked <- map["isTalked"]
-        applyEndTime <- (map["applyEndTime"], DateTransform())
-        readNums <- map["readNums"]
+        perDay <- map["per_day"]
+        months <- map["month"]
+        isStuff <- map["is_staff"]
+        isTalked <- map["is_talk"]
+        applyEndTime <- (map["apply_end_time"], DateTransform())
+        readNums <- map["read_num"]
         hr <- map["hr"]
         requirement <- map["requirement"]
         works <- map["works"]
-        addressCity <- map["addressCity"]
-        classify <- map["classify"]
-        jobtags <- map["jobtags"]
+        addressCity <- map["city"]
+        industry <- map["industry"]
+        major <- map["major"]
+        jobtags <- map["job_tags"]
         
         
     }

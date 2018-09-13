@@ -90,14 +90,14 @@ extension MagazineViewController{
     
     private func loadData(){
         
-        print(self.dataType)
         
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             Thread.sleep(forTimeInterval: 2)
             guard let type = self?.dataType else { return }
             switch type{
                 case let .toutiao(name, url):
-                    print(name, url)
+                   // print(name, url)
+                    break
                 default:
                     break
             }

@@ -138,17 +138,13 @@ class LoginServer {
     private let disposebag = DisposeBag()
     
     lazy var  provider:MoyaProvider<loginManager> = {
-        let p =  MoyaProvider<loginManager>(manager: manager, plugins: [NetworkLoggerPlugin(verbose: true)])
+        let p =  MoyaProvider<loginManager>(manager: MoyaManager, plugins: [NetworkLoggerPlugin(verbose: true)])
         return p
     }()
     
     static let shared:LoginServer = LoginServer()
     
-    // 支持https
-    let manager = Manager(
-        configuration: URLSessionConfiguration.default,
-        serverTrustPolicyManager: CustomServerTrustPoliceManager()
-    )
+    
     
     private init() {}
     
@@ -185,12 +181,5 @@ class LoginServer {
 }
 
 
-class CustomServerTrustPoliceManager : ServerTrustPolicyManager {
-    override func serverTrustPolicy(forHost host: String) -> ServerTrustPolicy? {
-        return .disableEvaluation
-    }
-    public init() {
-        super.init(policies: [:])
-    }
-}
+
 

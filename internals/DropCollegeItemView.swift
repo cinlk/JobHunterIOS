@@ -133,7 +133,7 @@ class DropCollegeItemView: YNDropDownView {
     private lazy var isOpenAreaView:Bool = false
     
     
-    private lazy var clearAll:UIButton = {
+    internal lazy var clearAll:UIButton = {
         let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (ScreenW - spaceWidth - 10)/2, height: 35))
         clear.setTitle("清空", for: .normal)
         clear.setTitleColor(UIColor.black, for: .normal)

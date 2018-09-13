@@ -9,7 +9,7 @@
 import Foundation
 import RxCocoa
 import RxSwift
-
+import ObjectMapper
 
 // 刷新状态
 enum mainPageRefreshStatus{
@@ -21,7 +21,7 @@ enum mainPageRefreshStatus{
     case NoMoreData
     case end
     // MARK 需要细化错误类型？
-    case error
+    case error(err:Error)
     
 }
 
@@ -29,78 +29,56 @@ enum mainPageRefreshStatus{
 
 class mainPageViewMode {
     
-    // 校招job数据
-    var compuseJobItems = Variable<[CompuseRecruiteJobs]>.init([])
-    
-    //MARK catagory数据
-    var catagory = Variable<[String:String]>.init([:])
-    
-    //MARK recommand 数据
-    var recommand = Variable<[String:String]>.init([:])
-    
-    // 宣讲会
-    var recruitMentMeets = Variable<[CareerTalkMeetingModel]>.init([])
-    // 网申
-    var applys = Variable<[applyOnlineModel]>.init([])
-    
+   
+    var compuseJobItems = PublishSubject<[CompuseRecruiteJobs]>.init()
+    var banners =  PublishSubject<[RotateCategory]>.init()
+    var combinationRecommands = PublishSubject<SpecialRecommands>.init()
     // 刷新状态
-    let refreshStatus = Variable<mainPageRefreshStatus>.init(.none)
-    
+    let refreshStatus = PublishSubject<mainPageRefreshStatus>.init()
+    // 是否刷新
     var refreshData = PublishSubject<Bool>.init()
+
+    let demoServer:demoHttpServer = demoHttpServer.shared
     
-    
-    
-    var index:Int = 0
-    
-    var request:mainPageServer!
     
     let disposebag = DisposeBag()
     
-    var banners =  Variable<[RotateImages]>.init([])
-    let driveBanner: Driver<[RotateImages]>
-    // 没有更多数据
-    var moreData = true
     // tableview 多个section 数据
     let sections: Driver<[MultiSecontions]>
     
-    init(request: mainPageServer) {
-        
-        self.request = request
-
-       
-        
-        driveBanner = banners.asDriver()
-        
-        
-        
-        // 转换为 multisection 数据，注意section顺序
-        sections = Driver.combineLatest(recommand.asDriver(), catagory.asDriver(), recruitMentMeets.asDriver(),applys.asDriver(), compuseJobItems.asDriver()){
-            
-            recommands,catagories, meeting, applys, jobs in
-            (recommands,catagories, meeting, applys, jobs)
-            }.map{ (arg) -> [MultiSecontions] in
-                
-                let (recommands, cts, meets, applys, jobs) = arg
-                var recommandjobs:[SectionItem] = []
-                jobs.forEach{
-                    recommandjobs.append(SectionItem.campuseRecruite(job: $0))
-                }
-                
-                
-                // 手动添加news！！！
-                return [MultiSecontions.newSection(title: "", items: [SectionItem.newItem(new: ["语句1","语句2","语句3","语句4"])]),
-                        MultiSecontions.CatagorySection(title: "", items: [SectionItem.catagoryItem(imageNames: cts)]),
-                        MultiSecontions.RecommandSection(title: "", itmes: [SectionItem.recommandItem(imageNames: recommands)]),
-                        MultiSecontions.RecruitMentMeet(title: "", items: [SectionItem.recruimentMeet(list: meets)]),
-                        MultiSecontions.ApplyOnline(title: "", items: [SectionItem.applyonline(list: applys)]),
-                        MultiSecontions.CampuseRecruite(title: "", items: recommandjobs)
-                    ]
-            }
-        
-        
+    // 没有更多数据
+    var moreData = true
+    var index:Int = 0
+    var allJobs:[CompuseRecruiteJobs] = []
+    
+    init() {
         
       
-        // MARK  上拉刷新 全部刷新
+        // table section 数据组合
+        // onError SpeicalRecommand 返回任意空值
+        sections = Driver.combineLatest(self.combinationRecommands.asDriver(onErrorJustReturn: Mapper<SpecialRecommands>().map(JSON: ["null":0])!), self.compuseJobItems.asDriver(onErrorJustReturn: [])){ comb, jobs in
+            
+            (comb, jobs)
+            }.map{ (args) -> [MultiSecontions] in
+                let (comb, jobs) = args
+                let articles = comb.news?.articles ?? []
+                var alljobs:[SectionItem] = []
+                jobs.forEach{
+                    alljobs.append(SectionItem.campuseRecruite(job: $0))
+                }
+                
+                return [MultiSecontions.newSection(title: "", items: [SectionItem.newItem(new: articles)]),
+                        MultiSecontions.JobFieldSection(title: "", items: [SectionItem.jobFieldItem(comb.jobFields)]),
+                        MultiSecontions.ColumnSection(title: "", items: [SectionItem.columnItem(comb.latestColumns)]),
+                        MultiSecontions.RecruitMentMeet(title: "", items: [SectionItem.recruimentMeet(list: comb
+                            .recruitMeetings)]),
+                        MultiSecontions.ApplyOnline(title: "", items: [SectionItem.applyonline(list: comb.applyOnlineField)]),
+                        MultiSecontions.CampuseRecruite(title: "", items: alljobs)
+                        ]
+            }
+       
+        
+        
         // 下拉刷新 局部更新
         refreshData.subscribe(onNext: { [unowned self] IsPullDown  in
             
@@ -108,80 +86,62 @@ class mainPageViewMode {
             if IsPullDown{
                
                 // 获取banner 数据
+                self.demoServer.getLastestCategory().subscribe(onNext: { (categories) in
+                    self.banners.onNext(categories)
+                }, onError: { (err) in
+                    print("get category \(err)")
+                    self.refreshStatus.onNext(.error(err: err))
+                    self.banners.onError(err)
+                    return
+                }, onCompleted: nil, onDisposed: nil).disposed(by: self.disposebag)
+                
+                // 组合数据
+                self.demoServer.getMainRecommands().subscribe(onNext: { (recommands) in
+                    self.combinationRecommands.onNext(recommands)
+                    
+                }, onError: { (err) in
+                    print("get all recommand \(err)")
+                    self.refreshStatus.onNext(.error(err: err))
+                    self.combinationRecommands.onError(err)
+                    return
+                }, onCompleted: nil, onDisposed: nil).disposed(by: self.disposebag)
+                
+                self.demoServer.getRecommandJobs(offset: self.index).subscribe(onNext: { (jobs) in
+                    self.moreData = jobs.isEmpty ? false : true
+                    self.allJobs = jobs
+                    self.compuseJobItems.onNext(self.allJobs)
+                }, onError: { (err) in
+                    print("query recommnad jobs failed \(err)")
+                    self.refreshStatus.onNext(.error(err: err))
+                     self.compuseJobItems.onError(err)
+                    return
+                }, onCompleted: nil, onDisposed: nil).disposed(by: self.disposebag)
             
-                _ =  self.request.getImageBanners().subscribe(onNext: { rotates in
-                    self.banners.value = rotates
-                    
-                }, onError: { (error) in
-                    self.refreshStatus.value = .error
-                    return
-                })
-                // 获取 
-                
-                // 获取第第一栏 数据
-                _ = self.request.getCatagories().subscribe(onNext: { (names) in
-                    self.catagory.value = names
-                }, onError: { error in
-                    self.refreshStatus.value = .error
-                    return
-                })
-                // 获取 专栏数据（论坛贴，面试经验总结，习题集推荐等）
-                _ = self.request.getRecommand().subscribe(onNext: { (names) in
-                    self.recommand.value = names
-                }, onError: { error in 
-                    self.refreshStatus.value = .error
-                    return
-                })
-                // 获取推荐职位
-                _ = self.request.getCompuseJobs(index: 0).subscribe(onNext: { (jobs) in
-                    self.compuseJobItems.value = jobs
-                    
-                }, onError: { (error) in
-                    self.refreshStatus.value = .error
-                    return
-                })
-                
-                // 获取热门宣讲会
-                _  = self.request.getHotRecruitMeetings().subscribe(onNext: { (hotMeeting) in
-                    self.recruitMentMeets.value = hotMeeting
-                    
-                }, onError: { (error) in
-                    self.refreshStatus.value = .error
-                    return
-                })
-                // 获取热门网申
-                _ = self.request.getHotApplyOnlines().subscribe(onNext: { (applys) in
-                    self.applys.value = applys
-                }, onError: { (error) in
-                    self.refreshStatus.value = .error
-                    return
-                }, onCompleted: nil, onDisposed: nil)
-                
                 // 重置
                 self.moreData = true
                 // 获取数据正常 结束
-                self.refreshStatus.value = .endHeaderRefresh
+                self.refreshStatus.onNext(.endHeaderRefresh)
+                
             }
             else{
-                _ = self.request.getCompuseJobs(index: self.index).subscribe(onNext: { (jobs) in
-                    if jobs.isEmpty{
-                        self.moreData = false
-                    }
-                    self.compuseJobItems.value  = IsPullDown ? jobs : (self.compuseJobItems.value) + jobs
+                self.demoServer.getRecommandJobs(offset: self.index).subscribe(onNext: { (jobs) in
+                     self.moreData = jobs.isEmpty ? false : true
+                     self.allJobs += jobs
+                     self.compuseJobItems.onNext(self.allJobs)
                     
-                    
-                }, onError: { (error) in
-                    self.refreshStatus.value = .error
+                }, onError: { (err) in
+                    self.refreshStatus.onNext(.error(err: err))
+                    self.compuseJobItems.onError(err)
                     return
-                    
-                }, onCompleted: {
-                    if !self.moreData{
-                        self.refreshStatus.value = .NoMoreData
-                    }else{
-                        self.refreshStatus.value =  IsPullDown ? .endHeaderRefresh : .endFooterRefresh
-                    }
-                    
-                }, onDisposed: nil)
+                }, onCompleted: nil, onDisposed: nil).disposed(by: self.disposebag)
+                
+                if self.moreData == false{
+                    self.refreshStatus.onNext(.NoMoreData)
+                }else{
+                    self.refreshStatus.onNext(.endFooterRefresh)
+                }
+                
+                
             }
             
             

@@ -8,10 +8,11 @@
 
 import UIKit
 
+fileprivate let columne:Int = 1
+fileprivate let row:Int = 4
 
 class recruitmentMeetCell: UITableViewCell {
 
-    
     // 查看所有热门宣讲会
     var selectedIndex:(()->Void)?
     
@@ -19,7 +20,7 @@ class recruitmentMeetCell: UITableViewCell {
     // 查看某个宣讲会
     var selectItem:(( _ mode:CareerTalkMeetingModel)->Void)?
     
-    private lazy var baseCollection:BaseCollectionHorizonView = BaseCollectionHorizonView.init(frame: CGRect.zero, column: 1, row: 4)
+    private lazy var baseCollection:BaseCollectionHorizonView = BaseCollectionHorizonView.init(frame: CGRect.zero, column: columne, row: row)
    
     
     var mode:(title:String,item:[CareerTalkMeetingModel])?{
@@ -33,6 +34,7 @@ class recruitmentMeetCell: UITableViewCell {
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
         self.contentView.addSubview(baseCollection)
         baseCollection.collectionView.register(simpleRecruitCell.self, forCellWithReuseIdentifier: simpleRecruitCell.identity())
         baseCollection.rightBtn.addTarget(self, action: #selector(chooseAll(_ :)), for: .touchUpInside)

@@ -40,8 +40,7 @@ class OnlineApplyModel: BaseModel {
     
     
 
-    // 官网招聘链接
-    internal var link:String?
+ 
     
     // 外部链接
     //申请跳转外部地址
@@ -73,14 +72,14 @@ class OnlineApplyModel: BaseModel {
        
         super.mapping(map: map)
         end_time <- (map["end_time"], DateTransform())
-        companyIcon <- map["companyIcon"]
-        companyName <- map["companyName"]
+        companyIcon <- map["company_icon"]
+        companyName <- map["company_name"]
         address <- map["address"]
         positions <- map["positions"]
         majors <- map["majors"]
         content <- map["content"]
         outer <- map["outer"]
-        link <- map["link"]
+        
         
         
     }

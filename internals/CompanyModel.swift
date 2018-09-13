@@ -14,10 +14,7 @@ import ObjectMapper
 
 class  CompanyModel: BaseModel {
     
-    
-    
 
-    
     // 简介
     internal var describe:String?
     // 简单描述
@@ -66,7 +63,7 @@ class  CompanyModel: BaseModel {
         
     
         describe <- map["describe"]
-        simpleDes <- map["simpleDes"]
+        simpleDes <- map["simple_des"]
         address <- map["address"]
         staffs <- map["staffs"]
         webSite <- map["webSite"]
@@ -75,7 +72,7 @@ class  CompanyModel: BaseModel {
         follows <- map["follows"]
     
         jobs <- map["jobs"]
-        careerTalk <- map["careerTalk"]
+        careerTalk <- map["recruit_meeting"]
         
     }
 }

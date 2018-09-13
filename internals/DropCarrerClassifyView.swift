@@ -214,3 +214,32 @@ extension DropCarrerClassifyView{
     
 }
 
+
+extension DropCarrerClassifyView{
+    
+    open func clearSelected(){
+        
+        self.leftTable.indexPathsForSelectedRows?.forEach({ (idx) in
+            if let cell = self.leftTable.cellForRow(at: idx){
+                cell.textLabel?.textColor = UIColor.black
+                cell.isSelected = false
+            }
+        })
+        self.rightTable.indexPathsForSelectedRows?.forEach({ (idx) in
+            if let cell = self.rightTable.cellForRow(at: idx){
+                cell.textLabel?.textColor = UIColor.black
+                cell.subviews.filter({ (view) -> Bool in
+                    return view.tag == 101
+                })[0].removeFromSuperview()
+                cell.isSelected = false
+            }
+        })
+        
+        
+        self.selected = keys[0]
+        self.leftTable.reloadData()
+        self.rightTable.reloadData()
+        
+    }
+}
+

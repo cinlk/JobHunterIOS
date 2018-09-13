@@ -210,7 +210,7 @@ extension CareerTalkShowViewController{
                 event.endDate =   dateFormat.date(from:  (mode.end_time?.toString())!)
                 event.location =  mode.college!   + "-" + mode.address!
                 
-                if let url = mode.url{
+                if let url = mode.link{
                     event.url = URL.init(string: url)
                 }
                 

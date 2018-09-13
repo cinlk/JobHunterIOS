@@ -134,28 +134,6 @@ class localData: NSObject {
     
 }
 
-class InitailData:NSObject{
-    
-    
-     static let  shareInstance  = InitailData()
-     var datas = [""]
-     private override init() {
-       super.init()
-       datas = self.getMatchKeyWords()
-        
-       
-    }
-    
-    
-    private func getMatchKeyWords() -> [String]{
-        
-        // 从服务器获取 职位标题
-       
-        return ["软件测试","软件研发", "实现","6个月以上","授课老师","市场实现","篮球","戴尔校园","cat",
-        "kashmira","dotcloud","yun","testdf","dwdTestko","pupremix","ghremix"]
-    
-    }
-}
 
 
 

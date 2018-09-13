@@ -17,28 +17,21 @@ private let defaulImg = build_image(frame: CGRect.init(x: 0, y: 0, width: Screen
 extension UINavigationBar{
     
     
-    
     // change to translucent
     func settranslucent(_ tag: Bool){
         
-        // MARK 如何保证 取消背景后的navigationbar，在恢复背景后 和以前效果一直。且
-        // translate 为透明
-        // 显示 lable
         //self.tintColor  = UIColor.black
         if tag == true{
-            //self.settranslucent(<#T##tag: Bool##Bool#>)
             self.setBackgroundImage(v, for: .default)
             self.shadowImage = v
-            //self.backgroundColor =  UIColor.clear
             self.isTranslucent = true
+            self.barTintColor = UIColor.clear
         }
         else{
-            // 背景image为 navigationbar系统默认颜色？？
             
             self.setBackgroundImage(defaulImg, for: .default)
-            //self.shadowImage = self.shadowImage
             self.isTranslucent = false
-            
+            self.barTintColor = UIColor.init(r: 192, g: 192, b: 192)
             
         }
     }

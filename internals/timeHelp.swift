@@ -10,63 +10,63 @@ import Foundation
 import SwiftDate
 
 
-func meetingTalkTime(times: Date) -> String{
+func meetingTalkTime(time: Date) -> String{
     
-    // 改变系统
-    let dd = DateInRegion.init(times, region: regionRome)
-    let time = dd.date
     
+    let ctime = DateInRegion.init(time, region: regionRome)
     let dateFormat = DateFormatter()
-    
-    
-    //dateFormat.locale = Locale.current
-    // 今天起始时间
-    let startDate = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date())
-    
-    
+    dateFormat.timeZone = regionRome.timeZone
     var timeStr = ""
-    
-    let elapsedTimeSeconds = time.timeIntervalSince(startDate!)
-    
-    dateFormat.pmSymbol = "下午"
     dateFormat.amSymbol = "上午"
-
+    dateFormat.pmSymbol = "下午"
     dateFormat.weekdaySymbols = ["周天","周一","周二","周三","周四","周五","周六"]
-    let secondInDays:TimeInterval = 60 * 60 * 24
     
-    // 明天
-    if  elapsedTimeSeconds > secondInDays && elapsedTimeSeconds < 2*secondInDays{
-       
-        
+    // 已过期
+    if ctime.compare(.isInThePast){
+        timeStr = "已过期"
+    }
+    // 今天(上午，下午)
+    else if ctime.compare(.isToday){
         dateFormat.dateFormat = "HH:mm"
-        timeStr = "明天 " +  dateFormat.string(from: time)
-    }else if elapsedTimeSeconds > 2*secondInDays && elapsedTimeSeconds < 7*secondInDays{
+        timeStr = "今天 "
+        timeStr += dateFormat.string(from: ctime.date)
+        if ctime.hour < 12{
+            timeStr += " 上午"
+        }
+        else if ctime.hour > 12 && ctime.hour < 18{
+            timeStr += " 下午"
+        }else{
+            timeStr += " 晚上"
+        }
+        
+    }
+    
+    //明天
+    else if ctime.compare(.isTomorrow){
+        timeStr = "明天 "
+        dateFormat.dateFormat = "HH:mm"
+        timeStr += dateFormat.string(from: ctime.date)
+        
+    }
+    // 这周
+    else if ctime.compare(.isThisWeek){
+    
         dateFormat.dateFormat = "EEEE HH:mm"
-        timeStr = dateFormat.string(from: time)
-        
-    }else if elapsedTimeSeconds >= 7*secondInDays{
-        
-        dateFormat.dateFormat =   time.year  ==  startDate!.year ? "MM-dd HH:mm" : "yy-MM-dd HH:mm"
-        timeStr = dateFormat.string(from: time)
-    }
-    else if elapsedTimeSeconds < secondInDays && elapsedTimeSeconds >= 0{
-        dateFormat.dateFormat = "HH:mm"
-        timeStr = "今天 " + dateFormat.string(from: time)
-    }else if elapsedTimeSeconds < 0{
-        dateFormat.dateFormat =   time.year  ==  startDate!.year ? "MM-dd HH:mm" : "yy-MM-dd HH:mm"
-        timeStr = "已经过期 " + dateFormat.string(from: time)
+        timeStr += dateFormat.string(from: ctime.date)
     }
     
-    //print(time.timeIntervalSince1970,elapsedTimeSeconds)
-    var postStr = ""
-    if time.hour >= 0 && time.hour < 12{
-        postStr = " 上午"
-    } else if time.hour >= 12 && time.hour < 18{
-        postStr = " 下午"
-    }else{
-        postStr = " 晚上"
+    else if ctime.compare(.isThisYear){
+        dateFormat.dateFormat = "MM-dd HH:mm"
+        timeStr += dateFormat.string(from: ctime.date)
+        
+    }else  {
+        dateFormat.dateFormat = "yy-MM-dd HH:mm"
+        timeStr += dateFormat.string(from: ctime.date)
     }
-    return timeStr + postStr
+    
+
+    return timeStr
+    
 }
 
 
@@ -139,15 +139,14 @@ func showMonthAndDay(date: Date?) ->String?{
         return nil
     }
     
-    let now = DateInRegion()
-    //DateInRegion.init(date)
     let dateRoom = DateInRegion.init(date, region: regionRome)
-    let year = now.year - dateRoom.year
-    if year != 0{
-        return String.init(format: "%d年%d月%d日", dateRoom.year, dateRoom.month,dateRoom.day)
-        
-    }else{
+    
+    if dateRoom.compare(.isThisYear){
         return String.init(format: "%d月%d日", dateRoom.month, dateRoom.day)
+
+    }else{
+        return String.init(format: "%d年%d月%d日", dateRoom.year, dateRoom.month,dateRoom.day)
+
     }
     
 }
@@ -158,15 +157,13 @@ func showDayAndHour(date: Date?) -> String?{
         return nil
     }
     
-    let now = DateInRegion()
     let dateRoom = DateInRegion.init(date, region: regionRome)
     
-    let year = now.year - dateRoom.year
-    if year != 0 {
-        return String.init(format: "%d年%d月%d日 %d:%02d", dateRoom.year, dateRoom.month, dateRoom.day, dateRoom.hour,
-                                        dateRoom.minute)
-    }else{
+    if dateRoom.compare(.isThisYear){
         return String.init(format: "%d月%d日 %d:%02d", dateRoom.month, dateRoom.day, dateRoom.hour, dateRoom.minute)
+
+    }else{
+        return String.init(format: "%d年%d月%d日 %d:%02d", dateRoom.year, dateRoom.month, dateRoom.day, dateRoom.hour, dateRoom.minute)
     }
     
 }

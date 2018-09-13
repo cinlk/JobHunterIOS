@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
 
@@ -62,8 +63,10 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
             guard let mode = mode else {
                 return
             }
+            let url = URL.init(string: mode.icon)
+            self.icon.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             
-            self.icon.image = UIImage.init(named: mode.icon)
+            //self.icon.image = UIImage.init(named: mode.icon)
             self.company.text = mode.name
             self.types.text = mode.industry!.joined(separator: " ")
             self.address.text = mode.address!.joined(separator: " ")

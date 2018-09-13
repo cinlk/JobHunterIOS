@@ -96,9 +96,9 @@ class BaseSingleItemDropView: YNDropDownView {
 
 
 extension BaseSingleItemDropView{
+    
     private func chooseItem(name:String){
         self.passData?(name)
-        
         self.hideMenu()
     }
     
@@ -156,13 +156,18 @@ extension BaseSingleItemDropView: UITableViewDelegate, UITableViewDataSource{
 
 }
 
+
 extension BaseSingleItemDropView{
+    
     func clearSelected(){
         guard  let index = index  else {
             return
         }
         let cell = table.cellForRow(at: index)
         cell?.isSelected = false
+        cell?.textLabel?.textColor = UIColor.black
+        cell?.accessoryType = .none
+        cell?.accessoryView?.tintColor = UIColor.black
         self.table.reloadData()
     }
 }

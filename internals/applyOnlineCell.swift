@@ -7,18 +7,21 @@
 //
 
 import UIKit
+import Kingfisher
 
+fileprivate let column:Int = 2
+fileprivate let row:Int = 2
 
 class applyOnlineCell: UITableViewCell {
 
     
-    private lazy var collect:BaseCollectionHorizonView = BaseCollectionHorizonView.init(frame: CGRect.zero, column: 2, row: 2)
+    private lazy var collect:BaseCollectionHorizonView = BaseCollectionHorizonView.init(frame: CGRect.zero, column: column, row: row)
     
     
     internal var selectedIndex:((_ name:String)->Void)?
     
 
-    var mode:(title:String, items:[applyOnlineModel])?{
+    var mode:(title:String, items:[applyField])?{
         didSet{
                 self.collect.topTitle.text = mode?.title
                 self.collect.collectionView.reloadData()
@@ -77,10 +80,9 @@ extension applyOnlineCell:UICollectionViewDelegateFlowLayout, UICollectionViewDe
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        //self.delegate?.chooseItem(index: indexPath.row)
+        
         // 跳转到 网申界面，显示所有对应项
         self.selectedIndex?(mode!.title)
-        //print(indexPath)
     }
     
     
@@ -100,16 +102,17 @@ private class  applyShowCollectedCell:UICollectionViewCell{
     private lazy var name:UILabel = {  [unowned self] in
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
-        
         label.setSingleLineAutoResizeWithMaxWidth(self.width)
         label.textAlignment = .center
         return label
     }()
     
-    var mode:applyOnlineModel?{
+    var mode:applyField?{
         didSet{
-            self.name.text = mode?.title
-            self.icon.image = UIImage.init(named: mode?.imageIcon ?? "default")
+            self.name.text = mode?.Field
+            let url = URL.init(string: mode?.ImageUrl ?? "")
+            //self.icon.image = UIImage.init(named: mode?.ImageUrl ?? APPLY_DEFAULT_IMG)
+            self.icon.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
         }
     }
     

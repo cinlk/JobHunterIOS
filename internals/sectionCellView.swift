@@ -20,7 +20,7 @@ import UIKit
     
     lazy var rightBtn:UIButton = { [unowned self] in
         let btn = UIButton()
-        btn.setTitle("我的订阅", for: .normal)
+        btn.setTitle("", for: .normal)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         btn.setTitleColor(UIColor.lightGray, for: .normal)
         btn.addTarget(self, action: #selector(choose(_ :)), for: .touchUpInside)

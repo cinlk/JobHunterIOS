@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Kingfisher
 
 fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
 
@@ -15,7 +15,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
 
     
     // 控制 标签显示
-    internal var showTag:Bool = true
+    internal var showInternTag:Bool = false
     
     internal lazy var icon:UIImageView = {
         let image = UIImageView.init()
@@ -30,22 +30,13 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
         label.textAlignment = .left
         label.font = UIFont.boldSystemFont(ofSize: 16)
         label.textColor = UIColor.black
+        label.isAttributedContent = true
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20 )
         return label
         
     }()
     
-    private lazy var interTag:UILabel = {
-        let label = UILabel.init()
-        label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 10)
-        label.textColor = UIColor.white
-        label.backgroundColor = UIColor.orange
-        label.text = "实习"
-        label.isHidden = true
-        return label
-        
-    }()
+
     internal lazy var jobName:UILabel = {
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: 12)
@@ -107,16 +98,35 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
                 return
             }
             
-            icon.image = UIImage.init(named: mode.icon)
+            let url = URL.init(string: mode.icon)
+            icon.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            //icon.image = UIImage.init(named: mode.icon)
             
             
-            if showTag{
-                interTag.isHidden  = type == .intern ? false : true
+            
+            
+            let paragrap = NSMutableParagraphStyle.init()
+            
+            paragrap.alignment = .center
+            paragrap.lineBreakMode = .byWordWrapping
+           
+            let companyStr = NSMutableAttributedString.init(string: mode.company?.name ?? "", attributes: [NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 16),NSAttributedStringKey.foregroundColor:UIColor.black,
+                NSAttributedStringKey.paragraphStyle: paragrap])
+            
+            
+            if showInternTag && type == .intern{
+ 
+                let attach = NSTextAttachment()
+                let img = #imageLiteral(resourceName: "qqZone").changesize(size: CGSize.init(width: 17, height: 17), renderMode: .alwaysOriginal)
+                attach.image = img
+
+                attach.bounds = CGRect.init(x: 10, y: (UIFont.systemFont(ofSize: 16).capHeight - img.size.height)/2, width: img.size.width, height: img.size.height)
+                let tagStr = NSAttributedString.init(attachment: attach)
+                companyStr.append(tagStr)
             }
             
+            company.attributedText = companyStr
             
-            company.text = mode.company?.name
-
             jobName.text = mode.name
             
             address.text = mode.addressStr
@@ -138,7 +148,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        let views:[UIView] = [icon, jobName, company, address, degree, create_time, checkNums,interTag]
+        let views:[UIView] = [icon, jobName, company, address, degree, create_time, checkNums]
         
         self.sd_addSubviews(views)
         setLayout()
@@ -165,14 +175,12 @@ extension  CommonJobDetailCellView{
        
         
         _ = company.sd_layout().topEqualToView(icon)?.leftSpaceToView(icon,15)?.autoHeightRatio(0)
-        _ = interTag.sd_layout().leftSpaceToView(company,5)?.centerYEqualToView(company)?.autoHeightRatio(0)?.widthIs(28)
         _ = jobName.sd_layout().topSpaceToView(company,5)?.leftEqualToView(company)?.autoHeightRatio(0)
         _ = address.sd_layout().topSpaceToView(jobName,10)?.leftEqualToView(jobName)?.autoHeightRatio(0)
         _ = degree.sd_layout().topEqualToView(address)?.leftSpaceToView(address,5)?.autoHeightRatio(0)
         _ = checkNums.sd_layout().topEqualToView(icon)?.rightSpaceToView(self,15)?.autoHeightRatio(0)
         _ = create_time.sd_layout().topSpaceToView(checkNums,10)?.rightEqualToView(checkNums)?.autoHeightRatio(0)
 
-        interTag.setMaxNumberOfLinesToShow(1)
         jobName.setMaxNumberOfLinesToShow(1)
         company.setMaxNumberOfLinesToShow(1)
         address.setMaxNumberOfLinesToShow(1)

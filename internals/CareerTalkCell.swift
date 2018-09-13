@@ -7,15 +7,12 @@
 //
 
 import UIKit
+import Kingfisher
 
 
 fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
-
-
-
 @objcMembers class CareerTalkCell: UITableViewCell {
 
-    
     
     private lazy var icon:UIImageView = {
         let img = UIImageView()
@@ -71,9 +68,10 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
             guard  let mode = mode  else {
                 return
             }
-            self.icon.image = UIImage.init(named: mode.icon)
-            self.company.text = mode.companyModel?.name
+            let url = URL.init(string: mode.icon)
+            self.icon.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             
+            self.company.text = mode.companyModel?.name
             self.time.text = mode.time
             self.collage.text = mode.college! + " |"
             self.address.text = mode.address

@@ -13,12 +13,11 @@ import RxDataSources
 
 
 
-
 // multi sections
 enum MultiSecontions{
     case newSection(title:String, items: [SectionItem])
-    case CatagorySection(title:String, items: [SectionItem])
-    case RecommandSection(title:String, itmes: [SectionItem])
+    case JobFieldSection(title:String, items: [SectionItem])
+    case ColumnSection(title:String, items: [SectionItem])
     case RecruitMentMeet(title:String, items: [SectionItem])
     case ApplyOnline(title:String, items: [SectionItem])
     
@@ -27,10 +26,10 @@ enum MultiSecontions{
 // items
 enum SectionItem{
     case newItem(new:[String])
-    case catagoryItem(imageNames:[String:String])
-    case recommandItem(imageNames:[String:String])
+    case jobFieldItem([jobField])
+    case columnItem([latestColumn])
     case recruimentMeet(list: [CareerTalkMeetingModel])
-    case applyonline(list: [applyOnlineModel])
+    case applyonline(list: [applyField])
     case campuseRecruite(job: CompuseRecruiteJobs)
     //case internRecruite(jobs:[InternshipJobs])
     
@@ -43,9 +42,9 @@ extension MultiSecontions: SectionModelType{
         switch self {
         case .newSection(title: _, let items):
             return items
-        case .CatagorySection(title: _, let items):
+        case .JobFieldSection(title: _, let items):
             return items.map{$0}
-        case .RecommandSection(title: _, let items):
+        case .ColumnSection(title: _, let items):
             return items.map{$0}
         case .RecruitMentMeet(title: _,  let  items):
             return items
@@ -63,9 +62,9 @@ extension MultiSecontions: SectionModelType{
             return title
         case .CampuseRecruite(title: let title, items: _):
             return title
-        case .CatagorySection(title: let title, items: _):
+        case .JobFieldSection(title: let title, items: _):
             return title
-        case .RecommandSection(title: let title, itmes: _):
+        case .ColumnSection(title: let title, items: _):
             return title
         case .RecruitMentMeet(title: let title, items: _):
             return title
@@ -78,10 +77,10 @@ extension MultiSecontions: SectionModelType{
         switch original {
         case let .newSection(title: title, items: _):
             self = .newSection(title: title, items: items)
-        case let .CatagorySection(title: title, items: _):
-            self = .CatagorySection(title: title, items: items)
-        case let .RecommandSection(title: title,  itmes:_):
-            self = .RecommandSection(title: title, itmes: items)
+        case let .JobFieldSection(title: title, items: _):
+            self = .JobFieldSection(title: title, items: items)
+        case let .ColumnSection(title: title,  items:_):
+            self = .ColumnSection(title: title, items: items)
         case let .RecruitMentMeet(title: title, items: items):
             self = .RecruitMentMeet(title: title, items: items)
         case let .ApplyOnline(title: title, items: items):

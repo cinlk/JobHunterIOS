@@ -7,10 +7,10 @@
 //
 
 import UIKit
+import Kingfisher
 
 fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
 
-// 这是collectioncell
 @objcMembers class simpleRecruitCell: UICollectionViewCell {
 
     private lazy var collegeIcon:UIImageView = {
@@ -18,7 +18,6 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
         icon.contentMode = .scaleToFill
         icon.clipsToBounds = true
         return icon
-        
     }()
     
     private lazy var times:UILabel = {
@@ -32,11 +31,11 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
     }()
     
     private lazy var collegeName:UILabel = {
-        let label = UILabel()
         
+        let label = UILabel()
         label.textAlignment = .left
         label.textColor = UIColor.lightGray
-        label.setSingleLineAutoResizeWithMaxWidth(160)
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW/2)
         label.font = UIFont.systemFont(ofSize: 14)
         return label
     }()
@@ -44,7 +43,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
     private lazy var company:UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 60)
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 80)
         label.font = UIFont.systemFont(ofSize: 14)
         return label
     }()
@@ -53,30 +52,31 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
         let label = UILabel()
         label.textColor = UIColor.lightGray
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 160)
+        label.setSingleLineAutoResizeWithMaxWidth(ScreenW/2)
         label.font = UIFont.systemFont(ofSize: 14)
         return label
     }()
     
    dynamic var mode:CareerTalkMeetingModel?{
+    
         didSet{
-            
             guard  let mode = mode  else {
                 return
             }
             
             self.times.text = mode.time
-            self.collegeIcon.image = UIImage.init(named: mode.icon)
+            let url = URL.init(string: mode.icon)
+            self.collegeIcon.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             self.collegeName.text = mode.college! + " |"
             self.company.text = mode.companyModel?.name
-            
-            self.address.text = mode.address
+            self.address.text = mode.short_address
             self.setupAutoHeight(withBottomViewsArray: [self.collegeIcon,self.address], bottomMargin: 10)
             
         }
     }
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         let views:[UIView] = [times, collegeIcon, collegeName, company,address]
         self.contentView.sd_addSubviews(views)
         _ = collegeIcon.sd_layout().topSpaceToView(self.contentView,5)?.leftSpaceToView(self.contentView,10)?.widthIs(imgSize.width)?.heightIs(imgSize.height)

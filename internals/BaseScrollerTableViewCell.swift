@@ -11,25 +11,26 @@ import UIKit
 class BaseScrollerTableViewCell: UITableViewCell {
 
     
-    lazy var scrollView:UIScrollView = {
-        let scrollView = UIScrollView.init(frame: self.contentView.frame)
+    internal lazy var scrollView:UIScrollView = {
+        
+        let scrollView = UIScrollView.init(frame: CGRect.zero)
         //scrollView.delegate = self
-        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator  = false
         scrollView.isUserInteractionEnabled = true
         scrollView.bounces = true
         scrollView.isPagingEnabled = false
         scrollView.contentInset = UIEdgeInsetsMake(0, 5, 0, 5)
-        //scrollView?.height = self.frame.height
         scrollView.canCancelContentTouches  = true
+        
         return scrollView
         
     }()
     
-    var selectedItem:((_ btn:UIButton)->Void)?
+    internal var selectedItem:((_ btn:UIButton)->Void)?
     
     
     // image url strings and title
-    var mode:[String:String]?
+   internal var mode:[String:String]?
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

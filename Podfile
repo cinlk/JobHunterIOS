@@ -16,6 +16,7 @@ target 'internals' do
 	pod 'Moya/RxSwift'
 	pod 'ObjectMapper'
 	pod 'MJRefresh'
+	pod 'Kingfisher', '~> 4.0'
 	# hub
 	pod 'MBProgressHUD'
 	pod 'SwiftDate'

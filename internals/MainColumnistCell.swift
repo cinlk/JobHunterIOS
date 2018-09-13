@@ -7,12 +7,13 @@
 //
 
 import UIKit
+import Kingfisher
 
-fileprivate let cellHeightH:CGFloat = 140
-fileprivate let itemWidth:CGFloat = ScreenW / 3 - 20
 
 class MainColumnistCell: BaseScrollerTableViewCell,UIScrollViewDelegate {
 
+    
+   private var itemViews:[UIView] = []
 
    private lazy var topView:UIView = {
         let v = UIView()
@@ -26,57 +27,17 @@ class MainColumnistCell: BaseScrollerTableViewCell,UIScrollViewDelegate {
         v.addSubview(label)
         _ = label.sd_layout().leftSpaceToView(v,10)?.centerYEqualToView(v)?.autoHeightRatio(0)
         return v
-
    }()
-    
-    
-   override  var mode:[String:String]?{
-        didSet{
-            guard let items = mode  else {
-                return
-            }
-            
-            //stackview
-            scrollView.subviews.forEach{$0.removeFromSuperview()}
-            scrollView.contentSize = CGSize.init(width: CGFloat(items.count) * (itemWidth + 10), height: scrollView.frame.height)
-            var index = 0
-            for (image,title) in items{
-                
-                
-                let button = UIButton(type: .custom)
-                button.frame = CGRect(x: CGFloat(index)*(itemWidth+10), y: 0, width: itemWidth, height: scrollView.frame.height - 20)
-                button.backgroundColor  = UIColor.clear
-                //button.setImage(UIImage(named: image), for: .normal)
-                //button.setBackgroundImage(UIImage.init(named: image), for: .normal)
-                //button.setBackgroundImage(UIImage.init(named: image), for: .highlighted)
-                button.setImage(UIImage.init(named: image), for: .normal)
-                button.setImage(UIImage.init(named: image), for: .highlighted)
-                button.imageView?.contentMode = .scaleToFill
-                button.imageView?.clipsToBounds = true
-                button.imageView?.alpha = 0.7
-                button.titleLabel?.text = title
-                button.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5)
-                button.addTarget(self, action: #selector(click(_:)), for: .touchUpInside)
-                button.backgroundColor = UIColor.clear
-                let label = UILabel.init(frame: CGRect.init(x: CGFloat(index)*(itemWidth+10), y: scrollView.frame.height - 20, width: itemWidth, height: 20))
-                // TEST 名字
-                label.text = "专栏\(index)"
-                //label.setSingleLineAutoResizeWithMaxWidth(itemWidth)
-                label.textAlignment = .center
-                index += 1
-                scrollView.addSubview(label)
-                scrollView.addSubview(button)
-                
-                
-            }
-            
+   
+    internal var topViewH:CGFloat = 25{
+        willSet{
+            self.topView.isHidden = newValue == 0 ? true : false
         }
     }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        
+        self.scrollView.delegate = self
         
     }
     
@@ -85,23 +46,20 @@ class MainColumnistCell: BaseScrollerTableViewCell,UIScrollViewDelegate {
     }
     
     
-    
     override func layoutSubviews() {
         super.layoutSubviews()
+        
         scrollView.sd_resetLayout()
         
         self.contentView.addSubview(topView)
-        _ = topView.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topEqualToView(self.contentView)?.heightIs(25)
+        _ = topView.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topEqualToView(self.contentView)?.heightIs(topViewH)
         
          _ = scrollView.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topSpaceToView(self.topView,5)?.bottomEqualToView(self.contentView)
        
         
     }
     
-    
-    class func cellHeight()->CGFloat {
-        return cellHeightH
-    }
+
     
     class func identity()->String{
         return "recommand"
@@ -110,8 +68,60 @@ class MainColumnistCell: BaseScrollerTableViewCell,UIScrollViewDelegate {
 }
 
 extension MainColumnistCell{
-    @objc private func click(_ btn:UIButton){
-        
+    @objc private func chooseItem(_ btn:UIButton){
         self.selectedItem?(btn)
+    }
+    
+    internal  func setItems(width:CGFloat, height:CGFloat, items:[String:String]){
+        
+        itemViews.removeAll()
+        scrollView.subviews.forEach{$0.removeFromSuperview()}
+       
+        scrollView.contentSize = CGSize.init(width: CGFloat(items.count)*(width+5) , height: height - topViewH)
+        
+        for (idx, item) in items.enumerated(){
+            
+            
+            let subView:UIView = UIView.init(frame: CGRect.init(x: CGFloat(idx)*(width+5), y: 0, width: width, height: height - topViewH))
+            
+            let btn = UIButton.init(frame: CGRect.zero)
+            
+            btn.tag = idx
+            btn.backgroundColor = UIColor.white
+            let url = URL.init(string: item.key)
+            btn.kf.setImage(with: url, for: .normal, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            btn.kf.setImage(with: url, for: .highlighted, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+           
+            btn.titleLabel?.text = item.value
+            btn.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5)
+            btn.addTarget(self, action: #selector(chooseItem(_:)), for: .touchUpInside)
+            
+            let subtitle = UILabel.init(frame: CGRect.zero)
+            subtitle.text = item.value
+            subtitle.font = UIFont.systemFont(ofSize: 15)
+            subtitle.textAlignment = .center
+            subtitle.textColor = UIColor.black
+            
+            subView.addSubview(btn)
+            subView.addSubview(subtitle)
+            _ = btn.sd_layout().leftSpaceToView(subView,5)?.rightSpaceToView(subView,5)?.topSpaceToView(subView,5)?.heightIs(height - topViewH - CGFloat(30))
+            _ = subtitle.sd_layout().topSpaceToView(btn,0)?.centerXEqualToView(btn)?.bottomSpaceToView(subView,5)?.widthRatioToView(btn,1)
+            itemViews.append(subView)
+        }
+        
+        scrollView.sd_addSubviews(itemViews)
+        
+    }
+    
+    
+}
+
+extension MainColumnistCell{
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView == self.scrollView{
+            if scrollView.contentOffset.y != 0 {
+                scrollView.contentOffset.y = 0
+            }
+        }
     }
 }

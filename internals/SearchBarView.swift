@@ -29,7 +29,7 @@ class SearchBarView: UISearchBar{
     
         self.showsCancelButton = true
         // 屏蔽image 显示text的圆角
-        self.setSearchFieldBackgroundImage(build_image(frame: CGRect.init(x: 0, y: 0, width: 1, height: searchBarH), color: UIColor.clear), for: .normal)
+        self.setSearchFieldBackgroundImage(build_image(frame: CGRect.init(x: 0, y: 0, width: 1, height: SEARCH_BAR_H), color: UIColor.clear), for: .normal)
         setTextField()
         
         
@@ -46,7 +46,7 @@ class SearchBarView: UISearchBar{
 extension SearchBarView{
     private func setTextField(){
         let textField = self.value(forKey: "searchField") as? UITextField
-        textField?.layer.cornerRadius = searchBarH/2
+        textField?.layer.cornerRadius = SEARCH_BAR_H/2
         textField?.layer.masksToBounds = true
         textField?.layer.borderWidth = 1
         textField?.layer.borderColor = UIColor.white.cgColor

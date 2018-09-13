@@ -217,12 +217,16 @@ struct SearchHistory {
             for item in try db.prepare(SearchHistory.search.select(SearchHistory.name).filter(SearchHistory.type == type).order(SearchHistory.ctime.desc)){
                 res.append(item[SearchHistory.name])
             }
+            if res.count > 0{
+                res.insert("搜索记录", at: 0)
+            }
             return res
             
         }catch{
             print(error)
-            return []
+            
         }
+        return []
     }
     
     

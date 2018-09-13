@@ -9,7 +9,8 @@
 
 import Foundation
 import SwiftDate
-
+import Alamofire
+import Moya
 
 /* 定义全局的变量 */
 // 时区
@@ -22,24 +23,6 @@ var shareItems:[ShareItem] = []
 var shareViewH:CGFloat = 240
 
 
-// 不同版本键盘高度不一样？？
-let KEYBOARD_HEIGHT:CGFloat = 216.0
-
-
-// navigationbar 高度
-let NavBarH:CGFloat = 44
-// navigation View 高度
-let NavH:CGFloat = 64
-let TOOLBARH:CGFloat = 44
-let searchBarH:CGFloat = 30
-
-// 屏幕宽高
-let ScreenW:CGFloat = UIScreen.main.bounds.width
-let ScreenH:CGFloat = UIScreen.main.bounds.height
-
-
-// cell lable offsetx 偏移
-let TableCellOffsetX:CGFloat = 16
 
 
 // url
@@ -94,6 +77,21 @@ var phoneNumber:String = ""
 
 
 
+
+// moya https 配置
+let MoyaManager = Manager(
+    configuration: URLSessionConfiguration.default,
+    serverTrustPolicyManager: CustomServerTrustPoliceManager()
+)
+
+class CustomServerTrustPoliceManager : ServerTrustPolicyManager {
+    override func serverTrustPolicy(forHost host: String) -> ServerTrustPolicy? {
+        return .disableEvaluation
+    }
+    public init() {
+        super.init(policies: [:])
+    }
+}
 
 
 

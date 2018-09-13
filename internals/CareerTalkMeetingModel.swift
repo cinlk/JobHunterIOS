@@ -9,17 +9,20 @@
 import UIKit
 import ObjectMapper
 
-class CareerTalkMeetingModel: BaseModel  {
+internal  class CareerTalkMeetingModel: BaseModel  {
     
     
     //关联 公司
     internal var companyModel:CompanyModel?
-
+    
     
     // 大学  (必须)
     internal var college:String?
-    // 地址 (必须)
+    // 详细地址 (必须)
     internal var address:String?
+    // 简写地址
+    internal var short_address:String = ""
+    
     // 开始时间 (必须)
     internal var start_time:Date?
     
@@ -37,15 +40,17 @@ class CareerTalkMeetingModel: BaseModel  {
     // 行业领域
     internal var industry:[String] = []
     
-    // 连接
-    internal var url:String?
+    // 专业
+    internal var major:[String] = []
+    
+    
     
     
     internal var time:String{
         get{
             guard let time = self.start_time else { return "" }
-           
-            return meetingTalkTime(times:time)
+            print(time)
+            return meetingTalkTime(time:time)
             
         }
     }
@@ -57,20 +62,28 @@ class CareerTalkMeetingModel: BaseModel  {
         if map.JSON["college"] == nil || map.JSON["address"] == nil || map.JSON["start_time"] == nil || map.JSON["end_time"] == nil  {
             return nil
         }
+       
     }
     
     override func mapping(map: Map) {
         super.mapping(map: map)
         
-        companyModel <- map["companyModel"]
+        companyModel <- map["company"]
         college <- map["college"]
         address <- map["address"]
+        short_address <- map["shorten_address"]
         start_time <- (map["start_time"], DateTransform())
         end_time <- (map["end_time"],DateTransform())
-        source <- map["source"]
+        source <- map["reference"]
         content <- map["content"]
         industry <- map["industry"]
-        url <- map["url"]
+        major <- map["major"]
+        
+        
+        // 不能超过10个长度
+        if short_address.count > 10{
+            short_address = ""
+        }
         
     }
     

@@ -12,7 +12,6 @@ import ObjectMapper
 
 class SpecialJobVC: BaseTableViewController {
 
-    
     // 查询条件
     var queryName:String?{
         didSet{

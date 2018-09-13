@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Kingfisher
 
 fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
 
@@ -82,7 +82,9 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
                  _ = self.icon.sd_layout().leftSpaceToView(self.contentView,0)?.topSpaceToView(self.contentView,5)?.widthIs(0)?.autoHeightRatio(1)
                 
             }else{
-                self.icon.image = UIImage.init(named:  mode.companyIcon)
+                let url = URL.init(string: mode.companyIcon)
+                
+                self.icon.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }
            
             
@@ -107,7 +109,7 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
         _ = icon.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(imgIcon.width)?.autoHeightRatio(1)
         _ = jobName.sd_layout().leftSpaceToView(icon,10)?.topEqualToView(icon)?.autoHeightRatio(0)
         _ = address.sd_layout().leftEqualToView(jobName)?.topSpaceToView(jobName,10)?.autoHeightRatio(0)
-        _ = endTime.sd_layout().rightSpaceToView(self.contentView,10)?.topEqualToView(address)?.autoHeightRatio(0)
+        _ = endTime.sd_layout().rightSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,10)?.autoHeightRatio(0)
      
         
         jobName.setMaxNumberOfLinesToShow(2)

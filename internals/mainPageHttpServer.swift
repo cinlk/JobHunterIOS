@@ -12,6 +12,119 @@ import Foundation
 import Moya
 import RxSwift
 import RxCocoa
+import SwiftDate
+
+
+
+enum MainPageTarget {
+    case getScrollerImage
+    case getMainRecommands
+    case getRecommandJobs(offset:Int)
+    case none
+}
+
+
+extension MainPageTarget:TargetType{
+    
+    var baseURL: URL {
+        return URL.init(string: "https://127.0.0.1:9090/app/api/")!
+    }
+    
+    var path: String {
+        switch  self {
+        case .getScrollerImage:
+            return "topic/category"
+        case .getMainRecommands:
+            return "job/mainRecommands"
+        case .getRecommandJobs(let offset):
+            return "job/recommands/\(offset)"
+            
+        default:
+            return "topic"
+        }
+    }
+    
+    var method: Moya.Method {
+        switch self {
+        case .getScrollerImage:
+            return Method.get
+        case .getMainRecommands:
+            return Method.get
+        case .getRecommandJobs(_):
+            return Method.get
+        default:
+            return Method.get
+        }
+    }
+    
+    
+    var sampleData: Data {
+        switch self {
+        case .getScrollerImage:
+            return "{\"image_url\":\"url\", \"link\":\"test link\"}".utf8Encoded
+        case .getMainRecommands:
+            return "nothing".utf8Encoded
+        case .getRecommandJobs(_):
+            return "nothing".utf8Encoded
+        default:
+            return "".utf8Encoded
+        }
+    }
+    
+    var task: Task {
+        switch self {
+        case .getScrollerImage:
+            return .requestPlain
+        case .getMainRecommands:
+            return .requestPlain
+        case .getRecommandJobs(_):
+            return .requestPlain
+        default:
+            return .requestPlain
+        }
+    }
+    
+    var headers: [String : String]? {
+        
+        return ["Content-type": "application/json","User-Agent":"ios"]
+    }
+    
+    
+}
+
+
+
+class  demoHttpServer {
+    
+    
+    static let shared:demoHttpServer = demoHttpServer()
+    private lazy var  httpServer: MoyaProvider<MainPageTarget> = {
+        let s = MoyaProvider<MainPageTarget>(manager: MoyaManager, plugins: [NetworkLoggerPlugin(verbose: true)])
+        return s
+    }()
+    
+    private init(){}
+
+    func getLastestCategory() -> Observable<[RotateCategory]>{
+        
+        return httpServer.rx.request(.getScrollerImage).filterSuccessfulStatusCodes().asObservable().mapArray(RotateCategory.self, tag: "categories")
+    }
+    
+    func getMainRecommands() -> Observable<SpecialRecommands>{
+        
+        return httpServer.rx.request(.getMainRecommands).filterSuccessfulStatusAndRedirectCodes().asObservable().mapObject(SpecialRecommands.self).debug()
+    }
+
+    // flatMapLatest 连续请求时只取第一次数据
+    //
+    func getRecommandJobs(offset:Int) -> Observable<[CompuseRecruiteJobs]>{
+        return httpServer.rx.request(.getRecommandJobs(offset:offset)).retry(3).timeout(30, scheduler: MainScheduler.instance).filterSuccessfulStatusCodes().asObservable().debug().mapArray(CompuseRecruiteJobs.self, tag: "jobs").flatMapLatest({ (jobs)  in
+            return Observable<[CompuseRecruiteJobs]>.just(jobs)
+        }).share()
+        
+    }
+
+}
 
 
 // job 参数
@@ -23,7 +136,6 @@ enum Jobs{
     case getCatagoryItem
     case getRecommandItems
     case searchJobs(word:String)
-    
     case getAlls
     
 }
@@ -126,54 +238,8 @@ class mainPageServer {
     
     private init(){}
     
-    
-    // MARK
-    public func getCompuseJobs(index:Int) -> Observable<[CompuseRecruiteJobs]> {
-        
-        return self.httpRequest.rx.request(Jobs.getCompuseJobs(limit: index)).asObservable().mapArray(CompuseRecruiteJobs.self,tag:"CompuseRecruiteJobs")
-    }
-    // MARK
-    public func getCatagories() -> Observable<[String:String]> {
-        return Observable.just(["hotJobs":"热门职位","fastOffer":"急招职位","accountIn":"户口机会","highPlay":"高薪职位","flyPig":"行业风口"])
-        
-    }
-    // MARK
-    public func getRecommand() -> Observable<[String:String]> {
-        return Observable.just(["ali":"https://job.alibaba.com/zhaopin/index.htm","xiaomiDefault":"http://hr.xiaomi.com/","service1":"http://www.sohu.com/a/151070865_219733","company2":"https://tour.go-zh.org/welcome/1"])
-    }
-    //MARK
-    public func getImageBanners() -> Observable<[RotateImages]>{
-        
-        return self.httpRequest.rx.request(Jobs.getImageBanners).asObservable().mapArray(RotateImages.self, tag: "RotateImages")
-    }
-    
-    public func getHotRecruitMeetings()->Observable<[CareerTalkMeetingModel]>{
-        //return self.httpRequest.rx.request(<#T##token: Jobs##Jobs#>)
-        var res:[CareerTalkMeetingModel] = []
-        for _ in 0..<12{
-           if let data =  CareerTalkMeetingModel(JSON: ["id":"dqw-dqwd","companyModel":["id":"com-dqwd-5dq",
-                        "name":"公司名字","describe":"达瓦大群-dqwd","isValidate":true,"isCollected":false,"address":["地址1","地址2"],"icon":"volk","industry":["教育","医疗","化工"]],
-                    "college":"北京大学","address":"教学室二","isValidate":true,"isCollected":false,"icon":"car","start_time":Date().timeIntervalSince1970 + TimeInterval (arc4random()%(7 * 60 * 60 * 24)),"end_time":Date().timeIntervalSince1970 + TimeInterval(3600*2),"name":"北京高华证券有限责任公司宣讲会但钱当前无多群","source":"上海交大",
-                    "content":"举办方：电院举办时间：2018年4月25日 18:00~20:00  \n举办地点：上海交通大学 - 上海市东川路800号电院楼群3-100会议室 单位名称：北京高华证券有限责任公司 联系方式：专业要求：不限、信息安全类、自动化类、计算机类、电子类、软件工程类"]){
-                        
-                res.append(data)
-            }
-         }
-        
-        
-        return Observable.just(res)
-        
-    }
-    
-    //
-    public func getHotApplyOnlines()->Observable<[applyOnlineModel]>{
-        return Observable.just([applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"金融行业"])!,
-                                applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"能源行业"])!,
-                                applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"教育行业"])!,
-                                applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"互联网行业"])!,
-                                applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"独角兽"])!,
-                                applyOnlineModel(JSON: ["imageIcon":"ali","type":"","title":"制造业"])!])
-    }
+
+
     
     // MARK 搜索校招和实习职位
     public func searchJobsByWord(word:String) -> Observable<[CompuseRecruiteJobs]> {

@@ -7,7 +7,8 @@
 //
 
 import UIKit
-
+import RxCocoa
+import RxSwift
 
 protocol SearchMenuDelegate: class {
     func selectedItem(item: searchItem)
@@ -148,5 +149,7 @@ extension SearchTypeMenuView: UITableViewDataSource, UITableViewDelegate{
     }
 
 }
+
+
 
 

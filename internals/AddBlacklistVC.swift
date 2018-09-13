@@ -34,7 +34,7 @@ class AddBlacklistVC: UIViewController {
     
     // 包裹searchbar View (设置titleview 能调整位置)
     private lazy var wrapperSearchBar:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW - 10, height: searchBarH))
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW - 10, height: SEARCH_BAR_H))
         v.addSubview(searchBar)
         searchBar.frame = v.frame
         return v

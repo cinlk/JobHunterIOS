@@ -14,118 +14,276 @@ import RxDataSources
 
 
 
-struct filterCondtionss {
-    var companyType:[String:[String]]?
-    var position:[String:[String]]?
-    var jobArea:[String:String]?
+class searchViewModel {
     
-    var index = 0
+    //网申
+    let onlineApplyRrefresh:PublishSubject<(Bool, searchOnlineApplyBody)> = PublishSubject<(Bool, searchOnlineApplyBody)>()
+    var onlineOffset = 0
+    var onlineApplyStatus:PublishSubject<mainPageRefreshStatus> = PublishSubject<mainPageRefreshStatus>()
+    var onlineApplyRes:BehaviorRelay<[OnlineApplyModel]> = BehaviorRelay<[OnlineApplyModel]>(value: [])
     
-    init() {
+    //校招
+    let graduateRefresh:PublishSubject<(Bool, searchGraduateRecruiteBody)> = PublishSubject<(Bool, searchGraduateRecruiteBody)>()
+    var graduateOffset = 0
+    var graduateRefreshStatus:PublishSubject<mainPageRefreshStatus> = PublishSubject<mainPageRefreshStatus>()
+    var graduateRes:BehaviorRelay<[CompuseRecruiteJobs]> = BehaviorRelay<[CompuseRecruiteJobs]>(value: [])
     
+    
+    //实习
+    let internRefresh:PublishSubject<(Bool, searchInternJobsBody)> = PublishSubject<(Bool, searchInternJobsBody)>()
+    var internOffset = 0
+    var internRefreshStatus:PublishSubject<mainPageRefreshStatus> = PublishSubject<mainPageRefreshStatus>()
+    var internRes:BehaviorRelay<[CompuseRecruiteJobs]> = BehaviorRelay<[CompuseRecruiteJobs]>.init(value: [])
+    
+    // 宣讲会
+    let careerTalkRefresh:PublishSubject<(Bool, searchCareerTalkBody)> = PublishSubject<(Bool, searchCareerTalkBody)>()
+    var careerOffset = 0
+    var careerRefreshStatus:PublishSubject<mainPageRefreshStatus> = PublishSubject<mainPageRefreshStatus>()
+    var carrerTalkRes:BehaviorRelay<[CareerTalkMeetingModel]> = BehaviorRelay<[CareerTalkMeetingModel]>.init(value: [])
+
+    
+    // 公司
+    let companyRefresh:PublishSubject<(Bool, searchCompanyBody)> = PublishSubject<(Bool, searchCompanyBody)>()
+    var companyOffset = 0
+    var companyRefreshStatus:PublishSubject<mainPageRefreshStatus> = PublishSubject<mainPageRefreshStatus>()
+    var companyRes:BehaviorRelay<[CompanyModel]> = BehaviorRelay<[CompanyModel]>.init(value: [])
+    
+    
+    
+    let disposeBag = DisposeBag.init()
+    let searchServer = SearchServer.shared
+   
+
+    
+    init(){
+        
+        //网申数据
+        setOnlineApply()
+        // 校招数据
+        setGraduateJobs()
+        
+        // 实习数据
+        setInternJobs()
+        
+        // 宣讲会数据
+        setCareerTalk()
+        
+        // 公司数据
+        setCompany()
+    }
+    
+    
+    
+    // onlineSearch
+    
+    // 搜索不同板块的 热门搜索记录
+    func searchLatestHotRecord(type:String) -> Driver<[String]>{
+        
+        return searchServer.getTopWords(type: type).throttle(0.5, scheduler: MainScheduler.instance).asDriver(onErrorJustReturn: [])
+        
+    }
+    
+    func searchMatchWords(type:String, word:String) -> Observable<MatchKeyWordsModel>{
+        
+        return searchServer.getMatchedWords(type: type, word: word)
+    }
+    
+    
+    // 搜索不同类型 根据关键字查数据
+    func searchOnlineAppy(mode:searchOnlineApplyBody, offset:Int) -> Observable<[OnlineApplyModel]>{
+    
+        return searchServer.searchOnlineAppy(mode: mode, offset: offset)
+    }
+    
+    
+    func searchGraduteJobs(mode: searchGraduateRecruiteBody, offset:Int) -> Observable<[CompuseRecruiteJobs]>{
+        
+        return searchServer.searchGraduateJobs(mode:mode, offset: offset)
+        
+    }
+    
+    
+    func searchInternJobs(mode: searchInternJobsBody, offset:Int) -> Observable<[CompuseRecruiteJobs]>{
+        
+        return searchServer.searchInternJobs(mode: mode, offset: offset)
+        
+    }
+    
+    
+    func searchCareerTalkMeetins(mode: searchCareerTalkBody, offset: Int) -> Observable<[CareerTalkMeetingModel]>{
+        
+        return searchServer.searchCareerTalkMeetins(mode: mode, offset: offset)
+    }
+    
+    
+    func searchCompany(mode: searchCompanyBody, offset:Int) -> Observable<[CompanyModel]>{
+        return searchServer.searchCompany(mode: mode, offset:offset)
     }
     
     
 }
 
 
-
-
-
-class searchViewModel: NSObject {
-
-    // 刷新数据
-    var refresh:Variable<filterCondtionss> = Variable.init(filterCondtionss.init())
-    // 搜索框 加载数据
-    var loadData:PublishSubject<String> = PublishSubject<String>.init()
+extension searchViewModel{
     
-   
     
-    var companyType:Variable<[String:[String]]> = Variable.init(["":[]])
-    var position:Variable<[String:[String]]> = Variable.init(["":[]])
-    var jobArea:Variable<[String:String]> = Variable.init(["":""])
-    var index = 0
-    let refreshStatus = Variable<mainPageRefreshStatus>.init(.none)
-    // job model data
-    let sectionJobData = Variable<[CompuseRecruiteJobs]>([])
-    // table section
-    var section:Driver<[searchJobSection]>?
-
-    // 转换为 json 对象
-    var combinCondtions:Observable<filterCondtionss>?
-    
-    var isRefresh:PublishSubject<Bool> = PublishSubject.init()
-    
-    let disposeBag = DisposeBag.init()
-    
-    var noMoredata = false
-    
-    // test
-    var test = 1
-    override init(){
-        super.init()
-        
+    private func setOnlineApply(){
+        // 网申数据
+        onlineApplyRrefresh.subscribe(onNext: { (IsPullDown, mode) in
             
-        section = sectionJobData.asObservable().map{ (jobs) -> [searchJobSection] in
-            return [searchJobSection.init(items: jobs)]
-        }.asDriver(onErrorJustReturn: [])
-        
-        
-        combinCondtions = Observable.combineLatest(companyType.asObservable(), position.asObservable(), jobArea.asObservable(), resultSelector: { (comp, position, area) in
-            var filter = filterCondtionss.init()
-            filter.companyType = comp
-            filter.jobArea = area
-            filter.position = position
-            return filter
-        
-        }).asObservable().share(replay:1)
-        
-        
-        loadData.subscribe(onNext: { (word) in
-            // 搜索的word
-            mainPageServer.shareInstance.searchJobsByWord(word: word).subscribe(onNext: { [unowned self] (jobs) in
-                self.sectionJobData.value = jobs
+            self.onlineOffset =  IsPullDown ? 0 : self.onlineOffset + 1
+            
+            self.searchOnlineAppy(mode: mode, offset: self.onlineOffset).subscribe(onNext: { (modes) in
+                if modes.isEmpty{
+                    self.onlineApplyStatus.onNext(mainPageRefreshStatus.NoMoreData)
+                    return
+                }
+                if IsPullDown{
+                    self.onlineApplyRes.accept(modes)
+                }else{
+                    self.onlineApplyRes.accept(self.onlineApplyRes.value + modes)
+                }
                 
-                }, onError: { (error) in
-                    self.sectionJobData.value = []
-                    self.refreshStatus.value = .error
-                    
-            }, onCompleted: {
-                //self.refreshStatus.value = .endFooterRefresh
-                self.refreshStatus.value = .end
+            }, onError: { (error) in
+                self.onlineApplyStatus.onNext(.error(err: error))
                 
-            }, onDisposed: nil).disposed(by: self.disposeBag)
+            }, onCompleted: nil, onDisposed: nil).disposed(by: self.disposeBag)
+            
+            
+            if IsPullDown{
+                self.onlineApplyStatus.onNext(mainPageRefreshStatus.endHeaderRefresh)
+                
+            }else{
+                self.onlineApplyStatus.onNext(mainPageRefreshStatus.endFooterRefresh)
+            }
+            
             
         }).disposed(by: disposeBag)
-        
-        
-        
-        isRefresh.subscribe(onNext: { [unowned self] (more) in
-            self.index = more ? self.index + 1 : 0
-            
-            // MARK  change to post method
-            
-            mainPageServer.shareInstance.searchJobsByWord(word: String(self.test)).subscribe(onNext: { [unowned self] (jobbs) in
-                
-                self.sectionJobData.value = more ? self.sectionJobData.value + jobbs : jobbs
-                if jobbs.isEmpty{
-                    self.noMoredata = true
+    }
+    
+    
+    private func setGraduateJobs(){
+        graduateRefresh.subscribe(onNext: { (IsPullDown, mode) in
+            self.graduateOffset = IsPullDown ? 0 : self.graduateOffset + 1
+            self.searchGraduteJobs(mode: mode, offset: self.graduateOffset).subscribe(onNext: { (jobs) in
+                if jobs.isEmpty{
+                    self.graduateRefreshStatus.onNext(mainPageRefreshStatus.NoMoreData)
+                    return
                 }
-                self.test += 1
+                if IsPullDown{
+                    self.graduateRes.accept(jobs)
+                }else{
+                    self.graduateRes.accept(self.graduateRes.value + jobs)
+                }
                 
-            }, onError: nil, onCompleted: {
-                self.refreshStatus.value =  self.noMoredata ? .NoMoreData : .endFooterRefresh
-            }, onDisposed: nil).disposed(by: self.disposeBag)
-            }, onDisposed: nil).disposed(by: disposeBag)
-       
+                
+            }, onError: { (err) in
+                self.graduateRefreshStatus.onNext(.error(err: err))
+                
+            }, onCompleted: nil, onDisposed: nil).disposed(by: self.disposeBag)
+            
+            
+            if IsPullDown{
+                self.graduateRefreshStatus.onNext(mainPageRefreshStatus.endHeaderRefresh)
+            }else{
+                self.graduateRefreshStatus.onNext(mainPageRefreshStatus.endFooterRefresh)
+
+            }
+            
+            
+            
+        }).disposed(by: disposeBag)
+    }
+    
+    
+    private func setInternJobs(){
+        
+  
+        internRefresh.share().subscribe(onNext: { (IsPullDown, mode) in
+            self.internOffset = IsPullDown ? 0 : self.internOffset + 1
+            
+            self.searchInternJobs(mode: mode, offset: self.internOffset).subscribe(onNext: { jobs in
+                if jobs.isEmpty{
+                    self.internRefreshStatus.onNext(mainPageRefreshStatus.NoMoreData)
+                    return
+                }
+                if IsPullDown{
+                    self.internRes.accept(jobs)
+                }else{
+                    self.internRes.accept(self.internRes.value + jobs)
+                }
+                
+            }, onError: { (err) in
+                self.internRefreshStatus.onNext(.error(err: err))
+            }, onCompleted: nil, onDisposed: nil).disposed(by: self.disposeBag)
+
+            if IsPullDown{
+                self.internRefreshStatus.onNext(mainPageRefreshStatus.endHeaderRefresh)
+            }else{
+                self.internRefreshStatus.onNext(mainPageRefreshStatus.endFooterRefresh)
+            }
+
+        }).disposed(by: disposeBag)
         
     }
     
     
+    private func  setCareerTalk(){
+        careerTalkRefresh.share().subscribe(onNext: { (IsPullDown, mode) in
+            self.careerOffset = IsPullDown ? 0 : self.careerOffset + 1
+            self.searchCareerTalkMeetins(mode: mode, offset: self.careerOffset).subscribe(onNext: { meetings in
+                if meetings.isEmpty{
+                    self.careerRefreshStatus.onNext(mainPageRefreshStatus.NoMoreData)
+                    return
+                }
+                if IsPullDown{
+                    self.carrerTalkRes.accept(meetings)
+                }else{
+                    self.carrerTalkRes.accept(self.carrerTalkRes.value + meetings)
+                }
+                
+            }, onError: { (err) in
+                self.careerRefreshStatus.onNext(.error(err: err))
+                
+            }, onCompleted: nil, onDisposed: nil).disposed(by: self.disposeBag)
+            
+            if IsPullDown{
+                self.careerRefreshStatus.onNext(mainPageRefreshStatus.endHeaderRefresh)
+            }else{
+                self.careerRefreshStatus.onNext(mainPageRefreshStatus.endFooterRefresh)
+            }
+            
+        }).disposed(by: disposeBag)
+    }
     
     
-    
-    
-    
+    private func  setCompany(){
+        companyRefresh.share().subscribe(onNext: {(IsPullDown, mode) in
+            self.companyOffset = IsPullDown ? 0 : self.companyOffset + 1
+            self.searchCompany(mode: mode, offset: self.companyOffset).subscribe(onNext: { companys in
+                if companys.isEmpty{
+                    self.companyRefreshStatus.onNext(mainPageRefreshStatus.NoMoreData)
+                    return
+                }
+                if IsPullDown{
+                    self.companyRes.accept(companys)
+                }else{
+                    self.companyRes.accept(self.companyRes.value + companys)
+                }
+                
+            }, onError: { (err) in
+                self.companyRefreshStatus.onNext(.error(err: err))
+            }, onCompleted: nil, onDisposed: nil).disposed(by: self.disposeBag)
+            
+            if IsPullDown{
+                self.companyRefreshStatus.onNext(mainPageRefreshStatus.endHeaderRefresh)
+            }else{
+                self.companyRefreshStatus.onNext(mainPageRefreshStatus.endFooterRefresh)
+            }
+            
+            
+        }).disposed(by: disposeBag)
+        
+    }
     
 }

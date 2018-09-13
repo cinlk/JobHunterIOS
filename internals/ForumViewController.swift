@@ -82,7 +82,7 @@ class ForumViewController: UIViewController {
     // 搜索包裹searchBar 的view
     private lazy var searchBarContainer:UIView = {
         // 搜索框
-        let searchBarFrame = CGRect(x: 0, y:0, width: ScreenW, height: searchBarH)
+        let searchBarFrame = CGRect(x: 0, y:0, width: ScreenW, height: SEARCH_BAR_H)
         let searchBarContainer = UIView(frame:searchBarFrame)
         searchBarContainer.backgroundColor = UIColor.clear
         return searchBarContainer
@@ -142,7 +142,7 @@ extension ForumViewController{
         self.navigationController?.navigationBar.settranslucent(true)
         
         self.definesPresentationContext = true
-        searchController.height = searchBarH
+        searchController.height = SEARCH_BAR_H
         searchBarContainer.addSubview(searchController.searchBar)
         // 不显示搜索分类
         searchController.chooseTypeBtn.isHidden = true
@@ -233,10 +233,10 @@ extension ForumViewController: UISearchResultsUpdating{
         
         if  let text = searchController.searchBar.text, !text.isEmpty{
             //MARK 显示搜索匹配结果
-            self.searchController.serchRecordVC.listRecords(word: text)
+            //self.searchController.serchRecordVC.listRecords(word: text)
         }else{
             // 历史搜索记录
-            self.searchController.serchRecordVC.showHistory()
+            //self.searchController.serchRecordVC.showHistory()
         }
         // 处理view
         self.searchController.showRecordView = true
@@ -272,9 +272,9 @@ extension ForumViewController: UISearchBarDelegate{
         
         // text 为空时 显示历史记录
         if searchText.isEmpty{
-            self.searchController.serchRecordVC.showHistory()
+            //self.searchController.serchRecordVC.showHistory()
         }else{
-            self.searchController.serchRecordVC.listRecords(word: searchText)
+            //self.searchController.serchRecordVC.listRecords(word: searchText)
         }
         // text 不为空 tableview 显示匹配搜索结果
     }

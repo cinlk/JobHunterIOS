@@ -54,7 +54,7 @@ class JobHomeVC: UIViewController {
     // 搜索包裹searchBar 的view
     private lazy var searchBarContainer:UIView = {
         // 搜索框
-        let searchBarFrame = CGRect(x: 0, y:0, width: ScreenW, height: searchBarH)
+        let searchBarFrame = CGRect(x: 0, y:0, width: ScreenW, height: SEARCH_BAR_H)
         let searchBarContainer = UIView(frame:searchBarFrame)
         searchBarContainer.backgroundColor = UIColor.clear
         return searchBarContainer
@@ -151,7 +151,7 @@ extension JobHomeVC {
 
         
         // 保证Controller 和 搜索container 高度一致, 搜索框左右圆角正常
-        searchController.height = searchBarH
+        searchController.height = SEARCH_BAR_H
         // searchBar 放入containerview
         searchBarContainer.addSubview(searchController.searchBar)
         //搜索条件menu
@@ -222,10 +222,10 @@ extension JobHomeVC: UISearchResultsUpdating{
         
         if  let text = searchController.searchBar.text, !text.isEmpty{
             //MARK 显示搜索匹配结果
-            self.searchController.serchRecordVC.listRecords(word: text)
+            //self.searchController.serchRecordVC.listRecords(word: text)
         }else{
             // 历史搜索记录
-            self.searchController.serchRecordVC.showHistory()
+            //self.searchController.serchRecordVC.showHistory()
         }
         self.searchController.showRecordView = true
         
@@ -261,9 +261,9 @@ extension JobHomeVC: UISearchBarDelegate{
         
         // text 为空时 显示历史记录
         if searchText.isEmpty{
-            self.searchController.serchRecordVC.showHistory()
+            //self.searchController.serchRecordVC.showHistory()
         }else{
-            self.searchController.serchRecordVC.listRecords(word: searchText)
+           // self.searchController.serchRecordVC.listRecords(word: searchText)
         }
         // text 不为空 tableview 显示匹配搜索结果
     }

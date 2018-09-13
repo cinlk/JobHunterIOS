@@ -12,10 +12,6 @@ fileprivate let pickerViewH:CGFloat = 200
 fileprivate let menuH:CGFloat = 40
 
 
-
-
-
-
 class DropValidTimeView: BaseSingleItemDropView {
 
     
@@ -40,13 +36,8 @@ class DropValidTimeView: BaseSingleItemDropView {
         let minDate = dateFormat.date(from: "2016-1-1")
         datePicker.maximumDate = Date()
         datePicker.minimumDate = minDate
-        
-        datePicker.date = Date()
-        
-        
     
-      
-
+        datePicker.date = Date()
         
         return datePicker
     }()

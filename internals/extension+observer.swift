@@ -38,11 +38,33 @@ extension Reactive where Base: UIButton {
         return Binder.init(self.base, binding: { (btn, r) in
             btn.isEnabled = r
             btn.alpha = r ? 1 : 0.5
+            
         })
     }
 }
 
 
+
+extension Reactive where Base: SearchTypeMenuView{
+    var hidden: Binder<Bool>{
+        return Binder.init(self.base, binding: { (target, v) in
+            let t =  target as SearchTypeMenuView
+           if v == true{
+                t.dismiss()
+            }
+        })
+    }
+}
+extension Reactive where Base: SearchRecodeViewController{
+    var status: Binder<String>{
+        return Binder.init(self.base, binding: { (target, v) in
+            let t =  target as SearchRecodeViewController
+            t.ShowHistoryTable = v.isEmpty
+            // 显示搜索历史界面
+            
+        })
+    }
+}
 
 
 extension ObservableConvertibleType{
@@ -65,6 +87,13 @@ extension Response {
     }
     
     // 将Json解析为多个Model，返回数组，对于不同的json格式需要对该方法进行修改
+//    {
+//    "tag_name":[
+//    {},
+//    {},
+//    ]
+//
+//    }
     public func mapArray<T:BaseMappable>(_ type: T.Type,tag:String) throws -> [T] {
         
         guard let json = try mapJSON() as? [String : Any] else {
@@ -77,6 +106,8 @@ extension Response {
         
         return Mapper<T>().mapArray(JSONArray: jsonArr)
     }
+    
+    
 }
 
 
@@ -94,6 +125,8 @@ extension ObservableType where E == Response {
             return Observable.just(try response.mapArray(T.self,tag: tag))
         }
     }
+    
+    
     
 }
 

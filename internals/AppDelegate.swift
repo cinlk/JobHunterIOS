@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreLocation
+import Kingfisher
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -36,8 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // load contacts
        // Contactlist.shared.removeAll()
-        // load search keywords
-        _ = InitailData.shareInstance
+    
         //Contactlist.shared.removeAll()
        //localData.shared.clearSubscribeData()
         //TODO 服务器获取greeting数据, 并与本地存储的数据来判断(最新的时间)
@@ -73,6 +73,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         //
         getLocalApps()
+        
+        // kingfisher ssl 配置
+        let config = URLSessionConfiguration.default
+        let imgManager = ImageDownloader.default
+        imgManager.sessionConfiguration = config
+        // 信任证书签名的ip地址
+        imgManager.trustedHosts = Set(["127.0.0.1"])
+        KingfisherManager.shared.downloader = imgManager
         
         // 设置TabBaritem 颜色
         

@@ -8,19 +8,13 @@
 
 import UIKit
 
-
-fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
-
 @objcMembers class CommonJobTableCell: UITableViewCell {
     
-    
-    
     private lazy var commonjobView: CommonJobDetailCellView =  CommonJobDetailCellView()
-    
 
     internal var showTag:Bool = false{
         didSet{
-            commonjobView.showTag = showTag
+            commonjobView.showInternTag = showTag
         }
     }
     
@@ -34,7 +28,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        showTag = false
+        
       
         self.contentView.addSubview(commonjobView)
         _ = commonjobView.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topEqualToView(self.contentView)?.heightIs(0)

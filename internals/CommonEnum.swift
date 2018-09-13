@@ -24,6 +24,16 @@ enum searchItem:String{
     case attachment = "attachment"
     
     
+    var type:String{
+        get{
+            switch self {
+            case .forum:
+                return "forum" // 只是论坛
+            default:
+                return "jobs"  // 公司, 职位, 其他条件
+            }
+        }
+    }
     
     var describe:String{
         get{

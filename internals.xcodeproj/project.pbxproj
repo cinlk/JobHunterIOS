@@ -180,6 +180,12 @@
 		4A6BC23D1FC92C26002C17B6 /* mainPageHttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC23C1FC92C26002C17B6 /* mainPageHttpServer.swift */; };
 		4A6BC2431FCB12A3002C17B6 /* mainPageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BC2421FCB12A3002C17B6 /* mainPageModel.swift */; };
 		4A76162A1FFE5DB600FC6A58 /* deliveryItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7616281FFE5DB600FC6A58 /* deliveryItemCell.swift */; };
+		4A7FD0862147483B00A51736 /* CollectionItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7FD0852147483B00A51736 /* CollectionItemView.swift */; };
+		4A7FD0892148A98900A51736 /* OnlineApplySearchVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7FD0882148A98900A51736 /* OnlineApplySearchVC.swift */; };
+		4A7FD08B2148A9D000A51736 /* CampusSearchVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7FD08A2148A9D000A51736 /* CampusSearchVC.swift */; };
+		4A7FD08D2148A9E300A51736 /* InternSearchVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7FD08C2148A9E300A51736 /* InternSearchVC.swift */; };
+		4A7FD08F2148A9F800A51736 /* CareerTalkSearchVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7FD08E2148A9F800A51736 /* CareerTalkSearchVC.swift */; };
+		4A7FD0912148AA1000A51736 /* CompanySearchVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7FD0902148AA1000A51736 /* CompanySearchVC.swift */; };
 		4A82A0D32026F6CA00185E8B /* personResumeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0D22026F6CA00185E8B /* personResumeTable.swift */; };
 		4A82A0D82027042B00185E8B /* resume_personInfoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0D72027042B00185E8B /* resume_personInfoCell.swift */; };
 		4A82A0DA202709B700185E8B /* person_resume.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82A0D9202709B700185E8B /* person_resume.swift */; };
@@ -193,6 +199,8 @@
 		4A83103320F26A1600959413 /* photosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A83103220F26A1600959413 /* photosView.swift */; };
 		4A8622D9213EBBA200F18BB1 /* accountLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8622D8213EBBA200F18BB1 /* accountLogin.swift */; };
 		4A8622DB21416A3A00F18BB1 /* LoginNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8622DA21416A3A00F18BB1 /* LoginNavigationController.swift */; };
+		4A8622DD21420D6100F18BB1 /* constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8622DC21420D6100F18BB1 /* constant.swift */; };
+		4A8622DF2142487700F18BB1 /* common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8622DE2142487600F18BB1 /* common.swift */; };
 		4A86792720D4CDD90039D36B /* JobHomeNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A86792620D4CDD90039D36B /* JobHomeNavigation.swift */; };
 		4A86792920D4DB2C0039D36B /* ShowApplyJobsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A86792820D4DB2C0039D36B /* ShowApplyJobsView.swift */; };
 		4A86792B20D5F95D0039D36B /* iconAndTitleTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A86792A20D5F95D0039D36B /* iconAndTitleTableCell.swift */; };
@@ -235,6 +243,8 @@
 		4A93C2DC1F83574A0022E97B /* localData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2DB1F83574A0022E97B /* localData.swift */; };
 		4A93C2DE1F8359A20022E97B /* subconditions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2DD1F8359A20022E97B /* subconditions.swift */; };
 		4A93C2E71F88B8E20022E97B /* client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2E61F88B8E20022E97B /* client.swift */; };
+		4A95065821460FAE00842D75 /* searchServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A95065721460FAE00842D75 /* searchServer.swift */; };
+		4A95065B21464DCA00842D75 /* searchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A95065A21464DCA00842D75 /* searchModel.swift */; };
 		4A954395209B48DA009BCBE2 /* listItemModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A954394209B48DA009BCBE2 /* listItemModel.swift */; };
 		4A954398209C98E6009BCBE2 /* DropJobTypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A954397209C98E6009BCBE2 /* DropJobTypeView.swift */; };
 		4A95439A209C9969009BCBE2 /* DropDelieveryStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A954399209C9969009BCBE2 /* DropDelieveryStatusView.swift */; };
@@ -277,7 +287,6 @@
 		4AAB084720B5C8D900BEF38A /* innerTextFiledCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AAB084620B5C8D900BEF38A /* innerTextFiledCell.swift */; };
 		4AB0FED82014E23200932C02 /* ChatTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB0FED72014E23200932C02 /* ChatTimeCell.swift */; };
 		4AB0FEDA201630B000932C02 /* LXFChatMshTimeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB0FED9201630B000932C02 /* LXFChatMshTimeHelper.swift */; };
-		4AB8FFE71FDD025B0020F026 /* HistoryRecordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB8FFE61FDD025B0020F026 /* HistoryRecordCell.swift */; };
 		4AB8FFE91FDEC0720020F026 /* searchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB8FFE81FDEC0720020F026 /* searchViewModel.swift */; };
 		4AB97F3120D783570056AC64 /* CompanyCareerTalkVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB97F3020D783570056AC64 /* CompanyCareerTalkVC.swift */; };
 		4AB97F3520D966EC0056AC64 /* PPBadgeViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB97F3420D966EC0056AC64 /* PPBadgeViewHelper.swift */; };
@@ -336,7 +345,6 @@
 		4AF3D35C2061376E0012EB6E /* baseWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF3D35B2061376E0012EB6E /* baseWebViewController.swift */; };
 		4AF3D35E20629FB00012EB6E /* subscribeConditionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF3D35D20629FB00012EB6E /* subscribeConditionModel.swift */; };
 		4AF3D3602062B7C10012EB6E /* sectionCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF3D35F2062B7C10012EB6E /* sectionCellView.swift */; };
-		4AF6C8051F5A98940059496B /* MainJobCategoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C8041F5A98940059496B /* MainJobCategoryCell.swift */; };
 		4AF6C80B1F5AEB880059496B /* MainColumnistCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF6C80A1F5AEB880059496B /* MainColumnistCell.swift */; };
 		4AF74432204D8C8A00BC52DB /* personRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF74431204D8C8A00BC52DB /* personRouter.swift */; };
 		4AFBCFEC210DD052000EBCDF /* server.cert in Resources */ = {isa = PBXBuildFile; fileRef = 4AFBCFEB210DD052000EBCDF /* server.cert */; };
@@ -551,6 +559,12 @@
 		4A6BC23C1FC92C26002C17B6 /* mainPageHttpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mainPageHttpServer.swift; sourceTree = "<group>"; };
 		4A6BC2421FCB12A3002C17B6 /* mainPageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mainPageModel.swift; sourceTree = "<group>"; };
 		4A7616281FFE5DB600FC6A58 /* deliveryItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = deliveryItemCell.swift; sourceTree = "<group>"; };
+		4A7FD0852147483B00A51736 /* CollectionItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionItemView.swift; sourceTree = "<group>"; };
+		4A7FD0882148A98900A51736 /* OnlineApplySearchVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineApplySearchVC.swift; sourceTree = "<group>"; };
+		4A7FD08A2148A9D000A51736 /* CampusSearchVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CampusSearchVC.swift; sourceTree = "<group>"; };
+		4A7FD08C2148A9E300A51736 /* InternSearchVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternSearchVC.swift; sourceTree = "<group>"; };
+		4A7FD08E2148A9F800A51736 /* CareerTalkSearchVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CareerTalkSearchVC.swift; sourceTree = "<group>"; };
+		4A7FD0902148AA1000A51736 /* CompanySearchVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanySearchVC.swift; sourceTree = "<group>"; };
 		4A82A0D22026F6CA00185E8B /* personResumeTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = personResumeTable.swift; sourceTree = "<group>"; };
 		4A82A0D72027042B00185E8B /* resume_personInfoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = resume_personInfoCell.swift; sourceTree = "<group>"; };
 		4A82A0D9202709B700185E8B /* person_resume.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = person_resume.swift; sourceTree = "<group>"; };
@@ -564,6 +578,8 @@
 		4A83103220F26A1600959413 /* photosView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = photosView.swift; sourceTree = "<group>"; };
 		4A8622D8213EBBA200F18BB1 /* accountLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = accountLogin.swift; sourceTree = "<group>"; };
 		4A8622DA21416A3A00F18BB1 /* LoginNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginNavigationController.swift; sourceTree = "<group>"; };
+		4A8622DC21420D6100F18BB1 /* constant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = constant.swift; sourceTree = "<group>"; };
+		4A8622DE2142487600F18BB1 /* common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = common.swift; sourceTree = "<group>"; };
 		4A86792620D4CDD90039D36B /* JobHomeNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobHomeNavigation.swift; sourceTree = "<group>"; };
 		4A86792820D4DB2C0039D36B /* ShowApplyJobsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowApplyJobsView.swift; sourceTree = "<group>"; };
 		4A86792A20D5F95D0039D36B /* iconAndTitleTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iconAndTitleTableCell.swift; sourceTree = "<group>"; };
@@ -610,6 +626,8 @@
 		4A93C2DB1F83574A0022E97B /* localData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = localData.swift; sourceTree = "<group>"; };
 		4A93C2DD1F8359A20022E97B /* subconditions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = subconditions.swift; sourceTree = "<group>"; };
 		4A93C2E61F88B8E20022E97B /* client.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = client.swift; sourceTree = "<group>"; };
+		4A95065721460FAE00842D75 /* searchServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = searchServer.swift; sourceTree = "<group>"; };
+		4A95065A21464DCA00842D75 /* searchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = searchModel.swift; sourceTree = "<group>"; };
 		4A954394209B48DA009BCBE2 /* listItemModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = listItemModel.swift; sourceTree = "<group>"; };
 		4A954397209C98E6009BCBE2 /* DropJobTypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropJobTypeView.swift; sourceTree = "<group>"; };
 		4A954399209C9969009BCBE2 /* DropDelieveryStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDelieveryStatusView.swift; sourceTree = "<group>"; };
@@ -652,7 +670,6 @@
 		4AAB084620B5C8D900BEF38A /* innerTextFiledCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = innerTextFiledCell.swift; sourceTree = "<group>"; };
 		4AB0FED72014E23200932C02 /* ChatTimeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTimeCell.swift; sourceTree = "<group>"; };
 		4AB0FED9201630B000932C02 /* LXFChatMshTimeHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LXFChatMshTimeHelper.swift; sourceTree = "<group>"; };
-		4AB8FFE61FDD025B0020F026 /* HistoryRecordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryRecordCell.swift; sourceTree = "<group>"; };
 		4AB8FFE81FDEC0720020F026 /* searchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = searchViewModel.swift; sourceTree = "<group>"; };
 		4AB97F3020D783570056AC64 /* CompanyCareerTalkVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyCareerTalkVC.swift; sourceTree = "<group>"; };
 		4AB97F3420D966EC0056AC64 /* PPBadgeViewHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PPBadgeViewHelper.swift; sourceTree = "<group>"; };
@@ -719,7 +736,6 @@
 		4AF3D35B2061376E0012EB6E /* baseWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = baseWebViewController.swift; sourceTree = "<group>"; };
 		4AF3D35D20629FB00012EB6E /* subscribeConditionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = subscribeConditionModel.swift; sourceTree = "<group>"; };
 		4AF3D35F2062B7C10012EB6E /* sectionCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sectionCellView.swift; sourceTree = "<group>"; };
-		4AF6C8041F5A98940059496B /* MainJobCategoryCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainJobCategoryCell.swift; sourceTree = "<group>"; };
 		4AF6C80A1F5AEB880059496B /* MainColumnistCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainColumnistCell.swift; sourceTree = "<group>"; };
 		4AF74431204D8C8A00BC52DB /* personRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = personRouter.swift; sourceTree = "<group>"; };
 		4AFBCFEB210DD052000EBCDF /* server.cert */ = {isa = PBXFileReference; lastKnownFileType = file; path = server.cert; sourceTree = "<group>"; };
@@ -913,19 +929,12 @@
 		4A1BA2CF208B275E00CF8352 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				4A7FD0872148A95E00A51736 /* searchFieldVC */,
 				4A02614A1FD4360400747B30 /* SearchRecodeViewController.swift */,
 				4A8858F21FE550D40009D73D /* searchResultController.swift */,
 				4ACBD6F41F76386D00A5FD23 /* baseSearchViewController.swift */,
 			);
 			name = ViewController;
-			sourceTree = "<group>";
-		};
-		4A1BA2D0208B278F00CF8352 /* Cell */ = {
-			isa = PBXGroup;
-			children = (
-				4AB8FFE61FDD025B0020F026 /* HistoryRecordCell.swift */,
-			);
-			name = Cell;
 			sourceTree = "<group>";
 		};
 		4A1BA2D1208B45D300CF8352 /* View */ = {
@@ -1113,7 +1122,6 @@
 		4A30EBE92083680900231D11 /* Cell */ = {
 			isa = PBXGroup;
 			children = (
-				4AF6C8041F5A98940059496B /* MainJobCategoryCell.swift */,
 				4AF6C80A1F5AEB880059496B /* MainColumnistCell.swift */,
 				4A30EBEA2083685800231D11 /* ScrollerNewsCell.swift */,
 				4A30EBEC20838C7C00231D11 /* recruitmentMeetCell.swift */,
@@ -1212,6 +1220,7 @@
 			children = (
 				4AF3D34F205E5C0C0012EB6E /* HeaderCollectionView.swift */,
 				4AFF9DCB20381EC9000ADBAF /* personTableHeader.swift */,
+				4A7FD0852147483B00A51736 /* CollectionItemView.swift */,
 			);
 			name = HeaderViews;
 			sourceTree = "<group>";
@@ -1342,6 +1351,7 @@
 		4A6BC2331FC86233002C17B6 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				4A6BC2381FC926C5002C17B6 /* TableSection.swift */,
 				4A6BC2421FCB12A3002C17B6 /* mainPageModel.swift */,
 			);
 			name = Model;
@@ -1350,8 +1360,6 @@
 		4A6BC2341FC8623A002C17B6 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				4AB8FFE81FDEC0720020F026 /* searchViewModel.swift */,
-				4A6BC2381FC926C5002C17B6 /* TableSection.swift */,
 				4A6BC23A1FC92BA3002C17B6 /* mainPageViewModel.swift */,
 				4A6BC23C1FC92C26002C17B6 /* mainPageHttpServer.swift */,
 			);
@@ -1362,8 +1370,21 @@
 			isa = PBXGroup;
 			children = (
 				4A6BC2361FC86453002C17B6 /* config.swift */,
+				4A8622DC21420D6100F18BB1 /* constant.swift */,
 			);
 			name = config;
+			sourceTree = "<group>";
+		};
+		4A7FD0872148A95E00A51736 /* searchFieldVC */ = {
+			isa = PBXGroup;
+			children = (
+				4A7FD0882148A98900A51736 /* OnlineApplySearchVC.swift */,
+				4A7FD08A2148A9D000A51736 /* CampusSearchVC.swift */,
+				4A7FD08C2148A9E300A51736 /* InternSearchVC.swift */,
+				4A7FD08E2148A9F800A51736 /* CareerTalkSearchVC.swift */,
+				4A7FD0902148AA1000A51736 /* CompanySearchVC.swift */,
+			);
+			name = searchFieldVC;
 			sourceTree = "<group>";
 		};
 		4A82A0CC2026D88C00185E8B /* view+controller */ = {
@@ -1526,8 +1547,9 @@
 		4A8D28B41FD190FF00FA983F /* 搜索栏 */ = {
 			isa = PBXGroup;
 			children = (
+				4A95065921464DB800842D75 /* model */,
+				4A95065621460F9200842D75 /* ViewModel */,
 				4AD2C77620941EF2002F3486 /* View */,
-				4A1BA2D0208B278F00CF8352 /* Cell */,
 				4A1BA2CF208B275E00CF8352 /* ViewController */,
 			);
 			name = "搜索栏";
@@ -1560,6 +1582,23 @@
 				4A93C2E61F88B8E20022E97B /* client.swift */,
 			);
 			name = socketim;
+			sourceTree = "<group>";
+		};
+		4A95065621460F9200842D75 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				4AB8FFE81FDEC0720020F026 /* searchViewModel.swift */,
+				4A95065721460FAE00842D75 /* searchServer.swift */,
+			);
+			name = ViewModel;
+			sourceTree = "<group>";
+		};
+		4A95065921464DB800842D75 /* model */ = {
+			isa = PBXGroup;
+			children = (
+				4A95065A21464DCA00842D75 /* searchModel.swift */,
+			);
+			name = model;
 			sourceTree = "<group>";
 		};
 		4A954396209C88BB009BCBE2 /* pageTitleAndContent */ = {
@@ -1712,6 +1751,7 @@
 				4A3C8DAB2098C6530008C2A4 /* AddEventInCalender.swift */,
 				4A4DBBEC20BBAE3A0036AD9D /* timeHelp.swift */,
 				4AB97F3420D966EC0056AC64 /* PPBadgeViewHelper.swift */,
+				4A8622DE2142487600F18BB1 /* common.swift */,
 			);
 			name = utils;
 			sourceTree = "<group>";
@@ -2249,6 +2289,7 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-internals/Pods-internals-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/Differentiator/Differentiator.framework",
+				"${BUILT_PRODUCTS_DIR}/Kingfisher/Kingfisher.framework",
 				"${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework",
 				"${BUILT_PRODUCTS_DIR}/MJRefresh/MJRefresh.framework",
 				"${BUILT_PRODUCTS_DIR}/Moya/Moya.framework",
@@ -2270,6 +2311,7 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Differentiator.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kingfisher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MBProgressHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MJRefresh.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Moya.framework",
@@ -2326,6 +2368,7 @@
 				4ACBD6FC1F77E8F500A5FD23 /* shareView.swift in Sources */,
 				4A93C2D41F834C030022E97B /* subscribleItem.swift in Sources */,
 				4AFF9DC42036FE3C000ADBAF /* evaluateSelfVC.swift in Sources */,
+				4A95065B21464DCA00842D75 /* searchModel.swift in Sources */,
 				4A3C8DAC2098C6530008C2A4 /* AddEventInCalender.swift in Sources */,
 				4A1BA2FC208E2DC200CF8352 /* DropCompanyPropertyView.swift in Sources */,
 				4A4254FD203EF18E0049B237 /* expansionCell.swift in Sources */,
@@ -2335,6 +2378,7 @@
 				4A1BA2E7208C3A6B00CF8352 /* OnlineApplyShowViewController.swift in Sources */,
 				4A871AE020E9EE7300E76E39 /* ForumMessageBaseVC.swift in Sources */,
 				4A4DBBE020B9A8EB0036AD9D /* AdvertiseViewController.swift in Sources */,
+				4A7FD08D2148A9E300A51736 /* InternSearchVC.swift in Sources */,
 				4A5E3FBD2031474B009C1A6B /* extension+dictonary.swift in Sources */,
 				4AFF91DD1F641A8000FE189F /* contentAndTitleCell.swift in Sources */,
 				4A954395209B48DA009BCBE2 /* listItemModel.swift in Sources */,
@@ -2450,6 +2494,7 @@
 				4AF3D35C2061376E0012EB6E /* baseWebViewController.swift in Sources */,
 				4A30EBF32083AA6400231D11 /* applyOnlineCell.swift in Sources */,
 				4A2145B92077B1AC000959F4 /* ThirdPartLoginView.swift in Sources */,
+				4A8622DF2142487700F18BB1 /* common.swift in Sources */,
 				4A8859161FF8B5D10009D73D /* extension+uicolor.swift in Sources */,
 				4A22103C203C374A000BDC70 /* aboutUS.swift in Sources */,
 				4A12437720E1D5360038336F /* forumViewModel.swift in Sources */,
@@ -2479,6 +2524,7 @@
 				4A502CF520B1CA1000BB71FD /* SocialPracticeCell.swift in Sources */,
 				4A20EEF1203DA0750021843B /* UIswitchCell.swift in Sources */,
 				4AA637662067CCC000DAE9A9 /* ConversationManager.swift in Sources */,
+				4A7FD0892148A98900A51736 /* OnlineApplySearchVC.swift in Sources */,
 				4ADDDADC1F9B40A8001CB00F /* ChatBarView.swift in Sources */,
 				4A6BC2301FC856D7002C17B6 /* PersonViewController.swift in Sources */,
 				4A5FFC1020F0CCBB00DD6FD4 /* BaseActionResumeVC.swift in Sources */,
@@ -2498,6 +2544,7 @@
 				4A9543D020A83C8E009BCBE2 /* ChatInputView.swift in Sources */,
 				4ACC6DB2205BF49100392252 /* SqliteManager.swift in Sources */,
 				4A1BA2FA208E1F4400CF8352 /* DropItemIndustrySectorView.swift in Sources */,
+				4A8622DD21420D6100F18BB1 /* constant.swift in Sources */,
 				4A30EBF120838FC400231D11 /* simpleRecruitCell.swift in Sources */,
 				4A30EBD6207BAFAC00231D11 /* CompanyDetailVC.swift in Sources */,
 				4AF3D356205EB2760012EB6E /* extension+navigation.swift in Sources */,
@@ -2526,7 +2573,6 @@
 				4A0BA75220B16D600099F332 /* ResumeItemsTypes.swift in Sources */,
 				4A86792B20D5F95D0039D36B /* iconAndTitleTableCell.swift in Sources */,
 				4A0BA74920B01C880099F332 /* ChatListViewController.swift in Sources */,
-				4AF6C8051F5A98940059496B /* MainJobCategoryCell.swift in Sources */,
 				4A9543AB209DDD75009BCBE2 /* CareerTalkInviteViewController.swift in Sources */,
 				4AE4D6B520358E0D00BC87FE /* textViewCell.swift in Sources */,
 				4AB8FFE91FDEC0720020F026 /* searchViewModel.swift in Sources */,
@@ -2540,6 +2586,7 @@
 				4AAB084520B5BA5600BEF38A /* TextAndPhontoCell.swift in Sources */,
 				4ADDDAB51F98EF84001CB00F /* ChatEmotionCells.swift in Sources */,
 				4A1BA2D9208B639D00CF8352 /* GraduateJobsViewController.swift in Sources */,
+				4A95065821460FAE00842D75 /* searchServer.swift in Sources */,
 				4AB0FEDA201630B000932C02 /* LXFChatMshTimeHelper.swift in Sources */,
 				4A5FFC1720F10B5800DD6FD4 /* PreShowPDFVC.swift in Sources */,
 				4A5304DB1F527D090000F1E9 /* loginUtils.swift in Sources */,
@@ -2552,6 +2599,7 @@
 				4AEDFE941FC087440071F4D8 /* ActivityIndicator.swift in Sources */,
 				4A82A0E02028939F00185E8B /* person_skillCell.swift in Sources */,
 				4A4254F7203EB5A30049B237 /* changePhoneVC.swift in Sources */,
+				4A7FD0912148AA1000A51736 /* CompanySearchVC.swift in Sources */,
 				4A8D28BD1FD2734400FA983F /* extension+searchDelegate.swift in Sources */,
 				4ADCC7501F511DD3001A4E9F /* AppDelegate.swift in Sources */,
 				4A0BA74720ADCB140099F332 /* MagazineModel.swift in Sources */,
@@ -2561,8 +2609,8 @@
 				4A9543B2209DE421009BCBE2 /* InviteBaseTableViewCell.swift in Sources */,
 				4A8B36492090B1160073BE89 /* CollectionLabelHeaderView.swift in Sources */,
 				4A30EBE1207E66AD00231D11 /* BaseTableViewController.swift in Sources */,
-				4AB8FFE71FDD025B0020F026 /* HistoryRecordCell.swift in Sources */,
 				4A9543C820A6E471009BCBE2 /* PostArticleModel.swift in Sources */,
+				4A7FD0862147483B00A51736 /* CollectionItemView.swift in Sources */,
 				4A82A0D82027042B00185E8B /* resume_personInfoCell.swift in Sources */,
 				4A9543BC20A0B634009BCBE2 /* ForumBaseCell.swift in Sources */,
 				4A8622D9213EBBA200F18BB1 /* accountLogin.swift in Sources */,
@@ -2582,6 +2630,7 @@
 				4A954398209C98E6009BCBE2 /* DropJobTypeView.swift in Sources */,
 				4ADDDAE01F9B426C001CB00F /* ChatMoreView.swift in Sources */,
 				4A22A3A920750A9E00024C2B /* personViewModel.swift in Sources */,
+				4A7FD08F2148A9F800A51736 /* CareerTalkSearchVC.swift in Sources */,
 				4A9A0BE9200B164F008721F3 /* JobMessageCell.swift in Sources */,
 				4A93C2B81F80AC590022E97B /* messageItemCell.swift in Sources */,
 				4A5304E81F52A7720000F1E9 /* DashboardViewController.swift in Sources */,
@@ -2602,6 +2651,7 @@
 				4A86792D20D5FA590039D36B /* subIconAndTitleCell.swift in Sources */,
 				4A22103A203BFD0E000BDC70 /* SettingVC.swift in Sources */,
 				4A0BA74E20B053DD0099F332 /* SetFourItemTableViewCell.swift in Sources */,
+				4A7FD08B2148A9D000A51736 /* CampusSearchVC.swift in Sources */,
 				4AF3D352205E62DB0012EB6E /* CollectionItemsCell.swift in Sources */,
 				4A0BA75020B13A700099F332 /* AddBaseInfoTableVC.swift in Sources */,
 			);
