@@ -68,7 +68,7 @@ internal class baseSubScribleCell:UITableViewCell{
         
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
         let views:[UIView] = [locate, salary, business, degree]
@@ -130,7 +130,7 @@ internal class baseSubScribleCell:UITableViewCell{
             
         }
     }
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         let views:[UIView] = [internMonth, internDay]
         self.contentView.sd_addSubviews(views)
@@ -192,7 +192,7 @@ internal class baseSubScribleCell:UITableViewCell{
         
         }
     }
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         _ = business.sd_layout().topSpaceToView(self.contentView,10)?.leftSpaceToView(self.contentView,10)?.autoHeightRatio(0)

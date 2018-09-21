@@ -22,7 +22,7 @@ class ChatListViewController: UITableViewController {
     private var deleteRow = 0
     
     private lazy var deleteAlertShow:UIAlertController = {
-        let alertVC = UIAlertController.init(title: "请确认", message: "删除后聊天记录不存在", preferredStyle: UIAlertControllerStyle.alert)
+        let alertVC = UIAlertController.init(title: "请确认", message: "删除后聊天记录不存在", preferredStyle: UIAlertController.Style.alert)
         
         alertVC.addAction(UIAlertAction.init(title: "确定", style: .default, handler: { (action) in
             self.deleteMode(row: self.deleteRow)
@@ -116,7 +116,7 @@ class ChatListViewController: UITableViewController {
         return true
     }
     
-    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
+    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
         if tableView.isEditing {
             return .delete
         }
@@ -214,7 +214,7 @@ extension ChatListViewController {
         self.tableView.separatorStyle = .singleLine
         self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.tableFooterView = UIView()
-        self.tableView.contentInset = UIEdgeInsetsMake(10, 0, 45, 0)
+        self.tableView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 45, right: 0)
         
         // 监听新的对话message
         NotificationCenter.default.addObserver(self, selector: #selector(refresh), name: NSNotification.Name.init("refreshChat"), object: nil)

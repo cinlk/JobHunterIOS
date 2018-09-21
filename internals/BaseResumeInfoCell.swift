@@ -64,10 +64,10 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 25, height: 25)
     }
     
     
-    dynamic var mode:U!
+    //dynamic var mode:U!
     
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         let views:[UIView] =  [modifyIcon, startToEndTime, multiValues,describe]
         self.contentView.sd_addSubviews(views)

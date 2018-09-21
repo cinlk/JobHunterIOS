@@ -11,7 +11,7 @@ import UIKit
 @objcMembers class SocialPracticeCell: BaseResumeInfoCell<socialPracticeInfo> {
 
    
-    override dynamic var mode:socialPracticeInfo?{
+     dynamic var mode:socialPracticeInfo?{
         didSet{
             guard let mode = mode else{
                 return
@@ -34,7 +34,7 @@ import UIKit
     }
     
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         //self.contentView.clipsToBounds = true
         

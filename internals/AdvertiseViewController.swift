@@ -78,7 +78,7 @@ extension AdvertiseViewController{
         if timer == nil {
             timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(count), userInfo: nil, repeats: true)
             //timer?.fire()
-            RunLoop.current.add(timer!, forMode: .commonModes)
+            RunLoop.current.add(timer!, forMode: RunLoop.Mode.common)
             
         }
     }

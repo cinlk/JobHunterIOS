@@ -21,7 +21,7 @@ target 'internals' do
 	pod 'MBProgressHUD'
 	pod 'SwiftDate'
 	#pod 'BadgeSwift'
-	pod 'PPBadgeViewSwift'
+	pod 'PPBadgeViewSwift', '~> 2.2.1' 
 	# umeng
 	#pod 'UMCCommon'
 	#pod 'UMCSecurityPlugins'

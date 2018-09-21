@@ -8,7 +8,8 @@
 
 import UIKit
 import EventKitUI
-
+import RxSwift
+import RxCocoa
 
 fileprivate let viewTitle:String = "宣讲会详情"
 
@@ -17,20 +18,30 @@ class CareerTalkShowViewController: BaseShowJobViewController {
     
     private lazy var headerView:CareerTalkHeaderView = CareerTalkHeaderView()
     
-    private var mode:CareerTalkMeetingModel?
-    // 根据id 查询数据
-    var meetingID:String?{
+    private var mode:CareerTalkMeetingModel?{
         didSet{
-            self.loadData()
+            self.didFinishloadData()
         }
     }
     
-    private lazy var firstLoad:Bool = false
+    // 根据id 查询数据
+    var meetingID:String?{
+        didSet{
+           query.onNext(meetingID!)
+        }
+    }
+    
+    private var showTooBar:Bool = false{
+        didSet{
+            self.navigationController?.setToolbarHidden(!showTooBar, animated: false)
+
+        }
+    }
+    
     
     private lazy var apply:UIButton = {
-        let apply = UIButton.init(frame: CGRect.init(x: 0, y: 0, width:  ScreenW - collectedBtn.width + 20, height: (self.navigationController?.toolbar.height)!))
         
-        
+        let apply = UIButton.init(frame: CGRect.init(x: 0, y: 0, width:  ScreenW - collectedBtn.width + 20, height: TOOLBARH))
         apply.addTarget(self, action: #selector(AddCalendar(_:)), for: .touchUpInside)
         apply.setTitle("添加到日历", for: .normal)
         apply.titleLabel?.font = UIFont.systemFont(ofSize: 16)
@@ -40,10 +51,18 @@ class CareerTalkShowViewController: BaseShowJobViewController {
         
     }()
     
+    
+    //rxSwift
+    let dispose = DisposeBag()
+    let vm:RecruitViewModel = RecruitViewModel()
+    let query:BehaviorSubject<String> = BehaviorSubject<String>.init(value: "")
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
-
+        setViewModel()
        
 
         // Do any additional setup after loading the view.
@@ -51,18 +70,18 @@ class CareerTalkShowViewController: BaseShowJobViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        //self.navigationItem.title = viewTitle
-        self.navigationController?.insertCustomerView()
-        self.navigationController?.setToolbarHidden(firstLoad == false, animated: false)
-
+        //self.navigationController?.insertCustomerView()
+        // 第一次加载 为false，不显示 直到获取数据后 设置为true 显示
+        if self.showTooBar == false{
+            self.showTooBar = false
+        }
         
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationController?.removeCustomerView()
-        //self.navigationItem.title = ""
-        self.navigationController?.setToolbarHidden(true, animated: false)
+        //self.navigationController?.removeCustomerView()
+        self.showTooBar = false
     }
     
     
@@ -71,29 +90,16 @@ class CareerTalkShowViewController: BaseShowJobViewController {
        
         
         super.setViews()
+        setToolBar()
+        self.errorView.reload = reload
         self.title = viewTitle
         table.delegate = self
         table.dataSource = self
-        // 公司cell
-        table.register(UINib.init(nibName: "CompanySimpleCell", bundle: nil), forCellReuseIdentifier: CompanySimpleCell.identity())
-        
-        
+        table.register(CompanySimpleCell.self, forCellReuseIdentifier: CompanySimpleCell.identity())
         // 内容cell
-        table.register(applyJobsCell.self, forCellReuseIdentifier: applyJobsCell.identity())
+        table.register(CareerTalkContentCell.self, forCellReuseIdentifier: CareerTalkContentCell.identity())
         shareapps.delegate = self
-        
-        // 设置toolbar btn
-        let rightSpace = UIBarButtonItem.init(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        rightSpace.width = 20
-        
-        
-        self.toolbarItems?.append(rightSpace)
-        self.toolbarItems?.append(UIBarButtonItem.init(customView: apply))
-        let last = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
-        last.width = -20
-        self.toolbarItems?.append(last)
-        // 筛选回调
-        
+       
 
     }
     
@@ -105,17 +111,13 @@ class CareerTalkShowViewController: BaseShowJobViewController {
         headerView.layoutSubviews()
         table.tableHeaderView = headerView
         table.reloadData()
-        
         collectedBtn.isSelected = (mode?.isCollected)!
-        firstLoad = true
-        self.navigationController?.setToolbarHidden(!firstLoad, animated: false)
-
-        
+        self.showTooBar = true
     }
     
     override func reload() {
         super.reload()
-        self.loadData()
+        // TODO 出现错误 重新获取序列数据
     }
     
     // 收藏
@@ -130,30 +132,6 @@ class CareerTalkShowViewController: BaseShowJobViewController {
 
 }
 
-
-extension CareerTalkShowViewController {
-    
-    private func loadData(){
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            
-            Thread.sleep(forTimeInterval: 1)
-            // 判断数据
-            self?.mode = CareerTalkMeetingModel(JSON: ["id":"dqw-dqwd","companyModel":["id":"com-dqwd-5dq","icon":"sina","name":"公司名字","address":["城市1","城市2"],"industry":["行业1","行业2"],"staffs":"10000人以上", "isValidate":true,"isCollected":false],"college":"北京大学","address":"教学室二"
-                ,"isValidate":true,"isCollected":false,"url":"https://dwqd/xjh/dwq67","icon":"car","start_time":Date().timeIntervalSince1970,"end_time":Date().timeIntervalSince1970 + TimeInterval(3600*2),
-                 "name":"北京高华证券有限责任公司宣讲会但钱当前无多群","source":"上海交大",
-                 "content":"举办方：电院举办时间：2018年4月25日 18:00~20:00  \n举办地点：上海交通大学 - 上海市东川路800号电院楼群3-100会议室 单位名称：北京高华证券有限责任公司 联系方式：专业要求：不限、信息安全类、自动化类、计算机类、电子类、软件工程类"])!
-            
-            
-            
-            
-            DispatchQueue.main.async(execute: {
-                self?.didFinishloadData()
-            })
-        }
-    }
-    
-
-}
 
 extension CareerTalkShowViewController: shareViewDelegate{
     
@@ -184,7 +162,41 @@ extension CareerTalkShowViewController: shareViewDelegate{
     }
 }
 
+
 extension CareerTalkShowViewController{
+    
+    private func setViewModel(){
+        
+        query.asDriver(onErrorJustReturn: "").drive(onNext: { (id) in
+            self.vm.getRecruitMeetingBy(id: id).share().subscribe(onNext: { (mode) in
+                self.mode = mode
+            }, onError: { (err) in
+                self.showError()
+                showOnlyTextHub(message: "query get error \(err)", view: self.view)
+            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+            
+            
+        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        
+    }
+}
+extension CareerTalkShowViewController{
+    
+    
+    private func setToolBar(){
+        
+        let rightSpace = UIBarButtonItem.init(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        rightSpace.width = 20
+        
+        
+        self.toolbarItems?.append(rightSpace)
+        self.toolbarItems?.append(UIBarButtonItem.init(customView: apply))
+        let last = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
+        last.width = -20
+        self.toolbarItems?.append(last)
+        
+    }
+    
     @objc private func AddCalendar(_ btn:UIButton){
        
         guard let mode = mode  else {
@@ -197,17 +209,14 @@ extension CareerTalkShowViewController{
         store.requestAccess(to: .event, completion: { (granted, error) in
             if granted {
                 print("calendar allowed")
-                let dateFormat = DateFormatter()
-                dateFormat.dateFormat = "yyyy-MM-dd HH:mm"
-                dateFormat.locale =  Locale(identifier: "zh_CN")
                 
                 
                 // create the event object
                 let event = EKEvent(eventStore: store)
                 
                 event.title = mode.name
-                event.startDate = dateFormat.date(from:  (mode.start_time?.toString())!)
-                event.endDate =   dateFormat.date(from:  (mode.end_time?.toString())!)
+                event.startDate = mode.start_time
+                event.endDate = mode.end_time
                 event.location =  mode.college!   + "-" + mode.address!
                 
                 if let url = mode.link{
@@ -249,11 +258,6 @@ extension CareerTalkShowViewController: EKEventEditViewDelegate{
 
     }
     
-   
-    
-   
-    
-    
     
 }
 
@@ -286,9 +290,9 @@ extension CareerTalkShowViewController: UITableViewDataSource, UITableViewDelega
             
             return cell
         case 1:
-            let cell = tableView.dequeueReusableCell(withIdentifier: applyJobsCell.identity(), for: indexPath) as! applyJobsCell
-            cell.name.text = "宣讲正文"
-            cell.mode = mode?.content ?? ""
+            let cell = tableView.dequeueReusableCell(withIdentifier: CareerTalkContentCell.identity(), for: indexPath) as! CareerTalkContentCell
+            cell.name.text = "宣讲内容"
+            cell.mode = mode
             return cell
         default:
             break
@@ -312,11 +316,14 @@ extension CareerTalkShowViewController: UITableViewDataSource, UITableViewDelega
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == 0 {
-            return  CompanySimpleCell.cellHeight()
+            //return  CompanySimpleCell.cellHeight()
+            return table.cellHeight(for: indexPath, model: mode?.companyModel, keyPath: "mode", cellClass: CompanySimpleCell.self, contentViewWidth: ScreenW)
         }
         
-        guard let content = mode?.content else { return 0 }
-        return tableView.cellHeight(for: indexPath, model: content, keyPath: "mode", cellClass: applyJobsCell.self, contentViewWidth: ScreenW)
+        guard let mode = mode else { return 0 }
+        
+        
+        return table.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CareerTalkContentCell.self, contentViewWidth: ScreenW)
     }
     
     
@@ -400,9 +407,7 @@ private class CareerTalkHeaderView:UIView{
             
             self.name.text = mode.name
             self.address.text = "举办地点: " + mode.college! + " " +  mode.address!
-            let dateFormat = DateFormatter()
-            dateFormat.dateFormat = "yyyy-MM-dd HH:MM"
-            self.time.text =   "举办时间: " + dateFormat.string(from: mode.start_time!)
+            self.time.text =   "举办时间: " + mode.startTimeStr
             if let source = mode.source{
             self.source.text = "来源: " +  source
             }else{

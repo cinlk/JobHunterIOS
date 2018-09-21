@@ -91,7 +91,7 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
             self.jobName.attributedText = jobName
             
             
-            let endStr = NSMutableAttributedString.init(string: mode.endTimeStr, attributes: [NSAttributedStringKey.foregroundColor: UIColor.red])
+            let endStr = NSMutableAttributedString.init(string: mode.endTimeStr, attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
             endStr.insert(NSAttributedString.init(string:"截止 ") , at: 0)
             self.endTime.attributedText =  endStr
             
@@ -100,7 +100,7 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
             
         }
     }
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         let views:[UIView] = [icon, jobName, endTime, address]

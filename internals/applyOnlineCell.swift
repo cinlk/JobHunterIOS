@@ -30,7 +30,7 @@ class applyOnlineCell: UITableViewCell {
     }
     
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         collect.collectionView.register(applyShowCollectedCell.self, forCellWithReuseIdentifier: applyShowCollectedCell.identity())
         collect.collectionView.delegate = self

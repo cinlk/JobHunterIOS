@@ -27,7 +27,7 @@ class jobCollectedVC: BaseViewController {
         tb.tableFooterView = UIView()
         tb.register(jobCollectedCell.self, forCellReuseIdentifier: jobCollectedCell.identity())
         tb.backgroundColor = UIColor.viewBackColor()
-        tb.contentInset = UIEdgeInsetsMake(0, 0, 44, 0)
+        tb.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 44, right: 0)
         return tb
     }()
     
@@ -113,7 +113,8 @@ extension jobCollectedVC: UITableViewDelegate, UITableViewDataSource{
         let mode = datas[indexPath.row]
         
         let JobDetail =  JobDetailViewController()
-        JobDetail.kind = (id:  mode.id!, type: mode.kind!)
+        JobDetail.uuid = mode.id!
+        //JobDetail.kind = (id:  mode.id!, type: mode.kind!)
         self.navigationController?.pushViewController(JobDetail, animated: true)
         
         
@@ -264,7 +265,7 @@ extension jobCollectedVC{
         }
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         let views:[UIView] = [icon, companyName, position, address, jobtype, times]
         self.contentView.sd_addSubviews(views)

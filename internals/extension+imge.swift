@@ -123,7 +123,7 @@ extension UIImage{
         //ctx.setAlpha(0)
         // 填充绘制
         ctx.fill(rect)
-        let attr = [ NSAttributedStringKey.foregroundColor : textColor, NSAttributedStringKey.font : UIFont.systemFont(ofSize: 10)]
+        let attr = [ NSAttributedString.Key.foregroundColor : textColor, NSAttributedString.Key.font : UIFont.systemFont(ofSize: 10)]
         // 写入文字
         (letter as NSString).draw(at: CGPoint(x: 2.5, y: 2.5), withAttributes: attr)
         // 得到图片
@@ -135,7 +135,7 @@ extension UIImage{
     
     
     // 改变图片大小和render mode
-    func changesize(size:CGSize, renderMode: UIImageRenderingMode = .alwaysTemplate) -> UIImage{
+    func changesize(size:CGSize, renderMode: UIImage.RenderingMode = .alwaysTemplate) -> UIImage{
         
         UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
         self.draw(in: CGRect.init(x: 0, y: 0, width: size.width, height: size.height))
@@ -160,7 +160,7 @@ extension UIImage{
 // 翻转图片
 extension UIImage{
     
-    class func flipImage(image:UIImage,orientation:UIImageOrientation)->UIImage{
+    class func flipImage(image:UIImage,orientation:UIImage.Orientation)->UIImage{
         return UIImage(cgImage: image.cgImage!, scale: image.scale, orientation: orientation)
     }
     
@@ -191,7 +191,7 @@ extension UIImage{
     
     func toBase64String()->String{
         // 只存储压缩的图片
-        if let data = UIImageJPEGRepresentation(self, 0){
+        if let data = self.jpegData(compressionQuality: 0){
             return data.base64EncodedString()
         }
         

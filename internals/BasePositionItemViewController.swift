@@ -140,7 +140,6 @@ class BasePositionItemViewController: BaseViewController {
         
         _ = table.sd_layout().topSpaceToView(self,dropMenuH)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
         
-        // Do any additional setup after loading the view.
     }
     
     
@@ -151,16 +150,6 @@ class BasePositionItemViewController: BaseViewController {
         super.setViews()
         
     }
-    
-    // 子类实现方法 MARK 抽象出来必须实现（语法？？）
-    func sendRequest(){
-    
-    }
-
-    
-    
-
-   
 
 }
 

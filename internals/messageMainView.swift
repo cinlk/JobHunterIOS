@@ -31,7 +31,7 @@ class messageMain: UIViewController {
     
         let collv = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
         collv.register(UICollectionViewCell.self, forCellWithReuseIdentifier: CollectionCellID)
-        collv.contentInset = UIEdgeInsetsMake(0, 0, 0, 0)
+        collv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         collv.showsVerticalScrollIndicator = false
         collv.showsHorizontalScrollIndicator = false
         collv.isPagingEnabled = true
@@ -132,8 +132,8 @@ extension messageMain {
         chidVCs.append(visitorVC)
         chidVCs.append(forume)
         chidVCs.forEach{
-            self.addChildViewController($0)
-            $0.didMove(toParentViewController: self)
+            self.addChild($0)
+            $0.didMove(toParent: self)
         }
         self.view.addSubview(collections)
         collections.frame = CGRect.init(x: 0, y: NavH, width: ScreenW, height: ScreenH - NavH)

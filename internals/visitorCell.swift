@@ -89,7 +89,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
         }
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         let views:[UIView] = [avartar, visite_time, company, hrName, postion]
         self.contentView.sd_addSubviews(views)

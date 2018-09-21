@@ -45,7 +45,7 @@ class TextAndPhontoCell: UITableViewCell {
         text.textColor = UIColor.black
         text.showsVerticalScrollIndicator = true
         // 内部container 偏移
-        text.textContainerInset = UIEdgeInsetsMake(10, 10, 0, 0)
+        text.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 0, right: 0)
         text.delegate = self
         text.inputAccessoryView = UIToolbar.NumberkeyBoardDone(title: "完成", view: self, selector: #selector(done))
         return text
@@ -67,7 +67,7 @@ class TextAndPhontoCell: UITableViewCell {
     
     
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
         let views:[UIView] = [textView,  words]

@@ -16,7 +16,7 @@ class showResumeVC: UIViewController {
 
     
     //
-    private var viewType:[ResumeSubItems] = [.personInfo,.education,.works, .project,.schoolWork,.practice,.skills,.other,.selfEvaludate]
+    private var viewType:[ResumeSubItems] = [ResumeSubItems.personInfo,.education,.works, .project,.schoolWork,.practice,.skills,.other,.selfEvaludate]
 
     // test
     private var pManager:personModelManager = personModelManager.shared

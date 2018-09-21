@@ -45,7 +45,7 @@ class CollectionHorizontalLayout: UICollectionViewFlowLayout {
         collectionView?.showsHorizontalScrollIndicator = false
         collectionView?.showsVerticalScrollIndicator = true
         //let insertMargin = (collectionView!.bounds.height - CGFloat(row) * itemH) * 0.5
-        collectionView?.contentInset = UIEdgeInsetsMake(0, 0, 0, 0)
+        collectionView?.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         
         
         // 计算每个cell 布局

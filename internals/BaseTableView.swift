@@ -25,7 +25,7 @@ class BaseTableView<M>: UITableView {
     
   
     
-    override init(frame: CGRect, style: UITableViewStyle) {
+    override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
         
         isScrollEnabled = false

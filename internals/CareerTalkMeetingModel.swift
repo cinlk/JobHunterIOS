@@ -26,6 +26,18 @@ internal  class CareerTalkMeetingModel: BaseModel  {
     // 开始时间 (必须)
     internal var start_time:Date?
     
+    internal var startTimeStr:String{
+        get{
+            
+            guard let time = self.start_time else { return "" }
+            
+            
+            if let str = showYearAndDayAndHour(date: time){
+                return str
+            }
+            return ""
+        }
+    }
     // 结束时间
     internal var end_time:Date?
 
@@ -35,7 +47,7 @@ internal  class CareerTalkMeetingModel: BaseModel  {
     
     // 内容
     internal var content:String?
-    
+    internal var contentType:String = "text"
     
     // 行业领域
     internal var industry:[String] = []
@@ -76,6 +88,7 @@ internal  class CareerTalkMeetingModel: BaseModel  {
         end_time <- (map["end_time"],DateTransform())
         source <- map["reference"]
         content <- map["content"]
+        contentType <- map["content_type"]
         industry <- map["industry"]
         major <- map["major"]
         

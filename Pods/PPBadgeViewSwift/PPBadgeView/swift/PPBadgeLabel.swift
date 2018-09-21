@@ -19,13 +19,6 @@
 
 import UIKit
 
-public enum PPBadgeViewFlexMode {
-    case head    // 左伸缩 Head Flex    : <==●
-    case tail    // 右伸缩 Tail Flex    : ●==>
-    case middle  // 左右伸缩 Middle Flex : <=●=>
-}
-
-
 
 open class PPBadgeLabel: UILabel {
     
@@ -33,7 +26,7 @@ open class PPBadgeLabel: UILabel {
         return self.init(frame: CGRect(x: 0, y: 0, width: 18, height: 18))
     }
     
-    override public init(frame: CGRect) {
+    required override public init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
     }
@@ -72,12 +65,15 @@ open class PPBadgeLabel: UILabel {
     }
     
     private func width(string: String?, font: UIFont, height: CGFloat) -> CGFloat {
-        if string?.isEmpty == true { return 0.0 }
-        var attributes : [NSAttributedStringKey: AnyObject] = [.font : font]
+        guard let string = string, string.isEmpty == false else {
+            return 0
+        }
+    
+        var attributes : [NSAttributedString.Key: AnyObject] = [.font : font]
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineBreakMode = .byWordWrapping
         attributes.updateValue(paragraphStyle, forKey: .paragraphStyle)
         let size = CGSize(width: CGFloat(Double.greatestFiniteMagnitude), height: height)
-        return ceil((string! as NSString).boundingRect(with: size, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes:attributes, context: nil).width)
+        return ceil((string as NSString).boundingRect(with: size, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes:attributes, context: nil).width)
     }
 }

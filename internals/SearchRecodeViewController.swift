@@ -229,7 +229,7 @@ extension SearchRecodeViewController{
                 cell.textLabel?.text =  element
                 cell.backgroundColor = UIColor.clear
                 cell.layer.borderWidth = 0
-                cell.separatorInset = UIEdgeInsetsMake(0, 20, 0, 0)
+                cell.separatorInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 0)
                 cell.accessoryView = nil 
                 return
             }
@@ -247,7 +247,7 @@ extension SearchRecodeViewController{
             btn.setTitle(element, for: .normal)
             //btn.tag = cIdx.row - 1
             btn.addTarget(self, action: #selector(self.removeItem), for: .touchUpInside)
-            cell.separatorInset = UIEdgeInsetsMake(0, 20, 0, 0)
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 0)
             cell.accessoryView = btn
         }.disposed(by: dispose)
         

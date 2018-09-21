@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 @objcMembers class CommonJobTableCell: UITableViewCell {
     
     private lazy var commonjobView: CommonJobDetailCellView =  CommonJobDetailCellView()
@@ -26,7 +27,7 @@ import UIKit
         }
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
       

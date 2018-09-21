@@ -52,6 +52,7 @@ class personResumeTable: BaseViewController {
     // 进入页面时 要刷新数据
     private var pManager:personModelManager = personModelManager.shared
     // 初始化subitem类型
+    
     private var viewType:[ResumeSubItems] = [.personInfo,.education,.works, .project,.schoolWork,.practice,.skills,.other,.selfEvaludate]
    
     private var datas:[ResumeSubItems:Any?]{
@@ -140,10 +141,8 @@ extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
         return arrys.count + 2
         
     }
-    
-    //
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         
         // 个人基本信息（不是数组）
         if indexPath.section == 0 {
@@ -155,7 +154,7 @@ extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
             cell.mode = mode
             return cell
             
-        // 自我评价
+            // 自我评价
         }else if indexPath.section == viewType.count - 1{
             guard let mode = datas[viewType[indexPath.section]] as? selfEstimateModel else {
                 return UITableViewCell()
@@ -164,7 +163,7 @@ extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
             let cell = tableView.dequeueReusableCell(withIdentifier: person_evaluateCell.identity(), for: indexPath) as!
             person_evaluateCell
             cell.mode = mode
-        
+            
             return cell
             
             
@@ -177,13 +176,13 @@ extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
             if indexPath.row == 0 {
                 
                 let cell = UITableViewCell.init()
-
+                
                 cell.textLabel?.text = type.describe
                 cell.textLabel?.textAlignment = .left
                 cell.isUserInteractionEnabled = false
                 return cell
-            
-            // 添加btn cell
+                
+                // 添加btn cell
             }else if indexPath.row == infos.count + 1{
                 let cell = tableView.dequeueReusableCell(withIdentifier: singleButtonCell.identity(), for: indexPath) as! singleButtonCell
                 cell.btnType = .add
@@ -195,65 +194,16 @@ extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
                     self.navigationController?.pushViewController(view, animated: true)
                 }
                 return cell
-            // 具体内容cell
+                // 具体内容cell
             }else{
                 guard infos.count > 0 else { return UITableViewCell() }
+                
+                
                 switch type{
                 case .education:
                     guard let modes = infos as?  [personEducationInfo] else { return UITableViewCell() }
                     let cell = tableView.dequeueReusableCell(withIdentifier: educationInfoCell.identity(), for: indexPath) as!
                     educationInfoCell
-                    cell.mode = modes[indexPath.row - 1]
-                    
-                    return cell
-                    
-                case .works:
-                    guard let modes = infos as?  [personInternInfo] else { return UITableViewCell() }
-                    let cell = tableView.dequeueReusableCell(withIdentifier: jobInfoCell.identity(), for: indexPath) as!
-                    jobInfoCell
-                    cell.mode = modes[indexPath.row - 1]
-                    
-                    return cell
-                    
-                case .project:
-                    guard let modes = infos as?  [personProjectInfo] else { return UITableViewCell() }
-                    let cell = tableView.dequeueReusableCell(withIdentifier: projectInfoCell.identity(), for: indexPath) as!
-                    projectInfoCell
-                    cell.mode = modes[indexPath.row - 1]
-                    
-                    return cell
-                    
-                case .schoolWork:
-                    
-                    guard let modes = infos as?  [studentWorkInfo] else { return UITableViewCell() }
-                    let cell = tableView.dequeueReusableCell(withIdentifier: studentWorkCell.identity(), for: indexPath) as!
-                    studentWorkCell
-                    cell.mode = modes[indexPath.row - 1]
-                    
-                    return cell
-                    
-                case .practice:
-                    guard let modes = infos as?  [socialPracticeInfo] else { return UITableViewCell() }
-                    let cell = tableView.dequeueReusableCell(withIdentifier: SocialPracticeCell.identity(), for: indexPath) as!
-                    SocialPracticeCell
-                    cell.mode = modes[indexPath.row - 1]
-                    
-                    return cell
-                    
-                case .other:
-                     guard let modes = infos as?  [resumeOther] else { return UITableViewCell() }
-                    let cell = tableView.dequeueReusableCell(withIdentifier: ResumeOtherCell.identity(), for: indexPath) as!
-                    ResumeOtherCell
-                    cell.mode = modes[indexPath.row - 1]
-                    
-                    return cell
-                    
-                    
-                case .skills:
-                    
-                    guard let modes = infos as?  [personSkillInfo] else { return UITableViewCell() }
-                    let cell = tableView.dequeueReusableCell(withIdentifier: person_skillCell.identity(), for: indexPath) as!
-                    person_skillCell
                     cell.mode = modes[indexPath.row - 1]
                     
                     return cell
@@ -264,11 +214,12 @@ extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
             }
             
         }
-
+        
         
         return UITableViewCell()
         
     }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
         if indexPath.section == 0 {

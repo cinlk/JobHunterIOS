@@ -19,12 +19,6 @@
 
 import UIKit
 
-public extension UIBarButtonItem {
-    public var pp: PP<UIBarButtonItem> {
-        return PP(self)
-    }
-}
-
 public extension PP where Base: UIBarButtonItem {
     
     /// 添加带文本内容的Badge, 默认右上角, 红色, 18pts

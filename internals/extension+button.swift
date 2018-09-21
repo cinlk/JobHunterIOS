@@ -10,7 +10,7 @@ import UIKit
  
 extension UIButton {
     
-    convenience init(title:(name:String, type:UIControlState), fontSize:CGFloat = 10, alignment: NSTextAlignment = .left, bColor:UIColor = UIColor.clear) {
+    convenience init(title:(name:String, type:UIControl.State), fontSize:CGFloat = 10, alignment: NSTextAlignment = .left, bColor:UIColor = UIColor.clear) {
         self.init(type: .custom)
         self.titleLabel?.font = UIFont.systemFont(ofSize: fontSize)
         self.titleLabel?.textAlignment = alignment
@@ -35,7 +35,7 @@ extension UIButton {
 extension UIButton {
     
     func setPositionWith(image anImage: UIImage?, title: String,
-             titlePosition: UIViewContentMode, additionalSpacing: CGFloat, state: UIControlState, offsetY: CGFloat = 0){
+                         titlePosition: UIView.ContentMode, additionalSpacing: CGFloat, state: UIControl.State, offsetY: CGFloat = 0){
         self.imageView?.contentMode = .center
         self.setImage(anImage, for: state)
         
@@ -45,11 +45,11 @@ extension UIButton {
         self.setTitle(title, for: state)
     }
     
-    private func positionLabelRespectToImage(title: String, position: UIViewContentMode,
+    private func positionLabelRespectToImage(title: String, position: UIView.ContentMode,
                                              spacing: CGFloat, offsetY:CGFloat) {
         let imageSize = self.imageRect(forContentRect: self.frame)
         let titleFont = self.titleLabel?.font!
-        let titleSize = (title as NSString).size(withAttributes: [NSAttributedStringKey.font: titleFont])
+        let titleSize = (title as NSString).size(withAttributes: [NSAttributedString.Key.font: titleFont])
         
         
         var titleInsets: UIEdgeInsets

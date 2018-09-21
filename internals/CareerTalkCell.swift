@@ -11,6 +11,7 @@ import Kingfisher
 
 
 fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
+
 @objcMembers class CareerTalkCell: UITableViewCell {
 
     
@@ -18,19 +19,15 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
         let img = UIImageView()
         img.contentMode = .scaleToFill
         img.clipsToBounds = true
-        
         return img
-        
     }()
     
     private lazy var company:UILabel = {
         let label = UILabel()
         label.textAlignment = .left
         label.font = UIFont.boldSystemFont(ofSize: 16)
-        
         label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
         return label
-        
     }()
     
     private lazy var time:UILabel = {
@@ -81,10 +78,11 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
     }
     
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         let views:[UIView] = [icon, company, time, collage, address]
         self.contentView.sd_addSubviews(views)
+        
         _ = icon.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(imgSize.width)?.autoHeightRatio(1)
         _ = company.sd_layout().leftSpaceToView(icon,5)?.topEqualToView(icon)?.autoHeightRatio(0)
         _ = time.sd_layout().rightSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,10)?.autoHeightRatio(0)

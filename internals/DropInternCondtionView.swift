@@ -91,7 +91,7 @@ class DropInternCondtionView: YNDropDownView{
         collectionView.allowsMultipleSelection = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.register(CollectionTextCell.self, forCellWithReuseIdentifier: CollectionTextCell.identity())
-        collectionView.register(CollectionLabelHeaderView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: CollectionLabelHeaderView.identity())
+        collectionView.register(CollectionLabelHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CollectionLabelHeaderView.identity())
        return collectionView
     }()
     
@@ -137,11 +137,17 @@ class DropInternCondtionView: YNDropDownView{
     // 显示 和 关闭 view
     override func dropDownViewOpened() {
         UIApplication.shared.keyWindow?.addSubview(backGroundBtn)
+        if let vc =  (self.getParentViewController()?.parent as? JobHomeVC){
+            vc.isScrollEnabled = false
+        }
         self.getParentViewController()?.tabBarController?.tabBar.isHidden = true
     }
     
     override func dropDownViewClosed() {
         backGroundBtn.removeFromSuperview()
+        if let vc =  (self.getParentViewController()?.parent as? JobHomeVC){
+            vc.isScrollEnabled = true
+        }
         self.getParentViewController()?.tabBarController?.tabBar.isHidden = false
     }
     
@@ -226,7 +232,7 @@ extension DropInternCondtionView: UICollectionViewDelegate, UICollectionViewData
 
    
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        if kind == UICollectionElementKindSectionHeader{
+        if kind == UICollectionView.elementKindSectionHeader{
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CollectionLabelHeaderView.identity(), for: indexPath) as! CollectionLabelHeaderView
             header.titleLabel.text = keys[indexPath.section]
             header.titleLabel.font = UIFont.systemFont(ofSize: 16)

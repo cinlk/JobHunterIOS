@@ -41,7 +41,7 @@ class modifyPersonInfoCell: UITableViewCell {
     
     private lazy var textField:UITextField = { [unowned self] in
         let textField = UITextField.init(frame: CGRect.zero)
-        textField.borderStyle = UITextBorderStyle.none
+        textField.borderStyle = UITextField.BorderStyle.none
         textField.placeholder = ""
         textField.textColor = UIColor.black
         textField.textAlignment = .right
@@ -110,8 +110,7 @@ class modifyPersonInfoCell: UITableViewCell {
         }
     }
     
-   
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
         

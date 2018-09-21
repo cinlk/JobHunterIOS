@@ -52,7 +52,7 @@ class AddItemCell: UITableViewCell {
     
     lazy var textFiled:UITextField = { [unowned self] in
         let textField = UITextField.init(frame: CGRect.zero)
-        textField.borderStyle = UITextBorderStyle.none
+        textField.borderStyle = UITextField.BorderStyle.none
         textField.placeholder = ""
         textField.textColor = UIColor.black
         textField.textAlignment = .right
@@ -61,7 +61,7 @@ class AddItemCell: UITableViewCell {
         textField.keyboardType = .default
         textField.returnKeyType = .done
         textField.textAlignment = .left
-        textField.rightViewMode = UITextFieldViewMode.always
+        textField.rightViewMode = UITextField.ViewMode.always
         textField.delegate = self
         
         return textField
@@ -95,7 +95,7 @@ class AddItemCell: UITableViewCell {
         }
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
     }

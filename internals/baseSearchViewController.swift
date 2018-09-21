@@ -65,7 +65,7 @@ class baseSearchViewController: UISearchController{
         let btn = UIButton.init(frame: CGRect.init(x: 5, y: 4.5, width: 60, height: 20))
         btn.setImage(#imageLiteral(resourceName: "arrow_nor").changesize(size: CGSize.init(width: 10, height: 10)), for: .normal)
         btn.setTitle(currentMenuType.describe, for: .normal)
-        btn.imageEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 0)
+        btn.imageEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 0)
         
         // btn的元素排列
         btn.semanticContentAttribute = .forceRightToLeft
@@ -169,7 +169,7 @@ class baseSearchViewController: UISearchController{
     
 
         
-        self.addChildViewController(serchRecordVC)
+        self.addChild(serchRecordVC)
         // 必须把布局代码 放这里，才能初始化正常！！！！
         self.view.addSubview(self.serchRecordVC.view)
         // 搜索结果VC的view 布局
@@ -290,9 +290,9 @@ extension baseSearchViewController: SearchMenuDelegate{
         
         chooseTypeBtn.setTitle(item.describe, for: .normal)
         if item == .meeting{
-            chooseTypeBtn.imageEdgeInsets = UIEdgeInsetsMake(0, 30, 0, 0)
+            chooseTypeBtn.imageEdgeInsets = UIEdgeInsets(top: 0, left: 30, bottom: 0, right: 0)
         }else{
-            chooseTypeBtn.imageEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 0)
+            chooseTypeBtn.imageEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 0)
 
         }
         

@@ -51,20 +51,21 @@ class PersonModel:NSObject, Mappable{
     var name:String?
     var company:String?
     // 
-    var icon:Data?
-    // 求职者 还是 职位发布者，还是其他
-    var role:String?
+    //var icon:Data?
+    var icon:String?
+    var roles:[String]?
+    var identity:String?
     // 屏蔽 不接受和发送信息
-    var isShield:Bool?
+   // var isShield:Bool?
     // 用户是否存在
-    var isExist:Bool?
+    var isValidate:Bool?
     
     var phone:String?
     
     
     
     required init?(map: Map) {
-        if map.JSON["userID"] == nil || map.JSON["name"] == nil || map.JSON["role"] == nil {
+        if map.JSON["user_id"] == nil || map.JSON["name"] == nil || map.JSON["roles"] == nil {
             return nil
         }
     }
@@ -75,9 +76,12 @@ class PersonModel:NSObject, Mappable{
         name <- map["name"]
         company <- map["company"]
         //base64 转换为data
-        icon <- (map["icon"], DataTransformBase64())
-        role <- map["role"]
-        isShield <- map["isShield"]
+        //icon <- (map["icon"], DataTransformBase64())
+        icon <- map["icon"]
+        roles <- map["roles"]
+        identity <- map["identity"]
+        //isShield <- map["isShield"]
+        isValidate <- map["validate"]
         phone <- map["phone"]
         
     }
@@ -86,13 +90,13 @@ class PersonModel:NSObject, Mappable{
 
 class HRPersonModel: PersonModel {
     
-    var ontime:Date?
+    var online:Date?
     var position:String?
     
     
     var  ontimeStr:String{
         get{
-            guard let time = ontime  else {
+            guard let time = online  else {
                 return ""
             }
             return personOnlineTime(date: time)
@@ -102,7 +106,7 @@ class HRPersonModel: PersonModel {
     
     required init?(map: Map) {
         super.init(map: map)
-        if map.JSON["ontime"] == nil || map.JSON["position"] == nil{
+        if map.JSON["online"] == nil || map.JSON["position"] == nil{
             return nil
         }
     }
@@ -110,7 +114,7 @@ class HRPersonModel: PersonModel {
     override func mapping(map: Map) {
         super.mapping(map: map)
         
-        ontime <- (map["ontime"], DateTransform())
+        online <- (map["online"], DateTransform())
         position <- map["position"]
     }
     

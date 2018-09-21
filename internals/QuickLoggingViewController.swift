@@ -40,7 +40,7 @@ class QuickLoggingViewController: UITableViewController {
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         btn.setTitleColor(UIColor.blue, for: .normal)
         btn.titleLabel?.textAlignment = .center
-        btn.addTarget(self, action: #selector(self.validateCode), for: UIControlEvents.touchUpInside)
+        btn.addTarget(self, action: #selector(self.validateCode), for: UIControl.Event.touchUpInside)
 
         
         return btn

@@ -20,7 +20,7 @@ protocol itemPickerDelegate: class {
 class itemPickerView: UIView {
     
     private lazy var cancel:UIButton = { [unowned self] in
-        let btn = UIButton.init(type: UIButtonType.custom)
+        let btn = UIButton.init(type: UIButton.ButtonType.custom)
         btn.frame = CGRect.zero
         btn.setTitle("取消", for: .normal)
         btn.setImage(UIImage.init(), for: .normal)
@@ -33,7 +33,7 @@ class itemPickerView: UIView {
     }()
     
     private lazy var choose:UIButton = { [unowned self] in
-        let btn = UIButton.init(type: UIButtonType.custom)
+        let btn = UIButton.init(type: UIButton.ButtonType.custom)
         btn.frame = CGRect.zero
         btn.setTitle("完成", for: .normal)
         btn.setImage(UIImage.init(), for: .normal)

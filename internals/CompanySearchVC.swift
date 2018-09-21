@@ -54,7 +54,7 @@ class CompanySearchVC: UIViewController, SearchControllerDeletgate {
         let tb = UITableView()
         tb.register(CompanyItemCell.self, forCellReuseIdentifier: CompanyItemCell.identity())
         tb.rx.setDelegate(self).disposed(by: dispose)
-        tb.contentInset = UIEdgeInsetsMake(0, 0, 60, 0)
+        tb.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
         tb.tableFooterView = UIView()
         tb.tableHeaderView = UIView()
         return tb
@@ -189,8 +189,6 @@ extension CompanySearchVC{
         }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
         
     }
-    
-    
 }
 
 

@@ -61,9 +61,6 @@ import UIKit
     }()
     
 
-    
-    
-    
     dynamic var mode:CompuseRecruiteJobs?{
         didSet{
             guard  let mode = mode  else {
@@ -73,13 +70,13 @@ import UIKit
             address.text = mode.addressStr
             degree.text =  mode.education + " |"
             create_time.text = mode.creatTimeStr
-            
+            // TODO 改成 attache image ？？
             internTag.isHidden =  mode.kind! == .intern ? false : true
            
             self.setupAutoHeight(withBottomViewsArray: [address,degree], bottomMargin: 10)
         }
     }
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         let views:[UIView] = [jobName,address,internTag,degree,create_time]
@@ -91,8 +88,8 @@ import UIKit
         _ = degree.sd_layout().topSpaceToView(jobName,10)?.leftEqualToView(jobName)?.autoHeightRatio(0)
         _ = address.sd_layout().leftSpaceToView(degree,5)?.topEqualToView(degree)?.autoHeightRatio(0)
         
-        jobName.setMaxNumberOfLinesToShow(1)
-        address.setMaxNumberOfLinesToShow(1)
+        jobName.setMaxNumberOfLinesToShow(2)
+        address.setMaxNumberOfLinesToShow(2)
         
         
     }

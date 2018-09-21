@@ -19,7 +19,7 @@ class BaseScrollerTableViewCell: UITableViewCell {
         scrollView.isUserInteractionEnabled = true
         scrollView.bounces = true
         scrollView.isPagingEnabled = false
-        scrollView.contentInset = UIEdgeInsetsMake(0, 5, 0, 5)
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
         scrollView.canCancelContentTouches  = true
         
         return scrollView
@@ -32,7 +32,7 @@ class BaseScrollerTableViewCell: UITableViewCell {
     // image url strings and title
    internal var mode:[String:String]?
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
         self.contentView.backgroundColor = UIColor.white

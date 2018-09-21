@@ -47,12 +47,12 @@ class DashboardViewController: BaseViewController{
         let btn = UIButton.init(frame: CGRect.init(x: 3, y: 0, width: 60, height: SEARCH_BAR_H))
         
         btn.semanticContentAttribute = .forceLeftToRight
-        btn.setImage(#imageLiteral(resourceName: "nearby").changesize(size: CGSize.init(width: 20, height: 20), renderMode: UIImageRenderingMode.alwaysOriginal), for: .normal)
+        btn.setImage(#imageLiteral(resourceName: "nearby").changesize(size: CGSize.init(width: 20, height: 20), renderMode: UIImage.RenderingMode.alwaysOriginal), for: .normal)
         btn.setImage(#imageLiteral(resourceName: "nearby").changesize(size: CGSize.init(width: 20, height: 20), renderMode:
-            UIImageRenderingMode.alwaysOriginal), for: .highlighted)
+            UIImage.RenderingMode.alwaysOriginal), for: .highlighted)
 
         
-        btn.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 10)
+        btn.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 10)
         btn.setTitle(NEARBY, for: .normal)
         btn.contentMode = .center
         btn.setTitleColor(UIColor.blue, for: .normal)
@@ -167,7 +167,7 @@ class DashboardViewController: BaseViewController{
         
         // page 放这里
         self.tables.insertSubview(imagescroller.page, aboveSubview: self.tables.tableHeaderView!)
-        self.tables.contentInset = UIEdgeInsetsMake(0, 0, tableBottomInset, 0)
+        self.tables.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: tableBottomInset, right: 0)
         self.tables.tableFooterView = UIView()
         self.tables.separatorStyle = .singleLine
         
@@ -503,7 +503,7 @@ extension DashboardViewController{
                     self.tabBarController?.selectedIndex = 1
                     //self.tabBarController?.viewControllers[1]
                     if let nav = self.tabBarController?.viewControllers?[1] as?  UINavigationController, let target = nav.viewControllers[0] as? JobHomeVC{
-                        target.scrollToindex2 = true
+                        target.scrollToCareerTalk = true
                     }
                     
                 }
@@ -530,12 +530,12 @@ extension DashboardViewController{
                         
                         //perform(#selecto, with: <#T##Any?#>, afterDelay: <#T##TimeInterval#>)
                         // 登录jobhome 加载完后 才有chidlvc
-                        target.scrollToindex = true
+                        target.scrollToOnlineAppy = true
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
                             // 查询某个行业的数据
                             
                             if !name.isEmpty, let vc = target.childVC[0] as? OnlineApplyViewController {
-                                vc.type = name
+                                //vc.type = name
                             }
                         })
                         
@@ -706,7 +706,7 @@ extension DashboardViewController{
         let detail = JobDetailViewController()
         detail.hidesBottomBarWhenPushed = true 
         //detail.jobID = jobModel.id!
-        detail.kind = (id: jobModel.id!, type: jobModel.kind!)
+        //detail.kind = (id: jobModel.id!, type: jobModel.kind!)
         self.navigationController?.pushViewController(detail, animated: true)
         
     }

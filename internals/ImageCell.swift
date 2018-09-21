@@ -46,9 +46,6 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
     // 存储图片到本地
     var storeImage:((_ image:UIImage)->Void)?
     
-        
-    
-    
     
    dynamic var mode:PicutreMessage? {
         didSet{
@@ -61,13 +58,13 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
             guard let imageName = mode.imageFileName else {
                 avartar.isHidden = true
                 imageV.isHidden = true
-                
                 return
             }
             
+            let url = URL.init(string: myself.icon ?? "")
             
+            self.avartar.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             
-            self.avartar.image = UIImage.init(data: mode.sender!.icon!)
             // 获取images
             if let imageData =  appFileManger.getImageDataBy(userID: (mode.receiver?.userID)!, fileName: imageName){
                 self.imageV.image = UIImage.init(data: imageData)
@@ -75,7 +72,7 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
             imageV.sd_clearAutoLayoutSettings()
             
             // 背景图片拉伸
-            let stretchInset = UIEdgeInsetsMake(30, 28, 23, 28)
+            let stretchInset = UIEdgeInsets(top: 30, left: 28, bottom: 23, right: 28)
             var stretchImage:UIImage!
             var bubbleMaskImage:UIImage!
             
@@ -120,7 +117,7 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
     }
 
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.contentView.addSubview(imageV)
         self.contentView.addSubview(avartar)

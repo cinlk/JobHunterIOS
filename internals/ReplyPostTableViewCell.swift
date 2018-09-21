@@ -22,8 +22,8 @@ class ReplyPostTableViewCell: ForumBaseCell {
             self.postType.text = ""
             
             
-            let authNameStr = NSMutableAttributedString.init(string: mode.authorName!, attributes: [NSAttributedStringKey.foregroundColor:UIColor.black, NSAttributedStringKey.font:UIFont.systemFont(ofSize: 14)])
-            authNameStr.append(NSAttributedString.init(string: " " + mode.colleage!, attributes: [NSAttributedStringKey.foregroundColor:UIColor.lightGray, NSAttributedStringKey.font:UIFont.systemFont(ofSize: 14)]))
+            let authNameStr = NSMutableAttributedString.init(string: mode.authorName!, attributes: [NSAttributedString.Key.foregroundColor:UIColor.black, NSAttributedString.Key.font:UIFont.systemFont(ofSize: 14)])
+            authNameStr.append(NSAttributedString.init(string: " " + mode.colleage!, attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray, NSAttributedString.Key.font:UIFont.systemFont(ofSize: 14)]))
             
             self.authorName.attributedText = authNameStr
             
@@ -36,7 +36,7 @@ class ReplyPostTableViewCell: ForumBaseCell {
             // 点赞
             let ts = String(mode.thumbUP)
             let thumbStr = NSMutableAttributedString.init(string: ts)
-            thumbStr.addAttributes([NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12)], range: NSRange.init(location: 0, length: ts.count))
+            thumbStr.addAttributes([NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12)], range: NSRange.init(location: 0, length: ts.count))
             let attch = NSTextAttachment.init()
             attch.image = UIImage.init(named: "thumbup")?.withRenderingMode(.alwaysTemplate).imageWithColor(color: UIColor.lightGray)
             // 图片和文字水平对齐
@@ -55,7 +55,7 @@ class ReplyPostTableViewCell: ForumBaseCell {
             let rs = String(mode.reply)
             
             let replyAttr = NSMutableAttributedString.init(string: rs)
-            replyAttr.addAttributes([NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12)], range: NSRange.init(location: 0, length: rs.count))
+            replyAttr.addAttributes([NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12)], range: NSRange.init(location: 0, length: rs.count))
             let commentAttch = NSTextAttachment.init()
             commentAttch.image = UIImage.init(named: "comment")?.withRenderingMode(.alwaysTemplate).imageWithColor(color: UIColor.lightGray)
             commentAttch.bounds = CGRect.init(x: 0, y: (UIFont.systemFont(ofSize: 12).capHeight - 15)/2, width: 15, height: 15)
@@ -75,7 +75,7 @@ class ReplyPostTableViewCell: ForumBaseCell {
 
         }
     }
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.postType.isHidden = true
         self.postTitle.font = UIFont.systemFont(ofSize: 16)

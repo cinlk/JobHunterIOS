@@ -39,7 +39,7 @@ class ValidateNumber {
             if newValue{
                 coundDown = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(counttime), userInfo: nil, repeats: true)
                 remainSeconds = 10
-                RunLoop.main.add(coundDown!, forMode: .commonModes)
+                RunLoop.main.add(coundDown!, forMode: RunLoop.Mode.common)
                 self.b?.backgroundColor = UIColor.clear
                 obCount.value = false
             }

@@ -91,7 +91,7 @@ extension searchResultController{
         case .onlineApply:
             self.searchFildContent.moveToIndex(0)
             
-            if let vc =  self.childViewControllers[0] as? SearchControllerDeletgate{
+            if let vc =  self.children[0] as? SearchControllerDeletgate{
                 // 清空搜索条件
                 vc.resetCondition()
                 vc.searchData(word:word)
@@ -99,26 +99,26 @@ extension searchResultController{
             
         case .graduate:
              self.searchFildContent.moveToIndex(1)
-             if let vc = self.childViewControllers[1] as? SearchControllerDeletgate{
+             if let vc = self.children[1] as? SearchControllerDeletgate{
                 vc.resetCondition()
                 vc.searchData(word: word)
              }
         case .intern:
             self.searchFildContent.moveToIndex(2)
-            if let vc = self.childViewControllers[2] as? SearchControllerDeletgate{
+            if let vc = self.children[2] as? SearchControllerDeletgate{
                 vc.resetCondition()
                 vc.searchData(word: word)
             }
         case .meeting:
             self.searchFildContent.moveToIndex(3)
-            if let vc = self.childViewControllers[3] as? SearchControllerDeletgate{
+            if let vc = self.children[3] as? SearchControllerDeletgate{
                 vc.resetCondition()
                 vc.searchData(word: word)
             }
 
         case .company:
             self.searchFildContent.moveToIndex(4)
-            if let vc = self.childViewControllers[4] as? SearchControllerDeletgate{
+            if let vc = self.children[4] as? SearchControllerDeletgate{
                 vc.resetCondition()
                 vc.searchData(word: word)
             }

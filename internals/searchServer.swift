@@ -121,7 +121,7 @@ extension SearchTarget: TargetType{
     
     var headers: [String : String]? {
         
-        return ["Content-type": "application/json","User-Agent":"ios"]
+        return ["Content-type": "application/json","User-Agent":"ios","Accept":"application/json"]
 
     }
     

@@ -41,7 +41,7 @@ class GetChatEmotion: NSObject {
        
         
         // 可变的
-        let attrMStr = NSMutableAttributedString(string: text, attributes: [NSAttributedStringKey.font : font])
+        let attrMStr = NSMutableAttributedString(string: text, attributes: [NSAttributedString.Key.font : font])
         
         
         // 替换表情符文本[xxx] 为表情符model 对应的image (bundle路径)

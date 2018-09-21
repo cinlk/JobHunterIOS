@@ -75,7 +75,7 @@ class websockDemo:NSObject, SRWebSocketDelegate{
             })
             
             print("aha \(String(describing: self.heartBeat))")
-            RunLoop.current.add(self.heartBeat!, forMode: .commonModes)
+            RunLoop.current.add(self.heartBeat!, forMode: RunLoop.Mode.common)
 
         }
         

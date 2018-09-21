@@ -101,7 +101,8 @@ class SpecialJobVC: BaseTableViewController {
         tableView.deselectRow(at: indexPath, animated: false)
         let mode = items[indexPath.row]
         let detail = JobDetailViewController()
-        detail.kind = (id: mode.id!, type: mode.kind!)
+        detail.uuid = mode.id!
+        //detail.kind = (id: mode.id!, type: mode.kind!)
         self.navigationController?.pushViewController(detail, animated: true)
     }
     

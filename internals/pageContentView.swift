@@ -51,8 +51,8 @@ class pageContentView: UIView {
         self.pVC = pVC
         for vc in childVCs{
             
-            self.pVC?.addChildViewController(vc)
-            vc.didMove(toParentViewController: self.pVC)
+            self.pVC?.addChild(vc)
+            vc.didMove(toParent: self.pVC)
         }
         
         self.addSubview(collectionView)

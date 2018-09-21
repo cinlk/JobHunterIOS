@@ -8,170 +8,229 @@
 
 import UIKit
 import YNDropDownMenu
-import ObjectMapper
+import RxCocoa
+import RxSwift
+import MJRefresh
 
 
-class OnlineApplyViewController: BasePositionItemViewController {
-
-    
+class OnlineApplyViewController: UIViewController {
     // 网申数据
-    private var datas:[OnlineApplyModel] = []
+    private var localData:[OnlineApplyModel] = []
     
-    internal var type:String = ""{
-        didSet{
-            // 取消当前的http查询进程，如果有，用新的查询
-            loadData(type)
+    private lazy var table:UITableView = {
+        let table = UITableView()
+        table.tableFooterView = UIView()
+        table.backgroundColor = UIColor.viewBackColor()
+        table.register(OnlineApplyCell.self, forCellReuseIdentifier: OnlineApplyCell.identity())
+        table.rx.setDelegate(self).disposed(by: dispose)
+       
+        table.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
+        return table
+    }()
+    
+    
+    internal lazy var cityMenu:DropItemCityView = {
+        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 200))
+        // 覆盖指定高度
+        city.passData = { citys in
+            
+            
         }
-    }
+        
+        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + JobHomeVC.titlePageH)
+        return city
+    }()
+    
+    // 行业分类
+    internal lazy var industryKind:DropItemIndustrySectorView = {
+        let indus = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
+        indus.passData = { kind in
+            
+        }
+        indus.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + JobHomeVC.titlePageH)
+        return indus
+    }()
+    
+    
+    // 条件选择下拉菜单view
+    lazy var dropMenu: YNDropDownMenu = { [unowned self] in
+        
+        
+        let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: DROP_MENU_H), dropDownViews: [cityMenu,industryKind], dropDownViewTitles: ["城市","行业领域"])
+        
+        menu.setImageWhen(normal: UIImage(named: "arrow_nor"), selected: UIImage(named: "arrow_xl"), disabled: UIImage(named: "arrow_dim"))
+        menu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
+        
+        menu.setLabelFontWhen(normal: .systemFont(ofSize: 16), selected: .boldSystemFont(ofSize: 16), disabled: .systemFont(ofSize: 16))
+        menu.backgroundBlurEnabled = true
+        menu.blurEffectViewAlpha = 0.5
+        menu.showMenuSpringWithDamping = 1
+        menu.hideMenuSpringWithDamping = 1
+        menu.bottomLine.isHidden = false
+        
+        // 添加手势
+        menu.addSwipeGestureToBlurView()
+        
+    
+        return menu
+        
+    }()
+    
+    
+    // refresh
+    private lazy var refreshHeader:MJRefreshNormalHeader = {
+        let h = MJRefreshNormalHeader.init { [weak self] in
+            self?.vm.onlineApplyRefresh.onNext(true)
+            
+        }
+        h?.setTitle("开始刷新", for: .pulling)
+        h?.setTitle("刷新中...", for: .refreshing)
+        h?.setTitle("下拉刷新", for: .idle)
+        h?.lastUpdatedTimeLabel.isHidden = true
+        
+        return h!
+        
+    }()
+    
+    private lazy var refreshFooter:MJRefreshAutoNormalFooter = {
+        let f = MJRefreshAutoNormalFooter.init(refreshingBlock: { [weak self] in
+            self?.vm.onlineApplyRefresh.onNext(false)
+            
+        })
+        f?.setTitle("上拉刷新", for: .idle)
+        f?.setTitle("刷新中...", for: .refreshing)
+        f?.setTitle("没有数据", for: .noMoreData)
+        
+        return f!
+    }()
+    
+    
+    // rxSwift
+    let dispose = DisposeBag()
+    let vm:RecruitViewModel = RecruitViewModel()
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
-        loadData()
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+        setViewModel()
+        
+        self.table.mj_header = refreshHeader
+        self.table.mj_footer = refreshFooter
+        
+      
     }
     
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,DROP_MENU_H)?.bottomEqualToView(self.view)
+    }
     
-    override func setViews() {
+  
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
-        table.register(OnlineApplyCell.self, forCellReuseIdentifier: OnlineApplyCell.identity())
-        table.dataSource = self
-        table.delegate = self
-        
-        super.setViews()
-        
-        // 条件刷新
-        industryKind.passData = { name in
-           
-            self.dropMenu.changeMenu(title: name, at: 1)
+        if localData.count > 0{
+            return
         }
         
-        cityMenu.passData = { city in
-            //print(city)
-            
-        }
-    }
-    
-    
-    override func didFinishloadData() {
-        super.didFinishloadData()
-        self.table.reloadData()
+        self.table.mj_header.beginRefreshing()
         
     }
-    
-    
-    override func reload() {
-        super.reload()
-        loadData()
-    }
-    
-    
-    override func sendRequest(){
-        
-        //
-        self.datas.removeAll()
-        self.table.reloadData()
-    }
-    
-    
 
 }
 
-
-
-extension  OnlineApplyViewController: UITableViewDataSource, UITableViewDelegate{
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return datas.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = table.dequeueReusableCell(withIdentifier: OnlineApplyCell.identity(), for: indexPath) as! OnlineApplyCell
-        cell.mode = datas[indexPath.row]
-        
-        return cell
-    }
-    
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let mode = datas[indexPath.row]
-        return table.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: OnlineApplyCell.self, contentViewWidth: ScreenW)
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let mode = datas[indexPath.row]
-        tableView.deselectRow(at: indexPath, animated: false)
-        
-        if mode.outer == true{
-            
-            guard let urlLink = mode.link else {return}
-            //跳转外部连接
-            let wbView = baseWebViewController()
-            wbView.mode = urlLink
-            wbView.hidesBottomBarWhenPushed = true
-            self.navigationController?.pushViewController(wbView, animated: true)
-        }else{
-            // 内部网申
-            let show = OnlineApplyShowViewController()
-            // 传递id
-            show.onlineApplyID = mode.id
-            
-            show.hidesBottomBarWhenPushed = true
-            self.navigationController?.pushViewController(show, animated: true)
-        }
-        
-    }
-    
-    
-    
-}
 
 
 
 extension OnlineApplyViewController{
     
-    // 查询不同类型数据
-    private func loadData(_ type:String = ""){
+    private func setViews() {
+        self.view.addSubview(table)
+        self.view.addSubview(dropMenu)
         
-        
-        DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
-            Thread.sleep(forTimeInterval: 3)
-            // 站外数据
-            for _ in 0..<10{
-               
-                
-                guard let data =  OnlineApplyModel(JSON: ["id":"sdqwd","isValidate":true,"isCollected":false,
-                                                          "name":"某某莫小元招聘网申","create_time":Date().timeIntervalSince1970 - TimeInterval(54364),"end_time":Date().timeIntervalSince1970 + TimeInterval(54631),"outer":true,"link":"https://www.xiaoyuanzhao.com/company/xri_y3y4pkvjtj3b?act=zw#1","address":["地点1","地点2"]])  else {
-                    continue
-                }
-                self?.datas.append(data)
-      
-                
-            }
-            
-            // 站内数据
-            for _ in 0..<10{
-                guard let data = OnlineApplyModel(JSON: ["id":"sdqwd","isValidate":true,"isCollected":false,
-                                                         "name":"某某莫小元招聘网申","create_time":Date().timeIntervalSince1970 - TimeInterval(54364),"end_time":Date().timeIntervalSince1970 + TimeInterval(54631),"outer":false,"address":["地点1","地点2"]]) else {
-                    continue
-                }
-                self?.datas.append(data)
-            }
-            
-            
-            
-            DispatchQueue.main.async {
-                
-                self?.didFinishloadData()
-            }
-        }
     }
+    
+    private func setViewModel(){
+        
+          self.vm.onlineApplyRes.share().subscribe(onNext: { (modes) in
+                self.localData = modes
+          }, onError: { (err) in
+            self.localData = []
+          }).disposed(by: dispose)
+        
+        self.vm.onlineApplyRes.share().bind(to: self.table.rx.items(cellIdentifier: OnlineApplyCell.identity(), cellType: OnlineApplyCell.self)) { (row, mode, cell) in
+            cell.mode = mode
+            
+        }.disposed(by: dispose)
+        
+        
+        self.vm.onlineApplyRefreshStatus.asDriver(onErrorJustReturn: mainPageRefreshStatus.none).drive(onNext: { (status) in
+            switch status{
+                case .endFooterRefresh:
+                    self.table.mj_footer.endRefreshing()
+            case .endHeaderRefresh:
+                self.table.mj_footer.resetNoMoreData()
+                self.table.mj_header.endRefreshing()
+            case .NoMoreData:
+                self.table.mj_footer.endRefreshingWithNoMoreData()
+            case .error(let err):
+                showOnlyTextHub(message: "get error \(err)", view: self.view)
+                self.table.mj_header.endRefreshing()
+                self.table.mj_footer.endRefreshing()
+            default:
+                break
+            }
+            
+        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        
+        // table
+        self.table.rx.itemSelected.subscribe(onNext: { (idx) in
+            self.table.deselectRow(at: idx, animated: false)
+            let mode = self.localData[idx.row]
+            if  mode.outer{
+                guard let urlLink = mode.link else {return}
+                //跳转外部连接
+                let wbView = baseWebViewController()
+                wbView.mode = urlLink
+                wbView.hidesBottomBarWhenPushed = true
+                self.navigationController?.pushViewController(wbView, animated: true)
+                
+            }else{
+                let show = OnlineApplyShowViewController()
+                // 传递id
+                guard let id = mode.id else {
+                    return
+                }
+                show.uuid = id
+                show.hidesBottomBarWhenPushed = true
+                self.navigationController?.pushViewController(show, animated: true)
+               
+            }
+            
+        }).disposed(by: dispose)
+        
+        
+        
+    }
+    
 }
+
+
+extension  OnlineApplyViewController:  UITableViewDelegate{
+
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        let mode = self.localData[indexPath.row]
+        return table.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: OnlineApplyCell.self, contentViewWidth: ScreenW)
+    
+    }
+    
+    
+}
+
+
+
 

@@ -20,7 +20,7 @@ class progressHUB: UIView {
      */
     
     
-    var indicator: UIActivityIndicatorView = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
+    var indicator: UIActivityIndicatorView = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.gray)
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -35,7 +35,7 @@ class progressHUB: UIView {
         indicator.center = self.center
         label.frame = CGRect(x: 0, y: 60, width: 60, height: 10)
         self.addSubview(indicator)
-        indicator.bringSubview(toFront: self)
+        indicator.bringSubviewToFront(self)
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         self.addSubview(label)
         //_ = indicator.sd_layout().topEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(50)

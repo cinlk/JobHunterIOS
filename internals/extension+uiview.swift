@@ -27,7 +27,7 @@ struct actionEntity {
 
 extension UIView{
     
-    func presentAlert(type: UIAlertControllerStyle, title:String?, message:String?, items:[actionEntity],  target:AnyObject?, complete:(( _ alert:UIAlertController )->Void)){
+    func presentAlert(type: UIAlertController.Style, title:String?, message:String?, items:[actionEntity],  target:AnyObject?, complete:(( _ alert:UIAlertController )->Void)){
         
         let alertVC = UIAlertController.init(title: title, message: message, preferredStyle: type)
         

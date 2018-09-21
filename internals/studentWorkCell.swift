@@ -11,7 +11,7 @@ import UIKit
 @objcMembers class studentWorkCell: BaseResumeInfoCell<studentWorkInfo> {
 
    
-    override dynamic var mode:studentWorkInfo?{
+     dynamic var mode:studentWorkInfo?{
         didSet{
             guard let mode = mode else{
                 return
@@ -35,7 +35,7 @@ import UIKit
     }
     
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
     }
     

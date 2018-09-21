@@ -75,7 +75,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 30, height: 30)
         return label
     }()
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         let views:[UIView] = [postTitle, postType, creatTime, authorName, authorIcon, thumbs, reply]

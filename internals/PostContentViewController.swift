@@ -84,10 +84,10 @@ class PostContentViewController: BaseTableViewController {
     internal var deleteSelf:((_ row: Int)->())?
     
     private lazy var deleteAlert:UIAlertController = { [unowned self] in
-        let alert = UIAlertController.init(title: "确认删除", message: "数据将无法恢复", preferredStyle: UIAlertControllerStyle.alert)
+        let alert = UIAlertController.init(title: "确认删除", message: "数据将无法恢复", preferredStyle: UIAlertController.Style.alert)
         
         let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
-        let delete = UIAlertAction.init(title: "确认", style: UIAlertActionStyle.default, handler: { action in
+        let delete = UIAlertAction.init(title: "确认", style: UIAlertAction.Style.default, handler: { action in
             self.deleteMyself()
         })
         
@@ -130,11 +130,11 @@ class PostContentViewController: BaseTableViewController {
         self.tableView.keyboardDismissMode = .onDrag
         self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.register(ReplyPostTableViewCell.self, forCellReuseIdentifier: ReplyPostTableViewCell.identity())
-        self.tableView.contentInset = UIEdgeInsetsMake(0, 0, TOOLBARH + 10, 0)
+        self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: TOOLBARH + 10, right: 0)
     
         //简体键盘
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHidden), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHidden), name: UIResponder.keyboardWillHideNotification, object: nil)
         
         //self.navigationController?.toolbar.autoresizingMask = [.flexibleHeight, .flexibleTopMargin]
         
@@ -363,13 +363,13 @@ extension PostContentViewController{
     @objc private func keyboardShow(notify:NSNotification){
         
         
-        let kframe = notify.userInfo![UIKeyboardFrameEndUserInfoKey] as! CGRect
-        let duration = notify.userInfo![UIKeyboardAnimationDurationUserInfoKey] as! NSNumber
-        let curve = notify.userInfo![UIKeyboardAnimationCurveUserInfoKey] as! NSNumber
+        let kframe = notify.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! CGRect
+        let duration = notify.userInfo![UIResponder.keyboardAnimationDurationUserInfoKey] as! NSNumber
+        let curve = notify.userInfo![UIResponder.keyboardAnimationCurveUserInfoKey] as! NSNumber
         
         keyboardH = kframe.height
         
-        UIView.animate(withDuration: TimeInterval(truncating: duration), delay: 0, options: [UIViewAnimationOptions.init(rawValue: UInt(truncating: curve))], animations: {
+        UIView.animate(withDuration: TimeInterval(truncating: duration), delay: 0, options: [UIView.AnimationOptions.init(rawValue: UInt(truncating: curve))], animations: {
       
             self.inputText.frame.origin.y = ScreenH - self.keyboardH  - self.InputViewHeigh
             
@@ -382,11 +382,11 @@ extension PostContentViewController{
     
     @objc private func keyboardHidden(notify:NSNotification){
      
-        let duration = notify.userInfo![UIKeyboardAnimationDurationUserInfoKey] as! NSNumber
-        let curve = notify.userInfo![UIKeyboardAnimationCurveUserInfoKey] as! NSNumber
+        let duration = notify.userInfo![UIResponder.keyboardAnimationDurationUserInfoKey] as! NSNumber
+        let curve = notify.userInfo![UIResponder.keyboardAnimationCurveUserInfoKey] as! NSNumber
         keyboardH = 0
         
-        UIView.animate(withDuration: TimeInterval(truncating: duration), delay: 0, options: [.curveEaseIn,UIViewAnimationOptions.init(rawValue: UInt(truncating: curve))], animations: {
+        UIView.animate(withDuration: TimeInterval(truncating: duration), delay: 0, options: [.curveEaseIn,UIView.AnimationOptions.init(rawValue: UInt(truncating: curve))], animations: {
            self.inputText.frame.origin.y = ScreenH - self.InputViewHeigh
             
 
@@ -474,8 +474,8 @@ fileprivate class contentHeaderView:PostHeaderView{
             self.contentTitle.text = mode.title
             self.userIcon.image = UIImage.init(named: mode.authorIcon)
             
-            let authNameStr = NSMutableAttributedString.init(string: mode.authorName!, attributes: [NSAttributedStringKey.foregroundColor:UIColor.black, NSAttributedStringKey.font:UIFont.systemFont(ofSize: 14)])
-            authNameStr.append(NSAttributedString.init(string: " " + mode.colleage!, attributes: [NSAttributedStringKey.foregroundColor:UIColor.lightGray, NSAttributedStringKey.font:UIFont.systemFont(ofSize: 14)]))
+            let authNameStr = NSMutableAttributedString.init(string: mode.authorName!, attributes: [NSAttributedString.Key.foregroundColor:UIColor.black, NSAttributedString.Key.font:UIFont.systemFont(ofSize: 14)])
+            authNameStr.append(NSAttributedString.init(string: " " + mode.colleage!, attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray, NSAttributedString.Key.font:UIFont.systemFont(ofSize: 14)]))
             
             self.userName.attributedText = authNameStr
             
@@ -489,11 +489,11 @@ fileprivate class contentHeaderView:PostHeaderView{
             
             // 更加数字长度 调整btn长度
             let replyStr = String(mode.reply)
-            let replySize = NSString(string: replyStr).size(withAttributes: [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12)])
+            let replySize = NSString(string: replyStr).size(withAttributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12)])
             self.reply.setTitle(replyStr, for: .normal)
             _ = self.reply.sd_layout().widthIs(25 + replySize.width + 20)
             let thumbStr = String(mode.thumbUP)
-            let thumbSize = NSString(string: thumbStr).size(withAttributes: [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12)])
+            let thumbSize = NSString(string: thumbStr).size(withAttributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12)])
             _ = self.thumbUP.sd_layout().widthIs(25 + thumbSize.width + 20)
             self.thumbUP.setTitle(thumbStr, for: .normal)
             

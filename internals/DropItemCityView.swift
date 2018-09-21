@@ -53,13 +53,13 @@ class DropItemCityView: YNDropDownView {
     
     private lazy var collection:UICollectionView = { [unowned self] in
         let col = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: flowLayout)
-        col.contentInset = UIEdgeInsetsMake(0, 10, 45, 10)
+        col.contentInset = UIEdgeInsets(top: 0, left: 10, bottom: 45, right: 10)
         col.delegate = self
         col.dataSource = self
         col.allowsMultipleSelection = false
         col.backgroundColor = UIColor.white
         col.showsHorizontalScrollIndicator = false
-        col.register(CollectionLabelHeaderView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: CollectionLabelHeaderView.identity())
+        col.register(CollectionLabelHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CollectionLabelHeaderView.identity())
         col.register(CollectionTextCell.self, forCellWithReuseIdentifier: CollectionTextCell.identity())
         return col
     }()
@@ -137,12 +137,19 @@ class DropItemCityView: YNDropDownView {
     override func dropDownViewOpened() {
         
         UIApplication.shared.keyWindow?.addSubview(backGroundBtn)
+        // 静止collectionview滑动
+        if let vc =  (self.getParentViewController()?.parent as? JobHomeVC){
+            vc.isScrollEnabled = false
+        }
         self.getParentViewController()?.tabBarController?.tabBar.isHidden = true
     }
     
     override func dropDownViewClosed() {
         
         backGroundBtn.removeFromSuperview()
+        if let vc =  (self.getParentViewController()?.parent as? JobHomeVC){
+            vc.isScrollEnabled = true
+        }
         self.getParentViewController()?.tabBarController?.tabBar.isHidden = false
     }
     
@@ -181,7 +188,7 @@ extension DropItemCityView:UICollectionViewDataSource, UICollectionViewDelegate,
         return CGSize(width:collectionView.frame.size.width,height:45)
     }
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        if let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: CollectionLabelHeaderView.identity(), for: indexPath) as? CollectionLabelHeaderView{
+        if let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CollectionLabelHeaderView.identity(), for: indexPath) as? CollectionLabelHeaderView{
             header.titleLabel.text = index[indexPath.section]
             return header
         }

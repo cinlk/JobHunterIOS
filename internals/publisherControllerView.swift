@@ -104,7 +104,7 @@ class publisherControllerView: BaseTableViewController {
         self.tableView.delegate = self
         self.tableView.dataSource = self
         self.tableView.backgroundColor = UIColor.viewBackColor()
-        self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 60, 0)
+        self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
         self.tableView.tableFooterView = UIView.init()
         self.tableView.register(UINib(nibName:"CompanySimpleCell", bundle:nil), forCellReuseIdentifier: CompanySimpleCell.identity())
         self.tableView.register(companySimpleJobCell.self, forCellReuseIdentifier: companySimpleJobCell.identity())
@@ -188,7 +188,8 @@ class publisherControllerView: BaseTableViewController {
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if   indexPath.section == 0 {
-            return  CompanySimpleCell.cellHeight()
+           // return  CompanySimpleCell.cellHeight()
+            return 60
         }
         
         if indexPath.section == 1{
@@ -222,7 +223,8 @@ class publisherControllerView: BaseTableViewController {
             
             let mode = publishJobs[indexPath.row]
             let jd = JobDetailViewController()
-            jd.kind = (id: mode.id!, type: mode.kind!)
+            jd.uuid = mode.id!
+            //jd.kind = (id: mode.id!, type: mode.kind!)
             self.navigationController?.pushViewController(jd, animated: true)
             
         default:
@@ -307,7 +309,7 @@ extension publisherControllerView{
         // 0 到 tHeaderHeight直接距离，headerview 向上移动
         if scrollView.contentOffset.y > 0 && scrollView.contentOffset.y < tHeaderHeight{
             hframe.origin.y = NavH - scrollView.contentOffset.y
-            scrollView.contentInset = UIEdgeInsetsMake(-scrollView.contentOffset.y, 0, 0, 0)
+            scrollView.contentInset = UIEdgeInsets(top: -scrollView.contentOffset.y, left: 0, bottom: 0, right: 0)
             if scrollView.contentOffset.y < 64{
                   navigationBack.alpha = scrollView.contentOffset.y / CGFloat(64)
                 
@@ -316,7 +318,7 @@ extension publisherControllerView{
             }
         }else if scrollView.contentOffset.y >= tHeaderHeight{
             // 取消header section 悬浮
-            scrollView.contentInset = UIEdgeInsetsMake(-tHeaderHeight, 0, 0, 0)
+            scrollView.contentInset = UIEdgeInsets(top: -tHeaderHeight, left: 0, bottom: 0, right: 0)
         }
             // 下拉 图片放大，固定y坐标
         else{
@@ -348,7 +350,7 @@ private class singleTextCell:UITableViewCell{
     }()
     
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.contentView.addSubview(content)
         _ = content.sd_layout().leftSpaceToView(self.contentView,10)?.centerYEqualToView(self.contentView)?.autoHeightRatio(0)

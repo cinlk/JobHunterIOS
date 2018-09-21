@@ -36,7 +36,7 @@ class AreaCollectionView: UIView {
     internal lazy var collection:UICollectionView = { [unowned self] in
         let col = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
         col.allowsMultipleSelection = false
-        col.contentInset = UIEdgeInsetsMake(5, 10, 5, 10)
+        col.contentInset = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
         col.dataSource = self
         col.delegate = self
         col.backgroundColor = UIColor.white

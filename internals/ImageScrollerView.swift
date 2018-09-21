@@ -60,7 +60,8 @@ extension ImageScrollerView{
     
     open func createTimer(){
         timer =  Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.change), userInfo: nil, repeats: true)
-        RunLoop.current.add(timer!, forMode: RunLoopMode.commonModes)
+        RunLoop.current.add(timer!, forMode: RunLoop.Mode.common)
+        
     }
     
     

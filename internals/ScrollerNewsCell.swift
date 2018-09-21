@@ -55,7 +55,7 @@ class ScrollerNewsCell: UITableViewCell {
     
     
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         self.selectionStyle = .none
@@ -94,14 +94,15 @@ extension ScrollerNewsCell{
                 // 模拟无限循环 pickerDataSize 数很大时
                 if self.count <= self.pickerDataSize{
                     self.count += 2
-                    self.scroller.scrollToRow(at: IndexPath.init(row: self.count, section: 0), at: UITableViewScrollPosition.none, animated: true)
+                    self.scroller.scrollToRow(at: IndexPath.init(row: self.count, section: 0), at: UITableView.ScrollPosition.none, animated: true)
                     // 重置
                     if self.count >= self.pickerDataSize{
                         self.count = 0
                     }
                 }
             })
-            RunLoop.current.add(self.timer!, forMode: .commonModes)
+            
+            RunLoop.current.add(self.timer!, forMode: RunLoop.Mode.common)
         }
     }
     

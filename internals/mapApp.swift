@@ -109,7 +109,8 @@ public enum PazNavigationApp {
             
             let coordinates = CLLocationCoordinate2DMake(coordinate.latitude, coordinate.longitude)
             
-            let regionSpan = MKCoordinateRegionMakeWithDistance(coordinates, regionDistance, regionDistance)
+            
+            let regionSpan =  MKCoordinateRegion.init(center: coordinates, latitudinalMeters: regionDistance, longitudinalMeters: regionDistance)
             
             let options = [
                 
@@ -146,15 +147,15 @@ public enum PazNavigationApp {
     
     // locate 2D
     public static func directionsAlertController(coordinate: CLLocationCoordinate2D, name: String = "Destination", title: String = "Directions Using", message: String? = nil, completion: ((Bool) -> Swift.Void)? = nil) -> UIAlertController {
-        let directionsAlertView = UIAlertController(title: title, message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
+        let directionsAlertView = UIAlertController(title: title, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
         for navigationApp in PazNavigationApp.AvailableServices {
-            directionsAlertView.addAction(UIAlertAction(title: navigationApp.name, style: UIAlertActionStyle.default, handler: { (action) in
+            directionsAlertView.addAction(UIAlertAction(title: navigationApp.name, style: UIAlertAction.Style.default, handler: { (action) in
                 navigationApp.openWithDirections(coordinate: coordinate, name: name, completion: { (success) in
                     completion?(success)
                 })
             }))
         }
-        directionsAlertView.addAction(UIAlertAction(title: "取消", style: UIAlertActionStyle.cancel, handler: { (action) in
+        directionsAlertView.addAction(UIAlertAction(title: "取消", style: UIAlertAction.Style.cancel, handler: { (action) in
             completion?(false)
         }))
         return directionsAlertView

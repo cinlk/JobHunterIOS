@@ -8,40 +8,34 @@
 
 import UIKit
 
-
-
-
 class BaseShowJobViewController: BaseViewController {
 
-
-    let toolBarHeight:CGFloat = 44
 
     // table 展示内容
     internal lazy var table:UITableView = {  [unowned self] in
         let table = UITableView()
         table.tableFooterView = UIView()
         table.backgroundColor = UIColor.viewBackColor()
-        
         return table
     }()
     
     // 收藏按钮
     internal lazy var collectedBtn:UIButton = { [unowned self] in
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 120, height: toolBarHeight))
+        
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 120, height: TOOLBARH))
         btn.setTitle("收藏", for: .normal)
         btn.setTitle("已收藏", for: .selected)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         btn.titleLabel?.textAlignment = .right
         btn.setTitleColor(UIColor.blue, for: .normal)
         btn.backgroundColor = UIColor.white
-        btn.setImage(#imageLiteral(resourceName: "collect").changesize(size: CGSize.init(width: 25, height: 25)), for: .normal)
-        btn.setImage(#imageLiteral(resourceName: "collected").changesize(size: CGSize.init(width: 25, height: 25)), for: .selected)
-        btn.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 30)
-        
-        
+        btn.setImage(#imageLiteral(resourceName: "collect").changesize(size: CGSize.init(width: 25, height: 25), renderMode: .alwaysOriginal), for: .normal)
+        btn.setImage(#imageLiteral(resourceName: "collected").changesize(size: CGSize.init(width: 25, height: 25), renderMode: .alwaysOriginal), for: .selected)
+        btn.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 30)
         btn.addTarget(self, action: #selector(collected(_:)), for: .touchUpInside)
         return btn
     }()
+    
     // 左边按钮空隙
     lazy var leftSpace = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
     
@@ -110,13 +104,13 @@ class BaseShowJobViewController: BaseViewController {
     }
     
    
-   @objc func share(_ btn:UIButton){
+   @objc internal func share(_ btn:UIButton){
     
         shareapps.showShare()
     
     }
     
-    @objc func collected(_ btn:UIButton){
+    @objc internal func collected(_ btn:UIButton){
         
     }
 

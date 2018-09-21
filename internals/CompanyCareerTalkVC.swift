@@ -7,22 +7,19 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
+import MJRefresh
+
 
 class CompanyCareerTalkVC: BaseViewController {
 
-    
-    
-    
-    
     internal var mode:CompanyModel?
-    
     
     private var datas:[CareerTalkMeetingModel] = []
     
-    
     // deleagte
     weak var delegate:CompanySubTableScrollDelegate?
-    
     
     internal lazy var table:UITableView = {
         let tb = UITableView()
@@ -31,37 +28,71 @@ class CompanyCareerTalkVC: BaseViewController {
         tb.tableHeaderView = hearder
         tb.tableFooterView = UIView()
         tb.contentInsetAdjustmentBehavior = .never
-        tb.contentInset = UIEdgeInsets.init(top: 0, left: 0, bottom: 30, right: 0)
         tb.register(CareerTalkCell.self, forCellReuseIdentifier: CareerTalkCell.identity())
-        tb.dataSource = self
-        tb.delegate = self
+        tb.contentInset = UIEdgeInsets.init(top: 0, left: 0, bottom: 30, right: 0)
+        tb.rx.setDelegate(self).disposed(by: dispose)
         return tb
     }()
-    
-    
-    
-    
-    
 
+    
+    private var headRefreshed:Bool = false{
+        didSet{
+            self.table.mj_header.isHidden = headRefreshed
+        }
+    }
+    
+    //refresh table
+    private lazy var  headRefresh:MJRefreshNormalHeader = { [unowned self] in
+        
+        let h = MJRefreshNormalHeader.init {
+            self.vm.companyRecruitMeetingRefesh.onNext((true,(self.mode?.id)!))
+        }
+        
+        h?.lastUpdatedTimeLabel.isHidden = true
+        return h!
+    }()
+    
+    private lazy var  footRefresh:MJRefreshAutoNormalFooter = {
+        let f = MJRefreshAutoNormalFooter.init {
+    
+            self.vm.companyRecruitMeetingRefesh.onNext((false,(self.mode?.id)!))
+        }
+        
+        f?.setTitle("上拉刷新", for: .idle)
+        f?.setTitle("刷新中...", for: .refreshing)
+        f?.setTitle("没有数据", for: .noMoreData)
+        return f!
+    }()
+    
+    //rxSwift
+    let dispose = DisposeBag()
+    let vm:RecruitViewModel = RecruitViewModel()
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
-        loadData()
-        // Do any additional setup after loading the view.
+        setViewModel()
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if self.headRefreshed == false && self.datas.isEmpty{
+            self.table.mj_header.beginRefreshing()
+        }
     }
-    
     
     override func setViews() {
         
         self.view.addSubview(table)
         _ = table.sd_layout().leftEqualToView(self.view)?.topEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
         self.handleViews.append(table)
+        
+        self.table.mj_header = headRefresh
+        self.table.mj_footer = footRefresh
+        
         super.setViews()
         
         
@@ -70,52 +101,70 @@ class CompanyCareerTalkVC: BaseViewController {
     
     override func didFinishloadData() {
         super.didFinishloadData()
-        self.table.reloadData()
         
     }
-    
-    
     override func reload() {
         super.reload()
-        self.loadData()
-        
     }
-    
-
-  
 }
 
-extension CompanyCareerTalkVC: UITableViewDataSource, UITableViewDelegate{
+extension CompanyCareerTalkVC {
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+    private func setViewModel(){
+        
+        //
+        self.vm.recruitMeetingRes.asDriver(onErrorJustReturn: []).drive(onNext: { (meetings) in
+            self.datas = meetings
+        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        
+        self.vm.recruitMeetingRes.share().catchErrorJustReturn([]).bind(to: self.table.rx.items(cellIdentifier: CareerTalkCell.identity(), cellType: CareerTalkCell.self)){ (row, mode, cell) in
+            cell.mode = mode
+            
+        }.disposed(by: dispose)
+        
+        
+        self.vm.recruitMeetingRefreshStatus.share().subscribe(onNext: { (status) in
+            switch status{
+            case .endHeaderRefresh:
+                self.table.mj_header.endRefreshing()
+                self.table.mj_footer.resetNoMoreData()
+                self.headRefreshed = true
+                self.didFinishloadData()
+            case .endFooterRefresh:
+                self.table.mj_footer.endRefreshing()
+            case .NoMoreData:
+                self.table.mj_footer.endRefreshingWithNoMoreData()
+            case .error(let err):
+                self.headRefreshed = false
+                showOnlyTextHub(message: "err \(err)", view: self.view)
+                self.showError()
+                self.table.mj_footer.endRefreshing()
+                self.table.mj_header.endRefreshing()
+            default:
+                break
+            }
+            
+        }).disposed(by: dispose)
+        
+        //table
+        self.table.rx.itemSelected.subscribe(onNext: { (idx) in
+            self.table.deselectRow(at: idx, animated: false)
+            let mode = self.datas[idx.row]
+            let show = CareerTalkShowViewController()
+            show.hidesBottomBarWhenPushed = true
+            show.meetingID = mode.id
+            self.navigationController?.pushViewController(show, animated: true)
+        }).disposed(by: dispose)
+        
     }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.datas.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: CareerTalkCell.identity(), for: indexPath) as! CareerTalkCell
-        cell.mode = self.datas[indexPath.row]
-        return cell
-    }
-    
+}
+
+extension CompanyCareerTalkVC: UITableViewDelegate{
+   
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let mode = self.datas[indexPath.row]
         return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CareerTalkCell.self, contentViewWidth: ScreenW)
-        
     }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: false)
-        let mode = self.datas[indexPath.row]
-        let show = CareerTalkShowViewController()
-        show.hidesBottomBarWhenPushed = true
-        show.meetingID = mode.id
-        self.navigationController?.pushViewController(show, animated: true)
-    }
-    
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         return UIView()
@@ -141,33 +190,3 @@ extension CompanyCareerTalkVC{
     }
 }
 
-extension CompanyCareerTalkVC{
-    
-    private func loadData(){
-        
-        
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            Thread.sleep(forTimeInterval: 2)
-            for _ in 0..<20{
-                if let data = CareerTalkMeetingModel(JSON: ["id":"dqw-dqwd","companyModel":["id":"com-dqwd-5dq",
-                                                                                            "icon":"sina","name":"公司名字","describe":"达瓦大群-dqwd","isValidate":true,"isCollected":false,"address":["地址1","地址2"],"industry":["教育","医疗","化工"]],
-                                                            "college":"北京大学","address":"教学室二"
-                    ,"isValidate":true,"isCollected":false,"icon":"car","start_time":Date().timeIntervalSince1970,"end_time":Date().timeIntervalSince1970 + TimeInterval(3600*3),
-                     "name":"北京高华证券有限责任公司宣讲会但钱当前无多群","source":"上海交大",
-                     "content":"举办方：电院举办时间：2018年4月25日 18:00~20:00  \n举办地点：上海交通大学 - 上海市东川路800号电院楼群3-100会议室 单位名称：北京高华证券有限责任公司 联系方式：专业要求：不限、信息安全类、自动化类、计算机类、电子类、软件工程类"]){
-                      self?.datas.append(data)
-                }
-              
-                
-                
-            }
-            
-            DispatchQueue.main.async(execute: {
-                self?.didFinishloadData()
-            })
-        }
-        
-        
-        
-    }
-}

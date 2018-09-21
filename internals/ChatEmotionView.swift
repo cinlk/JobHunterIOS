@@ -64,7 +64,7 @@ class ChatEmotionView: UIView {
         return emotionBtn
     }()
     private lazy var santaButton:UIButton = { [unowned self] in
-        let santa = UIButton.init(type: UIButtonType.custom)
+        let santa = UIButton.init(type: UIButton.ButtonType.custom)
         santa.backgroundColor = UIColor.white
         santa.addTarget(self, action: #selector(changeCollectionCell(_:)), for: .touchUpInside)
         santa.setImage(#imageLiteral(resourceName: "santa"), for: .normal)
@@ -76,7 +76,7 @@ class ChatEmotionView: UIView {
     }()
     
     private lazy var chickenButton:UIButton = { [unowned self ] in
-        let cb = UIButton.init(type: UIButtonType.custom)
+        let cb = UIButton.init(type: UIButton.ButtonType.custom)
         cb.backgroundColor = UIColor.white
         cb.addTarget(self, action: #selector(changeCollectionCell(_:)), for: .touchUpInside)
         cb.setImage(#imageLiteral(resourceName: "chicken"), for: .normal)
@@ -87,7 +87,7 @@ class ChatEmotionView: UIView {
     }()
     
     private lazy var moneyButton:UIButton = { [unowned self] in
-        let money = UIButton.init(type: UIButtonType.custom)
+        let money = UIButton.init(type: UIButton.ButtonType.custom)
         money.backgroundColor = UIColor.white
         money.setImage(#imageLiteral(resourceName: "jing"), for: .normal)
         money.tag = 3

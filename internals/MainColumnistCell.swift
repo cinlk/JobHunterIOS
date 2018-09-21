@@ -35,7 +35,7 @@ class MainColumnistCell: BaseScrollerTableViewCell,UIScrollViewDelegate {
         }
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.scrollView.delegate = self
         
@@ -93,7 +93,7 @@ extension MainColumnistCell{
             btn.kf.setImage(with: url, for: .highlighted, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
            
             btn.titleLabel?.text = item.value
-            btn.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5)
+            btn.imageEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
             btn.addTarget(self, action: #selector(chooseItem(_:)), for: .touchUpInside)
             
             let subtitle = UILabel.init(frame: CGRect.zero)

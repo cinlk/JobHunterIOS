@@ -70,7 +70,7 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
         tb.register(ChatTimeCell.self, forCellReuseIdentifier: ChatTimeCell.identity())
         tb.separatorStyle = .none
         tb.backgroundColor = UIColor.viewBackColor()
-        tb.contentInset = UIEdgeInsetsMake(5, 0, 0, 0)
+        tb.contentInset = UIEdgeInsets(top: 5, left: 0, bottom: 0, right: 0)
         
         // 滑动tableview 影藏键盘
         tb.keyboardDismissMode = .onDrag
@@ -123,8 +123,8 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
 
     
     private lazy var alertView:UIAlertController = { [unowned self] in
-        let alertV = UIAlertController.init(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
-        alertV.addAction(UIAlertAction.init(title: "查看TA的名片", style: UIAlertActionStyle.default, handler: { (action) in
+        let alertV = UIAlertController.init(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+        alertV.addAction(UIAlertAction.init(title: "查看TA的名片", style: UIAlertAction.Style.default, handler: { (action) in
             // MARK
             let pubHR = publisherControllerView()
             pubHR.userID = self.hr.userID!
@@ -227,9 +227,9 @@ extension CommunicationChatView {
         _ = moreView.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.chatBarView,0)?.heightIs(charMoreViewH)
         
         // 监听keyborad
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardhidden), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardhidden), name: UIResponder.keyboardWillHideNotification, object: nil)
         
     }
     
@@ -447,13 +447,13 @@ extension CommunicationChatView{
             // 先改变view 后 在显示vc
             self.moveBar(distance: 0){
                 let job = JobDetailViewController()
-                job.kind = (id: mes.jobID!, type: mes.jobtype)
+                job.uuid = mes.jobID!
                 self.navigationController?.pushViewController(job, animated: true)
             }
         }else{
     
             let job = JobDetailViewController()
-            job.kind = (id: mes.jobID!, type: mes.jobtype)
+            job.uuid = mes.jobID!
             self.navigationController?.pushViewController(job, animated: true)
             
         }
@@ -541,14 +541,14 @@ extension CommunicationChatView: chatMoreViewDelegate{
                 picker.sourceType = .camera
                 
                 //设置镜头 front:前置摄像头  Rear:后置摄像头
-                if UIImagePickerController.isCameraDeviceAvailable(UIImagePickerControllerCameraDevice.rear) {
-                    picker.cameraDevice = UIImagePickerControllerCameraDevice.rear
-                }else if UIImagePickerController.isCameraDeviceAvailable(UIImagePickerControllerCameraDevice.front){
-                    picker.cameraDevice = UIImagePickerControllerCameraDevice.front
+                if UIImagePickerController.isCameraDeviceAvailable(UIImagePickerController.CameraDevice.rear) {
+                    picker.cameraDevice = UIImagePickerController.CameraDevice.rear
+                }else if UIImagePickerController.isCameraDeviceAvailable(UIImagePickerController.CameraDevice.front){
+                    picker.cameraDevice = UIImagePickerController.CameraDevice.front
                 }
                 
                 //设置闪光灯(On:开、Off:关、Auto:自动)
-                picker.cameraFlashMode = UIImagePickerControllerCameraFlashMode.auto
+                picker.cameraFlashMode = UIImagePickerController.CameraFlashMode.auto
                 //允许编辑
                 picker.allowsEditing = true
                 //打开相机
@@ -768,7 +768,7 @@ extension CommunicationChatView{
     // 显示文本输入框
     @objc  func keyboardShow(sender:NSNotification){
         
-        guard  let h =  sender.userInfo?[UIKeyboardFrameEndUserInfoKey] as? CGRect else {
+        guard  let h =  sender.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
             return
         }
         keyboardFrame =  h
@@ -870,9 +870,9 @@ extension CommunicationChatView: UIImagePickerControllerDelegate{
         var selectedImage:UIImage?
         
         
-        if let originImage = info[UIImagePickerControllerOriginalImage] as? UIImage{
+        if let originImage = info[UIImagePickerController.InfoKey.originalImage.rawValue] as? UIImage{
                 selectedImage = originImage
-        }else if let editImage = info[UIImagePickerControllerEditedImage] as? UIImage{
+        }else if let editImage = info[UIImagePickerController.InfoKey.editedImage.rawValue] as? UIImage{
                 selectedImage = editImage
         }
         
@@ -886,20 +886,20 @@ extension CommunicationChatView: UIImagePickerControllerDelegate{
                 // 
                 DateFormat.dateFormat = "yyyy-MM-dd HH.mm.ss"
                 imageName = DateFormat.string(from: Date()) + ".jpeg"
-                imageData = UIImageJPEGRepresentation(image, 0)
+                imageData =  image.jpegData(compressionQuality: 0)
                 
                 
             }else if picker.sourceType == .photoLibrary{
                 // 照片库
                 // 获取名称
-                imagePathURL = info[UIImagePickerControllerImageURL] as? URL
+                imagePathURL = info[UIImagePickerController.InfoKey.imageURL.rawValue] as? URL
                 imageName = imagePathURL!.lastPathComponent
                 // 文件扩展类型
                 let fileType =  imageName.components(separatedBy: ".").last!
                 if fileType.lowercased() == "jpeg"{
-                    imageData = UIImageJPEGRepresentation(image, 0)
+                    imageData = image.jpegData(compressionQuality: 0)
                 }else{
-                    imageData = UIImagePNGRepresentation(image)
+                    imageData = image.pngData()
                 }
                
             }

@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 class BaseViewController: UIViewController {
 
     // 需要影藏的当前子view
@@ -15,7 +16,7 @@ class BaseViewController: UIViewController {
     
     //显示的错误界面
     internal lazy var  errorView:ErrorPageView = {  [unowned self] in
-        let eView = ErrorPageView.init(frame: self.view.bounds)
+        let eView = ErrorPageView.init(frame: CGRect.zero)
         eView.isHidden = true
         // 再次刷新
         eView.reload = reload
@@ -44,6 +45,7 @@ class BaseViewController: UIViewController {
         // 影藏返回按钮文字
         navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
 
+        _  = errorView.sd_layout().centerXEqualToView(self.view)?.centerYEqualToView(self.view)?.widthRatioToView(self.view, 0.7)?.heightRatioToView(self.view,0.4)
     }
 
     
@@ -56,6 +58,7 @@ class BaseViewController: UIViewController {
         self.handleViews.forEach{
             $0.isHidden = true
         }
+        
         
     }
     

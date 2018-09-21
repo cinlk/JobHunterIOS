@@ -8,6 +8,8 @@
 
 import UIKit
 import WebKit
+import RxSwift
+import RxCocoa
 
 fileprivate let keyStr:String = "estimatedProgress"
 fileprivate let imgSize = CGSize.init(width: 25, height: 25)
@@ -15,28 +17,12 @@ fileprivate let imgSize = CGSize.init(width: 25, height: 25)
 
 class baseWebViewController: UIViewController {
     
-    
-    // 自适应屏幕
-   
-    private lazy var wkContent:WKUserContentController = {
-        let content = WKUserContentController()
-        let jsString = "var meta = document.createElement('meta'); meta.setAttribute('name', 'viewport'); meta.setAttribute('content', 'width=device-width'); document.getElementsByTagName('head')[0].appendChild(meta);"
-        let script = WKUserScript.init(source: jsString, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
-        content.addUserScript(script)
-        return content
-    }()
-    private lazy var webConfig:WKWebViewConfiguration =  { [unowned self] in
-        let config = WKWebViewConfiguration()
-        config.userContentController = self.wkContent
-        return config
-    }()
-    
     private lazy var webView: WKWebView = { [unowned self] in
+        
         //let web = WKWebView.init(frame: CGRect.zero, configuration: self.webConfig)
         let web = WKWebView.init(frame: CGRect.zero)
         web.navigationDelegate = self
         web.uiDelegate = self
-    
         return web
     }()
     
@@ -61,14 +47,11 @@ class baseWebViewController: UIViewController {
     private lazy var btnBack:UIBarButtonItem = { [unowned self] in
         
         let img = UIImage.init(named: "back")?.changesize(size: imgSize).withRenderingMode(.alwaysTemplate)
-        
         let b1 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
         b1.tintColor = UIColor.lightGray
         b1.setImage(img, for: .normal)
         b1.addTarget(self, action: #selector(goBack), for: .touchUpInside)
         return UIBarButtonItem.init(customView: b1)
-        
-        
     }()
     
     
@@ -76,12 +59,10 @@ class baseWebViewController: UIViewController {
     private lazy var btnCancel:UIBarButtonItem = { [unowned self] in
         
         let img = UIImage.init(named: "cancel")?.changesize(size: imgSize).withRenderingMode(.alwaysTemplate)
-
         let b1 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
         b1.setImage(img, for: .normal)
         b1.addTarget(self, action: #selector(cancel), for: .touchUpInside)
         b1.tintColor = UIColor.lightGray
-
         return UIBarButtonItem.init(customView: b1)
         
     }()
@@ -91,12 +72,10 @@ class baseWebViewController: UIViewController {
         let img = UIImage.init(named: "upload")?.changesize(size: imgSize).withRenderingMode(.alwaysTemplate)
         let b1 = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
         b1.tintColor = UIColor.lightGray
-
         b1.addTarget(self, action: #selector(share), for: .touchUpInside)
         b1.clipsToBounds = true
         b1.setImage(img, for: .normal)
-        
-         return UIBarButtonItem.init(customView: b1)
+        return UIBarButtonItem.init(customView: b1)
     }()
     
     var mode:String?{
@@ -107,6 +86,9 @@ class baseWebViewController: UIViewController {
     }
     // 控制右上角btn 显示
     var showRightBtn:Bool = true
+    
+    private let dispose = DisposeBag()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -119,7 +101,7 @@ class baseWebViewController: UIViewController {
         super.viewWillAppear(animated)
         UIApplication.shared.keyWindow?.addSubview(sharedView)
 
-        self.navigationController?.insertCustomerView(UIColor.blue)
+        self.navigationController?.insertCustomerView(UIColor.white)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -149,10 +131,14 @@ extension baseWebViewController {
         self.view.addSubview(progressView)
         _ = progressView.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,64)?.heightIs(2)
         
-        webView.frame = self.view.frame
-        webView.addObserver(self, forKeyPath: keyStr, options: .new, context: nil)
+        webView.frame = self.view.frame        
+        webView.rx.observe(String.self, keyStr).subscribe(onNext: { (newValue) in
+            self.progressView.isHidden = self.webView.estimatedProgress == 1
+            self.progressView.setProgress(Float(self.webView.estimatedProgress), animated: true)
+        }).disposed(by: dispose)
         
     }
+    
     private func loadData(url:String){
         if let url = URL.init(string: url){
             let request = URLRequest.init(url: url)
@@ -176,11 +162,14 @@ extension baseWebViewController{
         if self.webView.canGoBack{
             self.webView.goBack()
         }else{
+            //self.navigationController?.popToRootViewController(animated: true)
             self.navigationController?.popvc(animated: true)
          }
     }
     
     @objc func cancel(){
+        //self.navigationController?.popToRootViewController(animated: true)
+
         self.navigationController?.popvc(animated: true)
      }
     @objc func share(){
@@ -194,20 +183,7 @@ extension baseWebViewController{
 
 extension baseWebViewController: WKNavigationDelegate{
     
-    // 获取进度值 设置progress
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if keyPath == keyStr{
-            
-            progressView.isHidden = webView.estimatedProgress == 1
-            progressView.setProgress(Float(webView.estimatedProgress), animated: true)
-           
-        }
-    }
     
-    
-    
-    
-   
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         progressView.isHidden = true
         progressView.setProgress(0, animated: false)

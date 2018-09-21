@@ -72,7 +72,7 @@ class InternSearchVC: UIViewController, SearchControllerDeletgate {
         table.tableFooterView = UIView()
         table.tableHeaderView = UIView()
         table.register(CommonJobTableCell.self, forCellReuseIdentifier: CommonJobTableCell.identity())
-        table.contentInset = UIEdgeInsetsMake(0, 0, 60, 0)
+        table.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
         return table
     }()
     

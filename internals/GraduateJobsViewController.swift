@@ -7,23 +7,53 @@
 //
 
 import UIKit
-import ObjectMapper
 import YNDropDownMenu
+import RxSwift
+import RxCocoa
+import MJRefresh
 
 
-class GraduateJobsViewController: BasePositionItemViewController {
+class GraduateJobsViewController: UIViewController {
 
 
     private var datas:[CompuseRecruiteJobs] = []
     
     
+    internal lazy var cityMenu:DropItemCityView = {
+        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 200))
+        // 覆盖指定高度
+        
+        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + JobHomeVC.titlePageH)
+        return city
+    }()
+    
+    
+    // 职业类型
+    lazy var careerClassify:DropCarrerClassifyView = { [unowned self] in
+        let v1 = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
+        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + JobHomeVC.titlePageH)
+        
+        
+        return v1
+    }()
+    
+    
+    
+    lazy var degree:DropDegreeMenuView = { [unowned self] in
+        let v = DropDegreeMenuView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 45*5))
+        v.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + JobHomeVC.titlePageH)
+        
+        return v
+    }()
+    
+    
     
     
     // 自定义条件选择下拉菜单view
-    lazy var myDropMenu: YNDropDownMenu = { [unowned self] in
+    private lazy var dropMenu: YNDropDownMenu = { [unowned self] in
         
         
-        let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: dropMenuH), dropDownViews: [cityMenu,careerClassify,degree], dropDownViewTitles: ["城市","行业分类","学历"])
+        let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: DROP_MENU_H), dropDownViews: [cityMenu,careerClassify,degree], dropDownViewTitles: ["城市","行业分类","学历"])
         
         menu.setImageWhen(normal: UIImage(named: "arrow_nor"), selected: UIImage(named: "arrow_xl"), disabled: UIImage(named: "arrow_dim"))
         menu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
@@ -41,91 +71,141 @@ class GraduateJobsViewController: BasePositionItemViewController {
         
     }()
     
+    
+    private lazy var table:UITableView = {
+        let table = UITableView()
+        
+        table.register(CommonJobTableCell.self, forCellReuseIdentifier: CommonJobTableCell.identity())
+        table.tableFooterView = UIView()
+        table.rx.setDelegate(self).disposed(by: dispose)
+        table.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
+        return table
+    }()
+    
+    //refresh
+    
+    private lazy var refreshHeader:MJRefreshNormalHeader = {
+        let h = MJRefreshNormalHeader.init { [weak self] in
+            
+            self?.vm.graduateRefresh.onNext(true)
+        }
+        h?.setTitle("开始刷新", for: .pulling)
+        h?.setTitle("刷新中...", for: .refreshing)
+        h?.setTitle("下拉刷新", for: .idle)
+        h?.lastUpdatedTimeLabel.isHidden = true
+        
+        return h!
+        
+    }()
+    
+    private lazy var refreshFooter:MJRefreshAutoNormalFooter = {
+        let f = MJRefreshAutoNormalFooter.init(refreshingBlock: { [weak self] in
+            
+            self?.vm.graduateRefresh.onNext(false)
+        })
+        f?.setTitle("上拉刷新", for: .idle)
+        f?.setTitle("刷新中...", for: .refreshing)
+        f?.setTitle("没有数据", for: .noMoreData)
+        
+        return f!
+    }()
+    
+    
+    
+    
+    let dispose = DisposeBag()
+    let vm:RecruitViewModel = RecruitViewModel()
+    
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
-        loadData()
-        
-        // 筛选回调
-        careerClassify.passData = { business in
-            print(business)
-            self.myDropMenu.changeMenu(title: business, at: 1)
-        }
-        
-        cityMenu.passData = { citys in
-           // print(citys)
-        }
-        
-        degree.passData = { kind in
-            print(kind)
-            self.myDropMenu.changeMenu(title: kind, at: 2)
-        }
-        
-        
-        // Do any additional setup after loading the view.
-    }
-
-    override func setViews() {
-        dropMenu.removeFromSuperview()
-        
-        self.view.addSubview(myDropMenu)
-        
-        table.register(CommonJobTableCell.self, forCellReuseIdentifier: CommonJobTableCell.identity())
-        table.dataSource = self
-        table.delegate = self
-        self.handleViews.append(myDropMenu)
-
-        // 设置menu
-        super.setViews()
-        
+        setViewModel()
+   
     }
     
-    override func didFinishloadData() {
-        super.didFinishloadData()
-        self.table.reloadData()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if self.datas.count > 0{
+            return
+        }
+        self.table.mj_header.beginRefreshing()
     }
     
-    override func reload() {
-        super.reload()
-        self.loadData()
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,DROP_MENU_H)?.bottomEqualToView(self.view)
     }
     
-
-    // MARK
-    override func sendRequest() {
-        self.datas.removeAll()
-        self.table.reloadData()
-    }
 }
 
 
-extension GraduateJobsViewController: UITableViewDataSource, UITableViewDelegate{
+extension GraduateJobsViewController{
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+    private func setViews() {
+        self.view.addSubview(table)
+        self.view.addSubview(dropMenu)
+        self.table.mj_header = refreshHeader
+        self.table.mj_footer = refreshFooter
+        
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.datas.count
-    }
+    private func setViewModel(){
+        
+        self.vm.graduateRes.share().subscribe(onNext: { (jobs) in
+            self.datas = jobs
+        }, onError: { (err) in
+            self.datas = []
+        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        
+        
+        self.vm.graduateRes.share().bind(to: self.table.rx.items(cellIdentifier: CommonJobTableCell.identity(), cellType: CommonJobTableCell.self)){ (row, mode, cell) in
+            cell.mode = mode
+        }.disposed(by: dispose)
+        
+        self.vm.graduateRefreshStasu.asDriver(onErrorJustReturn: .none).drive(onNext: { (status) in
+            switch status{
+                case .endHeaderRefresh:
+                    self.table.mj_header.endRefreshing()
+                    self.table.mj_footer.resetNoMoreData()
+                
+                case .endFooterRefresh:
+                    self.table.mj_footer.endRefreshing()
+                case .NoMoreData:
+                    self.table.mj_footer.endRefreshingWithNoMoreData()
+                case .error(let err):
+                    print("get err \(err)")
+                    self.table.mj_footer.endRefreshing()
+                    self.table.mj_header.endRefreshing()
+                default:
+                    break
+            }
+            
+        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        
+        // table
+        
+        self.table.rx.itemSelected.subscribe(onNext: { (idx) in
+            self.table.deselectRow(at: idx, animated: false)
+            let mode = self.datas[idx.row]
+            let graduateJob = JobDetailViewController()
+            graduateJob.uuid = mode.id!
+            
+            graduateJob.hidesBottomBarWhenPushed = true
+            self.navigationController?.pushViewController(graduateJob, animated: true)
+            
+            
+        }).disposed(by: dispose)
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = table.dequeueReusableCell(withIdentifier: CommonJobTableCell.identity(), for: indexPath) as! CommonJobTableCell
-        cell.mode = self.datas[indexPath.row]
-        return cell
+        
     }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        table.deselectRow(at: indexPath, animated: false)
-        let mode = self.datas[indexPath.row]
-        let graduateJob = JobDetailViewController()
+}
 
-        graduateJob.kind = (id: mode.id!, type: mode.kind!)
-        
-        graduateJob.hidesBottomBarWhenPushed = true
-        self.navigationController?.pushViewController(graduateJob, animated: true)
-        
-    }
+extension GraduateJobsViewController: UITableViewDelegate{
+    
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let mode = self.datas[indexPath.row]
@@ -136,24 +216,3 @@ extension GraduateJobsViewController: UITableViewDataSource, UITableViewDelegate
     
 }
 
-extension GraduateJobsViewController{
-    
-    private func loadData(){
-        
-        DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
-            Thread.sleep(forTimeInterval: 3)
-            for _ in 0..<20{
-                
-                self?.datas.append(Mapper<CompuseRecruiteJobs>().map(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dqwd-dqwdqwddqw","name":"码农","company":["id":"dqwd","name":"公司名称","isCollected":false,"icon":"chrome","address":["地址1","地址2"],"industry":["行业1","行业2"],"staffs":"1000人以上"],"hr":["userID":"dqwd","name":"我是hr","position":"HRBP","ontime": Date().timeIntervalSince1970 - TimeInterval(6514),"icon": #imageLiteral(resourceName: "jing").toBase64String()],"address":["北京","地址2"],"create_time":Date().timeIntervalSince1970,"education":"本科","type":"graduate","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false,"readNums":arc4random()%1000])!)
-                
-            }
-            
-            
-            
-            DispatchQueue.main.async {
-                
-                self?.didFinishloadData()
-            }
-        }
-    }
-}

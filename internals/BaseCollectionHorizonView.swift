@@ -38,7 +38,7 @@ class BaseCollectionHorizonView: UIView {
         let layout = CollectionHorizontalLayout(column: self.column, row: self.row)
         
         let collection = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
-        collection.contentInset = UIEdgeInsetsMake(0, 15, 0, 10)
+        collection.contentInset = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 10)
         collection.autoresizingMask = [.flexibleBottomMargin, .flexibleTopMargin]
         collection.backgroundColor = UIColor.white
         collection.showsHorizontalScrollIndicator = false

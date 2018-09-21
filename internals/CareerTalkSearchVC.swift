@@ -73,7 +73,7 @@ class CareerTalkSearchVC: UIViewController, SearchControllerDeletgate{
         t.tableFooterView = UIView()
         t.tableHeaderView = UIView()
         t.rx.setDelegate(self).disposed(by: dispose)
-        t.contentInset = UIEdgeInsetsMake(0, 0, 60, 0)
+        t.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
         return t
     }()
     

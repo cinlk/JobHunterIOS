@@ -198,14 +198,15 @@ extension DetailDeliveryStatus{
         }
         if mode.jobtype == .onlineApply{
             let apply = OnlineApplyShowViewController()
-            apply.onlineApplyID = "test-id"
+            //apply.onlineApplyID = "test-id"
+            apply.uuid = "trhtr765765"
             self.navigationController?.pushViewController(apply, animated: true)
             
         }else if mode.jobtype == .graduate || mode.jobtype == .intern{
             let jobV = JobDetailViewController()
            
-            
-            jobV.kind = (id: mode.id!, type: mode.jobtype)
+            jobV.uuid = mode.id!
+            //jobV.kind = (id: mode.id!, type: mode.jobtype)
             self.navigationController?.pushViewController(jobV, animated: true)
         }
     }
@@ -230,15 +231,15 @@ extension DetailDeliveryStatus{
     
     dynamic var mode:String?{
         didSet{
-            let attr = NSMutableAttributedString.init(string: "投递反馈: ", attributes: [NSAttributedStringKey.foregroundColor: UIColor.blue, NSAttributedStringKey.font: UIFont.systemFont(ofSize: 14)])
-            attr.append(NSAttributedString.init(string: mode ?? "", attributes: [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 14)]))
+            let attr = NSMutableAttributedString.init(string: "投递反馈: ", attributes: [NSAttributedString.Key.foregroundColor: UIColor.blue, NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14)])
+            attr.append(NSAttributedString.init(string: mode ?? "", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14)]))
             self.feedBack.attributedText = attr
             self.setupAutoHeight(withBottomView: feedBack, bottomMargin: 5)
         }
     }
     
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.contentView.addSubview(feedBack)
         self.selectionStyle = .none 

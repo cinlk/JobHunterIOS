@@ -101,7 +101,7 @@ class DropCollegeItemView: YNDropDownView {
     private lazy var collection:UICollectionView = {
         
         let col = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: flowLayout)
-        col.contentInset = UIEdgeInsetsMake(5, 10, 45, 10)
+        col.contentInset = UIEdgeInsets(top: 5, left: 10, bottom: 45, right: 10)
         col.delegate = self
         col.dataSource = self
         col.allowsMultipleSelection = false
@@ -227,11 +227,20 @@ class DropCollegeItemView: YNDropDownView {
     // 显示 和 关闭 view
     override func dropDownViewOpened() {
         UIApplication.shared.keyWindow?.addSubview(backGroundBtn)
+        
+        if let vc =  (self.getParentViewController()?.parent as? JobHomeVC){
+            vc.isScrollEnabled = false
+        }
+        
         self.getParentViewController()?.tabBarController?.tabBar.isHidden = true
     }
     
     override func dropDownViewClosed() {
         backGroundBtn.removeFromSuperview()
+        
+        if let vc =  (self.getParentViewController()?.parent as? JobHomeVC){
+            vc.isScrollEnabled = true
+        }
         self.getParentViewController()?.tabBarController?.tabBar.isHidden = false
     }
    

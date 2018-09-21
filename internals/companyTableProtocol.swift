@@ -8,10 +8,8 @@
 
 import Foundation
 
-
 protocol CompanySubTableScrollDelegate: class {
     
     func scrollUp(view:UITableView,height:CGFloat)
     //func syncTableContentOffset(height:CGFloat, table:UITableView)
-    
 }

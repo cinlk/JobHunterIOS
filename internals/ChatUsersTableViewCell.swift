@@ -8,6 +8,7 @@
 
 import UIKit
 import PPBadgeViewSwift
+import Kingfisher
 
 fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
 
@@ -63,7 +64,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
             guard let mes = mode?.message else { return }
             
             
-            guard let iconData = user.icon else { return }
+            
             
             if let num = mode?.unReadCount{
                 self.outerIconView.pp.addBadge(number: num)
@@ -72,8 +73,9 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
             }
             
             
+            let url = URL.init(string: user.icon ?? "")
+            self.icon.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             
-            self.icon.image = UIImage.init(data: iconData) ?? #imageLiteral(resourceName: "default")
             self.name.text =  user.name! + "@" + user.company!
             
             self.content.text = mes.getDescribe()
@@ -84,7 +86,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
         }
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         let views:[UIView] = [name, content, time, outerIconView]
         self.outerIconView.addSubview(icon)

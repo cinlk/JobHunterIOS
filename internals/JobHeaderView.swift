@@ -14,9 +14,10 @@ fileprivate let leftWidth:CGFloat = 30
 fileprivate let topHeight:CGFloat = 10
 fileprivate let internalLeft:CGFloat = 2
 
+
+
+
 class JobDetailHeader:UIView {
-
-
     
     private lazy var jobName: UILabel = {
         let jobName = UILabel()
@@ -203,8 +204,6 @@ class JobDetailHeader:UIView {
             _ = yuanIcon.sd_layout().topEqualToView(type)?.leftSpaceToView(type,leftWidth)?.widthRatioToView(degreeIcon,1)?.heightRatioToView(degreeIcon,1)
             
             _ = salary.sd_layout().leftSpaceToView(yuanIcon,internalLeft)?.topEqualToView(yuanIcon)?.autoHeightRatio(0)
-
-            
             
             _ = locateIcon.sd_layout().leftEqualToView(jobName)?.topSpaceToView(type,topHeight)?.widthRatioToView(degreeIcon,1)?.heightRatioToView(degreeIcon,1)
             
@@ -229,14 +228,9 @@ class JobDetailHeader:UIView {
             self.month.text = item.months
             self.perDay.text = item.perDay
             
-            
-
             _ = yuanIcon.sd_layout().topEqualToView(education)?.leftSpaceToView(education,leftWidth)?.widthRatioToView(degreeIcon,1)?.heightRatioToView(degreeIcon,1)
             
             _ = salary.sd_layout().leftSpaceToView(yuanIcon,internalLeft)?.topEqualToView(yuanIcon)?.autoHeightRatio(0)
-
-            
-            
             
             _ = monthIcon.sd_layout().topEqualToView(salary)?.leftSpaceToView(salary,leftWidth)?.widthRatioToView(degreeIcon,1)?.heightRatioToView(degreeIcon,1)
             _ = month.sd_layout().leftSpaceToView(monthIcon,internalLeft)?.topEqualToView(monthIcon)?.autoHeightRatio(0)

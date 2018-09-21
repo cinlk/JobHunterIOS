@@ -21,19 +21,6 @@ import UIKit
 
 private var kBadgeLabel = "kBadgeLabel"
 
-public struct PP<Base> {
-    public let base: Base
-    public init(_ base: Base) {
-        self.base = base
-    }
-}
-
-public extension UIView {
-    public var pp: PP<UIView> {
-        return PP(self)
-    }
-}
-
 // MARK: - add Badge
 public extension PP where Base: UIView {
     
@@ -88,7 +75,7 @@ public extension PP where Base: UIView {
         
         switch self.base.badgeLabel.flexMode {
         case .head:
-            self.base.badgeLabel.p_right = self.base.badgeLabel.superview!.p_width + self.base.badgeLabel.p_height*0.5 + x
+            self.base.badgeLabel.p_right = (self.base.badgeLabel.superview?.p_width ?? 0) + self.base.badgeLabel.p_height*0.5 + x
         case .tail:
             self.base.badgeLabel.p_x = (self.base.p_width - self.base.badgeLabel.p_height*0.5)/*badge的x坐标*/ + x
         case .middle:
@@ -188,7 +175,9 @@ extension UIView {
                 let badgeLabel = PPBadgeLabel.default()
                 badgeLabel.center = CGPoint(x: self.p_width, y: 0)
                 self.addSubview(badgeLabel)
+                // compatable with swift 4.1.2
                 self.bringSubview(toFront: badgeLabel)
+                //self.bringSubviewToFront(badgeLabel)
                 self.badgeLabel = badgeLabel
                 return badgeLabel
             }

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 @objcMembers class PersonCardCell: UITableViewCell {
 
@@ -69,9 +70,12 @@ import UIKit
     
         didSet{
         
-            imageV.image = UIImage.init(data: (mode?.sender?.icon)!)
+            let url = URL.init(string: mode?.sender?.icon ?? "")
+            self.imageV.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            
             name.text = mode?.sender?.name
-            avartar.image = UIImage.init(data: (mode?.sender?.icon)!)
+            self.avartar.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            //avartar.image = UIImage.init(data: (mode?.sender?.icon)!)
             bubbleBackGround.setupAutoHeight(withBottomView: imageV, bottomMargin: 10)
             // 获取计算后的高度
             bubbleBackGround.layoutSubviews()
@@ -82,7 +86,7 @@ import UIKit
     
     
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = UIColor.clear
         self.selectionStyle = .none

@@ -40,7 +40,7 @@ fileprivate let cellH:CGFloat = 30
             self.setupAutoHeight(withBottomView: address, bottomMargin: 0)
         }
     }
-     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
         

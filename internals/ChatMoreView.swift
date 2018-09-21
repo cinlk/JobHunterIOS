@@ -121,7 +121,7 @@ fileprivate class ChatMoreCell: UICollectionViewCell {
         didSet {
             
             self.itemButton.setImage(model?.icon, for: .normal)
-            self.itemButton.imageEdgeInsets = UIEdgeInsetsMake(5, 5, 5, 5)
+            self.itemButton.imageEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
             self.itemLabel.text = model?.name
             self.type = model?.type
             self.backgroundColor =  UIColor.backGroundColor()

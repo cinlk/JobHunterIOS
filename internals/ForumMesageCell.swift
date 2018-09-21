@@ -72,16 +72,16 @@ import UIKit
             
             if let sender = mode.body?.senderName{
                 
-                attr = NSMutableAttributedString.init(string: sender, attributes: [NSAttributedStringKey.font:UIFont.systemFont(ofSize: 16), NSAttributedStringKey.foregroundColor:UIColor.randomeColor()])
+                attr = NSMutableAttributedString.init(string: sender, attributes: [NSAttributedString.Key.font:UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor:UIColor.randomeColor()])
                 
-                attr!.append(NSAttributedString.init(string: " " + type.describe + "了你的"+target, attributes: [NSAttributedStringKey.font:UIFont.systemFont(ofSize: 16), NSAttributedStringKey.foregroundColor:UIColor.black]))
+                attr!.append(NSAttributedString.init(string: " " + type.describe + "了你的"+target, attributes: [NSAttributedString.Key.font:UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor:UIColor.black]))
                 
                 
             }else if let receiver = mode.body?.receiverName{
-                attr = NSMutableAttributedString.init(string: "我" + type.describe + "了 ", attributes: [NSAttributedStringKey.font:UIFont.systemFont(ofSize: 16), NSAttributedStringKey.foregroundColor:UIColor.black])
+                attr = NSMutableAttributedString.init(string: "我" + type.describe + "了 ", attributes: [NSAttributedString.Key.font:UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor:UIColor.black])
                 
-                attr!.append(NSAttributedString.init(string:   receiver , attributes: [NSAttributedStringKey.font:UIFont.systemFont(ofSize: 16), NSAttributedStringKey.foregroundColor:UIColor.randomeColor()]))
-                attr?.append(NSAttributedString.init(string:  "的"  + target, attributes: [NSAttributedStringKey.font:UIFont.systemFont(ofSize: 16), NSAttributedStringKey.foregroundColor:UIColor.black]))
+                attr!.append(NSAttributedString.init(string:   receiver , attributes: [NSAttributedString.Key.font:UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor:UIColor.randomeColor()]))
+                attr?.append(NSAttributedString.init(string:  "的"  + target, attributes: [NSAttributedString.Key.font:UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor:UIColor.black]))
                 
                 
             }else{
@@ -117,7 +117,7 @@ import UIKit
     }
     
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.clipsToBounds = true 
         self.replyContent.addSubview(reply)

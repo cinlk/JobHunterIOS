@@ -92,7 +92,7 @@ fileprivate let preEmail:String =   "联系邮箱: "
         }
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         let views:[UIView] = [gender,city, colleage,degree, birthday, phone, email]
         

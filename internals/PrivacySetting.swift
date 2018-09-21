@@ -142,7 +142,7 @@ extension PrivacySetting: UITableViewDataSource, UITableViewDelegate{
         
         
         if indexPath.section == 1 && indexPath.row == self.mode?.companyBlacklist.count {
-            let cell = singleButtonCell()
+            let cell = singleButtonCell.init(style: .default, reuseIdentifier: "cell")
             cell.btnType = .add
             cell.btn.setTitle("添加屏蔽企业", for: .normal)
             cell.addMoreItem = {

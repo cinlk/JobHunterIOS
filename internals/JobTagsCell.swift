@@ -9,24 +9,26 @@
 import UIKit
 
 
-fileprivate let ROWITEMS = 4
+fileprivate let ROWITEMS:Int = 4
 
 @objcMembers class JobTagsCell: UITableViewCell {
     
     
-    private var onece  = true
     private var btns:[UIButton] = []
     
     private var currentSelected:Int = 0
-    
     
     private lazy var btnView:UIView = UIView()
     
     dynamic var mode:[String]?{
         didSet{
+            guard  let mode = mode  else {
+                return
+            }
+            
             btns.removeAll()
             self.btnView.subviews.forEach{$0.removeFromSuperview()}
-            for (index, str) in  mode!.enumerated(){
+            for (index, str) in  mode.enumerated(){
                
                 let btn = UIButton.init(frame: CGRect.zero)
                 btn.setTitle(str, for: .normal)
@@ -35,9 +37,11 @@ fileprivate let ROWITEMS = 4
                 btn.titleLabel?.font = UIFont.systemFont(ofSize: 12)
                 btn.backgroundColor = UIColor.white
                 btn.titleLabel?.textAlignment = .center
+                // 第一次加载
                 if index == 0 && currentSelected == 0 {
                     btn.isSelected = true
                     btn.backgroundColor = UIColor.blue
+                // 重用cell 时
                 }else if index == currentSelected{
                     btn.isSelected = true
                     btn.backgroundColor = UIColor.blue
@@ -52,12 +56,14 @@ fileprivate let ROWITEMS = 4
 
             }
             // 这里设置width 浮动长度
-            self.btnView.setupAutoMarginFlowItems(btns, withPerRowItemsCount: ROWITEMS, itemWidth: 80, verticalMargin: 10, verticalEdgeInset: 5, horizontalEdgeInset: 5)        
+            let itemWidth = ScreenW - 20 - 10 -  CGFloat(ROWITEMS-1)*5
+            
+            self.btnView.setupAutoMarginFlowItems(btns, withPerRowItemsCount: ROWITEMS, itemWidth: itemWidth/CGFloat(ROWITEMS), verticalMargin: 10, verticalEdgeInset: 5, horizontalEdgeInset: 5)
             self.setupAutoHeight(withBottomView: btnView, bottomMargin: 10)
         }
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
         self.backgroundColor = UIColor.init(r: 230, g: 230, b: 250)
@@ -87,7 +93,7 @@ extension JobTagsCell{
         
         // 消息通知刷新tableview
         if let tag = btn.titleLabel?.text{
-            NotificationCenter.default.post(name: NSNotification.Name.init("whichTag"), object: tag)
+            NotificationCenter.default.post(name: NSNotification.Name.init(JOBTAG_NAME), object: tag)
         }
         
         

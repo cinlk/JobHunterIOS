@@ -48,6 +48,7 @@ class OnlineApplyModel: BaseModel {
     internal var outer:Bool = true
     
     // 网申招聘描述（MARK）
+    internal var contentType:String = "text" // html 或 text
     internal var content:String?
     
     // cell 视图显示条件
@@ -77,6 +78,7 @@ class OnlineApplyModel: BaseModel {
         address <- map["address"]
         positions <- map["positions"]
         majors <- map["majors"]
+        contentType <- map["content_type"]
         content <- map["content"]
         outer <- map["outer"]
         

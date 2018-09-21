@@ -22,7 +22,7 @@ class ForumMessageBaseVC: BaseViewController {
         tb.tableFooterView = UIView()
         tb.backgroundColor = UIColor.viewBackColor()
         tb.register(ForumMesageCell.self, forCellReuseIdentifier: ForumMesageCell.identity())
-        tb.contentInset = UIEdgeInsetsMake(0, 0, 10, 0)
+        tb.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
         return tb
     }()
     

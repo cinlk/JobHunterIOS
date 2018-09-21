@@ -28,7 +28,7 @@ class evaluateSelfVC: BaseActionResumeVC {
         self.tableView.tableFooterView = UIView.init()
         self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.isScrollEnabled = false
-        self.tableView.contentInset = UIEdgeInsetsMake(10, 0, 0, 0)
+        self.tableView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 0)
         self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "保存", style: .plain, target: self, action: #selector(save))
         
         self.tableView.register(textViewCell.self, forCellReuseIdentifier: textViewCell.identity())

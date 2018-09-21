@@ -69,7 +69,7 @@ class shareView: UIView {
         coll.dataSource = self
         coll.delegate = self
         coll.isScrollEnabled = false
-        coll.contentInset = UIEdgeInsetsMake(5, 10, 5, 10)
+        coll.contentInset = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
         coll.register(shareItemCell.self, forCellWithReuseIdentifier: shareItemCell.identity())
         return coll
         

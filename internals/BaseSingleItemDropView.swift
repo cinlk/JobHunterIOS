@@ -74,6 +74,10 @@ class BaseSingleItemDropView: YNDropDownView {
     override func dropDownViewOpened() {
         
         UIApplication.shared.keyWindow?.addSubview(backGroundBtn)
+        if let vc =  (self.getParentViewController()?.parent as? JobHomeVC){
+            vc.isScrollEnabled = false
+        }
+
         // 设置为true 才有下拉展开效果
         self.superview?.clipsToBounds = false
         if showTabBar {
@@ -83,6 +87,9 @@ class BaseSingleItemDropView: YNDropDownView {
     
     override func dropDownViewClosed() {
         backGroundBtn.removeFromSuperview()
+        if let vc =  (self.getParentViewController()?.parent as? JobHomeVC){
+            vc.isScrollEnabled = true
+        }
         self.superview?.clipsToBounds = true
         if showTabBar{
             self.getParentViewController()?.tabBarController?.tabBar.isHidden = false

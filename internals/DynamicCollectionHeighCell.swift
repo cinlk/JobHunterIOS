@@ -29,7 +29,7 @@ fileprivate let itemHeight:CGFloat = 30
     internal lazy var collectionView:UICollectionView = { [unowned self] in
         let collection = UICollectionView.init(frame: self.bounds, collectionViewLayout: flowlayout)
         collection.backgroundColor = UIColor.white
-        collection.contentInset = UIEdgeInsetsMake(10, 10, 10, 10)
+        collection.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         collection.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         collection.isScrollEnabled = false
         collection.isUserInteractionEnabled = true
@@ -54,7 +54,7 @@ fileprivate let itemHeight:CGFloat = 30
     }
     
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
         self.contentView.addSubview(collectionView)
@@ -131,7 +131,7 @@ extension feedBackTypeCell: UICollectionViewDelegate, UICollectionViewDelegateFl
             return CGSize.init(width: 0, height: 0)
         }
         
-        let item = (mode[indexPath.row] as NSString).boundingRect(with: CGSize.init(width: CGFloat(ScreenW - 40), height: itemHeight), options: NSStringDrawingOptions.usesFontLeading, attributes: [NSAttributedStringKey.font : UIFont.systemFont(ofSize: 14)], context: nil)
+        let item = (mode[indexPath.row] as NSString).boundingRect(with: CGSize.init(width: CGFloat(ScreenW - 40), height: itemHeight), options: NSStringDrawingOptions.usesFontLeading, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14)], context: nil)
         
         return CGSize.init(width: item.width + 10, height: itemHeight)
     }
@@ -141,7 +141,7 @@ extension feedBackTypeCell: UICollectionViewDelegate, UICollectionViewDelegateFl
 private class itemCell:UICollectionViewCell{
     
     internal lazy var btn:UIButton = {
-        let btn = UIButton.init(type: UIButtonType.custom)
+        let btn = UIButton.init(type: UIButton.ButtonType.custom)
         btn.layer.borderWidth = 0
         btn.layer.cornerRadius = 5
         btn.setTitleColor(UIColor.white, for: .selected)

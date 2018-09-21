@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Kingfisher
 
 
 fileprivate let textWidth:CGFloat = 250
@@ -37,7 +37,7 @@ class messageCell: UITableViewCell {
         text.delegate = self
         text.clipsToBounds = true
         // 取消与顶部的距离
-        text.textContainerInset = UIEdgeInsetsMake(2, 0, 0, 0)
+        text.textContainerInset = UIEdgeInsets(top: 2, left: 0, bottom: 0, right: 0)
         // 取消拖动
         if #available(iOS 11.0, *){
             text.textDragInteraction?.isEnabled = false
@@ -54,7 +54,7 @@ class messageCell: UITableViewCell {
  
 
     // 代码初始化
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
        
         
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -121,7 +121,7 @@ class messageCell: UITableViewCell {
         
         let paragrahStyle = NSMutableParagraphStyle()
         paragrahStyle.lineBreakMode = .byCharWrapping
-        attrStr.addAttributes([NSAttributedStringKey.paragraphStyle: paragrahStyle], range: NSRange.init(location: 0, length: attrStr.length))
+        attrStr.addAttributes([NSAttributedString.Key.paragraphStyle: paragrahStyle], range: NSRange.init(location: 0, length: attrStr.length))
         self.messgeText.attributedText = attrStr
         
         
@@ -145,7 +145,7 @@ class messageCell: UITableViewCell {
             // 内容向下偏移
             y = 5
             if line >= 3 {
-                messgeText.textContainerInset = UIEdgeInsetsMake(3, 0, 0, 0)
+                messgeText.textContainerInset = UIEdgeInsets(top: 3, left: 0, bottom: 0, right: 0)
 
             }
         }
@@ -159,7 +159,8 @@ class messageCell: UITableViewCell {
         if messageInfo.sender?.userID  ==  myself.userID{
             
             if let icon = myself.icon {
-                self.avatar.image = UIImage.init(data: icon)
+                let url = URL.init(string: icon)
+                self.avatar.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }else{
                 // 使用默认头像
                 self.avatar.image =  #imageLiteral(resourceName: "default")
@@ -180,7 +181,8 @@ class messageCell: UITableViewCell {
         else{
             
             if let icon = chatUser.icon {
-                self.avatar.image = UIImage.init(data: icon)
+                let url = URL.init(string: icon)
+                self.avatar.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }else{
                 self.avatar.image =  #imageLiteral(resourceName: "default")
             }

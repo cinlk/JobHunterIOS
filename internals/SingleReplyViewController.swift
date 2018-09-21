@@ -72,7 +72,7 @@ class SingleReplyViewController: BaseViewController {
         tb.dataSource = self
         tb.delegate = self
         tb.keyboardDismissMode = .onDrag
-        tb.contentInset = UIEdgeInsetsMake(0, 0, InputViewHeigh + 10, 0)
+        tb.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: InputViewHeigh + 10, right: 0)
         tb.register(contentCell.self, forCellReuseIdentifier: contentCell.identity())
         
         return tb
@@ -80,7 +80,7 @@ class SingleReplyViewController: BaseViewController {
     
     // 回复数据加载 状态进度
     internal lazy var  progressView:UIActivityIndicatorView = {
-       let pv = UIActivityIndicatorView.init(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
+        let pv = UIActivityIndicatorView.init(style: UIActivityIndicatorView.Style.whiteLarge)
         pv.center = CGPoint.init(x: ScreenW/2, y: ScreenH/2)
         pv.color = UIColor.orange
         pv.hidesWhenStopped = true
@@ -96,10 +96,10 @@ class SingleReplyViewController: BaseViewController {
     
     
     private lazy var deleteAlert:UIAlertController = { [unowned self] in
-        let alert = UIAlertController.init(title: "确认删除", message: "数据将无法恢复", preferredStyle: UIAlertControllerStyle.alert)
+        let alert = UIAlertController.init(title: "确认删除", message: "数据将无法恢复", preferredStyle: UIAlertController.Style.alert)
         
         let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
-        let delete = UIAlertAction.init(title: "确认", style: UIAlertActionStyle.default, handler: { action in
+        let delete = UIAlertAction.init(title: "确认", style: UIAlertAction.Style.default, handler: { action in
             self.deleteMyself()
         })
         
@@ -154,8 +154,8 @@ class SingleReplyViewController: BaseViewController {
         
         
         //简体键盘
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHidden), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHidden), name: UIResponder.keyboardWillHideNotification, object: nil)
         
         super.setViews()
         
@@ -249,8 +249,8 @@ extension SingleReplyViewController{
     
     private func buildAlert(showDelete:Bool){
         
-        let vc = UIAlertController.init(title: "请选择", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
-        let thumbUP = UIAlertAction.init(title: "赞", style: UIAlertActionStyle.default, handler: { action in
+        let vc = UIAlertController.init(title: "请选择", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+        let thumbUP = UIAlertAction.init(title: "赞", style: UIAlertAction.Style.default, handler: { action in
             if  self.allSubReplys[self.currentSelecteCell].isLike{
                 self.allSubReplys[self.currentSelecteCell].thumbUP -= 1
             }else{
@@ -273,7 +273,7 @@ extension SingleReplyViewController{
         })
         
         // 自己的评论
-        let delete = UIAlertAction.init(title: "删除", style: UIAlertActionStyle.destructive, handler: { action in
+        let delete = UIAlertAction.init(title: "删除", style: UIAlertAction.Style.destructive, handler: { action in
             // 服务器端删除
             self.allSubReplys.remove(at: self.currentSelecteCell)
             self.table.reloadData()
@@ -352,13 +352,13 @@ extension SingleReplyViewController{
     @objc private func keyboardShow(notify:NSNotification){
         
         
-        let kframe = notify.userInfo![UIKeyboardFrameEndUserInfoKey] as! CGRect
-        let duration = notify.userInfo![UIKeyboardAnimationDurationUserInfoKey] as! NSNumber
-        let curve = notify.userInfo![UIKeyboardAnimationCurveUserInfoKey] as! NSNumber
+        let kframe = notify.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! CGRect
+        let duration = notify.userInfo![UIResponder.keyboardAnimationDurationUserInfoKey] as! NSNumber
+        let curve = notify.userInfo![UIResponder.keyboardAnimationCurveUserInfoKey] as! NSNumber
         
         keyboardH = kframe.height
         
-        UIView.animate(withDuration: TimeInterval(truncating: duration), delay: 0, options: [UIViewAnimationOptions.init(rawValue: UInt(truncating: curve))], animations: {
+        UIView.animate(withDuration: TimeInterval(truncating: duration), delay: 0, options: [UIView.AnimationOptions.init(rawValue: UInt(truncating: curve))], animations: {
             
             self.inputText.frame.origin.y = ScreenH - self.keyboardH  - self.InputViewHeigh
             
@@ -371,13 +371,13 @@ extension SingleReplyViewController{
     
     @objc private func keyboardHidden(notify:NSNotification){
         
-        let duration = notify.userInfo![UIKeyboardAnimationDurationUserInfoKey] as! NSNumber
-        let curve = notify.userInfo![UIKeyboardAnimationCurveUserInfoKey] as! NSNumber
+        let duration = notify.userInfo![UIResponder.keyboardAnimationDurationUserInfoKey] as! NSNumber
+        let curve = notify.userInfo![UIResponder.keyboardAnimationCurveUserInfoKey] as! NSNumber
         keyboardH = 0
         
  
         
-        UIView.animate(withDuration: TimeInterval(truncating: duration), delay: 0, options: [.curveEaseIn,UIViewAnimationOptions.init(rawValue: UInt(truncating: curve))], animations: {
+        UIView.animate(withDuration: TimeInterval(truncating: duration), delay: 0, options: [.curveEaseIn,UIView.AnimationOptions.init(rawValue: UInt(truncating: curve))], animations: {
             self.inputText.frame.origin.y = ScreenH - self.InputViewHeigh
             
             
@@ -492,12 +492,12 @@ internal class  singleHeaderView:PostHeaderView{
             
             // 更加数字长度 调整btn长度
             let replyStr = String(mode.reply)
-            let replySize = NSString(string: replyStr).size(withAttributes: [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12)])
+            let replySize = NSString(string: replyStr).size(withAttributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12)])
             self.reply.setTitle(replyStr, for: .normal)
             // 25 是image 的长度
             _ = self.reply.sd_layout().widthIs(25 + replySize.width)
             let thumbStr = String(mode.thumbUP)
-            let thumbSize = NSString(string: thumbStr).size(withAttributes: [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12)])
+            let thumbSize = NSString(string: thumbStr).size(withAttributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12)])
             _ = self.thumbUP.sd_layout().widthIs(25 + thumbSize.width)
             self.thumbUP.setTitle(thumbStr, for: .normal)
             
@@ -539,8 +539,8 @@ internal class  singleHeaderView:PostHeaderView{
             self.authorIcon.image = UIImage.init(named: mode.authorIcon)
             self.postType.text = ""
             
-            let authNameStr = NSMutableAttributedString.init(string: mode.authorName!, attributes: [NSAttributedStringKey.foregroundColor:UIColor.black, NSAttributedStringKey.font:UIFont.systemFont(ofSize: 14)])
-            authNameStr.append(NSAttributedString.init(string: " " + mode.colleage!, attributes: [NSAttributedStringKey.foregroundColor:UIColor.lightGray, NSAttributedStringKey.font:UIFont.systemFont(ofSize: 14)]))
+            let authNameStr = NSMutableAttributedString.init(string: mode.authorName!, attributes: [NSAttributedString.Key.foregroundColor:UIColor.black, NSAttributedString.Key.font:UIFont.systemFont(ofSize: 14)])
+            authNameStr.append(NSAttributedString.init(string: " " + mode.colleage!, attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray, NSAttributedString.Key.font:UIFont.systemFont(ofSize: 14)]))
             
             self.authorName.attributedText = authNameStr
             
@@ -548,7 +548,7 @@ internal class  singleHeaderView:PostHeaderView{
             
             let talkto = NSAttributedString.init(string: " 回复 ")
             let receiver = NSMutableAttributedString.init(string: mode.receiver!)
-            receiver.addAttributes([NSAttributedStringKey.foregroundColor: UIColor.blue], range: NSRange.init(location: 0, length: mode.receiver!.count))
+            receiver.addAttributes([NSAttributedString.Key.foregroundColor: UIColor.blue], range: NSRange.init(location: 0, length: mode.receiver!.count))
             receiver.append(NSAttributedString.init(string: ": "))
             
             let content = NSMutableAttributedString.init(string: mode.replyContent!)
@@ -566,7 +566,7 @@ internal class  singleHeaderView:PostHeaderView{
             // 点赞
             let ts = String(mode.thumbUP)
             let thumbStr = NSMutableAttributedString.init(string: ts)
-            thumbStr.addAttributes([NSAttributedStringKey.font: UIFont.systemFont(ofSize: 12)], range: NSRange.init(location: 0, length: ts.count))
+            thumbStr.addAttributes([NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12)], range: NSRange.init(location: 0, length: ts.count))
             let attch = NSTextAttachment.init()
             if mode.isLike{
                  attch.image = UIImage.init(named: "selectedthumbup")?.withRenderingMode(.alwaysTemplate)
@@ -603,7 +603,8 @@ internal class  singleHeaderView:PostHeaderView{
         }
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.postType.isHidden = true
         self.reply.isHidden = true

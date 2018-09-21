@@ -12,7 +12,7 @@ import UIKit
 // 与companyMainVC 一致
 fileprivate let sections:Int = 3
 fileprivate var sectionHeight:CGFloat = 10
-
+fileprivate let companyAddress = "d公司网址"
 
 
 class CompanyDetailVC: UIViewController {
@@ -63,7 +63,6 @@ class CompanyDetailVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
-        //loadData()
         
     }
 
@@ -85,7 +84,7 @@ extension CompanyDetailVC: UITableViewDelegate, UITableViewDataSource{
     
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        if let web = detailModel?.webSite, !web.isEmpty{
+        if let web = detailModel?.link, !web.isEmpty{
             return sections + 1
         }
         return   sections
@@ -115,18 +114,23 @@ extension CompanyDetailVC: UITableViewDelegate, UITableViewDataSource{
         case 2:
             let cell  = tableView.dequeueReusableCell(withIdentifier: worklocateCell.identity(), for: indexPath) as! worklocateCell
             cell.mode = detailModel?.address
-            
+            //cell.chooseAddress
             return cell
         
         case 3:
+            guard let link = detailModel?.link else {
+                break
+            }
+            
             let cell = tableView.dequeueReusableCell(withIdentifier: subIconAndTitleCell.identity(), for: indexPath) as! subIconAndTitleCell
             
             cell.content.isUserInteractionEnabled = true
-            cell.content.attributedText = NSAttributedString.init(string: (detailModel?.webSite)!, attributes: [NSAttributedStringKey.foregroundColor:UIColor.blue, NSAttributedStringKey.link: URL(string: (detailModel?.webSite)!)!])
+            cell.content.attributedText = NSAttributedString.init(string: link, attributes: [NSAttributedString.Key.foregroundColor:UIColor.blue, NSAttributedString.Key.link: link])
+            cell.content.removeGestureRecognizer(tap)
             cell.content.addGestureRecognizer(tap)
             //cell.mode = detailModel?.webSite
             cell.icon.image  = #imageLiteral(resourceName: "link")
-            cell.iconName.text = "公司网址"
+            cell.iconName.text = companyAddress
             return cell
         default:
             break
@@ -161,7 +165,7 @@ extension CompanyDetailVC: UITableViewDelegate, UITableViewDataSource{
             return tableView.cellHeight(for: indexPath, model: detailModel?.address, keyPath: "mode", cellClass: worklocateCell.self, contentViewWidth: ScreenW)
             
         case 3:
-            let mode = detailModel?.webSite
+            let mode = detailModel?.link
             return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: subIconAndTitleCell.self, contentViewWidth: ScreenW) + 20
             
             
@@ -199,7 +203,7 @@ extension CompanyDetailVC{
 extension CompanyDetailVC{
     @objc private func open(){
         
-        openApp(appURL: (detailModel?.webSite)!, completion:{
+        openApp(appURL: (detailModel?.link)!, completion:{
             bool in
             
         })

@@ -106,7 +106,7 @@ import UIKit
     
   
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         let views:[UIView] = [textTitle,attacheImage, checkMark,  moreBtn]
         self.selectionStyle = .none 

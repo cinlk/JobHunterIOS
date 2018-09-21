@@ -19,7 +19,7 @@ class ResetPasswordViewController: UIViewController {
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         btn.setTitleColor(UIColor.blue, for: .normal)
         btn.titleLabel?.textAlignment = .center
-        btn.addTarget(self, action: #selector(self.validateCode), for: UIControlEvents.touchUpInside)
+        btn.addTarget(self, action: #selector(self.validateCode), for: UIControl.Event.touchUpInside)
 
         return btn
     }()
@@ -28,7 +28,7 @@ class ResetPasswordViewController: UIViewController {
         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
         btn.backgroundColor = UIColor.clear
         btn.setBackgroundImage(UIImage.init(named: "lash")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        btn.setBackgroundImage(UIImage.flipImage(image: #imageLiteral(resourceName: "lash"), orientation: UIImageOrientation.down).withRenderingMode(.alwaysTemplate), for: UIControlState.selected)
+        btn.setBackgroundImage(UIImage.flipImage(image: #imageLiteral(resourceName: "lash"), orientation: UIImage.Orientation.down).withRenderingMode(.alwaysTemplate), for: UIControl.State.selected)
         btn.tintColor = UIColor.lightGray
         btn.addTarget(self, action: #selector(click), for: .touchUpInside)
         return btn

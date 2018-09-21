@@ -118,7 +118,7 @@ extension EditPostViewController{
         _ = contentView.sd_layout().topSpaceToView(titleView,0)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.heightIs(contentTextH)
         
         
-         NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+         NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: UIResponder.keyboardWillShowNotification, object: nil)
 
         
     }
@@ -232,7 +232,7 @@ extension EditPostViewController{
     @objc private func keyboardShow(notify:NSNotification){
         
         
-        let kframe = notify.userInfo![UIKeyboardFrameEndUserInfoKey] as! CGRect
+        let kframe = notify.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! CGRect
         // 加上toolbar 高度30
         if contentTextH + NavH + titleTextH > ScreenH - (kframe.height + 30){
             _ = contentView.sd_resetLayout()

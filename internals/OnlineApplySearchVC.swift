@@ -64,7 +64,7 @@ class OnlineApplySearchVC: UIViewController, SearchControllerDeletgate {
         tb.rx.setDelegate(self).disposed(by: dispose)
         tb.tableHeaderView = UIView()
         tb.tableFooterView = UIView()
-        tb.contentInset = UIEdgeInsetsMake(0, 0, 50, 0)
+        tb.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
         return tb
         
     }()

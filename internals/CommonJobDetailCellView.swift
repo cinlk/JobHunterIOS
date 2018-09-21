@@ -110,8 +110,10 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
             paragrap.alignment = .center
             paragrap.lineBreakMode = .byWordWrapping
            
-            let companyStr = NSMutableAttributedString.init(string: mode.company?.name ?? "", attributes: [NSAttributedStringKey.font:UIFont.boldSystemFont(ofSize: 16),NSAttributedStringKey.foregroundColor:UIColor.black,
-                NSAttributedStringKey.paragraphStyle: paragrap])
+            let companyStr = NSMutableAttributedString.init(string: mode.company?.name ?? "", attributes: [NSAttributedString.Key.font:UIFont.boldSystemFont(ofSize: 16),NSAttributedString.Key.foregroundColor:UIColor.black,
+                                                                                                
+                                                                                                           
+                                                                                                    NSAttributedString.Key.paragraphStyle: paragrap])
             
             
             if showInternTag && type == .intern{

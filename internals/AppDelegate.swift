@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // 地理位置
     var locateManager = CLLocationManager()
     
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
        
         
@@ -84,15 +84,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // 设置TabBaritem 颜色
         
-        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedStringKey.foregroundColor: unselectedColor], for: .normal)
-        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedStringKey.foregroundColor: selectedColor], for: .selected)
+        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor: unselectedColor], for: .normal)
+        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor: selectedColor], for: .selected)
         
         
         return true
     }
 
     // 系统回调
-    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         // 简历文档 获取
         // 判断用户权限
         if url.scheme == "file"{
@@ -110,7 +110,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // 第三方登录
         let result = UMSocialManager.default().handleOpen(url)
-        let urlKey: String = options[UIApplicationOpenURLOptionsKey.sourceApplication] as! String
+        let urlKey: String = options[UIApplication.OpenURLOptionsKey.sourceApplication] as! String
 
         if !result{
             print(urlKey)

@@ -47,7 +47,7 @@ class ChatInputView: UIView {
         text.layer.cornerRadius = 5.0
         text.returnKeyType = .send
         text.showsVerticalScrollIndicator = true
-        text.contentInset = UIEdgeInsetsMake(0, 0, 0, 0)
+        text.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         return text
         
     }()

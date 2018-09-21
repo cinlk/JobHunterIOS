@@ -90,11 +90,11 @@ class customerTextField: UITextField {
 extension customerTextField{
     private func setLeftImage(){
         if let imageView = leftImage{
-            leftViewMode = UITextFieldViewMode.always
+            leftViewMode = UITextField.ViewMode.always
             leftView = imageView
             
         } else {
-            leftViewMode = UITextFieldViewMode.never
+            leftViewMode = UITextField.ViewMode.never
             leftView = nil
         }
         
@@ -102,7 +102,7 @@ extension customerTextField{
     
     private func setRightBtn(){
         if let btn = rightBtn{
-            rightViewMode = UITextFieldViewMode.always
+            rightViewMode = UITextField.ViewMode.always
             rightView = btn
             
            

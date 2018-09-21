@@ -136,7 +136,10 @@ class modifyPersonInfoVC: BaseActionResumeVC {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = modifyPersonInfoCell()
+        //modifyPersonInfoCell.initialize()
+        
+        
+        let cell = modifyPersonInfoCell.init(style: .default, reuseIdentifier: "cell")
         cell.onlyPickerResumeType = onlyPickerResumeType
         cell.mode = (type: keys[indexPath.row], title: diction[keys[indexPath.row]]!)
         cell.delegate = self
@@ -254,12 +257,11 @@ extension modifyPersonInfoVC: UIImagePickerControllerDelegate,UINavigationContro
         print("cancel")
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+    private func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
         var resultImage:UIImage?
         
-        
-        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage, let imagData = UIImageJPEGRepresentation(image, 0){
+        if let image = info[UIImagePickerController.InfoKey.originalImage.rawValue] as? UIImage, let imagData = image.jpegData(compressionQuality: 0){
            
             //  图片数据
             
@@ -274,7 +276,7 @@ extension modifyPersonInfoVC: UIImagePickerControllerDelegate,UINavigationContro
             
             
         }
-        if let image = info[UIImagePickerControllerEditedImage] as? UIImage,  let imagData = UIImageJPEGRepresentation(image, 0){
+        if let image = info[UIImagePickerController.InfoKey.editedImage.rawValue] as? UIImage,  let imagData = image.jpegData(compressionQuality: 0){
             
              resultImage =   UIImage.init(data: imagData)
              //pManager.mode?.basicinfo?.tx = "sina"

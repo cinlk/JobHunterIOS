@@ -31,6 +31,7 @@ let NavBarH:CGFloat = 44
 let NavH:CGFloat = 64
 let TOOLBARH:CGFloat = 44
 let SEARCH_BAR_H:CGFloat = 30
+let DROP_MENU_H:CGFloat = 40 
 
 // 屏幕宽高
 let ScreenW:CGFloat = UIScreen.main.bounds.width
@@ -57,6 +58,13 @@ let SCROLLER_IMG = "banner3"
 
 
 // 搜索分类
+// job 板块
+let JOB_PAGE_TITLES = ["网申","校招","宣讲会","公司","实习"]
+
+
+
+//NOTIFICATION
+let JOBTAG_NAME = "whichTag"
 
 
 

@@ -66,7 +66,7 @@ class InviteBaseTableViewCell: UITableViewCell {
     }
     
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         let views:[UIView] = [titleName, content, time,rightArrow]
         self.contentView.sd_addSubviews(views)

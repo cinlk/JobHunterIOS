@@ -100,7 +100,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
             self.setupAutoHeight(withBottomViewsArray: [type,icon], bottomMargin: 10)
         }
     }
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         let views:[UIView] = [icon, titleName, company, type, status, time]
         self.contentView.sd_addSubviews(views)

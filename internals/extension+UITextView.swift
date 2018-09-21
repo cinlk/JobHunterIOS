@@ -15,7 +15,7 @@ extension UITextView {
     
     class func sizeOfString(string:NSString,font:UIFont,maxWidth:CGFloat)->CGSize{
         
-        let size = string.boundingRect(with: CGSize.init(width: maxWidth, height: 1200), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSAttributedStringKey.font:font], context: nil).size
+        let size = string.boundingRect(with: CGSize.init(width: maxWidth, height: 1200), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font:font], context: nil).size
         // 与边框的距离
         return CGSize.init(width: size.width, height: size.height)
         
@@ -31,7 +31,7 @@ extension UITextView {
         
         let range = NSRange(location: 0, length: attrMStr.length)
         attrMStr.enumerateAttributes(in: range, options: []) { (dict, range, _) in
-            if let attachment = dict[NSAttributedStringKey.attachment] as? ChatEmotionAttachment {
+            if let attachment = dict[NSAttributedString.Key.attachment] as? ChatEmotionAttachment {
                 attrMStr.replaceCharacters(in: range, with: attachment.text!)
             }
         }
@@ -72,7 +72,8 @@ extension UITextView {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineBreakMode = .byCharWrapping
         
-        attrMStr.addAttributes([NSAttributedStringKey.font: font, NSAttributedStringKey.paragraphStyle: paragraphStyle], range: NSRange.init(location: 0, length: attrMStr.length))
+        
+        attrMStr.addAttributes([NSAttributedString.Key.font: font, NSAttributedString.Key.paragraphStyle: paragraphStyle], range: NSRange.init(location: 0, length: attrMStr.length))
 
         attributedText = attrMStr
         

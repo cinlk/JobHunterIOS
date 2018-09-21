@@ -47,7 +47,7 @@ class ChatBarView: UIView {
     
     
     private lazy var chatMoreButton:UIButton = {
-        var button = UIButton.init(type: UIButtonType.custom)
+        var button = UIButton.init(type: UIButton.ButtonType.custom)
         button.backgroundColor = UIColor.clear
         button.setImage(#imageLiteral(resourceName: "chatMore").changesize(size: CGSize.init(width: iconSize.width, height: iconSize.height)).withRenderingMode(.alwaysTemplate), for: .normal)
         button.tintColor = UIColor.black
@@ -58,7 +58,7 @@ class ChatBarView: UIView {
     }()
     
     private lazy var chatEmotionButton:UIButton = {
-        var button = UIButton.init(type: UIButtonType.custom)
+        var button = UIButton.init(type: UIButton.ButtonType.custom)
         // 默认是表情 输入view
         button.setImage(#imageLiteral(resourceName: "smile").changesize(size: CGSize.init(width: iconSize.width, height: iconSize.height)).withRenderingMode(.alwaysTemplate), for: .normal)
         // 选中 图片切换为文本输入keyboard
@@ -83,7 +83,7 @@ class ChatBarView: UIView {
         inputV.layer.backgroundColor = UIColor.white.cgColor
         inputV.layer.borderWidth = 0.5
         inputV.delegate = self
-        inputV.contentInset = UIEdgeInsetsMake(0, 0, 0, 0)
+        inputV.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         
         inputV.addObserver(self, forKeyPath: "attributedText", options: .new, context: nil)
         

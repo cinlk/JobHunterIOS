@@ -52,7 +52,7 @@ class ErrorPageView: UIView {
         let views:[UIView] = [wifiImage, des , resetBtn]
         self.sd_addSubviews(views)
         
-        _ = wifiImage.sd_layout().centerXEqualToView(self)?.centerYEqualToView(self)?.widthIs(iconSize.width)?.autoHeightRatio(1)
+        _ = wifiImage.sd_layout().centerXEqualToView(self)?.topSpaceToView(self,15)?.widthIs(iconSize.width)?.autoHeightRatio(1)
         _ = des.sd_layout().topSpaceToView(wifiImage,10)?.centerXEqualToView(wifiImage)?.autoHeightRatio(0)
         _ = resetBtn.sd_layout().topSpaceToView(des,10)?.leftEqualToView(des)?.rightEqualToView(des)?.heightIs(30)
         

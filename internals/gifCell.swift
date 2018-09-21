@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 
 class gifCell: UITableViewCell {
@@ -22,7 +23,7 @@ class gifCell: UITableViewCell {
         return img
     }()
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
@@ -73,7 +74,8 @@ class gifCell: UITableViewCell {
         
         if myself.userID  == messageInfo.sender?.userID{
             if let icon = myself.icon {
-                self.avatar.image = UIImage.init(data: icon)
+                let url = URL.init(string: icon)
+                self.avatar.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }else{
                 // default 头像
                 self.avatar.image =  #imageLiteral(resourceName: "default")
@@ -87,7 +89,8 @@ class gifCell: UITableViewCell {
             
         }else{
             if let icon = chatUser.icon {
-                self.avatar.image = UIImage.init(data: icon)
+                let url = URL.init(string: icon)
+                self.avatar.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }else{
                 // default 头像
                 self.avatar.image =  #imageLiteral(resourceName: "default")

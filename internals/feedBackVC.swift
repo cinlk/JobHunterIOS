@@ -49,16 +49,16 @@ class feedBackVC: BaseTableViewController {
     
     
     private lazy var showChooseImage:UIAlertController = { [unowned self] in
-        let choose = UIAlertController.init(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
-        let fromCamera = UIAlertAction.init(title: "照相机", style: UIAlertActionStyle.default, handler: { action in
+        let choose = UIAlertController.init(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+        let fromCamera = UIAlertAction.init(title: "照相机", style: UIAlertAction.Style.default, handler: { action in
             
             //self.selectPicture(type: UIImagePickerControllerSourceType)
-            self.selectPicture(type: UIImagePickerControllerSourceType.camera)
+            self.selectPicture(type: UIImagePickerController.SourceType.camera)
         })
         
         
-        let fromPicture = UIAlertAction.init(title: "相册", style: UIAlertActionStyle.default, handler: { action in
-            self.selectPicture(type: UIImagePickerControllerSourceType.photoLibrary)
+        let fromPicture = UIAlertAction.init(title: "相册", style: UIAlertAction.Style.default, handler: { action in
+            self.selectPicture(type: UIImagePickerController.SourceType.photoLibrary)
         })
         
         let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
@@ -262,7 +262,7 @@ extension feedBackVC: UIImagePickerControllerDelegate, UINavigationControllerDel
     }
     
     
-    func selectPicture(type: UIImagePickerControllerSourceType){
+    func selectPicture(type: UIImagePickerController.SourceType){
         let select = UIImagePickerController()
         select.delegate = self
         select.allowsEditing = true
@@ -277,17 +277,17 @@ extension feedBackVC: UIImagePickerControllerDelegate, UINavigationControllerDel
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
         var outputImage:UIImage?
-        
-        if let image = info[UIImagePickerControllerOriginalImage] as? UIImage{
+        if let image = info[UIImagePickerController.InfoKey.originalImage.rawValue
+] as? UIImage{
             outputImage = image
-        }else if let image = info[UIImagePickerControllerEditedImage] as? UIImage{
+        }else if let image = info[UIImagePickerController.InfoKey.editedImage.rawValue] as? UIImage{
             outputImage = image
         }
         guard outputImage != nil else {
             return
         }
         // 上传压缩image
-        if let imageData = UIImageJPEGRepresentation(outputImage!, 0), let image = UIImage.init(data: imageData){
+        if let imageData = outputImage?.jpegData(compressionQuality: 0), let image = UIImage.init(data: imageData){
             //outputImage = UIImage.init(data: UIImageJPEGRepresentation(outputImage, 0))
             self.image = image
         }

@@ -71,8 +71,8 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
             self.types.text = mode.industry!.joined(separator: " ")
             self.address.text = mode.address!.joined(separator: " ")
             
-            let fs = NSMutableAttributedString(string: String.init(describing: mode.follows) , attributes: [NSAttributedStringKey.foregroundColor:UIColor.blue])
-            fs.append(NSAttributedString.init(string: "人关注", attributes: [NSAttributedStringKey.foregroundColor:UIColor.lightGray]))
+            let fs = NSMutableAttributedString(string: String.init(describing: mode.follows) , attributes: [NSAttributedString.Key.foregroundColor:UIColor.blue])
+            fs.append(NSAttributedString.init(string: "人关注", attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray]))
             
             self.follows.attributedText = fs
             self.setupAutoHeight(withBottomViewsArray: [icon,address], bottomMargin: 10)
@@ -80,7 +80,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
         }
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         let views:[UIView] = [icon, company, types, address, follows]
         
@@ -92,7 +92,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
         _ = follows.sd_layout().centerYEqualToView(company)?.rightSpaceToView(self.contentView,10)?.autoHeightRatio(0)
         
         company.setMaxNumberOfLinesToShow(2)
-        types.setMaxNumberOfLinesToShow(1)
+        types.setMaxNumberOfLinesToShow(2)
         address.setMaxNumberOfLinesToShow(1)
         
     }

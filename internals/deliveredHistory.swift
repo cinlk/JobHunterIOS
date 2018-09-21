@@ -63,7 +63,7 @@ class deliveredHistory: BaseViewController,UIScrollViewDelegate {
     // dropMenu
     private lazy var dropMenu:YNDropDownMenu = { [unowned self] in
        
-        let dropView =  configDropMenu(items: [jobTypes,deliveryStatus], titles: ["职位类型","投递状态"], height: dropViewH)
+        let dropView =  configDropMenu(items: [jobTypes, deliveryStatus], titles: ["职位类型","投递状态"], height: dropViewH)
         dropView.origin.y  = 64
         dropView.isHidden = false
         return dropView
@@ -78,7 +78,7 @@ class deliveredHistory: BaseViewController,UIScrollViewDelegate {
         table.tableHeaderView = UIView()
         table.dataSource = self
         table.delegate = self
-        table.contentInset = UIEdgeInsetsMake(10, 0, 0, 0)
+        table.contentInset = UIEdgeInsets.init(top: 10, left: 0, bottom: 0, right: 0)
         table.separatorStyle = .none
         table.backgroundColor = UIColor.viewBackColor()
         

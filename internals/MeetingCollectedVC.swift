@@ -25,7 +25,7 @@ class MeetingCollectedVC: BaseViewController {
         tb.tableFooterView = UIView()
         tb.register(CareerTalkCell.self, forCellReuseIdentifier: CareerTalkCell.identity())
         tb.backgroundColor = UIColor.viewBackColor()
-        tb.contentInset = UIEdgeInsetsMake(0, 0, 44, 0)
+        tb.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 44, right: 0)
 
         
         return tb

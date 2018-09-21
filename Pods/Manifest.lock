@@ -11,7 +11,7 @@ PODS:
     - Moya/Core
     - RxSwift (~> 4.0)
   - ObjectMapper (3.3.0)
-  - PPBadgeViewSwift (2.1.0)
+  - PPBadgeViewSwift (2.2.1)
   - Result (3.2.4)
   - RxCocoa (4.2.0):
     - RxSwift (~> 4.0)
@@ -48,7 +48,7 @@ DEPENDENCIES:
   - MJRefresh
   - Moya/RxSwift
   - ObjectMapper
-  - PPBadgeViewSwift
+  - PPBadgeViewSwift (~> 2.2.1)
   - RxCocoa
   - RxDataSources (~> 3.0)
   - RxSwift
@@ -81,7 +81,7 @@ SPEC CHECKSUMS:
   MJRefresh: b48380ae2b927b46c4ef000de9adb8dc748e1df7
   Moya: a725035953bc1c0eb1be505ab903984501d82440
   ObjectMapper: b612bf8c8e99c4dc0bb6013a51f7c27966ed5da9
-  PPBadgeViewSwift: c43294dc4a88a555c75cbc45f651920416c23b81
+  PPBadgeViewSwift: 113fffa82fcda725170e526baab6253dc105f44d
   Result: d2d07204ce72856f1fd9130bbe42c35a7b0fea10
   RxCocoa: 0b54909c902e1e581212a03e690bbd94032d8baa
   RxDataSources: cb7c31e652a87ebb919da45f716bbb87b3765f6b
@@ -96,6 +96,6 @@ SPEC CHECKSUMS:
   UMCShare: 023886b10d11119331c9c46d8e8a0c31fe67c23e
   YNDropDownMenu: 9421eb9c144448415d90141344a2cdbbaf11fc3c
 
-PODFILE CHECKSUM: 73fe1fbb3af59281812937dccab700a269e88f55
+PODFILE CHECKSUM: 5958418f56eeb8e1bacc1280891537b25f7f5a12
 
 COCOAPODS: 1.4.0

@@ -7,29 +7,34 @@
 //
 
 import UIKit
+import RxCocoa
+import RxSwift
+import Kingfisher
 
 fileprivate let cellIdentity:String = "cell"
 
 class CompanyMainVC: BaseViewController {
     
-
+    // 共同的headview高度
     static var headerViewH:CGFloat = 0
     static var headerThreld:CGFloat = 0
     
     // 从job 页面跳转过来
-    var companyID:String?{
+    internal var companyID:String?{
         didSet{
-            loadData()
+            query.onNext(companyID!)
         }
     }
     
-    private  var mode:CompanyModel?
+    private  var mode:CompanyModel?{
+        didSet{
+            self.didFinishloadData()
+        }
+    }
     
     
     private lazy var collectedBtn:UIButton = {
         // 收藏
-        
-      
 
         let collected = UIImage.init(named: "heart")!.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate)
         
@@ -37,10 +42,7 @@ class CompanyMainVC: BaseViewController {
         btn.addTarget(self, action: #selector(collectedCompany(btn:)), for: .touchUpInside)
         btn.setImage(collected, for: .normal)
         
-       
-        
         let selectedCollection =  UIImage.init(named: "selectedHeart")!.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate)
-        
         
         btn.setImage(selectedCollection, for: .selected)
         btn.clipsToBounds = true
@@ -55,7 +57,6 @@ class CompanyMainVC: BaseViewController {
         // 与顶部留出间隔
         layout.itemSize = CGSize.init(width: ScreenW, height: ScreenH -  NavH)
         layout.scrollDirection = .horizontal
-        
         return layout
     }()
     
@@ -71,6 +72,7 @@ class CompanyMainVC: BaseViewController {
         coll.showsVerticalScrollIndicator = false
         coll.showsHorizontalScrollIndicator = false
         coll.register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellIdentity)
+       
         return coll
     }()
     
@@ -108,9 +110,17 @@ class CompanyMainVC: BaseViewController {
     private var startScrollerOffsetX:CGFloat = 0
     
     
+    //rxSwift
+    let dispose = DisposeBag()
+    let vm:RecruitViewModel = RecruitViewModel()
+    let query:BehaviorSubject<String> = BehaviorSubject<String>.init(value: "")
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setViews()
+        setViewModel()
+        
         
         // Do any additional setup after loading the view.
     }
@@ -118,17 +128,16 @@ class CompanyMainVC: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        //self.navigationItem.title = "公司详情"
+ 
         self.navigationController?.insertCustomerView()
         UIApplication.shared.keyWindow?.addSubview(shareapps)
-
         
         
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        //self.navigationItem.title = ""
+        
         self.navigationController?.removeCustomerView()
         shareapps.removeFromSuperview()
         
@@ -139,9 +148,9 @@ class CompanyMainVC: BaseViewController {
         
         self.title = "公司详情"
         self.view.backgroundColor = UIColor.viewBackColor()
-        self.addChildViewController(companyDetail)
-        self.addChildViewController(companyJobs)
-        self.addChildViewController(companyCarrerTalk)
+        self.addChild(companyDetail)
+        self.addChild(companyJobs)
+        self.addChild(companyCarrerTalk)
         
         subVC.append(companyDetail)
         subVC.append(companyJobs)
@@ -179,7 +188,7 @@ class CompanyMainVC: BaseViewController {
         CompanyMainVC.headerViewH = headerView.frame.height
  
         
-        //  30 是计算的固定值
+        //  30 是计算的固定值： label 的高度和line之间的高度
         CompanyMainVC.headerThreld = CompanyMainVC.headerViewH - 30
         // 调整子vc 的tableheader高度
         companyJobs.joblistTable.tableHeaderView?.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height:  CompanyMainVC.headerViewH)
@@ -204,45 +213,30 @@ class CompanyMainVC: BaseViewController {
 
     override func reload() {
         super.reload()
-        self.loadData()
+        
         
     }
 }
+
+
 
 
 
 extension CompanyMainVC{
     
-    private func loadData(){
+    private func setViewModel(){
         
-        
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            Thread.sleep(forTimeInterval: 1)
+        query.asDriver(onErrorJustReturn: "").drive(onNext: { (id) in
+            self.vm.getCompanyById(id: id).share().subscribe(onNext: { (mode) in
+                self.mode = mode
+            }, onError: { (err) in
+                self.showError()
+                print("query company error \(err)")
+            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
             
-            DispatchQueue.main.async {
-                
-                if let data = CompanyModel(JSON:  ["id":"dqw-dqwd","name":"公司名",
-                                                   "describe":"大哇多无多首先想到的肯定是结束减速的代理方法：scrollViewDscrollViewDidEndDecelerating代理方法的，如果做过用3个界面当前为多群无多当前为多群无多群无 当前为多群无多群无当前为多群无多群无多群无当前为多群无多群 \n 当前为多 \n dqwdwq 达瓦大群无、你、\n   dqwdqwdqw当前为多群无多无群多无群多群 当前为多无群当前为多群无多当前为多群无多当前为多群无多当前为多群无当前为多群无多群无","simpleDes":"一家有个性滑动公司当前为多群无多当前为多群无多当前为多群无","address":["地址1","地址2","当前为多群无多","当前为多"],"staffs":"100-200人","icon":"sina","industry":["教育","医疗","化工"],"webSite":"https://www.baidu.com","tags":["标签1","标签1测试","标签89我的当前","当前为多","迭代器","群无多当前为多群当前","达瓦大群无多", "当前为多当前的群","当前为多无", "当前为多群无多","杜德伟七多"],"isValidate":true,"isCollected":false]){
-                    
-                     self?.mode =  data
-                     self?.didFinishloadData()
-                }else{
-                    self?.showError()
-                }
-                
-               
-                
-            }
-            
-        }
-        
-       
+        }).disposed(by: dispose)
     }
-    
-
-    
 }
-
 
 
 
@@ -277,22 +271,19 @@ extension CompanyMainVC{
 
     
     @objc func collectedCompany(btn:UIButton){
-        // MARK 修改公司状态 已经为收藏
         
+        // MARK 修改公司状态 已经为收藏
         let str =  (mode?.isCollected)! ? "取消收藏" : "收藏成功"
         showOnlyTextHub(message: str, view: self.view)
         btn.isSelected = !(mode?.isCollected)!
-        
         mode?.isCollected = !(mode?.isCollected)!
-        
     }
-    
 }
 
 
 extension CompanyMainVC: CompanyHeaderViewDelegate{
     
-    func ScrollContentAtIndex(index: Int) {
+    func scrollContentAtIndex(index: Int) {
         isClick = true
         syncOffset()
         let offsetX = CGFloat(index) * self.collectionView.frame.width
@@ -300,7 +291,9 @@ extension CompanyMainVC: CompanyHeaderViewDelegate{
         
     }
     
-    
+    func changeTitle(_ progress:CGFloat, sourceIndex:Int, targetIndex : Int){
+        self.headerView.changeTitle(progress, sourceIndex: sourceIndex, targetIndex: targetIndex)
+    }
 }
 
 
@@ -338,6 +331,7 @@ extension CompanyMainVC: shareViewDelegate{
 }
 
 extension CompanyMainVC{
+  
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if isClick  {
             return
@@ -371,12 +365,13 @@ extension CompanyMainVC{
                 
             }
             
-            self.headerView.changeTitle(progress, sourceIndex: sourceIndex, targetIndex: targetIndex)
+            self.changeTitle(progress, sourceIndex: sourceIndex, targetIndex: targetIndex)
             
         }
         
     }
     
+    // 左右切换
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         isClick = false
         
@@ -387,9 +382,6 @@ extension CompanyMainVC{
     }
     
     
-    private func moveSubline(progress:Int,start:CGFloat, distance:CGFloat){
- 
-    }
     
     //tableview 最大偏移判断
     private func syncOffset(){
@@ -437,9 +429,6 @@ extension CompanyMainVC: CompanySubTableScrollDelegate{
         companyJobs.joblistTable.contentOffset = view.contentOffset
         companyCarrerTalk.table.contentOffset = view.contentOffset
         
-
-        
-        
     }
 }
 
@@ -468,15 +457,13 @@ extension CompanyMainVC: UICollectionViewDelegate, UICollectionViewDataSource, U
         return cell
     }
     
-  
-    
 }
-
 
 
 // 代理
 fileprivate protocol CompanyHeaderViewDelegate: class {
-    func ScrollContentAtIndex(index:Int)
+    func scrollContentAtIndex(index:Int)
+    func changeTitle(_ progress:CGFloat, sourceIndex:Int, targetIndex : Int)
     
 }
 
@@ -569,6 +556,8 @@ fileprivate class CompanyHeaderView:UIView{
         return line
     }()
     
+   
+    
     // 分割线
     private let line = UIView.init()
     
@@ -576,19 +565,22 @@ fileprivate class CompanyHeaderView:UIView{
     
     private var labels:[UILabel] = []
     
+    
+    
     var mode:CompanyModel?{
         didSet{
             guard  let mode = mode  else {
                 return
             }
+            let url = URL.init(string: mode.icon)
+            self.icon.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             
-            self.icon.image = UIImage.init(named: mode.icon)
             self.companyName.text = mode.name
             self.des.text = mode.simpleDes
             let address = mode.address?.joined(separator: " ") ?? "-"
             let industry = mode.industry?.joined(separator: " ") ?? "-"
-            let staff = mode.staffs ?? "-"
-            self.kinds.text = address + "|" + industry + "|" + staff
+            let staff = "人员数: \(mode.staffs)"
+            self.kinds.text = address + "|" + industry + "\n" + staff
             self.setupAutoHeight(withBottomViewsArray: [detail,jobs], bottomMargin: 5)
             
         }
@@ -605,14 +597,17 @@ fileprivate class CompanyHeaderView:UIView{
         
         line.backgroundColor = UIColor.lightGray
         
+        
         _ = icon.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(self,5)?.widthIs(70)?.heightIs(70)
         _ = companyName.sd_layout().leftSpaceToView(icon,10)?.topEqualToView(icon)?.autoHeightRatio(0)
         _ = kinds.sd_layout().topSpaceToView(companyName,10)?.leftEqualToView(companyName)?.autoHeightRatio(0)
         _ = des.sd_layout().leftEqualToView(companyName)?.topSpaceToView(kinds,5)?.autoHeightRatio(0)
         _ = line.sd_layout().topSpaceToView(des,5)?.leftEqualToView(icon)?.rightEqualToView(self)?.heightIs(1)
-        _ = detail.sd_layout().leftSpaceToView(self,20)?.topSpaceToView(line,5)?.widthIs(100)?.heightIs(20)
-        _ = jobs.sd_layout().leftSpaceToView(detail, 15)?.topSpaceToView(line,5)?.widthIs(100)?.heightIs(20)
-        _ = talk.sd_layout().leftSpaceToView(jobs, 15)?.topSpaceToView(line,5)?.widthIs(100)?.heightIs(20)
+        
+        let labelW:CGFloat = (ScreenW - 20 - 15*2) / 3
+        _ = detail.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(line,5)?.widthIs(labelW)?.heightIs(20)
+        _ = jobs.sd_layout().leftSpaceToView(detail, 15)?.topSpaceToView(line,5)?.widthIs(labelW)?.heightIs(20)
+        _ = talk.sd_layout().leftSpaceToView(jobs, 15)?.topSpaceToView(line,5)?.widthIs(labelW)?.heightIs(20)
 
    
         
@@ -689,7 +684,7 @@ extension CompanyHeaderView{
         
         currentIndexBtn = currentIndex
         
-        self.delegate?.ScrollContentAtIndex(index: currentIndex)
+        self.delegate?.scrollContentAtIndex(index: currentIndex)
         
     }
     

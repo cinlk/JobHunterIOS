@@ -150,6 +150,16 @@ func showMonthAndDay(date: Date?) ->String?{
     }
     
 }
+
+func showYearAndDayAndHour(date: Date?) ->String?{
+    guard let date = date  else {
+        return nil
+    }
+    
+    let dateRoom = DateInRegion.init(date, region: regionRome)
+    return String.init(format: "%d年%d月%d日 %d:%02d", dateRoom.year, dateRoom.month,dateRoom.day,
+    dateRoom.hour, dateRoom.minute)
+}
     
     
 func showDayAndHour(date: Date?) -> String?{

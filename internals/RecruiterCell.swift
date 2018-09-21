@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 fileprivate let imgSize:CGSize = CGSize.init(width: 40, height: 40)
 
@@ -72,7 +73,9 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 40, height: 40)
             
             title.text = "职位发布者"
             // 头像？？
-            icon.image = UIImage.init(data: mode.icon!)
+            
+            let url = URL.init(string: mode.icon ?? "")
+            self.icon.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             name.text = mode.name
             position.text = mode.position
             onlineTime.text = "最近活跃:" + mode.ontimeStr
@@ -80,7 +83,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 40, height: 40)
         }
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
         let views:[UIView] = [line,title,icon,name,position,onlineTime]

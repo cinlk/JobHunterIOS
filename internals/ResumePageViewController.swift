@@ -267,18 +267,18 @@ fileprivate class  operatorHandler:NSObject{
     // 在线简历显示的操作
     internal lazy var alertOnlineVC:UIAlertController = {
         let alert = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
-        let defaults = UIAlertAction.init(title: "设置为默认", style: UIAlertActionStyle.default, handler: { action in
+        let defaults = UIAlertAction.init(title: "设置为默认", style: UIAlertAction.Style.default, handler: { action in
             self.setDefaultItem()
         })
-        let rename = UIAlertAction.init(title: "重命名", style: UIAlertActionStyle.default, handler: { action in
+        let rename = UIAlertAction.init(title: "重命名", style: UIAlertAction.Style.default, handler: { action in
             self.renameItem()
             
         })
-        let copy = UIAlertAction.init(title: "复制", style: UIAlertActionStyle.default, handler: { action in
+        let copy = UIAlertAction.init(title: "复制", style: UIAlertAction.Style.default, handler: { action in
             self.copyItem()
         })
         
-        let delete = UIAlertAction.init(title: "删除", style: UIAlertActionStyle.destructive, handler: { action in
+        let delete = UIAlertAction.init(title: "删除", style: UIAlertAction.Style.destructive, handler: { action in
             self.deleteItem()
         })
         
@@ -294,15 +294,15 @@ fileprivate class  operatorHandler:NSObject{
     // 附件简历显示的操作
     internal lazy var alertAttachVC:UIAlertController = {
         let alert = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
-        let defaults = UIAlertAction.init(title: "设置为默认", style: UIAlertActionStyle.default, handler: { action in
+        let defaults = UIAlertAction.init(title: "设置为默认", style: UIAlertAction.Style.default, handler: { action in
             self.setDefaultItem()
         })
-        let rename = UIAlertAction.init(title: "重命名", style: UIAlertActionStyle.default, handler: { action in
+        let rename = UIAlertAction.init(title: "重命名", style: UIAlertAction.Style.default, handler: { action in
             self.renameItem()
             
         })
         
-        let delete = UIAlertAction.init(title: "删除", style: UIAlertActionStyle.destructive, handler: { action in
+        let delete = UIAlertAction.init(title: "删除", style: UIAlertAction.Style.destructive, handler: { action in
             self.deleteItem()
         })
         

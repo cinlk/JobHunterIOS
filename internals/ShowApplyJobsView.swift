@@ -10,8 +10,11 @@ import UIKit
 
 
 
+
+
+
 protocol showApplyJobsDelegate: class {
-    func cancel(view:ShowApplyJobsView)
+    
     func apply(view:ShowApplyJobsView, jobIndex:Int)
     
 }
@@ -19,9 +22,8 @@ protocol showApplyJobsDelegate: class {
 class ShowApplyJobsView: UIView {
 
     
-    
-    
-    
+    internal var cellH:CGFloat = 40
+    internal var fixedH:CGFloat = 80
     
     private lazy var selecTitle:UILabel = {
         let label = UILabel.init()
@@ -74,6 +76,18 @@ class ShowApplyJobsView: UIView {
     }()
     
     
+    
+    private lazy var showJobsBackGround:UIButton = {
+        let btn = UIButton(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
+        btn.backgroundColor = UIColor.lightGray
+        btn.alpha = 0.5
+        btn.addTarget(self, action: #selector(hidden), for: .touchUpInside)
+        return btn
+    }()
+    
+    
+    
+    
     private lazy var selectIndex:Int = -1
     
     weak var delegate:showApplyJobsDelegate?
@@ -117,6 +131,8 @@ extension ShowApplyJobsView{
         _ = contentTable.sd_layout().topSpaceToView(line,0)?.leftEqualToView(self)?.rightEqualToView(self)?.bottomSpaceToView(bottomBtn,0)
         
         
+ 
+        
         selecTitle.setMaxNumberOfLinesToShow(1)
     }
 }
@@ -124,6 +140,7 @@ extension ShowApplyJobsView{
 
 
 extension ShowApplyJobsView: UITableViewDataSource, UITableViewDelegate{
+    
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -133,6 +150,7 @@ extension ShowApplyJobsView: UITableViewDataSource, UITableViewDelegate{
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         let cell =  tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         cell.textLabel?.text =  jobs[indexPath.row]
         cell.selectionStyle = .none
@@ -145,7 +163,7 @@ extension ShowApplyJobsView: UITableViewDataSource, UITableViewDelegate{
     
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 40
+        return cellH
     }
     
     
@@ -172,15 +190,40 @@ extension ShowApplyJobsView: UITableViewDataSource, UITableViewDelegate{
 }
 
 extension ShowApplyJobsView{
+    
     @objc private func apply(){
         if selectIndex == -1 {
             return
         }
         
         delegate?.apply(view: self, jobIndex: selectIndex)
+        self.hidden()
     }
     
     @objc private func cancel(){
-        delegate?.cancel(view: self)
+        self.hidden()
+        
+    }
+    
+    
+    open func show(){
+       
+        UIApplication.shared.keyWindow?.insertSubview(showJobsBackGround , belowSubview: self)
+        
+        let height = CGFloat(min(jobs.count, 7)) * self.cellH + self.fixedH
+        
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.frame = CGRect.init(x: 0, y: ScreenH - height, width: ScreenW, height: height)
+        }, completion: nil)
+        
+    }
+    
+    @objc open func hidden(){
+        showJobsBackGround.removeFromSuperview()
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            self.frame = CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: 0)
+        }, completion: nil)
+        
+        
     }
 }

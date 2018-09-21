@@ -37,7 +37,7 @@ class CareerTalkInviteViewController: BaseTableViewController {
     
     override func setViews() {
         
-        self.tableView.contentInset = UIEdgeInsetsMake(10, 0, 0, 0)
+        self.tableView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 0)
         self.tableView.tableFooterView = UIView.init()
         self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.separatorStyle = .none

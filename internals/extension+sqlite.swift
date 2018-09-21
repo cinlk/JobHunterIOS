@@ -50,6 +50,7 @@ extension UIImage: Value {
     
     // Encode
     public var datatypeValue: Blob {
-        return UIImagePNGRepresentation(self)!.datatypeValue
+        
+        return self.pngData()!.datatypeValue
     }
 }

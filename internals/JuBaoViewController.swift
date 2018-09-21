@@ -10,27 +10,37 @@ import UIKit
 
 
 fileprivate let tableFootViewH:CGFloat = 200
+import RxSwift
+import RxCocoa
 
 
 class JuBaoViewController: BaseViewController {
 
     //  举报那个job
-    internal var target:(id:String,type: jobType)?{
+    internal var jobID:String?{
         didSet{
-            
-            loadData()
+            self.vm.getJobWarnMessages().asDriver(onErrorJustReturn: []).drive(onNext: { (items) in
+                self.resonse = items
+                
+            }).disposed(by: dispose)
         }
     }
     
     // 数据
-    private var resonse:[String]?
+    private var resonse:[String]?{
+        didSet{
+            self.didFinishloadData()
+        }
+    }
     
     private lazy var table:UITableView = {  [unowned self] in
        var table = UITableView.init()
        table.backgroundColor = UIColor.viewBackColor()
        table.delegate = self
        table.dataSource = self
-       table.keyboardDismissMode = UIScrollViewKeyboardDismissMode.onDrag
+        table.keyboardDismissMode = UIScrollView.KeyboardDismissMode.onDrag
+       table.tableHeaderView = tableheader
+       table.tableFooterView = bv
         
        return table
         
@@ -46,7 +56,12 @@ class JuBaoViewController: BaseViewController {
     
     }()
     
-    private let bv = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: tableFootViewH))
+    private lazy var  bv:UIView = {
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: tableFootViewH))
+        v.addSubview(inputField)
+        v.addSubview(comfirm)
+        return v
+    }()
     
     // 详细输入textView
     private lazy var inputField:UITextView = { [unowned self] in
@@ -75,27 +90,32 @@ class JuBaoViewController: BaseViewController {
     private var details:String = ""
     private var selectIndex:Int = -1
     
+    //rxSwift
+    
+    let dispose = DisposeBag()
+    let vm:RecruitViewModel = RecruitViewModel()
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setViews()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow(_:)), name:
+            UIResponder.keyboardWillShowNotification, object: nil)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHidden(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHidden(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationItem.title = "举报界面"
-        self.navigationController?.insertCustomerView()
+        //self.navigationController?.insertCustomerView()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationItem.title = ""
-        self.navigationController?.removeCustomerView()
+        //self.navigationController?.removeCustomerView()
     }
     
     
@@ -116,12 +136,9 @@ class JuBaoViewController: BaseViewController {
     
     
     override func setViews() {
-        self.view.addSubview(table)
-        self.table.tableHeaderView = tableheader
-        self.table.tableFooterView = bv
         
-        bv.addSubview(inputField)
-        bv.addSubview(comfirm)
+        self.title = "举报界面"
+        self.view.addSubview(table)
         
         self.handleViews.append(table)
         super.setViews()
@@ -137,39 +154,22 @@ class JuBaoViewController: BaseViewController {
     
     override func reload() {
         super.reload()
-        self.loadData()
+        
     }
 
 }
+
+
 
 
 extension JuBaoViewController{
     
-    private func loadData(){
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-         
-            Thread.sleep(forTimeInterval: 3)
-            // 获取数据
-            DispatchQueue.main.async(execute: {
-                 self?.resonse =  ["薪资不符合","职位描述不匹配","公司信息不真实","HR无法联系","工作地方不符合"]
-                 self?.didFinishloadData()
-                 // 错误
-                 // showError()
-            })
-        }
-       
-    }
-}
-
-
-
-extension JuBaoViewController{
     @objc private func done(_ text:UITextView){
         self.inputField.endEditing(true)
     }
     
     @objc private func keyboardShow(_ notify: Notification){
-        if  let keyboradFram = notify.userInfo![UIKeyboardFrameEndUserInfoKey] as? CGRect{
+        if  let keyboradFram = notify.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as? CGRect{
             
             let comfirmToTable = comfirm.convert(comfirm.origin, to: table)
             let bottonHeight = ScreenH - (comfirmToTable.y + comfirm.frame.height)
@@ -177,7 +177,7 @@ extension JuBaoViewController{
             
             if scrollUpHeight > 0{
                 UIView.animate(withDuration: 0.3) {
-                    self.table.contentInset = UIEdgeInsetsMake(-scrollUpHeight,0, 0, 0)
+                    self.table.contentInset = UIEdgeInsets(top: -scrollUpHeight,left: 0, bottom: 0, right: 0)
                 }
             
             }
@@ -262,6 +262,8 @@ extension JuBaoViewController:UITableViewDelegate,UITableViewDataSource{
 
 extension JuBaoViewController{
     @objc func submit(){
+        
+       self.inputField.endEditing(true)
        print(selectIndex,details)
         
     }

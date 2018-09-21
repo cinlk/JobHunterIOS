@@ -32,7 +32,7 @@ class PasswordLoggingViewController: UITableViewController {
         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
         btn.backgroundColor = UIColor.clear
         btn.setBackgroundImage(UIImage.init(named: "lash")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        btn.setBackgroundImage(UIImage.flipImage(image: #imageLiteral(resourceName: "lash"), orientation: UIImageOrientation.down).withRenderingMode(.alwaysTemplate), for: UIControlState.selected)
+        btn.setBackgroundImage(UIImage.flipImage(image: #imageLiteral(resourceName: "lash"), orientation: UIImage.Orientation.down).withRenderingMode(.alwaysTemplate), for: UIControl.State.selected)
         btn.tintColor = UIColor.lightGray
         btn.addTarget(self, action: #selector(click), for: .touchUpInside)
         return btn

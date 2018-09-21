@@ -22,9 +22,7 @@ class  CompanyModel: BaseModel {
     // 地点
     internal var address:[String]?
     // 员工人数
-    internal var staffs:String?
-    // 网址
-    internal var webSite:String?
+    internal var staffs:Int = 0
     
     // 福利标签
     internal var tags:[String]?
@@ -66,11 +64,9 @@ class  CompanyModel: BaseModel {
         simpleDes <- map["simple_des"]
         address <- map["address"]
         staffs <- map["staffs"]
-        webSite <- map["webSite"]
         tags <- map["tags"]
         industry <- map["industry"]
         follows <- map["follows"]
-    
         jobs <- map["jobs"]
         careerTalk <- map["recruit_meeting"]
         

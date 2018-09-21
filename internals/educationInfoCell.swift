@@ -12,7 +12,7 @@ import UIKit
 @objcMembers class educationInfoCell: BaseResumeInfoCell<personEducationInfo> {
     
     
-  override  dynamic var mode:personEducationInfo?{
+    dynamic var mode:personEducationInfo?{
         didSet{
             guard let mode = mode else {
                 return
@@ -34,7 +34,7 @@ import UIKit
         
     }
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
     }
     

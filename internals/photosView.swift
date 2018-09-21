@@ -22,10 +22,12 @@ class photosView: UIView {
     internal var imageData:[Data]{
         get{
             var res:[Data] = []
-            if let image = imageOne.image, let data = UIImageJPEGRepresentation(image, 0){
+        
+            
+            if let image = imageOne.image, let data = image.jpegData(compressionQuality: 0){
                 res.append(data)
             }
-            if let image = imageTow.image, let data = UIImageJPEGRepresentation(image, 0){
+            if let image = imageTow.image, let data = image.jpegData(compressionQuality: 0){
                 res.append(data)
             }
             
