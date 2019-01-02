@@ -573,7 +573,7 @@ fileprivate class CompanyHeaderView:UIView{
                 return
             }
             let url = URL.init(string: mode.icon)
-            self.icon.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            self.icon.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             
             self.companyName.text = mode.name
             self.des.text = mode.simpleDes

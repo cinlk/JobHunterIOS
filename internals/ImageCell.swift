@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Kingfisher
 
 
 
@@ -63,7 +63,7 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
             
             let url = URL.init(string: myself.icon ?? "")
             
-            self.avartar.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            self.avartar.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             
             // 获取images
             if let imageData =  appFileManger.getImageDataBy(userID: (mode.receiver?.userID)!, fileName: imageName){

@@ -668,7 +668,7 @@ extension DashboardViewController{
                     let url = URL.init(string: item.imageURL ?? "")
                     
                     //imageView.image = UIImage.init(named: item.imageURL ?? ROTATE_IMA)
-                    imageView.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "banner3"), options: nil, progressBlock: nil, completionHandler: nil)
+                    imageView.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "banner3"), options: nil, progressBlock: nil, completionHandler: nil)
                     imageView.contentMode = .scaleToFill
                     imageView.clipsToBounds = true
                     self.imagescroller.addSubview(imageView)

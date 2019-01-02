@@ -89,8 +89,8 @@ extension MainColumnistCell{
             btn.tag = idx
             btn.backgroundColor = UIColor.white
             let url = URL.init(string: item.key)
-            btn.kf.setImage(with: url, for: .normal, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
-            btn.kf.setImage(with: url, for: .highlighted, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            btn.kf.setImage(with: Source.network(url!), for: .normal, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            btn.kf.setImage(with: Source.network(url!), for: .highlighted, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
            
             btn.titleLabel?.text = item.value
             btn.imageEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)

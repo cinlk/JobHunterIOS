@@ -9,7 +9,7 @@
 import Foundation
 import ObjectMapper
 import SwiftDate
-import SwiftyJSON
+//import SwiftyJSON
 
 
 // 所有简历基本元素

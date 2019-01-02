@@ -75,7 +75,7 @@ class gifCell: UITableViewCell {
         if myself.userID  == messageInfo.sender?.userID{
             if let icon = myself.icon {
                 let url = URL.init(string: icon)
-                self.avatar.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                self.avatar.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }else{
                 // default 头像
                 self.avatar.image =  #imageLiteral(resourceName: "default")
@@ -90,7 +90,7 @@ class gifCell: UITableViewCell {
         }else{
             if let icon = chatUser.icon {
                 let url = URL.init(string: icon)
-                self.avatar.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                self.avatar.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }else{
                 // default 头像
                 self.avatar.image =  #imageLiteral(resourceName: "default")

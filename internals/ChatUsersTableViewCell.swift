@@ -74,7 +74,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
             
             
             let url = URL.init(string: user.icon ?? "")
-            self.icon.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            self.icon.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             
             self.name.text =  user.name! + "@" + user.company!
             

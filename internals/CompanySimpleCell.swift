@@ -43,7 +43,7 @@ import Kingfisher
                 return
             }
             let url = URL.init(string: mode.icon)
-            icon.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            icon.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             
             name.text = mode.name
             let address = "地址:" +  (mode.address?.joined(separator: " ")  ?? "")

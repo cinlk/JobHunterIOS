@@ -66,7 +66,9 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
             
             self.times.text = mode.time
             let url = URL.init(string: mode.icon)
-            self.collegeIcon.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            
+            self.collegeIcon.kf.setImage(with: Source.network(url!), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+                
             self.collegeName.text = mode.college! + " |"
             self.company.text = mode.companyModel?.name
             self.address.text = mode.short_address

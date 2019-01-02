@@ -345,8 +345,8 @@ typedef NS_ENUM(NSInteger,UMSocialPlatformType)
     
     //用户自定义的平台
     UMSocialPlatformType_UserDefine_Begin = 1000,
-    UMSocialPlatformType_CopyLink = 1001,
-    UMSocialPlatformType_More = 1002,
+    UMSocialPlatformType_copyLink =  1001,
+    UMSocialPlatformType_more =  1002,
     UMSocialPlatformType_UserDefine_End = 2000,
 };
 

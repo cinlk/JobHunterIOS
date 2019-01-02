@@ -75,7 +75,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 40, height: 40)
             // 头像？？
             
             let url = URL.init(string: mode.icon ?? "")
-            self.icon.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            self.icon.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             name.text = mode.name
             position.text = mode.position
             onlineTime.text = "最近活跃:" + mode.ontimeStr

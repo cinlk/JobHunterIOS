@@ -224,6 +224,8 @@ extension OnlineApplyShowViewController{
     
     
 }
+
+
 // share分享代理实现
 extension OnlineApplyShowViewController:shareViewDelegate{
     
@@ -401,7 +403,8 @@ private class tableHeader:UIView{
             }
             
             let url = URL.init(string: mode.companyIcon)
-            self.icon.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            
+            self.icon.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             self.address.text = mode.address?.joined(separator: " ")
             self.time.text = "截止时间: " + mode.endTimeStr
             self.name.text = mode.companyName

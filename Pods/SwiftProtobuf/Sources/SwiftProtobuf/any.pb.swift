@@ -127,20 +127,23 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 ///       "@type": "type.googleapis.com/google.protobuf.Duration",
 ///       "value": "1.212s"
 ///     }
-public struct Google_Protobuf_Any: SwiftProtobuf.Message {
-  public static let protoMessageName: String = _protobuf_package + ".Any"
+public struct Google_Protobuf_Any {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
 
-  /// A URL/resource name whose content describes the type of the
-  /// serialized protocol buffer message.
+  /// A URL/resource name that uniquely identifies the type of the serialized
+  /// protocol buffer message. The last segment of the URL's path must represent
+  /// the fully qualified name of the type (as in
+  /// `path/google.protobuf.Duration`). The name should be in a canonical form
+  /// (e.g., leading "." is not accepted).
   ///
-  /// For URLs which use the scheme `http`, `https`, or no scheme, the
-  /// following restrictions and interpretations apply:
+  /// In practice, teams usually precompile into the binary all types that they
+  /// expect it to use in the context of Any. However, for URLs which use the
+  /// scheme `http`, `https`, or no scheme, one can optionally set up a type
+  /// server that maps type URLs to message definitions as follows:
   ///
   /// * If no scheme is provided, `https` is assumed.
-  /// * The last segment of the URL's path must represent the fully
-  ///   qualified name of the type (as in `path/google.protobuf.Duration`).
-  ///   The name should be in a canonical form (e.g., leading "." is
-  ///   not accepted).
   /// * An HTTP GET on the URL must yield a [google.protobuf.Type][]
   ///   value in binary format, or produce an error.
   /// * Applications are allowed to cache lookup results based on the
@@ -148,6 +151,10 @@ public struct Google_Protobuf_Any: SwiftProtobuf.Message {
   ///   lookup. Therefore, binary compatibility needs to be preserved
   ///   on changes to types. (Use versioned type names to manage
   ///   breaking changes.)
+  ///
+  /// Note: this functionality is not currently available in the official
+  /// protobuf release, and it is not used for type URLs beginning with
+  /// type.googleapis.com.
   ///
   /// Schemes other than `http`, `https` (or the empty scheme) might be
   /// used with implementation specific semantics.
@@ -166,40 +173,6 @@ public struct Google_Protobuf_Any: SwiftProtobuf.Message {
 
   public init() {}
 
-  /// Used by the decoding initializers in the SwiftProtobuf library, not generally
-  /// used directly. `init(serializedData:)`, `init(jsonUTF8Data:)`, and other decoding
-  /// initializers are defined in the SwiftProtobuf library. See the Message and
-  /// Message+*Additions` files.
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    _ = _uniqueStorage()
-    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      while let fieldNumber = try decoder.nextFieldNumber() {
-        switch fieldNumber {
-        case 1: try decoder.decodeSingularStringField(value: &_storage._typeURL)
-        case 2: try decoder.decodeSingularBytesField(value: &_storage._value)
-        default: break
-        }
-      }
-    }
-  }
-
-  /// Used by the encoding methods of the SwiftProtobuf library, not generally
-  /// used directly. `Message.serializedData()`, `Message.jsonUTF8Data()`, and
-  /// other serializer methods are defined in the SwiftProtobuf library. See the
-  /// `Message` and `Message+*Additions` files.
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      try _storage.preTraverse()
-      if !_storage._typeURL.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._typeURL, fieldNumber: 1)
-      }
-      if !_storage._value.isEmpty {
-        try visitor.visitSingularBytesField(value: _storage._value, fieldNumber: 2)
-      }
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
   internal var _storage = _StorageClass.defaultInstance
 }
 
@@ -207,7 +180,8 @@ public struct Google_Protobuf_Any: SwiftProtobuf.Message {
 
 fileprivate let _protobuf_package = "google.protobuf"
 
-extension Google_Protobuf_Any: SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+extension Google_Protobuf_Any: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".Any"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "type_url"),
     2: .same(proto: "value"),
@@ -222,12 +196,38 @@ extension Google_Protobuf_Any: SwiftProtobuf._MessageImplementationBase, SwiftPr
     return _storage
   }
 
-  public func _protobuf_generated_isEqualTo(other: Google_Protobuf_Any) -> Bool {
-    if _storage !== other._storage {
-      let storagesAreEqual: Bool = _storage.isEqualTo(other: other._storage)
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        switch fieldNumber {
+        case 1: try decoder.decodeSingularStringField(value: &_storage._typeURL)
+        case 2: try decoder.decodeSingularBytesField(value: &_storage._value)
+        default: break
+        }
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      try _storage.preTraverse()
+      if !_storage._typeURL.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._typeURL, fieldNumber: 1)
+      }
+      if !_storage._value.isEmpty {
+        try visitor.visitSingularBytesField(value: _storage._value, fieldNumber: 2)
+      }
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Google_Protobuf_Any, rhs: Google_Protobuf_Any) -> Bool {
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = lhs._storage.isEqualTo(other: rhs._storage)
       if !storagesAreEqual {return false}
     }
-    if unknownFields != other.unknownFields {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }

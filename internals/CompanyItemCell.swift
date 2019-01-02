@@ -64,7 +64,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
                 return
             }
             let url = URL.init(string: mode.icon)
-            self.icon.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            self.icon.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             
             //self.icon.image = UIImage.init(named: mode.icon)
             self.company.text = mode.name

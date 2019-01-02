@@ -240,7 +240,8 @@ extension AppDelegate{
             shareItems.append( ShareItem.init(name: "QQ空间", image: "qqZone", type: UMSocialPlatformType.qzone, bubbles: nil))
             shareItems.append(        ShareItem.init(name: "QQ", image: "qqCircle",type: UMSocialPlatformType.QQ,  bubbles: nil))
         }
-        shareItems.append(  ShareItem.init(name: "复制链接", image: "copyIcon", type: UMSocialPlatformType.copyLink, bubbles: nil))
+        shareItems.append(  ShareItem.init(name: "复制链接", image: "copyIcon", type:
+            UMSocialPlatformType.copyLink, bubbles: nil))
         shareItems.append( ShareItem.init(name: "更多", image: "moreShare", type: UMSocialPlatformType.more, bubbles: nil))
         if shareItems.count <= 4{
             shareViewH -= 87.5

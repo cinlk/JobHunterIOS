@@ -112,7 +112,7 @@ private class  applyShowCollectedCell:UICollectionViewCell{
             self.name.text = mode?.Field
             let url = URL.init(string: mode?.ImageUrl ?? "")
             //self.icon.image = UIImage.init(named: mode?.ImageUrl ?? APPLY_DEFAULT_IMG)
-            self.icon.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            self.icon.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
         }
     }
     

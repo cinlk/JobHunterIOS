@@ -160,7 +160,7 @@ class messageCell: UITableViewCell {
             
             if let icon = myself.icon {
                 let url = URL.init(string: icon)
-                self.avatar.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                self.avatar.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }else{
                 // 使用默认头像
                 self.avatar.image =  #imageLiteral(resourceName: "default")
@@ -182,7 +182,7 @@ class messageCell: UITableViewCell {
             
             if let icon = chatUser.icon {
                 let url = URL.init(string: icon)
-                self.avatar.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                self.avatar.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }else{
                 self.avatar.image =  #imageLiteral(resourceName: "default")
             }

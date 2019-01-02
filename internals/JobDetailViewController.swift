@@ -13,7 +13,7 @@ import RxSwift
 import RxCocoa
 import MBProgressHUD
 import RxDataSources
-import SwiftyJSON
+//import SwiftyJSON
 //内置分享sdk
 import Social
 

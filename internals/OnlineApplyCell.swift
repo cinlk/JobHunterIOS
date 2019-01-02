@@ -84,7 +84,7 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
             }else{
                 let url = URL.init(string: mode.companyIcon)
                 
-                self.icon.kf.setImage(with: url, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                self.icon.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }
            
             

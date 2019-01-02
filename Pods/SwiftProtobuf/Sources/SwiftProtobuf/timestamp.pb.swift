@@ -111,7 +111,9 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 /// {hour}, {min}, and {sec} are zero-padded to two digits each. The fractional
 /// seconds, which can go up to 9 digits (i.e. up to 1 nanosecond resolution),
 /// are optional. The "Z" suffix indicates the timezone ("UTC"); the timezone
-/// is required, though only UTC (as indicated by "Z") is presently supported.
+/// is required. A proto3 JSON serializer should always use UTC (as indicated by
+/// "Z") when printing the Timestamp type and a proto3 JSON parser should be
+/// able to accept both UTC and other timezones (as indicated by an offset).
 ///
 /// For example, "2017-01-15T01:30:15.01Z" encodes 15.01 seconds past
 /// 01:30 UTC on January 15, 2017.
@@ -122,10 +124,12 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 /// to this format using [`strftime`](https://docs.python.org/2/library/time.html#time.strftime)
 /// with the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one
 /// can use the Joda Time's [`ISODateTimeFormat.dateTime()`](
-/// http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime())
-/// to obtain a formatter capable of generating timestamps in this format.
-public struct Google_Protobuf_Timestamp: SwiftProtobuf.Message {
-  public static let protoMessageName: String = _protobuf_package + ".Timestamp"
+/// http://www.joda.org/joda-time/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime--
+/// ) to obtain a formatter capable of generating timestamps in this format.
+public struct Google_Protobuf_Timestamp {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
 
   /// Represents seconds of UTC time since Unix epoch
   /// 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
@@ -141,11 +145,19 @@ public struct Google_Protobuf_Timestamp: SwiftProtobuf.Message {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
+}
 
-  /// Used by the decoding initializers in the SwiftProtobuf library, not generally
-  /// used directly. `init(serializedData:)`, `init(jsonUTF8Data:)`, and other decoding
-  /// initializers are defined in the SwiftProtobuf library. See the Message and
-  /// Message+*Additions` files.
+// MARK: - Code below here is support for the SwiftProtobuf runtime.
+
+fileprivate let _protobuf_package = "google.protobuf"
+
+extension Google_Protobuf_Timestamp: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".Timestamp"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "seconds"),
+    2: .same(proto: "nanos"),
+  ]
+
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
@@ -156,10 +168,6 @@ public struct Google_Protobuf_Timestamp: SwiftProtobuf.Message {
     }
   }
 
-  /// Used by the encoding methods of the SwiftProtobuf library, not generally
-  /// used directly. `Message.serializedData()`, `Message.jsonUTF8Data()`, and
-  /// other serializer methods are defined in the SwiftProtobuf library. See the
-  /// `Message` and `Message+*Additions` files.
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if self.seconds != 0 {
       try visitor.visitSingularInt64Field(value: self.seconds, fieldNumber: 1)
@@ -169,22 +177,11 @@ public struct Google_Protobuf_Timestamp: SwiftProtobuf.Message {
     }
     try unknownFields.traverse(visitor: &visitor)
   }
-}
 
-// MARK: - Code below here is support for the SwiftProtobuf runtime.
-
-fileprivate let _protobuf_package = "google.protobuf"
-
-extension Google_Protobuf_Timestamp: SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "seconds"),
-    2: .same(proto: "nanos"),
-  ]
-
-  public func _protobuf_generated_isEqualTo(other: Google_Protobuf_Timestamp) -> Bool {
-    if self.seconds != other.seconds {return false}
-    if self.nanos != other.nanos {return false}
-    if unknownFields != other.unknownFields {return false}
+  public static func ==(lhs: Google_Protobuf_Timestamp, rhs: Google_Protobuf_Timestamp) -> Bool {
+    if lhs.seconds != rhs.seconds {return false}
+    if lhs.nanos != rhs.nanos {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
