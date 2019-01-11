@@ -165,8 +165,8 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
         // 用户收藏 数据
         let str  = collectedBtn.isSelected ? "取消收藏" : "收藏成功"
         collectedBtn.isSelected = !collectedBtn.isSelected
-        
-        showOnlyTextHub(message: str, view: self.view)
+        self.view.showToast(title: str, customImage: nil, mode: .text)
+        //showOnlyTextHub(message: str, view: self.view)
         mode?.isCollected = collectedBtn.isSelected
         
         

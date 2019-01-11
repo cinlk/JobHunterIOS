@@ -16,7 +16,7 @@ fileprivate let startDate = Date(timeIntervalSince1970: 0)
 // singleton model
 class  SqliteManager{
     
-    fileprivate let fileManager = FileManager.default
+
     static let shared:SqliteManager = SqliteManager()
     var db:Connection?
     
@@ -29,12 +29,12 @@ class  SqliteManager{
     private func initialDBFile(){
         
         
-        let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
+        let url = SingletoneClass.fileManager.urls(for: .documentDirectory, in: .userDomainMask)
         let dbPath = url.last?.appendingPathComponent(dbName)
         print(dbPath)
-        let exist = fileManager.fileExists(atPath: dbPath!.path)
+        let exist = SingletoneClass.fileManager.fileExists(atPath: dbPath!.path)
         if !exist{
-            fileManager.createFile(atPath: dbPath!.path, contents: nil, attributes: nil)
+            SingletoneClass.fileManager.createFile(atPath: dbPath!.path, contents: nil, attributes: nil)
         }
         
         initialTables(dbPath: dbPath!.path)

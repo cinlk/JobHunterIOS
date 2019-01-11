@@ -95,6 +95,7 @@ class UserLogginViewController: UIViewController {
         self.navigationController?.navigationBar.isHidden = false
         self.navigationController?.navigationBar.settranslucent(true)
 
+
     }
 
     

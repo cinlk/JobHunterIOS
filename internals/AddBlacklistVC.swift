@@ -243,7 +243,7 @@ extension AddBlacklistVC{
 extension AddBlacklistVC{
     @objc private func blockCompany(_ sender: UIButton){
         if blacklists.count + currentBlacklistCount >= maxBlackCount {
-            showOnlyTextHub(message: "最多添加\(maxBlackCount)个", view: self.view)
+            self.view.showToast(title: "最多添加\(maxBlackCount)个", duration: 5, customImage: nil, mode: .text)
             return
         }
         

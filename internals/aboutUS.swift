@@ -14,6 +14,7 @@ fileprivate let headerViewH:CGFloat = 160
 fileprivate let cellIdentiy:String = "default"
 fileprivate let cellItem:[AboutUsModel.item] = [.serviceLaw, .wechat, .weibo, .serviceCall, .share]
 fileprivate let footViewH:CGFloat = ScreenH - headerViewH - (CGFloat(cellItem.count) * 45) - NavH
+fileprivate let shareViewH = SingletoneClass.shared.shareViewH
 
 
 class aboutUS: BaseViewController {
@@ -209,7 +210,8 @@ extension aboutUS{
        
         
         // nav 的view 没问题！
-        showOnlyTextHub(message: "微信账号已经复制, 跳转到微信", view: (self.navigationController?.view)!)
+        //showOnlyTextHub(message: "微信账号已经复制, 跳转到微信", view: (self.navigationController?.view)!)
+        self.navigationController?.view.showToast(title: "微信账号已经复制, 跳转到微信", customImage: nil, mode: .text)
         let paste = UIPasteboard.general
         paste.string = mode?.wecaht ?? ""
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {

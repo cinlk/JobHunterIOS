@@ -13,7 +13,7 @@ import RxCocoa
 
 fileprivate let keyStr:String = "estimatedProgress"
 fileprivate let imgSize = CGSize.init(width: 25, height: 25)
-
+fileprivate let shareViewH = SingletoneClass.shared.shareViewH
 
 class baseWebViewController: UIViewController {
     

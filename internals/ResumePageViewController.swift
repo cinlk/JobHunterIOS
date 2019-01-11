@@ -336,7 +336,8 @@ extension operatorHandler: SearchMenuDelegate{
         // 添加在线简历
         if item == .online{
             if self.myResumes.count >= maxCount{
-                showOnlyTextHub(message: "最多添加\(maxCount)个在线简历", view: self.tableView)
+                self.tableView.showToast(title: "最多添加\(maxCount)个在线简历", customImage: nil, mode: .text)
+                //showOnlyTextHub(message: "最多添加\(maxCount)个在线简历", view: self.tableView)
                 return
             }
             
@@ -409,7 +410,8 @@ extension operatorHandler{
         if let row = self.selectedrow{
             
             if myResumes.count >= maxCount{
-                showOnlyTextHub(message: "最多添加\(maxCount)个简历", view: self.tableView)
+                self.tableView.showToast(title: "最多添加\(maxCount)个简历", customImage: nil, mode: .text)
+                //showOnlyTextHub(message: "最多添加\(maxCount)个简历", view: self.tableView)
                 return
             }
             // 拷贝字典

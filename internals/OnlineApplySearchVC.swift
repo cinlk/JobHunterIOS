@@ -147,7 +147,8 @@ extension OnlineApplySearchVC{
         
         // 选项切换的刷新
         searchVM.searchOnlineAppy(mode: requestBody, offset: 0).catchError({ (error) -> Observable<[OnlineApplyModel]> in
-            showOnlyTextHub(message: "error \(error)", view: self.view)
+            self.view.showToast(title: "error \(error)", customImage: nil, mode: .text)
+            //showOnlyTextHub(message: "error \(error)", view: self.view)
             return Observable<[OnlineApplyModel]>.just([])
                 
         }).share().bind(to: searchResult).disposed(by: dispose)
@@ -185,7 +186,8 @@ extension OnlineApplySearchVC{
             case .NoMoreData:
                 self.table.mj_footer.endRefreshingWithNoMoreData()
             case .error(let err):
-                showOnlyTextHub(message: "online appy \(err)", view: self.view)
+                self.view.showToast(title: "online appy \(err)", customImage: nil, mode: .text)
+                //showOnlyTextHub(message: "online appy \(err)", view: self.view)
             default:
                 break
             }

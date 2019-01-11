@@ -946,11 +946,9 @@ extension CommunicationChatView{
     
     // 方法必须是这样
     @objc  private func saveImage(image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: AnyObject){
-        if error != nil{
-              showOnlyTextHub(message: "保存失败", view: self.tableView)
-
-        }else{
-            showOnlyTextHub(message: "保存成功", view: self.tableView)
-        }
+        
+        let hint = error != nil ? "保存失败" : "保存成功"
+        self.tableView.showToast(title: hint, customImage: nil, mode: .text)
+    
     }
 }

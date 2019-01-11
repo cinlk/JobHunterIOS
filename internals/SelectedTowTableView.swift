@@ -285,7 +285,8 @@ extension SelectedTowTableView{
         }else{
             // 提示最多选择3个
             if citys.count >= 3{
-                showOnlyTextHub(message: "最多选择3个城市", view: self)
+                self.showToast(title: "最多选择3个城市", customImage: nil, mode: .text)
+                //showOnlyTextHub(message: "最多选择3个城市", view: self)
                 //SVProgressHUD.show(#imageLiteral(resourceName: "warn"), status: "最多选择5个")
                 //SVProgressHUD.dismiss(withDelay: 2)
                 return

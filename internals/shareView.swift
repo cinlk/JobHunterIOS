@@ -12,6 +12,8 @@ import UIKit
 fileprivate var ROWNUMBERS = 2
 fileprivate let COLUME = 4
 fileprivate let btnHeight:CGFloat = 45
+fileprivate let shareViewH = SingletoneClass.shared.shareViewH
+fileprivate let shareItems = SingletoneClass.shared.shareItems
 
 
 protocol shareViewDelegate: class {
@@ -23,6 +25,7 @@ class shareView: UIView {
     
     // MARK 判断是否安装应用？？ UMSocialManager.default().isInstall(.wechatSession)
     
+   
     
     // shareView的背景
     private lazy var sharebackBtn: UIButton = {  [unowned self] in
@@ -127,14 +130,14 @@ extension shareView:UICollectionViewDelegate, UICollectionViewDataSource, UIColl
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return shareItems.count
+        return  shareItems.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: shareItemCell.identity(), for: indexPath) as! shareItemCell
         let mode = shareItems[indexPath.row]
-        cell.mode = (image: UIImage.init(named: mode.image ?? "default")! , name: mode.name!)
+        cell.mode = (image: mode.image ?? UIImage.init(named: "default")! , name: mode.name)
         return cell
     }
     

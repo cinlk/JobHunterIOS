@@ -10,17 +10,19 @@ import UIKit
 import CoreLocation
 import Kingfisher
 
+
+fileprivate var shareBox:String = ""
+
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
-    var shareInBox:String = "Inbox"
-    
-    var fileManager = FileManager.default
     
     // 地理位置
-    var locateManager = CLLocationManager()
+    private  lazy  var locateManager: UserLocationManager = {
+        return UserLocationManager()
+    }()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -30,63 +32,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let enter = EnterAppViewController()
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
+        
         window?.rootViewController = enter
+        //  获取地理位置
+        locateManager.getLocation()
         
+       
+        // 用户登录后 获取的数据？
+        // 1
+        // 2
         
-        loadLoacation()
+        // 友盟第三方接口
+        UMengInitial()
+        // 分享面板
+        SingletoneClass.shared.setSharedApps(condition: nil)
         
-        // load contacts
-       // Contactlist.shared.removeAll()
-    
-        //Contactlist.shared.removeAll()
-       //localData.shared.clearSubscribeData()
-        //TODO 服务器获取greeting数据, 并与本地存储的数据来判断(最新的时间)
-        
-        // 数据库信息
-        //let _ = SqliteManager.shared
-        
-        // 从服务器获取打招呼语句
-        GreetingMsg = "默认第一条"
-        // root controller
-        
-        
-        // 友盟初始化 测试
-        
-        UMConfigure.initWithAppkey("5ac6ed8bb27b0a7ba6000059", channel: nil)
-        // ****用的别人测试账号 *****
-        // 微信好友
-        UMSocialManager.default().setPlaform(.wechatSession, appKey: "wxd795d58c78ac222b", appSecret: "779c58188ca57046f76353ea1e84412c", redirectURL: "http://mobile.umeng.com/social")
-
-        // 微信朋友圈
-        UMSocialManager.default().setPlaform(.wechatTimeLine, appKey: "wxd795d58c78ac222b", appSecret: "779c58188ca57046f76353ea1e84412c", redirectURL: "http://mobile.umeng.com/social")
-        // 自己的账号
-        UMSocialManager.default().setPlaform(.sina, appKey: "879467986", appSecret: "a426356a2f770cba1c2fd88564635206", redirectURL: "https://api.weibo.com/oauth2/default.html")
-
-
-        // qq 是自己的账号
-        UMSocialManager.default().setPlaform(.QQ, appKey: "1106824184", appSecret: "V0zSNqtNlo2wPIo7", redirectURL: "http://mobile.umeng.com/social")
-        UMSocialManager.default().setPlaform(.qzone, appKey: "1106824184", appSecret: "V0zSNqtNlo2wPIo7", redirectURL: "http://mobile.umeng.com/social")
-        
-        
-        // test  user-agent
-        // testUserAgent()
-        
-        //
-        getLocalApps()
         
         // kingfisher ssl 配置
-        let config = URLSessionConfiguration.default
-        let imgManager = ImageDownloader.default
-        imgManager.sessionConfiguration = config
-        // 信任证书签名的ip地址
-        imgManager.trustedHosts = Set(["127.0.0.1"])
-        KingfisherManager.shared.downloader = imgManager
-        
+//        let config = URLSessionConfiguration.default
+//        let imgManager = ImageDownloader.default
+//        imgManager.sessionConfiguration = config
+//        // 信任证书签名的ip地址
+//        imgManager.trustedHosts = Set(["127.0.0.1"])
+//        KingfisherManager.shared.downloader = imgManager
+//
         // 设置TabBaritem 颜色
-        
-        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor: unselectedColor], for: .normal)
-        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor: selectedColor], for: .selected)
-        
+        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor: ConfigColor.TabBarItemColor.normalColor], for: .normal)
+        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor: ConfigColor.TabBarItemColor.SelectedColor], for: .selected)
         
         return true
     }
@@ -96,19 +68,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // 简历文档 获取
         // 判断用户权限
         if url.scheme == "file"{
-        
             let targetVC = PreShowPDFVC()
             targetVC.fileURL = URL.init(fileURLWithPath: url.path) 
-            print(url)
+            //print(url)
+            // 切换到 简历板块界面
+            // 判断用户是否已经登录 TODO
             
             if let vc =  self.getResumePageVC(){
                 vc.hidesBottomBarWhenPushed = true
                 vc.navigationController?.pushViewController(targetVC, animated: true)
+                return true
             }
-            return true
+            return false
         }
         
-        // 第三方登录
+        // 第三方登录 回调
         let result = UMSocialManager.default().handleOpen(url)
         let urlKey: String = options[UIApplication.OpenURLOptionsKey.sourceApplication] as! String
 
@@ -155,15 +129,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-        // 删除文件
-        let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-        guard let inbox = url.last?.appendingPathComponent(shareInBox) else {
+        
+        // 删除文件  TODO
+        let url = SingletoneClass.fileManager.urls(for: .documentDirectory, in: .userDomainMask)
+        guard let inbox = url.last?.appendingPathComponent(shareBox) else {
             return
         }
         
         do{
-            if fileManager.fileExists(atPath: inbox.path){
-                try fileManager.removeItem(at: inbox)
+            if  SingletoneClass.fileManager.fileExists(atPath: inbox.path){
+                try  SingletoneClass.fileManager.removeItem(at: inbox)
             }
             
         }catch{
@@ -191,7 +166,9 @@ extension AppDelegate{
     
     private func findTarget(rootVC:  UIViewController) -> UIViewController?{
         var tmp = rootVC
+        // 找到 uitabbarcontroller
         
+        // 切换到个人简历板块
         var currentVC:UIViewController?
         if tmp.presentedViewController != nil {
             tmp = tmp.presentedViewController!
@@ -222,92 +199,21 @@ extension AppDelegate{
 //   获取手机安装的 app(用于第三方登录 和 分享)
 extension AppDelegate{
     
-    private func getLocalApps(){
+    
+    
+    private func UMengInitial(){
         
-        let weixin = UIApplication.shared.canOpenURL(URL.init(string: "weixin://")!)
-        let weibo = UIApplication.shared.canOpenURL(URL.init(string: "sinaweibo://")!)
-        let qq = UIApplication.shared.canOpenURL(URL.init(string: "mqqapi://")!)
-        // 暂时不用
-        let alipay = UIApplication.shared.canOpenURL(URL.init(string: "alipay://")!)
-        if weixin{
-            shareItems.append(ShareItem.init(name: "微信好友", image: "wechat",type:UMSocialPlatformType.wechatSession,bubbles: nil))
-            shareItems.append( ShareItem.init(name: "微信朋友圈", image: "friendCircle", type: UMSocialPlatformType.wechatTimeLine, bubbles: nil))
-        }
-        if weibo{
-            shareItems.append( ShareItem.init(name: "sina", image: "sina", type: UMSocialPlatformType.sina, bubbles: nil))
-        }
-        if qq{
-            shareItems.append( ShareItem.init(name: "QQ空间", image: "qqZone", type: UMSocialPlatformType.qzone, bubbles: nil))
-            shareItems.append(        ShareItem.init(name: "QQ", image: "qqCircle",type: UMSocialPlatformType.QQ,  bubbles: nil))
-        }
-        shareItems.append(  ShareItem.init(name: "复制链接", image: "copyIcon", type:
-            UMSocialPlatformType.copyLink, bubbles: nil))
-        shareItems.append( ShareItem.init(name: "更多", image: "moreShare", type: UMSocialPlatformType.more, bubbles: nil))
-        if shareItems.count <= 4{
-            shareViewH -= 87.5
-        }
-    }
-}
-
-//  获取地理位置
-
-extension AppDelegate: CLLocationManagerDelegate{
-    
-    private func loadLoacation(){
-        locateManager.delegate = self
-        locateManager.desiredAccuracy = kCLLocationAccuracyBest
-        locateManager.distanceFilter = kCLLocationAccuracyKilometer
-        if   #available(iOS 8.0, *){
-            locateManager.requestAlwaysAuthorization()
-            locateManager.requestWhenInUseAuthorization()
-        }
-        
-        locateManager.startUpdatingLocation()
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location:CLLocation = locations.last, location.horizontalAccuracy > 0{
-            print("纬度\(location.coordinate.latitude)")
-            print("经度\(location.coordinate.longitude)")
-            getCity(location: location)
-            locateManager.stopUpdatingLocation()
-        }
-        
-    }
-    
-    
-    private func getCity(location: CLLocation){
-        let geocoder:CLGeocoder = CLGeocoder()
-        
-        geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
-            if  error == nil{
-                if let place = placemarks?.first{
-                    print("地址\(place.name)")
-                    print("城市\(place.locality)")
-                    print("区\(place.subLocality)")
-                }else{
-                    print("获取不到位置")
-                }
-            }
-        }
-        
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
-        print(error)
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        manager.stopUpdatingLocation()
-        switch (error as NSError).code {
-        case 0:
-            print("位置不可用")
-        case 1:
-            print("用户关闭")
-        default:
-            break
-        }
-        print(error)
+        UMConfigure.initWithAppkey(ConfigUMConfig.umKey, channel: nil)
+        // ****用的别人测试账号 *****
+        // 微信好友
+        UMSocialManager.default().setPlaform(.wechatSession, appKey: ConfigUMConfig.wechat.wechatAppKey, appSecret: ConfigUMConfig.wechat.wechatAppSecret, redirectURL: ConfigUMConfig.wechat.redirectURL)
+        // 微信朋友圈
+        UMSocialManager.default().setPlaform(.wechatTimeLine, appKey: ConfigUMConfig.wechat.wechatAppKey, appSecret: ConfigUMConfig.wechat.wechatAppSecret, redirectURL: ConfigUMConfig.wechat.redirectURL)
+        // 自己的账号
+        UMSocialManager.default().setPlaform(.sina, appKey: ConfigUMConfig.sina.sinaAppKey, appSecret: ConfigUMConfig.sina.sinaAppSecret, redirectURL: ConfigUMConfig.sina.redirectURL)
+        // qq 是自己的账号
+        UMSocialManager.default().setPlaform(.QQ, appKey: ConfigUMConfig.qq.qqAppKey, appSecret: ConfigUMConfig.qq.qqAppSecret, redirectURL: ConfigUMConfig.qq.redirectURL)
+        UMSocialManager.default().setPlaform(.qzone, appKey: ConfigUMConfig.qq.qqAppKey, appSecret: ConfigUMConfig.qq.qqAppSecret, redirectURL: ConfigUMConfig.qq.redirectURL)
         
     }
     
@@ -316,68 +222,64 @@ extension AppDelegate: CLLocationManagerDelegate{
 }
 
 
+//extension AppDelegate{
+//    func testUserAgent(){
+//
+//        if let url = URL.init(string: "https://192.168.199.113:9090/jobs"){
+//            httpsGET(request: NSMutableURLRequest.init(url: url))
+//        }
+//
+//
+//    }
+//
+//    func httpsGET(request:  NSMutableURLRequest){
+//        request.setValue("ios+android", forHTTPHeaderField: "User-Agent")
+//        let config = URLSessionConfiguration.default
+//
+//        let session = URLSession.init(configuration: config, delegate: self, delegateQueue: OperationQueue.main)
+//
+//        let task = session.dataTask(with: request as URLRequest) { (data, res, error) in
+//            if error != nil{
+//                print(error)
+//            }else{
+//                let str = String.init(data: data!, encoding: String.Encoding.utf8)
+//                print(str)
+//            }
+//
+//        }
+//        task.resume()
+//
+//    }
+//}
 
-
-
-extension AppDelegate{
-    func testUserAgent(){
-        
-        if let url = URL.init(string: "https://192.168.199.113:9090/jobs"){
-            httpsGET(request: NSMutableURLRequest.init(url: url))
-        }
-        
-       
-    }
-    
-    func httpsGET(request:  NSMutableURLRequest){
-        request.setValue("ios+android", forHTTPHeaderField: "User-Agent")
-        let config = URLSessionConfiguration.default
-        
-        let session = URLSession.init(configuration: config, delegate: self, delegateQueue: OperationQueue.main)
-        
-        let task = session.dataTask(with: request as URLRequest) { (data, res, error) in
-            if error != nil{
-                print(error)
-            }else{
-                let str = String.init(data: data!, encoding: String.Encoding.utf8)
-                print(str)
-            }
-            
-        }
-        task.resume()
-        
-    }
-}
-
-extension AppDelegate: URLSessionDelegate{
-    
-    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        // 服务端验证
-        if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust{
-            let serverTrust:SecTrust = challenge.protectionSpace.serverTrust!
-            let ceritificate = SecTrustGetCertificateAtIndex(serverTrust, 0)
-            let remoteCertificateData = CFBridgingRetain(SecCertificateCopyData(ceritificate!))
-            
-            // 获取证书
-            let cerpath = Bundle.main.path(forResource: "server", ofType: "cert")
-            if let cerData = try? Data.init(contentsOf: URL.init(fileURLWithPath: cerpath!)){
-                if remoteCertificateData?.isEqual(cerData) == true {
-                     let credential = URLCredential.init(trust: serverTrust)
-                     challenge.sender?.use(credential, for: challenge)
-                    completionHandler(.useCredential,credential)
-                    
-                }else{
-                    completionHandler(.cancelAuthenticationChallenge,nil)
-                }
-                
-            }
-            
-        }else{
-            completionHandler(.cancelAuthenticationChallenge,nil)
-        }
-        
-    }
-}
-
+//extension AppDelegate: URLSessionDelegate{
+//
+//    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+//        // 服务端验证
+//        if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust{
+//            let serverTrust:SecTrust = challenge.protectionSpace.serverTrust!
+//            let ceritificate = SecTrustGetCertificateAtIndex(serverTrust, 0)
+//            let remoteCertificateData = CFBridgingRetain(SecCertificateCopyData(ceritificate!))
+//
+//            // 获取证书
+//            let cerpath = Bundle.main.path(forResource: "server", ofType: "cert")
+//            if let cerData = try? Data.init(contentsOf: URL.init(fileURLWithPath: cerpath!)){
+//                if remoteCertificateData?.isEqual(cerData) == true {
+//                     let credential = URLCredential.init(trust: serverTrust)
+//                     challenge.sender?.use(credential, for: challenge)
+//                    completionHandler(.useCredential,credential)
+//
+//                }else{
+//                    completionHandler(.cancelAuthenticationChallenge,nil)
+//                }
+//
+//            }
+//
+//        }else{
+//            completionHandler(.cancelAuthenticationChallenge,nil)
+//        }
+//
+//    }
+//}
 
 

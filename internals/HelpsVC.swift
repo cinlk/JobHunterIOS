@@ -40,7 +40,7 @@ class HelpsVC: BaseViewController {
     
     private var mode:HelpAskModel?
     // 顶部view 显示items
-    private var shareItems:[ShareItem] = []
+    private var shareItems:[ShareAppItem] = []
     
     
     override func viewDidLoad() {
@@ -207,8 +207,9 @@ extension HelpsVC{
                 HelpGuidModel(JSON: ["name":"其它功能","image":"bell","guideURL":"地址"])!]
             
             guide.forEach{
-                
-                self?.shareItems.append(ShareItem.init(name:$0.name!,image:$0.image!))
+                // TODO
+                //self?.shareItems.append(ShareAppItem.init(name:$0.name!,image:$0.image!))
+                self?.shareItems.append(ShareAppItem.init(name: $0.name ?? "", image: UIImage.init(named: $0.image ?? "default"), type: UMSocialPlatformType.unKnown))
             }
             
             

@@ -136,7 +136,8 @@ extension CompanyCareerTalkVC {
                 self.table.mj_footer.endRefreshingWithNoMoreData()
             case .error(let err):
                 self.headRefreshed = false
-                showOnlyTextHub(message: "err \(err)", view: self.view)
+                self.view.showToast(title: "err \(err)", customImage: nil, mode: .text)
+                //showOnlyTextHub(message: "err \(err)", view: self.view)
                 self.showError()
                 self.table.mj_footer.endRefreshing()
                 self.table.mj_header.endRefreshing()

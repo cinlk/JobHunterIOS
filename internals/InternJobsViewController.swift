@@ -188,7 +188,8 @@ extension InternJobsViewController{
             case .error(let err):
                 self.table.mj_footer.endRefreshing()
                 self.table.mj_header.endRefreshing()
-                showOnlyTextHub(message: "err \(err)", view: self.view)
+                self.view.showToast(title: "err \(err)", customImage: nil, mode: .text)
+                //showOnlyTextHub(message: "err \(err)", view: self.view)
             default:
                 break
             }

@@ -214,9 +214,11 @@ extension QuickLoggingViewController{
         // 发送验证码
         self.verifyBtn.rx.tap.subscribe(onNext: {
             _ = self.quickVM.sendCode(phone: self.phoneNumber.value).subscribe(onNext: { (obj:CodeSuccess) in
-                showOnlyTextHub(message: "发送成功", view: self.view)
+                self.view.showToast(title: "发送成功", customImage: nil, mode: .text)
+                //showOnlyTextHub(message: "发送成功", view: self.view)
             }, onError: { (err) in
-                showOnlyTextHub(message: "发送失败", view: self.view)
+                //showOnlyTextHub(message: "发送失败", view: self.view)
+                self.view.showToast(title: "发送失败", customImage: nil, mode: .text)
                 self.codeNumber.stop()
                 
             }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)

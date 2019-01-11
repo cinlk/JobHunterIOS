@@ -194,7 +194,7 @@ extension PasswordLoggingViewController{
 
         logBtnConfirm.bind(to: self.parentVC!.loggingBtn.rx.rxEnable).disposed(by: dispose)
         
-        self.parentVC?.loggingBtn.rx.tap .subscribe(onNext: {
+        self.parentVC?.loggingBtn.rx.tap.subscribe(onNext: {
            // print(self.account.value, self.pwd.value)
             self.viewModel.passwordLogin(accont: self.account.value, pwd: self.pwd.value).debug().subscribe(onNext: { (res) in
                 print("res ", res.toJSON())

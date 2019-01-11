@@ -8,6 +8,9 @@
 
 import UIKit
 
+
+fileprivate  let shareViewH = SingletoneClass.shared.shareViewH
+
 class BaseShowJobViewController: BaseViewController {
 
 

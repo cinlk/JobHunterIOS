@@ -10,7 +10,7 @@ import UIKit
 
  
 fileprivate let viewTitle:String = "帖子详情"
-
+fileprivate let shareViewH = SingletoneClass.shared.shareViewH
 
 
 class PostContentViewController: BaseTableViewController {
@@ -166,8 +166,8 @@ class PostContentViewController: BaseTableViewController {
     
     private func notFound(){
         super.didFinishloadData()
-        
-        showOnlyTextHub(message: "没有找找404", view: self.tableView)
+        self.tableView.showToast(title: "没有找找404", customImage: nil, mode: .text)
+        //showOnlyTextHub(message: "没有找找404", view: self.tableView)
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             self.navigationController?.popvc(animated: true)
 

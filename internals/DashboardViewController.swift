@@ -118,6 +118,7 @@ class DashboardViewController: BaseViewController{
         super.viewWillAppear(animated)
         self.navigationController?.navigationBar.settranslucent(true)
         self.navigationController?.view.insertSubview(navigationView, at: 1)
+        //print("root viewController", UIApplication.shared.keyWindow?.rootViewController)
     }
     
     

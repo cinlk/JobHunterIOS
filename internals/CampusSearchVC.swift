@@ -165,7 +165,8 @@ extension CampusSearchVC{
                 case .NoMoreData:
                     self.table.mj_footer.endRefreshingWithNoMoreData()
                 case .error(let err):
-                    showOnlyTextHub(message: "online appy \(err)", view: self.view)
+                    self.view.showToast(title: "online appy \(err)", customImage: nil, mode: .text)
+                    //showOnlyTextHub(message: "online appy \(err)", view: self.view)
                 default:
                     break
                 }
@@ -180,7 +181,8 @@ extension CampusSearchVC{
         
         // 选项切换的刷新
         searchVM.searchGraduteJobs(mode: requestBody, offset: 0).catchError({ (error) -> Observable<[CompuseRecruiteJobs]> in
-            showOnlyTextHub(message: "error \(error)", view: self.view)
+            self.view.showToast(title: "error \(error)", customImage: nil, mode: .text)
+            //showOnlyTextHub(message: "error \(error)", view: self.view)
             return Observable<[CompuseRecruiteJobs]>.just([])
             
         }).share().bind(to: searchResult).disposed(by: dispose)

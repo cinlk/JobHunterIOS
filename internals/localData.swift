@@ -15,7 +15,7 @@ fileprivate let intern = "intern"
 class localData: NSObject {
     var pref: UserDefaults!
     
-    open static let shared: localData = localData()
+    public static let shared: localData = localData()
     
     public override init() {
         pref = UserDefaults.standard

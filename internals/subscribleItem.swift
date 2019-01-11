@@ -141,7 +141,8 @@ extension subscribleItem{
     
     @objc func addItem(){
         if  internData.count + compuseData.count  >= maxCount{
-            showOnlyTextHub(message: "达到上限", view: self.view)
+            self.view.showToast(title: "达到上限", customImage: nil, mode: .text)
+            //showOnlyTextHub(message: "达到上限", view: self.view)
             return
         }
         

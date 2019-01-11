@@ -125,7 +125,8 @@ class CareerTalkShowViewController: BaseShowJobViewController {
         
         let str =  (mode?.isCollected)! ? "取消收藏" : "收藏成功"
         collectedBtn.isSelected = !(mode?.isCollected)!
-        showOnlyTextHub(message: str, view: self.view)
+        self.view.showToast(title: str, customImage: nil, mode: .text)
+        //showOnlyTextHub(message: str, view: self.view)
         mode?.isCollected = !(mode?.isCollected)!
         
     }
@@ -172,7 +173,8 @@ extension CareerTalkShowViewController{
                 self.mode = mode
             }, onError: { (err) in
                 self.showError()
-                showOnlyTextHub(message: "query get error \(err)", view: self.view)
+                self.view.showLoading(title: "query get error \(err)", customImage: nil, mode: .text)
+                //showOnlyTextHub(message: "query get error \(err)", view: self.view)
             }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
             
             

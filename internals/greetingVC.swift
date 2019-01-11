@@ -182,9 +182,11 @@ extension greetingVC{
         // 本地招呼用语
         GreetingMsg = msg
         
-        let hub = showProgressHun(message: "加载数据", view: self.view)
+        self.view.showLoading(title: "加载数据", customImage: nil, mode: .customView)
+        //let hub = showProgressHun(message: "加载数据", view: self.view)
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            hub.hide(animated: true)
+            //hub.hide(animated: true)
+            self.view.hiddenLoading()
             complete(true)
             
             

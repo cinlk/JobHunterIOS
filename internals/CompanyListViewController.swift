@@ -160,7 +160,8 @@ extension CompanyListViewController{
             case .NoMoreData:
                 self.table.mj_footer.endRefreshingWithNoMoreData()
             case .error(let err):
-                showOnlyTextHub(message: "get error \(err)", view: self.view)
+                self.view.showToast(title: "get error \(err)", customImage: nil, mode: .text)
+                //showOnlyTextHub(message: "get error \(err)", view: self.view)
                 self.table.mj_header.endRefreshing()
                 self.table.mj_footer.endRefreshing()
             default:

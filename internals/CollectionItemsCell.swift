@@ -29,10 +29,11 @@ class CollectionItemsCell: UICollectionViewCell {
     }()
     
     
-    var mode:ShareItem?{
+    var mode:ShareAppItem?{
         didSet{
             titleLabel.text = mode?.name
-            iconImage.image = UIImage.init(named: mode?.image ?? "default")
+            iconImage.image = mode?.image ?? UIImage.init(named: "default")
+               
            
         }
     }

@@ -190,7 +190,8 @@ extension CompanyJobsVC{
            
             if self.requestBody.isPullDown{
                 if mode.tagJobs.isEmpty && mode.onlineAppys.isEmpty{
-                    showOnlyTextHub(message: "no data", view: self.view)
+                    self.view.showToast(title: "no data", customImage: nil, mode: .text)
+                    //showOnlyTextHub(message: "no data", view: self.view)
                     super.didFinishloadData()
                     // 显示没有数据界面
                     return
@@ -258,7 +259,8 @@ extension CompanyJobsVC{
                 //self.showError()
                 self.hearRefreshed = false
                 print("refresh error \(err)")
-                showOnlyTextHub(message: "获取数据失败\(err)", view: self.view)
+                self.view.showToast(title: "获取数据失败\(err)", customImage: nil, mode: .text)
+                //showOnlyTextHub(message: "获取数据失败\(err)", view: self.view)
                 super.didFinishloadData()
                 self.joblistTable.mj_header.endRefreshing()
                 self.joblistTable.mj_footer.endRefreshing()

@@ -50,3 +50,30 @@ extension UIView{
     
 }
 
+
+// 提示
+extension UIView{
+    
+    func showLoading(title:String, customImage:UIImageView?, mode: MBProgressHUDMode){
+    
+        let hud = MBProgressHUD.showAdded(to: self, animated: true)
+        hud.minSize=CGSize.init(width: 55, height: 55)
+        hud.label.text = title
+        hud.mode = mode
+        hud.removeFromSuperViewOnHide = true
+        hud.customView = customImage
+    }
+    
+    func showToast(title:String, duration:Int = 3, customImage:UIImageView?, mode: MBProgressHUDMode){
+        let hud = MBProgressHUD.showAdded(to: self, animated: true)
+        hud.label.text = title
+        hud.mode = mode
+        hud.hide(animated: true, afterDelay: TimeInterval(duration))
+        hud.customView = customImage
+        hud.removeFromSuperViewOnHide = true
+    }
+    func hiddenLoading(){
+       MBProgressHUD.hide(for: self, animated: true)
+    }
+}
+

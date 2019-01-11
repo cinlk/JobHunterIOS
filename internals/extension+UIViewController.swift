@@ -20,7 +20,8 @@ extension UIViewController{
         
         let paste = UIPasteboard.general
         paste.string = text
-        showOnlyTextHub(message: "复制成功", view: self.view)
+        self.view.showToast(title: "复制成功", customImage: nil, mode: .text)
+        //showOnlyTextHub(message: "复制成功", view: self.view)
     }
     
     

@@ -192,7 +192,8 @@ class JobDetailViewController: BaseShowJobViewController {
     override func collected(_ btn:UIButton){
         let str =  (mode?.isCollected)! ? "取消收藏" : "收藏成功"
         collectedBtn.isSelected = !(mode?.isCollected)!
-        showOnlyTextHub(message: str, view: self.view)
+        self.view.showToast(title: str, customImage: nil, mode: .text)
+        //showOnlyTextHub(message: str, view: self.view)
         mode?.isCollected = collectedBtn.isSelected
         
     }
@@ -203,7 +204,8 @@ class JobDetailViewController: BaseShowJobViewController {
         if mode?.isApply == false{
             apply.isSelected = true
             apply.isUserInteractionEnabled = false
-            showCustomerImageHub(message: "投递简历成功", view: self.view, image: #imageLiteral(resourceName: "checkmark").withRenderingMode(.alwaysTemplate))
+            self.view.showToast(title: "投递简历成功", duration: 5, customImage: UIImageView.init(image: UIImage.init(named: "checkmark")?.withRenderingMode(.alwaysTemplate)), mode: .customView)
+            //showCustomerImageHub(message: "投递简历成功", view: self.view, image: #imageLiteral(resourceName: "checkmark").withRenderingMode(.alwaysTemplate))
             mode?.isApply = true
         }
        

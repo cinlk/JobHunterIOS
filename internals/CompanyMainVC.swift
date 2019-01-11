@@ -12,6 +12,7 @@ import RxSwift
 import Kingfisher
 
 fileprivate let cellIdentity:String = "cell"
+fileprivate let shareViewH = SingletoneClass.shared.shareViewH
 
 class CompanyMainVC: BaseViewController {
     
@@ -274,7 +275,8 @@ extension CompanyMainVC{
         
         // MARK 修改公司状态 已经为收藏
         let str =  (mode?.isCollected)! ? "取消收藏" : "收藏成功"
-        showOnlyTextHub(message: str, view: self.view)
+        self.view.showToast(title: str, customImage: nil, mode: .text)
+        //showOnlyTextHub(message: str, view: self.view)
         btn.isSelected = !(mode?.isCollected)!
         mode?.isCollected = !(mode?.isCollected)!
     }

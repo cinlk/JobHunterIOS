@@ -339,7 +339,8 @@ extension baseSearchViewController{
                 //Observable<[String]>.just(model.words ?? [])
                 model.words ?? []
                 }.catchError({ (err) -> Observable<[String]> in
-                    showOnlyTextHub(message: "发生错误\(err)", view: self.view)
+                    self.view.showToast(title: "发生错误\(err)", customImage: nil, mode: .text)
+                    //showOnlyTextHub(message: "发生错误\(err)", view: self.view)
                     return Observable<[String]>.just([])
                 })
             

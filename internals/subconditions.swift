@@ -334,15 +334,20 @@ extension subconditions{
             
             // 检查条件
             if res[subscribeItemType.locate.rawValue]!.isEmpty{
-                showOnlyTextHub(message: "请选择城市", view: self.view)
+                self.view.showToast(title: "请选择城市", customImage: nil, mode: .text)
+                //showOnlyTextHub(message: "请选择城市", view: self.view)
                 return
             }
             if res[subscribeItemType.internDay.rawValue]!.isEmpty{
-                showOnlyTextHub(message: "请选择实习天数", view: self.view)
+                self.view.showToast(title: "请选择实习天数", customImage: nil, mode: .text)
+
+                //showOnlyTextHub(message: "请选择实习天数", view: self.view)
                 return
             }
             if res[subscribeItemType.internMonth.rawValue]!.isEmpty{
-                showOnlyTextHub(message: "请选择实习时间", view: self.view)
+                self.view.showToast(title: "请选择实习时间", customImage: nil, mode: .text)
+
+               // showOnlyTextHub(message: "请选择实习时间", view: self.view)
                 return
             }
             
@@ -351,7 +356,8 @@ extension subconditions{
         case .graduate:
              // 检查条件
             if res[subscribeItemType.locate.rawValue]!.isEmpty{
-                showOnlyTextHub(message: "请选择城市", view: self.view)
+                self.view.showToast(title: "请选择城市", customImage: nil, mode: .text)
+                //showOnlyTextHub(message: "请选择城市", view: self.view)
                 return
             }
             

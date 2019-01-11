@@ -15,7 +15,7 @@ class AppFileManager{
     
     
     static let shared = AppFileManager()
-    fileprivate let fileManager = FileManager.default
+    
     
     private var imagePath:String = ""
     
@@ -27,14 +27,14 @@ class AppFileManager{
     private func initialImageDir(){
         
         // 在document里创建images目录
-        let url = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
+        let url = SingletoneClass.fileManager.urls(for: .documentDirectory, in: .userDomainMask)
         if  let imagepath = url.last?.appendingPathComponent(imageDir){
-            let exist = fileManager.fileExists(atPath: imagepath.path)
+            let exist = SingletoneClass.fileManager.fileExists(atPath: imagepath.path)
             imagePath = imagepath.path
             
            if exist == false{
                 do{
-                    try  fileManager.createDirectory(atPath: imagepath.path, withIntermediateDirectories: true, attributes: nil)
+                    try  SingletoneClass.fileManager.createDirectory(atPath: imagepath.path, withIntermediateDirectories: true, attributes: nil)
                 }catch{
                     print(error)
                 }
@@ -47,9 +47,9 @@ class AppFileManager{
     open func createImageFile(userID:String, fileName:String, image:Data) throws {
         // 用户子文件夹判断
         let userDir = imagePath + "/" + userID
-        if  fileManager.fileExists(atPath: userDir) == false{
+        if  SingletoneClass.fileManager.fileExists(atPath: userDir) == false{
             do{
-                try  fileManager.createDirectory(atPath: userDir, withIntermediateDirectories: true, attributes: nil)
+                try  SingletoneClass.fileManager.createDirectory(atPath: userDir, withIntermediateDirectories: true, attributes: nil)
             }catch{
                 print(error)
             }
@@ -70,7 +70,7 @@ class AppFileManager{
         let path =   imagePath + "/" + userID + "/" + fileName
         do{
             
-            try fileManager.removeItem(atPath: path)
+            try SingletoneClass.fileManager.removeItem(atPath: path)
         }catch{
             print(error)
         }
@@ -80,8 +80,8 @@ class AppFileManager{
     open func deleteDirBy(userID:String){
         let userPath = imagePath + "/" + userID
         do{
-            if fileManager.fileExists(atPath: userPath){
-                try fileManager.removeItem(atPath: userPath)
+            if SingletoneClass.fileManager.fileExists(atPath: userPath){
+                try SingletoneClass.fileManager.removeItem(atPath: userPath)
             }
         }catch{
             print(error)
@@ -91,7 +91,7 @@ class AppFileManager{
     open func getImageDataBy(userID:String, fileName:String) -> Data?{
         let path = imagePath + "/" + userID + "/" +  fileName
         do{
-            if fileManager.fileExists(atPath: path){
+            if SingletoneClass.fileManager.fileExists(atPath: path){
                 return  try Data.init(contentsOf: URL.init(fileURLWithPath: path))
             }
         }catch{

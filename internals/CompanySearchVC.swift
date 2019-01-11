@@ -142,7 +142,8 @@ extension CompanySearchVC{
         
         self.requestBody.word  = word
         searchVM.searchCompany(mode: self.requestBody, offset: 0).catchError { (error) -> Observable<[CompanyModel]> in
-             showOnlyTextHub(message: "error \(error)", view: self.view)
+             self.view.showToast(title: "error \(error)", customImage: nil, mode: .text)
+             //showOnlyTextHub(message: "error \(error)", view: self.view)
              return Observable<[CompanyModel]>.just([])
         }.share().bind(to: searchResult).disposed(by: dispose)
         
@@ -181,7 +182,8 @@ extension CompanySearchVC{
             case .NoMoreData:
                 self.table.mj_footer.endRefreshingWithNoMoreData()
             case .error(let err):
-                showOnlyTextHub(message: "company appy \(err)", view: self.view)
+                self.view.showToast(title: "company appy \(err)", customImage: nil, mode: .text)
+                //showOnlyTextHub(message: "company appy \(err)", view: self.view)
             default:
                 break
             }

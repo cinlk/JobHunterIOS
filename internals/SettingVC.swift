@@ -235,7 +235,8 @@ extension SettingVC {
           guard  let index = params else {
             return
           }
-          showOnlyTextHub(message: "清楚完成", view: self.view)
+          self.view.showToast(title: "清楚完成", customImage: nil, mode: .text)
+          //showOnlyTextHub(message: "清楚完成", view: self.view)
           self.cacheSize = "0.00MB"
           self.tableView.reloadRows(at: [index], with: .automatic)
         
