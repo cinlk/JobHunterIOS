@@ -25,7 +25,7 @@ class personTableHeader: UIView {
         name.textAlignment = .center
         name.textColor = UIColor.black
         name.font = UIFont.systemFont(ofSize: 16)
-        name.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        name.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         return name
     }()
     
@@ -37,7 +37,7 @@ class personTableHeader: UIView {
         intr.font = UIFont.systemFont(ofSize: 14)
         intr.text = ""
         intr.backgroundColor = UIColor.clear
-        intr.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        intr.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         return intr
     }()
     

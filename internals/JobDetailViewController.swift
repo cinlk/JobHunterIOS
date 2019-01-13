@@ -45,7 +45,7 @@ class JobDetailViewController: BaseShowJobViewController {
     private let conversationManager = ConversationManager.shared
     
     private lazy var jobheader:JobDetailHeader = { [unowned self] in
-        let jh = JobDetailHeader.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: tableViewHeaderH))
+        let jh = JobDetailHeader.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: tableViewHeaderH))
         return jh
         
     }()
@@ -81,7 +81,7 @@ class JobDetailViewController: BaseShowJobViewController {
     
     private lazy var talk:UIButton = {
         // 宽度加上20 填满整个view
-        let talk = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW - collectedBtn.width - apply.width + 20, height: TOOLBARH))
+        let talk = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW - collectedBtn.width - apply.width + 20, height: TOOLBARH))
         talk.setTitle("和ta聊聊", for: .normal)
         talk.setTitle("继续沟通", for: .selected)
         talk.backgroundColor = UIColor.blue
@@ -315,15 +315,15 @@ extension JobDetailViewController: UITableViewDelegate{
         switch  self.dataSoure[indexPath]{
             
         case .CompanySectionItem(let mode):
-            return  tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CompanySimpleCell.self, contentViewWidth: ScreenW)
+            return  tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CompanySimpleCell.self, contentViewWidth: GlobalConfig.ScreenW)
         case .HRSectionItem(let mode):
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: RecruiterCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: RecruiterCell.self, contentViewWidth: GlobalConfig.ScreenW)
         case .JobDescribeSectionItem(let mode):
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: JobDescription.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: JobDescription.self, contentViewWidth: GlobalConfig.ScreenW)
         case .AddressSectionItem(let address):
-            return tableView.cellHeight(for: indexPath, model: address, keyPath: "mode", cellClass: worklocateCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: address, keyPath: "mode", cellClass: worklocateCell.self, contentViewWidth: GlobalConfig.ScreenW)
         case .EndTimeSectionItem(let time):
-            return tableView.cellHeight(for: indexPath, model: time, keyPath: "mode", cellClass: subIconAndTitleCell.self, contentViewWidth: ScreenW) + 20
+            return tableView.cellHeight(for: indexPath, model: time, keyPath: "mode", cellClass: subIconAndTitleCell.self, contentViewWidth: GlobalConfig.ScreenW) + 20
         }
         
     }

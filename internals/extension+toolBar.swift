@@ -14,7 +14,7 @@ extension UIToolbar{
     // keyboard toolbar
     class func NumberkeyBoardDone(title:String,view:UIView?, selector:Selector)->UIToolbar{
         
-        let toolBar:UIToolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: ScreenW, height: 35))
+        let toolBar:UIToolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 35))
         toolBar.backgroundColor = UIColor.gray
         let spaceBtn = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let barBtn = UIBarButtonItem(title: title, style: .plain, target: view, action: selector)
@@ -25,7 +25,7 @@ extension UIToolbar{
     
     class func NumberkeyBoardDone(title:String,vc:UIViewController, selector:Selector)->UIToolbar{
         
-        let toolBar:UIToolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: ScreenW, height: 35))
+        let toolBar:UIToolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 35))
         toolBar.backgroundColor = UIColor.gray
         let spaceBtn = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let barBtn = UIBarButtonItem(title: title, style: .plain, target: vc, action: selector)

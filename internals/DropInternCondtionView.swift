@@ -37,7 +37,7 @@ class DropInternCondtionView: YNDropDownView{
     
     // confirm button
     internal lazy var clearAll:UIButton = {
-        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (ScreenW - spaceWidth - 10)/2, height: 35))
+        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (GlobalConfig.ScreenW - spaceWidth - 10)/2, height: 35))
         clear.setTitle("清空", for: .normal)
         clear.setTitleColor(UIColor.black, for: .normal)
         clear.backgroundColor = UIColor.white
@@ -48,7 +48,7 @@ class DropInternCondtionView: YNDropDownView{
     }()
     
     private lazy var confirm:UIButton = {
-        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (ScreenW - spaceWidth - 10)/2, height: 35))
+        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (GlobalConfig.ScreenW - spaceWidth - 10)/2, height: 35))
         confirm.setTitle("确定", for: .normal)
         confirm.setTitleColor(UIColor.white, for: .normal)
         confirm.backgroundColor = UIColor.blue
@@ -70,7 +70,7 @@ class DropInternCondtionView: YNDropDownView{
     private lazy var layout:UICollectionViewFlowLayout = { 
        
         let layout = UICollectionViewFlowLayout.init()
-        layout.itemSize  = CGSize.init(width: (ScreenW - 50)/3, height: 35)
+        layout.itemSize  = CGSize.init(width: (GlobalConfig.ScreenW - 50)/3, height: 35)
         layout.scrollDirection  = .vertical
         layout.minimumInteritemSpacing = 10
         layout.minimumLineSpacing  = 10
@@ -98,7 +98,7 @@ class DropInternCondtionView: YNDropDownView{
     
     // 全局的 透明背景view
     internal lazy var backGroundBtn:UIButton = {
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 0))
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 0))
         btn.addTarget(self, action: #selector(hidden), for: .touchUpInside)
         btn.backgroundColor = UIColor.clear
         btn.alpha = 1
@@ -245,7 +245,7 @@ extension DropInternCondtionView: UICollectionViewDelegate, UICollectionViewData
     }
     // section size
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize.init(width: ScreenW, height: 45)
+        return CGSize.init(width: GlobalConfig.ScreenW, height: 45)
     }
     
     //

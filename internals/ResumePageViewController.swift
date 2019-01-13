@@ -25,7 +25,7 @@ class ResumePageViewController: BaseTableViewController {
     
     
     private lazy var menu:SearchTypeMenuView = {
-        let m = SearchTypeMenuView.init(frame: CGRect.init(x: ScreenW - 100 , y: NavH, width: 120, height: 70),arrowLeftMargin: 65)
+        let m = SearchTypeMenuView.init(frame: CGRect.init(x: GlobalConfig.ScreenW - 100 , y: NavH, width: 120, height: 70),arrowLeftMargin: 65)
         //m.delegate = self
         m.table.layer.cornerRadius = 0
         m.datas = [.online, .attachment]
@@ -35,7 +35,7 @@ class ResumePageViewController: BaseTableViewController {
     
     // 背景btn
     private lazy var backgroundBtn:UIButton = {
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH))
         btn.addTarget(self, action: #selector(hiddenPopMenu), for: .touchUpInside)
         btn.backgroundColor = UIColor.lightGray
         btn.alpha = 0.5
@@ -594,7 +594,7 @@ extension delegateHandler:UITableViewDataSource, UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let mode = myResumes[indexPath.row]
-        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: ResumePageCell.self, contentViewWidth: ScreenW)
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: ResumePageCell.self, contentViewWidth: GlobalConfig.ScreenW)
     }
     
     

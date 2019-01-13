@@ -42,7 +42,7 @@ class DropItemCityView: YNDropDownView {
     
     private lazy var flowLayout:UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout.init()
-        layout.itemSize = CGSize.init(width: (ScreenW - 50)/3 , height: 40)
+        layout.itemSize = CGSize.init(width: (GlobalConfig.ScreenW - 50)/3 , height: 40)
         layout.minimumLineSpacing = 10
         layout.minimumInteritemSpacing = 10
         // 不开启悬停
@@ -65,7 +65,7 @@ class DropItemCityView: YNDropDownView {
     }()
     
     internal lazy var clearAll:UIButton = {
-        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (ScreenW - spaceWidth - 10)/2 , height: 35))
+        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (GlobalConfig.ScreenW - spaceWidth - 10)/2 , height: 35))
         clear.setTitle("清空", for: .normal)
         clear.setTitleColor(UIColor.black, for: .normal)
         clear.backgroundColor = UIColor.white
@@ -76,7 +76,7 @@ class DropItemCityView: YNDropDownView {
     }()
     
     private lazy var confirm:UIButton = {
-        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (ScreenW - spaceWidth - 10)/2 , height: 35))
+        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (GlobalConfig.ScreenW - spaceWidth - 10)/2 , height: 35))
         confirm.setTitle("确定", for: .normal)
         confirm.setTitleColor(UIColor.white, for: .normal)
         confirm.backgroundColor = UIColor.blue
@@ -95,7 +95,7 @@ class DropItemCityView: YNDropDownView {
     
     // 全局的 透明背景view
     internal lazy var backGroundBtn:UIButton = {
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 0))
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 0))
         btn.addTarget(self, action: #selector(hidden), for: .touchUpInside)
         btn.backgroundColor = UIColor.clear
         btn.alpha = 1

@@ -29,7 +29,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
         label.textAlignment = .left
         label.textColor = UIColor.lightGray
         label.font = UIFont.systemFont(ofSize: 14)
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 60)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 60)
         return label
     }()
     

@@ -25,7 +25,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 25, height: 25)
         let t = UILabel.init(frame: CGRect.zero)
         t.textColor = UIColor.black
         t.textAlignment = .left
-        t.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
+        t.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 40)
         t.font = UIFont.systemFont(ofSize: 14)
         return t
     }()
@@ -35,7 +35,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 25, height: 25)
         let t = UILabel.init(frame: CGRect.zero)
         t.textColor = UIColor.black
         t.lineBreakMode = .byWordWrapping
-        t.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        t.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         t.textAlignment = .left
         t.font = UIFont.systemFont(ofSize: 14)
         return t

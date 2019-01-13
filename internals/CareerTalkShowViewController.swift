@@ -41,7 +41,7 @@ class CareerTalkShowViewController: BaseShowJobViewController {
     
     private lazy var apply:UIButton = {
         
-        let apply = UIButton.init(frame: CGRect.init(x: 0, y: 0, width:  ScreenW - collectedBtn.width + 20, height: TOOLBARH))
+        let apply = UIButton.init(frame: CGRect.init(x: 0, y: 0, width:  GlobalConfig.ScreenW - collectedBtn.width + 20, height: TOOLBARH))
         apply.addTarget(self, action: #selector(AddCalendar(_:)), for: .touchUpInside)
         apply.setTitle("添加到日历", for: .normal)
         apply.titleLabel?.font = UIFont.systemFont(ofSize: 16)
@@ -319,13 +319,13 @@ extension CareerTalkShowViewController: UITableViewDataSource, UITableViewDelega
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == 0 {
             //return  CompanySimpleCell.cellHeight()
-            return table.cellHeight(for: indexPath, model: mode?.companyModel, keyPath: "mode", cellClass: CompanySimpleCell.self, contentViewWidth: ScreenW)
+            return table.cellHeight(for: indexPath, model: mode?.companyModel, keyPath: "mode", cellClass: CompanySimpleCell.self, contentViewWidth: GlobalConfig.ScreenW)
         }
         
         guard let mode = mode else { return 0 }
         
         
-        return table.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CareerTalkContentCell.self, contentViewWidth: ScreenW)
+        return table.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CareerTalkContentCell.self, contentViewWidth: GlobalConfig.ScreenW)
     }
     
     
@@ -343,7 +343,7 @@ private class CareerTalkHeaderView:UIView{
     // 宣讲会名字
     private lazy var name:UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 40)
         label.textAlignment = .left
         label.font = UIFont.boldSystemFont(ofSize: 16)
         return label
@@ -359,7 +359,7 @@ private class CareerTalkHeaderView:UIView{
     // 会议室地址
     private lazy var address:UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 40)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 12)
         return label
@@ -375,7 +375,7 @@ private class CareerTalkHeaderView:UIView{
     // 举办时间范围
     private lazy var time:UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 40)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 12)
         return label
@@ -392,7 +392,7 @@ private class CareerTalkHeaderView:UIView{
     // 标注信息来源
     private lazy var source:UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 40)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 12)
         return label

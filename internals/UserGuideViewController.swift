@@ -7,65 +7,105 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
+import RxDataSources
 
-class UserGuideViewController: UIViewController {
-
-    
-    
-    private var datas:[UserGuidePageItem] = []
+fileprivate class CollectionView:UICollectionView{
     
     private lazy var flowLayout:UICollectionViewFlowLayout = { [unowned self] in
         let flow = UICollectionViewFlowLayout()
         flow.scrollDirection = .horizontal
         flow.minimumInteritemSpacing = 0
         flow.minimumLineSpacing = 0
-        flow.itemSize = self.view.bounds.size
+        flow.itemSize = self.bounds.size
         
         return flow
         
     }()
     
-    private lazy var collectionView:UICollectionView = {
-        let cv = UICollectionView.init(frame: self.view.bounds, collectionViewLayout: flowLayout)
-        cv.isPagingEnabled = true
-        cv.bounces = false
-        cv.showsHorizontalScrollIndicator = false
-        cv.dataSource = self
-        cv.delegate = self
-        cv.register(UserGuideItemCell.self, forCellWithReuseIdentifier: UserGuideItemCell.identity())
-        cv.register(UserGuideLogginCell.self, forCellWithReuseIdentifier: UserGuideLogginCell.identity())
+    
+    
+    override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
+        super.init(frame: frame, collectionViewLayout: layout)
+        self.collectionViewLayout = flowLayout
+        self.isPagingEnabled = true
+        self.bounces = false
+        self.showsHorizontalScrollIndicator = false
+        self.register(UserGuideItemCell.self, forCellWithReuseIdentifier: UserGuideItemCell.identity())
+        self.register(UserGuideLogginCell.self, forCellWithReuseIdentifier: UserGuideLogginCell.identity())
         
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+        
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        
+    }
+    
+    
+}
+
+
+fileprivate class clickBtn:UIButton {
+    
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    
+    convenience init(type: UIButton.ButtonType, title:String) {
+        self.init(type: type)
+        self.setTitle(title, for: .normal)
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.setTitleColor(UIColor.orange, for: .normal)
+        self.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        self.titleLabel?.textAlignment = .center
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+}
+
+class UserGuideViewController: UIViewController, UICollectionViewDelegate {
+
+    private var datas:[UserGuidePageItem] = []
+    private var dispose: DisposeBag = DisposeBag.init()
+    
+   
+    private lazy var collectionView:UICollectionView = {
+        let cv = CollectionView.init(frame: self.view.bounds, collectionViewLayout: UICollectionViewLayout.init())
+        cv.rx.setDelegate(self).disposed(by: dispose)
         return cv
         
     }()
     
     
     private lazy var continueBtn:UIButton = {
-        let btn = UIButton()
-        btn.setTitle("继续", for: .normal)
-        btn.setTitleColor(UIColor.orange, for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-        btn.titleLabel?.textAlignment = .center
-        btn.addTarget(self, action: #selector(nextPage), for: .touchUpInside)
+        let btn =  clickBtn.init(type: UIButton.ButtonType.custom, title: "继续")
         return btn
     }()
     
     private lazy var skipBtn:UIButton = {
         
-        let btn = UIButton()
-        btn.setTitle("跳过", for: .normal)
-        btn.setTitleColor(UIColor.orange, for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-        btn.titleLabel?.textAlignment = .center
-        btn.addTarget(self, action: #selector(lastPage), for: .touchUpInside)
-
+        let btn = clickBtn.init(type: UIButton.ButtonType.custom, title: "跳过")
         return btn
     }()
     
     private lazy var pageController:UIPageControl = {
         let pc = UIPageControl.init()
         pc.currentPage = 0
-        //pc.tintColor = UIColor.lightGray
         pc.currentPageIndicatorTintColor = UIColor.orange
         pc.contentMode = .center
         pc.pageIndicatorTintColor = UIColor.lightGray
@@ -82,21 +122,23 @@ class UserGuideViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
-        loadData()
+        setData()
+        setViewModel()
+        
         // Do any additional setup after loading the view.
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
+        self.view.backgroundColor = UIColor.white
         pageConrollerOriginY = pageController.origin.y
         skipBtnOriginY = skipBtn.origin.y
         continueBtnOriginY = continueBtn.origin.y
+        
+        // 如果没有获取到hguide数据，页面渲染
+        self.changeView(last: self.pageController.currentPage == self.datas.count)
         
     }
     
@@ -105,8 +147,9 @@ class UserGuideViewController: UIViewController {
 
 
 extension UserGuideViewController{
+    
     private func setViews(){
-        self.view.backgroundColor = UIColor.white
+        
         
         self.view.addSubview(collectionView)
         self.view.addSubview(continueBtn)
@@ -129,121 +172,88 @@ extension UserGuideViewController{
 extension UserGuideViewController{
     
     
-    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+    private func setViewModel(){
         
-        let index: Int = Int(targetContentOffset.pointee.x / view.frame.width)
-        pageController.currentPage = index
+        // rx button
+        self.continueBtn.rx.tap.asDriver().drive(onNext: {
+            self.pageController.currentPage += 1
+            // 最后登录界面
+            self.changeView(last: self.pageController.currentPage == self.datas.count)
+            
+            
+        }).disposed(by: dispose)
         
-        if index == datas.count {
-            changeView(last: true)
-        } else {
-            changeView(last: false)
-        }
+        
+        
+        self.skipBtn.rx.tap.asDriver().drive(onNext: {
+            self.pageController.currentPage = self.datas.count
+            self.changeView(last: true)
+           
+        }).disposed(by: dispose)
+        
+        
+        
+        // rx collection data
+        self.collectionView.rx.willEndDragging.asDriver().drive(onNext: { (arg0) in
+            let (_, targetContentOffset) = arg0
+            
+            let index: Int = Int(targetContentOffset.pointee.x / self.view.frame.width)
+            self.pageController.currentPage = index
+            self.changeView(last: index == self.datas.count)
+        }).disposed(by: dispose)
+        
+        
+        let dataSource = RxCollectionViewSectionedReloadDataSource<SectionModel<String, UserGuidePageItem>>(configureCell: { (dataSource, cv, indexPath, element) -> UICollectionViewCell in
+            
+            if indexPath.row == self.datas.count {
+                let cell = cv.dequeueReusableCell(withReuseIdentifier: UserGuideLogginCell.identity(), for: indexPath)
+                return cell
+            }
+            
+            
+            if let cell = cv.dequeueReusableCell(withReuseIdentifier: UserGuideItemCell.identity(), for: indexPath) as? UserGuideItemCell{
+                
+                cell.mode = element
+                return cell
+            }
+            
+            return UICollectionViewCell.init()
+            
+            
+        })
+        
+        
+        // 这里多一个默认数据
+        Observable.just([SectionModel.init(model: "", items: self.datas + [UserGuidePageItem(JSON: ["imageURL":"", "title":"", "detail":""])!])]).bind(to: collectionView.rx.items(dataSource: dataSource)).disposed(by: dispose)
         
     }
     
-    
-    @objc private func nextPage(){
-        
-        
-        pageController.currentPage += 1
-        
-        
-        
-        // 最后登录界面
-        if pageController.currentPage == datas.count{
-            changeView(last: true)
-        }
-        
-        
-        self.collectionView.scrollToItem(at: IndexPath.init(row: pageController.currentPage, section: 0), at: .centeredHorizontally, animated: true)
-        
-        
-        
-    }
-    
-    @objc private func lastPage(){
-        
-        pageController.currentPage = datas.count
-        changeView(last: true)
-        
-        self.collectionView.scrollToItem(at: IndexPath.init(row: pageController.currentPage, section: 0), at: .centeredHorizontally, animated: true)
-        
-    }
     
     private func changeView(last: Bool){
-        // 影藏
-       
-        
-        
+        self.collectionView.scrollToItem(at: IndexPath.init(row: self.pageController.currentPage, section: 0), at: .centeredHorizontally, animated: true)
+
         UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
-            if last{
-                
-                self.pageController.origin.y = ScreenH + 10
-                self.skipBtn.origin.y  = -50
-                self.continueBtn.origin.y = -50
-                self.skipBtn.isEnabled = false
-                self.continueBtn.isEnabled = false
-                
-            }else{
-                // 显示
-                self.pageController.origin.y =  self.pageConrollerOriginY
-                self.skipBtn.origin.y  = self.skipBtnOriginY
-                self.continueBtn.origin.y = self.continueBtnOriginY
-                self.skipBtn.isEnabled = true
-                self.continueBtn.isEnabled = true
-            }
+           
+            self.pageController.origin.y = last ?  GlobalConfig.ScreenH + 10 : self.pageConrollerOriginY
+            self.skipBtn.origin.y  = last ? -50 : self.skipBtnOriginY
+            self.continueBtn.origin.y = last ? -50 : self.continueBtnOriginY
+            self.skipBtn.isEnabled = !last
+            self.continueBtn.isEnabled = !last
         })
-      
-        
         
     }
 }
 
-extension UserGuideViewController:UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
-    
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return datas.count + 1
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        if indexPath.row == datas.count {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: UserGuideLogginCell.identity(), for: indexPath)
-            return cell
-        }
-        
-        
-        if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: UserGuideItemCell.identity(), for: indexPath) as? UserGuideItemCell{
-            
-            cell.mode = datas[indexPath.row]
-            return cell
-        }
-        
-        return  UICollectionViewCell()
-    }
-    
-    
-    
-}
 
 extension UserGuideViewController{
-    private func loadData(){
+    
+    private func setData(){
         
-        datas.append(UserGuidePageItem(JSON: ["imageName":"finacial", "title":"发现更多", "detail":"在这里发现更多，做你想做的。\nE浏览附近感兴趣的群体，并加入他们。"])!)
-        
-        datas.append(UserGuidePageItem(JSON: ["imageName":"fly", "title":"更多灵感，更多思路", "detail":"遇见更多志同道合者。\n并与他们保持联系。"])!)
-        datas.append(UserGuidePageItem(JSON: ["imageName":"ali", "title":"更加简洁", "detail":"比以前更加简洁\n为你打造更加便捷的使用体验，更加轻松的找到你想要的。"])!)
-        
-        
-        pageController.numberOfPages = datas.count + 1
-        collectionView.reloadData()
-        
-        
+        if let data = SingletoneClass.shared.guidanceData{
+            self.datas = data
+        }
+        // 最后一个cell 页面单独显示
+        self.pageController.numberOfPages = datas.count + 1
+       
     }
 }

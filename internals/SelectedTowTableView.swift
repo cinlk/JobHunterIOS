@@ -41,7 +41,7 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
     
     lazy var title:UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW/2)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW/2)
         label.textAlignment = .left
         label.font = UIFont.boldSystemFont(ofSize: 16)
         return label
@@ -141,9 +141,9 @@ class SelectedTowTableView:UIView,UITableViewDelegate,UITableViewDataSource{
         _ = confirm.sd_layout().rightSpaceToView(self,5)?.centerYEqualToView(title)?.widthIs(50)?.heightRatioToView(title,1.5)
         
         _ = line.sd_layout().topSpaceToView(title,5)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(1)
-        _ = lefttable.sd_layout().leftEqualToView(self)?.topSpaceToView(line,0)?.widthIs(ScreenW / 2 )?.bottomEqualToView(self)
+        _ = lefttable.sd_layout().leftEqualToView(self)?.topSpaceToView(line,0)?.widthIs(GlobalConfig.ScreenW / 2 )?.bottomEqualToView(self)
         // MARK  这里如果用rightEqualToView(self) 约束，大小是对的，但是reloadtable 不生效？？ 换成widthIs(ScreenW / 2 ) 有效？
-        _ = righttable.sd_layout().leftSpaceToView(lefttable,0)?.topSpaceToView(line,0)?.widthIs(ScreenW / 2)?.bottomEqualToView(self)
+        _ = righttable.sd_layout().leftSpaceToView(lefttable,0)?.topSpaceToView(line,0)?.widthIs(GlobalConfig.ScreenW / 2)?.bottomEqualToView(self)
         
         title.setMaxNumberOfLinesToShow(1)
         

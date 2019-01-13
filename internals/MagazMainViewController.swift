@@ -19,7 +19,7 @@ class MagazMainViewController: UIViewController {
     
     
     private lazy var pageTitleV:pagetitleView = {  [unowned self] in
-        let ptitle = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: pageHeight), titles: titles, lineCenter: true, kSelectColor:(30,144,255) )
+        let ptitle = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: pageHeight), titles: titles, lineCenter: true, kSelectColor:(30,144,255) )
         ptitle.delegate = self
         
         return ptitle
@@ -55,7 +55,7 @@ class MagazMainViewController: UIViewController {
         childVC.append(test5)
         
         
-        let pContent = pageContentView.init(frame: CGRect.init(x: 0, y: NavH + pageHeight, width: ScreenW, height: ScreenH - NavH - pageHeight), childVCs: childVC, pVC: self)
+        let pContent = pageContentView.init(frame: CGRect.init(x: 0, y: NavH + pageHeight, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - NavH - pageHeight), childVCs: childVC, pVC: self)
         pContent.delegate = self
         
         return pContent

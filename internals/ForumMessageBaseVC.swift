@@ -91,7 +91,7 @@ extension ForumMessageBaseVC: UITableViewDataSource, UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let mode = thumbDatas[indexPath.row]
-        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: ForumMesageCell.self, contentViewWidth: ScreenW)
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: ForumMesageCell.self, contentViewWidth: GlobalConfig.ScreenW)
         
     }
     

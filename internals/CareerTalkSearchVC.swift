@@ -20,26 +20,26 @@ class CareerTalkSearchVC: UIViewController, SearchControllerDeletgate{
 
     
     private lazy var colleageMenu: DropCollegeItemView = { [unowned self] in
-        let college = DropCollegeItemView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
+        let college = DropCollegeItemView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
         college.passData = { colleges in
             self.requestBody.college = colleges
             self.table.mj_header.beginRefreshing()
         }
-        college.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+        college.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
         
         return college
     }()
     
    
     private lazy var kind: DropItemIndustrySectorView = { [unowned self] in
-        let k = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
+        let k = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
         
         k.passData = { industry in
             self.requestBody.industry = industry
             self.table.mj_header.beginRefreshing()
         }
         
-        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
         
         return k
         
@@ -48,12 +48,12 @@ class CareerTalkSearchVC: UIViewController, SearchControllerDeletgate{
     // MARK: 日期选择具体到某天??
     private lazy var meetingTimeMenu:DropValidTimeView = { [unowned self] in
         
-        let m = DropValidTimeView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 90))
+        let m = DropValidTimeView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 90))
         m.passData = { date in
             self.requestBody.date = date
             self.table.mj_header.beginRefreshing()
         }
-        m.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+        m.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
         
         return m
     }()

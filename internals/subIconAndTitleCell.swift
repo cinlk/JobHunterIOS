@@ -19,7 +19,7 @@ import UIKit
         lable.text = " "
         
         lable.font = UIFont.systemFont(ofSize: 16)
-        lable.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        lable.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         return lable
     }()
     

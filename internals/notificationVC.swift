@@ -91,7 +91,7 @@ class notificationVC: BaseTableViewController {
             label.lineBreakMode = .byWordWrapping
             label.numberOfLines = 0
             label.text = "开启后打我打我的期望对群无多哇多无吊袜带挖多手机在22:00-8:00之间不会震动和发出提示声音"
-            label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20)
+            label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 20)
             v.addSubview(label)
             _ = label.sd_layout().leftSpaceToView(v,TableCellOffsetX)?.bottomSpaceToView(v,5)?.autoHeightRatio(0)
         default:

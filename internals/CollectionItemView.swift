@@ -15,7 +15,7 @@ class TableViewHeader:UIView{
     internal lazy var label:UILabel = {
         
         let title = UILabel.init(frame: CGRect.zero)
-        title.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        title.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         title.textColor = UIColor.black
         title.font = UIFont.systemFont(ofSize: 17)
         title.textAlignment = .left
@@ -30,10 +30,10 @@ class TableViewHeader:UIView{
         layout.minimumLineSpacing =  10
         layout.minimumInteritemSpacing = 5
         // 每行3个元素
-        layout.itemSize = CGSize.init(width: (ScreenW - 60) / 4 , height: 20)
+        layout.itemSize = CGSize.init(width: (GlobalConfig.ScreenW - 60) / 4 , height: 20)
         layout.sectionInset = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 0)
         // collection view  初始高度
-        let coll = UICollectionView.init(frame: CGRect.init(x: 0, y: 25, width: ScreenW - 40, height: ScreenH), collectionViewLayout: layout)
+        let coll = UICollectionView.init(frame: CGRect.init(x: 0, y: 25, width: GlobalConfig.ScreenW - 40, height: GlobalConfig.ScreenH), collectionViewLayout: layout)
         coll.backgroundColor = UIColor.clear
         coll.dataSource = self
         coll.delegate = self

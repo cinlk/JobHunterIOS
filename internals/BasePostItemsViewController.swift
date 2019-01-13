@@ -86,7 +86,7 @@ extension BasePostItemsViewController: UITableViewDataSource, UITableViewDelegat
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let mode = modes[indexPath.row]
-        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: listPostItemCell.self, contentViewWidth: ScreenW)
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: listPostItemCell.self, contentViewWidth: GlobalConfig.ScreenW)
         
         
     }

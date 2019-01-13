@@ -72,7 +72,7 @@ class ChatBarView: UIView {
     
     // 输入框
     lazy var inputText:UITextView = {
-        let inputV = UITextView(frame: CGRect.init(x: 5, y: 5, width: ScreenW - 60 - 10 - 10, height: 35))
+        let inputV = UITextView(frame: CGRect.init(x: 5, y: 5, width: GlobalConfig.ScreenW - 60 - 10 - 10, height: 35))
         
         inputV.font = UIFont.systemFont(ofSize: 16.0)
         inputV.textColor = UIColor.black
@@ -199,11 +199,11 @@ extension ChatBarView: UITextViewDelegate{
             
             let addHeigh = textView.font!.lineHeight*(line - 1)
             delegate?.chatBarUpdateHeight(height:  addHeigh)
-            textView.frame = CGRect.init(x: 5, y: 5, width: ScreenW - 60 - 20, height: addHeigh + 35)
+            textView.frame = CGRect.init(x: 5, y: 5, width: GlobalConfig.ScreenW - 60 - 20, height: addHeigh + 35)
             
         }else if line == 1{
             delegate?.chatBarUpdateHeight(height: 0)
-            textView.frame = CGRect.init(x: 5, y: 5, width: ScreenW - 60 - 20, height: 35)
+            textView.frame = CGRect.init(x: 5, y: 5, width: GlobalConfig.ScreenW - 60 - 20, height: 35)
 
         }else{
             

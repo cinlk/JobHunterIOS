@@ -18,7 +18,7 @@ import UIKit
                 self.textTitle.isUserInteractionEnabled = true
                 self.checkMark.isHidden = true
                 self.attacheImage.isHidden =  true
-                _ = self.textTitle.sd_layout().widthIs(ScreenW - 40)
+                _ = self.textTitle.sd_layout().widthIs(GlobalConfig.ScreenW - 40)
                 self.textTitle.becomeFirstResponder()
                 
             }
@@ -43,7 +43,7 @@ import UIKit
             }else{
                 MarginWidth = 40 + 20 + 20
             }
-            if let size = mode.name?.getStringCGRect(size: CGSize.init(width: ScreenW - MarginWidth, height: CGFloat(20)), font: UIFont.systemFont(ofSize: 14)){
+            if let size = mode.name?.getStringCGRect(size: CGSize.init(width: GlobalConfig.ScreenW - MarginWidth, height: CGFloat(20)), font: UIFont.systemFont(ofSize: 14)){
                 _ = self.textTitle.sd_layout().widthIs(size.width)
             }
             self.checkMark.isHidden = !mode.isDefault!

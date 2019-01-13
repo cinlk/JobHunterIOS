@@ -29,7 +29,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
         name.font = UIFont.boldSystemFont(ofSize: 14)
         name.textColor = textColort
         name.textAlignment = .center
-        name.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        name.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         return name
     }()
     
@@ -38,7 +38,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
         sex.font = UIFont.systemFont(ofSize: fontSize)
         sex.textColor = textColort
         sex.textAlignment = leftAlignment
-        sex.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        sex.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         return sex
     }()
     
@@ -47,7 +47,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
         city.font = UIFont.systemFont(ofSize: fontSize)
         city.textColor = textColort
         city.textAlignment = leftAlignment
-        city.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        city.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         return city
     }()
     
@@ -56,7 +56,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
         degree.font = UIFont.systemFont(ofSize: fontSize)
         degree.textColor = textColort
         degree.textAlignment = leftAlignment
-        degree.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        degree.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         return degree
     }()
     
@@ -65,7 +65,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
         birthday.font = UIFont.systemFont(ofSize: fontSize)
         birthday.textColor = textColort
         birthday.textAlignment = leftAlignment
-        birthday.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        birthday.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         return birthday
     }()
     
@@ -74,7 +74,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
         phone.font = UIFont.systemFont(ofSize: fontSize)
         phone.textColor = textColort
         phone.textAlignment = leftAlignment
-        phone.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        phone.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         return phone
     }()
     
@@ -83,7 +83,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
         email.font = UIFont.systemFont(ofSize: fontSize)
         email.textColor = textColort
         email.textAlignment = leftAlignment
-        email.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        email.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         return email
     }()
     
@@ -94,7 +94,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
         label.textColor = textColort
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         return label
     }()
     
@@ -104,7 +104,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
         label.textColor = textColort
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
     
         return label
     }()

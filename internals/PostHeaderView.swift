@@ -20,7 +20,7 @@ class PostHeaderView: UIView {
     internal lazy var userName:UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 40)
         label.font = UIFont.systemFont(ofSize: 14)
         label.isAttributedContent = true 
         return label
@@ -30,7 +30,7 @@ class PostHeaderView: UIView {
     internal lazy var createTime:UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 60)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 60)
         label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = UIColor.lightGray
         return label

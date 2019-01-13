@@ -23,7 +23,7 @@ fileprivate let preEmail:String =   "联系邮箱: "
     private lazy var gender:UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 80)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 80)
         label.font = UIFont.systemFont(ofSize: 16)
         return label
     }()
@@ -31,7 +31,7 @@ fileprivate let preEmail:String =   "联系邮箱: "
     private lazy var colleage:UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 80)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 80)
         label.font = UIFont.systemFont(ofSize: 16)
         return label
         
@@ -40,35 +40,35 @@ fileprivate let preEmail:String =   "联系邮箱: "
     private lazy var degree:UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 80)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 80)
         label.font = UIFont.systemFont(ofSize: 16)
         return label
     }()
     private lazy var city:UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 80)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 80)
         label.font = UIFont.systemFont(ofSize: 16)
         return label
     }()
     private lazy var birthday:UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 80)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 80)
         label.font = UIFont.systemFont(ofSize: 16)
         return label
     }()
     private lazy var phone:UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 80)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 80)
         label.font = UIFont.systemFont(ofSize: 16)
         return label
     }()
     private lazy var email:UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 80)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 80)
         label.font = UIFont.systemFont(ofSize: 16)
         return label
     }()

@@ -21,7 +21,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 100, height: 45)
         lb.font = UIFont.boldSystemFont(ofSize: 16)
         lb.textAlignment = .left
         lb.textColor = UIColor.black
-        lb.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width - 30)
+        lb.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width - 30)
         return lb
     }()
     
@@ -30,7 +30,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 100, height: 45)
         lb.font = UIFont.systemFont(ofSize: 14)
         lb.textAlignment = .left
         lb.textColor = UIColor.black
-        lb.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width - 30)
+        lb.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width - 30)
         return lb
     }()
     

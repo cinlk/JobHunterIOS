@@ -166,7 +166,7 @@ extension EditPostViewController:UITextViewDelegate{
     func textViewDidChange(_ textView: UITextView) {
         
         //textView.contentOffset = CGPoint.zero
-        let size = textView.sizeThatFits(CGSize.init(width: ScreenW, height: CGFloat(MAXFLOAT)))
+        let size = textView.sizeThatFits(CGSize.init(width: GlobalConfig.ScreenW, height: CGFloat(MAXFLOAT)))
         
         if textView == titleView{
             (textView as! mytext).placehold.text =  textView.text.isEmpty ? "标题" : ""
@@ -234,9 +234,9 @@ extension EditPostViewController{
         
         let kframe = notify.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! CGRect
         // 加上toolbar 高度30
-        if contentTextH + NavH + titleTextH > ScreenH - (kframe.height + 30){
+        if contentTextH + NavH + titleTextH > GlobalConfig.ScreenH - (kframe.height + 30){
             _ = contentView.sd_resetLayout()
-            contentTextH = ScreenH - (kframe.height + 30) - NavH - titleTextH
+            contentTextH = GlobalConfig.ScreenH - (kframe.height + 30) - NavH - titleTextH
             _ = contentView.sd_layout().topSpaceToView(titleView,0)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.heightIs(contentTextH)
             
         }
@@ -290,13 +290,13 @@ private class mytext:UITextView{
         let label = UILabel()
         label.textColor = UIColor.black
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         return label
     }()
     
     // toolbar
     internal lazy var toolBar:UIToolbar = { [unowned self] in
-        let bar = UIToolbar.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 30))
+        let bar = UIToolbar.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 30))
         bar.barStyle = .default
         bar.backgroundColor = UIColor.viewBackColor()
         return bar

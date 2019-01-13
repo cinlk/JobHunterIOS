@@ -76,14 +76,14 @@ class SearchRecodeViewController: UIViewController {
     
     private lazy var clearAllLabel:UIView = {
         
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 40))
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 40))
         v.backgroundColor = UIColor.clear
         v.isUserInteractionEnabled = true
         
         let  label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16)
         label.textColor = UIColor.lightGray
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         label.text = "清除历史记录"
         label.textAlignment = .center
         label.backgroundColor = UIColor.clear

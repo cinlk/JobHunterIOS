@@ -38,7 +38,7 @@ class baseWebViewController: UIViewController {
     
     //share
     private lazy var sharedView:shareView = {
-        let share = shareView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: shareViewH))
+        let share = shareView.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: shareViewH))
         share.delegate = self
         return share
     }()

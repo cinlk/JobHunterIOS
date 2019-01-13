@@ -108,7 +108,7 @@ extension CompanyCollectedVC: UITableViewDataSource, UITableViewDelegate{
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let item = datas[indexPath.row]
         
-        return tableView.cellHeight(for: indexPath, model: item, keyPath: "mode", cellClass: companyCollectedCell.self, contentViewWidth: ScreenW)
+        return tableView.cellHeight(for: indexPath, model: item, keyPath: "mode", cellClass: companyCollectedCell.self, contentViewWidth: GlobalConfig.ScreenW)
         
     }
     
@@ -200,7 +200,7 @@ extension CompanyCollectedVC{
     
     private lazy var companyName:UILabel = {
         let name = UILabel()
-        name.setSingleLineAutoResizeWithMaxWidth(ScreenW - 80)
+        name.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 80)
         name.font = UIFont.boldSystemFont(ofSize: 16)
         name.textAlignment = .left
         return name
@@ -211,7 +211,7 @@ extension CompanyCollectedVC{
     
     private lazy var describe:UILabel = {
         let name = UILabel()
-        name.setSingleLineAutoResizeWithMaxWidth(ScreenW - 80)
+        name.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 80)
         name.font = UIFont.systemFont(ofSize: 12)
         name.textAlignment = .left
         name.textColor = UIColor.lightGray

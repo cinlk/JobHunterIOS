@@ -23,7 +23,7 @@ class MainColumnistCell: BaseScrollerTableViewCell,UIScrollViewDelegate {
         label.font = UIFont.boldSystemFont(ofSize: 16)
         label.textAlignment = .left
         label.textColor = UIColor.black
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         v.addSubview(label)
         _ = label.sd_layout().leftSpaceToView(v,10)?.centerYEqualToView(v)?.autoHeightRatio(0)
         return v

@@ -2,7 +2,7 @@ platform :ios, '10.0'
 use_frameworks!
 
 target 'internals' do
-	#pod 'Alamofire' 
+	pod 'Alamofire' 
 	#pod 'SwiftyJSON', :git => 'https://github.com/appsailor/SwiftyJSON.git' 
 	pod 'SDAutoLayout' 
 	pod 'SQLite.swift' 

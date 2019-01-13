@@ -72,7 +72,7 @@ class feedBackVC: BaseTableViewController {
     
     // photosview
     private lazy var photo:photosView = {
-        let p = photosView(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 89))
+        let p = photosView(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 89))
         p.setImage = show
         return p
     }()
@@ -198,7 +198,7 @@ extension feedBackVC {
         switch sectionTitle[indexPath.section] {
         case .problem:
            
-            return tableView.cellHeight(for: indexPath, model: problems, keyPath: "mode", cellClass: feedBackTypeCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: problems, keyPath: "mode", cellClass: feedBackTypeCell.self, contentViewWidth: GlobalConfig.ScreenW)
         case .idea:
             return TextAndPhontoCell.cellHeight()
             

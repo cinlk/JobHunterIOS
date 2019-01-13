@@ -27,34 +27,34 @@ class BasePositionItemViewController: BaseViewController {
     
     // 选择城市
     internal lazy var cityMenu:DropItemCityView = {
-        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 200))
+        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 200))
         // 覆盖指定高度
         
-        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
+        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + 35)
         return city
     }()
     
     // 行业分类
     internal lazy var industryKind:DropItemIndustrySectorView = {
-        let indus = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
+        let indus = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
        
-        indus.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
+        indus.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + 35)
 
         return indus
         
     }()
     // 公司性质
     internal lazy var companyKind: DropCompanyPropertyView = {
-        let company = DropCompanyPropertyView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 6*45))
-        company.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
+        let company = DropCompanyPropertyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 6*45))
+        company.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + 35)
 
         return company
     }()
     
     // 大学
     internal lazy var colleges: DropCollegeItemView = {
-        let college = DropCollegeItemView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 200))
-        college.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
+        let college = DropCollegeItemView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 200))
+        college.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + 35)
 
         return college
     }()
@@ -62,8 +62,8 @@ class BasePositionItemViewController: BaseViewController {
     
     // 职业类型
     lazy var careerClassify:DropCarrerClassifyView = { [unowned self] in
-        let v1 = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
-        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
+        let v1 = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
+        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + 35)
 
         
         return v1
@@ -71,8 +71,8 @@ class BasePositionItemViewController: BaseViewController {
     
     // 学历
     lazy var degree:DropDegreeMenuView = { [unowned self] in
-        let v = DropDegreeMenuView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 45*5))
-        v.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
+        let v = DropDegreeMenuView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 45*5))
+        v.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + 35)
 
         return v
     }()
@@ -81,8 +81,8 @@ class BasePositionItemViewController: BaseViewController {
     // 宣讲会过期?
     internal lazy var meetingValidate:DropValidTimeView = {  [unowned self] in
         
-        let v1 = DropValidTimeView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 45*3))
-        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
+        let v1 = DropValidTimeView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 45*3))
+        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + 35)
     
         return v1
     }()
@@ -90,9 +90,9 @@ class BasePositionItemViewController: BaseViewController {
     
     // 实习条件
     internal lazy var  internCondition:DropInternCondtionView = { [unowned self] in
-        let v1 = DropInternCondtionView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 200))
+        let v1 = DropInternCondtionView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 200))
         
-        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
+        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + 35)
 
         return v1
         
@@ -100,8 +100,8 @@ class BasePositionItemViewController: BaseViewController {
     
     //
     internal  lazy var meetingTime:YNDropDownView = { [unowned self] in
-        let v1 = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 260))
-        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + 35)
+        let v1 = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 260))
+        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + 35)
 
         return v1
     }()
@@ -110,7 +110,7 @@ class BasePositionItemViewController: BaseViewController {
     lazy var dropMenu: YNDropDownMenu = { [unowned self] in
         
         
-        let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: dropMenuH), dropDownViews: [cityMenu,industryKind], dropDownViewTitles: ["城市","行业领域"])
+        let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuH), dropDownViews: [cityMenu,industryKind], dropDownViewTitles: ["城市","行业领域"])
         
         menu.setImageWhen(normal: UIImage(named: "arrow_nor"), selected: UIImage(named: "arrow_xl"), disabled: UIImage(named: "arrow_dim"))
         menu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)

@@ -34,7 +34,7 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
     
     private lazy var apply:UIButton = { [unowned self] in
         
-        let apply = UIButton.init(frame: CGRect.init(x: 0, y: 0, width:  ScreenW - collectedBtn.width + 20, height: TOOLBARH))
+        let apply = UIButton.init(frame: CGRect.init(x: 0, y: 0, width:  GlobalConfig.ScreenW - collectedBtn.width + 20, height: TOOLBARH))
         apply.addTarget(self, action: #selector(onlineApply(_:)), for: .touchUpInside)
         apply.setTitle("申请", for: .normal)
         apply.setTitleColor(UIColor.white, for: .normal)
@@ -45,7 +45,7 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
     
     
     private lazy var  showJobsView: ShowApplyJobsView = {
-        let view = ShowApplyJobsView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: 0))
+        let view = ShowApplyJobsView.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: 0))
         view.delegate = self
         return view
     }()
@@ -53,12 +53,12 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
 
 
     private lazy var naviBackView:UIView = {
-        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH))
+        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH))
         view.backgroundColor = UIColor.green
         view.alpha = 0
         
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         label.textColor = UIColor.white
         label.textAlignment = .center
         label.font = UIFont.boldSystemFont(ofSize: 16)
@@ -323,7 +323,7 @@ extension OnlineApplyShowViewController: UITableViewDelegate, UITableViewDataSou
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
-        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: applyJobsCell.self, contentViewWidth: ScreenW)
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: applyJobsCell.self, contentViewWidth: GlobalConfig.ScreenW)
     }
     
 }
@@ -342,7 +342,7 @@ private class tableHeader:UIView{
     
     private lazy var name:UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 40)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 12)
         return label
@@ -358,7 +358,7 @@ private class tableHeader:UIView{
     
     private lazy var address:UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 40)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 12)
         return label
@@ -373,7 +373,7 @@ private class tableHeader:UIView{
     }()
     private lazy var time:UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 40)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 12)
         return label
@@ -389,7 +389,7 @@ private class tableHeader:UIView{
     
     private lazy var positions:UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 40)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 12)
         return label

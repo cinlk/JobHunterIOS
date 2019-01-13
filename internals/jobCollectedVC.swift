@@ -101,7 +101,7 @@ extension jobCollectedVC: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let job = datas[indexPath.row]
-        return  tableView.cellHeight(for: indexPath, model: job, keyPath: "mode", cellClass: jobCollectedCell.self, contentViewWidth: ScreenW)
+        return  tableView.cellHeight(for: indexPath, model: job, keyPath: "mode", cellClass: jobCollectedCell.self, contentViewWidth: GlobalConfig.ScreenW)
         
     }
     
@@ -206,7 +206,7 @@ extension jobCollectedVC{
     
     private lazy var companyName:UILabel = {
         let name = UILabel()
-        name.setSingleLineAutoResizeWithMaxWidth(ScreenW - 60)
+        name.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 60)
         name.font = UIFont.boldSystemFont(ofSize: 16)
         name.textAlignment = .left
         return name
@@ -214,7 +214,7 @@ extension jobCollectedVC{
     
     private lazy var position:UILabel = {
         let name = UILabel()
-        name.setSingleLineAutoResizeWithMaxWidth(ScreenW - 60)
+        name.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 60)
         name.font = UIFont.systemFont(ofSize: 14)
         name.textAlignment = .left
         return name
@@ -223,7 +223,7 @@ extension jobCollectedVC{
     
     private lazy var address:UILabel = {
         let name = UILabel()
-        name.setSingleLineAutoResizeWithMaxWidth(ScreenW - 120)
+        name.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 120)
         name.font = UIFont.systemFont(ofSize: 12)
         name.textAlignment = .left
         name.textColor = UIColor.lightGray

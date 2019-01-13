@@ -20,7 +20,7 @@ class UserLogginViewController: UIViewController {
     }()
     
     private lazy var itemTitleView:pagetitleView = {
-        let title = pagetitleView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW - 20, height: 25), titles: ["快捷登录","密码登录"],itemWidth: 100)
+        let title = pagetitleView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW - 20, height: 25), titles: ["快捷登录","密码登录"],itemWidth: 100)
         title.delegate = self
         
         return title
@@ -33,7 +33,7 @@ class UserLogginViewController: UIViewController {
         let vc2 = PasswordLoggingViewController()
         vc2.parentVC = self 
         
-        let content = pageContentView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW - 20, height: contentViewH), childVCs: [vc1,vc2], pVC: self)
+        let content = pageContentView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW - 20, height: contentViewH), childVCs: [vc1,vc2], pVC: self)
         content.delegate = self
         return content
     }()
@@ -115,12 +115,12 @@ extension UserLogginViewController{
         let views:[UIView] = [appImage, itemTitleView,contentView,loggingBtn, skipBtn, socialAppLoginView]
         self.view.sd_addSubviews(views)
         
-        _ = appImage.sd_layout().topSpaceToView(self.view,NavH)?.centerXEqualToView(self.view)?.heightIs(ScreenH/4)?.widthIs(160)
+        _ = appImage.sd_layout().topSpaceToView(self.view,NavH)?.centerXEqualToView(self.view)?.heightIs(GlobalConfig.ScreenH/4)?.widthIs(160)
         
-        _ = itemTitleView.sd_layout().topSpaceToView(appImage,10)?.centerXEqualToView(self.view)?.widthIs(ScreenW - 20)?.heightIs(25)
+        _ = itemTitleView.sd_layout().topSpaceToView(appImage,10)?.centerXEqualToView(self.view)?.widthIs(GlobalConfig.ScreenW - 20)?.heightIs(25)
         _ = contentView.sd_layout().topSpaceToView(itemTitleView,0)?.centerXEqualToView(self.view)?.widthRatioToView(itemTitleView,1)?.heightIs(contentViewH)
        
-        _ = loggingBtn.sd_layout().topSpaceToView(contentView,20)?.centerXEqualToView(self.view)?.widthIs(ScreenW - 60)?.heightIs(30)
+        _ = loggingBtn.sd_layout().topSpaceToView(contentView,20)?.centerXEqualToView(self.view)?.widthIs(GlobalConfig.ScreenW - 60)?.heightIs(30)
         
         _ = skipBtn.sd_layout().leftEqualToView(contentView)?.topSpaceToView(self.view,20)?.widthIs(40)?.heightIs(40)
 

@@ -24,7 +24,7 @@ class DropValidTimeView: BaseSingleItemDropView {
     private lazy var datePicker:UIDatePicker = {
         //创建日期选择器
         
-        let datePicker = UIDatePicker(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: pickerViewH))
+        let datePicker = UIDatePicker(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: pickerViewH))
         datePicker.backgroundColor = UIColor.white
         //将日期选择器区域设置为中文，则选择器日期显示为中文
         datePicker.locale = Locale(identifier: "zh_CN")
@@ -103,7 +103,7 @@ class DropValidTimeView: BaseSingleItemDropView {
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseInOut, animations: {
             self.datePicker.isHidden = false
         }, completion: { bool in
-            self.bottomView.frame = CGRect.init(x: 0, y: NavH + menuH + pickerViewH, width: ScreenW, height: 40)
+            self.bottomView.frame = CGRect.init(x: 0, y: NavH + menuH + pickerViewH, width: GlobalConfig.ScreenW, height: 40)
         
         })
     }

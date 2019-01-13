@@ -24,7 +24,7 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
     private lazy var jobName:UILabel = {
         let label = UILabel()
         label.isAttributedContent = true
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgIcon.width - 20 )
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - imgIcon.width - 20 )
         label.textAlignment = .left
         label.font = UIFont.boldSystemFont(ofSize: 16)
         label.textColor = UIColor.black
@@ -37,7 +37,7 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
     private lazy var endTime:UILabel = {
         
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgIcon.width - 20 )
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - imgIcon.width - 20 )
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 12)
         label.isAttributedContent = true 
@@ -46,7 +46,7 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
     
     private lazy var address:UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgIcon.width - 20 )
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - imgIcon.width - 20 )
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = UIColor.lightGray

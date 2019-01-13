@@ -37,7 +37,7 @@ class ForumViewController: UIViewController {
     //
     
     private lazy var pageTitle:pagetitleView = {
-        let pageTitle = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: 45), titles: titles, lineCenter: true,itemWidth: 70, horizontalEdgeInset:5)
+        let pageTitle = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: 45), titles: titles, lineCenter: true,itemWidth: 70, horizontalEdgeInset:5)
         
         pageTitle.delegate = self
         pageTitle.backgroundColor = UIColor.init(r: 105, g: 105, b: 105)
@@ -67,7 +67,7 @@ class ForumViewController: UIViewController {
         vcs.append(help)
         
         
-        let pageContent = pageContentView.init(frame: CGRect.init(x: 0, y: NavH+45, width: ScreenW, height: ScreenH - (NavH+45)), childVCs: vcs, pVC: self)
+        let pageContent = pageContentView.init(frame: CGRect.init(x: 0, y: NavH+45, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - (NavH+45)), childVCs: vcs, pVC: self)
         
         pageContent.delegate = self
         return pageContent
@@ -82,7 +82,7 @@ class ForumViewController: UIViewController {
     // 搜索包裹searchBar 的view
     private lazy var searchBarContainer:UIView = {
         // 搜索框
-        let searchBarFrame = CGRect(x: 0, y:0, width: ScreenW, height: SEARCH_BAR_H)
+        let searchBarFrame = CGRect(x: 0, y:0, width: GlobalConfig.ScreenW, height: SEARCH_BAR_H)
         let searchBarContainer = UIView(frame:searchBarFrame)
         searchBarContainer.backgroundColor = UIColor.clear
         return searchBarContainer

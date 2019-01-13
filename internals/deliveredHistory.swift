@@ -32,7 +32,7 @@ class deliveredHistory: BaseViewController,UIScrollViewDelegate {
     
     // dropItem
     private lazy var jobTypes:DropJobTypeView = { [unowned self] in
-        let view = DropJobTypeView(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 45*4))
+        let view = DropJobTypeView(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 45*4))
         view.showTabBar = false
         view.passData = { type in
             self.currentJobType = jobType.getType(name: type)
@@ -47,7 +47,7 @@ class deliveredHistory: BaseViewController,UIScrollViewDelegate {
     
     
     private lazy var deliveryStatus:DropDelieveryStatusView = { [unowned self] in
-        let view = DropDelieveryStatusView(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 45*7))
+        let view = DropDelieveryStatusView(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 45*7))
         view.showTabBar = false
         
         view.passData = { status in
@@ -72,7 +72,7 @@ class deliveredHistory: BaseViewController,UIScrollViewDelegate {
     // table
     
     private lazy var table:UITableView = { [unowned self] in
-        let table = UITableView(frame: CGRect.init(x: 0, y: NavH + self.dropMenu.height , width: ScreenW, height: ScreenH - (NavH + self.dropMenu.height)))
+        let table = UITableView(frame: CGRect.init(x: 0, y: NavH + self.dropMenu.height , width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - (NavH + self.dropMenu.height)))
         table.tableFooterView = UIView()
         table.register(deliveryItemCell.self, forCellReuseIdentifier: deliveryItemCell.identity())
         table.tableHeaderView = UIView()
@@ -261,7 +261,7 @@ extension deliveredHistory:UITableViewDataSource, UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let item = filterDatas[indexPath.row]
-        let height =  table.cellHeight(for: indexPath, model: item, keyPath: "mode", cellClass: deliveryItemCell.self, contentViewWidth: ScreenW)
+        let height =  table.cellHeight(for: indexPath, model: item, keyPath: "mode", cellClass: deliveryItemCell.self, contentViewWidth: GlobalConfig.ScreenW)
         
         return height + 10
         

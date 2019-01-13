@@ -28,7 +28,7 @@ class textViewCell: UITableViewCell {
     }()
     
     lazy var placeHolderLabel:UILabel = {
-        let label = UILabel.init(frame: CGRect.init(x: 10, y: 5, width: ScreenW, height: 20))
+        let label = UILabel.init(frame: CGRect.init(x: 10, y: 5, width: GlobalConfig.ScreenW, height: 20))
         label.text = placeholdStr
         label.numberOfLines = 0
         label.contentMode = .top

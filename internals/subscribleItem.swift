@@ -55,13 +55,13 @@ class subscribleItem: BaseTableViewController {
     }
     
     private lazy var footLabelView:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 50))
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 50))
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 16)
         label.textColor = UIColor.lightGray
         label.textAlignment = .center
         label.text = "最多同时开启5个订阅"
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         v.addSubview(label)
         _ = label.sd_layout().centerYEqualToView(v)?.centerXEqualToView(v)?.autoHeightRatio(0)
         return v
@@ -205,16 +205,16 @@ extension subscribleItem{
        
         if indexPath.row == 0 {
             let mode = indexPath.section == 0 ? "校招" : "实习"
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: sectionCellView.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: sectionCellView.self, contentViewWidth: GlobalConfig.ScreenW)
         }
         
         if indexPath.section == 0 {
             let mode = compuseData[indexPath.row - 1]
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: subScribeGraduateCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: subScribeGraduateCell.self, contentViewWidth: GlobalConfig.ScreenW)
         }else{
             
             let mode = internData[indexPath.row - 1]
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: subScribeInternCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: subScribeInternCell.self, contentViewWidth: GlobalConfig.ScreenW)
         }
        
         

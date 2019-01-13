@@ -18,7 +18,7 @@ import UIKit
         label.textAlignment = .left
         label.textColor = UIColor.black
         label.font = UIFont.systemFont(ofSize: 16)
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 30)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 30)
         return label
     }()
     
@@ -35,7 +35,7 @@ import UIKit
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = UIColor.lightGray
         label.lineBreakMode = .byWordWrapping
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20 )
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 20 )
         return label
     }()
     

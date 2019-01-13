@@ -130,7 +130,7 @@ extension ResetPasswordViewController{
         
         let views:[UIView] = [inputAccount, inputVerifyCode, inputPassword, resetBtn]
         self.view.sd_addSubviews(views)
-        _ = inputAccount.sd_layout().topSpaceToView(self.view,NavH + 30)?.centerXEqualToView(self.view)?.widthIs(ScreenW - 40)?.heightIs(50)
+        _ = inputAccount.sd_layout().topSpaceToView(self.view,NavH + 30)?.centerXEqualToView(self.view)?.widthIs(GlobalConfig.ScreenW - 40)?.heightIs(50)
         _ = inputVerifyCode.sd_layout().topSpaceToView(inputAccount,10)?.widthRatioToView(inputAccount,1)?.heightRatioToView(inputAccount,1)?.centerXEqualToView(inputAccount)
         _ = inputPassword.sd_layout().topSpaceToView(inputVerifyCode,10)?.widthRatioToView(inputVerifyCode,1)?.heightRatioToView(inputVerifyCode,1)?.centerXEqualToView(inputVerifyCode)
         _ = resetBtn.sd_layout().topSpaceToView(inputPassword, 30)?.centerXEqualToView(inputPassword)?.widthRatioToView(inputPassword,1)?.heightIs(40)

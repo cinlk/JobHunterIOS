@@ -82,9 +82,9 @@ class gifCell: UITableViewCell {
             }
             
             
-            self.avatar.frame = CGRect.init(x: ScreenW - avatarSize.width - 5 , y: 5, width: avatarSize.width, height: avatarSize.height)
+            self.avatar.frame = CGRect.init(x: GlobalConfig.ScreenW - avatarSize.width - 5 , y: 5, width: avatarSize.width, height: avatarSize.height)
             
-            self.gif.frame = CGRect.init(x: ScreenW - 5 - self.avatar.frame.width - 5 - gifWidth - 10, y: 10, width: gifWidth, height: gifWidth)
+            self.gif.frame = CGRect.init(x: GlobalConfig.ScreenW - 5 - self.avatar.frame.width - 5 - gifWidth - 10, y: 10, width: gifWidth, height: gifWidth)
             
             
         }else{

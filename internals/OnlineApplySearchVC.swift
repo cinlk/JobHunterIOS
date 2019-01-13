@@ -21,20 +21,20 @@ class OnlineApplySearchVC: UIViewController, SearchControllerDeletgate {
 
     
     private lazy var cityMenu:DropItemCityView = { [unowned self] in
-        let c = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
+        let c = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
         c.passData  = { citys in
             
             self.requestBody.city = citys
             self.table.mj_header.beginRefreshing()
             
         }
-        c.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+        c.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
         return c
     }()
     
     
     private lazy var kind:DropItemIndustrySectorView = { [unowned self] in
-        let v = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
+        let v = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
       
         v.passData = { item in
             
@@ -42,7 +42,7 @@ class OnlineApplySearchVC: UIViewController, SearchControllerDeletgate {
             self.table.mj_header.beginRefreshing()
         }
         
-        v.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+        v.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
         return v
     }()
     

@@ -84,7 +84,7 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
                 
                 
                 
-                avartar.frame = CGRect.init(x: ScreenW - 45 - 5, y: 5, width: 45, height: 45)
+                avartar.frame = CGRect.init(x: GlobalConfig.ScreenW - 45 - 5, y: 5, width: 45, height: 45)
                 _ = imageV.sd_layout().rightSpaceToView(avartar,10)?.topEqualToView(self.avartar)?.widthIs(imageSize.width)?.heightIs(imageSize.height)
                 
                 
@@ -195,7 +195,7 @@ extension ImageCell{
                 self.blackBackgroundView?.alpha = 1
                 let height = self.startingFrame!.height / self.startingFrame!.width * keyWindow.frame.width
                 
-                zoomImageView.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: height)
+                zoomImageView.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: height)
                 zoomImageView.center = keyWindow.center
                 
                 

@@ -56,7 +56,7 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     
     private lazy var tableView:UITableView = { [unowned self] in
         
-        let tb = UITableView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: ScreenH - NavH - ChatInputBarH),style: .plain)
+        let tb = UITableView.init(frame: CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - NavH - ChatInputBarH),style: .plain)
        
         tb.delegate = self
         tb.dataSource = self
@@ -112,7 +112,7 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     
     //快捷回复界面
     private lazy var replyPopView:popView = {
-       let v = popView.init(frame: CGRect.init(x: -300, y: (ScreenH - 200)/2, width: 200, height: popViewH))
+       let v = popView.init(frame: CGRect.init(x: -300, y: (GlobalConfig.ScreenH - 200)/2, width: 200, height: popViewH))
        v.layer.masksToBounds = true
        v.layer.cornerRadius = 10
        return v
@@ -220,7 +220,7 @@ extension CommunicationChatView {
         
         
         
-        _  = chatBarView.sd_layout().leftEqualToView(self.view)?.yIs(ScreenH - ChatInputBarH)?.rightEqualToView(self.view)?.heightIs(ChatInputBarH)
+        _  = chatBarView.sd_layout().leftEqualToView(self.view)?.yIs(GlobalConfig.ScreenH - ChatInputBarH)?.rightEqualToView(self.view)?.heightIs(ChatInputBarH)
         
         _ = emotion.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.chatBarView,0)?.heightIs(charMoreViewH)
         
@@ -327,11 +327,11 @@ extension CommunicationChatView: UITableViewDelegate,UITableViewDataSource{
                 
             case .picture:
                 let message = self.tableSource.object(at: indexPath.row) as! PicutreMessage
-                 return tableView.cellHeight(for: indexPath, model: message, keyPath: "mode", cellClass: ImageCell.self, contentViewWidth: ScreenW)
+                 return tableView.cellHeight(for: indexPath, model: message, keyPath: "mode", cellClass: ImageCell.self, contentViewWidth: GlobalConfig.ScreenW)
                 
             case .jobDescribe:
                 let message = self.tableSource.object(at: indexPath.row) as! JobDescriptionlMessage
-                return tableView.cellHeight(for: indexPath, model: message, keyPath: "mode", cellClass: JobMessageCell.self, contentViewWidth: ScreenW)
+                return tableView.cellHeight(for: indexPath, model: message, keyPath: "mode", cellClass: JobMessageCell.self, contentViewWidth: GlobalConfig.ScreenW)
                 
              case .time:
                 return ChatTimeCell.cellHeight()
@@ -589,7 +589,7 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
         
         // 恢复 chatbarView 输入框高度
         self.chatBarUpdateHeight(height: 0)
-        self.chatBarView.inputText.frame = CGRect.init(x: 5, y: 5, width: ScreenW - 60 - 20, height: 35)
+        self.chatBarView.inputText.frame = CGRect.init(x: 5, y: 5, width: GlobalConfig.ScreenW - 60 - 20, height: 35)
         
         message = message.trimmingCharacters(in: CharacterSet.init(charactersIn: " "))
         guard !message.isEmpty else {
@@ -712,8 +712,8 @@ extension CommunicationChatView: ChatBarViewDelegate{
             y = keyboardFrame?.height ?? 0
         }
         let height = ChatInputBarH + height
-        _ = self.chatBarView.sd_layout().yIs(ScreenH - y - height)?.heightIs(height)
-        self.tableView.frame = CGRect.init(x: 0, y: NavH, width: ScreenW, height: ScreenH - NavH - height - y)
+        _ = self.chatBarView.sd_layout().yIs(GlobalConfig.ScreenH - y - height)?.heightIs(height)
+        self.tableView.frame = CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - NavH - height - y)
         let row = IndexPath.init(row: self.tableSource.count - 1   , section: 0)
         self.tableView.scrollToRow(at: row, at: .none, animated: true)
         self.currentChatBarHright =  height
@@ -736,9 +736,9 @@ extension CommunicationChatView{
 
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             // 改变table 大小
-            self.tableView.frame = CGRect.init(x: 0, y: NavH, width: ScreenW, height: ScreenH - NavH - self.currentChatBarHright - distance)
+            self.tableView.frame = CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - NavH - self.currentChatBarHright - distance)
             //改变 chatbar 位置和大小
-            self.chatBarView.frame  = CGRect.init(x: 0, y: ScreenH - distance - self.currentChatBarHright, width: ScreenW, height: self.currentChatBarHright)
+            self.chatBarView.frame  = CGRect.init(x: 0, y: GlobalConfig.ScreenH - distance - self.currentChatBarHright, width: GlobalConfig.ScreenW, height: self.currentChatBarHright)
             
             // tableview滑动到底部
             if distance != 0 {

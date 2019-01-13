@@ -29,7 +29,7 @@ class shareView: UIView {
     
     // shareView的背景
     private lazy var sharebackBtn: UIButton = {  [unowned self] in
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH))
         btn.alpha = 0.5
         btn.backgroundColor = UIColor.lightGray
         btn.addTarget(self, action: #selector(dismiss), for: .touchUpInside)
@@ -61,7 +61,7 @@ class shareView: UIView {
         let layout = UICollectionViewFlowLayout.init()
         layout.minimumLineSpacing = 10
         layout.minimumInteritemSpacing = 10
-        layout.itemSize = CGSize.init(width: ScreenW / 4 - 15, height: (shareViewH - btnHeight) / 2 - 10)
+        layout.itemSize = CGSize.init(width: GlobalConfig.ScreenW / 4 - 15, height: (shareViewH - btnHeight) / 2 - 10)
 
         return layout
     }()
@@ -107,7 +107,7 @@ extension shareView{
     func showShare(){
         UIApplication.shared.keyWindow?.insertSubview(sharebackBtn, belowSubview: self)
             UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-                    self.frame.origin.y = ScreenH - shareViewH
+                    self.frame.origin.y = GlobalConfig.ScreenH - shareViewH
         
                 }, completion: nil)
     }
@@ -116,7 +116,7 @@ extension shareView{
         sharebackBtn.removeFromSuperview()
         
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            self.frame.origin.y = ScreenH
+            self.frame.origin.y = GlobalConfig.ScreenH
             
         }, completion: nil)
         

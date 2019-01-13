@@ -36,6 +36,8 @@
 		4A14078420F8537F00F4E88E /* SearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A14078320F8537F00F4E88E /* SearchBarView.swift */; };
 		4A14078620FA08B000F4E88E /* ImageScrollerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A14078520FA08B000F4E88E /* ImageScrollerView.swift */; };
 		4A14078820FA4ED500F4E88E /* BaseTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A14078720FA4ED500F4E88E /* BaseTableView.swift */; };
+		4A14B78E21E8DFCA00563C97 /* BaseNetworkTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A14B78D21E8DFCA00563C97 /* BaseNetworkTool.swift */; };
+		4A14B78F21E8E52A00563C97 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224021F5160E50065A33F /* Alamofire.framework */; };
 		4A18E1EB202CA03F00B1038E /* TreeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A18E1EA202CA03F00B1038E /* TreeNode.swift */; };
 		4A1A502620773A500070B74D /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1A502520773A500070B74D /* CoreTelephony.framework */; };
 		4A1A502820773A5C0070B74D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1A502720773A5C0070B74D /* libz.tbd */; };
@@ -110,7 +112,6 @@
 		4A30EBED20838C7C00231D11 /* recruitmentMeetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBEC20838C7C00231D11 /* recruitmentMeetCell.swift */; };
 		4A30EBF120838FC400231D11 /* simpleRecruitCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBF020838FC400231D11 /* simpleRecruitCell.swift */; };
 		4A30EBF32083AA6400231D11 /* applyOnlineCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A30EBF22083AA6400231D11 /* applyOnlineCell.swift */; };
-		4A3224031F5160E50065A33F /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224021F5160E50065A33F /* Alamofire.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		4A3224051F5160EA0065A33F /* SDAutoLayout.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A3224041F5160EA0065A33F /* SDAutoLayout.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		4A39A7BE20C4C28D00953C1C /* SubscribleItemEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A39A7BD20C4C28D00953C1C /* SubscribleItemEnum.swift */; };
 		4A39A7C020CC01DB00953C1C /* DropDegreeMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A39A7BF20CC01DB00953C1C /* DropDegreeMenuView.swift */; };
@@ -136,7 +137,6 @@
 		4A4DBBDC20B9A5370036AD9D /* EnterAppViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBDB20B9A5370036AD9D /* EnterAppViewController.swift */; };
 		4A4DBBDE20B9A75A0036AD9D /* UserGuideViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBDD20B9A75A0036AD9D /* UserGuideViewController.swift */; };
 		4A4DBBE020B9A8EB0036AD9D /* AdvertiseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBDF20B9A8EB0036AD9D /* AdvertiseViewController.swift */; };
-		4A4DBBE520B9AB090036AD9D /* UserGuidePageItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBE420B9AB090036AD9D /* UserGuidePageItem.swift */; };
 		4A4DBBE720B9AC480036AD9D /* UserGuideItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBE620B9AC480036AD9D /* UserGuideItemCell.swift */; };
 		4A4DBBE920B9B3050036AD9D /* UserGuideLogginCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBE820B9B3050036AD9D /* UserGuideLogginCell.swift */; };
 		4A4DBBEB20BB8C520036AD9D /* DashboardNavigationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DBBEA20BB8C520036AD9D /* DashboardNavigationVC.swift */; };
@@ -247,7 +247,6 @@
 		4A93C2D01F82292E0022E97B /* statustage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4A93C2CE1F82292E0022E97B /* statustage.xib */; };
 		4A93C2D41F834C030022E97B /* subscribleItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2D31F834C030022E97B /* subscribleItem.swift */; };
 		4A93C2D91F834F2E0022E97B /* subjobitemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2D71F834F2E0022E97B /* subjobitemCell.swift */; };
-		4A93C2DC1F83574A0022E97B /* localData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2DB1F83574A0022E97B /* localData.swift */; };
 		4A93C2DE1F8359A20022E97B /* subconditions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2DD1F8359A20022E97B /* subconditions.swift */; };
 		4A93C2E71F88B8E20022E97B /* client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2E61F88B8E20022E97B /* client.swift */; };
 		4A95065821460FAE00842D75 /* searchServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A95065721460FAE00842D75 /* searchServer.swift */; };
@@ -418,6 +417,7 @@
 		4A14078320F8537F00F4E88E /* SearchBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBarView.swift; sourceTree = "<group>"; };
 		4A14078520FA08B000F4E88E /* ImageScrollerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageScrollerView.swift; sourceTree = "<group>"; };
 		4A14078720FA4ED500F4E88E /* BaseTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTableView.swift; sourceTree = "<group>"; };
+		4A14B78D21E8DFCA00563C97 /* BaseNetworkTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNetworkTool.swift; sourceTree = "<group>"; };
 		4A18E1EA202CA03F00B1038E /* TreeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeNode.swift; sourceTree = "<group>"; };
 		4A1A502520773A500070B74D /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		4A1A502720773A5C0070B74D /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -521,7 +521,6 @@
 		4A4DBBDB20B9A5370036AD9D /* EnterAppViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterAppViewController.swift; sourceTree = "<group>"; };
 		4A4DBBDD20B9A75A0036AD9D /* UserGuideViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserGuideViewController.swift; sourceTree = "<group>"; };
 		4A4DBBDF20B9A8EB0036AD9D /* AdvertiseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvertiseViewController.swift; sourceTree = "<group>"; };
-		4A4DBBE420B9AB090036AD9D /* UserGuidePageItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserGuidePageItem.swift; sourceTree = "<group>"; };
 		4A4DBBE620B9AC480036AD9D /* UserGuideItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserGuideItemCell.swift; sourceTree = "<group>"; };
 		4A4DBBE820B9B3050036AD9D /* UserGuideLogginCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserGuideLogginCell.swift; sourceTree = "<group>"; };
 		4A4DBBEA20BB8C520036AD9D /* DashboardNavigationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardNavigationVC.swift; sourceTree = "<group>"; };
@@ -636,7 +635,6 @@
 		4A93C2CE1F82292E0022E97B /* statustage.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = statustage.xib; sourceTree = "<group>"; };
 		4A93C2D31F834C030022E97B /* subscribleItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = subscribleItem.swift; sourceTree = "<group>"; };
 		4A93C2D71F834F2E0022E97B /* subjobitemCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = subjobitemCell.swift; sourceTree = "<group>"; };
-		4A93C2DB1F83574A0022E97B /* localData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = localData.swift; sourceTree = "<group>"; };
 		4A93C2DD1F8359A20022E97B /* subconditions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = subconditions.swift; sourceTree = "<group>"; };
 		4A93C2E61F88B8E20022E97B /* client.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = client.swift; sourceTree = "<group>"; };
 		4A95065721460FAE00842D75 /* searchServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = searchServer.swift; sourceTree = "<group>"; };
@@ -776,6 +774,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4A14B78F21E8E52A00563C97 /* Alamofire.framework in Frameworks */,
 				4A2145CB2078D0DC000959F4 /* MBProgressHUD.framework in Frameworks */,
 				4A2145BF2077BD37000959F4 /* libstdc++.tbd in Frameworks */,
 				4A2145BD2077BD1D000959F4 /* libiconv.tbd in Frameworks */,
@@ -797,7 +796,6 @@
 				4AC2D4FC1F89242E00EF0845 /* Security.framework in Frameworks */,
 				4ACBD6F71F77DE6C00A5FD23 /* Social.framework in Frameworks */,
 				4A3224051F5160EA0065A33F /* SDAutoLayout.framework in Frameworks */,
-				4A3224031F5160E50065A33F /* Alamofire.framework in Frameworks */,
 				D1EC4964AE33F5F8C9864AAB /* Pods_internals.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1191,7 +1189,6 @@
 		4A4DBBDA20B9A46B0036AD9D /* 引导界面 */ = {
 			isa = PBXGroup;
 			children = (
-				4A4DBBE320B9A9B50036AD9D /* mode */,
 				4A4DBBE220B9A9A80036AD9D /* view */,
 				4A4DBBE120B9A9A30036AD9D /* cell */,
 				4A4DBBDB20B9A5370036AD9D /* EnterAppViewController.swift */,
@@ -1215,14 +1212,6 @@
 			children = (
 			);
 			name = view;
-			sourceTree = "<group>";
-		};
-		4A4DBBE320B9A9B50036AD9D /* mode */ = {
-			isa = PBXGroup;
-			children = (
-				4A4DBBE420B9AB090036AD9D /* UserGuidePageItem.swift */,
-			);
-			name = mode;
 			sourceTree = "<group>";
 		};
 		4A502CF820B1CBB900BB71FD /* resumeSubItemCell */ = {
@@ -1608,11 +1597,11 @@
 			isa = PBXGroup;
 			children = (
 				4A20EEEA203D971C0021843B /* gifs */,
-				4A93C2DB1F83574A0022E97B /* localData.swift */,
 				4A8D28BA1FD195C900FA983F /* utils.swift */,
 				4AB0FED9201630B000932C02 /* LXFChatMshTimeHelper.swift */,
 				4A18E1EA202CA03F00B1038E /* TreeNode.swift */,
 				4AD8F754206FC6EC003969ED /* AppFileManager.swift */,
+				4A14B78D21E8DFCA00563C97 /* BaseNetworkTool.swift */,
 			);
 			name = tools;
 			sourceTree = "<group>";
@@ -2507,7 +2496,6 @@
 				4A12437E20E1DB070038336F /* AskSectionVC.swift in Sources */,
 				4A5C664920E7353600A4C647 /* extension+UIViewController.swift in Sources */,
 				4A5C664E20E782B400A4C647 /* NearCareerTalkMeetinVC.swift in Sources */,
-				4A4DBBE520B9AB090036AD9D /* UserGuidePageItem.swift in Sources */,
 				4A83103320F26A1600959413 /* photosView.swift in Sources */,
 				4A12438220E1DBD80038336F /* HelpSectionVC.swift in Sources */,
 				4A22A3A72073D1CE00024C2B /* resumePersonInfoCell.swift in Sources */,
@@ -2601,7 +2589,6 @@
 				4A93C2B51F80AB900022E97B /* messageMainView.swift in Sources */,
 				4AD2C77B209752DA002F3486 /* ConfigDropItemView.swift in Sources */,
 				4A39A7C020CC01DB00953C1C /* DropDegreeMenuView.swift in Sources */,
-				4A93C2DC1F83574A0022E97B /* localData.swift in Sources */,
 				4A5FFC1220F0E7B600DD6FD4 /* ShowPDFResumeVC.swift in Sources */,
 				4A9543A0209D5F8D009BCBE2 /* HRModel.swift in Sources */,
 				4A5C7C0E20D12E04009F548C /* Extension+YNDropMenuView.swift in Sources */,
@@ -2698,6 +2685,7 @@
 				4A686A902044526200571EB0 /* extension+tablecell.swift in Sources */,
 				4A1BA2BD208AE81C00CF8352 /* BaseScrollerView.swift in Sources */,
 				4A1BA2C8208B1E3A00CF8352 /* CompanyModel.swift in Sources */,
+				4A14B78E21E8DFCA00563C97 /* BaseNetworkTool.swift in Sources */,
 				4A8859181FF8DD2D0009D73D /* extension+uiview.swift in Sources */,
 				4A4254FB203EE0170049B237 /* HelpsVC.swift in Sources */,
 				4A502CF720B1CA5B00BB71FD /* ResumeOtherCell.swift in Sources */,

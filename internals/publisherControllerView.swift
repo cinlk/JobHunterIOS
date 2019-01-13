@@ -19,7 +19,7 @@ class publisherControllerView: BaseTableViewController {
     
     
     private lazy var headerView:personTableHeader = {
-        let h = personTableHeader.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: tHeaderHeight - NavH))
+        let h = personTableHeader.init(frame: CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: tHeaderHeight - NavH))
         h.isHR = true 
         return h
     }()
@@ -27,14 +27,14 @@ class publisherControllerView: BaseTableViewController {
     
     
     private lazy var navigationBack:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH))
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH))
         v.backgroundColor = UIColor.navigationBarColor()
         v.alpha = 0
         let title = UILabel.init(frame: CGRect.zero)
         title.text = ""
         title.textAlignment = .center
         title.tag = 1
-        title.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        title.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         title.font = UIFont.boldSystemFont(ofSize: 16)
         v.addSubview(title)
         _ = title.sd_layout().topSpaceToView(v,25)?.bottomSpaceToView(v,10)?.centerXEqualToView(v)?.autoHeightRatio(0)
@@ -46,7 +46,7 @@ class publisherControllerView: BaseTableViewController {
     
     // header 图片背景
     private lazy var bImg:UIImageView = {
-       let image = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: tHeaderHeight))
+       let image = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: tHeaderHeight))
        image.clipsToBounds = true
        image.contentMode = .scaleAspectFill
        image.image = UIImage.init(named: "pbackimg")
@@ -197,12 +197,12 @@ class publisherControllerView: BaseTableViewController {
         }
         
         let mode = publishJobs[indexPath.row]
-        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: companySimpleJobCell.self, contentViewWidth: ScreenW)
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: companySimpleJobCell.self, contentViewWidth: GlobalConfig.ScreenW)
         
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 10))
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 10))
         v.backgroundColor = UIColor.viewBackColor()
         return v
     }
@@ -239,7 +239,7 @@ class publisherControllerView: BaseTableViewController {
 extension publisherControllerView{
     private func setHeader(){
         
-        let th = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: tHeaderHeight))
+        let th = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: tHeaderHeight))
         th.backgroundColor = UIColor.clear
         self.tableView.tableHeaderView = th
         // 用bview来管理headerview，并根据滑动拉伸headerview
@@ -344,7 +344,7 @@ private class singleTextCell:UITableViewCell{
         label.textAlignment = .left
         label.textColor = UIColor.black
         label.text = "发布的职位"
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         return label
         
     }()

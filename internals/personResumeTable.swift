@@ -227,7 +227,7 @@ extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
                 return 0
             }
             
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: resume_personInfoCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: resume_personInfoCell.self, contentViewWidth: GlobalConfig.ScreenW)
         }else if indexPath.section == viewType.count - 1{
             
             
@@ -235,7 +235,7 @@ extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
                 return 0
             }
             mode.isOpen = false
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: person_evaluateCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: person_evaluateCell.self, contentViewWidth: GlobalConfig.ScreenW)
             
         }else{
             
@@ -255,14 +255,14 @@ extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
                 guard let modes = infos as?  [personEducationInfo] else { return 0  }
                 let mode = modes[indexPath.row - 1]
                 mode.isOpen = false
-                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: educationInfoCell.self, contentViewWidth: ScreenW)
+                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: educationInfoCell.self, contentViewWidth: GlobalConfig.ScreenW)
                 
                 
             case .works:
                 guard let modes = infos as?  [personInternInfo] else { return 0 }
                 let mode = modes[indexPath.row - 1]
                 mode.isOpen = false
-                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: jobInfoCell.self, contentViewWidth: ScreenW)
+                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: jobInfoCell.self, contentViewWidth: GlobalConfig.ScreenW)
                 
             case .project:
             
@@ -270,7 +270,7 @@ extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
                 let mode = modes[indexPath.row - 1]
                 mode.isOpen = false
                 
-                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: projectInfoCell.self, contentViewWidth: ScreenW)
+                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: projectInfoCell.self, contentViewWidth: GlobalConfig.ScreenW)
                 
             case .schoolWork:
                 
@@ -280,7 +280,7 @@ extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
                 let mode = modes[indexPath.row - 1]
                 mode.isOpen = false
                 
-                 return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: studentWorkCell.self, contentViewWidth: ScreenW)
+                 return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: studentWorkCell.self, contentViewWidth: GlobalConfig.ScreenW)
               
                 
             case .practice:
@@ -289,7 +289,7 @@ extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
                 let mode = modes[indexPath.row - 1]
                 mode.isOpen = false
                 
-                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: SocialPracticeCell.self, contentViewWidth: ScreenW)
+                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: SocialPracticeCell.self, contentViewWidth: GlobalConfig.ScreenW)
 
                 
             case .other:
@@ -298,7 +298,7 @@ extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
                 let mode = modes[indexPath.row - 1]
                 mode.isOpen = false
                 
-                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: ResumeOtherCell.self, contentViewWidth: ScreenW)
+                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: ResumeOtherCell.self, contentViewWidth: GlobalConfig.ScreenW)
 
                 
             case .skills:
@@ -307,7 +307,7 @@ extension personResumeTable: UITableViewDataSource, UITableViewDelegate{
                 let mode = modes[indexPath.row - 1]
                 mode.isOpen = false
                 
-                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: person_skillCell.self, contentViewWidth: ScreenW)
+                return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: person_skillCell.self, contentViewWidth: GlobalConfig.ScreenW)
             
             default:
                 break

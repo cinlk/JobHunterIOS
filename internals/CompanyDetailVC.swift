@@ -28,7 +28,7 @@ class CompanyDetailVC: UIViewController {
         tb.separatorStyle = .none
         //tb.bounces = false
         // 底部内容距离底部高60，防止回弹底部内容被影藏
-        let head = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: CompanyMainVC.headerViewH))
+        let head = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH))
         head.backgroundColor = UIColor.viewBackColor()
         tb.tableHeaderView = head
         
@@ -156,17 +156,17 @@ extension CompanyDetailVC: UITableViewDelegate, UITableViewDataSource{
         switch indexPath.section {
         case 0:
             let tags =  detailModel?.tags ?? []
-            return tableView.cellHeight(for: indexPath, model: tags, keyPath: "mode", cellClass: feedBackTypeCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: tags, keyPath: "mode", cellClass: feedBackTypeCell.self, contentViewWidth: GlobalConfig.ScreenW)
         case 1:
             let des  = detailModel?.describe ?? ""
-            return tableView.cellHeight(for: indexPath, model: des, keyPath: "des", cellClass: contentAndTitleCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: des, keyPath: "des", cellClass: contentAndTitleCell.self, contentViewWidth: GlobalConfig.ScreenW)
         case 2:
            
-            return tableView.cellHeight(for: indexPath, model: detailModel?.address, keyPath: "mode", cellClass: worklocateCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: detailModel?.address, keyPath: "mode", cellClass: worklocateCell.self, contentViewWidth: GlobalConfig.ScreenW)
             
         case 3:
             let mode = detailModel?.link
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: subIconAndTitleCell.self, contentViewWidth: ScreenW) + 20
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: subIconAndTitleCell.self, contentViewWidth: GlobalConfig.ScreenW) + 20
             
             
         default:

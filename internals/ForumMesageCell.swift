@@ -13,7 +13,7 @@ import UIKit
    
     private lazy var titleLabel:UILabel = {
         let lb = UILabel()
-        lb.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20)
+        lb.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 20)
         lb.isAttributedContent = true
         
         return lb
@@ -22,7 +22,7 @@ import UIKit
     private lazy var subTitle:UILabel = {
         let lb = UILabel()
         lb.font = UIFont.systemFont(ofSize: 14)
-        lb.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20)
+        lb.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 20)
         lb.textAlignment = .left
         lb.textColor = UIColor.black
         return lb
@@ -40,7 +40,7 @@ import UIKit
         
         let lb = UILabel()
         lb.font = UIFont.systemFont(ofSize: 14)
-        lb.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20)
+        lb.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 20)
         lb.textAlignment = .left
         lb.textColor = UIColor.black
         return lb
@@ -100,7 +100,7 @@ import UIKit
                     return
                 }
                 
-                let cgsize = UILabel.sizeOfString(string: content as NSString, font: reply.font, maxWidth:  ScreenW - 20)                
+                let cgsize = UILabel.sizeOfString(string: content as NSString, font: reply.font, maxWidth:  GlobalConfig.ScreenW - 20)                
                  _ = replyContent.sd_layout().heightIs(cgsize.height + 10)
                 
                 reply.text = content

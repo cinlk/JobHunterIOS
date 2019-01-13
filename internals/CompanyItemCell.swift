@@ -22,7 +22,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
     
     private lazy var company:UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - imgSize.width - 20)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 16)
         label.textColor = UIColor.black
@@ -32,7 +32,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
     
     private lazy var types:UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - imgSize.width - 20)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = UIColor.black
@@ -41,7 +41,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
     
     private lazy var address:UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - imgSize.width - 20)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = UIColor.lightGray
@@ -52,7 +52,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
     private lazy var follows:UILabel = {
         let label = UILabel()
         label.isAttributedContent = true
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - imgSize.width - 20)
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 12)
         return label

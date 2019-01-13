@@ -60,7 +60,7 @@ class PasswordLoggingViewController: UITableViewController {
     }()
     
     private lazy var tableFootView:UIView = {
-        let view = UIView(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 40))
+        let view = UIView(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 40))
         view.backgroundColor = UIColor.white
         return view
     }()

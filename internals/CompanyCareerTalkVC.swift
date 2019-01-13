@@ -24,7 +24,7 @@ class CompanyCareerTalkVC: BaseViewController {
     internal lazy var table:UITableView = {
         let tb = UITableView()
         tb.backgroundColor = UIColor.viewBackColor()
-        let hearder = UIView(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: CompanyMainVC.headerViewH))
+        let hearder = UIView(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH))
         tb.tableHeaderView = hearder
         tb.tableFooterView = UIView()
         tb.contentInsetAdjustmentBehavior = .never
@@ -164,7 +164,7 @@ extension CompanyCareerTalkVC: UITableViewDelegate{
    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let mode = self.datas[indexPath.row]
-        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CareerTalkCell.self, contentViewWidth: ScreenW)
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CareerTalkCell.self, contentViewWidth: GlobalConfig.ScreenW)
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {

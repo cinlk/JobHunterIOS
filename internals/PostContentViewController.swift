@@ -60,7 +60,7 @@ class PostContentViewController: BaseTableViewController {
     
     // 分享view
     private lazy var shareV:shareView = {
-        let share = shareView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: shareViewH))
+        let share = shareView.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: shareViewH))
         share.delegate = self
         return share
     }()
@@ -71,7 +71,7 @@ class PostContentViewController: BaseTableViewController {
     
     // 底部输入框view
     private lazy var inputText:ChatInputView = {
-        let text = ChatInputView.init(frame: CGRect.init(x: 0, y: ScreenH - InputViewHeigh , width: ScreenW, height: InputViewHeigh))
+        let text = ChatInputView.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH - InputViewHeigh , width: GlobalConfig.ScreenW, height: InputViewHeigh))
         text.defaultText = self.defaultText
         text.plashold.text = self.defaultText
         text.delegate = self
@@ -201,7 +201,7 @@ class PostContentViewController: BaseTableViewController {
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let mode = replyModels[indexPath.row]
-        return  tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: ReplyPostTableViewCell.self, contentViewWidth: ScreenW)
+        return  tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: ReplyPostTableViewCell.self, contentViewWidth: GlobalConfig.ScreenW)
         
     }
     
@@ -371,7 +371,7 @@ extension PostContentViewController{
         
         UIView.animate(withDuration: TimeInterval(truncating: duration), delay: 0, options: [UIView.AnimationOptions.init(rawValue: UInt(truncating: curve))], animations: {
       
-            self.inputText.frame.origin.y = ScreenH - self.keyboardH  - self.InputViewHeigh
+            self.inputText.frame.origin.y = GlobalConfig.ScreenH - self.keyboardH  - self.InputViewHeigh
             
 
         }, completion: nil)
@@ -387,7 +387,7 @@ extension PostContentViewController{
         keyboardH = 0
         
         UIView.animate(withDuration: TimeInterval(truncating: duration), delay: 0, options: [.curveEaseIn,UIView.AnimationOptions.init(rawValue: UInt(truncating: curve))], animations: {
-           self.inputText.frame.origin.y = ScreenH - self.InputViewHeigh
+           self.inputText.frame.origin.y = GlobalConfig.ScreenH - self.InputViewHeigh
             
 
         }, completion: nil)
@@ -403,15 +403,15 @@ extension PostContentViewController{
 extension PostContentViewController: ChatInputViewDelegate{
     
     func changeBarHeight(textView: UITextView, height: CGFloat) {
-        let pointY:CGFloat = ScreenH - keyboardH - TOOLBARH - height
+        let pointY:CGFloat = GlobalConfig.ScreenH - keyboardH - TOOLBARH - height
         //print(height)
         if height == 0 {
             InputViewHeigh = TOOLBARH
             
-            self.inputText.frame = CGRect.init(x: 0, y: pointY, width: ScreenW, height: InputViewHeigh)
+            self.inputText.frame = CGRect.init(x: 0, y: pointY, width: GlobalConfig.ScreenW, height: InputViewHeigh)
         }else{
             InputViewHeigh = TOOLBARH + height
-            self.inputText.frame = CGRect.init(x: 0, y: pointY, width: ScreenW, height: InputViewHeigh)
+            self.inputText.frame = CGRect.init(x: 0, y: pointY, width: GlobalConfig.ScreenW, height: InputViewHeigh)
         }
      
     }
@@ -483,7 +483,7 @@ fileprivate class contentHeaderView:PostHeaderView{
             self.createTime.text = "发布于 " + mode.createTimeStr
             self.contentText.text = mode.content
             // 计算contentText高度
-            let contentSize = self.contentText.sizeThatFits(CGSize.init(width: ScreenW, height: CGFloat(MAXFLOAT))
+            let contentSize = self.contentText.sizeThatFits(CGSize.init(width: GlobalConfig.ScreenW, height: CGFloat(MAXFLOAT))
             )
             _ = self.contentText.sd_layout().heightIs(contentSize.height)
             
@@ -509,7 +509,7 @@ fileprivate class contentHeaderView:PostHeaderView{
     private lazy var contentTitle:UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 40)
         label.font = UIFont.boldSystemFont(ofSize: 16)
         return label
         

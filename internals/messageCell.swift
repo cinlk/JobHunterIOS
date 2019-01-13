@@ -166,15 +166,15 @@ class messageCell: UITableViewCell {
                 self.avatar.image =  #imageLiteral(resourceName: "default")
             }
             
-            self.avatar.frame = CGRect.init(x: ScreenW-avatarSize.width-5 , y: 0, width: avatarSize.width, height: avatarSize.height)
+            self.avatar.frame = CGRect.init(x: GlobalConfig.ScreenW-avatarSize.width-5 , y: 0, width: avatarSize.width, height: avatarSize.height)
             
             // 拉伸图片
             self.bubleBackGround.image = UIImage.resizeableImage(name: "mebubble")
             self.bubleBackGround.tintColor = UIColor.init(r: 136, g: 211, b: 67)
             
             
-            self.bubleBackGround.frame = CGRect.init(x: ScreenW-5-self.avatar.frame.width-5-bubleSize.width, y: y-5, width: bubleSize.width, height: bubleSize.height)
-            self.messgeText.frame = CGRect.init(x: ScreenW-5-self.avatar.frame.width-5-bubleSize.width + 5 , y: y, width: labelSize.width + extraWitdhTextView, height: h)
+            self.bubleBackGround.frame = CGRect.init(x: GlobalConfig.ScreenW-5-self.avatar.frame.width-5-bubleSize.width, y: y-5, width: bubleSize.width, height: bubleSize.height)
+            self.messgeText.frame = CGRect.init(x: GlobalConfig.ScreenW-5-self.avatar.frame.width-5-bubleSize.width + 5 , y: y, width: labelSize.width + extraWitdhTextView, height: h)
             
         }
         // 别人发的消息

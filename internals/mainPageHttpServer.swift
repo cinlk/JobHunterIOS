@@ -145,7 +145,7 @@ enum Jobs{
 extension Jobs: TargetType{
     
     var baseURL: URL {
-        return URL.init(string: APP_JOB_URL)!
+        return URL.init(string: GlobalConfig.BASE_URL)!
     }
     
     var path: String {

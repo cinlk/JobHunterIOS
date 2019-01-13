@@ -41,7 +41,7 @@ class pagetitleView: UIView {
     
     
     lazy var subline:UIView = { [unowned self] in
-        let v = UIView.init(frame: CGRect.init(x: 0, y: self.bounds.height-1, width: ScreenW, height: 1))
+        let v = UIView.init(frame: CGRect.init(x: 0, y: self.bounds.height-1, width: GlobalConfig.ScreenW, height: 1))
         v.backgroundColor = UIColor.init(r: 100, g: 100, b: 100, alpha: 0.5)
         return v
     }()
@@ -128,7 +128,7 @@ extension pagetitleView{
                 // 缩短间隔距离
                 self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: itemWidth, verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: horizontalEdgeInset)
             }else{
-                self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: (ScreenW - 20) / CGFloat(count), verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: horizontalEdgeInset)
+                self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: (GlobalConfig.ScreenW - 20) / CGFloat(count), verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: horizontalEdgeInset)
             }
         }else{
              //let diff = 4 - count

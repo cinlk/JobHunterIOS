@@ -22,7 +22,7 @@ class JobDetailHeader:UIView {
     private lazy var jobName: UILabel = {
         let jobName = UILabel()
         jobName.font = UIFont.boldSystemFont(ofSize: 16)
-        jobName.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20 )
+        jobName.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 20 )
         jobName.textAlignment = .left
         return jobName
         
@@ -30,7 +30,7 @@ class JobDetailHeader:UIView {
     private lazy var address: UILabel = {
         let address = UILabel()
         address.font = UIFont.systemFont(ofSize: 13)
-        address.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40 )
+        address.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 40 )
         address.textAlignment = .left
         return address
         
@@ -64,7 +64,7 @@ class JobDetailHeader:UIView {
     private lazy var des:UILabel = {
         let des = UILabel.init()
         des.font = UIFont.systemFont(ofSize: 14)
-        des.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20 )
+        des.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 20 )
         des.textAlignment = .left
         des.textColor = UIColor.lightGray
         return des

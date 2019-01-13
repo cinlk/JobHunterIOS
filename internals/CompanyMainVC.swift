@@ -56,7 +56,7 @@ class CompanyMainVC: BaseViewController {
         layout.minimumLineSpacing = 0
         layout.minimumInteritemSpacing = 0
         // 与顶部留出间隔
-        layout.itemSize = CGSize.init(width: ScreenW, height: ScreenH -  NavH)
+        layout.itemSize = CGSize.init(width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH -  NavH)
         layout.scrollDirection = .horizontal
         return layout
     }()
@@ -80,7 +80,7 @@ class CompanyMainVC: BaseViewController {
 // 分享界面
     private lazy var shareapps:shareView = { [unowned self] in
         //放在最下方
-        let view =  shareView(frame: CGRect(x: 0, y: ScreenH, width: ScreenW, height: shareViewH))
+        let view =  shareView(frame: CGRect(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: shareViewH))
         view.delegate = self
         return view
     }()
@@ -88,7 +88,7 @@ class CompanyMainVC: BaseViewController {
     
     
     private lazy var headerView:CompanyHeaderView = {
-        let header = CompanyHeaderView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: 0))
+        let header = CompanyHeaderView.init(frame: CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: 0))
         header.backgroundColor = UIColor.white
         header.delegate = self
         return header
@@ -192,9 +192,9 @@ class CompanyMainVC: BaseViewController {
         //  30 是计算的固定值： label 的高度和line之间的高度
         CompanyMainVC.headerThreld = CompanyMainVC.headerViewH - 30
         // 调整子vc 的tableheader高度
-        companyJobs.joblistTable.tableHeaderView?.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height:  CompanyMainVC.headerViewH)
-        companyDetail.detailTable.tableHeaderView?.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: CompanyMainVC.headerViewH)
-        companyCarrerTalk.table.tableHeaderView?.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: CompanyMainVC.headerViewH)
+        companyJobs.joblistTable.tableHeaderView?.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height:  CompanyMainVC.headerViewH)
+        companyDetail.detailTable.tableHeaderView?.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH)
+        companyCarrerTalk.table.tableHeaderView?.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH)
         
         
    
@@ -411,15 +411,15 @@ extension CompanyMainVC: CompanySubTableScrollDelegate{
         
         if height >= CompanyMainVC.headerThreld{
             // 改变头部视图
-            self.headerView.frame = CGRect.init(x: 0, y: NavH - CompanyMainVC.headerThreld, width: ScreenW, height: CompanyMainVC.headerViewH)
+            self.headerView.frame = CGRect.init(x: 0, y: NavH - CompanyMainVC.headerThreld, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH)
             self.navigationItem.title = mode?.name
             return
             
         }else if height > 0 && height < CompanyMainVC.headerThreld{
-            self.headerView.frame = CGRect.init(x: 0, y: NavH - height, width: ScreenW, height: CompanyMainVC.headerViewH)
+            self.headerView.frame = CGRect.init(x: 0, y: NavH - height, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH)
             
         }else{
-            self.headerView.frame = CGRect.init(x: 0, y: NavH, width: ScreenW, height: CompanyMainVC.headerViewH)
+            self.headerView.frame = CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH)
             self.navigationItem.title = "公司详情"
             
         }
@@ -486,7 +486,7 @@ fileprivate class CompanyHeaderView:UIView{
     private lazy var companyName:UILabel = {
         let label = UILabel.init()
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 100)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 100)
         label.font = UIFont.boldSystemFont(ofSize: 16)
         return label
     }()
@@ -496,7 +496,7 @@ fileprivate class CompanyHeaderView:UIView{
         label.font = UIFont.systemFont(ofSize: 12)
         label.textAlignment = .left
         label.textColor = UIColor.lightGray
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 100)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 100)
         return label
     }()
     
@@ -504,7 +504,7 @@ fileprivate class CompanyHeaderView:UIView{
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: 12)
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 100)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 100)
         return label
     }()
     
@@ -606,7 +606,7 @@ fileprivate class CompanyHeaderView:UIView{
         _ = des.sd_layout().leftEqualToView(companyName)?.topSpaceToView(kinds,5)?.autoHeightRatio(0)
         _ = line.sd_layout().topSpaceToView(des,5)?.leftEqualToView(icon)?.rightEqualToView(self)?.heightIs(1)
         
-        let labelW:CGFloat = (ScreenW - 20 - 15*2) / 3
+        let labelW:CGFloat = (GlobalConfig.ScreenW - 20 - 15*2) / 3
         _ = detail.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(line,5)?.widthIs(labelW)?.heightIs(20)
         _ = jobs.sd_layout().leftSpaceToView(detail, 15)?.topSpaceToView(line,5)?.widthIs(labelW)?.heightIs(20)
         _ = talk.sd_layout().leftSpaceToView(jobs, 15)?.topSpaceToView(line,5)?.widthIs(labelW)?.heightIs(20)

@@ -140,7 +140,7 @@ extension MagazineViewController: UITableViewDataSource, UITableViewDelegate{
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let mode = modes[indexPath.row]
         
-        return table.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: MagineTableViewCell.self, contentViewWidth: ScreenW)
+        return table.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: MagineTableViewCell.self, contentViewWidth: GlobalConfig.ScreenW)
     }
     
     

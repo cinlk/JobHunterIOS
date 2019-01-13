@@ -24,7 +24,7 @@ class SelectedThreeTableView:UIView{
         let title = UILabel.init()
         title.font = UIFont.boldSystemFont(ofSize: 16)
         title.textColor = UIColor.black
-        title.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        title.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         title.textAlignment = .center
         return title
     }()
@@ -95,7 +95,7 @@ class SelectedThreeTableView:UIView{
         scroll.backgroundColor = UIColor.white
         scroll.bounces = false
         scroll.delegate = self
-        scroll.contentSize = CGSize.init(width: ScreenW + ScreenW / 2 , height: self.frame.height - 36)
+        scroll.contentSize = CGSize.init(width: GlobalConfig.ScreenW + GlobalConfig.ScreenW / 2 , height: self.frame.height - 36)
         return scroll
     }()
     
@@ -175,15 +175,15 @@ class SelectedThreeTableView:UIView{
         _ = title.sd_layout().topSpaceToView(self,5)?.centerXEqualToView(self)?.autoHeightRatio(0)
         _ = confirm.sd_layout().rightSpaceToView(self,5)?.centerYEqualToView(title)?.widthIs(50)?.heightRatioToView(title,1.5)
         
-        _ = line.sd_layout().topSpaceToView(title,5)?.widthIs(ScreenW)?.heightIs(1)
+        _ = line.sd_layout().topSpaceToView(title,5)?.widthIs(GlobalConfig.ScreenW)?.heightIs(1)
         
         
         _ = scroller.sd_layout().leftEqualToView(self)?.topSpaceToView(line,0)?.bottomEqualToView(self)?.rightEqualToView(self)
         
         
-        _ = table1.sd_layout().leftEqualToView(scroller)?.topEqualToView(scroller)?.bottomEqualToView(scroller)?.widthIs(ScreenW / 2)
-        _ = table2.sd_layout().leftSpaceToView(table1,0)?.topEqualToView(scroller)?.bottomEqualToView(scroller)?.widthIs(ScreenW / 2)
-        _ = table3.sd_layout().leftSpaceToView(table2,0)?.topEqualToView(scroller)?.bottomEqualToView(scroller)?.widthIs(ScreenW / 2)
+        _ = table1.sd_layout().leftEqualToView(scroller)?.topEqualToView(scroller)?.bottomEqualToView(scroller)?.widthIs(GlobalConfig.ScreenW / 2)
+        _ = table2.sd_layout().leftSpaceToView(table1,0)?.topEqualToView(scroller)?.bottomEqualToView(scroller)?.widthIs(GlobalConfig.ScreenW / 2)
+        _ = table3.sd_layout().leftSpaceToView(table2,0)?.topEqualToView(scroller)?.bottomEqualToView(scroller)?.widthIs(GlobalConfig.ScreenW / 2)
         
         
     }
@@ -301,7 +301,7 @@ extension SelectedThreeTableView: UITableViewDelegate,UITableViewDataSource,UISc
             last = currentNode.item
             table3.reloadData()
             // 滑过第一个table
-            scroller.setContentOffset(CGPoint(x:ScreenW / 2,y:0), animated: true)
+            scroller.setContentOffset(CGPoint(x:GlobalConfig.ScreenW / 2,y:0), animated: true)
         }else{
             self.selectedItems(row: indexPath.row, cell: cell)
         }

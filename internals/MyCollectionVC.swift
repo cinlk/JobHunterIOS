@@ -28,7 +28,7 @@ class MyCollectionVC: UIViewController {
     private let observerName:[String] = ["jobCollectedVC","CompanyCollectedVC","MeetingCollectedVC","PostCollectedViewController"]
  
     private lazy var pageTitle:pagetitleView = { [unowned self ] in
-        let pageTitle:pagetitleView = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: pagetTitleH), titles: self.titles, lineCenter: true )
+        let pageTitle:pagetitleView = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: pagetTitleH), titles: self.titles, lineCenter: true )
     
         pageTitle.delegate = self
         return pageTitle
@@ -61,7 +61,7 @@ class MyCollectionVC: UIViewController {
     
     
     private lazy var bottomBar:UIToolbar = {
-        let bar = UIToolbar.init(frame: CGRect.init(x: 0, y: ScreenH - 44, width: ScreenW, height: 44))
+        let bar = UIToolbar.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH - 44, width: GlobalConfig.ScreenW, height: 44))
         bar.isHidden = true
         bar.barStyle = .default
         bar.isTranslucent = true
@@ -82,7 +82,7 @@ class MyCollectionVC: UIViewController {
         let post = PostCollectedViewController()
         childVC.append(post)
         
-        let v:pageContentView = pageContentView.init(frame: CGRect.init(x: 0, y: NavH + pagetTitleH , width: ScreenW, height: ScreenH - NavH - pagetTitleH), childVCs: childVC, pVC: self)
+        let v:pageContentView = pageContentView.init(frame: CGRect.init(x: 0, y: NavH + pagetTitleH , width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - NavH - pagetTitleH), childVCs: childVC, pVC: self)
         v.delegate = self
         return v
         

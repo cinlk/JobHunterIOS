@@ -14,7 +14,7 @@ import Kingfisher
     
     //头像
     private lazy var avartar:UIImageView = {
-        var v = UIImageView.init(frame: CGRect.init(x: ScreenW - 45 - 5, y: 5, width: 45, height: 45))
+        var v = UIImageView.init(frame: CGRect.init(x: GlobalConfig.ScreenW - 45 - 5, y: 5, width: 45, height: 45))
         
         v.contentMode = .scaleAspectFit
         v.clipsToBounds = true

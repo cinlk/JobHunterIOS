@@ -26,7 +26,7 @@ class AreaCollectionView: UIView {
     
     private lazy var layout:UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize.init(width: (ScreenW - 50) / 3 , height: 40)
+        layout.itemSize = CGSize.init(width: (GlobalConfig.ScreenW - 50) / 3 , height: 40)
         layout.minimumLineSpacing = 10
         layout.minimumInteritemSpacing = 10
         

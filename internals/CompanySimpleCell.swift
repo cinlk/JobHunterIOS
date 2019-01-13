@@ -20,7 +20,7 @@ import Kingfisher
     
     private lazy var name:UILabel = {
         let lb = UILabel.init(frame: CGRect.zero)
-        lb.setSingleLineAutoResizeWithMaxWidth(ScreenW - 60)
+        lb.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 60)
         lb.font = UIFont.systemFont(ofSize: 16)
         lb.textAlignment = .left
         
@@ -30,7 +30,7 @@ import Kingfisher
     private lazy var detail:UILabel = {
         let lb = UILabel.init(frame: CGRect.zero)
         lb.isAttributedContent = true
-        lb.setSingleLineAutoResizeWithMaxWidth(ScreenW - 60)
+        lb.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 60)
         lb.font = UIFont.systemFont(ofSize: 14)
         lb.textAlignment = .left
         return lb

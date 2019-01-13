@@ -34,8 +34,6 @@ let SEARCH_BAR_H:CGFloat = 30
 let DROP_MENU_H:CGFloat = 40 
 
 // 屏幕宽高
-let ScreenW:CGFloat = UIScreen.main.bounds.width
-let ScreenH:CGFloat = UIScreen.main.bounds.height
 
 
 // cell lable offsetx 偏移

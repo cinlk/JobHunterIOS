@@ -16,14 +16,14 @@ import UIKit
     private lazy var topdescription: UILabel = {
         let label = UILabel.init()
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         label.font = UIFont.boldSystemFont(ofSize: 20)
         return label
     }()
     private lazy var works: UILabel = {
         let label = UILabel.init()
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
          label.font = UIFont.boldSystemFont(ofSize: 16)
         return label
         
@@ -31,7 +31,7 @@ import UIKit
     private lazy var workcontent: UILabel = {
         let label = UILabel.init()
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 60)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 60)
         label.font = UIFont.systemFont(ofSize: 15)
         return label
         
@@ -39,7 +39,7 @@ import UIKit
     private lazy var demand: UILabel = {
         let label = UILabel.init()
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         label.font = UIFont.boldSystemFont(ofSize: 16)
         return label
         
@@ -47,7 +47,7 @@ import UIKit
     private lazy var demandInfo: UILabel = {
         let label = UILabel.init()
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 60)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 60)
         label.font = UIFont.systemFont(ofSize: 15)
         
         return label

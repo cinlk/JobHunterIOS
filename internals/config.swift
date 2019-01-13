@@ -11,6 +11,7 @@ import Foundation
 import SwiftDate
 import Alamofire
 import Moya
+import Kingfisher
 
 /* 定义全局的变量 */
 // 时区
@@ -19,13 +20,6 @@ let regionRome =  Region.init(calendar: Calendars.gregorian, zone: Zones.asiaSha
 
 
 
-
-
-
-
-// url
-let GITHUB_API_URL:String = "https://api.github.com"
-let APP_JOB_URL:String = "http://18.179.132.85:8080"
 
 
 
@@ -166,5 +160,21 @@ struct ConfigSharedApp{
     }
     
 }
+
+
+
+// server base url
+struct GlobalConfig {
+    
+    static let BASE_URL = "http://127.0.0.1:9090/"
+    // 屏幕宽高
+    static let ScreenW:CGFloat = UIScreen.main.bounds.width
+    static let ScreenH:CGFloat = UIScreen.main.bounds.height
+}
+
+
+
+
+
 
 

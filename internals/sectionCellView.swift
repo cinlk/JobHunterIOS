@@ -14,7 +14,7 @@ import UIKit
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: 16)
         label.textAlignment = .left
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         return label
     }()
     

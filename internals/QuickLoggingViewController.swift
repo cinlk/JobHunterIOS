@@ -53,10 +53,10 @@ class QuickLoggingViewController: UITableViewController {
     
     
     private lazy var tableFootView:UIView = {  [unowned self] in 
-        let v = UIView(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 40))
+        let v = UIView(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 40))
         v.isUserInteractionEnabled = true 
         let lb = UILabel()
-        lb.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
+        lb.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 40)
         lb.font = UIFont.systemFont(ofSize: 14)
         lb.textAlignment = .center
         lb.textColor = UIColor.black

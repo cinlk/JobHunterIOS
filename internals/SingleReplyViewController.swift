@@ -81,7 +81,7 @@ class SingleReplyViewController: BaseViewController {
     // 回复数据加载 状态进度
     internal lazy var  progressView:UIActivityIndicatorView = {
         let pv = UIActivityIndicatorView.init(style: UIActivityIndicatorView.Style.whiteLarge)
-        pv.center = CGPoint.init(x: ScreenW/2, y: ScreenH/2)
+        pv.center = CGPoint.init(x: GlobalConfig.ScreenW/2, y: GlobalConfig.ScreenH/2)
         pv.color = UIColor.orange
         pv.hidesWhenStopped = true
         return pv
@@ -114,7 +114,7 @@ class SingleReplyViewController: BaseViewController {
     
     // 底部输入框view
     private lazy var inputText:ChatInputView = {
-        let text = ChatInputView.init(frame: CGRect.init(x: 0, y: ScreenH - InputViewHeigh , width: ScreenW, height: InputViewHeigh))
+        let text = ChatInputView.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH - InputViewHeigh , width: GlobalConfig.ScreenW, height: InputViewHeigh))
         text.plashold.text = "回复\(currentSenderName)"
         text.delegate = self
         text.isHidden = true
@@ -211,7 +211,7 @@ extension SingleReplyViewController: UITableViewDataSource, UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let mode = allSubReplys[indexPath.row]
-        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: contentCell.self, contentViewWidth: ScreenW)
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: contentCell.self, contentViewWidth: GlobalConfig.ScreenW)
         
     }
     
@@ -360,7 +360,7 @@ extension SingleReplyViewController{
         
         UIView.animate(withDuration: TimeInterval(truncating: duration), delay: 0, options: [UIView.AnimationOptions.init(rawValue: UInt(truncating: curve))], animations: {
             
-            self.inputText.frame.origin.y = ScreenH - self.keyboardH  - self.InputViewHeigh
+            self.inputText.frame.origin.y = GlobalConfig.ScreenH - self.keyboardH  - self.InputViewHeigh
             
             
         }, completion: nil)
@@ -378,7 +378,7 @@ extension SingleReplyViewController{
  
         
         UIView.animate(withDuration: TimeInterval(truncating: duration), delay: 0, options: [.curveEaseIn,UIView.AnimationOptions.init(rawValue: UInt(truncating: curve))], animations: {
-            self.inputText.frame.origin.y = ScreenH - self.InputViewHeigh
+            self.inputText.frame.origin.y = GlobalConfig.ScreenH - self.InputViewHeigh
             
             
         }, completion: { bool in
@@ -403,15 +403,15 @@ extension SingleReplyViewController{
 extension SingleReplyViewController: ChatInputViewDelegate{
     
     func changeBarHeight(textView: UITextView, height: CGFloat) {
-        let pointY:CGFloat = ScreenH - keyboardH - TOOLBARH - height
+        let pointY:CGFloat = GlobalConfig.ScreenH - keyboardH - TOOLBARH - height
         //print(height)
         if height == 0 {
             InputViewHeigh = TOOLBARH
             
-            self.inputText.frame = CGRect.init(x: 0, y: pointY, width: ScreenW, height: InputViewHeigh)
+            self.inputText.frame = CGRect.init(x: 0, y: pointY, width: GlobalConfig.ScreenW, height: InputViewHeigh)
         }else{
             InputViewHeigh = TOOLBARH + height
-            self.inputText.frame = CGRect.init(x: 0, y: pointY, width: ScreenW, height: InputViewHeigh)
+            self.inputText.frame = CGRect.init(x: 0, y: pointY, width: GlobalConfig.ScreenW, height: InputViewHeigh)
         }
         
     }
@@ -486,7 +486,7 @@ internal class  singleHeaderView:PostHeaderView{
             self.contentText.text = mode.replyContent
             
             // 计算contentText高度
-            let contentSize = self.contentText.sizeThatFits(CGSize.init(width: ScreenW, height: CGFloat(MAXFLOAT))
+            let contentSize = self.contentText.sizeThatFits(CGSize.init(width: GlobalConfig.ScreenW, height: CGFloat(MAXFLOAT))
             )
             _ = self.contentText.sd_layout().heightIs(contentSize.height)
             
@@ -501,7 +501,7 @@ internal class  singleHeaderView:PostHeaderView{
             _ = self.thumbUP.sd_layout().widthIs(25 + thumbSize.width)
             self.thumbUP.setTitle(thumbStr, for: .normal)
             
-            userName.setSingleLineAutoResizeWithMaxWidth(ScreenW - 45 - 10  -  thumbUP.width - reply.width)
+            userName.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 45 - 10  -  thumbUP.width - reply.width)
             
             self.setupAutoHeight(withBottomView: self.contentText, bottomMargin: 10)
         }

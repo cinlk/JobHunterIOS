@@ -166,7 +166,7 @@ extension itemPickerView: UIPickerViewDelegate, UIPickerViewDataSource{
     
     
     func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
-        return ScreenW / CGFloat(self.nodeComponents.count)  - 50
+        return GlobalConfig.ScreenW / CGFloat(self.nodeComponents.count)  - 50
         
     }
     

@@ -27,7 +27,7 @@ class ImageScrollerView: UIScrollView {
         didSet{
             self.page.numberOfPages = pageCount!
             self.page.currentPage = 0
-            self.page.frame = CGRect.init(x: (ScreenW -  CGFloat(pageCount! * 20))/2, y: self.size.height - 20, width: CGFloat(pageCount! * 20), height: 10)
+            self.page.frame = CGRect.init(x: (GlobalConfig.ScreenW -  CGFloat(pageCount! * 20))/2, y: self.size.height - 20, width: CGFloat(pageCount! * 20), height: 10)
         }
     }
     

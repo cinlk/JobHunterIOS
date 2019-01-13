@@ -97,7 +97,7 @@ extension MeetingCollectedVC: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let job = datas[indexPath.row]
-        return  tableView.cellHeight(for: indexPath, model: job, keyPath: "mode", cellClass: CareerTalkCell.self, contentViewWidth: ScreenW)
+        return  tableView.cellHeight(for: indexPath, model: job, keyPath: "mode", cellClass: CareerTalkCell.self, contentViewWidth: GlobalConfig.ScreenW)
         
     }
     

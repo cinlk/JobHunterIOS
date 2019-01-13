@@ -131,7 +131,7 @@ extension feedBackTypeCell: UICollectionViewDelegate, UICollectionViewDelegateFl
             return CGSize.init(width: 0, height: 0)
         }
         
-        let item = (mode[indexPath.row] as NSString).boundingRect(with: CGSize.init(width: CGFloat(ScreenW - 40), height: itemHeight), options: NSStringDrawingOptions.usesFontLeading, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14)], context: nil)
+        let item = (mode[indexPath.row] as NSString).boundingRect(with: CGSize.init(width: CGFloat(GlobalConfig.ScreenW - 40), height: itemHeight), options: NSStringDrawingOptions.usesFontLeading, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 14)], context: nil)
         
         return CGSize.init(width: item.width + 10, height: itemHeight)
     }

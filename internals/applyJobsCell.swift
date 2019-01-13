@@ -29,7 +29,7 @@ import UIKit
             }
             
             
-            let size = self.content.sizeThatFits(CGSize.init(width: ScreenW - 20, height: CGFloat(MAXFLOAT)))
+            let size = self.content.sizeThatFits(CGSize.init(width: GlobalConfig.ScreenW - 20, height: CGFloat(MAXFLOAT)))
             _ = self.content.sd_layout().heightIs(size.height + 10)
             
             self.setupAutoHeight(withBottomView: content, bottomMargin: 20)

@@ -45,7 +45,7 @@ class BaseSingleItemDropView: YNDropDownView {
     
     // 全局的 透明背景view
     internal lazy var backGroundBtn:UIButton = {
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 0))
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 0))
         btn.addTarget(self, action: #selector(hidden), for: .touchUpInside)
         btn.backgroundColor = UIColor.clear
         btn.alpha = 1

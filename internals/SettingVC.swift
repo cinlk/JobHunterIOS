@@ -229,7 +229,8 @@ extension SettingVC: UIScrollViewDelegate{
 
 extension SettingVC {
     
-    // 清理缓存
+    // 清理缓存 d 缓存的文件？
+    //  清楚 app 保留的userdefault 数据
     @objc private func clearCache(_ params: IndexPath?){
         
           guard  let index = params else {
@@ -239,6 +240,10 @@ extension SettingVC {
           //showOnlyTextHub(message: "清楚完成", view: self.view)
           self.cacheSize = "0.00MB"
           self.tableView.reloadRows(at: [index], with: .automatic)
+        
+          UserDefaults.standard.localKeys.forEach { (k) in
+                UserDefaults.standard.removeObject(forKey: k)
+          }
         
     }
     

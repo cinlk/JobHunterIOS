@@ -21,8 +21,8 @@ class InternJobsViewController: UIViewController {
     
     
     private lazy var cityMenu:DropItemCityView = {
-        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 200))
-        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + JobHomeVC.titlePageH)
+        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 200))
+        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + JobHomeVC.titlePageH)
         
         city.passData = { citys in
             self.table.mj_header.beginRefreshing()
@@ -32,8 +32,8 @@ class InternJobsViewController: UIViewController {
     }()
 
     private lazy var kind:DropCarrerClassifyView = {
-        let k = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
-        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + JobHomeVC.titlePageH)
+        let k = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
+        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + JobHomeVC.titlePageH)
         k.passData = { s in
             self.table.mj_header.beginRefreshing()
             
@@ -42,8 +42,8 @@ class InternJobsViewController: UIViewController {
     }()
     
     private lazy var intern:DropInternCondtionView = {
-        let intern = DropInternCondtionView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 200))
-        intern.backGroundBtn.frame =  CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + JobHomeVC.titlePageH)
+        let intern = DropInternCondtionView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 200))
+        intern.backGroundBtn.frame =  CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + JobHomeVC.titlePageH)
         intern.passData = {  condition in
             self.table.mj_header.beginRefreshing()
         }
@@ -54,7 +54,7 @@ class InternJobsViewController: UIViewController {
     lazy var dropMenu: YNDropDownMenu = { [unowned self] in
         
         
-        let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: DROP_MENU_H), dropDownViews: [cityMenu,kind,intern], dropDownViewTitles: ["城市","行业分类","实习条件"])
+        let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: DROP_MENU_H), dropDownViews: [cityMenu,kind,intern], dropDownViewTitles: ["城市","行业分类","实习条件"])
         
         menu.setImageWhen(normal: UIImage(named: "arrow_nor"), selected: UIImage(named: "arrow_xl"), disabled: UIImage(named: "arrow_dim"))
         menu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
@@ -218,7 +218,7 @@ extension InternJobsViewController: UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let mode = self.datas[indexPath.row]
-        return table.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CommonJobTableCell.self, contentViewWidth: ScreenW)
+        return table.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CommonJobTableCell.self, contentViewWidth: GlobalConfig.ScreenW)
         
     }
     

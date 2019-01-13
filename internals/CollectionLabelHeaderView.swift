@@ -19,7 +19,7 @@ class CollectionLabelHeaderView: UICollectionReusableView {
         label.textAlignment = .left
         label.backgroundColor = UIColor.clear
         label.textColor = UIColor.blue
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 40)
         return label
     }()
     

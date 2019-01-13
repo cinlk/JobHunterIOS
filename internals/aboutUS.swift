@@ -13,7 +13,7 @@ import MBProgressHUD
 fileprivate let headerViewH:CGFloat = 160
 fileprivate let cellIdentiy:String = "default"
 fileprivate let cellItem:[AboutUsModel.item] = [.serviceLaw, .wechat, .weibo, .serviceCall, .share]
-fileprivate let footViewH:CGFloat = ScreenH - headerViewH - (CGFloat(cellItem.count) * 45) - NavH
+fileprivate let footViewH:CGFloat = GlobalConfig.ScreenH - headerViewH - (CGFloat(cellItem.count) * 45) - NavH
 fileprivate let shareViewH = SingletoneClass.shared.shareViewH
 
 
@@ -24,13 +24,13 @@ class aboutUS: BaseViewController {
     
     // header
     private lazy var header:personTableHeader = {
-        let v = personTableHeader.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: headerViewH))
+        let v = personTableHeader.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: headerViewH))
         v.isHR = false
         return v
     }()
     // footer
     private lazy var footer:aboutUSFootView = {
-        let v = aboutUSFootView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: footViewH))
+        let v = aboutUSFootView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: footViewH))
         v.backgroundColor = UIColor.viewBackColor()
         return v
     }()
@@ -54,7 +54,7 @@ class aboutUS: BaseViewController {
     
     // sharedView
     private lazy var share:shareView = {
-        let v = shareView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: shareViewH))
+        let v = shareView.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: shareViewH))
         v.delegate = self
         return v
     }()

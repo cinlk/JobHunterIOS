@@ -23,7 +23,7 @@ class TitleTableViewCell: UITableViewCell {
         let lable = UILabel.init()
         lable.textAlignment = .left
         lable.font = UIFont.boldSystemFont(ofSize: 18)
-        lable.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        lable.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         return lable
     }()
     

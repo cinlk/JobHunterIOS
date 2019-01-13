@@ -88,7 +88,7 @@ class baseSearchViewController: UISearchController{
     
     // 背景btn
     private lazy var backgroundBtn:UIButton = {
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH))
         btn.addTarget(self, action: #selector(hiddenPopMenu), for: .touchUpInside)
         btn.backgroundColor = UIColor.lightGray
         btn.alpha = 0.5

@@ -26,7 +26,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
         let label = UILabel()
         label.textAlignment = .left
         label.font = UIFont.boldSystemFont(ofSize: 16)
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - imgSize.width - 20)
         return label
     }()
     
@@ -35,7 +35,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = UIColor.blue
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 20)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - imgSize.width - 20)
         return label
     }()
     
@@ -44,7 +44,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = UIColor.lightGray
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - imgSize.width - 100)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - imgSize.width - 100)
         return label
     }()
     

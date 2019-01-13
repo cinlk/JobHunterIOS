@@ -32,7 +32,7 @@ class TextAndPhontoCell: UITableViewCell {
         let label = UILabel.init()
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = UIColor.lightGray
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         label.textAlignment = .left
         label.text = placeholdStr
         return label

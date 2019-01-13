@@ -28,19 +28,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
        
         
-        // 初始viewController
-        let enter = EnterAppViewController()
-        window = UIWindow(frame: UIScreen.main.bounds)
-        window?.makeKeyAndVisible()
+        // 获取的初始化数据？
+        SingletoneClass.shared.getInitialData { (b) in
+            
+            let enter = EnterAppViewController()
+            self.window = UIWindow(frame: UIScreen.main.bounds)
+            self.window?.makeKeyAndVisible()
+            
+            self.window?.rootViewController = enter
         
-        window?.rootViewController = enter
+        }
+        
+        
+        
+     
         //  获取地理位置
         locateManager.getLocation()
         
-       
-        // 用户登录后 获取的数据？
-        // 1
-        // 2
+        
         
         // 友盟第三方接口
         UMengInitial()
@@ -196,11 +201,11 @@ extension AppDelegate{
 
 
 
+
 //   获取手机安装的 app(用于第三方登录 和 分享)
 extension AppDelegate{
     
-    
-    
+
     private func UMengInitial(){
         
         UMConfigure.initWithAppkey(ConfigUMConfig.umKey, channel: nil)

@@ -124,7 +124,7 @@ class invitationSettingViewController: BaseTableViewController {
         let title = UILabel.init(frame: CGRect.zero)
         title.font = UIFont.systemFont(ofSize: 14)
         title.textColor = UIColor.lightGray
-        title.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        title.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         title.text = sectionItem[section]
         
         view.addSubview(title)

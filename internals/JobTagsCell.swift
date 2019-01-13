@@ -56,7 +56,7 @@ fileprivate let ROWITEMS:Int = 4
 
             }
             // 这里设置width 浮动长度
-            let itemWidth = ScreenW - 20 - 10 -  CGFloat(ROWITEMS-1)*5
+            let itemWidth = GlobalConfig.ScreenW - 20 - 10 -  CGFloat(ROWITEMS-1)*5
             
             self.btnView.setupAutoMarginFlowItems(btns, withPerRowItemsCount: ROWITEMS, itemWidth: itemWidth/CGFloat(ROWITEMS), verticalMargin: 10, verticalEdgeInset: 5, horizontalEdgeInset: 5)
             self.setupAutoHeight(withBottomView: btnView, bottomMargin: 10)

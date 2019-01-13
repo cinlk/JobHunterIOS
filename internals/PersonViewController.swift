@@ -11,7 +11,7 @@ import UIKit
 
 
 fileprivate let SectionN = 3
-fileprivate let tableHeaderH:CGFloat = ScreenH / 4
+fileprivate let tableHeaderH:CGFloat = GlobalConfig.ScreenH / 4
 fileprivate let delegateNotify = NSNotification.Name.init("tableDelegateImplement")
 
 
@@ -114,7 +114,7 @@ fileprivate class personTable:BaseTableView<[(image:UIImage, title:String)]>{
     override func setHeaderView(data:Any?) {
         
         if let data = data as? (image:String,name:String, introduce:String){
-            let head  = personTableHeader.init(frame:CGRect.init(x: 0, y: 0, width: ScreenW, height: tableHeaderH))
+            let head  = personTableHeader.init(frame:CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: tableHeaderH))
             head.isHR = false
             head.backgroundColor = UIColor.orange
             // test 用个人信息

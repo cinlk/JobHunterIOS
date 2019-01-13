@@ -21,7 +21,7 @@ class CollectionItemsCell: UICollectionViewCell {
     
     private lazy var titleLabel:UILabel = {
         let label = UILabel.init(frame: CGRect.zero)
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         label.font = UIFont.systemFont(ofSize: 14)
         label.textAlignment = .center
         

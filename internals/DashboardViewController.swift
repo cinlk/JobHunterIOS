@@ -69,14 +69,14 @@ class DashboardViewController: BaseViewController{
     
     //导航栏遮挡背景view，随着滑动透明度可变
     private lazy  var navigationView:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH))
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH))
         v.backgroundColor = UIColor.clear
         return v
     }()
     
     // 轮播图view
     private lazy var imagescroller:ImageScrollerView = { [unowned self] in
-        let imagescroller =  ImageScrollerView(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: tableViewH))
+        let imagescroller =  ImageScrollerView(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: tableViewH))
         imagescroller.delegate = self
         return imagescroller
     }()
@@ -86,7 +86,7 @@ class DashboardViewController: BaseViewController{
     // 搜索框外部view，滑动影藏搜索框
     private lazy var searchBarContainer:UIView = {
         // 搜索框
-        let searchBarContainer = UIView(frame: CGRect(x: 0, y:0, width: ScreenW, height: SEARCH_BAR_H))
+        let searchBarContainer = UIView(frame: CGRect(x: 0, y:0, width: GlobalConfig.ScreenW, height: SEARCH_BAR_H))
         searchBarContainer.backgroundColor = UIColor.clear
         return searchBarContainer
         
@@ -463,7 +463,7 @@ extension DashboardViewController{
                 let cell:MainColumnistCell = table.dequeueReusableCell(withIdentifier: MainColumnistCell.identity()) as! MainColumnistCell
                 
                 cell.topViewH = 0
-                cell.setItems(width: ScreenW/4, height: JobFiledH, items: res)
+                cell.setItems(width: GlobalConfig.ScreenW/4, height: JobFiledH, items: res)
                
                 
                 cell.selectedItem = { (btn) in
@@ -484,7 +484,7 @@ extension DashboardViewController{
                 let cell:MainColumnistCell = table.dequeueReusableCell(withIdentifier: MainColumnistCell.identity()) as!
                 MainColumnistCell
                 
-                cell.setItems(width: ScreenW/3 - 20, height: ColumnH, items: res)
+                cell.setItems(width: GlobalConfig.ScreenW/3 - 20, height: ColumnH, items: res)
                 
                 cell.selectedItem = { (btn) in
                     let web = baseWebViewController()

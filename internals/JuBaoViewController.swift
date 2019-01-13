@@ -57,7 +57,7 @@ class JuBaoViewController: BaseViewController {
     }()
     
     private lazy var  bv:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: tableFootViewH))
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: tableFootViewH))
         v.addSubview(inputField)
         v.addSubview(comfirm)
         return v
@@ -75,11 +75,11 @@ class JuBaoViewController: BaseViewController {
     }()
     
     private lazy var tableheader:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 30))
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 30))
         v.backgroundColor = UIColor.clear
         let label = UILabel.init()
         label.text =  "请选择原因"
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         v.addSubview(label)
         _ = label.sd_layout().leftSpaceToView(v,10)?.topSpaceToView(v,5)?.autoHeightRatio(0)
         label.font = UIFont.systemFont(ofSize: 14)
@@ -172,7 +172,7 @@ extension JuBaoViewController{
         if  let keyboradFram = notify.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as? CGRect{
             
             let comfirmToTable = comfirm.convert(comfirm.origin, to: table)
-            let bottonHeight = ScreenH - (comfirmToTable.y + comfirm.frame.height)
+            let bottonHeight = GlobalConfig.ScreenH - (comfirmToTable.y + comfirm.frame.height)
             let scrollUpHeight = keyboradFram.height - bottonHeight - NavH
             
             if scrollUpHeight > 0{

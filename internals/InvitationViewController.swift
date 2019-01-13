@@ -19,7 +19,7 @@ class InvitationViewController: UIViewController {
     
     // 子栏目
     private lazy var pageTitle:pagetitleView = { [unowned self] in
-        let titles = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: pageTitleH) ,titles: subItems, itemWidth: 120)
+        let titles = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: pageTitleH) ,titles: subItems, itemWidth: 120)
         titles.delegate = self
         return titles
     }()
@@ -36,7 +36,7 @@ class InvitationViewController: UIViewController {
         ChildVC.append(jobInvite)
             
         
-        let content = pageContentView.init(frame: CGRect.init(x: 0, y: NavH + pageTitleH, width: ScreenW, height: ScreenH - (NavH + pageTitleH)), childVCs: ChildVC, pVC: self)
+        let content = pageContentView.init(frame: CGRect.init(x: 0, y: NavH + pageTitleH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - (NavH + pageTitleH)), childVCs: ChildVC, pVC: self)
         content.delegate = self
         
         return content

@@ -50,7 +50,7 @@ class JobHomeVC: UIViewController {
     // 搜索包裹searchBar 的view
     private lazy var searchBarContainer:UIView = {
         // 搜索框
-        let searchBarFrame = CGRect(x: 0, y:0, width: ScreenW, height: SEARCH_BAR_H)
+        let searchBarFrame = CGRect(x: 0, y:0, width: GlobalConfig.ScreenW, height: SEARCH_BAR_H)
         let searchBarContainer = UIView(frame:searchBarFrame)
         searchBarContainer.backgroundColor = UIColor.clear
         return searchBarContainer
@@ -65,7 +65,7 @@ class JobHomeVC: UIViewController {
     
     // 滑动栏
     private lazy var pageTitleView: pagetitleView = {  [unowned self] in
-        let view = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: JobHomeVC.titlePageH), titles: JOB_PAGE_TITLES,lineCenter:true)
+        let view = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: JobHomeVC.titlePageH), titles: JOB_PAGE_TITLES,lineCenter:true)
         view.delegate = self
         view.backgroundColor = topColor
         // 设置属性
@@ -97,7 +97,7 @@ class JobHomeVC: UIViewController {
         childVC.append(internJob)
         
      
-        let content = pageContentView.init(frame: CGRect.init(x: 0, y: NavH + JobHomeVC.titlePageH, width: ScreenW, height: ScreenH - NavH - JobHomeVC.titlePageH), childVCs: self.childVC, pVC: self)
+        let content = pageContentView.init(frame: CGRect.init(x: 0, y: NavH + JobHomeVC.titlePageH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - NavH - JobHomeVC.titlePageH), childVCs: self.childVC, pVC: self)
         content.delegate = self
         return content
         

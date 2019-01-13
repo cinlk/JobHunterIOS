@@ -14,7 +14,7 @@ public func configDropMenu(items: [YNDropDownView], titles:[String], height:CGFl
     
     
     let items:[YNDropDownView] = items
-    let dropDownMenu = YNDropDownMenu(frame: CGRect(x:0,y:originY,width:ScreenW,height:height) , dropDownViews: items, dropDownViewTitles: titles)
+    let dropDownMenu = YNDropDownMenu(frame: CGRect(x:0,y:originY,width:GlobalConfig.ScreenW,height:height) , dropDownViews: items, dropDownViewTitles: titles)
     
     dropDownMenu.isHidden = true 
      // 被选中iamge 方向向下，程序会自动翻转iamge

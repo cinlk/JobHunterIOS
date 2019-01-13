@@ -24,7 +24,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 25, height: 25)
     
     private lazy var lableTitle:UILabel = {
         let lb = UILabel()
-        lb.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width - 20)
+        lb.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width - 20)
         lb.textAlignment = .left
         lb.font = UIFont.systemFont(ofSize: 16)
         return lb
@@ -33,7 +33,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 25, height: 25)
     private lazy var content:UILabel = {
         
         let lb = UILabel()
-        lb.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width - 20)
+        lb.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width - 20)
         lb.textAlignment = .left
         lb.font = UIFont.systemFont(ofSize: 14)
         lb.textColor = UIColor.lightGray

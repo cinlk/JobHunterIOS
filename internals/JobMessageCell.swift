@@ -23,7 +23,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
     
     private lazy var jobName: UILabel = {
         let jobName = UILabel()
-        jobName.setSingleLineAutoResizeWithMaxWidth(ScreenW - 45 - 30)
+        jobName.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 45 - 30)
         jobName.textAlignment = .left
         jobName.font = UIFont.systemFont(ofSize: 18)
         return jobName
@@ -31,7 +31,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
     
     private lazy var company: UILabel = {
         let companyLabel = UILabel()
-        companyLabel.setSingleLineAutoResizeWithMaxWidth(ScreenW - 45 - 30)
+        companyLabel.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 45 - 30)
         companyLabel.textAlignment = .left
         companyLabel.font = UIFont.systemFont(ofSize: 14)
         return companyLabel
@@ -39,7 +39,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
     
     private lazy var tags: UILabel = {
         let tags = UILabel()
-        tags.setSingleLineAutoResizeWithMaxWidth(ScreenW - 45 - 30)
+        tags.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 45 - 30)
         tags.textAlignment = .left
         tags.font = UIFont.systemFont(ofSize: 14)
         return tags
@@ -50,7 +50,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
     
     private lazy var salary: UILabel = {
         let salary = UILabel()
-        salary.setSingleLineAutoResizeWithMaxWidth(ScreenW - 45 - 30)
+        salary.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 45 - 30)
         salary.textAlignment = .center
         salary.font = UIFont.systemFont(ofSize: 14)
         return salary

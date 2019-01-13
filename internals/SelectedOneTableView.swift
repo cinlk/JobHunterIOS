@@ -34,7 +34,7 @@ class SelectedOneTablView:UIView,UITableViewDelegate,UITableViewDataSource{
         let title = UILabel.init(frame: CGRect.zero)
         title.font = UIFont.boldSystemFont(ofSize: 16)
         title.textAlignment = .center
-        title.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        title.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         return title
     }()
     

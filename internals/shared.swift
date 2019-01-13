@@ -9,12 +9,56 @@
 // 存储全局需要的公共数据类型
 
 import Foundation
+import ObjectMapper
+import ObjectMapper
 
 
-fileprivate let locPermit = "locPermit"
-fileprivate let rememberLogin = "rememberLogin"
-fileprivate let userAccount = "userAccount"
-fileprivate let userPassword = "userPassword"
+
+
+
+extension UserDefaults{
+    // app 存储的keys
+    
+    static let locPermit = "locPermit"
+    static let userAccount = "userAccount"
+    static let userPassword = "userPassword"
+    static let firstOpen = "firstOpen"
+    
+    
+    public var localKeys:[String]{
+        get{
+            return [UserDefaults.locPermit, UserDefaults.userAccount,
+                    UserDefaults.userPassword]
+        }
+    }
+    
+    
+    
+}
+
+// 引导界面数据
+class UserGuidePageItem: NSObject, Mappable {
+    
+    
+    var imageURL: String?
+    var title: String?
+    var detail: String?
+    
+    required init?(map: Map) {
+        if map["imageURL"] == nil || map["title"] == nil || map["detail"] == nil{
+            return nil
+        }
+    }
+    
+    func mapping(map: Map) {
+        imageURL <- map["imageURL"]
+        title <- map["title"]
+        detail <- map["detail"]
+    }
+    
+    
+}
+
 
 
 // 记录当前用户地理位置 城市 和区
@@ -40,34 +84,33 @@ fileprivate struct CurrentUserAddress {
 
 
 // 发送简历时 默认发送的语句
-fileprivate struct  FirstHelloMsg {
+fileprivate class  FirstHelloMsg: NSObject, Mappable  {
     
-    private var index:Int
-    private var sayHi:[String]
+    private var choosed:Int
+    private var texts:[String]
     
-    init() {
-        self.sayHi = [String]()
-        self.index = self.sayHi.count
+    required init?(map: Map) {
+        self.choosed = 0
+        self.texts = [String]()
     }
     
-   public mutating func setSayHi(contents:[String], index:Int){
-        if contents.isEmpty{
-            return
-        }
-        if index < 0 || index >= contents.count {
-                return
-        }
     
-        self.sayHi = contents
-        self.index = index
+    func mapping(map: Map) {
+        self.choosed <- map["choosed"]
+        self.texts  <- map["texts"]
+    }
+    
+    
+    
+    fileprivate  func setSayHi(_ choosed: Int){
+    
+        self.choosed = choosed
+    
+    }
+    
+    fileprivate func getSayHi() -> ([String], Int){
         
-    }
-    
-    public func getSayHi() -> ([String]?, Int){
-        if self.sayHi.count <=  0{
-            return (nil, -1)
-        }
-        return (self.sayHi, self.index)
+        return (self.texts, self.choosed)
     }
 
     
@@ -142,19 +185,7 @@ class GlobalUserInfo {
        return UserDefaults.standard
     }()
     
-    private  var isRemember:Bool {
-        get{
-            return self.userDefault.bool(forKey: rememberLogin)
-        }
-        set{
-            if newValue == true{
-                // 存储账号和密码
-                self.userDefault.set(self.account, forKey: userAccount)
-                self.userDefault.set(self.password, forKey: userPassword)
-            }
-            self.userDefault.set(newValue, forKey: rememberLogin)
-        }
-    }
+  
     public var isLogin:Bool = false {
         willSet{
             if newValue == false{
@@ -198,6 +229,8 @@ class GlobalUserInfo {
 
 
 
+
+
 class SingletoneClass {
     
     private static let single = SingletoneClass()
@@ -209,9 +242,8 @@ class SingletoneClass {
     }
     
     
-    fileprivate lazy var messageHi:FirstHelloMsg = {
-            return FirstHelloMsg()
-    }()
+    fileprivate var messageHi:FirstHelloMsg?
+    
     
      fileprivate lazy var currentUserAddress: CurrentUserAddress = {
             return CurrentUserAddress()
@@ -228,6 +260,11 @@ class SingletoneClass {
             }
         }
     }
+    
+    // 引导界面数据
+    public var guidanceData:[UserGuidePageItem]?
+    // 广告背景图片
+    public var adviseImage:String?
     
     private var userDefaule: UserDefaults = UserDefaults.standard
     
@@ -256,11 +293,11 @@ class SingletoneClass {
     
     // 设置到缓存
     open func setUserLocation(permit:Bool){
-        self.userDefaule.set(permit, forKey: locPermit)
+        self.userDefaule.set(permit, forKey: UserDefaults.locPermit)
     }
     // 存储到缓存
     private func getUserLocationPermit() -> Bool{
-       return self.userDefaule.bool(forKey: locPermit)
+       return self.userDefaule.bool(forKey: UserDefaults.locPermit)
         
     }
     
@@ -274,15 +311,110 @@ extension SingletoneClass{
         self.currentUserAddress.set(city: city, zone: zone, address: address)
     }
     
-    public func setSayHi(contents:[String], index:Int){
-        self.messageHi.setSayHi(contents: contents, index: index)
-    }
     
-    public func getSayHi() -> ([String]?, Int){
-        return self.messageHi.getSayHi()
+    public func setChoosedMessage(index:Int){
+        // 跟新数据 http 请求
+        NetworkTool.request(GlobaHttpRequest.setHelloMsg(index: index), successCallback: { (data) in
+           
+            self.messageHi?.setSayHi(index)
+        }) { (error) in
+            print(error)
+        }
+        
+        //self.messageHi?.setSayHi(index)
+    }
+    public func getSayHi() -> ([String], Int){
+        if let  hi = self.messageHi{
+            return hi.getSayHi()
+        }
+        return ([String](), 0)
     }
     
 }
+
+
+// 引导界面数据
+extension SingletoneClass{
+    
+    public func getInitialData(finished: @escaping  (Bool)->Void){
+    
+        let group = DispatchGroup()
+        
+
+        let queue = DispatchQueue.init(label: "queue")
+        
+        group.enter()
+        // 请求也是在其它线程 异步执行
+        NetworkTool.request(GlobaHttpRequest.guideData, successCallback: { (data) in
+            // swiftJson
+            self.guidanceData =  Mapper<UserGuidePageItem>.init().mapArray(JSONObject: data)
+            group.leave()
+        }, failureCallback: { (error) in
+            group.leave()
+        })
+        
+        group.enter()
+        NetworkTool.request(GlobaHttpRequest.adviseImages, successCallback: { (data) in
+            if let d = data as? [String:String]{
+                self.adviseImage = d["imageURL"]
+            }
+            
+            group.leave()
+        }) { (error) in
+            group.leave()
+        }
+        
+        
+        //  需要等待用户登录后 TODO
+//        DispatchQueue.global().async(group: group, qos: .userInitiated, flags: .inheritQoS) {
+//            NetworkTool.request(GlobaHttpRequest.helloMsg, successCallback: { (data) in
+//                // swiftJson
+//                self.messageHi = Mapper<FirstHelloMsg>.init().map(JSONObject: data)
+//
+//            }, failureCallback :{ (error) in
+//                print(error)
+//            })
+//        }
+      
+        
+        group.notify(queue: DispatchQueue.main){
+            finished(true)
+        }
+    }
+    
+    // 用户登录
+    func userLogin(completed: @escaping (Bool)->Void){
+        
+       
+        guard let account = userDefaule.string(forKey: UserDefaults.userAccount) else{
+            completed(false)
+            return
+        }
+        
+        guard let password = userDefaule.string(forKey: UserDefaults.userPassword) else{
+            completed(false)
+            return
+        }
+        
+        NetworkTool.request(GlobaHttpRequest.userlogin(account: account, password: password), successCallback: { (_) in
+            completed(true)
+            // 返回TOKEN TODO
+            
+            // 记录用户名和密码
+            self.userDefaule.set(account, forKey: UserDefaults.userAccount)
+            self.userDefaule.set(password, forKey: UserDefaults.userPassword)
+            // 设置用户角色 TODO
+            
+        }) { (error) in
+            completed(false)
+        }
+        
+    }
+    
+    
+    
+}
+
 
 
 extension SingletoneClass{

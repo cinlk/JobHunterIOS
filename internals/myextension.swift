@@ -11,7 +11,7 @@ import Foundation
 
 
 private let  v =  UIImage.init()
-private let defaulImg = build_image(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH), color: UIColor.navigationBarColor())
+private let defaulImg = build_image(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH), color: UIColor.navigationBarColor())
 //private let bm = build_image(size: CGSize.init(width: NAV_BAR_FRAME_WIDTH, height: NAV_BAR_FRAME_HEIGHT), alpha: 1)
 
 extension UINavigationBar{

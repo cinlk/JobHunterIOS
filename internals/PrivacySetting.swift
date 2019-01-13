@@ -23,7 +23,7 @@ class PrivacySetting: BaseViewController {
     // popView
     
     private lazy var popCompanyView:popView = { [unowned self] in
-        let v = popView.init(frame: CGRect.init(x: -200, y: (ScreenH - 100)/2 , width: 200, height: 60))
+        let v = popView.init(frame: CGRect.init(x: -200, y: (GlobalConfig.ScreenH - 100)/2 , width: 200, height: 60))
         v.layer.cornerRadius = 10
         v.layer.masksToBounds = true
         v.backgroundColor = UIColor.white
@@ -206,7 +206,7 @@ extension PrivacySetting: UITableViewDataSource, UITableViewDelegate{
         label.text = section == 0 ?  "影藏类型" : "屏蔽以下企业"
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 14)
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         v.addSubview(label)
         _ = label.sd_layout().bottomSpaceToView(v,5)?.leftSpaceToView(v,TableCellOffsetX)?.autoHeightRatio(0)
         return v

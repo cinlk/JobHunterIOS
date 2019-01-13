@@ -21,23 +21,23 @@ class CompanySearchVC: UIViewController, SearchControllerDeletgate {
 
 
     private lazy var cityMenu:DropItemCityView = { [unowned self] in
-        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
+        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
         city.passData = { citys in
                 self.requestBody.city = citys
                 self.table.mj_header.beginRefreshing()
         }
-        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
         return city
     }()
     
     
     private lazy var kind:DropCarrerClassifyView = { [unowned self] in
-        let k = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
+        let k = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
         k.passData = {  s in
             self.requestBody.field = s
             self.table.mj_header.beginRefreshing()
         }
-        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
         
         return k
     }()

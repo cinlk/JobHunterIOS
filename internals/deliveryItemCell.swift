@@ -22,7 +22,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
     
     private lazy var titleName: UILabel = {
         let label = UILabel.init()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 16)
         label.textColor = UIColor.black
@@ -32,7 +32,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
     
     private lazy var company: UILabel = {
         let label = UILabel.init()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = UIColor.black
@@ -42,7 +42,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
     
     private lazy var type: UILabel = {
         let label = UILabel.init()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = UIColor.orange
@@ -51,7 +51,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
     
     private lazy var status: UILabel = {
         let label = UILabel.init()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width)
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = UIColor.blue
@@ -61,7 +61,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
     
     private lazy var time: UILabel = {
         let label = UILabel.init()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width)
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = UIColor.black

@@ -20,38 +20,38 @@ class InternSearchVC: UIViewController, SearchControllerDeletgate {
     
     
     private lazy var cityMenu:DropItemCityView = { [unowned self] in
-        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
+        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
         city.passData = { citys in
             self.requestBody.city = citys
             self.table.mj_header.beginRefreshing()
         }
         
-        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
         return city
     }()
     
     
     private lazy var kindMenu:DropCarrerClassifyView = { [unowned self] in
-        let k = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
+        let k = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
         k.passData = { industry in
             self.requestBody.industry = industry
             self.table.mj_header.beginRefreshing()
             
         }
-        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
         return k
         
     }()
     
     
     private lazy var internMenu:DropInternCondtionView = { [unowned self] in
-        let i = DropInternCondtionView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
+        let i = DropInternCondtionView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
         i.passData = {  condition in
             self.requestBody.interns = condition
             self.table.mj_header.beginRefreshing()
         }
         
-        i.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+        i.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
         
         return i
     }()

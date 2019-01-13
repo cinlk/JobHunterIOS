@@ -164,7 +164,7 @@ extension DetailDeliveryStatus:UITableViewDelegate,UITableViewDataSource{
         
         if indexPath.section == 0 {
             let feedback = mode?.feedBack
-            return  tableView.cellHeight(for: indexPath, model: feedback, keyPath: "mode", cellClass: feedBackCell.self, contentViewWidth: ScreenW)
+            return  tableView.cellHeight(for: indexPath, model: feedback, keyPath: "mode", cellClass: feedBackCell.self, contentViewWidth: GlobalConfig.ScreenW)
         }
         
         return 60
@@ -222,7 +222,7 @@ extension DetailDeliveryStatus{
         let label = UILabel()
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 14)
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 20)
         label.isAttributedContent = true
         
         return label
@@ -282,7 +282,7 @@ private class tableHeaderView:UIView{
         label.font = UIFont.systemFont(ofSize: 16)
         label.textAlignment = .left
         label.textColor = UIColor.black
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width)
         return label
     }()
     
@@ -291,7 +291,7 @@ private class tableHeaderView:UIView{
         company.font = UIFont.systemFont(ofSize: 14)
         company.textAlignment = .left
         company.textColor = UIColor.black
-        company.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
+        company.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width)
         return company
     }()
     
@@ -300,7 +300,7 @@ private class tableHeaderView:UIView{
         label.font = UIFont.systemFont(ofSize: 12)
         label.textAlignment = .left
         label.textColor = UIColor.lightGray
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width)
         return label
     }()
     

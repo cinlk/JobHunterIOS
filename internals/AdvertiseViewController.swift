@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Kingfisher
 
 
 class AdvertiseViewController: UIViewController {
@@ -17,13 +17,21 @@ class AdvertiseViewController: UIViewController {
     fileprivate var times:Int = 3{
         didSet{
             countBtn.setTitle("跳过\(times)", for: .normal)
+            if times == 0 {
+                skip()
+            }
         }
     }
 
     private lazy var backGroundImage:UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleToFill
-        image.isUserInteractionEnabled = true 
+        image.isUserInteractionEnabled = true
+        
+        if let url = URL.init(string: SingletoneClass.shared.adviseImage ?? ""){
+                image.kf.setImage(with: Source.network(url), placeholder: UIImage.init(named: "bigCar")!, options: nil, progressBlock: nil, completionHandler: nil)
+        }
+    
         return image
     }()
     
@@ -45,7 +53,7 @@ class AdvertiseViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
-        loadImage()
+        startTimer()
         // Do any additional setup after loading the view.
     }
     
@@ -66,41 +74,25 @@ extension AdvertiseViewController{
         
     }
     
-    private func loadImage(){
-        backGroundImage.image = #imageLiteral(resourceName: "QQStart")
-        startTimer()
-        
-        
-    }
-    
+   
     
     private func startTimer(){
         if timer == nil {
-            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(count), userInfo: nil, repeats: true)
-            //timer?.fire()
+            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { (t) in
+                self.times -= 1
+            }
             RunLoop.current.add(timer!, forMode: RunLoop.Mode.common)
-            
         }
     }
+    
    @objc private func skip(){
+    
         timer?.invalidate()
         timer = nil
-    
-    
         let rootViewController = UIApplication.shared.keyWindow?.rootViewController
         guard let enter = rootViewController as? EnterAppViewController else {return}
-    
         enter.finishShowAdvertise()
-    
-    
     }
     
-    @objc private func count(){
-        times -= 1
-        if times == 0{
-            
-            skip()
-        }
-        
-    }
+  
 }

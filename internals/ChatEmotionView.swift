@@ -120,7 +120,7 @@ class ChatEmotionView: UIView {
         layout.minimumInteritemSpacing = 0
         layout.scrollDirection = .horizontal
         
-        layout.itemSize = CGSize.init(width: ScreenW, height: self.bounds.height - buttonH)
+        layout.itemSize = CGSize.init(width: GlobalConfig.ScreenW, height: self.bounds.height - buttonH)
         
         let coll = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
         coll.register(baseEmotionView.self, forCellWithReuseIdentifier: baseEmotionView.identity())

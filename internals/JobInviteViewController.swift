@@ -76,7 +76,7 @@ class JobInviteViewController: BaseTableViewController {
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
         let mode = datas[indexPath.row]
-        let height =  tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: JobInviteTableViewCell.self, contentViewWidth: ScreenW)
+        let height =  tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: JobInviteTableViewCell.self, contentViewWidth: GlobalConfig.ScreenW)
         return height + 10
         
     }

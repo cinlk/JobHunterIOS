@@ -13,7 +13,7 @@ import UIKit
     
     private lazy var desc: UILabel = {
         let lable = UILabel.init()
-        lable.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20)
+        lable.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 20)
         lable.font = UIFont.systemFont(ofSize: 16)
         lable.textAlignment = .left
         return lable
@@ -26,7 +26,7 @@ import UIKit
     }()
     private lazy var title: UILabel = {
         let lable = UILabel.init()
-        lable.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20)
+        lable.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 20)
         lable.font = UIFont.boldSystemFont(ofSize: 18)
         lable.textAlignment = .left
         lable.text = "公司简介"

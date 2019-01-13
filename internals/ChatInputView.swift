@@ -30,7 +30,7 @@ class ChatInputView: UIView {
         label.textColor = UIColor.lightGray
         label.lineBreakMode = .byCharWrapping
         label.numberOfLines = 1
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 40)
         return label
         
     }()

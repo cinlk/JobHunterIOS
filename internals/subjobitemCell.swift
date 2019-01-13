@@ -40,7 +40,7 @@ internal class baseSubScribleCell:UITableViewCell{
     
     lazy var business: UILabel = {
         let label = UILabel.init(frame: CGRect.zero)
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         label.textColor = UIColor.black
         label.textAlignment = .left
         label.font = UIFont.boldSystemFont(ofSize: 16)
@@ -90,7 +90,7 @@ internal class baseSubScribleCell:UITableViewCell{
     
     private lazy var internMonth: UILabel = {
         let label = UILabel.init(frame: CGRect.zero)
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         label.textColor = UIColor.lightGray
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 14)
@@ -102,7 +102,7 @@ internal class baseSubScribleCell:UITableViewCell{
     
     private lazy var internDay: UILabel = {
         let label = UILabel.init(frame: CGRect.zero)
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         label.textColor = UIColor.lightGray
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 14)

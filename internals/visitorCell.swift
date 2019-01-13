@@ -23,7 +23,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
     
     private lazy var hrName:UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width)
         label.textAlignment = .left
         label.font = UIFont.boldSystemFont(ofSize: 16)
         label.textColor = UIColor.black
@@ -34,7 +34,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
     // YYYY-MM-DD
     private lazy var visite_time: UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width)
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = UIColor.lightGray
@@ -44,7 +44,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
     
     private lazy var company: UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width)
         label.textAlignment = .left
         label.textColor = UIColor.black
         label.font = UIFont.systemFont(ofSize: 14)

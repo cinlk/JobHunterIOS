@@ -7,15 +7,15 @@
 //
 
 import UIKit
+import Kingfisher
 
 class UserGuideItemCell: UICollectionViewCell {
-    
     
     
     private lazy var imageView:UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFill
-        
+        image.clipsToBounds = true
         return image
     }()
     
@@ -23,18 +23,15 @@ class UserGuideItemCell: UICollectionViewCell {
         let lb = UILabel()
         lb.textAlignment = .center
         lb.font = UIFont.boldSystemFont(ofSize: 18)
-        lb.setSingleLineAutoResizeWithMaxWidth(ScreenW)
-        
+        lb.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         return lb
     }()
     
     private lazy var content:UILabel = {
         let lb = UILabel()
-        lb.textAlignment = .left
         lb.font = UIFont.systemFont(ofSize: 16)
-        lb.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        lb.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         lb.textAlignment  = .center
-        
         return lb
     }()
     
@@ -42,7 +39,6 @@ class UserGuideItemCell: UICollectionViewCell {
     private lazy var line:UIView = {
         let v = UIView()
         v.backgroundColor = UIColor.lightGray
-        
         return v
     }()
     
@@ -51,7 +47,14 @@ class UserGuideItemCell: UICollectionViewCell {
             guard let mode = mode else {
                 return
             }
-            self.imageView.image = UIImage.init(named: mode.imageName!)
+            if let url = URL.init(string: mode.imageURL ?? ""){
+                 //self.imageView.kf.setImage(with: Source.network(url))
+                self.imageView.kf.setImage(with: Source.network(url), placeholder: UIImage.init(named: "bigCar")!, options: nil, progressBlock: nil, completionHandler: nil)
+                
+//                 self.imageView.kf.setImage(with: url, placeholder: , options: nil, progressBlock: nil, completionHandler: nil)
+            }
+
+            
             self.contentTitle.text = mode.title
             self.content.text = mode.detail
             
@@ -64,7 +67,7 @@ class UserGuideItemCell: UICollectionViewCell {
         self.contentView.sd_addSubviews(views)
         self.contentView.backgroundColor = UIColor.white
         
-        _ = imageView.sd_layout().topSpaceToView(self.contentView,NavH + 30)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.heightIs(300)
+        _ = imageView.sd_layout().topSpaceToView(self.contentView,NavH + 30)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.heightIs(GlobalConfig.ScreenH * 3/5)
         
         _ = line.sd_layout().topSpaceToView(imageView,1)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.heightIs(1)
         

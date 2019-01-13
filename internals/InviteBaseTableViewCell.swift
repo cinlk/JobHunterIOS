@@ -14,7 +14,7 @@ class InviteBaseTableViewCell: UITableViewCell {
 
     internal lazy var titleName: UILabel = {
         let label = UILabel.init()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 100)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 100)
         label.textAlignment = .left
         label.font = UIFont.boldSystemFont(ofSize: 16)
         label.textColor = UIColor.black
@@ -24,7 +24,7 @@ class InviteBaseTableViewCell: UITableViewCell {
     
     internal lazy var content: UILabel = {
         let label = UILabel.init()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 60)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 60)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = UIColor.black
@@ -45,7 +45,7 @@ class InviteBaseTableViewCell: UITableViewCell {
     
     internal lazy var time: UILabel = {
         let label = UILabel.init()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 40)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 40)
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = UIColor.lightGray

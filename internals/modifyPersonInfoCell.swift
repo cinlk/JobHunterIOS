@@ -58,7 +58,7 @@ class modifyPersonInfoCell: UITableViewCell {
     
     //
     private lazy var pickView:itemPickerView = {
-        let pick = itemPickerView.init(frame: CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: 200))
+        let pick = itemPickerView.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: 200))
         pick.backgroundColor = UIColor.white
         pick.pickerDelegate = self
         return pick

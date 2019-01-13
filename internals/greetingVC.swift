@@ -144,7 +144,7 @@ class greetingVC: BaseTableViewController {
             label.textAlignment = .left
             label.text = "请选择打招呼语"
             label.textColor = UIColor.lightGray
-            label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20)
+            label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 20)
             view.addSubview(label)
             _ = label.sd_layout().leftSpaceToView(view,TableCellOffsetX)?.bottomSpaceToView(view,10)?.autoHeightRatio(0)
         }

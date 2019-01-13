@@ -13,9 +13,9 @@ class UserGuideLogginCell: UICollectionViewCell {
     
     private lazy var backGroundImage:UIImageView = {
         let image = UIImageView()
-        image.image = #imageLiteral(resourceName: "ali")
+        image.image = UIImage.init(named: "ali")
         image.contentMode = .scaleToFill
-        
+        image.clipsToBounds = true
         return image
     }()
     

@@ -131,7 +131,7 @@ extension PostCollectedViewController: UITableViewDataSource, UITableViewDelegat
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let mode = datas[indexPath.row]
-        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: postCollectedCell.self, contentViewWidth: ScreenW)
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: postCollectedCell.self, contentViewWidth: GlobalConfig.ScreenW)
         
         
     }
@@ -200,7 +200,7 @@ extension PostCollectedViewController{
     
     private lazy var postName:UILabel = {
         let name = UILabel()
-        name.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20)
+        name.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 20)
         name.font = UIFont.boldSystemFont(ofSize: 14)
         name.textAlignment = .left
         return name
@@ -210,7 +210,7 @@ extension PostCollectedViewController{
 
     private lazy var times:UILabel = {
         let name = UILabel()
-        name.setSingleLineAutoResizeWithMaxWidth(ScreenW - 20)
+        name.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 20)
         name.font = UIFont.systemFont(ofSize: 12)
         name.textAlignment = .left
         name.textColor = UIColor.lightGray

@@ -17,7 +17,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 30, height: 30)
     
     internal lazy var postTitle:UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 30 - 30)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 30 - 30)
         label.textAlignment = .left
         label.font = UIFont.boldSystemFont(ofSize: 16)
         return label
@@ -25,7 +25,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 30, height: 30)
     
     internal lazy var authorName:UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 30 - 30)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 30 - 30)
         label.textAlignment = .left
         label.isAttributedContent = true 
         label.font = UIFont.systemFont(ofSize: 14)

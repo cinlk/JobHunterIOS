@@ -9,7 +9,7 @@
 import UIKit
 
 fileprivate let headerH:CGFloat = 180
-fileprivate let itemCGSize:CGSize = CGSize.init(width: ScreenW / 3 , height: headerH / 2 )
+fileprivate let itemCGSize:CGSize = CGSize.init(width: GlobalConfig.ScreenW / 3 , height: headerH / 2 )
 
 
 class HelpsVC: BaseViewController {
@@ -28,7 +28,7 @@ class HelpsVC: BaseViewController {
     }()
     
     private lazy var  headerView:HeaderCollectionView = {  [unowned self] in
-        let v = HeaderCollectionView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: headerH), itemSize: itemCGSize)
+        let v = HeaderCollectionView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: headerH), itemSize: itemCGSize)
         v.backgroundColor = UIColor.clear
         v.delegate = self
         return v
@@ -146,7 +146,7 @@ extension HelpsVC: UITableViewDelegate, UITableViewDataSource{
         v.backgroundColor = UIColor.viewBackColor()
         let label = UILabel()
         label.text = "常见问题"
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         label.font = UIFont.systemFont(ofSize: 16)
         v.addSubview(label)
         _ = label.sd_layout().leftSpaceToView(v,TableCellOffsetX)?.bottomSpaceToView(v,5)?.autoHeightRatio(0)
@@ -168,11 +168,11 @@ extension HelpsVC: UITableViewDelegate, UITableViewDataSource{
         if selectedCellIndexPath.contains(indexPath){
             
             item.selected = true
-            return tableView.cellHeight(for: indexPath, model: item, keyPath: "mode", cellClass: expansionCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: item, keyPath: "mode", cellClass: expansionCell.self, contentViewWidth: GlobalConfig.ScreenW)
         }else{
             
             item.selected = false
-            return tableView.cellHeight(for: indexPath, model: item, keyPath: "mode", cellClass: expansionCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: item, keyPath: "mode", cellClass: expansionCell.self, contentViewWidth: GlobalConfig.ScreenW)
         }
         
         

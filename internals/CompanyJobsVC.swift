@@ -47,7 +47,7 @@ class CompanyJobsVC: BaseViewController {
         tb.separatorStyle = .singleLine
         //tb.bounces = false
         tb.contentInsetAdjustmentBehavior = .never
-        let head = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: CompanyMainVC.headerViewH))
+        let head = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH))
         head.backgroundColor = UIColor.viewBackColor()
         tb.tableHeaderView = head
         tb.register(JobTagsCell.self, forCellReuseIdentifier: JobTagsCell.identity())
@@ -334,7 +334,7 @@ extension CompanyJobsVC:UITableViewDelegate, UITableViewDataSource{
        
         switch indexPath.section {
         case 0:
-            return tableView.cellHeight(for: indexPath, model: self.allTags, keyPath: "mode", cellClass: JobTagsCell.self, contentViewWidth: ScreenW)
+            return tableView.cellHeight(for: indexPath, model: self.allTags, keyPath: "mode", cellClass: JobTagsCell.self, contentViewWidth: GlobalConfig.ScreenW)
             
         case 1:
             return 55

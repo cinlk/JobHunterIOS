@@ -172,7 +172,7 @@ class myAccount: BaseTableViewController {
         label.textAlignment = .left
         label.text = sectionStr[section]
         label.textColor = UIColor.lightGray
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         v.addSubview(label)
         _ = label.sd_layout().leftSpaceToView(v,16)?.bottomSpaceToView(v,5)?.autoHeightRatio(0)
         return v

@@ -78,7 +78,7 @@ class ShowApplyJobsView: UIView {
     
     
     private lazy var showJobsBackGround:UIButton = {
-        let btn = UIButton(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
+        let btn = UIButton(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH))
         btn.backgroundColor = UIColor.lightGray
         btn.alpha = 0.5
         btn.addTarget(self, action: #selector(hidden), for: .touchUpInside)
@@ -213,7 +213,7 @@ extension ShowApplyJobsView{
         let height = CGFloat(min(jobs.count, 7)) * self.cellH + self.fixedH
         
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            self.frame = CGRect.init(x: 0, y: ScreenH - height, width: ScreenW, height: height)
+            self.frame = CGRect.init(x: 0, y: GlobalConfig.ScreenH - height, width: GlobalConfig.ScreenW, height: height)
         }, completion: nil)
         
     }
@@ -221,7 +221,7 @@ extension ShowApplyJobsView{
     @objc open func hidden(){
         showJobsBackGround.removeFromSuperview()
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            self.frame = CGRect.init(x: 0, y: ScreenH, width: ScreenW, height: 0)
+            self.frame = CGRect.init(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: 0)
         }, completion: nil)
         
         

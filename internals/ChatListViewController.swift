@@ -85,7 +85,7 @@ class ChatListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let mode = cModel[indexPath.row]
         
-        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: ChatUsersTableViewCell.self, contentViewWidth: ScreenW)
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: ChatUsersTableViewCell.self, contentViewWidth: GlobalConfig.ScreenW)
     }
     
     

@@ -22,7 +22,7 @@ class popView: UIView {
     
     
     private lazy var backView:UIButton = {
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH))
         btn.alpha = 0.5
         btn.backgroundColor = UIColor.lightGray
         btn.addTarget(self, action: #selector(dismiss), for: .touchUpInside)
@@ -63,7 +63,7 @@ extension popView{
         
        UIApplication.shared.keyWindow?.insertSubview(backView, belowSubview: self)
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            self.frame.origin.x = (ScreenW  - 200)/2
+            self.frame.origin.x = (GlobalConfig.ScreenW  - 200)/2
             
         }, completion: nil)
         

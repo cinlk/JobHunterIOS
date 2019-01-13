@@ -21,35 +21,35 @@ class CampusSearchVC: UIViewController, SearchControllerDeletgate {
     
     
     private  lazy var cityMenu:DropItemCityView =  {
-         let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
+         let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
          city.passData = { citys in
             self.requestBody.city = citys
             self.table.mj_header.beginRefreshing()
             
         }
-         city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+         city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
         
          return city
     }()
     
     
     private lazy var kind:DropCarrerClassifyView = {
-        let k = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
+        let k = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
         k.passData = {  industry in
             self.requestBody.industry =  industry
             self.table.mj_header.beginRefreshing()
         }
-        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
         return k
     }()
     
     private lazy var company:DropCompanyPropertyView = {
-        let c = DropCompanyPropertyView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height:  6*45))
+        let c = DropCompanyPropertyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height:  6*45))
         c.passData = { company in
             self.requestBody.company = company
             self.table.mj_header.beginRefreshing()
         }
-        c.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH)
+        c.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
         return c
     }()
     

@@ -17,7 +17,7 @@ class NearByViewController: UIViewController {
     private var childVC:[UIViewController] = []
     
     private lazy var pagetitle:pagetitleView = { [unowned self] in
-        let title = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: ScreenW, height: pageTitleH), titles: ["宣讲会","公司"])
+        let title = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: pageTitleH), titles: ["宣讲会","公司"])
         title.delegate = self
         return title
         
@@ -35,7 +35,7 @@ class NearByViewController: UIViewController {
         childVC.append(company)
         
         
-        let content = pageContentView.init(frame: CGRect.init(x: 0, y: NavH+pageTitleH, width: ScreenW, height: ScreenH - NavH - pageTitleH ), childVCs: childVC, pVC: self)
+        let content = pageContentView.init(frame: CGRect.init(x: 0, y: NavH+pageTitleH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - NavH - pageTitleH ), childVCs: childVC, pVC: self)
         
         content.delegate = self
         return content

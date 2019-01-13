@@ -42,7 +42,7 @@ class AffiliatedAccountViewController: UIViewController {
     
     private lazy var introduce:UILabel = {
         let lb = UILabel()
-        lb.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        lb.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         lb.textAlignment = .left
         lb.textColor = UIColor.black
         lb.font = UIFont.systemFont(ofSize: 14)
@@ -136,7 +136,7 @@ extension AffiliatedAccountViewController{
         let views:[UIView] = [accountText, verifyCode, confirmBtn, introduce]
         self.view.sd_addSubviews(views)
         
-        _ = accountText.sd_layout().topSpaceToView(self.view, NavH + 30)?.centerXEqualToView(self.view)?.widthIs(ScreenW - 40)?.heightIs(50)
+        _ = accountText.sd_layout().topSpaceToView(self.view, NavH + 30)?.centerXEqualToView(self.view)?.widthIs(GlobalConfig.ScreenW - 40)?.heightIs(50)
         _ = verifyCode.sd_layout().topSpaceToView(accountText, 15)?.centerXEqualToView(self.view)?.widthRatioToView(accountText,1)?.heightRatioToView(accountText,1)
         _ = confirmBtn.sd_layout().topSpaceToView(verifyCode,40)?.centerXEqualToView(self.view)?.widthRatioToView(verifyCode,1)?.heightIs(40)
         

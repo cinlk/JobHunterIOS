@@ -33,7 +33,7 @@ class DropCollegeItemView: YNDropDownView {
     
     private lazy var addrese:UILabel = {
         let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - 100)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 100)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 16)
         return label
@@ -87,7 +87,7 @@ class DropCollegeItemView: YNDropDownView {
     
     private lazy var flowLayout:UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout.init()
-        layout.itemSize = CGSize.init(width: (ScreenW - 60)/2 , height: 40)
+        layout.itemSize = CGSize.init(width: (GlobalConfig.ScreenW - 60)/2 , height: 40)
         layout.minimumLineSpacing = 10
         layout.minimumInteritemSpacing = 10
         // 不开启悬停
@@ -116,7 +116,7 @@ class DropCollegeItemView: YNDropDownView {
     // 地区collectionView
     private lazy var areaView:AreaCollectionView = { [unowned self] in
         
-        let v = AreaCollectionView.init(frame: CGRect.init(x: 0, y: 40, width: ScreenW, height: 0))
+        let v = AreaCollectionView.init(frame: CGRect.init(x: 0, y: 40, width: GlobalConfig.ScreenW, height: 0))
         
         v.autoresizesSubviews = false
 
@@ -134,7 +134,7 @@ class DropCollegeItemView: YNDropDownView {
     
     
     internal lazy var clearAll:UIButton = {
-        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (ScreenW - spaceWidth - 10)/2, height: 35))
+        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (GlobalConfig.ScreenW - spaceWidth - 10)/2, height: 35))
         clear.setTitle("清空", for: .normal)
         clear.setTitleColor(UIColor.black, for: .normal)
         clear.backgroundColor = UIColor.white
@@ -145,7 +145,7 @@ class DropCollegeItemView: YNDropDownView {
     }()
     
     private lazy var confirm:UIButton = {
-        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width:  (ScreenW - spaceWidth - 10)/2, height: 35))
+        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width:  (GlobalConfig.ScreenW - spaceWidth - 10)/2, height: 35))
         confirm.setTitle("确定", for: .normal)
         confirm.setTitleColor(UIColor.white, for: .normal)
         confirm.backgroundColor = UIColor.blue
@@ -165,7 +165,7 @@ class DropCollegeItemView: YNDropDownView {
     
     // 全局的 透明背景view
     internal lazy var backGroundBtn:UIButton = {
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 0))
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 0))
         btn.addTarget(self, action: #selector(hidden), for: .touchUpInside)
         btn.backgroundColor = UIColor.clear
         btn.alpha = 1
@@ -299,7 +299,7 @@ extension DropCollegeItemView{
         // 收藏
         if isOpenAreaView {
             
-            self.areaView.frame = CGRect.init(x: 0, y: 40, width: ScreenW, height: 1)
+            self.areaView.frame = CGRect.init(x: 0, y: 40, width: GlobalConfig.ScreenW, height: 1)
             
             //UIView.transition(with: <#T##UIView#>, duration: <#T##TimeInterval#>, options: <#T##UIViewAnimationOptions#>, animations: <#T##(() -> Void)?##(() -> Void)?##() -> Void#>, completion: <#T##((Bool) -> Void)?##((Bool) -> Void)?##(Bool) -> Void#>)
             UIView.animate(withDuration: 5, animations: {
@@ -310,7 +310,7 @@ extension DropCollegeItemView{
             
         }else{
             // 展开
-            self.areaView.frame = CGRect.init(x: 0, y: 40, width: ScreenW, height: self.bounds.height - 40)
+            self.areaView.frame = CGRect.init(x: 0, y: 40, width: GlobalConfig.ScreenW, height: self.bounds.height - 40)
             
             UIView.animate(withDuration: 5, animations: {
                self.areaView.layoutIfNeeded()

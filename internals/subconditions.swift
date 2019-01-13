@@ -37,7 +37,7 @@ class subconditions: UIViewController {
     
     private lazy var tableHeaderView:UIView = { [unowned self] in
         
-        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH))
+        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH))
         view.backgroundColor = UIColor.blue
         
         let title =  UILabel()
@@ -46,7 +46,7 @@ class subconditions: UIViewController {
         title.font = UIFont.boldSystemFont(ofSize: 14)
         title.textColor = UIColor.white
         title.textAlignment = .center
-        title.setSingleLineAutoResizeWithMaxWidth(ScreenW)
+        title.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         view.addSubview(title)
         _ = title.sd_layout().centerXEqualToView(view)?.bottomSpaceToView(view,10)?.autoHeightRatio(0)
         title.setMaxNumberOfLinesToShow(1)
@@ -80,7 +80,7 @@ class subconditions: UIViewController {
     
    
     private lazy var btnBackGround:UIButton = { [unowned self] in
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH))
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH))
         btn.addTarget(self, action: #selector(hidenView), for: .touchUpInside)
         btn.backgroundColor = UIColor.lightGray
         btn.alpha = 0.5
@@ -92,7 +92,7 @@ class subconditions: UIViewController {
     
     // 一个tableview
     private lazy  var SelectedOne:SelectedOneTablView = { [unowned self] in
-        let one =  SelectedOneTablView.init(frame: CGRect(x: 0, y: ScreenH, width: ScreenW, height: BottomViewH))
+        let one =  SelectedOneTablView.init(frame: CGRect(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: BottomViewH))
         one.call  = self.selectOneItem
         return one
     }()
@@ -100,7 +100,7 @@ class subconditions: UIViewController {
     
     // 包含左右2个table的view
     private lazy var SelectedSecond:SelectedTowTableView = {
-        let second = SelectedTowTableView.init(frame:  CGRect(x: 0, y: ScreenH, width: ScreenW, height: BottomViewH))
+        let second = SelectedTowTableView.init(frame:  CGRect(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: BottomViewH))
         second.call  = selectOneItem
         return second
     }()
@@ -261,7 +261,7 @@ extension subconditions{
             SelectedOne.mode = (name:type.describe, row:row)
             
             UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-                self.SelectedOne.frame = CGRect.init(x: 0, y: ScreenH - BottomViewH, width: ScreenW, height: BottomViewH)
+                self.SelectedOne.frame = CGRect.init(x: 0, y: GlobalConfig.ScreenH - BottomViewH, width: GlobalConfig.ScreenW, height: BottomViewH)
             }, completion: nil)
            
         case .locate, .business:
@@ -269,7 +269,7 @@ extension subconditions{
             SelectedSecond.mode = (name: type.describe, row: row)
             
             UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-                self.SelectedSecond.frame = CGRect.init(x: 0, y: ScreenH - BottomViewH, width: ScreenW, height: BottomViewH)
+                self.SelectedSecond.frame = CGRect.init(x: 0, y: GlobalConfig.ScreenH - BottomViewH, width: GlobalConfig.ScreenW, height: BottomViewH)
                 
             }, completion: nil)
             
@@ -388,8 +388,8 @@ extension subconditions{
         btnBackGround.isHidden = true
         
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            self.SelectedOne.origin.y = ScreenH
-            self.SelectedSecond.origin.y = ScreenH
+            self.SelectedOne.origin.y = GlobalConfig.ScreenH
+            self.SelectedSecond.origin.y = GlobalConfig.ScreenH
             
         }, completion: nil)
 

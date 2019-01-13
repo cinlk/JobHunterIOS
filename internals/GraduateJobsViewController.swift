@@ -20,18 +20,18 @@ class GraduateJobsViewController: UIViewController {
     
     
     internal lazy var cityMenu:DropItemCityView = {
-        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 200))
+        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 200))
         // 覆盖指定高度
         
-        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + JobHomeVC.titlePageH)
+        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + JobHomeVC.titlePageH)
         return city
     }()
     
     
     // 职业类型
     lazy var careerClassify:DropCarrerClassifyView = { [unowned self] in
-        let v1 = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: ScreenH - 240))
-        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + JobHomeVC.titlePageH)
+        let v1 = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
+        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + JobHomeVC.titlePageH)
         
         
         return v1
@@ -40,8 +40,8 @@ class GraduateJobsViewController: UIViewController {
     
     
     lazy var degree:DropDegreeMenuView = { [unowned self] in
-        let v = DropDegreeMenuView.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: 45*5))
-        v.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: ScreenW, height: NavH + JobHomeVC.titlePageH)
+        let v = DropDegreeMenuView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 45*5))
+        v.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + JobHomeVC.titlePageH)
         
         return v
     }()
@@ -53,7 +53,7 @@ class GraduateJobsViewController: UIViewController {
     private lazy var dropMenu: YNDropDownMenu = { [unowned self] in
         
         
-        let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: ScreenW, height: DROP_MENU_H), dropDownViews: [cityMenu,careerClassify,degree], dropDownViewTitles: ["城市","行业分类","学历"])
+        let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: DROP_MENU_H), dropDownViews: [cityMenu,careerClassify,degree], dropDownViewTitles: ["城市","行业分类","学历"])
         
         menu.setImageWhen(normal: UIImage(named: "arrow_nor"), selected: UIImage(named: "arrow_xl"), disabled: UIImage(named: "arrow_dim"))
         menu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
@@ -209,7 +209,7 @@ extension GraduateJobsViewController: UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let mode = self.datas[indexPath.row]
-        return table.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CommonJobTableCell.self, contentViewWidth: ScreenW)
+        return table.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CommonJobTableCell.self, contentViewWidth: GlobalConfig.ScreenW)
         
     }
     

@@ -50,7 +50,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 25, height: 25)
         label.font = UIFont.systemFont(ofSize: 15)
         label.textAlignment = .left
         label.lineBreakMode = .byWordWrapping
-        label.setSingleLineAutoResizeWithMaxWidth(ScreenW - iconSize.width - 20)
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width - 20)
         label.textColor = UIColor.black
         return label
     }()

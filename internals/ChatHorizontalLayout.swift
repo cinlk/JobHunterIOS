@@ -32,7 +32,7 @@ class CollectionHorizontalLayout: UICollectionViewFlowLayout {
         super.prepare()
         
         
-        let itemW: CGFloat = ScreenW / CGFloat(col)
+        let itemW: CGFloat = GlobalConfig.ScreenW / CGFloat(col)
         let itemH: CGFloat = (collectionView?.bounds.height)! / CGFloat(row)
         // 设置itemSize
         itemSize = CGSize(width: itemW, height: itemH)
@@ -57,7 +57,7 @@ class CollectionHorizontalLayout: UICollectionViewFlowLayout {
             
             page = itemIndex / (col * row)
             // 通过一系列计算, 得到x, y值
-            let x = itemSize.width * CGFloat(itemIndex % Int(col)) + (CGFloat(page) * ScreenW)
+            let x = itemSize.width * CGFloat(itemIndex % Int(col)) + (CGFloat(page) * GlobalConfig.ScreenW)
             let y = itemSize.height * CGFloat((itemIndex - page * row * col) / col)
             
             attributes.frame = CGRect(x: x, y: y, width: itemSize.width, height: itemSize.height)

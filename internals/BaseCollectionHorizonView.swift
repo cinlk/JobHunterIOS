@@ -16,7 +16,7 @@ class BaseCollectionHorizonView: UIView {
         let title = UILabel()
         title.font = UIFont.boldSystemFont(ofSize: 16)
         title.textAlignment = .left
-        title.setSingleLineAutoResizeWithMaxWidth(ScreenW - 80)
+        title.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 80)
         return title
     }()
     
