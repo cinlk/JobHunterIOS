@@ -37,7 +37,7 @@ class subconditions: UIViewController {
     
     private lazy var tableHeaderView:UIView = { [unowned self] in
         
-        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH))
+        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH))
         view.backgroundColor = UIColor.blue
         
         let title =  UILabel()

@@ -18,8 +18,8 @@ class InvitationViewController: UIViewController {
     
     
     // 子栏目
-    private lazy var pageTitle:pagetitleView = { [unowned self] in
-        let titles = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: pageTitleH) ,titles: subItems, itemWidth: 120)
+    private lazy var pageTitle:PagetitleView = { [unowned self] in
+        let titles = PagetitleView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: pageTitleH) ,titles: subItems, itemWidth: 120)
         titles.delegate = self
         return titles
     }()
@@ -27,7 +27,7 @@ class InvitationViewController: UIViewController {
     
     private lazy var ChildVC:[UIViewController] = []
     
-    private lazy var pageContent:pageContentView = {  [unowned self] in
+    private lazy var pageContent:PageContentView = {  [unowned self] in
         let carrerTalk = CareerTalkInviteViewController()
         ChildVC.append(carrerTalk)
       
@@ -36,7 +36,7 @@ class InvitationViewController: UIViewController {
         ChildVC.append(jobInvite)
             
         
-        let content = pageContentView.init(frame: CGRect.init(x: 0, y: NavH + pageTitleH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - (NavH + pageTitleH)), childVCs: ChildVC, pVC: self)
+        let content = PageContentView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH + pageTitleH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - (GlobalConfig.NavH + pageTitleH)), childVCs: ChildVC, pVC: self)
         content.delegate = self
         
         return content
@@ -127,7 +127,7 @@ extension InvitationViewController{
 
 extension InvitationViewController: pagetitleViewDelegate{
     
-    func ScrollContentAtIndex(index: Int, _ titleView: pagetitleView) {
+    func ScrollContentAtIndex(index: Int, _ titleView: PagetitleView) {
         self.pageContent.moveToIndex(index)
     }
     
@@ -137,7 +137,7 @@ extension InvitationViewController: pagetitleViewDelegate{
 
 extension InvitationViewController: PageContentViewScrollDelegate{
     
-    func pageContenScroll(_ contentView: pageContentView, progress: CGFloat, sourcIndex: Int, targetIndex: Int){
+    func pageContenScroll(_ contentView: PageContentView, progress: CGFloat, sourcIndex: Int, targetIndex: Int){
         self.pageTitle.changeTitleWithProgress(progress, sourceIndex: sourcIndex, targetIndex: targetIndex)
     
     }

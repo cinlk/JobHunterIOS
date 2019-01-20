@@ -43,7 +43,7 @@ extension loginManager: TargetType{
 
     var baseURL: URL{
        
-        return URL.init(string: "https://127.0.0.1:9090/app/api/")!
+        return URL.init(string: "http://www.baidu.com/app/api/")!
     }
     
     

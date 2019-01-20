@@ -229,8 +229,6 @@ class GlobalUserInfo {
 
 
 
-
-
 class SingletoneClass {
     
     private static let single = SingletoneClass()
@@ -265,6 +263,8 @@ class SingletoneClass {
     public var guidanceData:[UserGuidePageItem]?
     // 广告背景图片
     public var adviseImage:String?
+    // app用户协议地址
+    public var appAgreementURL:String? = "http://www.immomo.com/agreement.html"
     
     private var userDefaule: UserDefaults = UserDefaults.standard
     
@@ -376,6 +376,7 @@ extension SingletoneClass{
 //            })
 //        }
       
+        // TODO  用户协议网址
         
         group.notify(queue: DispatchQueue.main){
             finished(true)

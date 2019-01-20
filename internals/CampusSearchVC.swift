@@ -27,7 +27,7 @@ class CampusSearchVC: UIViewController, SearchControllerDeletgate {
             self.table.mj_header.beginRefreshing()
             
         }
-         city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
+         city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
         
          return city
     }()
@@ -39,7 +39,7 @@ class CampusSearchVC: UIViewController, SearchControllerDeletgate {
             self.requestBody.industry =  industry
             self.table.mj_header.beginRefreshing()
         }
-        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
+        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
         return k
     }()
     
@@ -49,7 +49,7 @@ class CampusSearchVC: UIViewController, SearchControllerDeletgate {
             self.requestBody.company = company
             self.table.mj_header.beginRefreshing()
         }
-        c.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
+        c.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
         return c
     }()
     

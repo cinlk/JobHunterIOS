@@ -83,7 +83,7 @@ class personResumeTable: BaseViewController {
         
        
         self.view.addSubview(tableView)
-        _ = tableView.sd_layout().topSpaceToView(self.view,NavH)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
+        _ = tableView.sd_layout().topSpaceToView(self.view,GlobalConfig.NavH)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
         
         
        

@@ -22,7 +22,7 @@ class InternJobsViewController: UIViewController {
     
     private lazy var cityMenu:DropItemCityView = {
         let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 200))
-        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + JobHomeVC.titlePageH)
+        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titlePageH)
         
         city.passData = { citys in
             self.table.mj_header.beginRefreshing()
@@ -33,7 +33,7 @@ class InternJobsViewController: UIViewController {
 
     private lazy var kind:DropCarrerClassifyView = {
         let k = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
-        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + JobHomeVC.titlePageH)
+        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titlePageH)
         k.passData = { s in
             self.table.mj_header.beginRefreshing()
             
@@ -43,7 +43,7 @@ class InternJobsViewController: UIViewController {
     
     private lazy var intern:DropInternCondtionView = {
         let intern = DropInternCondtionView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 200))
-        intern.backGroundBtn.frame =  CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + JobHomeVC.titlePageH)
+        intern.backGroundBtn.frame =  CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titlePageH)
         intern.passData = {  condition in
             self.table.mj_header.beginRefreshing()
         }

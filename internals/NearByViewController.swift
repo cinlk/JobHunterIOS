@@ -16,8 +16,8 @@ class NearByViewController: UIViewController {
 
     private var childVC:[UIViewController] = []
     
-    private lazy var pagetitle:pagetitleView = { [unowned self] in
-        let title = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: pageTitleH), titles: ["宣讲会","公司"])
+    private lazy var pagetitle:PagetitleView = { [unowned self] in
+        let title = PagetitleView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: pageTitleH), titles: ["宣讲会","公司"])
         title.delegate = self
         return title
         
@@ -25,7 +25,7 @@ class NearByViewController: UIViewController {
     
     
     
-    private lazy var pageContent:pageContentView = {  [unowned self] in
+    private lazy var pageContent:PageContentView = {  [unowned self] in
       
         
         let career = NearCareerTalkMeetinVC()
@@ -35,7 +35,7 @@ class NearByViewController: UIViewController {
         childVC.append(company)
         
         
-        let content = pageContentView.init(frame: CGRect.init(x: 0, y: NavH+pageTitleH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - NavH - pageTitleH ), childVCs: childVC, pVC: self)
+        let content = PageContentView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH+pageTitleH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH - pageTitleH ), childVCs: childVC, pVC: self)
         
         content.delegate = self
         return content
@@ -88,7 +88,7 @@ extension NearByViewController: UINavigationControllerDelegate{
 
 extension NearByViewController:pagetitleViewDelegate{
     
-    func ScrollContentAtIndex(index: Int, _ titleView: pagetitleView) {
+    func ScrollContentAtIndex(index: Int, _ titleView: PagetitleView) {
         self.pageContent.moveToIndex(index)
     }
     
@@ -97,7 +97,7 @@ extension NearByViewController:pagetitleViewDelegate{
 
 
 extension NearByViewController: PageContentViewScrollDelegate{
-    func pageContenScroll(_ contentView: pageContentView, progress: CGFloat, sourcIndex: Int, targetIndex: Int) {
+    func pageContenScroll(_ contentView: PageContentView, progress: CGFloat, sourcIndex: Int, targetIndex: Int) {
         self.pagetitle.changeTitleWithProgress(progress, sourceIndex: sourcIndex, targetIndex: targetIndex)
     }
     

@@ -53,9 +53,9 @@ class BaseShowJobViewController: BaseViewController {
     }()
     
     // 分享界面
-     internal lazy var  shareapps:shareView = { [unowned self] in
+     internal lazy var  shareapps:ShareView = { [unowned self] in
         //放在最下方
-        let view =  shareView(frame: CGRect(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: shareViewH))
+        let view =  ShareView(frame: CGRect(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: shareViewH))
         return view
     }()
     

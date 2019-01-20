@@ -15,7 +15,7 @@ fileprivate let keyStr:String = "estimatedProgress"
 fileprivate let imgSize = CGSize.init(width: 25, height: 25)
 fileprivate let shareViewH = SingletoneClass.shared.shareViewH
 
-class baseWebViewController: UIViewController {
+class BaseWebViewController: UIViewController {
     
     private lazy var webView: WKWebView = { [unowned self] in
         
@@ -37,8 +37,8 @@ class baseWebViewController: UIViewController {
     
     
     //share
-    private lazy var sharedView:shareView = {
-        let share = shareView.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: shareViewH))
+    private lazy var sharedView:ShareView = {
+        let share = ShareView.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: shareViewH))
         share.delegate = self
         return share
     }()
@@ -100,8 +100,7 @@ class baseWebViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         UIApplication.shared.keyWindow?.addSubview(sharedView)
-
-        self.navigationController?.insertCustomerView(UIColor.white)
+        self.navigationController?.insertCustomerView(UIColor.orange)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -124,7 +123,7 @@ class baseWebViewController: UIViewController {
     
 }
 
-extension baseWebViewController {
+extension BaseWebViewController {
     
     private func initView(){
         self.view.addSubview(webView)
@@ -156,7 +155,7 @@ extension baseWebViewController {
     
 }
 
-extension baseWebViewController{
+extension BaseWebViewController{
     
     @objc func goBack(){
         if self.webView.canGoBack{
@@ -181,7 +180,7 @@ extension baseWebViewController{
     
 }
 
-extension baseWebViewController: WKNavigationDelegate{
+extension BaseWebViewController: WKNavigationDelegate{
     
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
@@ -200,7 +199,7 @@ extension baseWebViewController: WKNavigationDelegate{
 }
 
 
-extension baseWebViewController: WKUIDelegate{
+extension BaseWebViewController: WKUIDelegate{
     // 允许http连接 跳转
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         if navigationAction.targetFrame?.isMainFrame != nil {
@@ -228,7 +227,7 @@ extension baseWebViewController: WKUIDelegate{
 }
 
 //share 代理
-extension baseWebViewController: shareViewDelegate{
+extension BaseWebViewController: shareViewDelegate{
     
     
     func handleShareType(type: UMSocialPlatformType, view: UIView) {

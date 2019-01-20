@@ -32,12 +32,21 @@ let BarImg_Size = CGSize.init(width: 27, height: 26)
 // TabBArImages Tuple
 let TabItemImages:[(UIImage,UIImage)] = [(#imageLiteral(resourceName: "home"), #imageLiteral(resourceName: "selectedHome")),(#imageLiteral(resourceName: "graduation"), #imageLiteral(resourceName: "selectedGraduation")),(#imageLiteral(resourceName: "message"),#imageLiteral(resourceName: "selectedMessage")),(#imageLiteral(resourceName: "forum"), #imageLiteral(resourceName: "forum")),(#imageLiteral(resourceName: "person"), #imageLiteral(resourceName: "selectedPerson"))]
 
+// color
 struct ConfigColor {
     
     struct TabBarItemColor {
         static let SelectedColor = UIColor(red: 246.0/255.0, green: 155.0/255.0, blue: 13.0/255.0, alpha: 1.0)
         static let normalColor = UIColor(red: 16.0/255.0, green: 224.0/255.0, blue: 223.0/255.0, alpha: 1.0)
+        
     }
+    
+    struct PageTitleColor {
+        
+        static let SublineColor = UIColor.init(r: 100, g: 100, b: 100, alpha: 0.5)
+    }
+    
+    
     
     
 }
@@ -55,7 +64,7 @@ let avatarSize:CGSize = CGSize.init(width: 45, height: 45)
 let myself:PersonModel = PersonModel(JSON: ["userID":"123456","company":"","name":"来自地球大于6","role":"求职","icon": #imageLiteral(resourceName: "evil").toBase64String()])!
 
 // 匿名用户
-var anonymous = false
+
 
 
 // global greeting msg
@@ -170,9 +179,9 @@ struct GlobalConfig {
     // 屏幕宽高
     static let ScreenW:CGFloat = UIScreen.main.bounds.width
     static let ScreenH:CGFloat = UIScreen.main.bounds.height
+    static let NavH:CGFloat = UIDevice.current.isX() ? 88 : 64
+    static let defaultImage = "bigCar"
 }
-
-
 
 
 

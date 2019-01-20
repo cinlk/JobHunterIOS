@@ -8,7 +8,7 @@
 
 import UIKit
 
-class customerTextField: UITextField {
+class CustomerTextField: UITextField {
 
     
     internal var leftPadding:CGFloat = 0
@@ -39,9 +39,18 @@ class customerTextField: UITextField {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.addSubview(line)
+       
     }
     
+    override func layoutSubviews() {
+       
+        self.addSubview(line)
+        self.textAlignment = .left
+        self.clearButtonMode = .whileEditing
+        self.font = UIFont.systemFont(ofSize: 16)
+        self.borderStyle = .roundedRect
+        super.layoutSubviews()
+    }
     
     
     
@@ -87,7 +96,7 @@ class customerTextField: UITextField {
 
 }
 
-extension customerTextField{
+extension CustomerTextField{
     private func setLeftImage(){
         if let imageView = leftImage{
             leftViewMode = UITextField.ViewMode.always
@@ -104,11 +113,6 @@ extension customerTextField{
         if let btn = rightBtn{
             rightViewMode = UITextField.ViewMode.always
             rightView = btn
-            
-           
-            
-            
-            
         }else{
             rightView = nil
             rightViewMode = .never

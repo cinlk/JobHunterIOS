@@ -59,8 +59,8 @@ class PostContentViewController: BaseTableViewController {
     
     
     // 分享view
-    private lazy var shareV:shareView = {
-        let share = shareView.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: shareViewH))
+    private lazy var shareV:ShareView = {
+        let share = ShareView.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: shareViewH))
         share.delegate = self
         return share
     }()

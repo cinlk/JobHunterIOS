@@ -15,7 +15,7 @@ extension UINavigationController{
     func insertCustomerView(_ color: UIColor? = nil, alpha:CGFloat = 1){
         
         if self.view.viewWithTag(1999) == nil{
-            let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH))
+            let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH))
             // naviagtionbar 默认颜色
             v.backgroundColor =  color ?? UIColor.navigationBarColor()
             v.tag  = 1999

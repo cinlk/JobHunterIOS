@@ -39,19 +39,18 @@ extension UIButton {
         self.imageView?.contentMode = .center
         self.setImage(anImage, for: state)
         
-        positionLabelRespectToImage(title: title, position: titlePosition, spacing: additionalSpacing, offsetY: offsetY)
-        
         self.titleLabel?.contentMode = .center
         self.setTitle(title, for: state)
+        self.layoutIfNeeded()
+        
+        positionLabelRespectToImage(position: titlePosition, spacing: additionalSpacing, offsetY: offsetY)
+
     }
     
-    private func positionLabelRespectToImage(title: String, position: UIView.ContentMode,
+    private func positionLabelRespectToImage(position: UIView.ContentMode,
                                              spacing: CGFloat, offsetY:CGFloat) {
         let imageSize = self.imageRect(forContentRect: self.frame)
-        let titleFont = self.titleLabel?.font!
-        let titleSize = (title as NSString).size(withAttributes: [NSAttributedString.Key.font: titleFont])
-        
-        
+        let titleSize = self.titleLabel?.bounds.size ?? CGSize.zero
         var titleInsets: UIEdgeInsets
         var imageInsets: UIEdgeInsets
         
@@ -65,9 +64,9 @@ extension UIButton {
                                        left: -(imageSize.width), bottom: 0, right: 0)
             imageInsets = UIEdgeInsets(top: offsetY, left: 0, bottom: 0, right: -titleSize.width)
         case .left:
-            titleInsets = UIEdgeInsets(top: 0, left: -(imageSize.width * 2), bottom: 0, right: 0)
-            imageInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0,
-                                       right: -(titleSize.width * 2 + spacing))
+            titleInsets = UIEdgeInsets(top: 0, left: -(imageSize.width + spacing), bottom: 0, right: (imageSize.width + spacing))
+            imageInsets = UIEdgeInsets(top: 0, left: (titleSize.width  + spacing), bottom: 0,
+                                       right: -(titleSize.width  + spacing))
         case .right:
             titleInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: -spacing)
             imageInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -79,6 +78,11 @@ extension UIButton {
         self.titleEdgeInsets = titleInsets
         self.imageEdgeInsets = imageInsets
     }
+    
+    
+    //
+    
+    
 }
 
 

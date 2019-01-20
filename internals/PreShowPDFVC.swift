@@ -150,7 +150,7 @@ extension PreShowPDFVC{
 
          _ = bottomView.sd_layout().bottomEqualToView(self.view)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.heightIs(60)
         
-        _ = wbView.sd_layout().topSpaceToView(self.view,NavH)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomSpaceToView(bottomView,0)
+        _ = wbView.sd_layout().topSpaceToView(self.view,GlobalConfig.NavH)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomSpaceToView(bottomView,0)
        
         
        

@@ -53,7 +53,7 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
 
 
     private lazy var naviBackView:UIView = {
-        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH))
+        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH))
         view.backgroundColor = UIColor.green
         view.alpha = 0
         
@@ -158,7 +158,7 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
     // 收藏
     override func collected(_ btn:UIButton){
         
-        if anonymous {
+        if !GlobalUserInfo.shared.isLogin {
             showAlert(error: "请登录", vc: self)
             return
         }
@@ -261,7 +261,7 @@ extension OnlineApplyShowViewController:shareViewDelegate{
 extension OnlineApplyShowViewController{
     
     @objc private func onlineApply(_ btn:UIButton){
-        if anonymous{
+        if !GlobalUserInfo.shared.isLogin{
             showAlert(error: "请登录", vc: self)
             return
         }
@@ -421,7 +421,7 @@ private class tableHeader:UIView{
         
         let views:[UIView] = [icon, name, addressIcon, address,timeIcon, time, positions, positionIcon]
         self.sd_addSubviews(views)
-        _ = icon.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(self, NavH)?.widthIs(45)?.heightIs(45)
+        _ = icon.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(self, GlobalConfig.NavH)?.widthIs(45)?.heightIs(45)
         _ = name.sd_layout().leftSpaceToView(icon,10)?.topEqualToView(icon)?.autoHeightRatio(0)
         _ = addressIcon.sd_layout().topSpaceToView(name,5)?.leftEqualToView(name)?.widthIs(15)?.heightIs(15)
         _ = address.sd_layout().leftSpaceToView(addressIcon,10)?.topEqualToView(addressIcon)?.autoHeightRatio(0)

@@ -27,7 +27,7 @@ class searchResultController: BaseViewController {
 
     private var searchChildVC:[UIViewController] = []
     
-    internal lazy var searchFildContent:pageContentView = { [unowned self] in
+    internal lazy var searchFildContent:PageContentView = { [unowned self] in
         
         let os = OnlineApplySearchVC.init()
         let cs = CampusSearchVC.init()
@@ -35,7 +35,7 @@ class searchResultController: BaseViewController {
         let css = CareerTalkSearchVC.init()
         let coms = CompanySearchVC()
         searchChildVC.append(contentsOf: [os, cs, ins, css, coms])
-        let content = pageContentView.init(frame: self.view.frame, childVCs: searchChildVC, pVC: self)
+        let content = PageContentView.init(frame: self.view.frame, childVCs: searchChildVC, pVC: self)
         content.collectionView.isScrollEnabled = false
         return content
         

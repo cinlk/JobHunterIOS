@@ -103,7 +103,7 @@ class DropValidTimeView: BaseSingleItemDropView {
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseInOut, animations: {
             self.datePicker.isHidden = false
         }, completion: { bool in
-            self.bottomView.frame = CGRect.init(x: 0, y: NavH + menuH + pickerViewH, width: GlobalConfig.ScreenW, height: 40)
+            self.bottomView.frame = CGRect.init(x: 0, y: GlobalConfig.NavH + menuH + pickerViewH, width: GlobalConfig.ScreenW, height: 40)
         
         })
     }

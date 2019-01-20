@@ -48,7 +48,7 @@ class showResumeVC: UIViewController {
     
     // 带名称的 nav view
     private lazy var nagView:UIView = {
-        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH))
+        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH))
         view.backgroundColor = UIColor.orange
         let label = UILabel()
         label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
@@ -117,9 +117,9 @@ extension showResumeVC: UIScrollViewDelegate{
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView == self.table{
             let offsetY = scrollView.contentOffset.y
-            if offsetY > 0 && offsetY < NavH{
-                nagView.alpha = offsetY / NavH
-            }else if offsetY >= NavH{
+            if offsetY > 0 && offsetY < GlobalConfig.NavH{
+                nagView.alpha = offsetY / GlobalConfig.NavH
+            }else if offsetY >= GlobalConfig.NavH{
                 nagView.alpha = 1
             }else{
                 nagView.alpha = 0

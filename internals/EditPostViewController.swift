@@ -113,7 +113,7 @@ extension EditPostViewController{
         self.view.addSubview(contentView)
     
         
-        _ = titleView.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,NavH)?.heightIs(titleTextH)
+        _ = titleView.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,GlobalConfig.NavH)?.heightIs(titleTextH)
         
         _ = contentView.sd_layout().topSpaceToView(titleView,0)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.heightIs(contentTextH)
         
@@ -234,9 +234,9 @@ extension EditPostViewController{
         
         let kframe = notify.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! CGRect
         // 加上toolbar 高度30
-        if contentTextH + NavH + titleTextH > GlobalConfig.ScreenH - (kframe.height + 30){
+        if contentTextH + GlobalConfig.NavH + titleTextH > GlobalConfig.ScreenH - (kframe.height + 30){
             _ = contentView.sd_resetLayout()
-            contentTextH = GlobalConfig.ScreenH - (kframe.height + 30) - NavH - titleTextH
+            contentTextH = GlobalConfig.ScreenH - (kframe.height + 30) - GlobalConfig.NavH - titleTextH
             _ = contentView.sd_layout().topSpaceToView(titleView,0)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.heightIs(contentTextH)
             
         }

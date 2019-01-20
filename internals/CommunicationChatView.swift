@@ -56,7 +56,7 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     
     private lazy var tableView:UITableView = { [unowned self] in
         
-        let tb = UITableView.init(frame: CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - NavH - ChatInputBarH),style: .plain)
+        let tb = UITableView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH - ChatInputBarH),style: .plain)
        
         tb.delegate = self
         tb.dataSource = self
@@ -713,7 +713,7 @@ extension CommunicationChatView: ChatBarViewDelegate{
         }
         let height = ChatInputBarH + height
         _ = self.chatBarView.sd_layout().yIs(GlobalConfig.ScreenH - y - height)?.heightIs(height)
-        self.tableView.frame = CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - NavH - height - y)
+        self.tableView.frame = CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH - height - y)
         let row = IndexPath.init(row: self.tableSource.count - 1   , section: 0)
         self.tableView.scrollToRow(at: row, at: .none, animated: true)
         self.currentChatBarHright =  height
@@ -736,7 +736,7 @@ extension CommunicationChatView{
 
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             // 改变table 大小
-            self.tableView.frame = CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - NavH - self.currentChatBarHright - distance)
+            self.tableView.frame = CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH - self.currentChatBarHright - distance)
             //改变 chatbar 位置和大小
             self.chatBarView.frame  = CGRect.init(x: 0, y: GlobalConfig.ScreenH - distance - self.currentChatBarHright, width: GlobalConfig.ScreenW, height: self.currentChatBarHright)
             

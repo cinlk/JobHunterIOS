@@ -19,7 +19,7 @@ class publisherControllerView: BaseTableViewController {
     
     
     private lazy var headerView:personTableHeader = {
-        let h = personTableHeader.init(frame: CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: tHeaderHeight - NavH))
+        let h = personTableHeader.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: tHeaderHeight - GlobalConfig.NavH))
         h.isHR = true 
         return h
     }()
@@ -27,7 +27,7 @@ class publisherControllerView: BaseTableViewController {
     
     
     private lazy var navigationBack:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH))
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH))
         v.backgroundColor = UIColor.navigationBarColor()
         v.alpha = 0
         let title = UILabel.init(frame: CGRect.zero)
@@ -308,7 +308,7 @@ extension publisherControllerView{
         
         // 0 到 tHeaderHeight直接距离，headerview 向上移动
         if scrollView.contentOffset.y > 0 && scrollView.contentOffset.y < tHeaderHeight{
-            hframe.origin.y = NavH - scrollView.contentOffset.y
+            hframe.origin.y = GlobalConfig.NavH - scrollView.contentOffset.y
             scrollView.contentInset = UIEdgeInsets(top: -scrollView.contentOffset.y, left: 0, bottom: 0, right: 0)
             if scrollView.contentOffset.y < 64{
                   navigationBack.alpha = scrollView.contentOffset.y / CGFloat(64)
@@ -326,7 +326,7 @@ extension publisherControllerView{
             frame.size.height = tHeaderHeight - scrollView.contentOffset.y
             navigationBack.alpha = 0
             // 变化速度
-            hframe.origin.y = NavH - scrollView.contentOffset.y / 2
+            hframe.origin.y = GlobalConfig.NavH - scrollView.contentOffset.y / 2
         }
         self.bImg.frame = frame
         self.headerView.frame = hframe

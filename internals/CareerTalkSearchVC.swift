@@ -25,7 +25,7 @@ class CareerTalkSearchVC: UIViewController, SearchControllerDeletgate{
             self.requestBody.college = colleges
             self.table.mj_header.beginRefreshing()
         }
-        college.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
+        college.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
         
         return college
     }()
@@ -39,7 +39,7 @@ class CareerTalkSearchVC: UIViewController, SearchControllerDeletgate{
             self.table.mj_header.beginRefreshing()
         }
         
-        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
+        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
         
         return k
         
@@ -53,7 +53,7 @@ class CareerTalkSearchVC: UIViewController, SearchControllerDeletgate{
             self.requestBody.date = date
             self.table.mj_header.beginRefreshing()
         }
-        m.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
+        m.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
         
         return m
     }()

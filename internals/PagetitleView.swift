@@ -10,13 +10,12 @@ import UIKit
 
 
 protocol pagetitleViewDelegate: class {
-    func ScrollContentAtIndex(index:Int, _ titleView: pagetitleView)
+    func ScrollContentAtIndex(index:Int, _ titleView: PagetitleView)
     
 }
 
 
-
-class pagetitleView: UIView {
+class PagetitleView: UIView {
 
     
     var kScrollLineH : CGFloat = 2
@@ -42,22 +41,22 @@ class pagetitleView: UIView {
     
     lazy var subline:UIView = { [unowned self] in
         let v = UIView.init(frame: CGRect.init(x: 0, y: self.bounds.height-1, width: GlobalConfig.ScreenW, height: 1))
-        v.backgroundColor = UIColor.init(r: 100, g: 100, b: 100, alpha: 0.5)
+        v.backgroundColor = ConfigColor.PageTitleColor.SublineColor
         return v
     }()
     
     
     init(frame:CGRect, titles:[String], lineCenter:Bool = false, itemWidth:CGFloat = 60,horizontalEdgeInset:CGFloat = 30, kNormalColor:(CGFloat, CGFloat, CGFloat) = (85, 85, 85),
          kSelectColor:(CGFloat, CGFloat, CGFloat) = (255, 128, 0)) {
+        
         super.init(frame: frame)
-        self.titles = titles
         self.lineCenter = lineCenter
         self.itemWidth = itemWidth
         self.horizontalEdgeInset = horizontalEdgeInset
         self.kNormalColor = kNormalColor
         self.kSelectColor = kSelectColor
+        self.titles = titles
         
-        self.setViews()
         
         
     }
@@ -69,39 +68,32 @@ class pagetitleView: UIView {
     }
     
     
-}
-
-
-extension pagetitleView{
- 
-    private func setViews(){
-        self.backgroundColor = UIColor.white
+    override func layoutSubviews() {
+        super.layoutSubviews()
         self.creatLabels()
-        self.layoutSubviews()
+        self.backgroundColor = UIColor.white
         self.addSubview(moveLine)
         self.addSubview(subline)
         guard let firstLabel = labelTitles.first else {
             return
         }
-        if lineCenter{
-          
-            moveLine.frame = CGRect.init(x: firstLabel.center.x - 15 , y: frame.height - 5, width: 30, height: kScrollLineH)
-        }else{
-            moveLine.frame = CGRect.init(x: firstLabel.frame.origin.x, y: frame.height - kScrollLineH , width: firstLabel.frame.width, height: kScrollLineH)
-        }
         
+        moveLine.frame =  lineCenter ?  CGRect.init(x: firstLabel.center.x - 15 , y: frame.height - 5, width: 30, height: kScrollLineH) : CGRect.init(x: firstLabel.frame.origin.x, y: frame.height - kScrollLineH , width: firstLabel.frame.width, height: kScrollLineH)
+       
     }
+}
+
+
+extension PagetitleView{
+ 
+    
     
     private func creatLabels(){
         guard let labels = self.titles else {
             return
         }
         
-       
         let count = labels.count
-        // 以4为单位
-       
-        //let width:CGFloat = ScreenW / CGFloat(count)
         
         var labelsView:[UILabel] = []
         
@@ -113,29 +105,19 @@ extension pagetitleView{
             label.text = item
             label.tag = index
             
-            //label.setSingleLineAutoResizeWithMaxWidth(ScreenW)
             self.addGuesture(label: label)
-            //label.sizeToFit()
+            
             label.textAlignment = .center
             self.labelTitles.append(label)
             labelsView.append(label)
-            //self.addSubview(label)
+           
             
         }
         self.sd_addSubviews(labelsView)
-        if count >= 4{
-            if self.lineCenter{
-                // 缩短间隔距离
-                self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: itemWidth, verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: horizontalEdgeInset)
-            }else{
-                self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: (GlobalConfig.ScreenW - 20) / CGFloat(count), verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: horizontalEdgeInset)
-            }
-        }else{
-             //let diff = 4 - count
-             // horizoneEdge 与最近父view的边距
-             self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: itemWidth, verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: horizontalEdgeInset)
-        }
-            
+        
+        !self.lineCenter && count >= 4 ?   self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: (GlobalConfig.ScreenW - 20) / CGFloat(count), verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: horizontalEdgeInset) :
+        self.setupAutoMarginFlowItems(labelsView, withPerRowItemsCount: count, itemWidth: itemWidth, verticalMargin: 0, verticalEdgeInset: 0, horizontalEdgeInset: horizontalEdgeInset)
+        
     }
     private func addGuesture(label:UILabel){
         label.isUserInteractionEnabled = true
@@ -165,8 +147,6 @@ extension pagetitleView{
         let distance = labelTitles[currentIndex].frame.origin.x - oldIabel.frame.origin.x
         let centerDistance =  labelTitles[currentIndex].center.x - oldIabel.center.x
 
-        
-        print("current \(currentIndex)", "start \(startIndex)")
         self.labelTitles[currentIndex].textColor = UIColor.init(r: kSelectColor.0, g: kSelectColor.1, b: kSelectColor.2)
         
         self.labelTitles[startIndex].textColor = UIColor.init(r: kNormalColor.0, g: kNormalColor.1, b: kNormalColor.2)
@@ -177,8 +157,8 @@ extension pagetitleView{
 
         
         UIView.animate(withDuration: 0.15) { [unowned self] in
+            
             if self.lineCenter{
-                
                 self.moveLine.center.x = oldIabel.center.x + centerDistance
             }else{
                 self.moveLine.frame.origin.x = oldIabel.frame.origin.x + distance
@@ -193,7 +173,8 @@ extension pagetitleView{
 }
 
 
-extension pagetitleView{
+extension PagetitleView{
+    
     func changeTitleWithProgress(_ progress : CGFloat, sourceIndex : Int, targetIndex : Int){
         
         let sourceLabel = labelTitles[sourceIndex]

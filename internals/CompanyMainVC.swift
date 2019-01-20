@@ -56,7 +56,7 @@ class CompanyMainVC: BaseViewController {
         layout.minimumLineSpacing = 0
         layout.minimumInteritemSpacing = 0
         // 与顶部留出间隔
-        layout.itemSize = CGSize.init(width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH -  NavH)
+        layout.itemSize = CGSize.init(width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH -  GlobalConfig.NavH)
         layout.scrollDirection = .horizontal
         return layout
     }()
@@ -78,9 +78,9 @@ class CompanyMainVC: BaseViewController {
     }()
     
 // 分享界面
-    private lazy var shareapps:shareView = { [unowned self] in
+    private lazy var shareapps:ShareView = { [unowned self] in
         //放在最下方
-        let view =  shareView(frame: CGRect(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: shareViewH))
+        let view =  ShareView(frame: CGRect(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: shareViewH))
         view.delegate = self
         return view
     }()
@@ -88,7 +88,7 @@ class CompanyMainVC: BaseViewController {
     
     
     private lazy var headerView:CompanyHeaderView = {
-        let header = CompanyHeaderView.init(frame: CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: 0))
+        let header = CompanyHeaderView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: 0))
         header.backgroundColor = UIColor.white
         header.delegate = self
         return header
@@ -167,7 +167,7 @@ class CompanyMainVC: BaseViewController {
         companyJobs.delegate = self
         companyCarrerTalk.delegate = self
         
-        _ = collectionView.sd_layout().topSpaceToView(self.view,NavH)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
+        _ = collectionView.sd_layout().topSpaceToView(self.view,GlobalConfig.NavH)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
        
         
         self.handleViews.append(collectionView)
@@ -411,15 +411,15 @@ extension CompanyMainVC: CompanySubTableScrollDelegate{
         
         if height >= CompanyMainVC.headerThreld{
             // 改变头部视图
-            self.headerView.frame = CGRect.init(x: 0, y: NavH - CompanyMainVC.headerThreld, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH)
+            self.headerView.frame = CGRect.init(x: 0, y: GlobalConfig.NavH - CompanyMainVC.headerThreld, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH)
             self.navigationItem.title = mode?.name
             return
             
         }else if height > 0 && height < CompanyMainVC.headerThreld{
-            self.headerView.frame = CGRect.init(x: 0, y: NavH - height, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH)
+            self.headerView.frame = CGRect.init(x: 0, y: GlobalConfig.NavH - height, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH)
             
         }else{
-            self.headerView.frame = CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH)
+            self.headerView.frame = CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH)
             self.navigationItem.title = "公司详情"
             
         }

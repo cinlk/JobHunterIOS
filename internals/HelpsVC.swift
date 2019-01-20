@@ -233,7 +233,7 @@ extension HelpsVC: headerCollectionViewDelegate{
     
     func chooseItem(name: String, row: Int) {
         if let guide = self.mode?.guide[row], let url = guide.guideURL{
-            let wb = baseWebViewController()
+            let wb = BaseWebViewController()
             wb.mode = "http://www.sohu.com/a/144471615_687630"
             self.navigationController?.pushViewController(wb, animated: true)
         }

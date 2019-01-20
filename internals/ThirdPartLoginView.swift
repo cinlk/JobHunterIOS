@@ -8,7 +8,7 @@
 
 import UIKit
 
-fileprivate let title:String = "或"
+fileprivate let title:String = "第三方登录"
 fileprivate let items = 3
 fileprivate let iconWidth:CGFloat = 50
 
@@ -18,6 +18,9 @@ protocol SocialAppLoginDelegate: class {
     func showError(view:UIView,message:String)
     
 }
+
+
+
 
 // 固定的 第三方登录btn
 class ThirdPartLoginView: UIView {
@@ -34,10 +37,10 @@ class ThirdPartLoginView: UIView {
     }()
     
     private lazy var weixinBtn:UIButton = {
+        
         let btn = UIButton()
         btn.setBackgroundImage(UIImage.init(named: "wechat_circle"), for: .normal)
         btn.setBackgroundImage(UIImage.init(named: "wechat_circle"), for: .highlighted)
-
         btn.imageView?.contentMode = .scaleToFill
         btn.backgroundColor = UIColor.clear
         btn.addTarget(self, action: #selector(loginWeixin), for: .touchUpInside)
@@ -115,7 +118,7 @@ extension ThirdPartLoginView{
         
         UMSocialManager.default().getUserInfo(with: .wechatSession, currentViewController: nil) { (res, error) in
             if error != nil {
-                print(error)
+                self.delegate?.showError(view: self, message: "\(error)")
             }else{
                 print(res)
             }
@@ -137,7 +140,7 @@ extension ThirdPartLoginView{
         
         UMSocialManager.default().getUserInfo(with: .sina, currentViewController: nil) { (res, error) in
             if error != nil {
-                print(error)
+                 //self.delegate?.showError(view: self, message: "\(error)")
             }else{
                 if let response = res as? UMSocialUserInfoResponse{
                     print(response)
@@ -149,9 +152,10 @@ extension ThirdPartLoginView{
         
         UMSocialManager.default().getUserInfo(with: .QQ, currentViewController: nil) { (res, error) in
             if error != nil {
+                
                 print(error)
                // self.delegate?.showError(view: self, message: error.debugDescription)
-                
+                //self.delegate?.showError(view: self, message: error)
             }else{
                 if let response = res as? UMSocialUserInfoResponse{
                     
@@ -170,11 +174,7 @@ extension ThirdPartLoginView{
                     
                     // sdk 数据源
                     print(response.originalResponse)
-                    
-                    // 与服务器交互，判断是否关联了 注册的手机号， 如果是就登录
-                    
-                    // 否则弹出界面 关联手机号，在登录
-                    
+                    self.delegate?.verifyLoggable(view: self, type: .QQ, respons: response)
                     //self.delegate?.verifyLoggable(view: self, type: .QQ, respons: response)
                 }
             }

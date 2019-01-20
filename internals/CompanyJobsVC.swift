@@ -368,7 +368,7 @@ extension CompanyJobsVC:UITableViewDelegate, UITableViewDataSource{
                 if mode.outer == true && mode.link != nil{
                     
                     //跳转外部连接
-                    let wbView = baseWebViewController()
+                    let wbView = BaseWebViewController()
                     wbView.mode = mode.link
                     wbView.hidesBottomBarWhenPushed = true
                     self.navigationController?.pushViewController(wbView, animated: true)

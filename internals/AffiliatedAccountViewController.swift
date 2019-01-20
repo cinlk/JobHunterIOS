@@ -7,27 +7,19 @@
 //
 
 import UIKit
+import RxCocoa
+import RxSwift
+
+fileprivate let navTitle:String = "绑定手机号"
+fileprivate let describe:String = "请填写你已经注册的手机号或注册新的手机号, 绑定后即可登陆"
 
 
-fileprivate let navTitle:String = "验证账号"
-fileprivate let describe:String = "填写你已经注册的账号或注册新的账号, 绑定后登陆"
 
 class AffiliatedAccountViewController: UIViewController {
 
-    
-    private lazy var userIcon:UIImageView = {
-        let imageV = UIImageView(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
-        imageV.contentMode = .scaleAspectFill
-        imageV.image  = #imageLiteral(resourceName: "me").withRenderingMode(.alwaysTemplate)
-        return imageV
-    }()
-    
-    private lazy var numberIcon:UIImageView = {
-        let imageV = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
-        imageV.contentMode = .scaleAspectFill
-        imageV.image = #imageLiteral(resourceName: "password").withRenderingMode(.alwaysTemplate)
-        return imageV
-    }()
+    private lazy var dispose = DisposeBag()
+    private var type:UMSocialPlatformType =  UMSocialPlatformType.unKnown
+    private var socialId:String = ""
     
     private lazy var verifyBtn:UIButton = {
         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 90, height: 20))
@@ -35,8 +27,6 @@ class AffiliatedAccountViewController: UIViewController {
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         btn.setTitleColor(UIColor.blue, for: .normal)
         btn.titleLabel?.textAlignment = .center
-        btn.addTarget(self, action: #selector(self.validateCode), for: UIControl.Event.touchUpInside)
-        
         return btn
     }()
     
@@ -51,30 +41,20 @@ class AffiliatedAccountViewController: UIViewController {
     }()
     
     
-    private lazy var accountText:customerTextField = { [unowned self] in
-        let field = customerTextField.init(frame: CGRect.zero)
-        field.delegate = self
-        field.textAlignment = .left
-        field.clearButtonMode = .whileEditing
+    private lazy var accountText:CustomerTextField = { [unowned self] in
+        let field = CustomerTextField.init(frame: CGRect.zero)
         field.keyboardType = UIKeyboardType.default
-        field.font = UIFont.systemFont(ofSize: 16)
-        field.borderStyle = .roundedRect
-        field.placeholder = "输入手机号或邮箱"
-        field.leftImage = userIcon
+        field.placeholder = "输入手机号"
+        field.leftImage = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30), image: #imageLiteral(resourceName: "me"), highlightedImage: #imageLiteral(resourceName: "sina"))
         field.leftPadding = 10
         return field
     }()
     
-    private lazy var verifyCode:customerTextField = { [unowned self] in
-        let field = customerTextField.init(frame: CGRect.zero)
-        field.delegate = self
-        field.textAlignment = .left
-        field.clearButtonMode = .whileEditing
+    private lazy var verifyCode:CustomerTextField = { [unowned self] in
+        let field = CustomerTextField.init(frame: CGRect.zero)
         field.keyboardType = UIKeyboardType.numberPad
-        field.font = UIFont.systemFont(ofSize: 16)
-        field.borderStyle = .roundedRect
         field.placeholder = "输入验证码"
-        field.leftImage = numberIcon
+        field.leftImage = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30), image: #imageLiteral(resourceName: "password"), highlightedImage: #imageLiteral(resourceName: "sina"))
         field.leftPadding = 10
         field.righPadding = 10
         field.rightBtn = verifyBtn
@@ -87,7 +67,6 @@ class AffiliatedAccountViewController: UIViewController {
         btn.backgroundColor = UIColor.lightGray
         btn.setTitle("确 定", for: .normal)
         btn.titleLabel?.textAlignment = .center
-        btn.addTarget(self, action: #selector(confirm), for: .touchUpInside)
         return btn
     }()
     
@@ -96,24 +75,32 @@ class AffiliatedAccountViewController: UIViewController {
         let tap = UITapGestureRecognizer()
         tap.numberOfTapsRequired  = 1
         tap.addTarget(self, action: #selector(cancelEdit))
-        
         return tap
     }()
     
     
-    private  lazy var codeNumber:ValidateNumber =  ValidateNumber(button: verifyBtn)!
+    private  lazy var codeNumber:ValidateNumber?  =  ValidateNumber(button: verifyBtn)
 
     
+    init(type: UMSocialPlatformType, id:String) {
+        super.init(nibName: nil, bundle: nil)
+        self.type = type
+        self.socialId = id 
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         serViews()
-        // Do any additional setup after loading the view.
+        viewModel()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.insertCustomerView(UIColor.orange)
+        self.navigationController?.insertCustomerView(UIColor.clear)
     }
     
     
@@ -123,8 +110,6 @@ class AffiliatedAccountViewController: UIViewController {
 
     }
     
-    
-
 
 }
 
@@ -136,15 +121,15 @@ extension AffiliatedAccountViewController{
         let views:[UIView] = [accountText, verifyCode, confirmBtn, introduce]
         self.view.sd_addSubviews(views)
         
-        _ = accountText.sd_layout().topSpaceToView(self.view, NavH + 30)?.centerXEqualToView(self.view)?.widthIs(GlobalConfig.ScreenW - 40)?.heightIs(50)
+        _ = accountText.sd_layout().topSpaceToView(self.view, GlobalConfig.NavH + 30)?.centerXEqualToView(self.view)?.widthIs(GlobalConfig.ScreenW - 40)?.heightIs(50)
         _ = verifyCode.sd_layout().topSpaceToView(accountText, 15)?.centerXEqualToView(self.view)?.widthRatioToView(accountText,1)?.heightRatioToView(accountText,1)
         _ = confirmBtn.sd_layout().topSpaceToView(verifyCode,40)?.centerXEqualToView(self.view)?.widthRatioToView(verifyCode,1)?.heightIs(40)
         
         _ = introduce.sd_layout().topSpaceToView(confirmBtn,20)?.leftEqualToView(confirmBtn)?.autoHeightRatio(0)
         
         
-        // view 点击界面
-        self.view.addGestureRecognizer(tapGestur)
+        introduce.setMaxNumberOfLinesToShow(0)
+     
         
     }
 }
@@ -154,29 +139,52 @@ extension AffiliatedAccountViewController{
 extension AffiliatedAccountViewController{
     
     
-    @objc private func validateCode(){
-         codeNumber.start()
+    private func viewModel(){
+        // view 点击界面
+        self.view.addGestureRecognizer(tapGestur)
+    
+        
+        self.accountText.rx.text.subscribe(onNext: { (str) in
+                self.accountText.leftImage?.isHighlighted = str?.count != 0
+        }).disposed(by: self.dispose)
+        self.verifyCode.rx.text .subscribe(onNext: { (str) in
+                self.verifyCode.leftImage?.isHighlighted = str?.count != 0
+        }).disposed(by: self.dispose)
+        
+        self.codeNumber?.obCount.bind(to: self.verifyBtn.rx.isEnabled).disposed(by: self.dispose)
+        
+        _ = self.verifyBtn.rx.tap.takeUntil(self.rx.deallocated).subscribe({ _ in
+            self.codeNumber?.start()
+           
+        })
+         // 发送验证码接口
+        let ConfirmEnable = Driver<Bool>.combineLatest(self.accountText.rx.text.asDriver(), self.verifyCode.rx.text.asDriver()){ (phone, code) in
+            return phone?.count == 13 && code?.count == 6
+        }.distinctUntilChanged()
+        
+        ConfirmEnable.drive(self.confirmBtn.rx.isEnabled).disposed(by: self.dispose)
+        
+      
+        // 判断 确定按钮是否可用
+        
+        _ = self.confirmBtn.rx.tap.takeUntil(self.rx.deallocated).subscribe(onNext: { _ in
+            self.view.endEditing(true)
+            
+            //guard let phone =  self.accountText.text
+            
+            // 绑定第三方账号 登录
+            // 成功跳转到主界面
+            let vc = UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "main") as! MainTabBarViewController
+            
+            self.present(vc, animated: true, completion: nil)
+            //self.navigationController?.popvc(animated: true)
+            
+        })
     }
     
-    @objc private func confirm(){
-        self.view.endEditing(true)
-        // 测试登录
-        let vc =  UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "main") as! MainTabBarViewController
-        
-        
-        self.present(vc, animated: true, completion: nil)
-        self.navigationController?.popvc(animated: true)
-
-     }
+   
     
     @objc private func cancelEdit(){
         self.view.endEditing(true)
     }
-}
-
-
-
-extension AffiliatedAccountViewController:UITextFieldDelegate{
-    
-    
 }

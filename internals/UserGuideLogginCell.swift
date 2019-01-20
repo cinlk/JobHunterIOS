@@ -34,7 +34,7 @@ class UserGuideLogginCell: UICollectionViewCell {
         self.contentView.backgroundColor = UIColor.white
         self.contentView.addSubview(backGroundImage)
         self.contentView.addSubview(loggingBtn)
-        _ = backGroundImage.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(self.contentView,NavH + 60)?.widthIs(200)?.heightIs(200)
+        _ = backGroundImage.sd_layout().centerXEqualToView(self.contentView)?.topSpaceToView(self.contentView,GlobalConfig.NavH + 60)?.widthIs(200)?.heightIs(200)
         
         _ = loggingBtn.sd_layout().bottomSpaceToView(self.contentView,100)?.centerXEqualToView(self.contentView)?.heightIs(35)?.widthIs(200)
         

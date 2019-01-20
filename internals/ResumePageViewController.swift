@@ -25,7 +25,7 @@ class ResumePageViewController: BaseTableViewController {
     
     
     private lazy var menu:SearchTypeMenuView = {
-        let m = SearchTypeMenuView.init(frame: CGRect.init(x: GlobalConfig.ScreenW - 100 , y: NavH, width: 120, height: 70),arrowLeftMargin: 65)
+        let m = SearchTypeMenuView.init(frame: CGRect.init(x: GlobalConfig.ScreenW - 100 , y: GlobalConfig.NavH, width: 120, height: 70),arrowLeftMargin: 65)
         //m.delegate = self
         m.table.layer.cornerRadius = 0
         m.datas = [.online, .attachment]
@@ -78,7 +78,7 @@ class ResumePageViewController: BaseTableViewController {
         tableView.backgroundColor = UIColor.viewBackColor()
         tableView.register(ResumePageCell.self, forCellReuseIdentifier: ResumePageCell.identity())
         self.navigationController?.delegate = self
-        _ = menu.sd_layout().topSpaceToView(self.view,NavH)?.rightSpaceToView(self.view,10)?.widthIs(100)?.heightIs(60)
+        _ = menu.sd_layout().topSpaceToView(self.view,GlobalConfig.NavH)?.rightSpaceToView(self.view,10)?.widthIs(100)?.heightIs(60)
         
         super.setViews()
         

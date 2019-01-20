@@ -173,7 +173,7 @@ extension JuBaoViewController{
             
             let comfirmToTable = comfirm.convert(comfirm.origin, to: table)
             let bottonHeight = GlobalConfig.ScreenH - (comfirmToTable.y + comfirm.frame.height)
-            let scrollUpHeight = keyboradFram.height - bottonHeight - NavH
+            let scrollUpHeight = keyboradFram.height - bottonHeight - GlobalConfig.NavH
             
             if scrollUpHeight > 0{
                 UIView.animate(withDuration: 0.3) {

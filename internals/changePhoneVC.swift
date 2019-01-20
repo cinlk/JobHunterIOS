@@ -138,7 +138,7 @@ extension changePhoneVC{
         self.view.addSubview(inputPhoneView)
         self.view.addSubview(inputCodeView)
         self.view.addSubview(confirmBtn)
-        _ = topLabel.sd_layout().centerXEqualToView(self.view)?.topSpaceToView(self.view,20 + NavH)?.widthIs(200)?.heightIs(10)
+        _ = topLabel.sd_layout().centerXEqualToView(self.view)?.topSpaceToView(self.view,20 + GlobalConfig.NavH)?.widthIs(200)?.heightIs(10)
         _ = currentPhoneLabel.sd_layout().centerXEqualToView(self.view)?.topSpaceToView(topLabel,5)?.widthIs(300)?.heightIs(20)
         _ = inputPhoneView.sd_layout().leftSpaceToView(self.view,20)?.rightSpaceToView(self.view,20)?.topSpaceToView(currentPhoneLabel,20)?.heightIs(40)
         _ = inputCodeView.sd_layout().leftEqualToView(inputPhoneView)?.rightEqualToView(inputPhoneView)?.topSpaceToView(inputPhoneView,10)?.heightIs(40)

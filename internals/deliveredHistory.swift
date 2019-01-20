@@ -72,7 +72,7 @@ class deliveredHistory: BaseViewController,UIScrollViewDelegate {
     // table
     
     private lazy var table:UITableView = { [unowned self] in
-        let table = UITableView(frame: CGRect.init(x: 0, y: NavH + self.dropMenu.height , width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - (NavH + self.dropMenu.height)))
+        let table = UITableView(frame: CGRect.init(x: 0, y: GlobalConfig.NavH + self.dropMenu.height , width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - (GlobalConfig.NavH + self.dropMenu.height)))
         table.tableFooterView = UIView()
         table.register(deliveryItemCell.self, forCellReuseIdentifier: deliveryItemCell.identity())
         table.tableHeaderView = UIView()

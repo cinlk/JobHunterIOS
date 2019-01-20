@@ -34,18 +34,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let enter = EnterAppViewController()
             self.window = UIWindow(frame: UIScreen.main.bounds)
             self.window?.makeKeyAndVisible()
-            
             self.window?.rootViewController = enter
         
         }
-        
-        
-        
-     
         //  获取地理位置
         locateManager.getLocation()
-        
-        
         
         // 友盟第三方接口
         UMengInitial()
@@ -94,8 +87,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if !result{
             print(urlKey)
         }
-        
-        
         return result
     }
     

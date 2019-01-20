@@ -9,155 +9,126 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import RxDataSources
+import ObjectMapper
+
 
 fileprivate let text = "登录代表你同意 "
+fileprivate let agreement = "<<app用户协议>>"
 
-class QuickLoggingViewController: UITableViewController {
+fileprivate class tableViewFoot: UIView {
+    
+    private lazy var des:UILabel = {
+        let lb = UILabel.init(frame: CGRect.zero)
+        lb.font = UIFont.systemFont(ofSize: 14)
+        lb.textAlignment = .center
+        lb.textColor = UIColor.black
+        lb.text = text
+        lb.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 40)
+        return lb
+    }()
+
+    lazy var btn: UIButton = {
+        let btn = UIButton.init(frame: CGRect.zero)
+        btn.backgroundColor = UIColor.white
+        btn.setTitle(agreement, for: .normal)
+        btn.setTitleColor(UIColor.blue, for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        btn.titleLabel?.textAlignment = .left
+        return btn
+    }()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.isUserInteractionEnabled = true
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        
+        self.addSubview(des)
+        self.addSubview(btn)
+        _ = btn.sd_layout()?.rightSpaceToView(self,10)?.centerYEqualToView(self)?.heightRatioToView(self,0.8)?.widthRatioToView(self,0.4)
+        _ = des.sd_layout()?.rightSpaceToView(btn, 10)?.centerYEqualToView(btn)?.autoHeightRatio(0)
+        
+        super.layoutSubviews()
+    }
+    
+    
+}
+
+
+class QuickLoggingViewController: UIViewController, UITableViewDelegate {
 
    
-    
     weak var parentVC:UserLogginViewController?
     
-    
-    private lazy var userIcon:UIImageView = {
-        let imageV = UIImageView(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
-        imageV.contentMode = .scaleAspectFill
-        imageV.image  = #imageLiteral(resourceName: "me").withRenderingMode(.alwaysTemplate)
-        return imageV
+    private lazy var agreeMentVC:BaseWebViewController = {
+        let vc = BaseWebViewController()
+        vc.mode = SingletoneClass.shared.appAgreementURL
+        vc.showRightBtn = false
+        return vc
     }()
     
-    private lazy var numberIcon:UIImageView = {
-        let imageV = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
-        imageV.contentMode = .scaleAspectFill
-        imageV.image = #imageLiteral(resourceName: "password").withRenderingMode(.alwaysTemplate)
-        return imageV
+     lazy var tableView:UITableView = {
+        let tb = UITableView.init(frame: CGRect.zero)
+        tb.tableHeaderView = UIView()
+        tb.tableFooterView = tableFootView
+        tb.isScrollEnabled = false
+        tb.bounces = false
+        tb.register(InnerTextFiledCell.self, forCellReuseIdentifier: InnerTextFiledCell.identity())
+        tb.backgroundColor = UIColor.white
+        return tb
     }()
-    
-    
     private lazy var verifyBtn:UIButton = {
         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 90, height: 20))
         btn.setTitle("获取验证码", for: .normal)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         btn.setTitleColor(UIColor.blue, for: .normal)
         btn.titleLabel?.textAlignment = .center
-        btn.addTarget(self, action: #selector(self.validateCode), for: UIControl.Event.touchUpInside)
-
-        
+        //btn.addTarget(self, action: #selector(self.validateCode), for: UIControl.Event.touchUpInside)
         return btn
     }()
     
-    
     // 倒计时
     private  lazy var codeNumber:ValidateNumber =  ValidateNumber(button: verifyBtn)!
-    
-    
-    
-    private lazy var tableFootView:UIView = {  [unowned self] in 
-        let v = UIView(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 40))
-        v.isUserInteractionEnabled = true 
-        let lb = UILabel()
-        lb.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 40)
-        lb.font = UIFont.systemFont(ofSize: 14)
-        lb.textAlignment = .center
-        lb.textColor = UIColor.black
-        lb.text = text
-        v.addSubview(lb)
-        
-        let userProtocal = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 120, height: 30))
-        userProtocal.backgroundColor = UIColor.white
-        userProtocal.setTitle("<<app用户协议>>", for: .normal)
-        userProtocal.setTitleColor(UIColor.blue, for: .normal)
-        userProtocal.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-        userProtocal.titleLabel?.textAlignment = .left
-        userProtocal.addTarget(self, action: #selector(showProtocal), for: .touchUpInside)
-        v.addSubview(userProtocal)
-        _ = userProtocal.sd_layout().rightSpaceToView(v,10)?.centerYEqualToView(v)?.widthIs(118)
-        _ = lb.sd_layout().rightSpaceToView(userProtocal,10)?.centerYEqualToView(userProtocal)?.autoHeightRatio(0)
-        
-        
-        return v
-        
-        
+    private lazy var tableFootView: tableViewFoot = {
+        return  tableViewFoot.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 40))
     }()
-    
-    
     
     // rxSwift
     private var dispose = DisposeBag()
-    private var phoneNumber:Variable<String> = Variable<String>("")
-    private var verifyCode:Variable<String> = Variable<String>("")
     
+    private var phoneNumber: BehaviorRelay<String> = BehaviorRelay<String>.init(value: "")
+    private var verifyCode: BehaviorRelay<String> = BehaviorRelay<String>.init(value: "")
     private var quickVM = QuickLoginViewModel()
     
-    
-    
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
         setViewModel()
-        
-    
     }
     
-    
-    
-    
-   
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-    }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.view.endEditing(true)
     }
 
-
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
+   
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        _ = self.tableView.sd_layout()?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
     }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        if let cell = tableView.dequeueReusableCell(withIdentifier: innerTextFiledCell.identity()) as? innerTextFiledCell{
-            if indexPath.row == 0 {
-                cell.textFiled.placeholder = "请输入手机号"
-                 
-                cell.textFiled.leftImage = userIcon
-                // 监听账号值
-                cell.textFiled.rx.text.orEmpty.share().bind(to: phoneNumber).disposed(by: dispose)
-                
-                
-            }else if indexPath.row == 1{
-                cell.textFiled.placeholder = "请输入验证码"
-                cell.textFiled.leftImage = numberIcon
-                cell.textFiled.rightBtn = verifyBtn
-                cell.textFiled.righPadding = 10
-                cell.textFiled.rx.text.orEmpty.share().bind(to: verifyCode).disposed(by: dispose)
-
-            }
-            cell.textFiled.leftView?.tintColor = UIColor.orange
-            cell.textFiled.keyboardType = .numberPad
-            cell.textFiled.leftPadding = 10
-            
-            
-            
-            return cell
-        }
-        
-        return UITableViewCell()
-        
-    }
-    
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 50
+   
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60
     }
 }
 
@@ -166,34 +137,8 @@ class QuickLoggingViewController: UITableViewController {
 
 extension QuickLoggingViewController{
     private func setViews(){
-        self.tableView.tableHeaderView = UIView()
-        self.tableView.tableFooterView = tableFootView
-        self.tableView.isScrollEnabled = false
-        self.tableView.bounces = false
-        
-        self.tableView.register(innerTextFiledCell.self, forCellReuseIdentifier: innerTextFiledCell.identity())
-        self.tableView.backgroundColor = UIColor.white
-        
-        
-        
-    }
-}
-
-
-extension QuickLoggingViewController{
-    @objc private func showProtocal(){
-        // webview
-        let webVc = baseWebViewController()
-        webVc.mode = "http://www.immomo.com/agreement.html"
-        webVc.showRightBtn = false
-        self.navigationController?.pushViewController(webVc, animated: true)
-    }
-}
-
-//
-extension QuickLoggingViewController{
-    @objc private func validateCode(){
-         codeNumber.start()
+       self.view.addSubview(tableView)
+       self.tableView.rx.setDelegate(self).disposed(by: self.dispose)
     }
 }
 
@@ -204,61 +149,107 @@ extension QuickLoggingViewController{
     
     private func setViewModel(){
         
+        // 查看协议
+        _ = self.tableFootView.btn.rx.tap.takeUntil(self.rx.deallocated).subscribe { _ in
+            self.navigationController?.pushViewController(self.agreeMentVC, animated: true)
+        }
+        
+     
+        
+        // table
+        let dataSource = RxTableViewSectionedAnimatedDataSource<AnimatableSectionModel<String,String>>.init(configureCell:  { (_, table, index, element) -> UITableViewCell in
+            if  let cell = table.dequeueReusableCell(withIdentifier: InnerTextFiledCell.identity(), for: index) as?  InnerTextFiledCell{
+                if index.row == 0 {
+                    
+                    cell.textFiled.leftImage = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30), image: #imageLiteral(resourceName: "me").withRenderingMode(.alwaysTemplate), highlightedImage: #imageLiteral(resourceName: "sina").withRenderingMode(.alwaysTemplate))
+                    // 监听账号值
+                    cell.textFiled.rx.text.orEmpty.share().bind(to: self.phoneNumber).disposed(by: self.dispose)
+                    
+                }else if index.row == 1{
+                    cell.textFiled.leftImage = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30), image: #imageLiteral(resourceName: "password").withRenderingMode(.alwaysTemplate), highlightedImage: #imageLiteral(resourceName: "sina").withRenderingMode(.alwaysTemplate))
+                    cell.textFiled.rightBtn = self.verifyBtn
+                    cell.textFiled.righPadding = 10
+                    // 验证码
+                    cell.textFiled.rx.text.orEmpty.share().bind(to: self.verifyCode).disposed(by: self.dispose)
+                    
+                }
+                
+                cell.textFiled.placeholder = element
+                cell.textFiled.leftView?.tintColor = UIColor.orange
+                cell.textFiled.keyboardType = .numberPad
+                cell.textFiled.leftPadding = 10
+                
+                return cell
+            }
+            
+            return UITableViewCell()
+        })
+        
+    
+        let cellItem = Observable.just([AnimatableSectionModel.init(model: "", items: ["请输入手机号","请输入验证码"])])
+        cellItem.bind(to: self.tableView.rx.items(dataSource: dataSource)).disposed(by: self.dispose)
+        
+        
+        
+        
         let verifyBtnValid =  Observable.combineLatest(phoneNumber.asObservable().map{
             $0.count > 6
-        }.share(), codeNumber.obCount.asObservable()){ $0 && $1 }.share()
+        }, codeNumber.obCount.asObservable()){ $0 && $1 }.distinctUntilChanged()
         
         // 验证码btn 可用
         verifyBtnValid.asObservable().debug().bind(to: self.verifyBtn.rx.rxEnable).disposed(by: dispose)
-        
-        // 发送验证码
-        self.verifyBtn.rx.tap.subscribe(onNext: {
-            _ = self.quickVM.sendCode(phone: self.phoneNumber.value).subscribe(onNext: { (obj:CodeSuccess) in
-                self.view.showToast(title: "发送成功", customImage: nil, mode: .text)
-                //showOnlyTextHub(message: "发送成功", view: self.view)
-            }, onError: { (err) in
-                //showOnlyTextHub(message: "发送失败", view: self.view)
-                self.view.showToast(title: "发送失败", customImage: nil, mode: .text)
-                self.codeNumber.stop()
-                
-            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        _ = self.verifyBtn.rx.tap.throttle(1, scheduler: MainScheduler.instance).map({
+            self.codeNumber.start()
+        }).flatMapLatest { _ in
+            self.quickVM.sendCode(phone: self.phoneNumber.value).asDriver(onErrorJustReturn: Mapper<CodeSuccess>.init().map(JSON: [:])!)
             
-        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+            
+            }.takeUntil(self.rx.deallocated).subscribe(onNext: { (res) in
+                print("\(res)")
+                self.codeNumber.stop()
+                if res.number == nil{
+                     self.view.showToast(title: "发送失败", customImage: nil, mode: .text)
+                }
+            })
         
-    
+        
         
         // 登录按钮可用
         let obCode = verifyCode.asObservable().map{ (v) -> Bool in
-            if v.count == 6{
-                if let _ = Int(v){
-                    return true
-                }
-            }
-            return false
+            
+            return v.count == 6 && Int(v) != nil && self.parentVC?.currentIndex == 0
         }.share()
         
         
         let verifyLoginBtn = Observable.combineLatest(self.phoneNumber.asObservable().map{
                 $0.count > 6
-        }.share(), obCode) { $0 && $1 }.share()
+        }, obCode) { $0 && $1 }.distinctUntilChanged()
         
         verifyLoginBtn.asObservable().debug().bind(to: self.parentVC!.loggingBtn.rx.rxEnable).disposed(by: dispose)
         
         // 验证码登录
+        _ = self.parentVC?.loggingBtn.rx.tap.throttle(0.5, scheduler: MainScheduler.instance).filter({
+             self.parentVC?.currentIndex == 0
+        }).flatMapLatest({ _ in
+            self.quickVM.quickLogin(phone: self.phoneNumber.value, code: self.verifyCode.value).asDriver(onErrorJustReturn: Mapper<loginSuccess>().map(JSON: [:])!)
+        }).takeUntil(self.rx.deallocated).subscribe(onNext: { (res) in
+            if res.token == nil{
+                self.view.showToast(title: "账号或密码不对", customImage: nil, mode: .text)
+            }
+            print("quik login \(res)")
+        })
+        // 网络
+        self.quickVM.loginIn.drive(UIApplication.shared.rx.isNetworkActivityIndicatorVisible).disposed(by: self.dispose)
+        // btn 上的菊花
+        self.quickVM.loginIn.drive(self.parentVC!.activity.rx.isAnimating).disposed(by: self.dispose)
+        // mbp hub 界面有多个hub，hide只会影藏最上一层的view, 所有不能直接用self.view.showloading
         
-        self.parentVC?.loggingBtn.rx.tap.subscribe(onNext: {
-            self.quickVM.quickLogin(phone:self.phoneNumber.value, code: self.verifyCode.value).subscribe(onNext: { (res) in
-                // TODO 判断账号是否绑定了身份，没有显示界面绑定身份
-                self.parentVC?.quickLogin(token: res.token ?? "")
-            }, onError: { (err) in
-                print("err \(err)")
-                
-            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
-            
-        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+        self.quickVM.loginIn.map { !$0
+            }.debug().drive(hud.rx.isHidden).disposed(by: self.dispose)
         
-    
     }
+
     
 }
 

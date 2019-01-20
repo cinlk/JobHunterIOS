@@ -64,8 +64,8 @@ class JobHomeVC: UIViewController {
     }
     
     // 滑动栏
-    private lazy var pageTitleView: pagetitleView = {  [unowned self] in
-        let view = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: JobHomeVC.titlePageH), titles: JOB_PAGE_TITLES,lineCenter:true)
+    private lazy var pageTitleView: PagetitleView = {  [unowned self] in
+        let view = PagetitleView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: JobHomeVC.titlePageH), titles: JOB_PAGE_TITLES,lineCenter:true)
         view.delegate = self
         view.backgroundColor = topColor
         // 设置属性
@@ -78,7 +78,7 @@ class JobHomeVC: UIViewController {
     internal var childVC:[UIViewController] = []
 
     // 内容vc
-    private lazy var pageContent:pageContentView = { [unowned self] in
+    private lazy var pageContent:PageContentView = { [unowned self] in
         // 网申职位
         let applyVC:OnlineApplyViewController = OnlineApplyViewController()
         childVC.append(applyVC)
@@ -97,7 +97,7 @@ class JobHomeVC: UIViewController {
         childVC.append(internJob)
         
      
-        let content = pageContentView.init(frame: CGRect.init(x: 0, y: NavH + JobHomeVC.titlePageH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - NavH - JobHomeVC.titlePageH), childVCs: self.childVC, pVC: self)
+        let content = PageContentView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH + JobHomeVC.titlePageH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH - JobHomeVC.titlePageH), childVCs: self.childVC, pVC: self)
         content.delegate = self
         return content
         
@@ -169,14 +169,14 @@ extension JobHomeVC {
 // pagetitle 代理实现
 extension JobHomeVC: pagetitleViewDelegate{
     
-    func ScrollContentAtIndex(index: Int, _ titleView: pagetitleView) {
+    func ScrollContentAtIndex(index: Int, _ titleView: PagetitleView) {
         curentIndex = index
         self.pageContent.moveToIndex(index)
      }
 }
 // page 内容代理
 extension JobHomeVC: PageContentViewScrollDelegate{
-    func pageContenScroll(_ contentView: pageContentView, progress: CGFloat, sourcIndex: Int, targetIndex: Int) {
+    func pageContenScroll(_ contentView: PageContentView, progress: CGFloat, sourcIndex: Int, targetIndex: Int) {
         curentIndex = targetIndex
         self.pageTitleView.changeTitleWithProgress(progress, sourceIndex: sourcIndex, targetIndex: targetIndex)
     }

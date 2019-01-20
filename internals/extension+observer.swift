@@ -67,12 +67,6 @@ extension Reactive where Base: SearchRecodeViewController{
 }
 
 
-extension ObservableConvertibleType{
-    public func trackActivity(_ activityIndicator: ActivityIndicator) -> Observable<E> {
-        return activityIndicator.trackActivityOfObservable(self)
-    }
-    
-}
 
 
 

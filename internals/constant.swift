@@ -28,7 +28,7 @@ func getKeyBoardHight() -> CGFloat{
 // navigationbar 高度
 let NavBarH:CGFloat = 44
 // navigation View 高度
-let NavH:CGFloat = 64
+//let GlobalConfig.NavH:CGFloat = 64
 let TOOLBARH:CGFloat = 44
 let SEARCH_BAR_H:CGFloat = 30
 let DROP_MENU_H:CGFloat = 40 

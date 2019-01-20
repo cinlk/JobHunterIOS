@@ -8,34 +8,16 @@
 
 import UIKit
 
-class innerTextFiledCell: UITableViewCell {
+class InnerTextFiledCell: UITableViewCell {
 
     
-   
-    
-    internal lazy var textFiled:customerTextField = {  [unowned self ] in
-        let field = customerTextField.init(frame: CGRect.zero)
-        //field.delegate = self
-        field.textAlignment = .left
-        field.clearButtonMode = .whileEditing
+    internal lazy var textFiled:CustomerTextField = {  [unowned self ] in
+        let field = CustomerTextField.init(frame: CGRect.zero)
         field.keyboardType = UIKeyboardType.asciiCapable
-        field.font = UIFont.systemFont(ofSize: 16)
-        //field.inputAccessoryView = UIToolbar.NumberkeyBoardDone(title: "完成", view: self, selector: #selector(done))
-       
-        
-        
         return field
     }()
     
     
-    internal var mode:(placeholder:String, title:String, content:String)?{
-        didSet{
-            //let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
-            //v.backgroundColor = UIColor.randomeColor()
-            //textFiled.rightView = v
-            
-        }
-    }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -62,7 +44,7 @@ class innerTextFiledCell: UITableViewCell {
 }
 
 
-extension innerTextFiledCell{
+extension InnerTextFiledCell{
     @objc private func done(){
         self.textFiled.resignFirstResponder()
     }

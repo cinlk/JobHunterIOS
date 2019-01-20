@@ -18,8 +18,15 @@ class QuickLoginViewModel{
     // server handler
     var server = LoginServer.shared
     
+    // 发送验证码中
     
-    init() {}
+    // 登录中
+    let loginIn: Driver<Bool>
+    let activityIndicator = ActivityIndicator()
+    init() {
+        
+        self.loginIn = activityIndicator.asDriver()
+    }
     
     
     func sendCode(phone:String) -> Observable<CodeSuccess>{
@@ -33,7 +40,7 @@ class QuickLoginViewModel{
     
     func quickLogin(phone:String, code:String) -> Observable<loginSuccess>{
         if let code = uint(code){
-            return server.loginWithCode(account: phone, code: code)
+            return server.loginWithCode(account: phone, code: code).trackActivity(activityIndicator)
 
         }
         return  Observable<loginSuccess>.error(RxError.noElements)
@@ -43,7 +50,7 @@ class QuickLoginViewModel{
     
     func resetPassword(account:String, code:String, pwd:String) -> Observable<Moya.Response>{
         if let code = uint(code){
-            return server.resetPassword(account: account, code: code, pwd: pwd)
+            return server.resetPassword(account: account, code: code, pwd: pwd).trackActivity(activityIndicator)
         }
         return Observable<Moya.Response>.error(RxError.noElements)
     }
@@ -51,7 +58,7 @@ class QuickLoginViewModel{
     
     func registryAccount(account:String, code:String, pwd:String) -> Observable<loginSuccess>{
         if let code = uint(code){
-            return server.registryAccount(account: account, code: code, pwd: pwd)
+            return server.registryAccount(account: account, code: code, pwd: pwd).trackActivity(activityIndicator)
         }
         return Observable<loginSuccess>.error(RxError.noElements)
     }

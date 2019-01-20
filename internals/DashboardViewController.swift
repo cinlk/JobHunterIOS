@@ -69,7 +69,7 @@ class DashboardViewController: BaseViewController{
     
     //导航栏遮挡背景view，随着滑动透明度可变
     private lazy  var navigationView:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH))
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH))
         v.backgroundColor = UIColor.clear
         return v
     }()
@@ -487,7 +487,7 @@ extension DashboardViewController{
                 cell.setItems(width: GlobalConfig.ScreenW/3 - 20, height: ColumnH, items: res)
                 
                 cell.selectedItem = { (btn) in
-                    let web = baseWebViewController()
+                    let web = BaseWebViewController()
                     web.mode = columnes[btn.tag].Link
                     web.hidesBottomBarWhenPushed = true
                     self.navigationController?.pushViewController(web, animated: true)
@@ -760,7 +760,7 @@ extension DashboardViewController{
         }
         if image.tag < rotateText.count && image.tag >= 0{
             //
-            let webView = baseWebViewController()
+            let webView = BaseWebViewController()
             webView.mode = rotateText[image.tag]
             webView.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(webView, animated: true)

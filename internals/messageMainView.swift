@@ -136,7 +136,7 @@ extension messageMain {
             $0.didMove(toParent: self)
         }
         self.view.addSubview(collections)
-        collections.frame = CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - NavH)
+        collections.frame = CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH)
         
         self.navigationItem.titleView = segeMentView
         self.navigationController?.view.backgroundColor = UIColor.white
@@ -181,7 +181,7 @@ extension messageMain: UICollectionViewDelegate, UICollectionViewDataSource, UIC
     
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize.init(width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - NavH)
+        return CGSize.init(width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH)
     }
     
     

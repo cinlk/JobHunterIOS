@@ -13,7 +13,7 @@ import MBProgressHUD
 fileprivate let headerViewH:CGFloat = 160
 fileprivate let cellIdentiy:String = "default"
 fileprivate let cellItem:[AboutUsModel.item] = [.serviceLaw, .wechat, .weibo, .serviceCall, .share]
-fileprivate let footViewH:CGFloat = GlobalConfig.ScreenH - headerViewH - (CGFloat(cellItem.count) * 45) - NavH
+fileprivate let footViewH:CGFloat = GlobalConfig.ScreenH - headerViewH - (CGFloat(cellItem.count) * 45) - GlobalConfig.NavH
 fileprivate let shareViewH = SingletoneClass.shared.shareViewH
 
 
@@ -53,8 +53,8 @@ class aboutUS: BaseViewController {
    
     
     // sharedView
-    private lazy var share:shareView = {
-        let v = shareView.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: shareViewH))
+    private lazy var share:ShareView = {
+        let v = ShareView.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: shareViewH))
         v.delegate = self
         return v
     }()
@@ -83,7 +83,7 @@ class aboutUS: BaseViewController {
         self.title = "关于我们"
         
         self.view.addSubview(tableView)
-        _ = tableView.sd_layout().topSpaceToView(self.view, NavH)?.rightEqualToView(self.view)?.leftEqualToView(self.view)?.bottomEqualToView(self.view)
+        _ = tableView.sd_layout().topSpaceToView(self.view, GlobalConfig.NavH)?.rightEqualToView(self.view)?.leftEqualToView(self.view)?.bottomEqualToView(self.view)
         self.handleViews.append(tableView)
         super.setViews()
     }

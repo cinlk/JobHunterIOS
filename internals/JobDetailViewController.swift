@@ -291,7 +291,7 @@ extension JobDetailViewController: UITableViewDelegate{
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView == self.table{
-            if scrollView.contentOffset.y > NavH{
+            if scrollView.contentOffset.y > GlobalConfig.NavH{
                 self.navigationItem.title = mode?.name
                 
             }else if scrollView.contentOffset.y <= 0 {

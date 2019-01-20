@@ -67,7 +67,7 @@ class UserGuideItemCell: UICollectionViewCell {
         self.contentView.sd_addSubviews(views)
         self.contentView.backgroundColor = UIColor.white
         
-        _ = imageView.sd_layout().topSpaceToView(self.contentView,NavH + 30)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.heightIs(GlobalConfig.ScreenH * 3/5)
+        _ = imageView.sd_layout().topSpaceToView(self.contentView,GlobalConfig.NavH + 30)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.heightIs(GlobalConfig.ScreenH * 3/5)
         
         _ = line.sd_layout().topSpaceToView(imageView,1)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.heightIs(1)
         

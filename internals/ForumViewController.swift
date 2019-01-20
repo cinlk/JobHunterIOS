@@ -36,15 +36,15 @@ class ForumViewController: UIViewController {
     
     //
     
-    private lazy var pageTitle:pagetitleView = {
-        let pageTitle = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: 45), titles: titles, lineCenter: true,itemWidth: 70, horizontalEdgeInset:5)
+    private lazy var pageTitle:PagetitleView = {
+        let pageTitle = PagetitleView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: 45), titles: titles, lineCenter: true,itemWidth: 70, horizontalEdgeInset:5)
         
         pageTitle.delegate = self
         pageTitle.backgroundColor = UIColor.init(r: 105, g: 105, b: 105)
         return pageTitle
     }()
     
-    private lazy var pageContent:pageContentView = { [unowned self] in
+    private lazy var pageContent:PageContentView = { [unowned self] in
         var vcs:[UIViewController] = []
         // 热门
         let hot = PopularSectionVC()
@@ -67,7 +67,7 @@ class ForumViewController: UIViewController {
         vcs.append(help)
         
         
-        let pageContent = pageContentView.init(frame: CGRect.init(x: 0, y: NavH+45, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - (NavH+45)), childVCs: vcs, pVC: self)
+        let pageContent = PageContentView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH+45, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - (GlobalConfig.NavH+45)), childVCs: vcs, pVC: self)
         
         pageContent.delegate = self
         return pageContent
@@ -180,7 +180,7 @@ extension ForumViewController{
 
 
 extension ForumViewController: PageContentViewScrollDelegate{
-    func pageContenScroll(_ contentView: pageContentView, progress: CGFloat, sourcIndex: Int, targetIndex: Int) {
+    func pageContenScroll(_ contentView: PageContentView, progress: CGFloat, sourcIndex: Int, targetIndex: Int) {
         self.pageTitle.changeTitleWithProgress(progress, sourceIndex: sourcIndex, targetIndex: targetIndex)
     }
     
@@ -188,7 +188,7 @@ extension ForumViewController: PageContentViewScrollDelegate{
 }
 
 extension ForumViewController: pagetitleViewDelegate{
-    func ScrollContentAtIndex(index: Int, _ titleView: pagetitleView) {
+    func ScrollContentAtIndex(index: Int, _ titleView: PagetitleView) {
         self.pageContent.moveToIndex(index)
     }
     

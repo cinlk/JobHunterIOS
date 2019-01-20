@@ -54,6 +54,11 @@ extension UIView{
 // 提示
 extension UIView{
     
+    var hub:MBProgressHUD?{
+        get{
+            return nil
+        }
+    }
     func showLoading(title:String, customImage:UIImageView?, mode: MBProgressHUDMode){
     
         let hud = MBProgressHUD.showAdded(to: self, animated: true)
@@ -71,9 +76,10 @@ extension UIView{
         hud.hide(animated: true, afterDelay: TimeInterval(duration))
         hud.customView = customImage
         hud.removeFromSuperViewOnHide = true
+       
     }
     func hiddenLoading(){
-       MBProgressHUD.hide(for: self, animated: true)
+       MBProgressHUD.hide(for: self, animated: true) //hide(for: self, animated: true)
     }
 }
 

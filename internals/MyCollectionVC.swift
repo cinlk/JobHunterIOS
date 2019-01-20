@@ -27,8 +27,8 @@ class MyCollectionVC: UIViewController {
     // 注意顺序！！
     private let observerName:[String] = ["jobCollectedVC","CompanyCollectedVC","MeetingCollectedVC","PostCollectedViewController"]
  
-    private lazy var pageTitle:pagetitleView = { [unowned self ] in
-        let pageTitle:pagetitleView = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: pagetTitleH), titles: self.titles, lineCenter: true )
+    private lazy var pageTitle:PagetitleView = { [unowned self ] in
+        let pageTitle:PagetitleView = PagetitleView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: pagetTitleH), titles: self.titles, lineCenter: true )
     
         pageTitle.delegate = self
         return pageTitle
@@ -67,7 +67,7 @@ class MyCollectionVC: UIViewController {
         bar.isTranslucent = true
         return bar
     }()
-    private lazy var pageContent:pageContentView = { [unowned self] in
+    private lazy var pageContent:PageContentView = { [unowned self] in
         
         
         let vc = jobCollectedVC()
@@ -82,7 +82,7 @@ class MyCollectionVC: UIViewController {
         let post = PostCollectedViewController()
         childVC.append(post)
         
-        let v:pageContentView = pageContentView.init(frame: CGRect.init(x: 0, y: NavH + pagetTitleH , width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - NavH - pagetTitleH), childVCs: childVC, pVC: self)
+        let v:PageContentView = PageContentView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH + pagetTitleH , width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH - pagetTitleH), childVCs: childVC, pVC: self)
         v.delegate = self
         return v
         
@@ -176,7 +176,7 @@ extension MyCollectionVC: UINavigationControllerDelegate{
 }
 
 extension MyCollectionVC: pagetitleViewDelegate{
-    func ScrollContentAtIndex(index: Int, _ titleView: pagetitleView) {
+    func ScrollContentAtIndex(index: Int, _ titleView: PagetitleView) {
         NotificationCenter.default.post(name: NSNotification.Name.init(observerName[currentSelect]), object: nil, userInfo: ["action":"cancel"])
         navigationItem.rightBarButtonItem?.title = "编辑"
         chooseAll.isSelected = false
@@ -193,7 +193,7 @@ extension MyCollectionVC: pagetitleViewDelegate{
 
 
 extension MyCollectionVC: PageContentViewScrollDelegate{
-    func pageContenScroll(_ contentView: pageContentView, progress: CGFloat, sourcIndex: Int, targetIndex: Int) {
+    func pageContenScroll(_ contentView: PageContentView, progress: CGFloat, sourcIndex: Int, targetIndex: Int) {
         self.pageTitle.changeTitleWithProgress(progress, sourceIndex: sourcIndex, targetIndex: targetIndex)
         NotificationCenter.default.post(name: NSNotification.Name.init(observerName[currentSelect]), object: nil, userInfo: ["action":"cancel"])
         navigationItem.rightBarButtonItem?.title = "编辑"

@@ -17,6 +17,13 @@ extension UIImageView{
         self.layer.borderWidth = 0.1
     }
     
+   
+    
+    convenience init(frame: CGRect, image: UIImage?, highlightedImage: UIImage?) {
+            self.init(image: image, highlightedImage: highlightedImage)
+            self.frame = frame
+            self.contentMode = .scaleAspectFill
+    }
     
 }
 

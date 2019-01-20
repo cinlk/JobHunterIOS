@@ -9,24 +9,58 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import RxDataSources
+import ObjectMapper
 
-class PasswordLoggingViewController: UITableViewController {
+fileprivate let titles = ["请输入手机号","请输入密码"]
+
+fileprivate class tableFooter:UIView {
+    
+    fileprivate lazy var forgetPasswordBtn:UIButton = {
+        let btn = UIButton()
+        btn.setTitle("忘记密码", for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        btn.setTitleColor(UIColor.blue, for: .normal)
+        return btn
+    }()
+    
+    // 注册账号
+    fileprivate lazy var registryNewAccountBtn:UIButton = {
+        let btn = UIButton()
+        btn.setTitle("注册账号", for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        btn.setTitleColor(UIColor.blue, for: .normal)
+        return btn
+    }()
+    
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    override func layoutSubviews() {
+        
+        self.addSubview(forgetPasswordBtn)
+        self.addSubview(registryNewAccountBtn)
+        _ = forgetPasswordBtn.sd_layout()?.leftSpaceToView(self,20)?.centerYEqualToView(self)?.heightRatioToView(self,0.8)?.widthIs(160)
+        _ = registryNewAccountBtn.sd_layout()?.rightSpaceToView(self,20)?.centerYEqualToView(forgetPasswordBtn)?.heightRatioToView(forgetPasswordBtn,1)?.widthRatioToView(forgetPasswordBtn,1)
+        
+        super.layoutSubviews()
+        
+    }
+    
+    
+}
+
+
+class PasswordLoggingViewController: UIViewController, UITableViewDelegate {
     
     weak var parentVC: UserLogginViewController?
-    
-    private lazy var userIcon:UIImageView = {
-        let imageV = UIImageView(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
-        imageV.contentMode = .scaleAspectFill
-        imageV.image  = #imageLiteral(resourceName: "me").withRenderingMode(.alwaysTemplate)
-        return imageV
-    }()
-    
-    private lazy var numberIcon:UIImageView = {
-        let imageV = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
-        imageV.contentMode = .scaleAspectFill
-        imageV.image = #imageLiteral(resourceName: "password").withRenderingMode(.alwaysTemplate)
-        return imageV
-    }()
     
     private lazy var lash:UIButton = {
         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
@@ -34,43 +68,30 @@ class PasswordLoggingViewController: UITableViewController {
         btn.setBackgroundImage(UIImage.init(named: "lash")?.withRenderingMode(.alwaysTemplate), for: .normal)
         btn.setBackgroundImage(UIImage.flipImage(image: #imageLiteral(resourceName: "lash"), orientation: UIImage.Orientation.down).withRenderingMode(.alwaysTemplate), for: UIControl.State.selected)
         btn.tintColor = UIColor.lightGray
-        btn.addTarget(self, action: #selector(click), for: .touchUpInside)
         return btn
         
     }()
     
-    
-    private lazy var ForgetPasswordBtn:UIButton = {
-        let btn = UIButton()
-        btn.setTitle("忘记密码", for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-        btn.setTitleColor(UIColor.blue, for: .normal)
-        btn.addTarget(self, action: #selector(resetPassword), for: .touchUpInside)
-        return btn
+    private lazy var tableFootView:tableFooter = {
+        return tableFooter.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 40))
     }()
     
-    // 注册账号
-    private lazy var RegistryNewAccountBtn:UIButton = {
-        let btn = UIButton()
-        btn.setTitle("注册账号", for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-        btn.setTitleColor(UIColor.blue, for: .normal)
-        btn.addTarget(self, action: #selector(registryAccount), for: .touchUpInside)
-        return btn
+    private lazy var tableView: UITableView = {
+        let tb = UITableView()
+        tb.tableHeaderView = UIView()
+        tb.tableFooterView = tableFootView
+        tb.isScrollEnabled = false
+        tb.bounces = false
+        tb.register(InnerTextFiledCell.self, forCellReuseIdentifier: InnerTextFiledCell.identity())
+        tb.backgroundColor = UIColor.white
+        return tb
     }()
     
-    private lazy var tableFootView:UIView = {
-        let view = UIView(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 40))
-        view.backgroundColor = UIColor.white
-        return view
-    }()
-    
-    // 获取验证码界面
-    private lazy var  resetpdVC = ResetPasswordViewController()
+
     
     //rxswift
-    private var account:Variable<String> = Variable<String>("")
-    private var pwd:Variable<String> = Variable<String>("")
+    private var account:BehaviorRelay<String> = BehaviorRelay<String>(value: "")
+    private var pwd:BehaviorRelay<String> = BehaviorRelay<String>(value: "")
     private var dispose:DisposeBag = DisposeBag()
     private var viewModel:AccountLoginViewModel = AccountLoginViewModel()
     
@@ -79,150 +100,134 @@ class PasswordLoggingViewController: UITableViewController {
         super.viewDidLoad()
         setViews()
         setViewModel()
-        
-        // Do any additional setup after loading the view.
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.view.endEditing(true)
     }
-    
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: innerTextFiledCell.identity()) as? innerTextFiledCell{
-            
-            if indexPath.row == 0 {
-                cell.textFiled.placeholder = "请输入手机号或邮箱"
-                cell.textFiled.leftImage = userIcon
-                cell.textFiled.rx.text.orEmpty.bind(to: account).disposed(by: dispose)
-                
-            }else if indexPath.row == 1{
-                cell.textFiled.placeholder = "请输入密码"
-                cell.textFiled.leftImage = numberIcon
-                cell.textFiled.rightBtn = lash
-                cell.textFiled.showLine = false
-                cell.textFiled.isSecureTextEntry = true
-                cell.textFiled.rx.text.orEmpty.bind(to: pwd).disposed(by: dispose)
-                //cell.textFiled
-            }
-            cell.textFiled.leftView?.tintColor = UIColor.orange
-            cell.textFiled.leftPadding = 10
-            return cell
-        }
-        return UITableViewCell()
-        
-    }
-    
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 50
-    }
+
 }
 
 
 
 
 extension PasswordLoggingViewController{
-    @objc private func click(_ btn:UIButton){
-        btn.isSelected = !btn.isSelected
-        btn.tintColor =  btn.isSelected ? UIColor.orange : UIColor.lightGray
-        if let cell = tableView.cellForRow(at: IndexPath.init(row: 1, section: 0)) as? innerTextFiledCell{
-            cell.textFiled.isSecureTextEntry = btn.isSelected ? false : true
-        }
-        
-    }
-}
-
-extension PasswordLoggingViewController{
+    
     private func setViews(){
-        
-        tableFootView.addSubview(ForgetPasswordBtn)
-        tableFootView.addSubview(RegistryNewAccountBtn)
-        _ = ForgetPasswordBtn.sd_layout().rightSpaceToView(tableFootView,10)?.centerYEqualToView(tableFootView)?.widthIs(120)?.heightIs(20)
-        _ = RegistryNewAccountBtn.sd_layout().leftSpaceToView(tableFootView,10)?.centerYEqualToView(tableFootView)?.widthRatioToView(ForgetPasswordBtn,1)?.heightRatioToView(ForgetPasswordBtn,1)
-        
-        self.tableView.tableHeaderView = UIView()
-        self.tableView.tableFooterView = tableFootView
-        self.tableView.isScrollEnabled = false
-        self.tableView.bounces = false
-        self.tableView.register(innerTextFiledCell.self, forCellReuseIdentifier: innerTextFiledCell.identity())
-        self.tableView.backgroundColor = UIColor.white
-        
+     
+        self.view.addSubview(tableView)
+        _ = tableView.sd_layout()?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60
     }
 }
 
-extension PasswordLoggingViewController{
-    @objc private func resetPassword(){
-        resetpdVC.isResetPwd = true 
-        self.navigationController?.pushViewController(resetpdVC, animated: true)
-    }
-    @objc private func registryAccount(){
-        let vc = ResetPasswordViewController()
-        vc.inputPassword.placeholder = "输入密码（大于6位"
-        vc.resetBtn.setTitle("确认", for: .normal)
-        vc.isResetPwd = false
-        
-        self.navigationController?.pushViewController(vc, animated: true)
-    }
-}
 
 //viewmodel
 extension PasswordLoggingViewController{
     
     private func setViewModel(){
         
-
-        
-        let logBtnConfirm =  Observable.combineLatest(account.asDriver().map{
-            self.isEmail(str: $0) ? true : self.isPhone(str: $0)
-            }.asObservable(), pwd.asDriver().map{
-                $0.count >= 6
-        }.asObservable()) { $0 && $1 }.debug()
-
-        logBtnConfirm.bind(to: self.parentVC!.loggingBtn.rx.rxEnable).disposed(by: dispose)
-        
-        self.parentVC?.loggingBtn.rx.tap.subscribe(onNext: {
-           // print(self.account.value, self.pwd.value)
-            self.viewModel.passwordLogin(accont: self.account.value, pwd: self.pwd.value).debug().subscribe(onNext: { (res) in
-                print("res ", res.toJSON())
-            }, onError: { (err) in
-                
-                // TODO 获取错误类型
-                print("error is", err)
-                showAlert(error: "账号密码错误", vc: self)
-            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
-            
-        }, onError: { (err) in
-           
-        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
-        
-        
-    }
-    
-    private func isEmail(str:String) -> Bool{
-        return str.contains(Character.init("@"))
-        
-    }
-    
-    private func isPhone(str:String) -> Bool{
-        if str.count == 11 {
-            if let _ = UInt(str){
-                return true
-            }
+        // 重置密码
+        _ = self.tableFootView.forgetPasswordBtn.rx.tap.takeUntil(self.rx.deallocated).subscribe { _ in
+            let vc = ResetPasswordViewController()
+            vc.isResetPwd = true
+            vc.resetBtn.setTitle("重置密码", for: .normal)
+            self.navigationController?.pushViewController(vc, animated: true)
         }
-        return false
+        
+        // 注册账号
+        _ = self.tableFootView.registryNewAccountBtn.rx.tap.takeUntil(self.rx.deallocated).subscribe(onNext: { _ in
+            let vc = ResetPasswordViewController()
+            vc.isResetPwd = false
+            vc.resetBtn.setTitle("确认", for: .normal)
+            self.navigationController?.pushViewController(vc, animated: true)
+        })
+        
+        
+        // 密码明文显示
+        _ = self.lash.rx.tap.takeUntil(self.rx.deallocated).subscribe(onNext: { _ in
+            self.lash.isSelected = !self.lash.isSelected
+            self.lash.tintColor =  self.lash.isSelected ? UIColor.orange : UIColor.lightGray
+            if let cell = self.tableView.cellForRow(at: IndexPath.init(row: 1, section: 0)) as? InnerTextFiledCell{
+                cell.textFiled.isSecureTextEntry = !self.lash.isSelected
+            }
+        })
+        
+        // table
+        let dataSource = RxTableViewSectionedAnimatedDataSource<AnimatableSectionModel<String,String>>.init(configureCell:  { (_, table, index, element) -> UITableViewCell in
+            
+          
+            if let cell = table.dequeueReusableCell(withIdentifier: InnerTextFiledCell.identity()) as? InnerTextFiledCell{
+                
+                if index.row == 0 {
+                    
+                    cell.textFiled.leftImage = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30), image: #imageLiteral(resourceName: "me").withRenderingMode(.alwaysTemplate), highlightedImage: nil)
+                    cell.textFiled.rx.text.orEmpty.bind(to: self.account).disposed(by: self.dispose)
+                    
+                }else if index.row == 1{
+                    
+                    cell.textFiled.leftImage = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30), image: #imageLiteral(resourceName: "password").withRenderingMode(.alwaysTemplate), highlightedImage: nil)
+                    cell.textFiled.rightBtn = self.lash
+                    cell.textFiled.showLine = false
+                    cell.textFiled.isSecureTextEntry = true
+                    cell.textFiled.rx.text.orEmpty.bind(to: self.pwd).disposed(by: self.dispose)
+                }
+                cell.textFiled.placeholder = element
+                cell.textFiled.leftView?.tintColor = UIColor.orange
+                cell.textFiled.leftPadding = 10
+                
+                return cell
+            }
+            return UITableViewCell()
+        })
+        
+        
+        let cellItem = Observable.just([AnimatableSectionModel.init(model: "", items: titles)])
+        cellItem.bind(to: self.tableView.rx.items(dataSource: dataSource)).disposed(by: self.dispose)
+        
+        self.tableView.rx.setDelegate(self).disposed(by: self.dispose)
+        
+        // 登录按钮检查 当前view
+        let enableLogin = Observable.combineLatest(account.share().map({  a in
+           return a.count == 13  && Int(a) != nil && self.parentVC?.currentIndex == 1
+        }), pwd.map({ p in
+            p.count >= 6
+        })){
+            $0 && $1
+        }
+        
+        enableLogin.bind(to: self.parentVC!.loggingBtn.rx.rxEnable).disposed(by: dispose)
+        
+        // 登录
+        _ = self.parentVC?.loggingBtn.rx.tap.throttle(0.5, scheduler: MainScheduler.instance).filter({
+             self.parentVC?.currentIndex == 1
+        }).flatMapLatest({ _ in
+            self.viewModel.passwordLogin(accont: self.account.value, pwd: self.pwd.value).asDriver(onErrorJustReturn: Mapper<loginSuccess>().map(JSON: [:])!)
+        }).takeUntil(self.rx.deallocated).subscribe(onNext: { res in
+            print(" password login \(res)")
+            if res.token == nil {
+                self.view.showToast(title: "用户名或密码错误", customImage: nil, mode: .text)
+            }
+            
+        })
+        
+        let hud = MBProgressHUD.showAdded(to: self.view, animated: true)
+        // 登录加载
+        self.viewModel.loginIn.map({ !$0
+        }).drive(hud.rx.isHidden).disposed(by: self.dispose)
+        
+        
     }
+    
+   
+    
+  
 }
+
+
+
+

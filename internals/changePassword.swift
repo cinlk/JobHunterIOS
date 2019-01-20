@@ -99,7 +99,7 @@ extension changePassword{
         self.view.addSubview(oldPassWordView)
         self.view.addSubview(newPassWordView)
         self.view.addSubview(confirmBtn)
-        _ = oldPassWordView.sd_layout().leftSpaceToView(self.view,20)?.rightSpaceToView(self.view,20)?.topSpaceToView(self.view,30 + NavH)?.heightIs(40)
+        _ = oldPassWordView.sd_layout().leftSpaceToView(self.view,20)?.rightSpaceToView(self.view,20)?.topSpaceToView(self.view,30 + GlobalConfig.NavH)?.heightIs(40)
         _ = newPassWordView.sd_layout().leftEqualToView(oldPassWordView)?.rightEqualToView(oldPassWordView)?.topSpaceToView(oldPassWordView,20)?.heightIs(40)
         _ = confirmBtn.sd_layout().leftEqualToView(newPassWordView)?.rightEqualToView(newPassWordView)?.topSpaceToView(newPassWordView,50)?.heightIs(30)
         

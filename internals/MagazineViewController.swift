@@ -146,7 +146,7 @@ extension MagazineViewController: UITableViewDataSource, UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         table.deselectRow(at: indexPath, animated: false)
-        let webview = baseWebViewController()
+        let webview = BaseWebViewController()
         webview.mode = modes[indexPath.row].link
         webview.hidesBottomBarWhenPushed = true
         

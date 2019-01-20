@@ -28,7 +28,7 @@ class OnlineApplySearchVC: UIViewController, SearchControllerDeletgate {
             self.table.mj_header.beginRefreshing()
             
         }
-        c.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
+        c.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
         return c
     }()
     
@@ -42,7 +42,7 @@ class OnlineApplySearchVC: UIViewController, SearchControllerDeletgate {
             self.table.mj_header.beginRefreshing()
         }
         
-        v.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
+        v.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
         return v
     }()
     

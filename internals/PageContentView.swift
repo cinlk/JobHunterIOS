@@ -1,5 +1,5 @@
 //
-//  pageContentView.swift
+//  PageContentView.swift
 //  internals
 //
 //  Created by ke.liang on 2018/1/2.
@@ -8,17 +8,14 @@
 
 import UIKit
 
-
-
-
 protocol PageContentViewScrollDelegate: class {
-    func pageContenScroll(_ contentView: pageContentView, progress:CGFloat, sourcIndex:Int, targetIndex:Int)
+    func pageContenScroll(_ contentView: PageContentView, progress:CGFloat, sourcIndex:Int, targetIndex:Int)
     
 }
 private let CollectionCellID = "CollectionCellID"
 
 
-class pageContentView: UIView {
+class PageContentView: UIView {
 
     fileprivate var startOffsetX:CGFloat = 0
     private var childVCs:[UIViewController]?
@@ -27,13 +24,14 @@ class pageContentView: UIView {
     fileprivate var isCkick:Bool = false
     
     lazy var collectionView:UICollectionView = { [unowned self] in
+        
         let layout = UICollectionViewFlowLayout.init()
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0
         layout.itemSize = self.bounds.size
         layout.scrollDirection = .horizontal
         
-        let collv = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
+        let collv = UICollectionView.init(frame: self.bounds, collectionViewLayout: layout)
         collv.register(UICollectionViewCell.self, forCellWithReuseIdentifier: CollectionCellID)
         collv.showsVerticalScrollIndicator = false
         collv.showsHorizontalScrollIndicator = false
@@ -45,18 +43,17 @@ class pageContentView: UIView {
         
         return collv
     }()
+    
     init(frame:CGRect, childVCs: [UIViewController], pVC: UIViewController) {
         super.init(frame: frame)
         self.childVCs = childVCs
         self.pVC = pVC
-        for vc in childVCs{
-            
+        childVCs.forEach { (vc) in
             self.pVC?.addChild(vc)
-            vc.didMove(toParent: self.pVC)
         }
         
         self.addSubview(collectionView)
-        collectionView.frame = self.bounds
+        
         //collectionView.contentSize = CGSize.init(width: self.bounds.width * CGFloat(childVCs.count), height: self.bounds.height)
 
     }
@@ -71,7 +68,7 @@ class pageContentView: UIView {
 
 }
 
-extension pageContentView: UICollectionViewDataSource{
+extension PageContentView: UICollectionViewDataSource{
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.childVCs?.count ?? 0
@@ -99,7 +96,7 @@ extension pageContentView: UICollectionViewDataSource{
 }
 
 
-extension pageContentView: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout{
+extension PageContentView: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout{
     
         
 
@@ -142,7 +139,7 @@ extension pageContentView: UICollectionViewDelegate, UICollectionViewDelegateFlo
     
 }
 
-extension pageContentView{
+extension PageContentView{
     
     func moveToIndex(_ currentIndex: Int){
         isCkick = true
@@ -150,15 +147,7 @@ extension pageContentView{
         let offsetX = CGFloat(currentIndex) * self.collectionView.frame.width
         // 触发scroller方法
         collectionView.setContentOffset(CGPoint.init(x: offsetX, y: 0), animated: false)
-        
-       // print(collectionView.layoutAttributesForItem(at: IndexPath.init(row: currentIndex, section: 0)))
-       // print(collectionView.cellForItem(at: IndexPath.init(row: currentIndex, section: 0)))
     }
-    
-    
-   
-    
-    
     
 }
 

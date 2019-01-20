@@ -15,7 +15,7 @@ extension UITextField{
         // textfield view
         let frame: CGRect = self.frame
         
-        let offset: CGFloat = frame.origin.y + NavH/2 - (view!.frame.size.height - KEYBOARD_HEIGHT)
+        let offset: CGFloat = frame.origin.y + GlobalConfig.NavH/2 - (view!.frame.size.height - KEYBOARD_HEIGHT)
         let animationDuration : TimeInterval = 0.30
         
         UIView.beginAnimations("ResizeForKeyboard", context: nil)

@@ -18,8 +18,8 @@ class MagazMainViewController: UIViewController {
     fileprivate let titles:[String] = ["测试1","测试2","测试3","测试4", "测试5"]
     
     
-    private lazy var pageTitleV:pagetitleView = {  [unowned self] in
-        let ptitle = pagetitleView.init(frame: CGRect.init(x: 0, y: NavH, width: GlobalConfig.ScreenW, height: pageHeight), titles: titles, lineCenter: true, kSelectColor:(30,144,255) )
+    private lazy var pageTitleV:PagetitleView = {  [unowned self] in
+        let ptitle = PagetitleView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: pageHeight), titles: titles, lineCenter: true, kSelectColor:(30,144,255) )
         ptitle.delegate = self
         
         return ptitle
@@ -28,7 +28,7 @@ class MagazMainViewController: UIViewController {
     
     private lazy var childVC:[UIViewController] = []
     
-    private lazy var pageContentV:pageContentView = { [unowned self] in
+    private lazy var pageContentV:PageContentView = { [unowned self] in
         
         let test1 = MagazineViewController(dataType: .test1(name:"测试1", url:"url地址"))
         
@@ -55,7 +55,7 @@ class MagazMainViewController: UIViewController {
         childVC.append(test5)
         
         
-        let pContent = pageContentView.init(frame: CGRect.init(x: 0, y: NavH + pageHeight, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - NavH - pageHeight), childVCs: childVC, pVC: self)
+        let pContent = PageContentView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH + pageHeight, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH - pageHeight), childVCs: childVC, pVC: self)
         pContent.delegate = self
         
         return pContent
@@ -94,7 +94,7 @@ class MagazMainViewController: UIViewController {
 
 
 extension MagazMainViewController:PageContentViewScrollDelegate{
-    func pageContenScroll(_ contentView: pageContentView, progress: CGFloat, sourcIndex: Int, targetIndex: Int) {
+    func pageContenScroll(_ contentView: PageContentView, progress: CGFloat, sourcIndex: Int, targetIndex: Int) {
         
         self.pageTitleV.changeTitleWithProgress(progress, sourceIndex: sourcIndex, targetIndex: targetIndex)
     }
@@ -105,7 +105,7 @@ extension MagazMainViewController:PageContentViewScrollDelegate{
 
 
 extension MagazMainViewController: pagetitleViewDelegate{
-    func ScrollContentAtIndex(index: Int, _ titleView: pagetitleView) {
+    func ScrollContentAtIndex(index: Int, _ titleView: PagetitleView) {
         self.pageContentV.moveToIndex(index)
     }
     

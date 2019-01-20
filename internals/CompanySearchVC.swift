@@ -26,7 +26,7 @@ class CompanySearchVC: UIViewController, SearchControllerDeletgate {
                 self.requestBody.city = citys
                 self.table.mj_header.beginRefreshing()
         }
-        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
+        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
         return city
     }()
     
@@ -37,7 +37,7 @@ class CompanySearchVC: UIViewController, SearchControllerDeletgate {
             self.requestBody.field = s
             self.table.mj_header.beginRefreshing()
         }
-        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH)
+        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
         
         return k
     }()

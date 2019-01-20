@@ -21,7 +21,7 @@ protocol shareViewDelegate: class {
 }
 
 
-class shareView: UIView {
+class ShareView: UIView {
     
     // MARK 判断是否安装应用？？ UMSocialManager.default().isInstall(.wechatSession)
     
@@ -103,7 +103,7 @@ class shareView: UIView {
 }
 
 
-extension shareView{
+extension ShareView{
     func showShare(){
         UIApplication.shared.keyWindow?.insertSubview(sharebackBtn, belowSubview: self)
             UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
@@ -123,7 +123,7 @@ extension shareView{
     }
 }
 
-extension shareView:UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
+extension ShareView:UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
@@ -151,7 +151,7 @@ extension shareView:UICollectionViewDelegate, UICollectionViewDataSource, UIColl
 }
 
 // 代用友盟sdk进行分享
-extension shareView{
+extension ShareView{
     
     func sharedToUM(type: UMSocialPlatformType?){
         

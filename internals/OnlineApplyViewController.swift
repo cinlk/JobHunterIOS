@@ -37,7 +37,7 @@ class OnlineApplyViewController: UIViewController {
             
         }
         
-        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + JobHomeVC.titlePageH)
+        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titlePageH)
         return city
     }()
     
@@ -47,7 +47,7 @@ class OnlineApplyViewController: UIViewController {
         indus.passData = { kind in
             
         }
-        indus.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: NavH + JobHomeVC.titlePageH)
+        indus.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titlePageH)
         return indus
     }()
     
@@ -193,7 +193,7 @@ extension OnlineApplyViewController{
             if  mode.outer{
                 guard let urlLink = mode.link else {return}
                 //跳转外部连接
-                let wbView = baseWebViewController()
+                let wbView = BaseWebViewController()
                 wbView.mode = urlLink
                 wbView.hidesBottomBarWhenPushed = true
                 self.navigationController?.pushViewController(wbView, animated: true)
