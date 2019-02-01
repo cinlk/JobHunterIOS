@@ -88,19 +88,19 @@ var phoneNumber:String = ""
 
 
 // moya https 配置
-let MoyaManager = Manager(
-    configuration: URLSessionConfiguration.default,
-    serverTrustPolicyManager: CustomServerTrustPoliceManager()
-)
-
-class CustomServerTrustPoliceManager : ServerTrustPolicyManager {
-    override func serverTrustPolicy(forHost host: String) -> ServerTrustPolicy? {
-        return .disableEvaluation
-    }
-    public init() {
-        super.init(policies: [:])
-    }
-}
+//let MoyaManager = Manager(
+//    configuration: URLSessionConfiguration.default,
+//    serverTrustPolicyManager: CustomServerTrustPoliceManager()
+//)
+//
+//class CustomServerTrustPoliceManager : ServerTrustPolicyManager {
+//    override func serverTrustPolicy(forHost host: String) -> ServerTrustPolicy? {
+//        return .disableEvaluation
+//    }
+//    public init() {
+//        super.init(policies: [:])
+//    }
+//}
 
 
 
@@ -175,7 +175,7 @@ struct ConfigSharedApp{
 // server base url
 struct GlobalConfig {
     
-    static let BASE_URL = "http://127.0.0.1:9090/"
+    static let BASE_URL = "http://127.0.0.1:9090/api/v1/"
     // 屏幕宽高
     static let ScreenW:CGFloat = UIScreen.main.bounds.width
     static let ScreenH:CGFloat = UIScreen.main.bounds.height
@@ -183,7 +183,31 @@ struct GlobalConfig {
     static let defaultImage = "bigCar"
 }
 
+struct HttpCodeRange {
+    
+    static func filter<R: RangeExpression>(statusCodes: R, target: Int) -> Bool where R.Bound == Int {
+        guard statusCodes.contains(target) else {
+           return false
+        }
+        return true
+    }
+    
+    static func filterSuccessResponse(target:Int) -> Bool{
+        return HttpCodeRange.filter(statusCodes: 200...299, target: target)
+    }
+    
+}
 
 
 
 
+struct UserRole {
+    
+    enum role:String {
+        case hr = "hr"
+        case seeker = "seeker"
+        case anonymous = "anonymous"
+    }
+    
+    
+}

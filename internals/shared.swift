@@ -9,10 +9,9 @@
 // 存储全局需要的公共数据类型
 
 import Foundation
+import Moya
+import Alamofire
 import ObjectMapper
-import ObjectMapper
-
-
 
 
 
@@ -23,7 +22,7 @@ extension UserDefaults{
     static let userAccount = "userAccount"
     static let userPassword = "userPassword"
     static let firstOpen = "firstOpen"
-    
+    static let token = "token"
     
     public var localKeys:[String]{
         get{
@@ -36,28 +35,6 @@ extension UserDefaults{
     
 }
 
-// 引导界面数据
-class UserGuidePageItem: NSObject, Mappable {
-    
-    
-    var imageURL: String?
-    var title: String?
-    var detail: String?
-    
-    required init?(map: Map) {
-        if map["imageURL"] == nil || map["title"] == nil || map["detail"] == nil{
-            return nil
-        }
-    }
-    
-    func mapping(map: Map) {
-        imageURL <- map["imageURL"]
-        title <- map["title"]
-        detail <- map["detail"]
-    }
-    
-    
-}
 
 
 
@@ -160,13 +137,14 @@ public struct ShareAppItem {
 
 
 
-enum UserRole:String {
-    
-    case hr = "hr"
-    case student = "student"
-    case anonymous = "anonymouse"
-    
-}
+
+//enum UserRole:String {
+//    
+//    case hr = "hr"
+//    case student = "student"
+//    case anonymous = "anonymouse"
+//    
+//}
 
 // 用户信息
 class GlobalUserInfo {
@@ -194,34 +172,69 @@ class GlobalUserInfo {
         }
     }
     
-    public var token:String = ""
+    private var token:String = ""
     
+    private var account:String? {
+        get{
+            return self.userDefault.string(forKey: UserDefaults.userAccount)
+        }
+        set{
+            self.userDefault.set(newValue, forKey: UserDefaults.userAccount)
+        }
+    }
     
-    private var account:String = ""
-    private var password:String = ""
-    private var role:UserRole = .anonymous
+    private var password:String? {
+        get{
+           return self.userDefault.string(forKey: UserDefaults.userPassword)
+        }
+        set{
+            self.userDefault.set(newValue, forKey: UserDefaults.userPassword)
+        }
+    }
+    private var role:UserRole.role = UserRole.role.anonymous
     
     init() {}
     
-    init(isLogin:Bool, role:UserRole, account:String, password:String) {
-        self.isLogin = isLogin
+    
+    open func baseInfo(role: UserRole.role, token:String, account:String, pwd:String){
+        
+        self.token = token
         self.role = role
-        self.account = account
-        self.password = password
+        switch self.role{
+        case .anonymous:
+            self.isLogin = false
+        case .hr, .seeker:
+            self.isLogin = true
+            self.account = account
+            self.password = pwd
+        }
+        return
+        
         
     }
     
-    open func setRole(role:String){
-        if let r =  UserRole.init(rawValue: role){
-            self.role = r
-        }
-    }
-
-    open func setAccount(account:String, password:String){
-        self.account = account
-        self.password = password
+    open func getAccount() -> String?{
+        return self.account
     }
     
+    open func getPassword() -> String?{
+        return self.password
+    }
+    
+    open func getToken() -> String{
+        return self.token
+    }
+    
+    open func clear(){
+        self.account = nil
+        self.password = nil
+        self.token = ""
+        self.role = .anonymous
+        UserDefaults.standard.removeObject(forKey: UserDefaults.userAccount)
+        UserDefaults.standard.removeObject(forKey: UserDefaults.userPassword)
+        //UserDefaults.standard.removeObject(forKey: <#T##String#>)
+    }
+
 }
 
 
@@ -260,13 +273,15 @@ class SingletoneClass {
     }
     
     // 引导界面数据
-    public var guidanceData:[UserGuidePageItem]?
+    public var guidanceData:ResponseArrayModel<GuideItems>?
     // 广告背景图片
-    public var adviseImage:String?
+    public var adviseImage:ResponseModel<AdViseImage>?
     // app用户协议地址
     public var appAgreementURL:String? = "http://www.immomo.com/agreement.html"
     
     private var userDefaule: UserDefaults = UserDefaults.standard
+    
+    
     
 
    
@@ -284,6 +299,15 @@ class SingletoneClass {
             return self.getUserLocationPermit()
         }
     }
+//    open var accessToken:String {
+//        get {
+//            return self.userDefaule.string(forKey: "token") ?? "fake"
+//        }
+//        set{
+//            self.userDefaule.set(newValue, forKey: "token")
+//            //GlobalUserInfo.shared.isLogin = true
+//        }
+//    }
     
     
     init() {
@@ -295,11 +319,14 @@ class SingletoneClass {
     open func setUserLocation(permit:Bool){
         self.userDefaule.set(permit, forKey: UserDefaults.locPermit)
     }
+    
     // 存储到缓存
     private func getUserLocationPermit() -> Bool{
        return self.userDefaule.bool(forKey: UserDefaults.locPermit)
         
     }
+    
+    
     
 }
 
@@ -315,7 +342,7 @@ extension SingletoneClass{
     public func setChoosedMessage(index:Int){
         // 跟新数据 http 请求
         NetworkTool.request(GlobaHttpRequest.setHelloMsg(index: index), successCallback: { (data) in
-           
+            
             self.messageHi?.setSayHi(index)
         }) { (error) in
             print(error)
@@ -330,6 +357,25 @@ extension SingletoneClass{
         return ([String](), 0)
     }
     
+    public func logout(complete: @escaping (Bool)->Void) {
+        let group = DispatchGroup()
+        group.enter()
+        var flag = false
+        NetworkTool.request(.logout, successCallback: { (res) in
+            print("logout \(res)")
+            GlobalUserInfo.shared.clear()
+            group.leave()
+            flag = true 
+        }) { (error) in
+            group.leave()
+            
+            print("logout error \(error)")
+        }
+        group.notify(queue: DispatchQueue.main){
+            complete(flag)
+        }
+        
+    }
 }
 
 
@@ -341,13 +387,15 @@ extension SingletoneClass{
         let group = DispatchGroup()
         
 
-        let queue = DispatchQueue.init(label: "queue")
+        //let queue = DispatchQueue.init(label: "queue")
         
         group.enter()
         // 请求也是在其它线程 异步执行
         NetworkTool.request(GlobaHttpRequest.guideData, successCallback: { (data) in
             // swiftJson
-            self.guidanceData =  Mapper<UserGuidePageItem>.init().mapArray(JSONObject: data)
+            
+            self.guidanceData =  Mapper<ResponseArrayModel<GuideItems>>().map(JSONObject: data)
+           
             group.leave()
         }, failureCallback: { (error) in
             group.leave()
@@ -355,10 +403,8 @@ extension SingletoneClass{
         
         group.enter()
         NetworkTool.request(GlobaHttpRequest.adviseImages, successCallback: { (data) in
-            if let d = data as? [String:String]{
-                self.adviseImage = d["imageURL"]
-            }
             
+            self.adviseImage  = Mapper<ResponseModel<AdViseImage>>().map(JSONObject: data)
             group.leave()
         }) { (error) in
             group.leave()
@@ -387,24 +433,25 @@ extension SingletoneClass{
     func userLogin(completed: @escaping (Bool)->Void){
         
        
-        guard let account = userDefaule.string(forKey: UserDefaults.userAccount) else{
+        guard let account = GlobalUserInfo.shared.getAccount() else{
             completed(false)
             return
         }
         
-        guard let password = userDefaule.string(forKey: UserDefaults.userPassword) else{
+        guard let password = GlobalUserInfo.shared.getPassword()  else{
             completed(false)
             return
         }
         
-        NetworkTool.request(GlobaHttpRequest.userlogin(account: account, password: password), successCallback: { (_) in
-            completed(true)
-            // 返回TOKEN TODO
-            
-            // 记录用户名和密码
-            self.userDefaule.set(account, forKey: UserDefaults.userAccount)
-            self.userDefaule.set(password, forKey: UserDefaults.userPassword)
-            // 设置用户角色 TODO
+        NetworkTool.request(GlobaHttpRequest.userlogin(phone: account, password: password), successCallback: { (json) in
+            if let res =  Mapper<ResponseModel<LoginSuccess>>().map(JSONObject: json), let token = res.body?.token{
+                completed(true)
+                // 返回TOKEN TODO
+                // 记录用户名和密码
+                GlobalUserInfo.shared.baseInfo(role: UserRole.role.seeker, token: token , account: account, pwd: password)
+                // 设置用户角色 TODO
+                // 根据角色却换不同界面
+            }
             
         }) { (error) in
             completed(false)
@@ -434,3 +481,24 @@ extension SingletoneClass{
     
     
 }
+
+
+// moya https 配置
+//let MoyaManager = Manager(
+//    configuration: URLSessionConfiguration.default,
+//    serverTrustPolicyManager: CustomServerTrustPoliceManager()
+//)
+//
+//class CustomServerTrustPoliceManager : ServerTrustPolicyManager {
+//    override func serverTrustPolicy(forHost host: String) -> ServerTrustPolicy? {
+//        return .disableEvaluation
+//    }
+//    public init() {
+//        super.init(policies: [:])
+//    }
+//}
+
+
+
+
+

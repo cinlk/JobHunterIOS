@@ -27,8 +27,8 @@ class AdvertiseViewController: UIViewController {
         let image = UIImageView()
         image.contentMode = .scaleToFill
         image.isUserInteractionEnabled = true
-        
-        if let url = URL.init(string: SingletoneClass.shared.adviseImage ?? ""){
+        image.backgroundColor = UIColor.orange
+        if let url = URL.init(string: SingletoneClass.shared.adviseImage?.body?.imageUrl ?? ""){
                 image.kf.setImage(with: Source.network(url), placeholder: UIImage.init(named: "bigCar")!, options: nil, progressBlock: nil, completionHandler: nil)
         }
     

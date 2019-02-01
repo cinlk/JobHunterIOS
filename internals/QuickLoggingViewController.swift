@@ -16,7 +16,9 @@ import ObjectMapper
 fileprivate let text = "登录代表你同意 "
 fileprivate let agreement = "<<app用户协议>>"
 
+
 fileprivate class tableViewFoot: UIView {
+    
     
     private lazy var des:UILabel = {
         let lb = UILabel.init(frame: CGRect.zero)
@@ -63,7 +65,7 @@ fileprivate class tableViewFoot: UIView {
 
 class QuickLoggingViewController: UIViewController, UITableViewDelegate {
 
-   
+    
     weak var parentVC:UserLogginViewController?
     
     private lazy var agreeMentVC:BaseWebViewController = {
@@ -104,7 +106,7 @@ class QuickLoggingViewController: UIViewController, UITableViewDelegate {
     
     private var phoneNumber: BehaviorRelay<String> = BehaviorRelay<String>.init(value: "")
     private var verifyCode: BehaviorRelay<String> = BehaviorRelay<String>.init(value: "")
-    private var quickVM = QuickLoginViewModel()
+    private var quickVM = LoginViewModel()
     
 
     
@@ -201,15 +203,17 @@ extension QuickLoggingViewController{
         _ = self.verifyBtn.rx.tap.throttle(1, scheduler: MainScheduler.instance).map({
             self.codeNumber.start()
         }).flatMapLatest { _ in
-            self.quickVM.sendCode(phone: self.phoneNumber.value).asDriver(onErrorJustReturn: Mapper<CodeSuccess>.init().map(JSON: [:])!)
-            
+            self.quickVM.sendCode(phone: self.phoneNumber.value).asDriver(onErrorJustReturn: Mapper<ResponseModel<CodeSuccess>>.init().map(JSON: [:])!)
             
             }.takeUntil(self.rx.deallocated).subscribe(onNext: { (res) in
-                print("\(res)")
-                self.codeNumber.stop()
-                if res.number == nil{
-                     self.view.showToast(title: "发送失败", customImage: nil, mode: .text)
+                
+                if  let code = res.code,  HttpCodeRange.filterSuccessResponse(target: code) {
+                    return
                 }
+                self.codeNumber.stop()
+                self.view.showToast(title: res.returnMsg ?? "发送失败", customImage: nil, mode: .text)
+                
+                
             })
         
         
@@ -231,12 +235,20 @@ extension QuickLoggingViewController{
         _ = self.parentVC?.loggingBtn.rx.tap.throttle(0.5, scheduler: MainScheduler.instance).filter({
              self.parentVC?.currentIndex == 0
         }).flatMapLatest({ _ in
-            self.quickVM.quickLogin(phone: self.phoneNumber.value, code: self.verifyCode.value).asDriver(onErrorJustReturn: Mapper<loginSuccess>().map(JSON: [:])!)
+            
+            self.quickVM.quickLogin(phone: self.phoneNumber.value, code: self.verifyCode.value).asDriver(onErrorJustReturn: Mapper<ResponseModel<LoginSuccess>>().map(JSON: [:])!)
         }).takeUntil(self.rx.deallocated).subscribe(onNext: { (res) in
-            if res.token == nil{
-                self.view.showToast(title: "账号或密码不对", customImage: nil, mode: .text)
+            if let token =  res.body?.token{
+                GlobalUserInfo.shared.baseInfo(role: UserRole.role.seeker, token: token, account: "", pwd: "")
+                // 跳转到主界面
+                guard let pv = self.parentVC else {
+                    return
+                }
+                pv.performSegue(withIdentifier: pv.mainSegueIdentiy, sender: nil)
+                return
             }
-            print("quik login \(res)")
+            self.view.showToast(title: res.returnMsg ?? "登录失败", customImage: nil, mode: .text)
+            
         })
         // 网络
         self.quickVM.loginIn.drive(UIApplication.shared.rx.isNetworkActivityIndicatorVisible).disposed(by: self.dispose)

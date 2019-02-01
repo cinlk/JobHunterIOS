@@ -41,7 +41,7 @@ import Foundation
 import ObjectMapper
 
 // data 和 base64string 相互转换
-open class DataTransformBase64: TransformType {
+final class DataTransformBase64: TransformType {
     
     public typealias Object = Data
     public typealias JSON = String
@@ -68,7 +68,7 @@ open class DataTransformBase64: TransformType {
 }
 
 // YYYY-MM 日期转换
-open class YearMonthtDateTransform: TransformType {
+final class YearMonthtDateTransform: TransformType {
     
     public typealias Object = Date
     public typealias JSON = String
@@ -92,10 +92,79 @@ open class YearMonthtDateTransform: TransformType {
         }
         return nil
     }
+}
+
+
+// object <==> json
+final class JsonObjectTransform<T>: TransformType where T: Mappable {
+    
+    
+    public typealias Object = T
+    
+    public typealias JSON = [String:Any]
+    
+    
+    func transformFromJSON(_ value: Any?) -> Object? {
+        // 数组类型
+        
+        
+        if let json = value as? [String:Any]{
+            
+            return Mapper<T>().map(JSON: json)
+        }
+      
+        
+        return nil
+    }
+    
+    func transformToJSON(_ value: T?) -> JSON? {
+        if let map = value {
+            return map.toJSON()
+        }
+        return nil
+    }
     
     
 }
 
+// object == json array
+
+
+final class JsonArrayObjectTransform<T>: TransformType where T: Mappable {
+    
+    
+    public typealias Object = [T]
+    
+    public typealias JSON = [[String:Any]]
+    
+    
+    func transformFromJSON(_ value: Any?) -> Object? {
+        // 数组类型
+        
+        
+        if let json = value as? [[String:Any]]{
+            
+            return Mapper<T>().mapArray(JSONObject: json)
+        }
+        
+        
+        return nil
+    }
+    
+    func transformToJSON(_ value: Object?) -> JSON? {
+        
+        if let map = value {
+            var res:[[String:Any]] = []
+            map.forEach { (m) in
+                res.append(m.toJSON())
+            }
+            return  res 
+        }
+        return nil
+    }
+    
+    
+}
 
 
 

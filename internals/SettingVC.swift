@@ -258,22 +258,28 @@ extension SettingVC {
    
     
    @objc  private func logout(){
-        
-      
          // 禁止自动登录
-    DBFactory.shared.getUserDB().setLoginAuto(account: "123456", auto: false)
+        //DBFactory.shared.getUserDB().setLoginAuto(account: "123456", auto: false)
+        if GlobalUserInfo.shared.isLogin == false {
+            self.navgateToLginVC()
+            return
+        }
+        SingletoneClass.shared.logout { (b) in
+                b ? self.navgateToLginVC() : self.view.showToast(title: "退出失败", customImage: nil, mode: .text)
+            }
+    
+    }
+    
+    private func navgateToLginVC(){
         // 登录界面进入
         if  let _ = self.presentingViewController as? LoginNavigationController{
             self.dismiss(animated: true, completion: nil)
         }else{
             // 直接进入
-             let loginView =  UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "loginNav") as! LoginNavigationController
+            let loginView =  UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "loginNav") as! LoginNavigationController
             
             self.present(loginView, animated: true, completion: nil)
         }
-        
-        
-        
     }
 }
 

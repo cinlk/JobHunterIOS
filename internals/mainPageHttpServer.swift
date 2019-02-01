@@ -99,7 +99,7 @@ class  demoHttpServer {
     
     static let shared:demoHttpServer = demoHttpServer()
     private lazy var  httpServer: MoyaProvider<MainPageTarget> = {
-        let s = MoyaProvider<MainPageTarget>(manager: MoyaManager, plugins: [NetworkLoggerPlugin(verbose: true)])
+        let s = MoyaProvider<MainPageTarget>(plugins: [NetworkLoggerPlugin(verbose: true)])
         return s
     }()
     

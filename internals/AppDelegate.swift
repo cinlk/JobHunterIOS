@@ -123,8 +123,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     }
 
+
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        // 用户退出
+        
+       // self.performSelector(onMainThread: #selector(self.logout), with: nil, waitUntilDone: true)
+        // moya  是异步的 主线程已经退出，来不及执行完请求 ????
+        //Thread.sleep(forTimeInterval: 10)
         
         // 删除文件  TODO
         let url = SingletoneClass.fileManager.urls(for: .documentDirectory, in: .userDomainMask)
@@ -143,6 +149,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
     }
     
+//    @objc func logout(){
+//        if GlobalUserInfo.shared.isLogin{
+//            SingletoneClass.shared.logout{ (b) in
+//                print(b)
+//            }
+//        }
+//    }
     
 
 }

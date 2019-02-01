@@ -37,10 +37,11 @@ class ValidateNumber {
         }).subscribe(onNext: { i in
             
             if i == count{
-                self.b?.setTitle("获取验证码", for: .normal)
-                self.b?.setTitleColor(UIColor.blue, for: .normal)
-                
-                self.obCount.onNext(true)
+//                self.b?.setTitle("获取验证码", for: .normal)
+//                self.b?.setTitleColor(UIColor.blue, for: .normal)
+//
+//                self.obCount.onNext(true)
+                self.stop(true)
             }else{
                 self.b?.setTitle("重新获取(\(count - i))", for: .normal)
                 self.b?.setTitleColor(UIColor.lightGray, for: .normal)
@@ -50,9 +51,11 @@ class ValidateNumber {
         })
     }
     
-    func stop(){
+    func stop(_ inner: Bool = false){
         
-        end.onNext(false)
+        if inner == false {
+            end.onNext(false)
+        }
         self.b?.setTitle("获取验证码", for: .normal)
         self.b?.setTitleColor(UIColor.blue, for: .normal)
         //self.obCount.value = true

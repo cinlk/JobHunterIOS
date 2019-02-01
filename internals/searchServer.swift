@@ -135,7 +135,7 @@ class SearchServer{
     
     static let shared:SearchServer = SearchServer()
     private lazy var httpServer:MoyaProvider<SearchTarget> = {
-        let s = MoyaProvider<SearchTarget>(manager: MoyaManager, plugins: [NetworkLoggerPlugin(verbose: true)])
+        let s = MoyaProvider<SearchTarget>(plugins: [NetworkLoggerPlugin(verbose: true)])
         return s
     }()
     

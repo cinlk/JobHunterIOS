@@ -80,7 +80,8 @@ fileprivate class clickBtn:UIButton {
 
 class UserGuideViewController: UIViewController, UICollectionViewDelegate {
 
-    private var datas:[UserGuidePageItem] = []
+    private var datas:[GuideItems] = []
+    
     private var dispose: DisposeBag = DisposeBag.init()
     
    
@@ -203,7 +204,7 @@ extension UserGuideViewController{
         }).disposed(by: dispose)
         
         
-        let dataSource = RxCollectionViewSectionedReloadDataSource<SectionModel<String, UserGuidePageItem>>(configureCell: { (dataSource, cv, indexPath, element) -> UICollectionViewCell in
+        let dataSource = RxCollectionViewSectionedReloadDataSource<SectionModel<String, GuideItems>>(configureCell: { (dataSource, cv, indexPath, element) -> UICollectionViewCell in
             
             if indexPath.row == self.datas.count {
                 let cell = cv.dequeueReusableCell(withReuseIdentifier: UserGuideLogginCell.identity(), for: indexPath)
@@ -222,9 +223,9 @@ extension UserGuideViewController{
             
         })
         
-        
+    
         // 这里多一个默认数据
-        Observable.just([SectionModel.init(model: "", items: self.datas + [UserGuidePageItem(JSON: ["imageURL":"", "title":"", "detail":""])!])]).bind(to: collectionView.rx.items(dataSource: dataSource)).disposed(by: dispose)
+        Observable.just([SectionModel.init(model: "", items: self.datas + [GuideItems(JSON: ["image_url":"fake", "title":"fake", "detail":"fake"])!])]).bind(to: collectionView.rx.items(dataSource: dataSource)).disposed(by: dispose)
         
     }
     
@@ -250,7 +251,7 @@ extension UserGuideViewController{
     private func setData(){
         
         if let data = SingletoneClass.shared.guidanceData{
-            self.datas = data
+            self.datas = data.body!
         }
         // 最后一个cell 页面单独显示
         self.pageController.numberOfPages = datas.count + 1

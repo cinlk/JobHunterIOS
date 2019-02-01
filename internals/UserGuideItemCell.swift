@@ -42,12 +42,12 @@ class UserGuideItemCell: UICollectionViewCell {
         return v
     }()
     
-    var mode:UserGuidePageItem?{
+    var mode:GuideItems?{
         didSet{
             guard let mode = mode else {
                 return
             }
-            if let url = URL.init(string: mode.imageURL ?? ""){
+            if let url = URL.init(string: mode.imageUrl ?? ""){
                  //self.imageView.kf.setImage(with: Source.network(url))
                 self.imageView.kf.setImage(with: Source.network(url), placeholder: UIImage.init(named: "bigCar")!, options: nil, progressBlock: nil, completionHandler: nil)
                 

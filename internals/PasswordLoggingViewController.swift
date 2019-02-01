@@ -93,7 +93,7 @@ class PasswordLoggingViewController: UIViewController, UITableViewDelegate {
     private var account:BehaviorRelay<String> = BehaviorRelay<String>(value: "")
     private var pwd:BehaviorRelay<String> = BehaviorRelay<String>(value: "")
     private var dispose:DisposeBag = DisposeBag()
-    private var viewModel:AccountLoginViewModel = AccountLoginViewModel()
+    private var viewModel:LoginViewModel = LoginViewModel()
     
    
     override func viewDidLoad() {
@@ -193,7 +193,7 @@ extension PasswordLoggingViewController{
         
         // 登录按钮检查 当前view
         let enableLogin = Observable.combineLatest(account.share().map({  a in
-           return a.count == 13  && Int(a) != nil && self.parentVC?.currentIndex == 1
+           return a.count == 11  && Int(a) != nil && self.parentVC?.currentIndex == 1
         }), pwd.map({ p in
             p.count >= 6
         })){
@@ -206,12 +206,20 @@ extension PasswordLoggingViewController{
         _ = self.parentVC?.loggingBtn.rx.tap.throttle(0.5, scheduler: MainScheduler.instance).filter({
              self.parentVC?.currentIndex == 1
         }).flatMapLatest({ _ in
-            self.viewModel.passwordLogin(accont: self.account.value, pwd: self.pwd.value).asDriver(onErrorJustReturn: Mapper<loginSuccess>().map(JSON: [:])!)
+            self.viewModel.passwordLogin(accont: self.account.value, pwd: self.pwd.value).asDriver(onErrorJustReturn: Mapper<ResponseModel<LoginSuccess>>().map(JSON: [:])!)
         }).takeUntil(self.rx.deallocated).subscribe(onNext: { res in
-            print(" password login \(res)")
-            if res.token == nil {
-                self.view.showToast(title: "用户名或密码错误", customImage: nil, mode: .text)
+            
+            if let token = res.body?.token{
+                 GlobalUserInfo.shared.baseInfo(role: UserRole.role.seeker, token: token, account: self.account.value , pwd: self.pwd.value)
+                
+                guard let pv = self.parentVC else {
+                    return
+                }
+                pv.performSegue(withIdentifier: pv.mainSegueIdentiy, sender: nil)
+                return
             }
+            
+             self.view.showToast(title: res.returnMsg ?? "用户名或密码错误", customImage: nil, mode: .text)
             
         })
         

@@ -15,7 +15,8 @@ public enum GlobaHttpRequest {
     case guideData
     case helloMsg
     case adviseImages
-    case userlogin(account:String, password:String)
+    case userlogin(phone:String, password:String)
+    case logout
     case setHelloMsg(index:Int)
     
     
@@ -25,7 +26,9 @@ public enum GlobaHttpRequest {
 
 extension GlobaHttpRequest: TargetType{
     
-    
+    private var urlPrefix:String {
+        return "global/"
+    }
     
     public var baseURL: URL {
         
@@ -35,15 +38,17 @@ extension GlobaHttpRequest: TargetType{
     public var path: String {
         switch self {
         case .guideData:
-            return "guides"
+            return self.urlPrefix + "guidance"
         case .helloMsg:
-            return  "hellos"
+            return self.urlPrefix + "hellos"
         case .adviseImages:
-            return "advise"
+            return self.urlPrefix + "advise/image"
         case .userlogin:
-            return "login"
+            return   "account/login/pwd"
+        case .logout:
+            return  "account/logout"
         case .setHelloMsg:
-            return "hellos"
+            return self.urlPrefix + "hellos"
         }
     }
     
@@ -55,6 +60,8 @@ extension GlobaHttpRequest: TargetType{
             return .post
         case .setHelloMsg:
             return .put
+        case .logout:
+            return .delete
         }
     }
         
@@ -65,18 +72,22 @@ extension GlobaHttpRequest: TargetType{
     
     public var task: Task {
         switch self {
-        case .guideData, .helloMsg, .adviseImages:
+        case .guideData, .helloMsg, .adviseImages, .logout:
             return Task.requestPlain
-        case let .userlogin(account, password):
-            
-            return .requestParameters(parameters: ["account":account, "password":password], encoding: JSONEncoding.default)
+        case let .userlogin(phone, password):
+            return .requestParameters(parameters: ["phone": phone, "password":password], encoding: JSONEncoding.default)
         case let .setHelloMsg(index):
             return Task.requestParameters(parameters: ["count":index], encoding: URLEncoding.default)
         }
     }
     
     public var headers: [String : String]? {
-        return nil
+        switch  self {
+        case .logout:
+            return ["Authorization": GlobalUserInfo.shared.getToken()]
+        default:
+            return nil
+        }
     }
     
     
@@ -108,7 +119,7 @@ class NetworkTool {
         case .guideData, .adviseImages:
             
             timeout = 10
-        case .helloMsg, .userlogin:
+        case .helloMsg, .userlogin, .logout:
             timeout = 30
         case .setHelloMsg(let index):
             timeout = 30
@@ -118,7 +129,6 @@ class NetworkTool {
         
     }, requestClosure: { (endpoint, done) in
         do{
-            
             
             
             var req = try endpoint.urlRequest()
@@ -165,6 +175,7 @@ class NetworkTool {
                     
                     _ =  try  response.filterSuccessfulStatusCodes()
                     let json =  try response.mapJSON(failsOnEmptyData: true)
+                    
                     successCallback(json)
                     
                 }catch let error{

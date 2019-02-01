@@ -7,15 +7,18 @@
 //
 
 import UIKit
+import ObjectMapper
+import RxSwift
 
 fileprivate let contentViewH:CGFloat = GlobalConfig.ScreenH / 4
-fileprivate let mainSegueIdentiy = "showMain"
+
 fileprivate let titles  = ["快捷登录","密码登录"]
 
 
 
 class UserLogginViewController: UIViewController {
 
+    let mainSegueIdentiy = "showMain"
     
     lazy var currentIndex = 0
     
@@ -89,6 +92,9 @@ class UserLogginViewController: UIViewController {
         tap.addTarget(self, action: #selector(cancelEdit))
         return tap
     }()
+    
+    private var dispose = DisposeBag()
+     private var quickVM = LoginViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -170,8 +176,13 @@ extension UserLogginViewController{
         _ = self.skipBtn.rx.tap.takeUntil(self.rx.deallocated).subscribe({ _ in
             
             GlobalUserInfo.shared.isLogin = false
-            
-            self.performSegue(withIdentifier: mainSegueIdentiy, sender: nil)
+            self.quickVM.anonymouseLogin().asDriver(onErrorJustReturn: ResponseModel<LoginSuccess>(JSON: [:])!).drive(onNext: { (res) in
+                if let token = res.body?.token{
+                       GlobalUserInfo.shared.baseInfo(role: UserRole.role.anonymous, token: token, account: "" , pwd: "")
+                }
+             
+            }).disposed(by: self.dispose)
+            self.performSegue(withIdentifier: self.mainSegueIdentiy, sender: nil)
             
         })
         
@@ -192,7 +203,7 @@ extension UserLogginViewController: pagetitleViewDelegate{
         // 必须有这个不然collection cell view消失
         self.view.endEditing(true)
         self.contentView.moveToIndex(index)
-         self.currentIndex = index
+        self.currentIndex = index
     }
     
     

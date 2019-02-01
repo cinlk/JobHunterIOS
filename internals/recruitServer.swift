@@ -198,7 +198,7 @@ class RecruitServer{
     static let shared:RecruitServer = RecruitServer()
     
     private lazy var httpServer:MoyaProvider<RecruitTarget> = {
-        let s = MoyaProvider<RecruitTarget>(manager: MoyaManager, plugins: [NetworkLoggerPlugin(verbose: true)])
+        let s = MoyaProvider<RecruitTarget>(plugins: [NetworkLoggerPlugin(verbose: true)])
         return s
     }()
     

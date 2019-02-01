@@ -33,7 +33,7 @@ extension EnterAppViewController{
         }else{
             // 登录成功跳转到广告界面
             SingletoneClass.shared.userLogin { (b) in
-                //print("login state", b)
+                
                 b ? self.performSelector(onMainThread: #selector(self.showAdvertise), with: nil, waitUntilDone: false) : self.performSelector(onMainThread: #selector(self.showLogging), with: nil, waitUntilDone: false)
             }
         }
@@ -62,6 +62,7 @@ extension EnterAppViewController{
     }
     
     private func showAppMain(){
+        // 不同角色显示不同 界面 TODO
         if let vc  =  UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "main") as? MainTabBarViewController{
             present(vc, animated: true, completion: nil)
         }

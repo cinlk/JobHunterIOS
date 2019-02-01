@@ -10,57 +10,41 @@ import Foundation
 import ObjectMapper
 
 
-class CodeSuccess: Mappable{
+class CodeSuccess: Mappable, CustomStringConvertible{
     
-    var account: String?
-    var number: Int?
+    var code: Int?
     
     required init?(map: Map) {
         
     }
+    
     func mapping(map: Map) {
-        account <- map["account"]
-        number <- map["number"]
+        
+        code <- map["code"]
+    }
+    
+    var description: String{
+        return self.toJSONString() ?? ""
     }
 }
 
 
 
 
-class  loginSuccess: Mappable{
+class  LoginSuccess: Mappable{
     
     var token: String?
-    var userExsit:Bool?
-    
-    
+
     required init?(map: Map) {
         
     }
     
     func mapping(map: Map) {
         token <- map["token"]
-        userExsit <- map["user_exsit"]
     }
     
     
 }
 
 
-class BaseResponse: Mappable{
-    
-    var requestID:String?
-    var statusCode:Int?
-    var message:String?
-    
-    required init?(map: Map) {
-    }
-    
-    func mapping(map: Map) {
-        requestID <- map["request_id"]
-        statusCode <- map["status_code"]
-        message <- map["message"]
-    }
-    
-    
-}
 
