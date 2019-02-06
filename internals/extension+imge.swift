@@ -12,6 +12,18 @@ import UIKit
 extension UIImage{
     
     
+    
+    static func drawNormalImage(frame: CGRect, color:UIColor)->UIImage {
+        
+        UIGraphicsBeginImageContext(frame.size)
+        let context:CGContext = UIGraphicsGetCurrentContext()!
+        context.setFillColor(color.cgColor)
+        context.fill(frame)
+        let image:UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        return image
+    }
+    
     // gif 图片解析, gif 多个图片片段按时间顺序组成
     static func animationImageWithData(data:NSData?) -> UIImage {
         
@@ -170,6 +182,7 @@ extension UIImage{
 
 // 图片颜色
 extension UIImage {
+    
     func imageWithColor(color:UIColor) -> UIImage {
         let rect = CGRect(x: 0, y: 0, width: self.size.width, height: self.size.height);
         UIGraphicsBeginImageContext(rect.size)

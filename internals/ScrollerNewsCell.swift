@@ -25,7 +25,7 @@ class ScrollerNewsCell: UITableViewCell {
                 return
             }
             // 插入第一个位置，滚到这里切换到底部
-            _ = self.scroller.sd_layout().heightIs(cellH)
+           // _ = self.scroller.sd_layout().heightIs(cellH)
             self.scroller.reloadData()
             // 开始无限滚动
             self.startScheduler()
@@ -64,7 +64,7 @@ class ScrollerNewsCell: UITableViewCell {
         //self.contentView.addSubview(pickView)
         self.contentView.addSubview(scroller)
         _ = leftImage.sd_layout().leftSpaceToView(self.contentView,10)?.topEqualToView(self.contentView)?.bottomEqualToView(self.contentView)?.widthIs(45)
-        _ = scroller.sd_layout().leftSpaceToView(leftImage,10)?.rightEqualToView(self.contentView)?.centerYEqualToView(self.contentView)?.heightIs(0)
+        _ = scroller.sd_layout().leftSpaceToView(leftImage,10)?.rightEqualToView(self.contentView)?.centerYEqualToView(self.contentView)?.heightRatioToView(self.contentView, 1)
     }
     
     
@@ -91,7 +91,7 @@ extension ScrollerNewsCell{
         
         if self.timer == nil {
             self.timer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { [unowned self] (time) in
-                // 模拟无限循环 pickerDataSize 数很大时
+                // 模拟无限循环 pickerDataSize 数很大
                 if self.count <= self.pickerDataSize{
                     self.count += 2
                     self.scroller.scrollToRow(at: IndexPath.init(row: self.count, section: 0), at: UITableView.ScrollPosition.none, animated: true)

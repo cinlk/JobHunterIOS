@@ -51,7 +51,7 @@ class NearCareerTalkMeetinVC: BaseViewController {
          _  = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
         
         
-        self.handleViews.append(table)
+        self.hiddenViews.append(table)
         
         
         super.setViews()

@@ -75,7 +75,7 @@ class CareerTalkShowViewController: BaseShowJobViewController {
         if self.showTooBar == false{
             self.showTooBar = false
         }
-        
+        self.hidesBottomBarWhenPushed = true 
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -91,7 +91,7 @@ class CareerTalkShowViewController: BaseShowJobViewController {
         
         super.setViews()
         setToolBar()
-        self.errorView.reload = reload
+      
         self.title = viewTitle
         table.delegate = self
         table.dataSource = self

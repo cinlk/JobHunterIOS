@@ -89,7 +89,7 @@ class PrivacySetting: BaseViewController {
         self.view.addSubview(table)
         
          _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
-        self.handleViews.append(table)
+        self.hiddenViews.append(table)
         
         super.setViews()
         

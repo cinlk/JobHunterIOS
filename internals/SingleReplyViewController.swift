@@ -146,7 +146,7 @@ class SingleReplyViewController: BaseViewController {
     override func setViews(){
 
         self.view.addSubview(table)
-        self.handleViews.append(table)
+        self.hiddenViews.append(table)
         self.table.addSubview(progressView)
         
         _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
@@ -174,7 +174,7 @@ class SingleReplyViewController: BaseViewController {
         self.table.reloadData()
     }
     
-    override func reload() {
+    override  func reload() {
         super.reload()
         self.loadData()
     }

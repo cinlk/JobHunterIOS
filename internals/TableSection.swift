@@ -16,17 +16,17 @@ import RxDataSources
 // multi sections
 enum MultiSecontions{
     case newSection(title:String, items: [SectionItem])
-    case JobFieldSection(title:String, items: [SectionItem])
-    case ColumnSection(title:String, items: [SectionItem])
-    case RecruitMentMeet(title:String, items: [SectionItem])
-    case ApplyOnline(title:String, items: [SectionItem])
+    case jobFieldSection(title:String, items: [SectionItem])
+    case columnSection(title:String, items: [SectionItem])
+    case recruitMentMeet(title:String, items: [SectionItem])
+    case applyOnline(title:String, items: [SectionItem])
     
-    case CampuseRecruite(title:String, items: [SectionItem])
+    case campuseRecruite(title:String, items: [SectionItem])
 }
 // items
 enum SectionItem{
     case newItem(new:[String])
-    case jobFieldItem([jobField])
+    case jobFieldItem([JobField])
     case columnItem([latestColumn])
     case recruimentMeet(list: [CareerTalkMeetingModel])
     case applyonline(list: [applyField])
@@ -42,15 +42,15 @@ extension MultiSecontions: SectionModelType{
         switch self {
         case .newSection(title: _, let items):
             return items
-        case .JobFieldSection(title: _, let items):
+        case .jobFieldSection(title: _, let items):
             return items.map{$0}
-        case .ColumnSection(title: _, let items):
+        case .columnSection(title: _, let items):
             return items.map{$0}
-        case .RecruitMentMeet(title: _,  let  items):
+        case .recruitMentMeet(title: _,  let  items):
             return items
-        case .ApplyOnline(title: _,  let items):
+        case .applyOnline(title: _,  let items):
             return items
-        case .CampuseRecruite(title:_,let items):
+        case .campuseRecruite(title:_,let items):
             return items
         
         }
@@ -60,15 +60,15 @@ extension MultiSecontions: SectionModelType{
         switch self {
         case .newSection(title: let title, items: _):
             return title
-        case .CampuseRecruite(title: let title, items: _):
+        case .campuseRecruite(title: let title, items: _):
             return title
-        case .JobFieldSection(title: let title, items: _):
+        case .jobFieldSection(title: let title, items: _):
             return title
-        case .ColumnSection(title: let title, items: _):
+        case .columnSection(title: let title, items: _):
             return title
-        case .RecruitMentMeet(title: let title, items: _):
+        case .recruitMentMeet(title: let title, items: _):
             return title
-        case .ApplyOnline(title: let title, items: _):
+        case .applyOnline(title: let title, items: _):
             return title
         }
     }
@@ -77,16 +77,16 @@ extension MultiSecontions: SectionModelType{
         switch original {
         case let .newSection(title: title, items: _):
             self = .newSection(title: title, items: items)
-        case let .JobFieldSection(title: title, items: _):
-            self = .JobFieldSection(title: title, items: items)
-        case let .ColumnSection(title: title,  items:_):
-            self = .ColumnSection(title: title, items: items)
-        case let .RecruitMentMeet(title: title, items: items):
-            self = .RecruitMentMeet(title: title, items: items)
-        case let .ApplyOnline(title: title, items: items):
-            self = .ApplyOnline(title: title, items: items)
-        case let .CampuseRecruite(title: title, items: _):
-            self = .CampuseRecruite(title: title, items: items)
+        case let .jobFieldSection(title: title, items: _):
+            self = .jobFieldSection(title: title, items: items)
+        case let .columnSection(title: title,  items:_):
+            self = .columnSection(title: title, items: items)
+        case let .recruitMentMeet(title: title, items: items):
+            self = .recruitMentMeet(title: title, items: items)
+        case let .applyOnline(title: title, items: items):
+            self = .applyOnline(title: title, items: items)
+        case let .campuseRecruite(title: title, items: _):
+            self = .campuseRecruite(title: title, items: items)
         
         }
     

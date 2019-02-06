@@ -85,8 +85,8 @@ class BaseShowJobViewController: BaseViewController {
         self.view.backgroundColor = UIColor.white
     
         // 加载数据过程影藏view
-        self.handleViews.append(table)
-        self.handleViews.append(shareBtn)
+        self.hiddenViews.append(table)
+        self.hiddenViews.append(shareBtn)
     
         self.view.addSubview(table)
     

@@ -145,8 +145,8 @@ class BasePositionItemViewController: BaseViewController {
     
     override func setViews() {
         
-        self.handleViews.append(table)
-        self.handleViews.append(dropMenu)
+        self.hiddenViews.append(table)
+        self.hiddenViews.append(dropMenu)
         super.setViews()
         
     }

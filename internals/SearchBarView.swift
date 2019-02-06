@@ -29,7 +29,7 @@ class SearchBarView: UISearchBar{
     
         self.showsCancelButton = true
         // 屏蔽image 显示text的圆角
-        self.setSearchFieldBackgroundImage(build_image(frame: CGRect.init(x: 0, y: 0, width: 1, height: SEARCH_BAR_H), color: UIColor.clear), for: .normal)
+        self.setSearchFieldBackgroundImage(UIImage.drawNormalImage(frame: CGRect.init(x: 0, y: 0, width: 1, height: SEARCH_BAR_H), color: UIColor.clear), for: .normal)
         setTextField()
         
         

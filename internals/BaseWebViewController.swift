@@ -80,8 +80,10 @@ class BaseWebViewController: UIViewController {
     
     var mode:String?{
         didSet{
-            
-            loadData(url:mode!)
+            if let u = mode{
+                loadData(url:u)
+            }
+           
         }
     }
     // 控制右上角btn 显示
@@ -99,6 +101,7 @@ class BaseWebViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.hidesBottomBarWhenPushed = true
         UIApplication.shared.keyWindow?.addSubview(sharedView)
         self.navigationController?.insertCustomerView(UIColor.orange)
     }

@@ -111,7 +111,7 @@ class publisherControllerView: BaseTableViewController {
         self.tableView.register(singleTextCell.self, forCellReuseIdentifier: singleTextCell.identity())
         self.setHeader()
         
-        self.handleViews.append(bview)
+        self.hiddenViews.append(bview)
         //self.handleViews.append(self.tableView)
         super.setViews()
         

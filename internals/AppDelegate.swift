@@ -19,10 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     
-    // 地理位置
-    private  lazy  var locateManager: UserLocationManager = {
-        return UserLocationManager()
-    }()
+
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -38,11 +35,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         }
         //  获取地理位置
-        locateManager.getLocation()
+        UserLocationManager.shared.getLocation()
         
         // 友盟第三方接口
         UMengInitial()
-        // 分享面板
+        
         SingletoneClass.shared.setSharedApps(condition: nil)
         
         
@@ -54,9 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        imgManager.trustedHosts = Set(["127.0.0.1"])
 //        KingfisherManager.shared.downloader = imgManager
 //
-        // 设置TabBaritem 颜色
-        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor: ConfigColor.TabBarItemColor.normalColor], for: .normal)
-        UITabBarItem.appearance().setTitleTextAttributes([NSAttributedString.Key.foregroundColor: ConfigColor.TabBarItemColor.SelectedColor], for: .selected)
+     
         
         return true
     }

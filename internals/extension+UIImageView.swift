@@ -11,6 +11,8 @@ import Foundation
 
 extension UIImageView{
     
+    
+    
     func setCircle(){
         self.layer.cornerRadius = (self.frame.width / 2)
         self.layer.masksToBounds = true

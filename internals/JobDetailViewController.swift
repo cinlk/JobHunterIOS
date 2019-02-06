@@ -115,6 +115,7 @@ class JobDetailViewController: BaseShowJobViewController {
         if self.showToolBar == false{
             self.showToolBar = false
         }
+        self.hidesBottomBarWhenPushed = true 
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -135,10 +136,10 @@ class JobDetailViewController: BaseShowJobViewController {
     override func setViews() {
         
         
-        self.handleViews.append(warnBtn)
+        self.hiddenViews.append(warnBtn)
         super.setViews()
         self.title = "职位详情"
-        self.errorView.reload = reload
+        
         table.register(CompanySimpleCell.self, forCellReuseIdentifier: CompanySimpleCell.identity())
         table.register(JobDescription.self, forCellReuseIdentifier: JobDescription.identity())
         table.register(worklocateCell.self, forCellReuseIdentifier: worklocateCell.identity())

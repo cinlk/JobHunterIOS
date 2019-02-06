@@ -15,8 +15,13 @@ enum ItemLayout{
     
 }
 
+protocol ImageBanner{
+    var imageURL:String? {get set}
+    var link:String? {get set}
+}
+
 // 轮播图数据
-internal struct RotateCategory:Mappable {
+internal struct RotateCategory:Mappable, ImageBanner {
     
     var imageURL:String?
     var link:String?
@@ -34,17 +39,19 @@ internal struct RotateCategory:Mappable {
 
 
 
- 
 
-internal struct jobField: Mappable{
+
+
+
+internal class JobField: Mappable{
     var ImageUrl:String?
     var Title:String?
     
-    init?(map: Map) {
+    required init?(map: Map) {
         
     }
     
-    mutating func mapping(map: Map) {
+    func mapping(map: Map) {
         ImageUrl <- map["image_url"]
         Title <- map["title"]
     }
@@ -53,17 +60,15 @@ internal struct jobField: Mappable{
 }
 
 
-internal struct latestColumn: Mappable{
-    var ImageUrl:String?
-    var Title:String?
+internal class latestColumn: JobField{
+    
     var Link:String?
-    init?(map: Map) {
-        
+    required init?(map: Map) {
+        super.init(map: map)
     }
     
-    mutating func mapping(map: Map) {
-        ImageUrl <- map["image_url"]
-        Title <- map["title"]
+    override func mapping(map: Map) {
+        super.mapping(map: map)
         Link <- map["link"]
     }
     
@@ -86,22 +91,24 @@ internal struct applyField:Mappable{
 }
 
 internal struct latestNews:Mappable{
-    var articles:[String] = []
+    var articles: String?
     
     init?(map: Map) {
         
     }
     
     mutating func mapping(map: Map) {
-        articles <- map["top_new"]
+        articles <- map["title"]
     }
     
     
 }
 
+// 组合 数据
 internal struct SpecialRecommands:Mappable{
-    var news:latestNews?  = nil
-    var jobFields:[jobField] = []
+    
+    var news:[latestNews]  = []
+    var jobFields:[JobField] = []
     var latestColumns:[latestColumn] = []
     var recruitMeetings: [CareerTalkMeetingModel] = []
     var applyOnlineField:[applyField] = []
@@ -111,10 +118,10 @@ internal struct SpecialRecommands:Mappable{
     }
     
     mutating func mapping(map: Map) {
-        jobFields <- map["job_field"]
-        latestColumns <- map["columns"]
-        recruitMeetings <- map["recruit_meeting"]
-        applyOnlineField <- map["apply_field"]
+        jobFields <- map["job_category"]
+        latestColumns <- map["top_jobs"]
+        recruitMeetings <- map["career_talk"]
+        applyOnlineField <- map["apply_classify"]
         news <- map["news"]
     }
     

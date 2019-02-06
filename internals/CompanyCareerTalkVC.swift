@@ -88,7 +88,7 @@ class CompanyCareerTalkVC: BaseViewController {
         
         self.view.addSubview(table)
         _ = table.sd_layout().leftEqualToView(self.view)?.topEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
-        self.handleViews.append(table)
+        self.hiddenViews.append(table)
         
         self.table.mj_header = headRefresh
         self.table.mj_footer = footRefresh

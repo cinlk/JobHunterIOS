@@ -8,7 +8,7 @@
 
 import UIKit
 
-@objcMembers class sectionCellView: UITableViewCell {
+@objcMembers class SectionCellView: UITableViewCell {
 
     lazy var SectionTitle:UILabel = {
         let label = UILabel.init()
@@ -58,7 +58,7 @@ import UIKit
     }
 }
 
-extension sectionCellView{
+extension SectionCellView{
     @objc private func choose(_ btn:UIButton){
         self.action?()
     }

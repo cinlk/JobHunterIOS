@@ -12,7 +12,7 @@ import Kingfisher
 fileprivate let column:Int = 2
 fileprivate let row:Int = 2
 
-class applyOnlineCell: UITableViewCell {
+class ApplyOnlineCell: UITableViewCell {
 
     
     private lazy var collect:BaseCollectionHorizonView = BaseCollectionHorizonView.init(frame: CGRect.zero, column: column, row: row)
@@ -51,10 +51,15 @@ class applyOnlineCell: UITableViewCell {
         return "applyOnlineCell"
     }
     
+    class func cellHeight()->CGFloat{
+        return 280
+    }
+    
 }
 
-extension applyOnlineCell{
+extension ApplyOnlineCell{
     @objc private func showAll(_ btn:UIButton) {
+        // 空字符串 代表选择查询所有
         self.selectedIndex?("")
         
     }
@@ -62,7 +67,7 @@ extension applyOnlineCell{
 
 
 
-extension applyOnlineCell:UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource{
+extension ApplyOnlineCell:UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource{
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
@@ -110,9 +115,12 @@ private class  applyShowCollectedCell:UICollectionViewCell{
     var mode:applyField?{
         didSet{
             self.name.text = mode?.Field
-            let url = URL.init(string: mode?.ImageUrl ?? "")
+            if let url = URL.init(string: mode?.ImageUrl ?? ""){
+                self.icon.kf.setImage(with: Source.network(url),
+                                      placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+
+            }
             //self.icon.image = UIImage.init(named: mode?.ImageUrl ?? APPLY_DEFAULT_IMG)
-            self.icon.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
         }
     }
     

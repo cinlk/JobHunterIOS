@@ -71,9 +71,9 @@ internal  class CareerTalkMeetingModel: BaseModel  {
     
     required init?(map: Map) {
         super.init(map: map)
-        if map.JSON["college"] == nil || map.JSON["address"] == nil || map.JSON["start_time"] == nil || map.JSON["end_time"] == nil  {
-            return nil
-        }
+//        if map.JSON["college"] == nil || map.JSON["address"] == nil || map.JSON["start_time"] == nil || map.JSON["end_time"] == nil  {
+//            return nil
+//        }
        
     }
     

@@ -66,15 +66,21 @@ class SearchTypeMenuView: UIView {
 
     }()
 
+    // 蒙层view
+    private lazy var backgroundBtn:UIButton = {
+        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH))
+        btn.addTarget(self, action: #selector(dismiss), for: .touchUpInside)
+        btn.backgroundColor = UIColor.lightGray
+        btn.alpha = 0.5
+        return btn
+    }()
+    
     
      init(frame: CGRect, arrowLeftMargin:CGFloat = 15) {
         self.arrowLeftMargin = arrowLeftMargin
         super.init(frame: frame)
-        
         self.addSubview(table)
         self.addSubview(arrow)
-      
-        //_ = table.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.topEqualToView(self)?.bottomEqualToView(self)
         
     }
     
@@ -89,13 +95,16 @@ extension SearchTypeMenuView{
     
     open func show(){
         
+        UIApplication.shared.keyWindow?.addSubview(backgroundBtn)
         UIApplication.shared.keyWindow?.addSubview(self)
-
+        
+        
     }
     
     
-    open func dismiss(){
-        
+    
+    @objc open func dismiss(){
+        backgroundBtn.removeFromSuperview()
         self.removeFromSuperview()
     }
     

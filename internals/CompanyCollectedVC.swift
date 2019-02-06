@@ -57,7 +57,7 @@ class CompanyCollectedVC: BaseViewController {
         self.view.addSubview(table)
            _ = table.sd_layout().topEqualToView(self.view)?.bottomEqualToView(self.view)?.leftEqualToView(self.view)?.rightEqualToView(self.view)
         
-        self.handleViews.append(table)
+        self.hiddenViews.append(table)
         super.setViews()
     }
     

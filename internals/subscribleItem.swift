@@ -41,7 +41,7 @@ class subscribleItem: BaseTableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.insertCustomerView(UIColor.orange)
-        
+        self.hidesBottomBarWhenPushed = true 
         //self.navigationController?.insertCustomerView(UIColor.orange)
         //self.loadData()
        
@@ -78,10 +78,10 @@ class subscribleItem: BaseTableViewController {
         self.tableView.register(subScribeInternCell.self, forCellReuseIdentifier: subScribeInternCell.identity())
         self.tableView.register(subScribeGraduateCell.self, forCellReuseIdentifier: subScribeGraduateCell.identity())
         // sectionCell
-        self.tableView.register(sectionCellView.self, forCellReuseIdentifier: sectionCellView.identity())
+        self.tableView.register(SectionCellView.self, forCellReuseIdentifier: SectionCellView.identity())
         self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(customView: addBtn)
         
-        self.handleViews.append(addBtn)
+        self.hiddenViews.append(addBtn)
         super.setViews()
         
     }
@@ -175,7 +175,7 @@ extension subscribleItem{
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
             if indexPath.row == 0 {
-                let cell = tableView.dequeueReusableCell(withIdentifier: sectionCellView.identity(), for: indexPath) as! sectionCellView
+                let cell = tableView.dequeueReusableCell(withIdentifier: SectionCellView.identity(), for: indexPath) as! SectionCellView
                 cell.mode = indexPath.section == 0 ?  "校招" : "实习"
                 cell.backgroundColor = UIColor.clear
                 cell.rightBtn.isHidden = true
@@ -205,7 +205,7 @@ extension subscribleItem{
        
         if indexPath.row == 0 {
             let mode = indexPath.section == 0 ? "校招" : "实习"
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: sectionCellView.self, contentViewWidth: GlobalConfig.ScreenW)
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: SectionCellView.self, contentViewWidth: GlobalConfig.ScreenW)
         }
         
         if indexPath.section == 0 {

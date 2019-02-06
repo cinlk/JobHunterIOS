@@ -7,54 +7,45 @@
 //
 
 import UIKit
-import UserNotifications
 
-
-private struct TabBarItemImages {
-    var normalImg:UIImage
-    var selectedImg:UIImage
-}
 
 class MainTabBarViewController: UITabBarController {
 
-    private var TabImages:[TabBarItemImages] = []
-   
-    private func getTabBarImages(images:[(UIImage,UIImage)]){
-        
-        for  (_, img) in images.enumerated(){
-              let item = TabBarItemImages.init(normalImg: img.0.changesize(size: BarImg_Size),
-                                               selectedImg: img.1.changesize(size: BarImg_Size))
-              TabImages.append(item)
-        }
-    }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
     
-    // 加载bar icon 图标
     override func viewDidLoad() {
         super.viewDidLoad()
-        getTabBarImages(images:TabItemImages)
+    }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
         
-        if let items = self.tabBar.items {
-            let newitems = zip(items.enumerated(), TabImages)
-            newitems.forEach { (barItme, images) in
-                if barItme.offset == 0 {
-                    barItme.element.title = "主页"
-                }
-                barItme.element.image = images.normalImg
-                barItme.element.selectedImage = images.selectedImg
-            }
+        
+        for  (index, item) in TabBarItems.items.enumerated(){
+            self.tabBar.items?[index].title = item.title
+            self.tabBar.items?[index].image =
+                item.normalImg.changesize(size: TabBarItems.imageSize,renderMode:  .alwaysOriginal)
+            self.tabBar.items?[index].selectedImage =
+                item.selectedImg.changesize(size: TabBarItems.imageSize, renderMode: .alwaysOriginal)
+            
+            self.tabBar.items?[index].setTitleTextAttributes([NSAttributedString.Key.foregroundColor: ConfigColor.TabBarItemColor.normalColor], for: .normal)
+            
+            self.tabBar.items?[index].setTitleTextAttributes([NSAttributedString.Key.foregroundColor: ConfigColor.TabBarItemColor.SelectedColor], for: .selected)
+            
+            
         }
+     
+        
+        
+        self.tabBar.clipsToBounds = true
+        self.tabBar.itemSpacing = 5
         
     }
-
-    
-    override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-    
-    }
     
     
-
+    
+    
 }

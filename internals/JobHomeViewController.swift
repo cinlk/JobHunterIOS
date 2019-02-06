@@ -44,7 +44,7 @@ class JobHomeVC: UIViewController {
     }
     
     // 搜索控件
-    private lazy var searchController:baseSearchViewController = baseSearchViewController(searchResultsController: searchResultController())
+    private lazy var searchController:BaseSearchViewController = BaseSearchViewController(searchResultsController: searchResultController())
     
     
     // 搜索包裹searchBar 的view

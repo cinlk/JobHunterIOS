@@ -48,7 +48,7 @@ class NearCompanyViewController: BaseViewController {
     
     
     override func setViews() {
-        self.handleViews.append(table)
+        self.hiddenViews.append(table)
         self.view.addSubview(table)
         
         _  = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)

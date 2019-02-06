@@ -23,9 +23,6 @@ class SpecialJobVC: BaseTableViewController {
     private var items:[CompuseRecruiteJobs] = []
     
     
-    
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setViews()
@@ -37,6 +34,7 @@ class SpecialJobVC: BaseTableViewController {
         super.viewWillAppear(animated)
         // 背景颜色
         self.navigationController?.insertCustomerView(UIColor.orange)
+        self.hidesBottomBarWhenPushed = true 
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -64,9 +62,7 @@ class SpecialJobVC: BaseTableViewController {
         self.loadData()
     }
     
-    override func showError() {
-        
-    }
+  
     
 
     // MARK: - Table view data source
@@ -111,19 +107,20 @@ class SpecialJobVC: BaseTableViewController {
 
 extension SpecialJobVC{
     
+    // rxswift TODO
     private func loadData(){
         
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            Thread.sleep(forTimeInterval: 3)
-            
-            // 更加名字查询jobs
-            self?.items = [Mapper<CompuseRecruiteJobs>().map(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dqwd-dqwdqwddqw","name":"码农","company":["id":"dqwd","name":"公司名称","isCollected":false,"icon":"chrome","address":["地址1","地址2"],"industry":["行业1","行业2"],"staffs":"1000人以上"],"address":["北京","地址2"],"create_time":Date().timeIntervalSince1970,"education":"本科","type":"intern","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false,"readNums":arc4random()%1000])!]
-            
-            DispatchQueue.main.async(execute: {
-                self?.didFinishloadData()
-                
-            })
-        }
+//        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+//            Thread.sleep(forTimeInterval: 3)
+//
+//            // 更加名字查询jobs
+//            self?.items = [Mapper<CompuseRecruiteJobs>().map(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dqwd-dqwdqwddqw","name":"码农","company":["id":"dqwd","name":"公司名称","isCollected":false,"icon":"chrome","address":["地址1","地址2"],"industry":["行业1","行业2"],"staffs":"1000人以上"],"address":["北京","地址2"],"create_time":Date().timeIntervalSince1970,"education":"本科","type":"intern","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false,"readNums":arc4random()%1000])!]
+//
+//            DispatchQueue.main.async(execute: {
+//                self?.didFinishloadData()
+//
+//            })
+//        }
         
     }
 }

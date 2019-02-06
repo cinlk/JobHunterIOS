@@ -8,14 +8,14 @@
 
 import UIKit
 
+fileprivate let hubTitle = "加载数据"
+
 class BaseTableViewController: UITableViewController {
 
     
     private lazy var  errorView:ErrorPageView = {  [unowned self] in
         let eView = ErrorPageView.init(frame: self.view.bounds)
         eView.isHidden = true
-        // 再次刷新
-        eView.reload = reload
         return eView
         
     }()
@@ -25,7 +25,7 @@ class BaseTableViewController: UITableViewController {
         
         let  hub = MBProgressHUD.showAdded(to: self.tableView, animated: true)
         hub.mode = .indeterminate
-        hub.label.text = "加载数据"
+        hub.label.text = hubTitle
         hub.removeFromSuperViewOnHide = false
         hub.margin = 10
         hub.label.textColor = UIColor.black
@@ -34,35 +34,41 @@ class BaseTableViewController: UITableViewController {
     }()
     
     
-    var handleViews:[UIView] = []
+    var hiddenViews:[UIView] = []
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.view.backgroundColor = UIColor.white
+        self.view.insertSubview(errorView,at: 0)
+        // 影藏返回按钮文字
+        navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
+        
+        _  = errorView.sd_layout().centerXEqualToView(self.tableView)?.centerYEqualToView(self.tableView)?.widthRatioToView(self.tableView, 0.7)?.heightRatioToView(self.tableView,0.4)
         
     }
     
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        hub.removeFromSuperview()
+        //hub.removeFromSuperview()
         
     }
     
     func setViews(){
                 
-        // 影藏返回按钮文字
-        navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
+      
         
         hub.show(animated: true)
-        self.handleViews.forEach{
+        self.hiddenViews.forEach{
             $0.isHidden = true
         }
     }
     
     func didFinishloadData(){
         hub.hide(animated: true)
-        self.handleViews.forEach{
+        self.hiddenViews.forEach{
             $0.isHidden = false
         }
         errorView.isHidden = true
@@ -72,7 +78,7 @@ class BaseTableViewController: UITableViewController {
     }
     
     func showError(){
-        self.handleViews.forEach{
+        self.hiddenViews.forEach{
             $0.isHidden = true
         }
         hub.hide(animated: true)

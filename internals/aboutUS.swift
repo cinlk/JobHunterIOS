@@ -84,7 +84,7 @@ class aboutUS: BaseViewController {
         
         self.view.addSubview(tableView)
         _ = tableView.sd_layout().topSpaceToView(self.view, GlobalConfig.NavH)?.rightEqualToView(self.view)?.leftEqualToView(self.view)?.bottomEqualToView(self.view)
-        self.handleViews.append(tableView)
+        self.hiddenViews.append(tableView)
         super.setViews()
     }
     

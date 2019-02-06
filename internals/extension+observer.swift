@@ -80,6 +80,20 @@ extension Response {
         return object
     }
     
+    public func mapObject<T: BaseMappable>(_ type: T.Type, tag: String) throws -> T{
+        guard let json = try mapJSON() as? [String: Any] else {
+            throw MoyaError.jsonMapping(self)
+        }
+        
+        guard  let subJson = json[tag]  as? [String: Any] else {
+            throw MoyaError.jsonMapping(self)
+        }
+        guard  let object =  Mapper<T>().map(JSON: subJson) else {
+            throw MoyaError.jsonMapping(self)
+        }
+        return object
+    }
+    
     // 将Json解析为多个Model，返回数组，对于不同的json格式需要对该方法进行修改
 //    {
 //    "tag_name":[
@@ -112,6 +126,13 @@ extension ObservableType where E == Response {
         return flatMap { response -> Observable<T> in
             return Observable.just(try response.mapObject(T.self))
         }
+    }
+    public func mapObject<T: BaseMappable>(_ type:T.Type, tag:String) -> Observable<T>{
+        
+        return flatMap { response -> Observable<T> in
+            return Observable.just(try response.mapObject(T.self, tag: tag))
+        }
+        
     }
     // 将Json解析为Observable<[Model]>
     public func mapArray<T: BaseMappable>(_ type: T.Type,tag:String) -> Observable<[T]> {

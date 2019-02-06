@@ -13,6 +13,7 @@ import CoreLocation
 class UserLocationManager: NSObject, CLLocationManagerDelegate{
     
     private var col: CLLocationManager?
+    static let shared:UserLocationManager = UserLocationManager()
     
     required override init() {
         super.init()

@@ -19,7 +19,7 @@ import SwiftDate
 enum MainPageTarget {
     case getScrollerImage
     case getMainRecommands
-    case getRecommandJobs(offset:Int)
+    case getRecommandJobs(offset:Int, limit: Int)
     case none
 }
 
@@ -27,17 +27,20 @@ enum MainPageTarget {
 extension MainPageTarget:TargetType{
     
     var baseURL: URL {
-        return URL.init(string: "https://127.0.0.1:9090/app/api/")!
+        return  URL.init(string: GlobalConfig.BASE_URL)!
     }
     
+    var urlPrefix:String{
+        return "home/"
+    }
     var path: String {
         switch  self {
         case .getScrollerImage:
-            return "topic/category"
+            return self.urlPrefix + "banners"
         case .getMainRecommands:
-            return "job/mainRecommands"
-        case .getRecommandJobs(let offset):
-            return "job/recommands/\(offset)"
+            return self.urlPrefix + "recommand"
+        case .getRecommandJobs:
+            return self.urlPrefix + "jobs"
             
         default:
             return "topic"
@@ -46,12 +49,10 @@ extension MainPageTarget:TargetType{
     
     var method: Moya.Method {
         switch self {
-        case .getScrollerImage:
-            return Method.get
-        case .getMainRecommands:
+        case .getScrollerImage, .getMainRecommands:
             return Method.get
         case .getRecommandJobs(_):
-            return Method.get
+            return Method.post
         default:
             return Method.get
         }
@@ -61,11 +62,11 @@ extension MainPageTarget:TargetType{
     var sampleData: Data {
         switch self {
         case .getScrollerImage:
-            return "{\"image_url\":\"url\", \"link\":\"test link\"}".utf8Encoded
+            return "".utf8Encoded
         case .getMainRecommands:
-            return "nothing".utf8Encoded
+            return "".utf8Encoded
         case .getRecommandJobs(_):
-            return "nothing".utf8Encoded
+            return "".utf8Encoded
         default:
             return "".utf8Encoded
         }
@@ -73,12 +74,10 @@ extension MainPageTarget:TargetType{
     
     var task: Task {
         switch self {
-        case .getScrollerImage:
+        case .getScrollerImage, .getMainRecommands:
             return .requestPlain
-        case .getMainRecommands:
-            return .requestPlain
-        case .getRecommandJobs(_):
-            return .requestPlain
+        case .getRecommandJobs(let offset, let limit):
+            return .requestParameters(parameters: ["offset":offset, "limit":limit], encoding: JSONEncoding.default)
         default:
             return .requestPlain
         }
@@ -86,7 +85,7 @@ extension MainPageTarget:TargetType{
     
     var headers: [String : String]? {
         
-        return ["Content-type": "application/json","User-Agent":"ios"]
+        return  nil
     }
     
     
@@ -106,21 +105,23 @@ class  demoHttpServer {
     private init(){}
 
     func getLastestCategory() -> Observable<[RotateCategory]>{
-        
-        return httpServer.rx.request(.getScrollerImage).filterSuccessfulStatusCodes().asObservable().mapArray(RotateCategory.self, tag: "categories")
+
+        return httpServer.rx.request(.getScrollerImage).asObservable().mapArray(RotateCategory.self, tag: "body")
     }
+//    func getLastestCategory() -> Observable<ResponseArrayModel<RotateCategory>>{
+//
+//         return httpServer.rx.request(.getScrollerImage).asObservable().mapObject(ResponseArrayModel<RotateCategory>.self)
+//    }
     
     func getMainRecommands() -> Observable<SpecialRecommands>{
         
-        return httpServer.rx.request(.getMainRecommands).filterSuccessfulStatusAndRedirectCodes().asObservable().mapObject(SpecialRecommands.self).debug()
+        return httpServer.rx.request(.getMainRecommands).asObservable().mapObject(SpecialRecommands.self, tag: "body").debug()
     }
 
     // flatMapLatest 连续请求时只取第一次数据
     //
-    func getRecommandJobs(offset:Int) -> Observable<[CompuseRecruiteJobs]>{
-        return httpServer.rx.request(.getRecommandJobs(offset:offset)).retry(3).timeout(30, scheduler: MainScheduler.instance).filterSuccessfulStatusCodes().asObservable().debug().mapArray(CompuseRecruiteJobs.self, tag: "jobs").flatMapLatest({ (jobs)  in
-            return Observable<[CompuseRecruiteJobs]>.just(jobs)
-        }).share()
+    func getRecommandJobs(offset:Int, limit:Int) -> Observable<[CompuseRecruiteJobs]>{
+        return httpServer.rx.request(.getRecommandJobs(offset:offset, limit: limit)).retry(3).timeout(30, scheduler: MainScheduler.instance).asObservable().debug().mapArray(CompuseRecruiteJobs.self, tag: "body")
         
     }
 

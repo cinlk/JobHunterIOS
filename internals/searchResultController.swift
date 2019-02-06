@@ -57,7 +57,7 @@ class searchResultController: BaseViewController {
     override func setViews() {
     
         self.view.addSubview(searchFildContent)
-        self.handleViews.append(searchFildContent)
+        self.hiddenViews.append(searchFildContent)
         super.setViews()
     }
     

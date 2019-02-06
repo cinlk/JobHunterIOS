@@ -77,6 +77,7 @@ class MagazMainViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.insertCustomerView(UIColor.blue)
+        self.hidesBottomBarWhenPushed = true 
     }
     
     override func viewWillDisappear(_ animated: Bool) {

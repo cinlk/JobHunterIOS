@@ -11,7 +11,7 @@ import Foundation
 
 
 // hub 提示
-let LOADING = "加载中..."
+
 
 var KEYBOARD_HEIGHT:CGFloat = 216.0
 // 不同版本键盘高度不一样？？
@@ -40,8 +40,7 @@ let DROP_MENU_H:CGFloat = 40
 let TableCellOffsetX:CGFloat = 16
 
 
-// Btn 名称
-let NEARBY = "周边"
+
 
 
 // 热门网申默认图片

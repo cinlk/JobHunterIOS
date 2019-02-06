@@ -12,21 +12,7 @@ import UserNotifications
 
 
 //
-public func  build_image(frame: CGRect, color:UIColor)->UIImage{
-    
-    UIGraphicsBeginImageContext(frame.size)
-    let context:CGContext = UIGraphicsGetCurrentContext()!
-    context.setFillColor(color.cgColor)
-    context.fill(frame)
-    
-    let image:UIImage = UIGraphicsGetImageFromCurrentImageContext()!
-    UIGraphicsEndImageContext()
-    
-    return image
-    
-    
-    
-}
+
 
  
 

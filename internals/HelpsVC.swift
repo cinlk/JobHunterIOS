@@ -65,7 +65,7 @@ class HelpsVC: BaseViewController {
         self.navigationController?.delegate = self
         _ = tableView.sd_layout().topEqualToView(self.view)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
         self.tableView.tableHeaderView = headerView
-        self.handleViews.append(tableView)
+        self.hiddenViews.append(tableView)
         super.setViews()
     }
     

@@ -48,10 +48,10 @@ class BaseModel:NSObject, Mappable, Comparable{
     }
     
     required init?(map: Map) {
-        if map.JSON["id"] == nil  || map.JSON["is_collect"] == nil
-            || map.JSON["name"] == nil {
-            return nil
-        }
+//        if map.JSON["id"] == nil  || map.JSON["is_collect"] == nil
+//            || map.JSON["name"] == nil {
+//            return nil
+//        }
     }
     
     func mapping(map: Map) {

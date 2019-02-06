@@ -28,18 +28,19 @@ let CITYS:String = "citys"
 
 
 // tabBarImage and Size
-let BarImg_Size = CGSize.init(width: 27, height: 26)
+
 // TabBArImages Tuple
-let TabItemImages:[(UIImage,UIImage)] = [(#imageLiteral(resourceName: "home"), #imageLiteral(resourceName: "selectedHome")),(#imageLiteral(resourceName: "graduation"), #imageLiteral(resourceName: "selectedGraduation")),(#imageLiteral(resourceName: "message"),#imageLiteral(resourceName: "selectedMessage")),(#imageLiteral(resourceName: "forum"), #imageLiteral(resourceName: "forum")),(#imageLiteral(resourceName: "person"), #imageLiteral(resourceName: "selectedPerson"))]
+//let TabItemImages:[(UIImage,UIImage)] = [(#imageLiteral(resourceName: "home"), #imageLiteral(resourceName: "selectedHome")),(#imageLiteral(resourceName: "graduation"), #imageLiteral(resourceName: "selectedGraduation")),(#imageLiteral(resourceName: "message"),#imageLiteral(resourceName: "selectedMessage")),(#imageLiteral(resourceName: "forum"), #imageLiteral(resourceName: "forum")),(#imageLiteral(resourceName: "person"), #imageLiteral(resourceName: "selectedPerson"))]
 
 // color
 struct ConfigColor {
     
     struct TabBarItemColor {
-        static let SelectedColor = UIColor(red: 246.0/255.0, green: 155.0/255.0, blue: 13.0/255.0, alpha: 1.0)
+        static let SelectedColor = UIColor(red: 240.0/255.0, green: 185.0/255.0, blue: 40.0/255.0, alpha: 1.0)
         static let normalColor = UIColor(red: 16.0/255.0, green: 224.0/255.0, blue: 223.0/255.0, alpha: 1.0)
         
     }
+    
     
     struct PageTitleColor {
         
@@ -181,6 +182,7 @@ struct GlobalConfig {
     static let ScreenH:CGFloat = UIScreen.main.bounds.height
     static let NavH:CGFloat = UIDevice.current.isX() ? 88 : 64
     static let defaultImage = "bigCar"
+    static let searchBarH:CGFloat = 30
 }
 
 struct HttpCodeRange {
@@ -199,6 +201,25 @@ struct HttpCodeRange {
 }
 
 
+struct TabBarItems {
+    
+    struct barItem {
+        var title:String
+        var normalImg:UIImage
+        var selectedImg:UIImage
+    }
+    
+    static let items:[barItem]  = [barItem.init(title: "主页", normalImg: #imageLiteral(resourceName: "home"), selectedImg: #imageLiteral(resourceName: "selectedHome")),
+                                   barItem.init(title: "职位", normalImg: #imageLiteral(resourceName: "degree"), selectedImg: #imageLiteral(resourceName: "graduation")),
+                                   barItem.init(title: "消息", normalImg: #imageLiteral(resourceName: "message"), selectedImg: #imageLiteral(resourceName: "selectedMessage")),
+                                   barItem.init(title: "论坛", normalImg: #imageLiteral(resourceName: "edit"), selectedImg: #imageLiteral(resourceName: "sms")),
+                                   barItem.init(title: "个人", normalImg: #imageLiteral(resourceName: "person"), selectedImg: #imageLiteral(resourceName: "hr"))]
+    
+    // 切图替换
+    static let imageSize = CGSize.init(width: 25, height: 25)
+    
+    
+}
 
 
 struct UserRole {
@@ -208,6 +229,7 @@ struct UserRole {
         case seeker = "seeker"
         case anonymous = "anonymous"
     }
+    
     
     
 }

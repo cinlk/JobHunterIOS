@@ -83,3 +83,21 @@ extension UIView{
     }
 }
 
+
+
+// 父级viewcontroller
+extension UIView{
+    
+    func targetViewController(aClass: AnyClass) -> UIViewController?{
+        var next=self.superview;
+        while(next != nil){
+            let nextResponder = next?.next
+            if((nextResponder?.isKind(of:aClass)) != nil){
+                return nextResponder as? UIViewController
+            }
+            next=next?.superview
+        }
+        return nil
+    }
+
+}

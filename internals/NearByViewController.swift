@@ -62,6 +62,7 @@ class NearByViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.insertCustomerView(UIColor.blue)
+        self.hidesBottomBarWhenPushed = true 
 
     }
     

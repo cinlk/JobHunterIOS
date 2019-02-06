@@ -102,10 +102,10 @@ class CompuseRecruiteJobs :BaseModel{
     required init?(map: Map) {
         super.init(map: map)
         
-        if map.JSON["type"] == nil || map.JSON["company"] == nil ||
-            map.JSON["create_time"] == nil || map.JSON["is_apply"] == nil || map.JSON["is_talk"] == nil   {
-            return nil
-        }
+//        if map.JSON["type"] == nil || map.JSON["company"] == nil ||
+//            map.JSON["create_time"] == nil || map.JSON["is_apply"] == nil || map.JSON["is_talk"] == nil   {
+//            return nil
+//        }
        
     }
     

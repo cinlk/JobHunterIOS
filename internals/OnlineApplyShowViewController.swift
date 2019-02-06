@@ -111,7 +111,6 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
     override func setViews(){
         super.setViews()
         
-        self.errorView.reload = reload
         
         table.backgroundColor = UIColor.viewBackColor()
         table.contentInsetAdjustmentBehavior = .never

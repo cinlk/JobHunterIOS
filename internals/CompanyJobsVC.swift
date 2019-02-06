@@ -154,7 +154,7 @@ class CompanyJobsVC: BaseViewController {
     override func setViews() {
         
         self.view.addSubview(joblistTable)
-        self.handleViews.append(joblistTable)
+        self.hiddenViews.append(joblistTable)
         super.setViews()
         self.joblistTable.mj_header = refreshHeader
         self.joblistTable.mj_footer = refreshFooter
@@ -186,6 +186,11 @@ extension CompanyJobsVC{
     
     private func  setViewModel(){
         //
+        (self.errorView as EorrorPageDelegate).tap.drive(onNext: {
+            self.reload()
+            
+        }).disposed(by: self.dispose)
+        
         self.vm.combinationlistRes.share().subscribe(onNext: { (mode) in
            
             if self.requestBody.isPullDown{

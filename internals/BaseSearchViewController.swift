@@ -16,7 +16,81 @@ fileprivate let leftDistance:CGFloat = 40
 fileprivate let dropViewH:CGFloat = 40
 fileprivate let SearchPlaceholder:String = "搜索公司/职位/宣讲会"
 
-class baseSearchViewController: UISearchController{
+
+
+// 搜索类型
+enum searchItem:String{
+    
+    case onlineApply = "onlineApply"
+    case graduate = "graduate"
+    case intern = "intern"
+    case meeting = "meeting"
+    case company = "company"
+    case forum = "forum"
+    case none = "none"
+    // 简历添加类型
+    case online = "online"
+    case attachment = "attachment"
+    
+    
+    var type:String{
+        get{
+            switch self {
+            case .forum:
+                return "forum" // 只是论坛
+            default:
+                return "jobs"  // 公司, 职位, 其他条件
+            }
+        }
+    }
+    
+    var describe:String{
+        get{
+            switch self {
+            case .intern:
+                return "实习"
+            case .graduate:
+                return "校招"
+            case .onlineApply:
+                return "网申"
+            case .meeting:
+                return "宣讲会"
+            case .forum:
+                return "论坛"
+            case .company:
+                return "公司"
+            case .online:
+                return "在线简历"
+            case .attachment:
+                return "附件简历"
+            default:
+                return ""
+            }
+        }
+        
+    }
+    
+    static func getType(name:String)->searchItem{
+        if name == "实习"{
+            return .intern
+        }else if name == "校招"{
+            return .graduate
+        }else if name == "网申"{
+            return .onlineApply
+        }else if name == "论坛"{
+            return .forum
+        }else if name == "公司"{
+            return .company
+        }
+        return .none
+    }
+    
+}
+
+
+
+
+class BaseSearchViewController: UISearchController{
 
     
     // 搜索类型 决定 搜索记录界面显示数据 MARK
@@ -54,7 +128,7 @@ class baseSearchViewController: UISearchController{
     // 设置搜索bar 高度 并影藏textfield 背景img
     var height:CGFloat = 0 {
         willSet{
-            self.searchBar.setSearchFieldBackgroundImage(build_image(frame: CGRect.init(x: 0, y: 0, width: 1, height: newValue), color: UIColor.clear), for: .normal)
+//            self.searchBar.setSearchFieldBackgroundImage(UIImage.drawNormalImage(frame: CGRect.init(x: 0, y: 0, width: 1, height: newValue), color: UIColor.red), for: .normal)
         }
     }
     
@@ -81,25 +155,15 @@ class baseSearchViewController: UISearchController{
     
     // 下拉菜单tableview
     internal lazy var popMenuView:SearchTypeMenuView = { [unowned self] in
-        let popMenuView = SearchTypeMenuView(frame: CGRect.init(x: 30, y: 50, width: 100, height: 160))
+        // 计算 btn 相对windows 的位置
+        //let absolute =  self.searchField.convert(self.chooseTypeBtn.frame, to: self.searchBar)
+        print("the absolue view CGrect \(self.chooseTypeBtn.frame)")
+        let popMenuView = SearchTypeMenuView(frame: CGRect.init(x: self.chooseTypeBtn.frame.origin.x + self.chooseTypeBtn.size.width, y: self.chooseTypeBtn.frame.origin.y +  self.chooseTypeBtn.size.height, width: 100, height: 160))
         popMenuView.delegate = self
         return popMenuView
     }()
     
-    // 背景btn
-    private lazy var backgroundBtn:UIButton = {
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH))
-        btn.addTarget(self, action: #selector(hiddenPopMenu), for: .touchUpInside)
-        btn.backgroundColor = UIColor.lightGray
-        btn.alpha = 0.5
-        return btn
-    }()
-    
-    
-    
-    
-    
-    
+
     // 搜索历史和搜索匹配展示VC
     lazy  var serchRecordVC:SearchRecodeViewController = {  [unowned self] in
             let vc =  SearchRecodeViewController()
@@ -165,9 +229,10 @@ class baseSearchViewController: UISearchController{
         searchField.textColor = UIColor.darkGray
         searchField.layer.masksToBounds = true
         
-        searchField.addSubview(chooseTypeBtn)
-    
-
+        
+        searchField.leftViewMode = .always
+        searchField.leftView = chooseTypeBtn
+ 
         
         self.addChild(serchRecordVC)
         // 必须把布局代码 放这里，才能初始化正常！！！！
@@ -175,8 +240,8 @@ class baseSearchViewController: UISearchController{
         // 搜索结果VC的view 布局
         _ = self.serchRecordVC.view.sd_layout().topEqualToView(self.view)?.bottomEqualToView(self.view)?.rightEqualToView(self.view)?.leftEqualToView(self.view)
         
-        //不隐藏导航栏
-        self.navigationController?.navigationBar.settranslucent(false)
+
+        //self.navigationController?.navigationBar.settranslucent(false)
         //rxswift
         setViewModel()
     
@@ -192,17 +257,21 @@ class baseSearchViewController: UISearchController{
     }
     
     
+    override func viewWillLayoutSubviews() {
+        self.searchBar.frame = CGRect(x: 0, y:0, width: GlobalConfig.ScreenW, height: SEARCH_BAR_H)
+        super.viewDidLayoutSubviews()
+    }
+    
 }
 
 
 
-extension baseSearchViewController{
+extension BaseSearchViewController{
     @objc private func showItems(_ btn:UIButton){
         
         searchField.resignFirstResponder()
         
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            UIApplication.shared.keyWindow?.addSubview(self.backgroundBtn)
         }, completion: { bool in
             self.popMenuView.show()
             
@@ -214,15 +283,12 @@ extension baseSearchViewController{
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             self.popMenuView.dismiss()
 
-        }) { bool in
-            self.backgroundBtn.removeFromSuperview()
-
-        }
+        })
         
     }
 }
 
-extension baseSearchViewController{
+extension BaseSearchViewController{
     
     internal func setSearchBar(open:Bool){
         self.chooseTypeBtn.isHidden = !open
@@ -235,7 +301,7 @@ extension baseSearchViewController{
 
 
 // 搜索热门记录 点击代理实现
-extension baseSearchViewController:SearchResultDelegate{
+extension BaseSearchViewController:SearchResultDelegate{
     
     func ShowSearchResults(word: String) {
         
@@ -258,7 +324,7 @@ extension baseSearchViewController:SearchResultDelegate{
 }
 
 //点击键盘search   搜索帖子 或 其他职位
-extension baseSearchViewController{
+extension BaseSearchViewController{
     
     open func startSearch(word:String){
         
@@ -279,7 +345,7 @@ extension baseSearchViewController{
 
 
 // 搜索菜单代理
-extension baseSearchViewController: SearchMenuDelegate{
+extension BaseSearchViewController: SearchMenuDelegate{
     
     func selectedItem(item: searchItem) {
         
@@ -310,7 +376,7 @@ extension baseSearchViewController: SearchMenuDelegate{
 }
 
 
-extension baseSearchViewController{
+extension BaseSearchViewController{
     
     private func setViewModel(){
         

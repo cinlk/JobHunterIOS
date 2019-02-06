@@ -11,7 +11,7 @@ import UIKit
 fileprivate let columne:Int = 1
 fileprivate let row:Int = 4
 
-class recruitmentMeetCell: UITableViewCell {
+class RecruitmentMeetCell: UITableViewCell {
 
     // 查看所有热门宣讲会
     var selectedIndex:(()->Void)?
@@ -55,25 +55,20 @@ class recruitmentMeetCell: UITableViewCell {
     }
     
     class func cellHeight()->CGFloat{
-        return 180
+        return 280
     }
 }
 
 
-extension recruitmentMeetCell{
+extension RecruitmentMeetCell{
     @objc private func chooseAll(_ btn:UIButton){
-        if self.baseCollection.topTitle.text == ""{
-            
-        }else{
-            // 跳转到职位的宣讲会界面
-            
-            self.selectedIndex?()
-        }
+        self.selectedIndex?()
     }
+    
 }
 
 
-extension recruitmentMeetCell:UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource{
+extension RecruitmentMeetCell:UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSource{
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1

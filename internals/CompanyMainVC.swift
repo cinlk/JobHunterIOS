@@ -170,11 +170,11 @@ class CompanyMainVC: BaseViewController {
         _ = collectionView.sd_layout().topSpaceToView(self.view,GlobalConfig.NavH)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
        
         
-        self.handleViews.append(collectionView)
-        self.handleViews.append(headerView)
+        self.hiddenViews.append(collectionView)
+        self.hiddenViews.append(headerView)
         
         barItems.forEach{
-            self.handleViews.append($0)
+            self.hiddenViews.append($0)
         }
         
         

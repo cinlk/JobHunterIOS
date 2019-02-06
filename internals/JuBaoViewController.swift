@@ -140,7 +140,7 @@ class JuBaoViewController: BaseViewController {
         self.title = "举报界面"
         self.view.addSubview(table)
         
-        self.handleViews.append(table)
+        self.hiddenViews.append(table)
         super.setViews()
         
     }

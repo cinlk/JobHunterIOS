@@ -115,8 +115,8 @@ class deliveredHistory: BaseViewController,UIScrollViewDelegate {
         self.title = titleName
         self.view.backgroundColor = UIColor.viewBackColor()
 
-        self.handleViews.append(table)
-        self.handleViews.append(dropMenu)
+        self.hiddenViews.append(table)
+        self.hiddenViews.append(dropMenu)
         self.view.addSubview(table)
         self.view.addSubview(dropMenu)
         

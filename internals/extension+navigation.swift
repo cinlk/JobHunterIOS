@@ -37,6 +37,8 @@ extension UINavigationController{
 }
 
 
+
+
 // navigationbar 返回按钮事件拦截
 
 
@@ -125,6 +127,39 @@ extension UINavigationController: UINavigationBarDelegate
 }
 
 
+
+
+extension UINavigationBar{
+    
+    
+    private var v:UIImage {
+        return UIImage.init()
+    }
+    
+    private var bgImage:UIImage {
+        return UIImage.drawNormalImage(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH), color: UIColor.navigationBarColor())
+    }
+    
+    // change to translucent
+    func settranslucent(_ tag: Bool){
+        
+        //self.tintColor  = UIColor.black
+        if tag == true{
+            self.setBackgroundImage(v, for: .default)
+            self.shadowImage = v
+            self.isTranslucent = true
+            self.backgroundColor = UIColor.clear
+            self.barTintColor = UIColor.clear
+        }
+        else{
+            
+            self.setBackgroundImage(bgImage, for: .default)
+            self.isTranslucent = false
+            
+        }
+    }
+    
+}
 
 
 

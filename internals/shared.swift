@@ -56,6 +56,10 @@ fileprivate struct CurrentUserAddress {
         self.zone = zone
         self.address = address
     }
+    //
+    func getAddress() -> String?{
+        return self.address  == "" ? nil : self.address
+    }
     
 }
 
@@ -337,6 +341,11 @@ extension SingletoneClass{
     public func setAddress(city:String, zone:String, address:String){
         self.currentUserAddress.set(city: city, zone: zone, address: address)
     }
+    public func getAddress() -> String?{
+        return self.currentUserAddress.getAddress()
+    }
+    
+    
     
     
     public func setChoosedMessage(index:Int){

@@ -8,6 +8,9 @@
 
 import UIKit
 
+
+fileprivate let btnTitle = "查看全部"
+
 class BaseCollectionHorizonView: UIView {
 
   
@@ -22,7 +25,7 @@ class BaseCollectionHorizonView: UIView {
     
     lazy var rightBtn:UIButton = { [unowned self] in
         let btn = UIButton()
-        btn.setTitle("查看全部", for: .normal)
+        btn.setTitle(btnTitle, for: .normal)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         btn.setTitleColor(UIColor.lightGray, for: .normal)
         //btn.addTarget(self, action: #selector(choose(_ :)), for: .touchUpInside)
