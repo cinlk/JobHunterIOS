@@ -16,7 +16,7 @@ import YNDropDownMenu
 
 class InternJobsViewController: UIViewController {
     
-    private var datas:[CompuseRecruiteJobs] = []
+    private var datas:[JobListModel] = []
     
     
     
@@ -166,9 +166,9 @@ extension InternJobsViewController{
             self.datas = []
         }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
         
-        self.vm.internRes.share().catchError { (err) -> Observable<[CompuseRecruiteJobs]> in
+        self.vm.internRes.share().catchError { (err) -> Observable<[JobListModel]> in
             print("err \(err)")
-            return Observable<[CompuseRecruiteJobs]>.just([])
+            return Observable<[JobListModel]>.just([])
             }.observeOn(MainScheduler.instance).bind(to: self.table.rx.items(cellIdentifier: CommonJobTableCell.identity(), cellType: CommonJobTableCell.self)){ (row, mode, cell) in
                 cell.showTag = false
                 cell.mode = mode
@@ -201,7 +201,7 @@ extension InternJobsViewController{
             self.table.deselectRow(at: idx, animated: false)
             let mode = self.datas[idx.row]
             let internJob = JobDetailViewController()
-            internJob.uuid = mode.id!
+            internJob.uuid = mode.jobId!
             
             internJob.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(internJob, animated: true)

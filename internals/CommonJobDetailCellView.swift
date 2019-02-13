@@ -91,15 +91,17 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     
     
     
-    dynamic var mode:CompuseRecruiteJobs?{
+    dynamic var mode:JobListModel?{
         didSet{
             
             guard  let mode = mode, let type = mode.kind else {
                 return
             }
             
-            let url = URL.init(string: mode.icon)
-            icon.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            if let url = mode.iconURL{
+                  icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            }
+            
             //icon.image = UIImage.init(named: mode.icon)
             
             
@@ -110,7 +112,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
             paragrap.alignment = .center
             paragrap.lineBreakMode = .byWordWrapping
            
-            let companyStr = NSMutableAttributedString.init(string: mode.company?.name ?? "", attributes: [NSAttributedString.Key.font:UIFont.boldSystemFont(ofSize: 16),NSAttributedString.Key.foregroundColor:UIColor.black,
+            let companyStr = NSMutableAttributedString.init(string: mode.companyName ?? "", attributes: [NSAttributedString.Key.font:UIFont.boldSystemFont(ofSize: 16),NSAttributedString.Key.foregroundColor:UIColor.black,
                                                                                                 
                                                                                                            
                                                                                                     NSAttributedString.Key.paragraphStyle: paragrap])
@@ -129,15 +131,15 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
             
             company.attributedText = companyStr
             
-            jobName.text = mode.name
+            jobName.text = mode.jobName
             
-            address.text = mode.addressStr
+            address.text = mode.address?.joined(separator: " ")
             
-            degree.text = "| " + mode.education
+            degree.text = "| " + (mode.degree ?? "")
            
-            create_time.text = mode.creatTimeStr
+            create_time.text = mode.createdTimeStr
             
-            checkNums.text = "\(mode.readNums)人浏览"
+            checkNums.text = "\(mode.reviewCount ?? 0 )人浏览"
             
            
             self.setupAutoHeight(withBottomViewsArray: [address, degree], bottomMargin: 5)

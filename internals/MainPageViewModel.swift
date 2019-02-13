@@ -11,34 +11,22 @@ import RxCocoa
 import RxSwift
 import ObjectMapper
 
-// 刷新状态
-enum mainPageRefreshStatus{
-    case none
-    case beginHeaderRefrsh
-    case endHeaderRefresh
-    case beginFooterRefresh
-    case endFooterRefresh
-    case NoMoreData
-    case end
-    // MARK 需要细化错误类型？
-    case error(err:Error)
-    
-}
+
 
 
 
 class MainPageViewMode {
     
    
-    private let compuseJobItems = PublishSubject<[CompuseRecruiteJobs]>.init()
+    private let compuseJobItems = PublishSubject<[JobListModel]>.init()
     let banners =  PublishSubject<[RotateCategory]>.init()
     private let combinationRecommands = PublishSubject<SpecialRecommands>.init()
     // 刷新状态
-    let refreshStatus = PublishSubject<mainPageRefreshStatus>.init()
+    let refreshStatus = PublishSubject<PageRefreshStatus>.init()
     // 是否刷新
     let refreshData = PublishSubject<Bool>.init()
 
-    private let demoServer:demoHttpServer = demoHttpServer.shared
+    private let demoServer:DemoHttpServer = DemoHttpServer.shared
     
     
     private let disposebag = DisposeBag()
@@ -46,11 +34,12 @@ class MainPageViewMode {
     // tableview 多个section 数据
     let sections: Driver<[MultiSecontions]>
     
+    
     // 没有更多数据
     var moreData = true
     var index:Int = 0
     
-    private  var allJobs:[CompuseRecruiteJobs] = []
+    private  var allJobs:[JobListModel] = []
     
     init() {
         

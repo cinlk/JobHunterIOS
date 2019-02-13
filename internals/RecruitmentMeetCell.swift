@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import RxDataSources
 
 fileprivate let columne:Int = 1
 fileprivate let row:Int = 4
@@ -18,16 +19,17 @@ class RecruitmentMeetCell: UITableViewCell {
     
     
     // 查看某个宣讲会
-    var selectItem:(( _ mode:CareerTalkMeetingModel)->Void)?
+    var selectItem:(( _ mode:CareerTalkMeetingListModel)->Void)?
     
     private lazy var baseCollection:BaseCollectionHorizonView = BaseCollectionHorizonView.init(frame: CGRect.zero, column: columne, row: row)
    
     
-    var mode:(title:String,item:[CareerTalkMeetingModel])?{
+    var mode:(title:String,item:[CareerTalkMeetingListModel])?{
         didSet{
             self.baseCollection.topTitle.text = mode?.title
             //self.table.reloadData()
             self.baseCollection.collectionView.reloadData()
+            
             
         }
     }
@@ -36,7 +38,7 @@ class RecruitmentMeetCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         self.contentView.addSubview(baseCollection)
-        baseCollection.collectionView.register(simpleRecruitCell.self, forCellWithReuseIdentifier: simpleRecruitCell.identity())
+        baseCollection.collectionView.register(SimpleRecruitCell.self, forCellWithReuseIdentifier: SimpleRecruitCell.identity())
         baseCollection.rightBtn.addTarget(self, action: #selector(chooseAll(_ :)), for: .touchUpInside)
         baseCollection.collectionView.delegate = self
         baseCollection.collectionView.dataSource = self
@@ -79,7 +81,7 @@ extension RecruitmentMeetCell:UICollectionViewDelegateFlowLayout, UICollectionVi
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: simpleRecruitCell.identity(), for: indexPath) as! simpleRecruitCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SimpleRecruitCell.identity(), for: indexPath) as! SimpleRecruitCell
         cell.mode = mode!.item[indexPath.row]
         
         return cell

@@ -9,6 +9,42 @@
 import UIKit
 import ObjectMapper
 
+internal class CareerTalkMeetingListModel: NSObject, Mappable {
+    
+    internal var meetingID:String?
+    internal var collegeIconURL:URL?
+    internal var startTime:Date?
+    internal var startTimeStr:String?{
+        get{
+            guard  let t = self.startTime else {
+                return ""
+            }
+            return meetingTalkTime(time: t)
+        }
+    }
+    internal var college:String?
+    internal var companyName:String?
+    internal var simplifyAddress:String?
+    
+    required init?(map: Map) {
+        
+        if map.JSON["meeting_id"] == nil  || map.JSON["college"] == nil {
+            return nil
+        }
+    }
+    
+    func mapping(map: Map) {
+        meetingID <- map["meeting_id"]
+        collegeIconURL <- (map["college_icon_url"], URLTransform())
+        startTime <- (map["start_time"], DateTransform())
+        companyName <- map["company_name"]
+        simplifyAddress <- map["simplify_address"]
+        college <- map["college"]
+    }
+    
+}
+
+
 internal  class CareerTalkMeetingModel: BaseModel  {
     
     

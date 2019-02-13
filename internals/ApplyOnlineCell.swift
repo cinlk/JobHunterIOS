@@ -115,7 +115,7 @@ private class  applyShowCollectedCell:UICollectionViewCell{
     var mode:applyField?{
         didSet{
             self.name.text = mode?.Field
-            if let url = URL.init(string: mode?.ImageUrl ?? ""){
+            if let url = mode?.ImageUrl{
                 self.icon.kf.setImage(with: Source.network(url),
                                       placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
 

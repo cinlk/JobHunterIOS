@@ -62,9 +62,30 @@ final class DataTransformBase64: TransformType {
         }
         return nil
     }
-    
-   
+}
 
+final class StringTransformURL: TransformType {
+    
+    typealias Object = URL
+    
+    typealias JSON = String
+    
+    public func transformFromJSON(_ value: Any?) -> Object? {
+        if let str = value as? String{
+            return URL.init(string: str)
+        }
+        
+        return nil
+    }
+    
+    public func transformToJSON(_ value: Object?) -> JSON? {
+        if let data = value{
+            return data.absoluteString
+        }
+        return nil
+    }
+    
+    
 }
 
 // YYYY-MM 日期转换

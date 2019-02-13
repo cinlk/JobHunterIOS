@@ -19,7 +19,7 @@ import UIKit
         }
     }
     
-    dynamic var mode:CompuseRecruiteJobs?{
+    dynamic var mode:JobListModel?{
         didSet{
             self.commonjobView.mode = mode
             

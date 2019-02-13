@@ -18,7 +18,7 @@ import UIKit
     
     private var deliver:Bool = false
     
-    dynamic var mode:CompuseRecruiteJobs?{
+    dynamic var mode:JobListModel?{
         didSet{
             self.commonjobView.mode = mode
             self.setupAutoHeight(withBottomView: commonjobView, bottomMargin: 10)

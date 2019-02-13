@@ -104,7 +104,7 @@ class CampusSearchVC: UIViewController, SearchControllerDeletgate {
     //rxSwift
     private let dispose = DisposeBag()
     private let searchVM = searchViewModel()
-    private var searchResult:BehaviorRelay<[CompuseRecruiteJobs]> = BehaviorRelay<[CompuseRecruiteJobs]>.init(value: [])
+    private var searchResult:BehaviorRelay<[JobListModel]> = BehaviorRelay<[JobListModel]>.init(value: [])
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -180,10 +180,10 @@ extension CampusSearchVC{
         requestBody.word = word
         
         // 选项切换的刷新
-        searchVM.searchGraduteJobs(mode: requestBody, offset: 0).catchError({ (error) -> Observable<[CompuseRecruiteJobs]> in
+        searchVM.searchGraduteJobs(mode: requestBody, offset: 0).catchError({ (error) -> Observable<[JobListModel]> in
             self.view.showToast(title: "error \(error)", customImage: nil, mode: .text)
             //showOnlyTextHub(message: "error \(error)", view: self.view)
-            return Observable<[CompuseRecruiteJobs]>.just([])
+            return Observable<[JobListModel]>.just([])
             
         }).share().bind(to: searchResult).disposed(by: dispose)
         

@@ -7,14 +7,12 @@
 //
 
 import UIKit
-
+import Kingfisher
 
 fileprivate let iconSize:CGSize = CGSize.init(width: 100, height: 45)
 
 @objcMembers class MagineTableViewCell: UITableViewCell {
 
-    
-    
     
     private lazy var titleName:UILabel = {
         let lb = UILabel()
@@ -57,7 +55,9 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 100, height: 45)
                 return
             }
             
-            icon.image = UIImage.init(named: mode.icon)
+            
+            icon.kf.setImage(with: Source.network(URL.init(string: mode.icon)!), placeholder: #imageLiteral(resourceName: "volk"), options: nil, progressBlock: nil, completionHandler: nil)
+           
             titleName.text = mode.title
             author.text = mode.author
             time.text = mode.timeStr
@@ -73,9 +73,9 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 100, height: 45)
         let views:[UIView] = [titleName, author, time, icon]
         self.contentView.sd_addSubviews(views)
         _ = icon.sd_layout().rightSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(iconSize.width)?.autoHeightRatio(3/4)
-        _ = titleName.sd_layout().rightSpaceToView(icon,10)?.leftSpaceToView(self.contentView,10)?.topEqualToView(icon)?.autoHeightRatio(0)
+        _ = titleName.sd_layout().leftSpaceToView(self.contentView,10)?.topEqualToView(icon)?.autoHeightRatio(0)
         _ = author.sd_layout().topSpaceToView(titleName,20)?.leftEqualToView(titleName)?.autoHeightRatio(0)
-        _ = time.sd_layout().topEqualToView(author)?.rightSpaceToView(icon,20)?.autoHeightRatio(0)
+        _ = time.sd_layout().topEqualToView(author)?.leftSpaceToView(author,20)?.autoHeightRatio(0)
         
         
     }

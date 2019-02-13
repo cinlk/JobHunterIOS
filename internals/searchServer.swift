@@ -172,16 +172,16 @@ class SearchServer{
     }
     
     
-    func searchGraduateJobs(mode:searchGraduateRecruiteBody, offset:Int) ->Observable<[CompuseRecruiteJobs]>{
+    func searchGraduateJobs(mode:searchGraduateRecruiteBody, offset:Int) ->Observable<[JobListModel]>{
         
-        return  httpServer.rx.request(.searchGraduateJobs(mode:mode, offset:offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapArray(CompuseRecruiteJobs.self, tag: "jobs")
+        return  httpServer.rx.request(.searchGraduateJobs(mode:mode, offset:offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapArray(JobListModel.self, tag: "jobs")
         
     }
     
     
-    func searchInternJobs(mode: searchInternJobsBody, offset:Int) -> Observable<[CompuseRecruiteJobs]>{
+    func searchInternJobs(mode: searchInternJobsBody, offset:Int) -> Observable<[JobListModel]>{
         
-        return httpServer.rx.request(.searchInternJobs(mode:mode, offset:offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapArray(CompuseRecruiteJobs.self, tag: "jobs")
+        return httpServer.rx.request(.searchInternJobs(mode:mode, offset:offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapArray(JobListModel.self, tag: "jobs")
         
     }
     

@@ -16,7 +16,7 @@ import MJRefresh
 class GraduateJobsViewController: UIViewController {
 
 
-    private var datas:[CompuseRecruiteJobs] = []
+    private var datas:[JobListModel] = []
     
     
     internal lazy var cityMenu:DropItemCityView = {
@@ -192,7 +192,7 @@ extension GraduateJobsViewController{
             self.table.deselectRow(at: idx, animated: false)
             let mode = self.datas[idx.row]
             let graduateJob = JobDetailViewController()
-            graduateJob.uuid = mode.id!
+            graduateJob.uuid = mode.jobId!
             
             graduateJob.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(graduateJob, animated: true)

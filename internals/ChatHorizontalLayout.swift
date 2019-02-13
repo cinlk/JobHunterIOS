@@ -56,7 +56,7 @@ class CollectionHorizontalLayout: UICollectionViewFlowLayout {
             let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
             
             page = itemIndex / (col * row)
-            // 通过一系列计算, 得到x, y值
+            //  得到x, y值
             let x = itemSize.width * CGFloat(itemIndex % Int(col)) + (CGFloat(page) * GlobalConfig.ScreenW)
             let y = itemSize.height * CGFloat((itemIndex - page * row * col) / col)
             

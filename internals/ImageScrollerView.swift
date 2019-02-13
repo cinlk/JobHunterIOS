@@ -57,7 +57,6 @@ class ImageScrollerView: UIScrollView {
         scrollsToTop = false
         showsHorizontalScrollIndicator = false
         showsVerticalScrollIndicator = false
-        isUserInteractionEnabled = true
         //
         contentInsetAdjustmentBehavior = .never
         
@@ -91,11 +90,14 @@ extension ImageScrollerView{
     private func setRunning(){
         
         _ =  isRunning.asObservable().debug().flatMapLatest{ isRunning in
-            isRunning ? Observable<Int>.interval(1, scheduler: MainScheduler.instance) : .empty()
+            isRunning ? Observable<Int>.interval(3, scheduler: MainScheduler.instance) : .empty()
             
             }.enumerated().flatMapLatest { (index, element)   in
                 Observable.just(element)
-            }.takeUntil(self.rx.deallocated).subscribe()
+            }.takeUntil(self.rx.deallocated).subscribe(onNext: { _ in
+                self.moveToRight()
+                
+            })
         
     }
     
@@ -159,17 +161,19 @@ extension ImageScrollerView{
             return
         }
         
-        // 获取navigation controller
-        guard let nav = self.targetViewController(aClass: UINavigationController.self) as? UINavigationController else {
+        
+        guard let vc = self.getParentViewController() else {
+            
             return
         }
         
         if image.tag < scrollerImages.count && image.tag >= 0{
             //
             let webView = BaseWebViewController()
+        
             webView.mode = scrollerImages[image.tag].1
-            webView.hidesBottomBarWhenPushed = true
-            nav.pushViewController(webView, animated: true)
+            
+            vc.navigationController?.pushViewController(webView, animated: true)
         }
     }
     

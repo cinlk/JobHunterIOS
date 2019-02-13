@@ -85,13 +85,15 @@ extension UIView{
 
 
 
-// 父级viewcontroller
+// 第一个响应的view
 extension UIView{
     
     func targetViewController(aClass: AnyClass) -> UIViewController?{
-        var next=self.superview;
+        var next = self.superview;
         while(next != nil){
+           
             let nextResponder = next?.next
+            
             if((nextResponder?.isKind(of:aClass)) != nil){
                 return nextResponder as? UIViewController
             }

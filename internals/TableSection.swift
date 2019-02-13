@@ -28,9 +28,9 @@ enum SectionItem{
     case newItem(new:[String])
     case jobFieldItem([JobField])
     case columnItem([latestColumn])
-    case recruimentMeet(list: [CareerTalkMeetingModel])
+    case recruimentMeet(list: [CareerTalkMeetingListModel])
     case applyonline(list: [applyField])
-    case campuseRecruite(job: CompuseRecruiteJobs)
+    case campuseRecruite(job: JobListModel)
     //case internRecruite(jobs:[InternshipJobs])
     
 }

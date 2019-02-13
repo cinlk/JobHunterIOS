@@ -17,7 +17,7 @@ class BaseScrollerTableViewCell: UITableViewCell {
         //scrollView.delegate = self
         scrollView.showsVerticalScrollIndicator  = false
         scrollView.isUserInteractionEnabled = true
-        scrollView.bounces = true
+        scrollView.bounces = false
         scrollView.isPagingEnabled = false
         scrollView.scrollsToTop = false
         scrollView.contentInset = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)

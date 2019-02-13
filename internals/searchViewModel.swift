@@ -19,33 +19,33 @@ class searchViewModel {
     //网申
     let onlineApplyRrefresh:PublishSubject<(Bool, searchOnlineApplyBody)> = PublishSubject<(Bool, searchOnlineApplyBody)>()
     var onlineOffset = 0
-    var onlineApplyStatus:PublishSubject<mainPageRefreshStatus> = PublishSubject<mainPageRefreshStatus>()
+    var onlineApplyStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>()
     var onlineApplyRes:BehaviorRelay<[OnlineApplyModel]> = BehaviorRelay<[OnlineApplyModel]>(value: [])
     
     //校招
     let graduateRefresh:PublishSubject<(Bool, searchGraduateRecruiteBody)> = PublishSubject<(Bool, searchGraduateRecruiteBody)>()
     var graduateOffset = 0
-    var graduateRefreshStatus:PublishSubject<mainPageRefreshStatus> = PublishSubject<mainPageRefreshStatus>()
-    var graduateRes:BehaviorRelay<[CompuseRecruiteJobs]> = BehaviorRelay<[CompuseRecruiteJobs]>(value: [])
+    var graduateRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>()
+    var graduateRes:BehaviorRelay<[JobListModel]> = BehaviorRelay<[JobListModel]>(value: [])
     
     
     //实习
     let internRefresh:PublishSubject<(Bool, searchInternJobsBody)> = PublishSubject<(Bool, searchInternJobsBody)>()
     var internOffset = 0
-    var internRefreshStatus:PublishSubject<mainPageRefreshStatus> = PublishSubject<mainPageRefreshStatus>()
-    var internRes:BehaviorRelay<[CompuseRecruiteJobs]> = BehaviorRelay<[CompuseRecruiteJobs]>.init(value: [])
+    var internRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>()
+    var internRes:BehaviorRelay<[JobListModel]> = BehaviorRelay<[JobListModel]>.init(value: [])
     
     // 宣讲会
     let careerTalkRefresh:PublishSubject<(Bool, searchCareerTalkBody)> = PublishSubject<(Bool, searchCareerTalkBody)>()
     var careerOffset = 0
-    var careerRefreshStatus:PublishSubject<mainPageRefreshStatus> = PublishSubject<mainPageRefreshStatus>()
+    var careerRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>()
     var carrerTalkRes:BehaviorRelay<[CareerTalkMeetingModel]> = BehaviorRelay<[CareerTalkMeetingModel]>.init(value: [])
 
     
     // 公司
     let companyRefresh:PublishSubject<(Bool, searchCompanyBody)> = PublishSubject<(Bool, searchCompanyBody)>()
     var companyOffset = 0
-    var companyRefreshStatus:PublishSubject<mainPageRefreshStatus> = PublishSubject<mainPageRefreshStatus>()
+    var companyRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>()
     var companyRes:BehaviorRelay<[CompanyModel]> = BehaviorRelay<[CompanyModel]>.init(value: [])
     
     
@@ -96,14 +96,14 @@ class searchViewModel {
     }
     
     
-    func searchGraduteJobs(mode: searchGraduateRecruiteBody, offset:Int) -> Observable<[CompuseRecruiteJobs]>{
+    func searchGraduteJobs(mode: searchGraduateRecruiteBody, offset:Int) -> Observable<[JobListModel]>{
         
         return searchServer.searchGraduateJobs(mode:mode, offset: offset)
         
     }
     
     
-    func searchInternJobs(mode: searchInternJobsBody, offset:Int) -> Observable<[CompuseRecruiteJobs]>{
+    func searchInternJobs(mode: searchInternJobsBody, offset:Int) -> Observable<[JobListModel]>{
         
         return searchServer.searchInternJobs(mode: mode, offset: offset)
         
@@ -135,7 +135,7 @@ extension searchViewModel{
             
             self.searchOnlineAppy(mode: mode, offset: self.onlineOffset).subscribe(onNext: { (modes) in
                 if modes.isEmpty{
-                    self.onlineApplyStatus.onNext(mainPageRefreshStatus.NoMoreData)
+                    self.onlineApplyStatus.onNext(PageRefreshStatus.NoMoreData)
                     return
                 }
                 if IsPullDown{
@@ -151,10 +151,10 @@ extension searchViewModel{
             
             
             if IsPullDown{
-                self.onlineApplyStatus.onNext(mainPageRefreshStatus.endHeaderRefresh)
+                self.onlineApplyStatus.onNext(PageRefreshStatus.endHeaderRefresh)
                 
             }else{
-                self.onlineApplyStatus.onNext(mainPageRefreshStatus.endFooterRefresh)
+                self.onlineApplyStatus.onNext(PageRefreshStatus.endFooterRefresh)
             }
             
             
@@ -167,7 +167,7 @@ extension searchViewModel{
             self.graduateOffset = IsPullDown ? 0 : self.graduateOffset + 1
             self.searchGraduteJobs(mode: mode, offset: self.graduateOffset).subscribe(onNext: { (jobs) in
                 if jobs.isEmpty{
-                    self.graduateRefreshStatus.onNext(mainPageRefreshStatus.NoMoreData)
+                    self.graduateRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                     return
                 }
                 if IsPullDown{
@@ -184,9 +184,9 @@ extension searchViewModel{
             
             
             if IsPullDown{
-                self.graduateRefreshStatus.onNext(mainPageRefreshStatus.endHeaderRefresh)
+                self.graduateRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
             }else{
-                self.graduateRefreshStatus.onNext(mainPageRefreshStatus.endFooterRefresh)
+                self.graduateRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
 
             }
             
@@ -204,7 +204,7 @@ extension searchViewModel{
             
             self.searchInternJobs(mode: mode, offset: self.internOffset).subscribe(onNext: { jobs in
                 if jobs.isEmpty{
-                    self.internRefreshStatus.onNext(mainPageRefreshStatus.NoMoreData)
+                    self.internRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                     return
                 }
                 if IsPullDown{
@@ -218,9 +218,9 @@ extension searchViewModel{
             }, onCompleted: nil, onDisposed: nil).disposed(by: self.disposeBag)
 
             if IsPullDown{
-                self.internRefreshStatus.onNext(mainPageRefreshStatus.endHeaderRefresh)
+                self.internRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
             }else{
-                self.internRefreshStatus.onNext(mainPageRefreshStatus.endFooterRefresh)
+                self.internRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
             }
 
         }).disposed(by: disposeBag)
@@ -233,7 +233,7 @@ extension searchViewModel{
             self.careerOffset = IsPullDown ? 0 : self.careerOffset + 1
             self.searchCareerTalkMeetins(mode: mode, offset: self.careerOffset).subscribe(onNext: { meetings in
                 if meetings.isEmpty{
-                    self.careerRefreshStatus.onNext(mainPageRefreshStatus.NoMoreData)
+                    self.careerRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                     return
                 }
                 if IsPullDown{
@@ -248,9 +248,9 @@ extension searchViewModel{
             }, onCompleted: nil, onDisposed: nil).disposed(by: self.disposeBag)
             
             if IsPullDown{
-                self.careerRefreshStatus.onNext(mainPageRefreshStatus.endHeaderRefresh)
+                self.careerRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
             }else{
-                self.careerRefreshStatus.onNext(mainPageRefreshStatus.endFooterRefresh)
+                self.careerRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
             }
             
         }).disposed(by: disposeBag)
@@ -262,7 +262,7 @@ extension searchViewModel{
             self.companyOffset = IsPullDown ? 0 : self.companyOffset + 1
             self.searchCompany(mode: mode, offset: self.companyOffset).subscribe(onNext: { companys in
                 if companys.isEmpty{
-                    self.companyRefreshStatus.onNext(mainPageRefreshStatus.NoMoreData)
+                    self.companyRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                     return
                 }
                 if IsPullDown{
@@ -276,9 +276,9 @@ extension searchViewModel{
             }, onCompleted: nil, onDisposed: nil).disposed(by: self.disposeBag)
             
             if IsPullDown{
-                self.companyRefreshStatus.onNext(mainPageRefreshStatus.endHeaderRefresh)
+                self.companyRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
             }else{
-                self.companyRefreshStatus.onNext(mainPageRefreshStatus.endFooterRefresh)
+                self.companyRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
             }
             
             

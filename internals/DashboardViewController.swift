@@ -97,6 +97,16 @@ class DashboardViewController: BaseViewController, UISearchControllerDelegate, U
     }()
     
     
+    // 包裹searchbar 的view, 来限制高度，不然navibar 自适应高度为56
+    private lazy var wrapBar:UIView = {
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.searchBarH))
+        v.backgroundColor = UIColor.clear
+        v.addSubview(self.searchController?.searchBar ?? UIView())
+        return v
+    }()
+    
+    
+    
     
 //    // 搜索框外部view，滑动影藏搜索框
 //    private lazy var searchBarContainer:UIView = {
@@ -152,6 +162,10 @@ class DashboardViewController: BaseViewController, UISearchControllerDelegate, U
                 self.automaticallyAdjustsScrollViewInsets = false
             }
         
+           _ = self.searchController?.searchBar.sd_layout()?.topEqualToView(wrapBar)?.bottomEqualToView(wrapBar)?.leftEqualToView(wrapBar)?.rightEqualToView(wrapBar)
+            self.wrapBar.layoutSubviews()
+            self.searchController?.searchField.layer.cornerRadius = self.searchController!.searchBar.height/2
+        
 //        _ =  searchController?.searchBar.sd_layout().leftSpaceToView(searchBarContainer,0)?.topEqualToView(searchBarContainer)?.bottomEqualToView(searchBarContainer)?.rightSpaceToView(searchBarContainer,0)
     }
     
@@ -162,6 +176,8 @@ class DashboardViewController: BaseViewController, UISearchControllerDelegate, U
     
     
     override func setViews(){
+        
+        self.hidesBottomBarWhenPushed = true 
         /***** table *****/
         // 分类职位 和  热门板块
         self.tables.register(MainColumnistCell.self, forCellReuseIdentifier: MainColumnistCell.identity())
@@ -191,6 +207,7 @@ class DashboardViewController: BaseViewController, UISearchControllerDelegate, U
         self.tables.tableFooterView = UIView()
         self.tables.separatorStyle = .singleLine
         
+        
         /***** search *****/
         // searchController 占时新的控制视图时，显示在当前视图上
         self.definesPresentationContext  = true
@@ -215,8 +232,11 @@ class DashboardViewController: BaseViewController, UISearchControllerDelegate, U
         
         //self.navigationItem.titleView = searchBarContainer
         
-        self.navigationItem.titleView = self.searchController?.searchBar
+      
+       
      
+        self.navigationItem.titleView =  wrapBar
+        
         if let sc = self.searchController?.searchBar{
             self.hiddenViews.append(sc)
         }
@@ -233,9 +253,12 @@ class DashboardViewController: BaseViewController, UISearchControllerDelegate, U
         
         // 使用begin  refresh 不能触发加载 TODO
         vm.refreshData.onNext(true)
+        //self.tables.mj_header.beginRefreshing()
         super.reload()
         
     }
+    
+    
     
 }
 
@@ -292,27 +315,33 @@ extension DashboardViewController{
 //                self.marginTop = scrollView.contentInset.top
 //            }
 //
+            
             let offsetY = scrollView.contentOffset.y
            // let newoffsetY = offsetY + self.marginTop
             //向下滑动 newoffsetY 小于0
             //向上滑动 newoffsetY 大于0
             
             // searchcontiner 透明度
-            if (offsetY >= 0 && offsetY <= 64){
+            if (offsetY > 0 && offsetY <= 64){
                 (self.navigationController as? DashboardNavigationVC)?.currentStyle = .lightContent
                 //self.searchBarContainer.alpha = 1
                 self.searchController?.searchBar.alpha = 1
-                self.navigationView.backgroundColor  = UIColor.init(r: 249, g: 249, b: 249, alpha: offsetY/64)
-                    
+                
+                self.navigationView.backgroundColor  = UIColor.init(r: 129, g: 129, b: 129, alpha: offsetY/64)
+              
                 
             }
             else if ( offsetY > 64){
                 (self.navigationController as? DashboardNavigationVC)?.currentStyle = .default
-                self.navigationView.backgroundColor  = UIColor.init(r: 192, g: 192, b: 192)
+                //self.navigationView.backgroundColor  = UIColor.init(r: 249, g: 249, b: 249, alpha: 1)
+                self.navigationView.backgroundColor  = UIColor.init(r: 129, g: 129, b: 129, alpha: 1)
+
+                
+                
                 
             }
             else {
-                let apl = 0.7 -  (-offsetY / 64)
+                let apl = 1.0 -  (-offsetY / 64)
                 
                 self.searchController?.searchBar.alpha = apl < 0 ?  0 :   apl
 //                if apl < 0{
@@ -324,6 +353,7 @@ extension DashboardViewController{
 //                }
                 
                 self.navigationView.backgroundColor  = UIColor.clear
+                
                 
             }
             
@@ -427,7 +457,7 @@ extension DashboardViewController{
             return RecruitmentMeetCell.cellHeight()
         }
         else if indexPath.section == 4 {
-            return  ApplyOnlineCell.cellHeight()
+            return ApplyOnlineCell.cellHeight()
         }
         else if indexPath.section == 5 {
             
@@ -481,8 +511,8 @@ extension DashboardViewController{
                cell.setItems(width: GlobalConfig.ScreenW/4, items: fields)
                 
                cell.selectedItem = { (btn) in
-                    let spe = SpecialJobVC()
-                    spe.queryName = btn.titleLabel?.text
+                    let spe = SpecialJobVC.init(kind: btn.titleLabel?.text ?? "")
+                    //spe.queryName = btn.titleLabel?.text
                     //spe.hidesBottomBarWhenPushed = true
                     self.navigationController?.pushViewController(spe, animated: true)
                 }
@@ -513,6 +543,7 @@ extension DashboardViewController{
             case let .recruimentMeet(list: meets):
                 
                 let cell = table.dequeueReusableCell(withIdentifier: RecruitmentMeetCell.identity()) as! RecruitmentMeetCell
+               
                 cell.mode = (title:"热门宣讲会",item:meets)
                 // 查看所有热门宣讲会
                 cell.selectedIndex = {
@@ -526,7 +557,7 @@ extension DashboardViewController{
                 // 查看具体的宣讲会
                 cell.selectItem = { mode in
                     let talkShow = CareerTalkShowViewController()
-                    talkShow.meetingID = mode.id
+                    talkShow.meetingID = mode.meetingID!
                     //talkShow.hidesBottomBarWhenPushed = true
                     self.navigationController?.pushViewController(talkShow, animated: true)
                     
@@ -546,14 +577,20 @@ extension DashboardViewController{
                     if let nav = self.tabBarController?.viewControllers?[1] as?  UINavigationController, let target = nav.viewControllers[0] as? JobHomeVC{
                         
                         //perform(#selecto, with: <#T##Any?#>, afterDelay: <#T##TimeInterval#>)
-                        // 登录jobhome 加载完后 才有chidlvc
+                        // 登录jobhome 加载完后 才有chidlvc TODO  顺序？
                         target.scrollToOnlineAppy = true
+                        
+                        
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
                             // 查询某个行业的数据
-                            
                             if !name.isEmpty, let vc = target.childVC[0] as? OnlineApplyViewController {
                                 //vc.type = name
                             }
+                            // 跳转到 网申栏目
+                            if name.isEmpty{
+                                
+                            }
+                            
                         })
                         
                     }
@@ -619,16 +656,24 @@ extension DashboardViewController{
             self.tables.deselectRow(at: indexpath, animated: true)
             if indexpath.section == 0{
                 
-                let news = MagazMainViewController()
-                self.navigationController?.pushViewController(news, animated: true)
+                //  新闻专栏标题  不超过4个 TODO
+                if let cell = self.tables.cellForRow(at: indexpath) as? ScrollerNewsCell, let titles = cell.mode{
+                    let news = MagazMainViewController()
+                    news.titles = titles
+                    
+                    self.navigationController?.pushViewController(news, animated: true)
+                }
+                
+                
             }
             
             else if indexpath.section == 1{
                 return
             }
             else if  let cell = self.tables.cellForRow(at: indexpath) as? CommonJobTableCell, let data = cell.mode{
-                print(data)
+                
                 let detail = JobDetailViewController()
+                detail.uuid = data.jobId ?? ""
                 //detail.hidesBottomBarWhenPushed = true
                 //detail.jobID = jobModel.id!
                 //detail.kind = (id: jobModel.id!, type: jobModel.kind!)
@@ -637,6 +682,7 @@ extension DashboardViewController{
             }
             
         }).disposed(by: disposebag)
+        
         
         
         
@@ -656,7 +702,7 @@ extension DashboardViewController{
                 self?.tables.mj_header.endRefreshing(completionBlock: {
                     self?.didFinishloadData()
                 })
-                print(" end headerRefrsh")
+               
             
             case .beginFooterRefresh:
                 self?.tables.mj_footer.beginRefreshing()
@@ -771,7 +817,7 @@ extension DashboardViewController{
        
         self.tables.mj_header  = MJRefreshNormalHeader.init { [weak self] in
             
-            print("start beginRefreshing ")
+            
             self?.imagescroller.stopAutoScroller()
             self?.vm.refreshData.onNext(true)
             

@@ -13,7 +13,7 @@ fileprivate let hubTitle = "加载数据"
 class BaseTableViewController: UITableViewController {
 
     
-    private lazy var  errorView:ErrorPageView = {  [unowned self] in
+    lazy var  errorView:ErrorPageView = {  [unowned self] in
         let eView = ErrorPageView.init(frame: self.view.bounds)
         eView.isHidden = true
         return eView

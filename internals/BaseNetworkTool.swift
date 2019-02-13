@@ -18,6 +18,9 @@ public enum GlobaHttpRequest {
     case userlogin(phone:String, password:String)
     case logout
     case setHelloMsg(index:Int)
+    // 获取新闻栏目数据
+    case news(type:String, offset:Int)
+    
     
     
 }
@@ -49,6 +52,8 @@ extension GlobaHttpRequest: TargetType{
             return  "account/logout"
         case .setHelloMsg:
             return self.urlPrefix + "hellos"
+        case .news(_, _):
+            return self.urlPrefix + "news"
         }
     }
     
@@ -56,7 +61,7 @@ extension GlobaHttpRequest: TargetType{
         switch self {
         case .guideData, .adviseImages, .helloMsg:
             return .get
-        case .userlogin:
+        case .userlogin, .news:
             return .post
         case .setHelloMsg:
             return .put
@@ -78,6 +83,8 @@ extension GlobaHttpRequest: TargetType{
             return .requestParameters(parameters: ["phone": phone, "password":password], encoding: JSONEncoding.default)
         case let .setHelloMsg(index):
             return Task.requestParameters(parameters: ["count":index], encoding: URLEncoding.default)
+        case let .news(type, offset):
+            return Task.requestParameters(parameters: ["type": type, "offset": offset], encoding: JSONEncoding.default)
         }
     }
     
@@ -97,13 +104,8 @@ extension GlobaHttpRequest: TargetType{
 
 class NetworkTool {
     
-    
 
- 
-    
     static var timeout: Double = 30
-    
-    
     
     static let httpRequest = MoyaProvider<GlobaHttpRequest>.init(endpointClosure: { (target) -> Endpoint in
         let url = target.baseURL.absoluteString + target.path
@@ -117,9 +119,8 @@ class NetworkTool {
         switch target{
             
         case .guideData, .adviseImages:
-            
             timeout = 10
-        case .helloMsg, .userlogin, .logout:
+        case .helloMsg, .userlogin, .logout, .news:
             timeout = 30
         case .setHelloMsg(let index):
             timeout = 30

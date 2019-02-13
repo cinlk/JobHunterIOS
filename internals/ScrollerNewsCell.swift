@@ -35,6 +35,7 @@ class ScrollerNewsCell: UITableViewCell {
         let img = UIImageView.init(image: #imageLiteral(resourceName: "news"))
         img.clipsToBounds = true
         img.contentMode = .scaleToFill
+        img.isUserInteractionEnabled = false
         return img
     }()
     
@@ -52,6 +53,7 @@ class ScrollerNewsCell: UITableViewCell {
         return table
 
     }()
+    
     
     
     
@@ -142,3 +144,5 @@ extension ScrollerNewsCell: UITableViewDelegate, UITableViewDataSource{
     
     
 }
+
+ 

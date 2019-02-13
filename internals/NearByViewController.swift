@@ -89,7 +89,7 @@ extension NearByViewController: UINavigationControllerDelegate{
 
 extension NearByViewController:pagetitleViewDelegate{
     
-    func ScrollContentAtIndex(index: Int, _ titleView: PagetitleView) {
+    func ScrollContentAtIndex(index: Int) {
         self.pageContent.moveToIndex(index)
     }
     

@@ -30,7 +30,6 @@ let NavBarH:CGFloat = 44
 // navigation View 高度
 //let GlobalConfig.NavH:CGFloat = 64
 let TOOLBARH:CGFloat = 44
-let SEARCH_BAR_H:CGFloat = 30
 let DROP_MENU_H:CGFloat = 40 
 
 // 屏幕宽高

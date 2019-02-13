@@ -101,7 +101,8 @@ class BaseWebViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.hidesBottomBarWhenPushed = true
+        
+        
         UIApplication.shared.keyWindow?.addSubview(sharedView)
         self.navigationController?.insertCustomerView(UIColor.orange)
     }
@@ -144,7 +145,9 @@ extension BaseWebViewController {
     private func loadData(url:String){
         if let url = URL.init(string: url){
             let request = URLRequest.init(url: url)
+            
             webView.load(request)
+        
         }
         
     }
@@ -193,6 +196,10 @@ extension BaseWebViewController: WKNavigationDelegate{
         self.navigationItem.title = webView.title
     }
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        // -999 之前的请求未完成被取消
+        if (error as NSError).code == -999 {
+            return
+        }
         print("error ---> \(error)")
         progressView.isHidden = true
         progressView.setProgress(0, animated: false)
@@ -222,7 +229,7 @@ extension BaseWebViewController: WKUIDelegate{
     
     // 内容加载 错误
     func  webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        print("error ---> \(error)")
+        print("error ++++++ \(error)")
         progressView.isHidden = true
         progressView.setProgress(0, animated: false)
         

@@ -20,6 +20,7 @@ enum MainPageTarget {
     case getScrollerImage
     case getMainRecommands
     case getRecommandJobs(offset:Int, limit: Int)
+    case jobSet(kind:String, offset:Int, limit:Int)
     case none
 }
 
@@ -41,7 +42,9 @@ extension MainPageTarget:TargetType{
             return self.urlPrefix + "recommand"
         case .getRecommandJobs:
             return self.urlPrefix + "jobs"
-            
+        // 某个类别的job集合
+        case .jobSet(let kind, _, _):
+            return "job/" + "kind/\(kind)"
         default:
             return "topic"
         }
@@ -51,7 +54,7 @@ extension MainPageTarget:TargetType{
         switch self {
         case .getScrollerImage, .getMainRecommands:
             return Method.get
-        case .getRecommandJobs(_):
+        case .getRecommandJobs(_), .jobSet:
             return Method.post
         default:
             return Method.get
@@ -78,6 +81,8 @@ extension MainPageTarget:TargetType{
             return .requestPlain
         case .getRecommandJobs(let offset, let limit):
             return .requestParameters(parameters: ["offset":offset, "limit":limit], encoding: JSONEncoding.default)
+        case .jobSet(_, let offset, let limit):
+            return .requestParameters(parameters: ["offset":offset, "limit":limit], encoding: JSONEncoding.default)
         default:
             return .requestPlain
         }
@@ -93,10 +98,10 @@ extension MainPageTarget:TargetType{
 
 
 
-class  demoHttpServer {
+class  DemoHttpServer {
     
     
-    static let shared:demoHttpServer = demoHttpServer()
+    static let shared:DemoHttpServer = DemoHttpServer()
     private lazy var  httpServer: MoyaProvider<MainPageTarget> = {
         let s = MoyaProvider<MainPageTarget>(plugins: [NetworkLoggerPlugin(verbose: true)])
         return s
@@ -120,9 +125,15 @@ class  demoHttpServer {
 
     // flatMapLatest 连续请求时只取第一次数据
     //
-    func getRecommandJobs(offset:Int, limit:Int) -> Observable<[CompuseRecruiteJobs]>{
-        return httpServer.rx.request(.getRecommandJobs(offset:offset, limit: limit)).retry(3).timeout(30, scheduler: MainScheduler.instance).asObservable().debug().mapArray(CompuseRecruiteJobs.self, tag: "body")
+    func getRecommandJobs(offset:Int, limit:Int) -> Observable<[JobListModel]>{
+        return httpServer.rx.request(.getRecommandJobs(offset:offset, limit: limit)).retry(3).timeout(30, scheduler: MainScheduler.instance).asObservable().debug().mapArray(JobListModel.self, tag: "body")
         
+    }
+    
+    // job 分类集合
+    func getJobsBy(kind:String, offset:Int, limit:Int) -> Observable<ResponseArrayModel<JobListModel>>{
+        
+        return httpServer.rx.request(.jobSet(kind: kind, offset: offset, limit: limit)).retry(3).asObservable().debug().mapObject(ResponseArrayModel<JobListModel>.self)
     }
 
 }
@@ -230,11 +241,11 @@ extension Jobs: TargetType{
 }
 
 
-class mainPageServer {
+class MainPageServer {
     
     
     var httpRequest = MoyaProvider<Jobs>.init()
-    static let shareInstance:mainPageServer = mainPageServer.init()
+    static let shareInstance:MainPageServer = MainPageServer.init()
     
     
     private init(){}

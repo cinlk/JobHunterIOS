@@ -166,7 +166,7 @@ extension OnlineApplyViewController{
         }.disposed(by: dispose)
         
         
-        self.vm.onlineApplyRefreshStatus.asDriver(onErrorJustReturn: mainPageRefreshStatus.none).drive(onNext: { (status) in
+        self.vm.onlineApplyRefreshStatus.asDriver(onErrorJustReturn: PageRefreshStatus.none).drive(onNext: { (status) in
             switch status{
                 case .endFooterRefresh:
                     self.table.mj_footer.endRefreshing()

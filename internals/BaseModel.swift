@@ -57,10 +57,10 @@ class BaseModel:NSObject, Mappable, Comparable{
     func mapping(map: Map) {
         id <- map["id"]
         name <- map["name"]
-        isValidate <- map["is_valid"]
-        isCollected <- map["is_collect"]
-        isApply <- map["is_apply"]
-        create_time <- (map["create_time"], DateTransform())
+        isValidate <- map["validate"]
+        isCollected <- map["collected"]
+        isApply <- map["applied"]
+        create_time <- (map["created_time"], DateTransform())
         icon <- map["icon"]
         link <- map["link"]
         

@@ -199,7 +199,7 @@ extension UserLogginViewController{
 }
 
 extension UserLogginViewController: pagetitleViewDelegate{
-    func ScrollContentAtIndex(index: Int, _ titleView: PagetitleView) {
+    func ScrollContentAtIndex(index: Int) {
         // 必须有这个不然collection cell view消失
         self.view.endEditing(true)
         self.contentView.moveToIndex(index)

@@ -8,6 +8,7 @@
 
 import UIKit
 import ObjectMapper
+import RxDataSources
 
 class MagazineModel: NSObject, Mappable {
 
@@ -33,9 +34,9 @@ class MagazineModel: NSObject, Mappable {
     
     
     required init?(map: Map) {
-        if map.JSON["title"] == nil || map.JSON["author"] == nil || map.JSON["time"] == nil{
-            return nil
-        }
+//        if map.JSON["title"] == nil || map.JSON["author"] == nil || map.JSON["time"] == nil{
+//            return nil
+//        }
     }
     
     func mapping(map: Map) {
@@ -46,5 +47,27 @@ class MagazineModel: NSObject, Mappable {
         link <- map["link"]
         
         
+    }
+}
+
+
+//
+
+struct  MagazineModelSection {
+    
+    var items: [Item]
+    
+    
+}
+
+extension MagazineModelSection: SectionModelType{
+    
+    
+        
+    typealias Item = MagazineModel
+    
+    init(original: MagazineModelSection, items: [Item]) {
+        self = original
+        self.items = items
     }
 }

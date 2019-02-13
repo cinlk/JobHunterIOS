@@ -18,20 +18,20 @@ class RecruitViewModel{
     private let dispose = DisposeBag()
     internal let onlineApplyRefresh:PublishSubject<Bool> = PublishSubject<Bool>.init()
     internal let onlineApplyRes:BehaviorRelay<[OnlineApplyModel]> = BehaviorRelay<[OnlineApplyModel]>.init(value: [])
-    internal let onlineApplyRefreshStatus:PublishSubject<mainPageRefreshStatus> = PublishSubject<mainPageRefreshStatus>.init()
+    internal let onlineApplyRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
     internal var onlineApplyOffset = 0
     
     
     internal let internRefresh:PublishSubject<Bool> = PublishSubject<Bool>.init()
-    internal let internRes:BehaviorRelay<[CompuseRecruiteJobs]> = BehaviorRelay<[CompuseRecruiteJobs]>.init(value: [])
-    internal let internRefreshStatus:PublishSubject<mainPageRefreshStatus> = PublishSubject<mainPageRefreshStatus>.init()
+    internal let internRes:BehaviorRelay<[JobListModel]> = BehaviorRelay<[JobListModel]>.init(value: [])
+    internal let internRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
     internal var internOffset = 0
     
     
     
     internal let graduateRefresh:PublishSubject<Bool> = PublishSubject<Bool>.init()
-    internal let graduateRes:BehaviorRelay<[CompuseRecruiteJobs]> = BehaviorRelay<[CompuseRecruiteJobs]>.init(value: [])
-    internal let graduateRefreshStasu:PublishSubject<mainPageRefreshStatus> = PublishSubject<mainPageRefreshStatus>.init()
+    internal let graduateRes:BehaviorRelay<[JobListModel]> = BehaviorRelay<[JobListModel]>.init(value: [])
+    internal let graduateRefreshStasu:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
     internal var graduateOffset = 0
     
     
@@ -40,13 +40,13 @@ class RecruitViewModel{
     internal let companyRecruitMeetingRefesh:PublishSubject<(Bool, String)> = PublishSubject<(Bool, String)>.init()
     
     internal let recruitMeetingRes:BehaviorRelay<[CareerTalkMeetingModel]> = BehaviorRelay<[CareerTalkMeetingModel]>.init(value: [])
-    internal let recruitMeetingRefreshStatus:PublishSubject<mainPageRefreshStatus> = PublishSubject<mainPageRefreshStatus>.init()
+    internal let recruitMeetingRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
     internal var recruitMeetingOffset = 0 
     
     
     internal let companyRefresh:PublishSubject<Bool> = PublishSubject<Bool>.init()
     internal let companyRes:BehaviorRelay<[CompanyModel]> = BehaviorRelay<[CompanyModel]>.init(value: [])
-    internal let companyRefreshStatus:PublishSubject<mainPageRefreshStatus> = PublishSubject<mainPageRefreshStatus>.init()
+    internal let companyRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
     internal var companyOffset = 0
     
     
@@ -62,7 +62,7 @@ class RecruitViewModel{
     private var  tmpCombinatiobs:ListJobsOnlineAppy = ListJobsOnlineAppy(JSON: [:])!
     
     
-    internal let combinationlistRefreshStatus:PublishSubject<mainPageRefreshStatus> = PublishSubject<mainPageRefreshStatus>.init()
+    internal let combinationlistRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
     
     
     // jobs multi-section
@@ -103,11 +103,11 @@ extension RecruitViewModel{
     }
     
     
-    private func getInternJobs(offset :Int) -> Observable<[CompuseRecruiteJobs]>{
+    private func getInternJobs(offset :Int) -> Observable<[JobListModel]>{
         return httpServer.getInternJobs(offset: offset).share()
     }
     
-    private func getGraduateJobs(offset:Int) -> Observable<[CompuseRecruiteJobs]>{
+    private func getGraduateJobs(offset:Int) -> Observable<[JobListModel]>{
         
         return httpServer.getGraduateJobs(offset: offset).share()
     }
@@ -189,15 +189,15 @@ extension RecruitViewModel{
             
             self.getOnlineApplies(offset: self.onlineApplyOffset).subscribe(onNext: { (modes) in
                 if modes.isEmpty{
-                    self.onlineApplyRefreshStatus.onNext(mainPageRefreshStatus.NoMoreData)
+                    self.onlineApplyRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                     return
                 }
                 if IsPullDown{
                     self.onlineApplyRes.accept(modes)
-                    self.onlineApplyRefreshStatus.onNext(mainPageRefreshStatus.endHeaderRefresh)
+                    self.onlineApplyRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
                 }else{
                     self.onlineApplyRes.accept(self.onlineApplyRes.value + modes)
-                     self.onlineApplyRefreshStatus.onNext(mainPageRefreshStatus.endFooterRefresh)
+                     self.onlineApplyRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
                 }
                 
             }, onError: { (err) in
@@ -215,15 +215,15 @@ extension RecruitViewModel{
             self.internOffset = IsPullDown ? 0 : self.internOffset + 1
             self.getInternJobs(offset: self.internOffset).subscribe(onNext: { (interns) in
                 if interns.isEmpty {
-                    self.internRefreshStatus.onNext(mainPageRefreshStatus.NoMoreData)
+                    self.internRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                     return
                 }
                 if IsPullDown{
                     self.internRes.accept(interns)
-                    self.internRefreshStatus.onNext(mainPageRefreshStatus.endHeaderRefresh)
+                    self.internRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
                 }else{
                     self.internRes.accept(self.internRes.value + interns)
-                    self.internRefreshStatus.onNext(mainPageRefreshStatus.endFooterRefresh)
+                    self.internRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
                 }
                 
             }, onError: { (err) in
@@ -242,15 +242,15 @@ extension RecruitViewModel{
             
             self.getGraduateJobs(offset: self.graduateOffset).subscribe(onNext: { (jobs) in
                 if jobs.isEmpty{
-                    self.graduateRefreshStasu.onNext(mainPageRefreshStatus.NoMoreData)
+                    self.graduateRefreshStasu.onNext(PageRefreshStatus.NoMoreData)
                     return
                 }
                 if IsPullDown{
                     self.graduateRes.accept(jobs)
-                    self.graduateRefreshStasu.onNext(mainPageRefreshStatus.endHeaderRefresh)
+                    self.graduateRefreshStasu.onNext(PageRefreshStatus.endHeaderRefresh)
                 }else{
                     self.graduateRes.accept(self.graduateRes.value + jobs)
-                    self.graduateRefreshStasu.onNext(mainPageRefreshStatus.endFooterRefresh)
+                    self.graduateRefreshStasu.onNext(PageRefreshStatus.endFooterRefresh)
                 }
                 
             }, onError: { (err) in
@@ -268,15 +268,15 @@ extension RecruitViewModel{
             
             self.getRecruitMeeting(offset: self.recruitMeetingOffset).subscribe(onNext: { (jobs) in
                 if jobs.isEmpty{
-                    self.recruitMeetingRefreshStatus.onNext(mainPageRefreshStatus.NoMoreData)
+                    self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                     return
                 }
                 if IsPullDown{
                     self.recruitMeetingRes.accept(jobs)
-                    self.recruitMeetingRefreshStatus.onNext(mainPageRefreshStatus.endHeaderRefresh)
+                    self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
                 }else{
                     self.recruitMeetingRes.accept(self.recruitMeetingRes.value + jobs)
-                    self.recruitMeetingRefreshStatus.onNext(mainPageRefreshStatus.endFooterRefresh)
+                    self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
                 }
                 
             }, onError: { (err) in
@@ -293,15 +293,15 @@ extension RecruitViewModel{
             self.recruitMeetingOffset = IsPullDown ? 0 : self.recruitMeetingOffset + 1
             self.getCompanyRecruitMeetings(companyId: companyID, offset: self.recruitMeetingOffset).subscribe(onNext: { (meetings) in
                 if meetings.isEmpty{
-                    self.recruitMeetingRefreshStatus.onNext(mainPageRefreshStatus.NoMoreData)
+                    self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                     return
                 }
                 if IsPullDown{
                     self.recruitMeetingRes.accept(meetings)
-                    self.recruitMeetingRefreshStatus.onNext(mainPageRefreshStatus.endHeaderRefresh)
+                    self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
                 }else{
                     self.recruitMeetingRes.accept(self.recruitMeetingRes.value + meetings)
-                    self.recruitMeetingRefreshStatus.onNext(mainPageRefreshStatus.endFooterRefresh)
+                    self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
                 }
                 
             }, onError: { (err) in
@@ -317,16 +317,16 @@ extension RecruitViewModel{
             self.companyOffset = IsPullDown ? 0 : self.companyOffset + 1
             self.getCompany(offset: self.companyOffset).subscribe(onNext: { (companys) in
                 if companys.isEmpty{
-                    self.companyRefreshStatus.onNext(mainPageRefreshStatus.NoMoreData)
+                    self.companyRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                     return
                 }
                 
                 if IsPullDown{
                     self.companyRes.accept(companys)
-                    self.companyRefreshStatus.onNext(mainPageRefreshStatus.endHeaderRefresh)
+                    self.companyRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
                 }else{
                     self.companyRes.accept(self.companyRes.value + companys)
-                    self.companyRefreshStatus.onNext(mainPageRefreshStatus.endFooterRefresh)
+                    self.companyRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
                 }
             }, onError: { (err) in
                 self.companyRefreshStatus.onNext(.error(err: err))
@@ -348,33 +348,33 @@ extension RecruitViewModel{
                     self.combinationlistRes.onNext(self.tmpCombinatiobs)
                     //self.combinationlistRes.accept(mode)
                     // 在界面 计算当前的offset 值状态
-                    self.combinationlistRefreshStatus.onNext(mainPageRefreshStatus.endHeaderRefresh)
+                    self.combinationlistRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
                 }else{
                 
                     let tag = tagData.tag
                     if tag == "网申"{
                         if mode.onlineAppys.isEmpty{
-                            self.combinationlistRefreshStatus.onNext(mainPageRefreshStatus.NoMoreData)
+                            self.combinationlistRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                             return
                         }else{
                             // 累加最新的数据
                             self.tmpCombinatiobs.onlineAppys.append(contentsOf: mode.onlineAppys)
                             self.combinationlistRes.onNext(self.tmpCombinatiobs)
-                            self.combinationlistRefreshStatus.onNext(mainPageRefreshStatus.endFooterRefresh)
+                            self.combinationlistRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
                         }
                     }else{
                         guard let tagJobs = mode.tagJobs[tag] else{
-                            self.combinationlistRefreshStatus.onNext(mainPageRefreshStatus.NoMoreData)
+                            self.combinationlistRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                             return
                         }
                         if tagJobs.isEmpty{
-                            self.combinationlistRefreshStatus.onNext(mainPageRefreshStatus.NoMoreData)
+                            self.combinationlistRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                             return
                         }else{
                              // 累加最新的数据
                             self.tmpCombinatiobs.tagJobs[tag]?.append(contentsOf: tagJobs)
                             self.combinationlistRes.onNext(self.tmpCombinatiobs)
-                            self.combinationlistRefreshStatus.onNext(mainPageRefreshStatus.endFooterRefresh)
+                            self.combinationlistRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
                         }
                     }
                     

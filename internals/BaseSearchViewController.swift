@@ -219,12 +219,13 @@ class BaseSearchViewController: UISearchController{
         self.searchBar.barTintColor = UIColor.clear
         //设置边框和圆角 已经borderview 背景颜色
     
-        searchField = self.searchBar.value(forKey: "searchField") as! UITextField
+        searchField = (self.searchBar.value(forKey: "searchField") as! UITextField)
         searchField.layer.borderColor = UIColor.white.cgColor
         searchField.layer.borderWidth = 1
         searchField.layer.backgroundColor  = UIColor.white.cgColor
         searchField.backgroundColor = UIColor.clear
-        searchField.layer.cornerRadius = SEARCH_BAR_H/2
+//        searchField.layer.cornerRadius = search_bar_height/2
+       
         searchField.borderStyle  = .roundedRect
         searchField.textColor = UIColor.darkGray
         searchField.layer.masksToBounds = true
@@ -239,7 +240,7 @@ class BaseSearchViewController: UISearchController{
         self.view.addSubview(self.serchRecordVC.view)
         // 搜索结果VC的view 布局
         _ = self.serchRecordVC.view.sd_layout().topEqualToView(self.view)?.bottomEqualToView(self.view)?.rightEqualToView(self.view)?.leftEqualToView(self.view)
-        
+        _ = self.searchField.sd_layout()?.topEqualToView(self.searchBar)?.bottomEqualToView(self.searchBar)
 
         //self.navigationController?.navigationBar.settranslucent(false)
         //rxswift
@@ -258,8 +259,10 @@ class BaseSearchViewController: UISearchController{
     
     
     override func viewWillLayoutSubviews() {
-        self.searchBar.frame = CGRect(x: 0, y:0, width: GlobalConfig.ScreenW, height: SEARCH_BAR_H)
+       
         super.viewDidLayoutSubviews()
+        
+        
     }
     
 }

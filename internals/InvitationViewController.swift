@@ -127,7 +127,7 @@ extension InvitationViewController{
 
 extension InvitationViewController: pagetitleViewDelegate{
     
-    func ScrollContentAtIndex(index: Int, _ titleView: PagetitleView) {
+    func ScrollContentAtIndex(index: Int) {
         self.pageContent.moveToIndex(index)
     }
     

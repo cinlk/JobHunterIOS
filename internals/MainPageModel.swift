@@ -75,7 +75,8 @@ internal class latestColumn: JobField{
 }
 
 internal struct applyField:Mappable{
-    var ImageUrl:String?
+    
+    var ImageUrl:URL?
     var Field:String?
     
     init?(map: Map) {
@@ -83,7 +84,7 @@ internal struct applyField:Mappable{
     }
     
     mutating func mapping(map: Map) {
-        ImageUrl <- map["image_url"]
+        ImageUrl <- (map["image_url"], URLTransform())
         Field <- map["field"]
     }
     
@@ -110,7 +111,7 @@ internal struct SpecialRecommands:Mappable{
     var news:[latestNews]  = []
     var jobFields:[JobField] = []
     var latestColumns:[latestColumn] = []
-    var recruitMeetings: [CareerTalkMeetingModel] = []
+    var recruitMeetings: [CareerTalkMeetingListModel] = []
     var applyOnlineField:[applyField] = []
     
     init?(map: Map) {

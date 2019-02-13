@@ -180,9 +180,10 @@ struct GlobalConfig {
     // 屏幕宽高
     static let ScreenW:CGFloat = UIScreen.main.bounds.width
     static let ScreenH:CGFloat = UIScreen.main.bounds.height
-    static let NavH:CGFloat = UIDevice.current.isX() ? 88 : 64
+    static let NavH:CGFloat = (UIDevice.current.isX() ? 44  : 20) + 44
     static let defaultImage = "bigCar"
     static let searchBarH:CGFloat = 30
+    
 }
 
 struct HttpCodeRange {

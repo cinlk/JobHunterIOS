@@ -176,7 +176,7 @@ extension MyCollectionVC: UINavigationControllerDelegate{
 }
 
 extension MyCollectionVC: pagetitleViewDelegate{
-    func ScrollContentAtIndex(index: Int, _ titleView: PagetitleView) {
+    func ScrollContentAtIndex(index: Int) {
         NotificationCenter.default.post(name: NSNotification.Name.init(observerName[currentSelect]), object: nil, userInfo: ["action":"cancel"])
         navigationItem.rightBarButtonItem?.title = "编辑"
         chooseAll.isSelected = false

@@ -166,17 +166,6 @@ enum forumType:String{
 }
 
 
-// 专栏 类型
-enum newsType {
-    
-    
-    case toutiao(name:String, url:String)
-    case zhuanlan(name:String, url:String)
-    case test1(name:String, url:String)
-    case test2(name:String, url:String)
-    case none 
-}
-
 
 
 // 订阅类型

@@ -11,6 +11,7 @@ import Kingfisher
 
 
 fileprivate let lbName = "专栏推荐"
+fileprivate let top = 5
 
 class MainColumnistCell: BaseScrollerTableViewCell,UIScrollViewDelegate {
 
@@ -49,14 +50,16 @@ class MainColumnistCell: BaseScrollerTableViewCell,UIScrollViewDelegate {
     
     
     override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        scrollView.sd_resetLayout()
-        
+       
+         super.layoutSubviews()
+        //scrollView.sd_resetLayout()
+        scrollView.sd_resetNewLayout()
         self.contentView.addSubview(topView)
         _ = topView.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topEqualToView(self.contentView)?.heightIs(topViewH)
         
          _ = scrollView.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topSpaceToView(self.topView,5)?.bottomEqualToView(self.contentView)
+        
+         //super.layoutSubviews()
        
         
     }
@@ -85,14 +88,16 @@ extension MainColumnistCell{
         itemViews.forEach{ $0.removeFromSuperview()}
         itemViews.removeAll()
         
-        //scrollView.subviews.forEach{$0.removeFromSuperview()}
-       
-        scrollView.contentSize = CGSize.init(width: CGFloat(items.count)*(width+5) , height: self.height - topViewH)
+        // height  只要小于 cell 的frame 高度就行
+        scrollView.contentSize = CGSize.init(width: CGFloat(items.count)*(width+5) , height: self.height - topViewH - 5)
         
         for (idx, item) in items.enumerated(){
             
             
-            let subView:UIView = UIView.init(frame: CGRect.init(x: CGFloat(idx)*(width+5), y: 0, width: width, height: self.height - topViewH))
+            let subView:UIView = UIView.init(frame: CGRect.zero)
+            
+            //_ = subView.sd_layout()?.bottomEqualToView(self.scrollView)?.topEqualToView(self.scrollView)
+            subView.tag = idx
             
             let btn = UIButton.init(frame: CGRect.zero)
             
@@ -111,19 +116,23 @@ extension MainColumnistCell{
             
             let subtitle = UILabel.init(frame: CGRect.zero)
             subtitle.text = item.Title
-            subtitle.font = UIFont.systemFont(ofSize: 15)
+            subtitle.font = UIFont.systemFont(ofSize: 14)
             subtitle.textAlignment = .center
             subtitle.textColor = UIColor.black
-            
+            subView.sizeToFit()
             subView.addSubview(btn)
             subView.addSubview(subtitle)
-            _ = btn.sd_layout().leftSpaceToView(subView,5)?.rightSpaceToView(subView,5)?.topSpaceToView(subView,5)?.heightIs(self.height - topViewH - CGFloat(30))
-            _ = subtitle.sd_layout().topSpaceToView(btn,0)?.centerXEqualToView(btn)?.bottomSpaceToView(subView,5)?.widthRatioToView(btn,1)
+            _ = btn.sd_layout().leftSpaceToView(subView,5)?.rightSpaceToView(subView,5)?.topSpaceToView(subView,5)?.heightRatioToView(subView, 0.7)
+            _ = subtitle.sd_layout().topSpaceToView(btn,0)?.centerXEqualToView(btn)?.widthRatioToView(btn,1)?.heightRatioToView(subView, 0.2)
+            
             itemViews.append(subView)
         }
         
         scrollView.sd_addSubviews(itemViews)
-        
+        itemViews.forEach { view in
+            // cell 动态调整高度
+            _ = view.sd_layout()?.bottomEqualToView(self.scrollView)?.topEqualToView(self.scrollView)?.xIs( CGFloat(view.tag) * (width + 5))?.yIs(0)?.widthIs(width)
+        }
     }
     
     

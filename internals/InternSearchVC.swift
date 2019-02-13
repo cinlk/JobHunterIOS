@@ -115,7 +115,7 @@ class InternSearchVC: UIViewController, SearchControllerDeletgate {
     //rxSwift
     let dispose = DisposeBag()
     let searchVM:searchViewModel = searchViewModel()
-    let searchResult:BehaviorRelay<[CompuseRecruiteJobs]> = BehaviorRelay<[CompuseRecruiteJobs]>.init(value: [])
+    let searchResult:BehaviorRelay<[JobListModel]> = BehaviorRelay<[JobListModel]>.init(value: [])
     
     
     
@@ -151,10 +151,10 @@ extension InternSearchVC{
     open func searchData(word:String){
         
         requestBody.word = word
-        searchVM.searchInternJobs(mode: requestBody, offset: 0).catchError({ (error) -> Observable<[CompuseRecruiteJobs]> in
+        searchVM.searchInternJobs(mode: requestBody, offset: 0).catchError({ (error) -> Observable<[JobListModel]> in
             self.view.showToast(title: "error \(error)", customImage: nil, mode: .text)
             //showOnlyTextHub(message: "error \(error)", view: self.view)
-            return Observable<[CompuseRecruiteJobs]>.just([])
+            return Observable<[JobListModel]>.just([])
             
         }).share().bind(to: searchResult).disposed(by: dispose)
         

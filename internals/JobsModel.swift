@@ -9,6 +9,61 @@
 import UIKit
 import ObjectMapper
 
+
+// cell 显示job列表信息
+class JobListModel: NSObject, Mappable{
+    
+    var jobId:String?
+    var iconURL:URL?
+    var companyName:String?
+    var jobName:String?
+    var address:[String]?
+    var degree:String?
+    var reviewCount:Int?
+    var created_time:Date?
+    
+    // 职位类型 (必须)
+    internal var type:String?{
+        didSet{
+            guard type != nil else {
+                kind = .none
+                return
+            }
+            kind = jobType.init(rawValue: type!)
+        }
+    }
+    internal var kind:jobType?
+    
+    var createdTimeStr:String{
+        get{
+            guard let time = self.created_time, let ts = showMonthAndDay(date: time) else {
+                return ""
+            }
+            return ts
+        }
+    }
+    
+    
+    required init?(map: Map) {
+        if map.JSON["job_id"] == nil || map.JSON["type"] == nil{
+            return nil
+        }
+    }
+    
+    func mapping(map: Map) {
+        jobId <- map["job_id"]
+        type <- map["type"]
+        iconURL <- (map["icon_url"], StringTransformURL())
+        companyName <- map["company_name"]
+        jobName <- map["job_name"]
+        address <- map["address"]
+        degree <- map["degree"]
+        reviewCount <- map["review_count"]
+        created_time <- (map["created_time"], DateTransform())
+    }
+    
+}
+
 // MARK 添加更多的属性，比如id，标签等？？
 class CompuseRecruiteJobs :BaseModel{
     

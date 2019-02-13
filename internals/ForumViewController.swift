@@ -82,7 +82,7 @@ class ForumViewController: UIViewController {
     // 搜索包裹searchBar 的view
     private lazy var searchBarContainer:UIView = {
         // 搜索框
-        let searchBarFrame = CGRect(x: 0, y:0, width: GlobalConfig.ScreenW, height: SEARCH_BAR_H)
+        let searchBarFrame = CGRect(x: 0, y:0, width: GlobalConfig.ScreenW, height: GlobalConfig.searchBarH)
         let searchBarContainer = UIView(frame:searchBarFrame)
         searchBarContainer.backgroundColor = UIColor.clear
         return searchBarContainer
@@ -142,7 +142,7 @@ extension ForumViewController{
         self.navigationController?.navigationBar.settranslucent(true)
         
         self.definesPresentationContext = true
-        searchController.height = SEARCH_BAR_H
+        searchController.height = GlobalConfig.searchBarH
         searchBarContainer.addSubview(searchController.searchBar)
         // 不显示搜索分类
         searchController.chooseTypeBtn.isHidden = true
@@ -188,7 +188,7 @@ extension ForumViewController: PageContentViewScrollDelegate{
 }
 
 extension ForumViewController: pagetitleViewDelegate{
-    func ScrollContentAtIndex(index: Int, _ titleView: PagetitleView) {
+    func ScrollContentAtIndex(index: Int) {
         self.pageContent.moveToIndex(index)
     }
     

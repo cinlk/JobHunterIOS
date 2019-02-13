@@ -50,7 +50,7 @@ class JobHomeVC: UIViewController {
     // 搜索包裹searchBar 的view
     private lazy var searchBarContainer:UIView = {
         // 搜索框
-        let searchBarFrame = CGRect(x: 0, y:0, width: GlobalConfig.ScreenW, height: SEARCH_BAR_H)
+        let searchBarFrame = CGRect(x: 0, y:0, width: GlobalConfig.ScreenW, height: GlobalConfig.searchBarH)
         let searchBarContainer = UIView(frame:searchBarFrame)
         searchBarContainer.backgroundColor = UIColor.clear
         return searchBarContainer
@@ -129,9 +129,10 @@ class JobHomeVC: UIViewController {
         // 子 vc 覆盖 navibar view
         self.navigationController?.removeCustomerView()
         
-
          
     }
+    
+    
 }
 
 extension JobHomeVC {
@@ -146,7 +147,7 @@ extension JobHomeVC {
 
         
         // 保证Controller 和 搜索container 高度一致, 搜索框左右圆角正常
-        searchController.height = SEARCH_BAR_H
+        searchController.height = GlobalConfig.searchBarH
         // searchBar 放入containerview
         searchBarContainer.addSubview(searchController.searchBar)
         //搜索条件menu
@@ -169,7 +170,7 @@ extension JobHomeVC {
 // pagetitle 代理实现
 extension JobHomeVC: pagetitleViewDelegate{
     
-    func ScrollContentAtIndex(index: Int, _ titleView: PagetitleView) {
+    func ScrollContentAtIndex(index: Int) {
         curentIndex = index
         self.pageContent.moveToIndex(index)
      }
