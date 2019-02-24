@@ -10,6 +10,59 @@ import UIKit
 import ObjectMapper
 
 
+
+
+class NeayByCompanyModel: NSObject, Mappable{
+    
+    var companyID:String?
+    var companyIconURL:URL?
+    var companyName:String?
+    var businessFiled:[String]?
+    var distance:Double?
+    var reviewCounts:Int?
+    
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        
+        companyID <- map["company_id"]
+        companyIconURL <- (map["company_icon_url"], URLTransform())
+        companyName <- map["company_name"]
+        businessFiled <- map["business_field"]
+        distance <- map["distance"]
+        reviewCounts <- map["review_counts"]
+    }
+    
+}
+
+
+class CompanyListModel: NSObject,  Mappable{
+    
+    var companyID:String?
+    var companyIconURL:URL?
+    var companyName:String?
+    var reviewCounts:Int?
+    var citys:[String]?
+    var businessField:[String]?
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        
+        companyID <- map["company_id"]
+        companyIconURL <- (map["company_icon_url"], URLTransform())
+        companyName <- map["company_name"]
+        reviewCounts <- map["review_counts"]
+        citys <- map["citys"]
+        businessField <- map["business_field"]
+    }
+}
+
 // 公司数据model
 
 class  CompanyModel: BaseModel {

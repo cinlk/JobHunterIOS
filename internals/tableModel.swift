@@ -218,7 +218,7 @@ struct SearchHistory {
                 res.append(item[SearchHistory.name])
             }
             if res.count > 0{
-                res.insert("搜索记录", at: 0)
+                res.insert(GlobalConfig.searchTopWord, at: 0)
             }
             return res
             

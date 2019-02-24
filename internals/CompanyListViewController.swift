@@ -16,7 +16,7 @@ import YNDropDownMenu
 class CompanyListViewController: UIViewController {
 
     
-    private var datas:[CompanyModel] = []
+    private var datas:[CompanyListModel] = []
     
     internal lazy var cityMenu:DropItemCityView = {
         let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 200))
@@ -40,7 +40,7 @@ class CompanyListViewController: UIViewController {
         
         let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: DROP_MENU_H), dropDownViews: [cityMenu,industryKind], dropDownViewTitles: ["城市","行业领域"])
         
-        menu.setImageWhen(normal: UIImage(named: "arrow_nor"), selected: UIImage(named: "arrow_xl"), disabled: UIImage(named: "arrow_dim"))
+        menu.setImageWhens(normal: [#imageLiteral(resourceName: "arrow_dim")], selectedTintColor: UIColor.blue, disabledTintColor: UIColor.black)
         menu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
         
         menu.setLabelFontWhen(normal: .systemFont(ofSize: 16), selected: .boldSystemFont(ofSize: 16), disabled: .systemFont(ofSize: 16))
@@ -49,7 +49,7 @@ class CompanyListViewController: UIViewController {
         menu.showMenuSpringWithDamping = 1
         menu.hideMenuSpringWithDamping = 1
         menu.bottomLine.isHidden = false
-        menu.addSwipeGestureToBlurView()
+        //menu.addSwipeGestureToBlurView()
         return menu
         
     }()
@@ -143,8 +143,8 @@ extension CompanyListViewController{
             self.datas = companys
         }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
         
-        self.vm.companyRes.share().catchError { (err) -> Observable<[CompanyModel]> in
-            return  Observable<[CompanyModel]>.just([])
+        self.vm.companyRes.share().catchError { (err) -> Observable<[CompanyListModel]> in
+            return  Observable<[CompanyListModel]>.just([])
             }.observeOn(MainScheduler.instance).bind(to: self.table.rx.items(cellIdentifier: CompanyItemCell.identity(), cellType: CompanyItemCell.self)) { (row, mode, cell) in
                 cell.mode = mode
         }.disposed(by: dispose)
@@ -175,7 +175,7 @@ extension CompanyListViewController{
                 self.table.deselectRow(at: idx, animated: false)
                 let mode = self.datas[idx.row]
                 let companyVC = CompanyMainVC()
-                companyVC.companyID = mode.id
+                companyVC.companyID = mode.companyID
                 companyVC.hidesBottomBarWhenPushed = true
                 self.navigationController?.pushViewController(companyVC, animated: true)
             

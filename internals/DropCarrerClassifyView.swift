@@ -11,8 +11,9 @@ import YNDropDownMenu
 
 
 
-fileprivate let leftTableH:CGFloat = 140
+fileprivate let leftTableW:CGFloat = 140
 fileprivate let all:String = "不限"
+fileprivate let cellIdentity:String = "cell"
 
 class DropCarrerClassifyView:YNDropDownView,UITableViewDataSource,UITableViewDelegate{
     
@@ -20,10 +21,10 @@ class DropCarrerClassifyView:YNDropDownView,UITableViewDataSource,UITableViewDel
     private lazy var  leftTable:UITableView = { [unowned self] in
         let table = UITableView()
         table.backgroundColor = UIColor.viewBackColor()
-        table.frame = CGRect(x: 0, y: 0, width: leftTableH, height: frame.height)
+        table.frame = CGRect(x: 0, y: 0, width: leftTableW, height: frame.height)
         table.delegate = self
         table.dataSource = self
-        table.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        table.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentity)
         table.separatorStyle = .none
         table.allowsMultipleSelection = false
         return table
@@ -33,10 +34,10 @@ class DropCarrerClassifyView:YNDropDownView,UITableViewDataSource,UITableViewDel
         
         let table = UITableView()
         table.backgroundColor = UIColor.white
-        table.frame = CGRect(x: leftTableH, y: 0, width: self.frame.width-leftTableH, height: frame.height)
+        table.frame = CGRect(x: leftTableW, y: 0, width: self.frame.width-leftTableW, height: frame.height)
         table.delegate = self
         table.dataSource = self
-        table.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        table.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentity)
         
         table.separatorStyle = .none
         table.allowsMultipleSelection = false
@@ -46,18 +47,26 @@ class DropCarrerClassifyView:YNDropDownView,UITableViewDataSource,UITableViewDel
         
     }()
     
+    private lazy var subline:UIView = {
+        let lines = UIView()
+        lines.tag = 101
+        lines.backgroundColor = UIColor.orange
+        return lines
+    }()
+    // 回调选择的数据
     var passData: ((_ cond:String) -> Void)?
     
     
     private var keys:[String] = []
     private var selected = ""
-    private var rightTableIndex:Int = 0
+    //private var rightTableIndex:Int = 0
     
     private var datas:[String:[String]] = [:]{
         didSet{
             keys = datas.keys.sorted()
             keys.insert(all, at: 0)
             selected = keys[0]
+            self.leftTable.reloadData()
         }
     }
     
@@ -116,22 +125,22 @@ class DropCarrerClassifyView:YNDropDownView,UITableViewDataSource,UITableViewDel
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell:UITableViewCell =  tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        let cell:UITableViewCell =  tableView.dequeueReusableCell(withIdentifier: cellIdentity, for: indexPath)
         cell.textLabel?.textAlignment = .center
         cell.textLabel?.font = UIFont.systemFont(ofSize: 14)
         cell.selectionStyle = .none
         
         if tableView == leftTable{
             cell.textLabel?.text = keys[indexPath.row]
-            
             cell.backgroundColor = UIColor.viewBackColor()
         }else{
-            
-            cell.subviews.filter({ (view) -> Bool in
-                return view.tag == 101
-            }).forEach{
-                $0.removeFromSuperview()
-            }
+            // 下划线 view 移除
+//            cell.subviews.filter({ (view) -> Bool in
+//                return view.tag == 101
+//            }).forEach{
+//                $0.removeFromSuperview()
+//            }
+            removeUnderLine(cell: cell)
             cell.backgroundColor = UIColor.white
             cell.textLabel?.textColor = UIColor.black
             cell.textLabel?.text =  datas[selected]?[indexPath.row]
@@ -146,11 +155,7 @@ class DropCarrerClassifyView:YNDropDownView,UITableViewDataSource,UITableViewDel
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let cell = tableView.cellForRow(at: indexPath)
-        //添加下滑线
-        let lines = UIView()
-        lines.tag = 101
-        lines.frame = CGRect(x: 60, y: (cell?.frame.height)!-1, width: (cell?.frame.width)!-120, height: 1.0)
-        lines.backgroundColor = UIColor.orange
+        
         cell?.textLabel?.textColor = UIColor.orange
         
         
@@ -164,8 +169,9 @@ class DropCarrerClassifyView:YNDropDownView,UITableViewDataSource,UITableViewDel
             rightTable.reloadData()
             
         }else{
-            rightTableIndex = indexPath.row
-            cell?.addSubview(lines)
+            //rightTableIndex = indexPath.row
+            subline.frame = CGRect(x: 60, y: (cell?.frame.height)!-1, width: (cell?.frame.width)!-120, height: 1.0)
+            cell?.addSubview(subline)
             if let name:String =  datas[selected]?[indexPath.row]{
             
                 self.hideMenu()
@@ -180,9 +186,10 @@ class DropCarrerClassifyView:YNDropDownView,UITableViewDataSource,UITableViewDel
         let cell = tableView.cellForRow(at: indexPath)
         cell?.textLabel?.textColor = UIColor.black
         if tableView == rightTable{
-            cell?.subviews.filter({ (view) -> Bool in
-                return view.tag == 101
-            })[0].removeFromSuperview()
+//            cell?.subviews.filter({ (view) -> Bool in
+//                return view.tag == 101
+//            })[0].removeFromSuperview()
+             removeUnderLine(cell: cell)
         }
     }
     
@@ -196,13 +203,19 @@ class DropCarrerClassifyView:YNDropDownView,UITableViewDataSource,UITableViewDel
 extension DropCarrerClassifyView{
     private func loadData(){
         
-        datas =   ["IT互联网":["软件及系统开发","算法/大数据","智能硬件","移动开发"],
-                    "电子电气":["电子/通信","嵌入式","电气工程"],
-                    "人事行政":["人事HR","猎头","行政"],
-                    "传媒设计":["广告","编辑","媒体","视频后期"],
-                    "杀掉无多哇多无多无多":["数据1","数据2"]]
+//        datas =   ["IT互联网":["软件及系统开发","算法/大数据","智能硬件","移动开发"],
+//                    "电子电气":["电子/通信","嵌入式","电气工程"],
+//                    "人事行政":["人事HR","猎头","行政"],
+//                    "传媒设计":["广告","编辑","媒体","视频后期"],
+//                    "杀掉无多哇多无多无多":["数据1","数据2"]]
         
-        self.leftTable.reloadData()
+        if SingletoneClass.shared.selectedSubBusinessField.isEmpty{
+            // TODO
+            
+            return
+        }
+        self.datas = SingletoneClass.shared.selectedSubBusinessField
+        
         
     }
     
@@ -228,9 +241,10 @@ extension DropCarrerClassifyView{
         self.rightTable.indexPathsForSelectedRows?.forEach({ (idx) in
             if let cell = self.rightTable.cellForRow(at: idx){
                 cell.textLabel?.textColor = UIColor.black
-                cell.subviews.filter({ (view) -> Bool in
-                    return view.tag == 101
-                })[0].removeFromSuperview()
+//                cell.subviews.filter({ (view) -> Bool in
+//                    return view.tag == 101
+//                })[0].removeFromSuperview()
+                removeUnderLine(cell: cell)
                 cell.isSelected = false
             }
         })
@@ -239,6 +253,16 @@ extension DropCarrerClassifyView{
         self.selected = keys[0]
         self.leftTable.reloadData()
         self.rightTable.reloadData()
+        
+    }
+    
+    private func removeUnderLine(cell:UITableViewCell?){
+        
+        cell?.subviews.filter({ (view) -> Bool in
+            return view.tag == 101
+        }).forEach({ (v) in
+            v.removeFromSuperview()
+        })
         
     }
 }

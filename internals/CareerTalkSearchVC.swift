@@ -14,16 +14,34 @@ import MJRefresh
 
 
 fileprivate let dropMenuH:CGFloat = 40
-fileprivate let dropMenuTitles:[String] = ["学校","行业领域","宣讲时间"]
+fileprivate let dropMenuTitles:[String] = [GlobalConfig.DropMenuTitle.college,
+                                           GlobalConfig.DropMenuTitle.businessField,
+                                           GlobalConfig.DropMenuTitle.meetingTime]
 
-class CareerTalkSearchVC: UIViewController, SearchControllerDeletgate{
+fileprivate let dropMenuHeight:CGFloat = GlobalConfig.ScreenH - 240
+fileprivate let meetingDateHeight:CGFloat = 120
 
+class CareerTalkSearchVC: BaseViewController, SearchControllerDeletgate{
+
+    private lazy var modes:[CareerTalkMeetingListModel] = []
+    private lazy var filterModes:[CareerTalkMeetingListModel] = []
+    private lazy var firstLoad:Bool = true
+    
+    private var condition:([String:[String]], String, String) = ([:], "", ""){
+        didSet{
+            // 根据条件过滤结果
+            print(self.condition)
+        }
+    }
+    
     
     private lazy var colleageMenu: DropCollegeItemView = { [unowned self] in
-        let college = DropCollegeItemView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
+        let college = DropCollegeItemView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeight))
         college.passData = { colleges in
-            self.requestBody.college = colleges
-            self.table.mj_header.beginRefreshing()
+//            self.requestBody.college = colleges
+//            self.table.mj_header.beginRefreshing()
+            self.condition.0 = colleges
+        
         }
         college.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
         
@@ -32,11 +50,12 @@ class CareerTalkSearchVC: UIViewController, SearchControllerDeletgate{
     
    
     private lazy var kind: DropItemIndustrySectorView = { [unowned self] in
-        let k = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
+        let k = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeight))
         
         k.passData = { industry in
-            self.requestBody.industry = industry
-            self.table.mj_header.beginRefreshing()
+//            self.requestBody.industry = industry
+//            self.table.mj_header.beginRefreshing()
+            self.condition.1 = industry
         }
         
         k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
@@ -48,10 +67,10 @@ class CareerTalkSearchVC: UIViewController, SearchControllerDeletgate{
     // MARK: 日期选择具体到某天??
     private lazy var meetingTimeMenu:DropValidTimeView = { [unowned self] in
         
-        let m = DropValidTimeView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 90))
+        let m = DropValidTimeView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: DropValidTimeView.myHeigh()))
         m.passData = { date in
-            self.requestBody.date = date
-            self.table.mj_header.beginRefreshing()
+
+            self.condition.2 = date
         }
         m.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
         
@@ -62,7 +81,7 @@ class CareerTalkSearchVC: UIViewController, SearchControllerDeletgate{
     private lazy var dropMenu:YNDropDownMenu = {
         
         let m =  configDropMenu(items: [colleageMenu, kind, meetingTimeMenu], titles: dropMenuTitles, height: dropMenuH)
-        m.isHidden = false
+        //m.isHidden = false
         return m
     }()
     
@@ -78,60 +97,45 @@ class CareerTalkSearchVC: UIViewController, SearchControllerDeletgate{
     }()
     
     
-    // mj refresh
-    private lazy var refreshHeader:MJRefreshNormalHeader = {
-        let h = MJRefreshNormalHeader.init { [weak self] in
-            self?.searchVM.careerTalkRefresh.onNext((true, (self?.requestBody)!))
-        }
-        h?.setTitle("开始刷新", for: .pulling)
-        h?.setTitle("刷新中...", for: .refreshing)
-        h?.setTitle("下拉刷新", for: .idle)
-        h?.lastUpdatedTimeLabel.isHidden = true
-        
-        return h!
-        
-    }()
-    
-    private lazy var refreshFooter:MJRefreshAutoNormalFooter = {
-        let f = MJRefreshAutoNormalFooter.init(refreshingBlock: { [weak self] in
-            
-            self?.searchVM.careerTalkRefresh.onNext((false, (self?.requestBody)!))
 
-        })
-        f?.setTitle("上拉刷新", for: .idle)
-        f?.setTitle("刷新中...", for: .refreshing)
-        f?.setTitle("没有数据", for: .noMoreData)
-        
-        return f!
-    }()
     
     
-    
-    private var requestBody:searchCareerTalkBody = searchCareerTalkBody(JSON: [:])!
+   // private var requestBody:searchCareerTalkBody = searchCareerTalkBody(JSON: [:])!
     
     //rxSwift
     let dispose = DisposeBag()
-    let searchVM:searchViewModel = searchViewModel()
-    let searchResult:BehaviorRelay<[CareerTalkMeetingModel]> = BehaviorRelay<[CareerTalkMeetingModel]>.init(value: [])
+    let searchVM:SearchViewModel = SearchViewModel()
+    //let searchResult:BehaviorRelay<[CareerTalkMeetingModel]> = BehaviorRelay<[CareerTalkMeetingModel]>.init(value: [])
     
     
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        setView()
+        setViews()
         setViewModel()
-        self.table.mj_header = refreshHeader
-        self.table.mj_footer = refreshFooter
-        
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if self.firstLoad{
+            super.setViews()
+            self.firstLoad = !self.firstLoad
+        }
+    }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        _ = table.sd_layout().topSpaceToView(self.view,dropMenuH)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
+    
+    override func setViews() {
+        self.view.addSubview(table)
+        self.view.addSubview(dropMenu)
+        _ = self.table.sd_layout()?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view, dropMenuH)?.bottomEqualToView(self.view)
+        self.view.backgroundColor = UIColor.white
+        self.hub.isHidden = true
+        self.hiddenViews.append(table)
+        self.hiddenViews.append(dropMenu)
+        
+        
     }
 
 }
@@ -142,7 +146,8 @@ class CareerTalkSearchVC: UIViewController, SearchControllerDeletgate{
 extension CareerTalkSearchVC:UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 65
+        let mode = self.filterModes[indexPath.row]
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CareerTalkCell.self, contentViewWidth: GlobalConfig.ScreenW)
     }
     
 }
@@ -150,62 +155,49 @@ extension CareerTalkSearchVC:UITableViewDelegate{
 
 extension CareerTalkSearchVC{
     
-    private func setView(){
-        self.view.addSubview(table)
-        self.view.addSubview(dropMenu)
-        self.view.backgroundColor = UIColor.white
+
+    private func showloading(){
+        self.hub.isHidden = false
+        self.hub.show(animated: true)
+        self.hiddenViews.forEach { (view) in
+            view.isHidden = true
+        }
     }
     
+    
     open func searchData(word:String){
-        requestBody.word = word
+        //requestBody.word = word
         
         // 选项切换的刷新
-        searchVM.searchCareerTalkMeetins(mode: requestBody, offset: 0).catchError({ (error) -> Observable<[CareerTalkMeetingModel]> in
-            self.view.showToast(title: "error \(error)", customImage: nil, mode: .text)
-            //showOnlyTextHub(message: "error \(error)", view: self.view)
-            return Observable<[CareerTalkMeetingModel]>.just([])
-            
-        }).share().bind(to: searchResult).disposed(by: dispose)
-        
+        searchVM.searchCareerTalkMeetins(word: word)
+        self.showloading()
         // 界面内table 自身的刷新
-        self.searchVM.carrerTalkRes.share().bind(to: searchResult).disposed(by: dispose)
+        //self.searchVM.carrerTalkRes.share().bind(to: searchResult).disposed(by: dispose)
         
     }
     
     private func  setViewModel(){
         
-        searchResult.share().observeOn(MainScheduler.instance).bind(to: self.table.rx.items(cellIdentifier: CareerTalkCell.identity(), cellType: CareerTalkCell.self)){ (row, element, cell) in
+        
+        self.searchVM.carrerTalkRes.share().observeOn(MainScheduler.instance).bind(to: self.table.rx.items(cellIdentifier: CareerTalkCell.identity(), cellType: CareerTalkCell.self)){ (row, element, cell) in
             cell.mode = element
             }.disposed(by: dispose)
         
-        searchResult.share().map({ applys  in
-            applys.isEmpty
-        }) .bind(to: self.dropMenu.rx.isHidden).disposed(by: dispose)
-        
+//        searchResult.share().map({ applys  in
+//            applys.isEmpty
+//        }) .bind(to: self.dropMenu.rx.isHidden).disposed(by: dispose)
+//
         
         // table 刷新状态
-        
-        self.searchVM.careerRefreshStatus.asDriver(onErrorJustReturn: .none).drive(onNext: { refreshStatus in
-            switch refreshStatus{
-            case .beginHeaderRefrsh:
-                self.table.mj_header.beginRefreshing()
-            case .endHeaderRefresh:
-                self.table.mj_footer.resetNoMoreData()
-                self.table.mj_header.endRefreshing()
-            case .beginFooterRefresh:
-                self.table.mj_footer.beginRefreshing()
-            case .endFooterRefresh:
-                self.table.mj_footer.endRefreshing()
-            case .NoMoreData:
-                self.table.mj_footer.endRefreshingWithNoMoreData()
-            case .error(let err):
-                self.view.showToast(title: "online appy \(err)", customImage: nil, mode: .text)
-                //showOnlyTextHub(message: "online appy \(err)", view: self.view)
-            default:
-                break
+        self.searchVM.carrerTalkRes.asDriver(onErrorJustReturn: []).drive(onNext: { (modes) in
+            if self.modes.isEmpty{
+                self.modes = modes
             }
+            self.filterModes = modes
+            self.dropMenu.isHidden = modes.isEmpty
+            self.didFinishloadData()
             
-        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        }).disposed(by: self.dispose)
         
     }
     
@@ -215,13 +207,10 @@ extension CareerTalkSearchVC{
 
 extension CareerTalkSearchVC{
     open func resetCondition(){
-        self.colleageMenu.clearAll.sendActions(for: .touchUpInside)
+        self.colleageMenu.reset()
         self.kind.clearSelected()
         self.meetingTimeMenu.clearSelected()
-        
-        self.requestBody.college = nil
-        self.requestBody.date = nil
-        self.requestBody.industry = nil
+        self.modes = []
         
         
     }

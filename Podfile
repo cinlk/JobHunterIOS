@@ -6,7 +6,7 @@ target 'internals' do
 	#pod 'SwiftyJSON', :git => 'https://github.com/appsailor/SwiftyJSON.git' 
 	pod 'SDAutoLayout' 
 	pod 'SQLite.swift' 
-        pod 'YNDropDownMenu'
+        pod 'YNDropDownMenu', '3.0.3'
 	#pod 'CocoaAsyncSocket'
 	pod 'SocketRocket'
 	pod 'SwiftProtobuf' 
@@ -17,6 +17,9 @@ target 'internals' do
 	pod 'ObjectMapper'
 	pod 'MJRefresh'
 	pod 'Kingfisher' 
+	# gaode map
+	#pod 'AMap3DMap'
+	#pod 'AMapSearch'
 	# hub
 	pod 'MBProgressHUD'
 	pod 'SwiftDate'

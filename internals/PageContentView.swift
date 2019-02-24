@@ -50,6 +50,7 @@ class PageContentView: UIView {
         self.pVC = pVC
         childVCs.forEach { (vc) in
             self.pVC?.addChild(vc)
+        
         }
         
         self.addSubview(collectionView)

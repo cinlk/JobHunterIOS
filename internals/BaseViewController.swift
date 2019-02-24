@@ -30,6 +30,7 @@ class BaseViewController: UIViewController {
         hub.mode = .indeterminate
         hub.label.text = loading
         hub.removeFromSuperViewOnHide = false
+        //hub.isHidden = true 
         hub.margin = 10
         hub.label.textColor = UIColor.black
         return hub
@@ -38,7 +39,7 @@ class BaseViewController: UIViewController {
     
     override func viewDidLoad(){
         super.viewDidLoad()
-        
+        //hub.show(animated: false)
         self.view.backgroundColor = UIColor.white
         self.view.insertSubview(errorView,at: 0)
         // 影藏返回按钮文字
@@ -49,6 +50,7 @@ class BaseViewController: UIViewController {
    
     internal func setViews(){
         
+        
         hub.show(animated: true)
         self.hiddenViews.forEach{
             $0.isHidden = true
@@ -58,7 +60,7 @@ class BaseViewController: UIViewController {
     //获取数据后正常显示
    internal func didFinishloadData(){
         
-        
+         
         hub.hide(animated: true)
         self.hiddenViews.forEach{
             $0.isHidden = false

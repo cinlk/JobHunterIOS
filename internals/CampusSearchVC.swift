@@ -13,18 +13,40 @@ import RxSwift
 import MJRefresh
 import ObjectMapper
 
-fileprivate let menuTitles:[String] = ["城市","专业分类","公司性质"]
+fileprivate let menuTitles:[String] = [GlobalConfig.DropMenuTitle.city,
+                                       GlobalConfig.DropMenuTitle.subBusinessField,
+                                       GlobalConfig.DropMenuTitle.companyType]
 fileprivate let dropMenuH:CGFloat = 40
+fileprivate let cityMenuHeight:CGFloat = GlobalConfig.ScreenH - 240
+fileprivate let bussinessMenuHeight:CGFloat = GlobalConfig.ScreenH - 240
+fileprivate let companyMenuHeight:CGFloat = GlobalConfig.ScreenH - 240
 
-class CampusSearchVC: UIViewController, SearchControllerDeletgate {
+class CampusSearchVC: BaseViewController, SearchControllerDeletgate {
 
+    
+    private lazy var modes:[JobListModel] = []
+    private lazy var filterModes:[JobListModel] = []
+    private lazy var firstLoad:Bool = true
+    
+    private var condition:([String], String, String) = ([], "", ""){
+        didSet{
+            // 过滤条件
+            //self.filterModes.removeAll()
+            self.modes.forEach { m in
+//                if m.address?.contains(condition.0) && m.businessField?.contains(condition.1) && m.companyType == condition.2{
+//                    self.filterModes.append(m)
+//                }
+            }
+            
+            //self.searchVM.graduateRes.onNext(self.filterModes)
+        }
+    }
     
     
     private  lazy var cityMenu:DropItemCityView =  {
-         let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
+         let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: cityMenuHeight))
          city.passData = { citys in
-            self.requestBody.city = citys
-            self.table.mj_header.beginRefreshing()
+            self.condition.0 = citys
             
         }
          city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
@@ -33,21 +55,20 @@ class CampusSearchVC: UIViewController, SearchControllerDeletgate {
     }()
     
     
-    private lazy var kind:DropCarrerClassifyView = {
-        let k = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
+    private lazy var businessKind:DropCarrerClassifyView = {
+        let k = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: bussinessMenuHeight))
         k.passData = {  industry in
-            self.requestBody.industry =  industry
-            self.table.mj_header.beginRefreshing()
+            self.condition.1 = industry
         }
         k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
         return k
     }()
     
     private lazy var company:DropCompanyPropertyView = {
-        let c = DropCompanyPropertyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height:  6*45))
+        let c = DropCompanyPropertyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height:  companyMenuHeight))
         c.passData = { company in
-            self.requestBody.company = company
-            self.table.mj_header.beginRefreshing()
+           
+            self.condition.2 = company
         }
         c.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
         return c
@@ -56,7 +77,7 @@ class CampusSearchVC: UIViewController, SearchControllerDeletgate {
     
     private lazy var dropMenu:YNDropDownMenu = {
         
-        return configDropMenu(items: [cityMenu, kind, company], titles: menuTitles, height: dropMenuH)
+        return configDropMenu(items: [cityMenu, businessKind, company], titles: menuTitles, height: dropMenuH)
     }()
     
     
@@ -71,125 +92,94 @@ class CampusSearchVC: UIViewController, SearchControllerDeletgate {
         return tb
     }()
     
-    //table refresh
-    private lazy var refreshHeader:MJRefreshNormalHeader = {
-        let h = MJRefreshNormalHeader.init { [weak self] in
-            self?.searchVM.graduateRefresh.onNext((true, (self?.requestBody)!))
-            //self?.searchVM. .onNext((true, (self?.requestBody)!))
-        }
-        h?.setTitle("开始刷新", for: .pulling)
-        h?.setTitle("刷新中...", for: .refreshing)
-        h?.setTitle("下拉刷新", for: .idle)
-        h?.lastUpdatedTimeLabel.isHidden = true
-        
-        return h!
-        
-    }()
-    
-    private lazy var refreshFooter:MJRefreshAutoNormalFooter = {
-        let f = MJRefreshAutoNormalFooter.init(refreshingBlock: { [weak self] in
-            self?.searchVM.graduateRefresh.onNext((false, (self?.requestBody)!))
-            
-        })
-        f?.setTitle("上拉刷新", for: .idle)
-        f?.setTitle("刷新中...", for: .refreshing)
-        f?.setTitle("没有数据", for: .noMoreData)
-        
-        return f!
-    }()
-    
-    
-    private var requestBody:searchGraduateRecruiteBody = searchGraduateRecruiteBody(JSON: [:])!
 
-    //rxSwift
+
     private let dispose = DisposeBag()
-    private let searchVM = searchViewModel()
-    private var searchResult:BehaviorRelay<[JobListModel]> = BehaviorRelay<[JobListModel]>.init(value: [])
+    private let searchVM = SearchViewModel()
+    //private var searchResult:BehaviorRelay<[JobListModel]> = BehaviorRelay<[JobListModel]>.init(value: [])
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setView()
+        setViews()
         setViewModel()
-        self.table.mj_header = refreshHeader
-        self.table.mj_footer = refreshFooter
-        
         // Do any additional setup after loading the view.
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // 控制其他vc 先显示时， 该vc的hub不显示
+        if self.firstLoad{
+            super.setViews()
+            self.firstLoad = !self.firstLoad
+        }
+    }
+    
+    override func setViews(){
+        self.view.addSubview(table)
+        self.view.addSubview(dropMenu)
+        self.view.backgroundColor = UIColor.white
+        _ = table.sd_layout().topSpaceToView(dropMenu,0)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
+        self.hub.isHidden = true
+        self.hiddenViews.append(table)
+        self.hiddenViews.append(dropMenu)
+        //super.setViews()
+    }
+    
+    
 
 }
 
 extension CampusSearchVC:UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 75
+        let mode = self.filterModes[indexPath.row]
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CommonJobTableCell.self, contentViewWidth: GlobalConfig.ScreenW)
     }
 }
 
 
 
 extension CampusSearchVC{
-    private func setView(){
-        self.view.addSubview(table)
-        self.view.addSubview(dropMenu)
-        self.view.backgroundColor = UIColor.white
-        _ = table.sd_layout().topSpaceToView(dropMenu,0)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
-    }
     
     
     private func setViewModel(){
         
         
-        searchResult.share().observeOn(MainScheduler.instance).bind(to: self.table.rx.items(cellIdentifier: CommonJobTableCell.identity(), cellType: CommonJobTableCell.self)){ (row, element, cell) in
+        self.searchVM.graduateRes.share().observeOn(MainScheduler.instance).bind(to: self.table.rx.items(cellIdentifier: CommonJobTableCell.identity(), cellType: CommonJobTableCell.self)){ (row, element, cell) in
             cell.mode = element
         }.disposed(by: dispose)
         
         
-        searchResult.share().map { jobs in
-            jobs.isEmpty
-        }.bind(to: self.dropMenu.rx.isHidden).disposed(by: dispose)
+        self.searchVM.graduateRes.asDriver(onErrorJustReturn: []).drive(onNext: { (modes) in
+            if self.modes.isEmpty{
+                self.modes = modes
+            }
+            self.filterModes = modes
+            self.dropMenu.isHidden = modes.isEmpty
+            self.didFinishloadData()
+            
+            
+        }).disposed(by: self.dispose)
         
         
-        
-        self.searchVM.graduateRefreshStatus.asDriver(onErrorJustReturn: .none).drive(onNext: { status in
-                switch status{
-                case .beginHeaderRefrsh:
-                    self.table.mj_header.beginRefreshing()
-                case .endHeaderRefresh:
-                    self.table.mj_footer.resetNoMoreData()
-                    self.table.mj_header.endRefreshing()
-                case .beginFooterRefresh:
-                    self.table.mj_footer.beginRefreshing()
-                case .endFooterRefresh:
-                    self.table.mj_footer.endRefreshing()
-                case .NoMoreData:
-                    self.table.mj_footer.endRefreshingWithNoMoreData()
-                case .error(let err):
-                    self.view.showToast(title: "online appy \(err)", customImage: nil, mode: .text)
-                    //showOnlyTextHub(message: "online appy \(err)", view: self.view)
-                default:
-                    break
-                }
-        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
     }
     
     
+    private func showloading(){
+        self.hub.isHidden = false
+        self.hub.show(animated: true)
+        self.hiddenViews.forEach { (view) in
+            view.isHidden = true
+        }
+    }
     // 搜索数据
     open func searchData(word:String){
         
-        requestBody.word = word
-        
-        // 选项切换的刷新
-        searchVM.searchGraduteJobs(mode: requestBody, offset: 0).catchError({ (error) -> Observable<[JobListModel]> in
-            self.view.showToast(title: "error \(error)", customImage: nil, mode: .text)
-            //showOnlyTextHub(message: "error \(error)", view: self.view)
-            return Observable<[JobListModel]>.just([])
-            
-        }).share().bind(to: searchResult).disposed(by: dispose)
         
         // 界面内table 自身的刷新
-        self.searchVM.graduateRes.share().bind(to: searchResult).disposed(by: dispose)
-        
+        //self.searchVM.graduateRes.share().bind(to: searchResult).disposed(by: dispose)
+        self.searchVM.searchGraduteJobs(word: word)
+        self.showloading()
     }
     
     
@@ -200,13 +190,12 @@ extension CampusSearchVC{
 extension CampusSearchVC{
     
     open func resetCondition(){
-        self.cityMenu.clearAll.sendActions(for: .touchUpInside)
-        self.kind.clearSelected()
+        self.cityMenu.clear()
+        self.businessKind.clearSelected()
         self.company.clearSelected()
+        self.modes = []
         
-        self.requestBody.city = nil
-        self.requestBody.industry = nil
-        self.requestBody.company = nil
+        
     }
 }
 

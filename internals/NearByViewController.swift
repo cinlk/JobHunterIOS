@@ -8,8 +8,10 @@
 
 import UIKit
 
-fileprivate let titleName:String = "周边"
+fileprivate let titleName:String = "附近"
 fileprivate let pageTitleH:CGFloat = 45
+fileprivate let titles:[String] = ["宣讲会", "公司"]
+
 
 class NearByViewController: UIViewController {
 
@@ -17,7 +19,8 @@ class NearByViewController: UIViewController {
     private var childVC:[UIViewController] = []
     
     private lazy var pagetitle:PagetitleView = { [unowned self] in
-        let title = PagetitleView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: pageTitleH), titles: ["宣讲会","公司"])
+        let title = PagetitleView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: pageTitleH),  titles: titles, itemWidth: 100, horizontalEdgeInset: 80)
+       
         title.delegate = self
         return title
         
@@ -64,11 +67,6 @@ class NearByViewController: UIViewController {
         self.navigationController?.insertCustomerView(UIColor.blue)
         self.hidesBottomBarWhenPushed = true 
 
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
 }

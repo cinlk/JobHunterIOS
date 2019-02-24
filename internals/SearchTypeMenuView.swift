@@ -15,6 +15,7 @@ protocol SearchMenuDelegate: class {
  }
 
 
+fileprivate let frameWidth:CGFloat = 100
 
 class SearchTypeMenuView: UIView {
     
@@ -23,9 +24,11 @@ class SearchTypeMenuView: UIView {
     internal var datas:[searchItem] = [] {
         didSet{
             self.table.reloadData()
+            self.frame.size = CGSize.init(width: frameWidth, height: CGFloat(datas.count) * SearchTypeMenuView.cellHeight())
         }
     }
     
+    private lazy var dispose:DisposeBag = DisposeBag.init()
     
     private var arrowWidth:CGFloat = 15
     private var arrowHeight:CGFloat = 10
@@ -35,7 +38,8 @@ class SearchTypeMenuView: UIView {
     
     // 三角箭头
     private lazy var arrow:UIView = {  [unowned self] in
-        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: self.frame.width, height: arrowHeight))
+        //let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: self.frame.width, height: arrowHeight))
+        let view = UIView.init(frame: CGRect.zero)
         view.backgroundColor = UIColor.clear
         let layer = CAShapeLayer()
         let path = UIBezierPath()
@@ -51,7 +55,8 @@ class SearchTypeMenuView: UIView {
     
     // 内容
     internal lazy var table:UITableView = {  [unowned self] in
-        let table = UITableView(frame: CGRect.init(x: 0, y: arrowHeight , width: self.frame.width - 30, height: self.frame.height - arrowHeight))
+        //let table = UITableView(frame: CGRect.init(x: 0, y: arrowHeight , width: self.frame.width - 30, height: self.frame.height - arrowHeight))
+        let table = UITableView.init(frame: CGRect.zero)
         table.tableHeaderView = UIView()
         table.backgroundColor = UIColor.white
         table.dataSource = self
@@ -68,6 +73,7 @@ class SearchTypeMenuView: UIView {
 
     // 蒙层view
     private lazy var backgroundBtn:UIButton = {
+        
         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH))
         btn.addTarget(self, action: #selector(dismiss), for: .touchUpInside)
         btn.backgroundColor = UIColor.lightGray
@@ -77,15 +83,37 @@ class SearchTypeMenuView: UIView {
     
     
      init(frame: CGRect, arrowLeftMargin:CGFloat = 15) {
-        self.arrowLeftMargin = arrowLeftMargin
         super.init(frame: frame)
-        self.addSubview(table)
-        self.addSubview(arrow)
+        self.frame.size = CGSize.init(width: frameWidth, height: 0)
+        self.arrowLeftMargin = arrowLeftMargin
+       
+        _ = NotificationCenter.default.rx.notification(NotificationName.searchType).takeUntil(self.rx.deallocated).subscribe(onNext: { (notify) in
+            if let searchType = notify.userInfo?["searchType"] as? searchItem{
+                switch searchType{
+                    case .company, .intern, .meeting, .graduate, .onlineApply:
+                        self.datas = [.company, .intern, .meeting, .graduate, .onlineApply]
+                default:
+                    break
+                }
+            }
+        })
         
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+      
+        self.addSubview(table)
+        self.addSubview(arrow)
+        _ = self.arrow.sd_layout()?.leftEqualToView(self)?.topEqualToView(self)?.widthRatioToView(self,1)?.heightIs(arrowHeight)
+        _ = self.table.sd_layout()?.leftEqualToView(self)?.topSpaceToView(self.arrow,0)?.rightSpaceToView(self,30)?.bottomSpaceToView(self, 0)
+        
+        super.layoutSubviews()
+        
+        
     }
 
 }
@@ -116,6 +144,12 @@ extension SearchTypeMenuView{
 
 
 
+extension SearchTypeMenuView{
+    
+    class func cellHeight()->CGFloat{
+        return 30
+    }
+}
 
 extension SearchTypeMenuView: UITableViewDataSource, UITableViewDelegate{
 
@@ -130,6 +164,7 @@ extension SearchTypeMenuView: UITableViewDataSource, UITableViewDelegate{
 
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         cell.selectionStyle = .none
         cell.textLabel?.text = datas[indexPath.row].describe
@@ -154,7 +189,7 @@ extension SearchTypeMenuView: UITableViewDataSource, UITableViewDelegate{
 
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 30
+        return SearchTypeMenuView.cellHeight()
     }
 
 }

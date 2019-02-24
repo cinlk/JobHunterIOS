@@ -11,27 +11,39 @@ import YNDropDownMenu
 
 fileprivate let maxCount:Int = 5
 fileprivate let addressPre:String = "当前地区: "
+fileprivate let topAddressHeight:CGFloat = 40
+fileprivate let bottomBarHeight:CGFloat = 40
 fileprivate let spaceWidth:CGFloat = 25
+fileprivate let defaulAllCollege:String = "不限"
 
-
-class DropCollegeItemView: YNDropDownView {
-
+// 顶部地址view
+fileprivate class topAddress:UIView{
     
     
-    // 当前大学
-    private var datas:[String:[String]] = [:]{
-        didSet{
-            datas.keys.reversed().forEach{
-                selected[$0] = []
-            }
-        }
-    }
+    private weak var pview:DropCollegeItemView?
     
-    // MARK app 定位到具体的省 或 直辖市
-    private var currentCity:String = "北京"
+    private lazy var downArrow:UIImageView = {
+        let img = UIImageView.init(frame: CGRect.zero)
+        img.contentMode = .scaleAspectFit
+        img.image = #imageLiteral(resourceName: "arrow_xl").withRenderingMode(.alwaysTemplate)
+        img.clipsToBounds = true
+        return img
+    }()
     
+    private lazy var addressIcon:UIImageView = {
+        let img = UIImageView.init(frame: CGRect.zero)
+        img.clipsToBounds = true
+        img.contentMode = .scaleAspectFit
+        img.image = #imageLiteral(resourceName: "nearby").withRenderingMode(.alwaysOriginal)
+        return img
+    }()
     
-    private lazy var addrese:UILabel = {
+    private  lazy var tap:UITapGestureRecognizer = {
+        let t = UITapGestureRecognizer.init()
+        return t
+    }()
+    
+    private var address:UILabel = {
         let label = UILabel()
         label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 100)
         label.textAlignment = .left
@@ -39,54 +51,129 @@ class DropCollegeItemView: YNDropDownView {
         return label
     }()
     
+    private var line:UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor.lightGray
+        return v
+    }()
     
     
-    private lazy var topAddressView:UIView = { [unowned self] in
+    convenience init(frame:CGRect, v:DropCollegeItemView?){
+        self.init(frame: frame)
+        self.pview = v
+        self.tap.addTarget(self.pview!, action: #selector(self.pview!.chooseArea(_:)))
+
+        
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.backgroundColor = UIColor.white
+        self.isUserInteractionEnabled = true
+        self.addGestureRecognizer(self.tap)
+
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let views:[UIView] = [downArrow, line, address, addressIcon]
+        self.sd_addSubviews(views)
+        _ = self.downArrow.sd_layout()?.rightSpaceToView(self, 10)?.centerYEqualToView(self)?.widthIs(15)?.heightEqualToWidth()
+        _ = self.addressIcon.sd_layout()?.leftSpaceToView(self, 10)?.centerYEqualToView(self)?.widthIs(20)?.heightEqualToWidth()
+        _ = self.address.sd_layout()?.leftSpaceToView(addressIcon, 5)?.centerYEqualToView(addressIcon)?.autoHeightRatio(0)
+        _ = self.line.sd_layout()?.bottomEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(1)
+        
+    }
+    
+    
+    internal func setText(text:String){
+        self.address.text = text
+    }
+}
+
+
+
+fileprivate class bottomToolBar:UIToolbar{
+    
+    
+    private lazy var clearAll:UIButton = {
+    
+        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (GlobalConfig.ScreenW - spaceWidth - 10)/2, height: 35))
+        clear.setTitle("清空", for: .normal)
+        clear.setTitleColor(UIColor.black, for: .normal)
+        clear.backgroundColor = UIColor.white
+        clear.layer.borderWidth = 1
+        clear.layer.borderColor = UIColor.black.cgColor
+        clear.addTarget(self.pview!, action: #selector(self.pview!.reset), for: .touchUpInside)
+        return clear
+        
+    }()
+    
+    private lazy var confirm:UIButton = {
+        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width:  (GlobalConfig.ScreenW - spaceWidth - 10)/2, height: 35))
+        confirm.setTitle("确定", for: .normal)
+        confirm.setTitleColor(UIColor.white, for: .normal)
+        confirm.backgroundColor = UIColor.blue
+        confirm.addTarget(self.pview!, action: #selector(self.pview!.done), for: .touchUpInside)
+        return confirm
+    }()
+    
+    private lazy var space:UIBarButtonItem = {
+        let s = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
+        s.width = spaceWidth
+        return s
+    }()
+    
+    
+    
+    private weak var pview:DropCollegeItemView?
+    
+    
+    convenience init(frame:CGRect, view:DropCollegeItemView){
+        self.init(frame: frame)
+        self.pview = view
         
         
-        let top = UIView()
-        top.backgroundColor = UIColor.white
-        top.isUserInteractionEnabled = true
+        self.barStyle = .default
+        self.backgroundColor = UIColor.white
+        self.items = []
         
-        let downArrow = UIImageView()
-        downArrow.contentMode = .scaleAspectFit
-        downArrow.image = #imageLiteral(resourceName: "arrow_nor").withRenderingMode(.alwaysTemplate)
-        downArrow.clipsToBounds = true
+    }
+    
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.items?.append(contentsOf: [UIBarButtonItem.init(customView: clearAll),space, UIBarButtonItem.init(customView: confirm)])
         
-        // 选择地区
-        let gesture = UITapGestureRecognizer()
-        gesture.numberOfTapsRequired = 1
-        
-        
-        gesture.addTarget(self, action: #selector(chooseArea(_ :)))
-        
-        top.addGestureRecognizer(gesture)
-        
-        top.addSubview(downArrow)
-        _ = downArrow.sd_layout().rightSpaceToView(top,10)?.centerYEqualToView(top)?.widthIs(15)?.heightIs(15)
-        
-        let addressIcon = UIImageView()
-        addressIcon.image = #imageLiteral(resourceName: "locate").withRenderingMode(.alwaysTemplate)
-        addressIcon.clipsToBounds = true
-        addressIcon.contentMode = .scaleAspectFit
-        top.addSubview(addressIcon)
-        _ = addressIcon.sd_layout().leftSpaceToView(top,10)?.centerYEqualToView(top)?.widthIs(20)?.heightIs(15)
-        
-        
-        top.addSubview(addrese)
-        _ = addrese.sd_layout().leftSpaceToView(addressIcon,5)?.centerYEqualToView(addressIcon)?.autoHeightRatio(0)
-        
-        let line = UIView()
-        line.backgroundColor = UIColor.lightGray
-        top.addSubview(line)
-        _ = line.sd_layout().bottomEqualToView(top)?.leftEqualToView(top)?.rightEqualToView(top)?.heightIs(1)
-        
-        
-        return top
+    }
+}
+
+
+
+class DropCollegeItemView: YNDropDownView {
+
+    
+    
+    private lazy var topAddressView:topAddress = {
+        let t = topAddress.init(frame: CGRect.zero, v: self)
+        return t
     }()
     
     private lazy var flowLayout:UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout.init()
+        // 每行2个元素
         layout.itemSize = CGSize.init(width: (GlobalConfig.ScreenW - 60)/2 , height: 40)
         layout.minimumLineSpacing = 10
         layout.minimumInteritemSpacing = 10
@@ -116,49 +203,20 @@ class DropCollegeItemView: YNDropDownView {
     // 地区collectionView
     private lazy var areaView:AreaCollectionView = { [unowned self] in
         
-        let v = AreaCollectionView.init(frame: CGRect.init(x: 0, y: 40, width: GlobalConfig.ScreenW, height: 0))
+        let v = AreaCollectionView.init(frame: CGRect.init(x: 0, y: topAddressHeight, width: GlobalConfig.ScreenW, height: 0))
         
         v.autoresizesSubviews = false
 
         v.selectedCity = { city in
             self.reloadCitys(name: city)
         }
-        
-        //v.isHidden = true
-        
         return v
     }()
     
     
-    private lazy var isOpenAreaView:Bool = false
-    
-    
-    internal lazy var clearAll:UIButton = {
-        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (GlobalConfig.ScreenW - spaceWidth - 10)/2, height: 35))
-        clear.setTitle("清空", for: .normal)
-        clear.setTitleColor(UIColor.black, for: .normal)
-        clear.backgroundColor = UIColor.white
-        clear.layer.borderWidth = 1
-        clear.layer.borderColor = UIColor.black.cgColor
-        clear.addTarget(self, action: #selector(clear(_:)), for: .touchUpInside)
-        return clear
-    }()
-    
-    private lazy var confirm:UIButton = {
-        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width:  (GlobalConfig.ScreenW - spaceWidth - 10)/2, height: 35))
-        confirm.setTitle("确定", for: .normal)
-        confirm.setTitleColor(UIColor.white, for: .normal)
-        confirm.backgroundColor = UIColor.blue
-        confirm.addTarget(self, action: #selector(done(_:)), for: .touchUpInside)
-        return confirm
-        
-    }()
     // 加入toolbar
-    private lazy var toolBar:UIToolbar = {
-        let bar = UIToolbar.init()
-        bar.barStyle = .default
-        bar.backgroundColor = UIColor.white
-        bar.items = []
+    private lazy var toolBar:bottomToolBar = {
+        let bar = bottomToolBar.init(frame: CGRect.zero, view: self)
         return bar
     }()
     
@@ -169,16 +227,33 @@ class DropCollegeItemView: YNDropDownView {
         btn.addTarget(self, action: #selector(hidden), for: .touchUpInside)
         btn.backgroundColor = UIColor.clear
         btn.alpha = 1
-        
         return btn
     }()
     
+    private lazy var isOpenAreaView:Bool = false
     
     
-    // 记录当前选择的大学集合
+    // 当前大学
+    private var datas:[String:[String]] = [:]{
+        didSet{
+            
+            // 默认城市n类所有大学
+            datas.keys.reversed().forEach{
+                selected[$0] = [defaulAllCollege]
+                //datas[$0]?.insert(defaulAllCollege, at: 0)
+            }
+            self.topAddressView.setText(text: addressPre + currentCity)
+            self.collection.reloadData()
+        }
+    }
+    
+    // TODO  定位到具体的省 或 直辖市 逻辑
+    private var currentCity:String = "北京"
+    
+    // 记录当前选择的城市的大学集合
     private var selected:[String:[String]] = [:]
     
-    var passData: ((_ colleges:[String]) -> Void)?
+    var passData: ((_ colleges:[String:[String]]) -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -187,27 +262,14 @@ class DropCollegeItemView: YNDropDownView {
         self.addSubview(topAddressView)
         self.addSubview(collection)
         self.addSubview(toolBar)
-        
         self.addSubview(areaView)
         
+        //addrese.text = addressPre + currentCity
         
-        addrese.text = addressPre + currentCity
-        _ = toolBar.sd_layout().bottomEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(40)
-        _ = topAddressView.sd_layout().topEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(40)
+        _ = toolBar.sd_layout().bottomEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(bottomBarHeight)
+        _ = topAddressView.sd_layout().topEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(topAddressHeight)
         
         _ = collection.sd_layout().topSpaceToView(topAddressView,0)?.rightEqualToView(self)?.leftEqualToView(self)?.heightIs(self.frame.height - topAddressView.frame.height)
-        
-        
-        
-        //
- 
-        
-        
-        
-        let space = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
-        space.width = spaceWidth
-        toolBar.items?.append(contentsOf: [UIBarButtonItem.init(customView: clearAll),space, UIBarButtonItem.init(customView: confirm)])
-        
         
         loadData()
         
@@ -218,11 +280,7 @@ class DropCollegeItemView: YNDropDownView {
          super.init(coder: aDecoder)
         //fatalError("init(coder:) has not been implemented")
     }
-    
-    
-    
 
-    
     
     // 显示 和 关闭 view
     override func dropDownViewOpened() {
@@ -250,19 +308,18 @@ class DropCollegeItemView: YNDropDownView {
 
 extension DropCollegeItemView{
     private func loadData(){
-        var bj:[String] = []
-        for i in 0..<15{
-            bj.append("北京大学\(i)")
+
+        if SingletoneClass.shared.selectedcityCollege.isEmpty{
+            // TODO
+            return
         }
-        
-        var cd:[String] = []
-        for i in 0..<15{
-            cd.append("成都大学\(i)")
+        // 加入不限到每个城市
+        var tmp = SingletoneClass.shared.selectedcityCollege
+        tmp.keys.forEach { (k) in
+            tmp[k]?.insert(defaulAllCollege, at: 0)
         }
-        let randSeed:[String] = ["北京","测试","大青蛙","当前为多","当前为多","成都","北京1","测试1","大青蛙1","当前为多1","当前为多1","成都1","北京2","测试2","大青蛙2","当前为多2","当前为多2","成都2","北京2","测试2","大青蛙2","当前为多2","当前为多2","成都2","北京3","测试3","大青蛙3","当前为多3","当前为多3","成都3","北京3","测试3","大青蛙3","当前为多3","当前为多3","成都3"]
-        for i in 0..<randSeed.count{
-            datas[randSeed[i]] =  i%2 == 0 ? cd : bj
-        }
+        self.datas = tmp
+        self.currentCity = tmp.keys.first ?? ""
         // 设置城市
         areaView.datas = Array(datas.keys)
         //datas = ["北京":bj,"测试":bj,"大青蛙":cd,"当前为多":cd,"当前为多":bj,"成都":cd]
@@ -270,16 +327,21 @@ extension DropCollegeItemView{
 }
 
 extension DropCollegeItemView{
-    @objc private func clear(_ btn:UIButton){
-        selected[currentCity]!.removeAll()
+    
+    @objc internal func reset(){
+        selected.keys.forEach { (k) in
+            selected[k] = [defaulAllCollege]
+        }
+//        selected[currentCity]!.removeAll()
+//        selected[currentCity]! = [defaulAllCollege]
         self.collection.reloadData()
         
     }
     
-    @objc private func done(_ btn:UIButton){
+    @objc internal func done(){
         
         
-        self.passData?(selected[currentCity]!)
+        self.passData?([currentCity: selected[currentCity] ?? []])
         self.hideMenu()
         
     }
@@ -293,51 +355,37 @@ extension DropCollegeItemView{
 
 // 展开地区
 extension DropCollegeItemView{
-    @objc private func chooseArea(_ gest: UITapGestureRecognizer){
+    
+    private func changeAreaView(frame:CGRect, complete:  (()->Void)?){
+        self.areaView.frame = frame
+        UIView.animate(withDuration: 0.3) {
+            self.areaView.layoutIfNeeded()
+            complete?()
+        }
+    }
+    
+    
+    @objc internal func chooseArea(_ gest: UITapGestureRecognizer){
         //self.areaView
 
-        // 收藏
-        if isOpenAreaView {
-            
-            self.areaView.frame = CGRect.init(x: 0, y: 40, width: GlobalConfig.ScreenW, height: 1)
-            
-            //UIView.transition(with: <#T##UIView#>, duration: <#T##TimeInterval#>, options: <#T##UIViewAnimationOptions#>, animations: <#T##(() -> Void)?##(() -> Void)?##() -> Void#>, completion: <#T##((Bool) -> Void)?##((Bool) -> Void)?##(Bool) -> Void#>)
-            UIView.animate(withDuration: 5, animations: {
-                //self.areaView.isHidden = true
-                self.areaView.layoutIfNeeded()
-
-            })
-            
-        }else{
-            // 展开
-            self.areaView.frame = CGRect.init(x: 0, y: 40, width: GlobalConfig.ScreenW, height: self.bounds.height - 40)
-            
-            UIView.animate(withDuration: 5, animations: {
-               self.areaView.layoutIfNeeded()
-                //self.areaView.isHidden = false
-
-            })
-        }
+        isOpenAreaView ? self.changeAreaView(frame: CGRect.init(x: 0, y: topAddressHeight, width: GlobalConfig.ScreenW, height: 1), complete: nil) : self.changeAreaView(frame: CGRect.init(x: 0, y: topAddressHeight, width: GlobalConfig.ScreenW, height: self.bounds.height - topAddressHeight), complete: nil)
+        
+         isOpenAreaView = !isOpenAreaView
     
-        isOpenAreaView = !isOpenAreaView
        
     }
 }
 
 extension DropCollegeItemView{
+    
     private func reloadCitys(name:String){
+        
         currentCity = name
-        
-        
         self.collection.reloadData()
 
-        UIView.animate(withDuration: 0.5, animations: {
-           //self.areaView.isHidden = true
-        }, completion: { bool in
-            
-            self.addrese.text = addressPre + name
+        self.changeAreaView(frame: CGRect.init(x: 0, y: topAddressHeight, width: GlobalConfig.ScreenW, height: 1), complete: {
+            self.topAddressView.setText(text: addressPre + name)
         })
-        
         isOpenAreaView = false
         
     }
@@ -365,22 +413,23 @@ extension DropCollegeItemView: UICollectionViewDataSource, UICollectionViewDeleg
         cell.name.text = datas[currentCity]?[indexPath.row]
         
         // 默认选择全部大学
-        if selected[currentCity]!.isEmpty{
-            selected[currentCity]!.append(datas[currentCity]![0])
+//        if selected[currentCity]!.isEmpty{
+//            selected[currentCity]!.append(datas[currentCity]![0])
+//
+//        }
+//
         
-        }
-        
-        
-        if selected[currentCity]!.contains(datas[currentCity]![indexPath.row]){
-            // 被选中状态
-            cell.name.textColor = UIColor.blue
-            cell.name.layer.borderColor = UIColor.blue.cgColor
-            
-        }else{
-            cell.name.textColor = UIColor.black
-            cell.name.layer.borderColor = UIColor.clear.cgColor
-        }
-        
+        cell.Selected = selected[currentCity]!.contains(datas[currentCity]![indexPath.row]) ? true : false
+//        if selected[currentCity]!.contains(datas[currentCity]![indexPath.row]){
+//            // 被选中状态
+//            cell.name.textColor = UIColor.blue
+//            cell.name.layer.borderColor = UIColor.blue.cgColor
+//
+//        }else{
+//            cell.name.textColor = UIColor.black
+//            cell.name.layer.borderColor = UIColor.clear.cgColor
+//        }
+//
         
         return cell
     }
@@ -389,21 +438,23 @@ extension DropCollegeItemView: UICollectionViewDataSource, UICollectionViewDeleg
         guard  selected[currentCity] != nil else {
             return
         }
+        
         if  let cell = collectionView.cellForItem(at: indexPath) as? CollectionTextCell, let name = cell.name.text{
-            // 全选
-            if indexPath.row == 0 {
+            
+            // 默认全选
+            if name == defaulAllCollege {
                 selected[currentCity]!.removeAll()
-                selected[currentCity]!.append(name)
+                selected[currentCity]! = [defaulAllCollege]
                 collectionView.reloadData()
                 return
             }
             
-            // 去掉全部选择的cell
-            if selected[currentCity]!.contains(datas[currentCity]![0]){
-                selected[currentCity]!.remove(at: 0)               
+            // 先去掉全部选择的cell
+            if (selected[currentCity]?.contains(datas[currentCity]?[0] ?? "") ?? false), let i = selected[currentCity]?.firstIndex(of: defaulAllCollege) {
+                selected[currentCity]?.remove(at: i)
+                
             }
-            
-            
+        
             
             if selected[currentCity]!.contains(name){
                 // 取消选择状态
@@ -411,7 +462,7 @@ extension DropCollegeItemView: UICollectionViewDataSource, UICollectionViewDeleg
                 
             }else{
                 if selected[currentCity]!.count >= maxCount{
-                    print("不能超过5个")
+                    self.showToast(title: "不能超过5个", customImage: nil, mode: .text)
                     return
                 }
                 selected[currentCity]!.append(name)

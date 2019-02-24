@@ -400,13 +400,13 @@ private class tableHeader:UIView{
             guard  let mode = mode  else {
                 return
             }
+        
+            //let url = URL.init(string: mode.companyIcon)
             
-            let url = URL.init(string: mode.companyIcon)
-            
-            self.icon.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            //self.icon.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             self.address.text = mode.address?.joined(separator: " ")
             self.time.text = "截止时间: " + mode.endTimeStr
-            self.name.text = mode.companyName
+            //self.name.text = mode.companyName
             self.positions.text = mode.positions?.joined(separator: " ")
             self.setupAutoHeight(withBottomViewsArray: [icon,time], bottomMargin: 5)
             

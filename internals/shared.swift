@@ -12,6 +12,7 @@ import Foundation
 import Moya
 import Alamofire
 import ObjectMapper
+import CoreLocation
 
 
 
@@ -44,11 +45,13 @@ fileprivate struct CurrentUserAddress {
     private var city:String
     private var zone:String
     private var address:String
+    private var userLocation: CLLocation
     
     init() {
         self.city = ""
         self.zone = ""
         self.address = ""
+        self.userLocation = CLLocation.init(latitude: CLLocationDegrees.init(), longitude: CLLocationDegrees.init())
     }
     
     mutating func set(city:String, zone:String, address:String){
@@ -56,11 +59,19 @@ fileprivate struct CurrentUserAddress {
         self.zone = zone
         self.address = address
     }
+    
+    mutating func setLocation(location: CLLocation){
+        self.userLocation = location
+    }
+    
     //
     func getAddress() -> String?{
         return self.address  == "" ? nil : self.address
     }
     
+    func getLocation() -> CLLocation{
+        return self.userLocation
+    }
 }
 
 
@@ -280,6 +291,18 @@ class SingletoneClass {
     public var guidanceData:ResponseArrayModel<GuideItems>?
     // 广告背景图片
     public var adviseImage:ResponseModel<AdViseImage>?
+    // 选择的城市
+    public var selectedCity:[String:[String]] = [:]
+    // 选择的行业类型
+    public var selectedBusinessField:[String] = []
+    // 行业职位细分
+    public var selectedSubBusinessField:[String:[String]] = [:]
+    // 公司类型
+    public var selectedCompanyType:[String] = []
+    // 实习选择类型
+    public var selectedInternCondition:[String:[String]] = [:]
+    // 城市的大学
+    public var selectedcityCollege:[String:[String]] = [:]
     // app用户协议地址
     public var appAgreementURL:String? = "http://www.immomo.com/agreement.html"
     
@@ -343,6 +366,14 @@ extension SingletoneClass{
     }
     public func getAddress() -> String?{
         return self.currentUserAddress.getAddress()
+    }
+    public func getLocation() -> CLLocation{
+        return self.currentUserAddress.getLocation()
+    }
+    
+    public func setUserLocation(location: CLLocation){
+       
+        self.currentUserAddress.setLocation(location: location)
     }
     
     
@@ -418,6 +449,73 @@ extension SingletoneClass{
         }) { (error) in
             group.leave()
         }
+        // 需要选择的数据 TODO
+        group.enter()
+        NetworkTool.request(.citys, successCallback: { (data) in
+            if let res = Mapper<ResponseModel<SelectedCityModel>>().map(JSONObject: data)?.body, let citys = res.citys{
+                self.selectedCity = citys
+            }
+            group.leave()
+        }) { (error) in
+            group.leave()
+        }
+        
+        group.enter()
+        NetworkTool.request(.bussinessField, successCallback: { (data) in
+            if let res = Mapper<ResponseModel<BussinessFieldModel>>().map(JSONObject: data)?.body, let field = res.fields{
+                self.selectedBusinessField = field
+            }
+            group.leave()
+        }) { (error) in
+            group.leave()
+        }
+        
+        group.enter()
+        NetworkTool.request(.subBusinessField, successCallback: { (data) in
+            if let res = Mapper<ResponseModel<SubBusinessFieldModel>>().map(JSONObject: data)?.body,
+                let field = res.fields{
+                self.selectedSubBusinessField = field
+            }
+            group.leave()
+        }) { (error) in
+            group.leave()
+        }
+        
+        group.enter()
+        NetworkTool.request(.companyType, successCallback: { (data) in
+            if let res = Mapper<ResponseModel<CompanyTypeModel>>().map(JSONObject: data)?.body,
+                let type = res.type{
+                self.selectedCompanyType = type
+            }
+            
+            group.leave()
+        }) { (error) in
+            group.leave()
+        }
+        
+        
+        group.enter()
+        NetworkTool.request(.internCondition, successCallback: { (data) in
+            if let res = Mapper<ResponseModel<InternConditionModel>>().map(JSONObject: data)?.body,
+                let condition = res.condition{
+                self.selectedInternCondition = condition
+            }
+            
+            group.leave()
+        }) { (error) in
+            group.leave()
+        }
+        
+        group.enter()
+        NetworkTool.request(.cityCollege, successCallback: { (data) in
+            if let res = Mapper<ResponseModel<CitysCollegeModel>>().map(JSONObject: data)?.body, let c = res.cityCollege{
+                self.selectedcityCollege = c
+            }
+            group.leave()
+        }) { (error) in
+            group.leave()
+        }
+        
         
         
         //  需要等待用户登录后 TODO

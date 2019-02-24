@@ -44,7 +44,7 @@ class JobHomeVC: UIViewController {
     }
     
     // 搜索控件
-    private lazy var searchController:BaseSearchViewController = BaseSearchViewController(searchResultsController: searchResultController())
+    private lazy var searchController:BaseSearchViewController = BaseSearchViewController(searchResultsController: SearchResultController())
     
     
     // 搜索包裹searchBar 的view
@@ -151,7 +151,7 @@ extension JobHomeVC {
         // searchBar 放入containerview
         searchBarContainer.addSubview(searchController.searchBar)
         //搜索条件menu
-        searchController.popMenuView.datas = [.onlineApply, .graduate, .intern, .meeting, .company]
+//        searchController.popMenuView.datas = [.onlineApply, .graduate, .intern, .meeting, .company]
         //searchController.hidesNavigationBarDuringPresentation = false
         // 搜索containerview 作为title viwe
         self.navigationItem.titleView = searchBarContainer

@@ -16,7 +16,7 @@ import YNDropDownMenu
 class CareerTalkMeetingViewController: UIViewController {
 
     
-    private var datas:[CareerTalkMeetingModel] = []
+    private var datas:[CareerTalkMeetingListModel] = []
     
     internal lazy var industry:DropItemIndustrySectorView = {
         let indus = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
@@ -52,7 +52,7 @@ class CareerTalkMeetingViewController: UIViewController {
         // 不遮挡子view，子view 改变frame
         //menu.clipsToBounds = false
     
-        menu.setImageWhen(normal: UIImage(named: "arrow_nor"), selected: UIImage(named: "arrow_xl"), disabled: UIImage(named: "arrow_dim"))
+        menu.setImageWhens(normal: [#imageLiteral(resourceName: "arrow_dim")], selectedTintColor: UIColor.blue, disabledTintColor: UIColor.black)
         menu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
         
         menu.setLabelFontWhen(normal: .systemFont(ofSize: 16), selected: .boldSystemFont(ofSize: 16), disabled: .systemFont(ofSize: 16))
@@ -61,7 +61,7 @@ class CareerTalkMeetingViewController: UIViewController {
         menu.showMenuSpringWithDamping = 1
         menu.hideMenuSpringWithDamping = 1
         menu.bottomLine.isHidden = false
-        menu.addSwipeGestureToBlurView()
+        //menu.addSwipeGestureToBlurView()
         return menu
         
     }()
@@ -165,9 +165,9 @@ extension CareerTalkMeetingViewController{
             self.datas = []
         }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
         
-        self.vm.recruitMeetingRes.share().catchError { (err) -> Observable<[CareerTalkMeetingModel]> in
+        self.vm.recruitMeetingRes.share().catchError { (err) -> Observable<[CareerTalkMeetingListModel]> in
             print("err \(err)")
-            return Observable<[CareerTalkMeetingModel]>.just([])
+            return Observable<[CareerTalkMeetingListModel]>.just([])
             }.observeOn(MainScheduler.instance).bind(to: self.table.rx.items(cellIdentifier: CareerTalkCell.identity(), cellType: CareerTalkCell.self)){ (row, mode, cell) in
                 cell.mode = mode
                 
@@ -202,7 +202,7 @@ extension CareerTalkMeetingViewController{
             let show = CareerTalkShowViewController()
             show.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(show, animated: true)
-            show.meetingID = mode.id
+            show.meetingID = mode.meetingID
             
             
         }).disposed(by: dispose)

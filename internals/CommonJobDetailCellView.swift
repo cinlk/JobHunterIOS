@@ -90,6 +90,8 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     }()
     
     
+    // 实习需要显示的view TODO
+   
     
     dynamic var mode:JobListModel?{
         didSet{

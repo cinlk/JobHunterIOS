@@ -23,7 +23,7 @@ protocol SearchControllerDeletgate: class {
 }
 
 
-class searchResultController: BaseViewController {
+class SearchResultController: BaseViewController {
 
     private var searchChildVC:[UIViewController] = []
     
@@ -34,6 +34,7 @@ class searchResultController: BaseViewController {
         let ins = InternSearchVC.init()
         let css = CareerTalkSearchVC.init()
         let coms = CompanySearchVC()
+    
         searchChildVC.append(contentsOf: [os, cs, ins, css, coms])
         let content = PageContentView.init(frame: self.view.frame, childVCs: searchChildVC, pVC: self)
         content.collectionView.isScrollEnabled = false
@@ -61,24 +62,24 @@ class searchResultController: BaseViewController {
         super.setViews()
     }
     
-    override func showError() {
-        super.showError()
-    }
-    
-    override func reload() {
-        super.reload()
-
-    }
-    
-    override func didFinishloadData() {
-        // 不让hub 从view 中移除
-        super.didFinishloadData()
-    }
+//    override func showError() {
+//        super.showError()
+//    }
+//
+//    override func reload() {
+//        super.reload()
+//
+//    }
+//
+//    override func didFinishloadData() {
+//        // 不让hub 从view 中移除
+//        super.didFinishloadData()
+//    }
     
 }
 
 
-extension searchResultController{
+extension SearchResultController{
     
     
     
@@ -86,24 +87,29 @@ extension searchResultController{
     open func startSearchData(type: searchItem,word: String){
         
         
+
         switch type {
             
         case .onlineApply:
             self.searchFildContent.moveToIndex(0)
             
+          
             if let vc =  self.children[0] as? SearchControllerDeletgate{
                 // 清空搜索条件
                 vc.resetCondition()
+                
                 vc.searchData(word:word)
             }
             
         case .graduate:
+            
              self.searchFildContent.moveToIndex(1)
              if let vc = self.children[1] as? SearchControllerDeletgate{
                 vc.resetCondition()
                 vc.searchData(word: word)
              }
         case .intern:
+          
             self.searchFildContent.moveToIndex(2)
             if let vc = self.children[2] as? SearchControllerDeletgate{
                 vc.resetCondition()
@@ -126,8 +132,7 @@ extension searchResultController{
         default:
             break
         }
-        
+
         self.didFinishloadData()
-        
     }
 }

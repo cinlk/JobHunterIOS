@@ -55,7 +55,7 @@ class GraduateJobsViewController: UIViewController {
         
         let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: DROP_MENU_H), dropDownViews: [cityMenu,careerClassify,degree], dropDownViewTitles: ["城市","行业分类","学历"])
         
-        menu.setImageWhen(normal: UIImage(named: "arrow_nor"), selected: UIImage(named: "arrow_xl"), disabled: UIImage(named: "arrow_dim"))
+        menu.setImageWhens(normal: [#imageLiteral(resourceName: "arrow_dim")], selectedTintColor: UIColor.blue, disabledTintColor: UIColor.black)
         menu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
         
         menu.setLabelFontWhen(normal: .systemFont(ofSize: 16), selected: .boldSystemFont(ofSize: 16), disabled: .systemFont(ofSize: 16))
@@ -64,7 +64,7 @@ class GraduateJobsViewController: UIViewController {
         menu.showMenuSpringWithDamping = 1
         menu.hideMenuSpringWithDamping = 1
         menu.bottomLine.isHidden = false
-        menu.addSwipeGestureToBlurView()
+        //menu.addSwipeGestureToBlurView()
         
         return menu
         

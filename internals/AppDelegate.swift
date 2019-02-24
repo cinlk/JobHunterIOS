@@ -9,7 +9,7 @@
 import UIKit
 import CoreLocation
 import Kingfisher
-
+//import AMapFoundationKit
 
 fileprivate var shareBox:String = ""
 
@@ -42,6 +42,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         SingletoneClass.shared.setSharedApps(condition: nil)
         
+        
+        // 高德地图配置
+//        AMapServices.shared()?.apiKey = "4afc428898376c1810581289501ec549"
+//        AMapServices.shared()?.enableHTTPS = false
         
         // kingfisher ssl 配置
 //        let config = URLSessionConfiguration.default

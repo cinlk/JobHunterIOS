@@ -21,6 +21,16 @@ class JobListModel: NSObject, Mappable{
     var degree:String?
     var reviewCount:Int?
     var created_time:Date?
+    // search 类型
+    var companyType:String?
+    var businessField:[String]?
+    
+    // 实习类型数据
+    var days:Int?
+    var months:Int?
+    var payDay:Int?
+    var isTransfer:Bool?
+    
     
     // 职位类型 (必须)
     internal var type:String?{
@@ -60,6 +70,13 @@ class JobListModel: NSObject, Mappable{
         degree <- map["degree"]
         reviewCount <- map["review_count"]
         created_time <- (map["created_time"], DateTransform())
+        companyType <- map["company_type"]
+        businessField <- map["business_field"]
+        
+        days <- map["days"]
+        months <- map["months"]
+        payDay <- map["pay_day"]
+        isTransfer <- map["is_transfer"]
     }
     
 }

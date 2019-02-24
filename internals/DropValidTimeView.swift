@@ -8,38 +8,31 @@
 
 import UIKit
 
-fileprivate let pickerViewH:CGFloat = 200
+fileprivate let pickerViewH:CGFloat = 240
 fileprivate let menuH:CGFloat = 40
+fileprivate let titles:[String] = ["将来","过去","具体时间"]
 
 
-class DropValidTimeView: BaseSingleItemDropView {
-
+fileprivate class datePickerView:UIView {
     
-    private lazy var pickerData = SelectItemUtil.shared.getItems(name: "日期")
     
-    //private lazy var pickerData
-
-    private lazy var dateStr:String = ""
+    private weak var pview:DropValidTimeView?
     
-    private lazy var datePicker:UIDatePicker = {
-        //创建日期选择器
-        
-        let datePicker = UIDatePicker(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: pickerViewH))
-        datePicker.backgroundColor = UIColor.white
-        //将日期选择器区域设置为中文，则选择器日期显示为中文
-        datePicker.locale = Locale(identifier: "zh_CN")
-        datePicker.isHidden  = true
-        datePicker.datePickerMode = .date
-        
-        var dateFormat = DateFormatter()
-        dateFormat.dateFormat = "yyyy-MM-dd"
-        let minDate = dateFormat.date(from: "2016-1-1")
-        datePicker.maximumDate = Date()
-        datePicker.minimumDate = minDate
+    internal var date:Date{
+        get{
+            return self.picker.date
+        }
+    }
     
-        datePicker.date = Date()
-        
-        return datePicker
+    private lazy var picker:UIDatePicker = {
+        let picker = UIDatePicker.init(frame: CGRect.zero)
+        picker.backgroundColor = UIColor.white
+        picker.locale = GlobalConfig.locale
+        picker.datePickerMode = UIDatePicker.Mode.date
+        picker.minimumDate = Calendar.current.date(byAdding: .year, value: -1, to: Date())
+        picker.maximumDate = Calendar.current.date(byAdding: Calendar.Component.year, value: 2, to: Date())
+        picker.date = Date()
+        return picker
     }()
     
     private lazy var cancelBtn:UIButton = {
@@ -47,7 +40,7 @@ class DropValidTimeView: BaseSingleItemDropView {
         btn.setTitle("取消", for: .normal)
         btn.setTitleColor(UIColor.black, for: .normal)
         btn.layer.borderWidth = 1
-        btn.addTarget(self, action: #selector(cancel), for: .touchUpInside)
+        btn.addTarget(self.pview!, action: #selector(self.pview!.cancel), for: .touchUpInside)
         return btn
     }()
     
@@ -57,54 +50,74 @@ class DropValidTimeView: BaseSingleItemDropView {
         btn.setTitleColor(UIColor.white, for: .normal)
         btn.backgroundColor = UIColor.blue
         btn.layer.borderWidth = 1
-        btn.addTarget(self, action: #selector(confirm), for: .touchUpInside)
+        btn.addTarget(self.pview!, action: #selector(self.pview!.confirm), for: .touchUpInside)
         return btn
     }()
     
     
-    private lazy var bottomView:UIView = {
-        let v = UIView(frame: CGRect.zero)
-        v.backgroundColor = UIColor.white
-        return v
+    convenience init(frame: CGRect, v:DropValidTimeView){
+        self.init(frame: frame)
+        self.pview = v
+        self.backgroundColor = UIColor.white
         
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+       
+        let views:[UIView] = [picker, cancelBtn, confirmBtn]
+        self.sd_addSubviews(views)
+        _ = cancelBtn.sd_layout()?.leftSpaceToView(self,10)?.bottomSpaceToView(self,5)?.widthRatioToView(self, 0.45)?.heightIs(40)
+        _ = confirmBtn.sd_layout()?.rightSpaceToView(self, 10)?.bottomEqualToView(cancelBtn)?.widthRatioToView(cancelBtn,1)?.heightRatioToView(cancelBtn,1)
+        _ = self.picker.sd_layout()?.leftEqualToView(self)?.rightEqualToView(self)?.topEqualToView(self)?.bottomSpaceToView(self.cancelBtn,2.5)
+        
+         super.layoutSubviews()
+    }
+    
+    
+}
+
+
+class DropValidTimeView: BaseSingleItemDropView {
+
+    
+    private lazy var dateStr:String = ""
+    
+    private lazy var datePicker:datePickerView = {
+        //创建日期选择器
+        let datePicker = datePickerView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH + menuH, width: GlobalConfig.ScreenW, height: pickerViewH), v:self )
+        datePicker.isHidden = true
+        return datePicker
     }()
+    
+ 
+    
+    
+ 
     override init(frame: CGRect) {
         super.init(frame: frame)
         // 不遮挡 子view
-        
         self.clipsToBounds = false
-        loadData()
-        
-      
-        self.addSubview(datePicker)
-        
-     
-        
-        bottomView.addSubview(cancelBtn)
-        bottomView.addSubview(confirmBtn)
-        _ = cancelBtn.sd_layout().leftSpaceToView(bottomView,10)?.bottomSpaceToView(bottomView,5)?.widthRatioToView(bottomView,0.45)?.heightRatioToView(bottomView,0.8)
-        _ = confirmBtn.sd_layout().rightSpaceToView(bottomView,10)?.bottomEqualToView(cancelBtn)?.widthRatioToView(cancelBtn,1)?.heightRatioToView(cancelBtn,1)
-        
+        datas =  titles
         
     }
     
     required init?(coder aDecoder: NSCoder) {
          super.init(coder: aDecoder)
-        //fatalError("init(coder:) has not been implemented")
     }
     
     
     private func showPickerView() {
         self.table.isHidden = true
-        // 加入到keywinds，让button成为第一个接受点击事件
-        UIApplication.shared.keyWindow?.addSubview(bottomView)
-
-        
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseInOut, animations: {
             self.datePicker.isHidden = false
-        }, completion: { bool in
-            self.bottomView.frame = CGRect.init(x: 0, y: GlobalConfig.NavH + menuH + pickerViewH, width: GlobalConfig.ScreenW, height: 40)
-        
         })
     }
     
@@ -120,7 +133,7 @@ class DropValidTimeView: BaseSingleItemDropView {
             
             imageView.frame = CGRect.init(x: 0, y: 0, width: 20, height: 20)
             cell.accessoryView = imageView
-            
+            //cell.textLabel?.textColor = UIColor.bl
             return cell
             
         }else{
@@ -143,10 +156,18 @@ class DropValidTimeView: BaseSingleItemDropView {
         
     }
     
+    override func dropDownViewOpened() {
+        super.dropDownViewOpened()
+      
+        // 加入最外层，才能触发button 点击
+        UIApplication.shared.keyWindow?.addSubview(datePicker)
+    }
  
     
     override func dropDownViewClosed() {
+        
         super.dropDownViewClosed()
+        self.datePicker.removeFromSuperview()
         cancel()
     }
     
@@ -157,12 +178,18 @@ class DropValidTimeView: BaseSingleItemDropView {
 
 
 
+
+
 extension DropValidTimeView{
-    @objc private func cancel(){
-        recover(animation: true)
+    
+    @objc internal func cancel(){
+       
+        
+        self.datePicker.isHidden = true
+        self.table.isHidden = false
     }
     
-    @objc private func confirm(){
+    @objc internal func confirm(){
         
         let formatter = DateFormatter()
         //日期样式
@@ -170,43 +197,16 @@ extension DropValidTimeView{
         dateStr = formatter.string(from: datePicker.date)
         self.table.reloadRows(at: [IndexPath.init(row: 2, section: 0)], with: .automatic)
         self.passData?(dateStr)
-        
- 
-        recover(animation:false)
+        self.cancel()
         self.hideMenu()
     }
     
    
-    
-    private func recover(animation: Bool){
-        if animation{
-            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseInOut, animations: {
-                self.datePicker.isHidden = true
-                
-                //self.datePicker.frame =  CGRect.init(x: 0, y: 0, width: ScreenW, height: 0)
-                self.bottomView.removeFromSuperview()
-                
-            })
-        }else{
-            self.datePicker.isHidden = true
-            
-            //self.datePicker.frame =  CGRect.init(x: 0, y: 0, width: ScreenW, height: 0)
-            self.bottomView.removeFromSuperview()
-        }
-      
-        
-        self.table.isHidden = false
-        
+    class func myHeigh() -> CGFloat{
+        return CGFloat(titles.count * 45)
     }
+ 
 }
 
 
-extension DropValidTimeView{
-    private func loadData(){
-        // 从网络获取数据
-        //
-        datas =   ["将来","过去","具体时间"]
-        
-        
-    }
-}
+

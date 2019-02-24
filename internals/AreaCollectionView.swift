@@ -83,12 +83,11 @@ extension AreaCollectionView:UICollectionViewDataSource, UICollectionViewDelegat
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionTextCell.identity(), for: indexPath) as? CollectionTextCell{
             cell.name.text = datas[indexPath.row]
-            cell.name.textColor = UIColor.black
-            cell.name.layer.borderColor = UIColor.clear.cgColor
+            cell.Selected = false
             return cell
         }
         
-        fatalError("no cell")
+        return UICollectionViewCell()
         
         
     }
@@ -96,8 +95,7 @@ extension AreaCollectionView:UICollectionViewDataSource, UICollectionViewDelegat
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         if let cell = collectionView.cellForItem(at: indexPath) as? CollectionTextCell{
-            cell.name.textColor = UIColor.blue
-            cell.name.layer.borderColor = UIColor.blue.cgColor
+            cell.Selected = true
             self.selectedCity?(cell.name.text!)
             
         }
@@ -109,8 +107,7 @@ extension AreaCollectionView:UICollectionViewDataSource, UICollectionViewDelegat
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         
         if let cell = collectionView.cellForItem(at: indexPath) as? CollectionTextCell{
-            cell.name.textColor = UIColor.black
-            cell.name.layer.borderColor = UIColor.clear.cgColor
+            cell.Selected = false
         }
     }
     

@@ -10,6 +10,14 @@ import UIKit
 
  class CollectionTextCell:UICollectionViewCell{
     
+    
+    var Selected:Bool = false{
+        didSet{
+            self.name.textColor = Selected ? UIColor.blue : UIColor.black
+                self.name.layer.borderColor = Selected ? UIColor.blue.cgColor : UIColor.clear.cgColor
+        }
+    }
+    
     lazy var name:UILabel = { [unowned self] in
         
         let name = UILabel.init()

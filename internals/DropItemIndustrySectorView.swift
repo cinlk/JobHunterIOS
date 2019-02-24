@@ -33,8 +33,14 @@ class DropItemIndustrySectorView: BaseSingleItemDropView {
 extension DropItemIndustrySectorView{
     private func loadData(){
         // 从服务器获取数据 MARK
-        datas = ["健康医疗","生活服务","旅游","金融","信息安全","网络招聘","互联网","IT软件","媒体","公共会展","机械制造","游戏","教育培训","其他"]
-   
+        if SingletoneClass.shared.selectedBusinessField.isEmpty{
+            // TODO  获取数据
+            
+            return
+        }
+        datas =  SingletoneClass.shared.selectedBusinessField
+        
+        
         
     }
 }

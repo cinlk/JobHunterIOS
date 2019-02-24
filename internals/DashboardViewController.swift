@@ -37,10 +37,10 @@ class DashboardViewController: BaseViewController, UISearchControllerDelegate, U
     
     // 搜索控制控件
     private lazy var searchController:BaseSearchViewController? = {
-        let sc = BaseSearchViewController.init(searchResultsController: searchResultController())
+        let sc = BaseSearchViewController.init(searchResultsController: SearchResultController())
         sc.delegate = self
         sc.searchType = .company
-        sc.popMenuView.datas = [.onlineApply, .graduate, .intern, .meeting, .company]
+        //sc.popMenuView.datas = [.onlineApply, .graduate, .intern, .meeting, .company]
         sc.searchField.addSubview(self.nearBtn)
         
         _ = self.nearBtn.sd_layout()?.leftSpaceToView(sc.searchField,5)?.centerYEqualToView(sc.searchField)?.widthIs(60)?.heightRatioToView(sc.searchField,1)
@@ -629,13 +629,17 @@ extension DashboardViewController{
         // 周边按钮
         self.nearBtn.rx.tap.asDriver().drive(onNext: { _ in
             //  地址位置授权判断 TODO
-            if  let _ = SingletoneClass.shared.getAddress(){
-                let show = NearByViewController()
-                //show.hidesBottomBarWhenPushed = true
-                self.navigationController?.pushViewController(show, animated: true)
-            }else{
-                UserLocationManager.shared.getLocation()
-            }
+            //let map = testMapViewController()
+            //self.navigationController?.pushViewController(map, animated: true)
+            let near = NearByViewController()
+            self.navigationController?.pushViewController(near, animated: true)
+//            if  let _ = SingletoneClass.shared.getAddress(){
+//                let show = NearByViewController()
+//                //show.hidesBottomBarWhenPushed = true
+//                self.navigationController?.pushViewController(show, animated: true)
+//            }else{
+//                UserLocationManager.shared.getLocation()
+//            }
             
         }).disposed(by: self.disposebag)
         
@@ -816,7 +820,6 @@ extension DashboardViewController{
     private func tableRefresh(){
        
         self.tables.mj_header  = MJRefreshNormalHeader.init { [weak self] in
-            
             
             self?.imagescroller.stopAutoScroller()
             self?.vm.refreshData.onNext(true)

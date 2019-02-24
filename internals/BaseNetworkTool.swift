@@ -20,6 +20,21 @@ public enum GlobaHttpRequest {
     case setHelloMsg(index:Int)
     // 获取新闻栏目数据
     case news(type:String, offset:Int)
+    // 周边宣讲会
+    case nearByMeetings(latitude: Double, longitude: Double, distance: Double)
+    // 周边公司
+    case nearyByCompany(latitude: Double, longtitude: Double, distance: Double)
+    // 选择的城市
+    case citys
+    case bussinessField
+    // 细化的行业职位
+    case subBusinessField
+    // 公司选择类型
+    case companyType
+    // 实习选择类型
+    case internCondition
+    // 城市大学
+    case cityCollege
     
     
     
@@ -54,14 +69,32 @@ extension GlobaHttpRequest: TargetType{
             return self.urlPrefix + "hellos"
         case .news(_, _):
             return self.urlPrefix + "news"
+        case .nearByMeetings:
+            return "home" + "/near/meetings"
+        case .nearyByCompany:
+            return "home" + "/near/company"
+        case .citys:
+            return self.urlPrefix + "citys"
+        case .bussinessField:
+            return self.urlPrefix + "business/field"
+        case .subBusinessField:
+            return self.urlPrefix + "subBusiness/field"
+        case .companyType:
+            return self.urlPrefix + "company/type"
+        case .internCondition:
+            return self.urlPrefix + "intern/condition"
+        case .cityCollege:
+            return self.urlPrefix + "city/college"
+        
         }
     }
     
     public  var method: Moya.Method {
         switch self {
-        case .guideData, .adviseImages, .helloMsg:
+        case .guideData, .adviseImages, .helloMsg, .citys, .bussinessField, .subBusinessField,
+             .companyType, .internCondition, .cityCollege:
             return .get
-        case .userlogin, .news:
+        case .userlogin, .news, .nearByMeetings, .nearyByCompany:
             return .post
         case .setHelloMsg:
             return .put
@@ -77,7 +110,7 @@ extension GlobaHttpRequest: TargetType{
     
     public var task: Task {
         switch self {
-        case .guideData, .helloMsg, .adviseImages, .logout:
+        case .guideData, .helloMsg, .adviseImages, .logout, .citys, .bussinessField, .subBusinessField, .companyType, .internCondition, .cityCollege:
             return Task.requestPlain
         case let .userlogin(phone, password):
             return .requestParameters(parameters: ["phone": phone, "password":password], encoding: JSONEncoding.default)
@@ -85,6 +118,11 @@ extension GlobaHttpRequest: TargetType{
             return Task.requestParameters(parameters: ["count":index], encoding: URLEncoding.default)
         case let .news(type, offset):
             return Task.requestParameters(parameters: ["type": type, "offset": offset], encoding: JSONEncoding.default)
+        case let .nearByMeetings(latitude, longitude, distance):
+            return Task.requestParameters(parameters: ["latitude": latitude, "longitude": longitude, "distance": distance, "type": "meetings"], encoding: JSONEncoding.default)
+        case let .nearyByCompany(latitude, longitude, distance):
+            return Task.requestParameters(parameters: ["latitude": latitude, "longitude": longitude, "distance": distance, "type": "company"], encoding: JSONEncoding.default)
+            
         }
     }
     
@@ -118,12 +156,14 @@ class NetworkTool {
         )
         switch target{
             
-        case .guideData, .adviseImages:
+        case .guideData, .adviseImages, .citys, .bussinessField:
             timeout = 10
         case .helloMsg, .userlogin, .logout, .news:
             timeout = 30
         case .setHelloMsg(let index):
             timeout = 30
+        default:
+            timeout = 15
         }
         
         return endpoint

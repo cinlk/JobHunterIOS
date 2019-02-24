@@ -15,7 +15,7 @@ fileprivate let notifiyName:String = "MeetingCollectedVC"
 class MeetingCollectedVC: BaseViewController {
 
   
-    private lazy var datas:[CareerTalkMeetingModel] = []
+    private lazy var datas:[CareerTalkMeetingListModel] = []
     
     internal lazy var table:UITableView = { [unowned self] in
         let tb = UITableView.init(frame: self.view.frame)
@@ -108,7 +108,7 @@ extension MeetingCollectedVC: UITableViewDelegate, UITableViewDataSource{
         
         let mode = self.datas[indexPath.row]
         let show = CareerTalkShowViewController()
-        show.meetingID = mode.id
+        show.meetingID = mode.meetingID
         self.navigationController?.pushViewController(show, animated: true)
         
         
@@ -155,16 +155,16 @@ extension MeetingCollectedVC{
 
 extension MeetingCollectedVC{
     private func loadData(){
-        DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
-            Thread.sleep(forTimeInterval: 1)
-            for _ in 0..<20{
-                self?.datas.append(CareerTalkMeetingModel(JSON: ["id":"dqw-dqwd","companyModel":["id":"com-dqwd-5dq","icon":"sina","name":"公司名字","describe":"达瓦大群-dqwd","isValidate":true,"isCollected":false,"address":["地址1","地址2"],"industry":["教育","医疗","化工"]],"college":"北京大学","address":"教学室二"
-                    ,"isValidate":true,"isCollected":false,"icon":"car","start_time":Date().timeIntervalSince1970,"end_time":Date().timeIntervalSince1970 + TimeInterval(3600*2),"name":"北京高华证券有限责任公司宣讲会但钱当前无多群","source":"上海交大"])!)
-            }
-            DispatchQueue.main.async {
-                self?.didFinishloadData()
-            }
-        }
+//        DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
+//            Thread.sleep(forTimeInterval: 1)
+//            for _ in 0..<20{
+//                self?.datas.append(CareerTalkMeetingModel(JSON: ["id":"dqw-dqwd","companyModel":["id":"com-dqwd-5dq","icon":"sina","name":"公司名字","describe":"达瓦大群-dqwd","isValidate":true,"isCollected":false,"address":["地址1","地址2"],"industry":["教育","医疗","化工"]],"college":"北京大学","address":"教学室二"
+//                    ,"isValidate":true,"isCollected":false,"icon":"car","start_time":Date().timeIntervalSince1970,"end_time":Date().timeIntervalSince1970 + TimeInterval(3600*2),"name":"北京高华证券有限责任公司宣讲会但钱当前无多群","source":"上海交大"])!)
+//            }
+//            DispatchQueue.main.async {
+//                self?.didFinishloadData()
+//            }
+//        }
         
     }
 }

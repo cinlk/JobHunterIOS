@@ -16,7 +16,7 @@ class CompanyCareerTalkVC: BaseViewController {
 
     internal var mode:CompanyModel?
     
-    private var datas:[CareerTalkMeetingModel] = []
+    private var datas:[CareerTalkMeetingListModel] = []
     
     // deleagte
     weak var delegate:CompanySubTableScrollDelegate?
@@ -153,7 +153,7 @@ extension CompanyCareerTalkVC {
             let mode = self.datas[idx.row]
             let show = CareerTalkShowViewController()
             show.hidesBottomBarWhenPushed = true
-            show.meetingID = mode.id
+            show.meetingID = mode.meetingID
             self.navigationController?.pushViewController(show, animated: true)
         }).disposed(by: dispose)
         

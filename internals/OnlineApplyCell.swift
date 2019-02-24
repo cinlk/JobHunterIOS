@@ -21,7 +21,7 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
     }()
     
     
-    private lazy var jobName:UILabel = {
+    private lazy var name:UILabel = {
         let label = UILabel()
         label.isAttributedContent = true
         label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - imgIcon.width - 20 )
@@ -32,6 +32,13 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
         return label
     }()
     
+//    private lazy var companyName:UILabel = {
+//        let label = UILabel.init()
+//        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - imgIcon.width - 20)
+//        label.textAlignment = .left
+//        label.font = UIFont.systemFont(ofSize: 14)
+//        return label
+//    }()
     
     
     private lazy var endTime:UILabel = {
@@ -55,24 +62,25 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
     
 
     
-    dynamic var mode:OnlineApplyModel?{
+    dynamic var mode:OnlineApplyListModel?{
         didSet{
            
             guard let mode = mode else {
                 return
             }
-            let jobName = NSMutableAttributedString.init(string: mode.name!)
-            if mode.outer{
+            
+            let name = NSMutableAttributedString.init(string: mode.name ?? "")
+            if mode.outside ?? false{
                 let attchment = NSTextAttachment()
                 // image 对齐
-                attchment.bounds = CGRect.init(x: 0, y: (self.jobName.font.capHeight - 15).rounded()/2, width: 15, height: 15)
+                attchment.bounds = CGRect.init(x: 0, y: (self.name.font.capHeight - 15).rounded()/2, width: 15, height: 15)
 
                 attchment.image = UIImage.init(named: "links")
                 let imageStr = NSAttributedString.init(attachment: attchment)
                 
                 // 间隔距离
-                jobName.append(NSAttributedString.init(string: " "))
-                jobName.append(imageStr)
+                name.append(NSAttributedString.init(string: " "))
+                name.append(imageStr)
 
             
 
@@ -81,38 +89,41 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
             if mode.isSimple{
                  _ = self.icon.sd_layout().leftSpaceToView(self.contentView,0)?.topSpaceToView(self.contentView,5)?.widthIs(0)?.autoHeightRatio(1)
                 
-            }else{
-                let url = URL.init(string: mode.companyIcon)
+            }else if let url =  mode.companyIconURL {
                 
-                self.icon.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                self.icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }
-           
             
-            self.jobName.attributedText = jobName
+            self.name.attributedText = name
             
             
-            let endStr = NSMutableAttributedString.init(string: mode.endTimeStr, attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
+            let endStr = NSMutableAttributedString.init(string: mode.endTimeStr ?? "", attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
             endStr.insert(NSAttributedString.init(string:"截止 ") , at: 0)
             self.endTime.attributedText =  endStr
             
-            self.address.text = mode.address?.joined(separator: " ")
+            self.address.text = mode.citys?.joined(separator: " ")
+            //self.companyName.text = mode.companyName
             self.setupAutoHeight(withBottomViewsArray: [icon, address], bottomMargin: 5)
-            
         }
     }
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        let views:[UIView] = [icon, jobName, endTime, address]
+        let views:[UIView] = [icon, name, endTime, address]
+        
+        self.selectedBackgroundView?.backgroundColor = UIColor.clear
+        
         self.contentView.sd_addSubviews(views)
         
         _ = icon.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(imgIcon.width)?.autoHeightRatio(1)
-        _ = jobName.sd_layout().leftSpaceToView(icon,10)?.topEqualToView(icon)?.autoHeightRatio(0)
-        _ = address.sd_layout().leftEqualToView(jobName)?.topSpaceToView(jobName,10)?.autoHeightRatio(0)
+        _ = name.sd_layout().leftSpaceToView(icon,10)?.topEqualToView(icon)?.autoHeightRatio(0)
+        //_ = companyName.sd_layout()?.topSpaceToView(name, 10)?.leftEqualToView(name)?.autoHeightRatio(0)
+        _ = address.sd_layout().leftEqualToView(name)?.topSpaceToView(name,10)?.autoHeightRatio(0)
         _ = endTime.sd_layout().rightSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,10)?.autoHeightRatio(0)
-     
         
-        jobName.setMaxNumberOfLinesToShow(2)
+        //_ = companyName.sd_layout()
+        //companyName.setMaxNumberOfLinesToShow(1)
+        name.setMaxNumberOfLinesToShow(2)
         address.setMaxNumberOfLinesToShow(1)
     }
     

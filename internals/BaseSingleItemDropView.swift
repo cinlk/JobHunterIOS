@@ -110,6 +110,7 @@ extension BaseSingleItemDropView{
     }
     
     @objc private func hidden(){
+         
         backGroundBtn.removeFromSuperview()
         self.hideMenu()
     }
@@ -130,9 +131,16 @@ extension BaseSingleItemDropView: UITableViewDelegate, UITableViewDataSource{
         let cell = table.dequeueReusableCell(withIdentifier: cellIdentity, for: indexPath)
         
         cell.textLabel?.text = datas[indexPath.row]
-        
+        if indexPath.row == 0 {
+            // 默认选中第一条
+            cell.textLabel?.textColor = UIColor.blue
+            cell.accessoryType = .checkmark
+            tableView.selectRow(at: indexPath, animated: false, scrollPosition: UITableView.ScrollPosition.top)
+            
+        }
         cell.textLabel?.font = UIFont.systemFont(ofSize: 14)
         cell.selectionStyle = .none
+        
         return cell
     }
     

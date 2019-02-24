@@ -112,7 +112,7 @@ class BasePositionItemViewController: BaseViewController {
         
         let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuH), dropDownViews: [cityMenu,industryKind], dropDownViewTitles: ["城市","行业领域"])
         
-        menu.setImageWhen(normal: UIImage(named: "arrow_nor"), selected: UIImage(named: "arrow_xl"), disabled: UIImage(named: "arrow_dim"))
+        menu.setImageWhens(normal: [#imageLiteral(resourceName: "arrow_dim")], selectedTintColor: UIColor.blue, disabledTintColor: UIColor.black)
         menu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
         
         menu.setLabelFontWhen(normal: .systemFont(ofSize: 16), selected: .boldSystemFont(ofSize: 16), disabled: .systemFont(ofSize: 16))
@@ -123,7 +123,7 @@ class BasePositionItemViewController: BaseViewController {
         menu.bottomLine.isHidden = false
         
         // 添加手势
-        menu.addSwipeGestureToBlurView()
+       // menu.addSwipeGestureToBlurView()
         
 
         return menu

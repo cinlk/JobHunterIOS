@@ -17,7 +17,7 @@ class RecruitViewModel{
     
     private let dispose = DisposeBag()
     internal let onlineApplyRefresh:PublishSubject<Bool> = PublishSubject<Bool>.init()
-    internal let onlineApplyRes:BehaviorRelay<[OnlineApplyModel]> = BehaviorRelay<[OnlineApplyModel]>.init(value: [])
+    internal let onlineApplyRes:BehaviorRelay<[OnlineApplyListModel]> = BehaviorRelay<[OnlineApplyListModel]>.init(value: [])
     internal let onlineApplyRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
     internal var onlineApplyOffset = 0
     
@@ -39,13 +39,13 @@ class RecruitViewModel{
     internal let recruitMeetingRefresh:PublishSubject<Bool> = PublishSubject<Bool>.init()
     internal let companyRecruitMeetingRefesh:PublishSubject<(Bool, String)> = PublishSubject<(Bool, String)>.init()
     
-    internal let recruitMeetingRes:BehaviorRelay<[CareerTalkMeetingModel]> = BehaviorRelay<[CareerTalkMeetingModel]>.init(value: [])
+    internal let recruitMeetingRes:BehaviorRelay<[CareerTalkMeetingListModel]> = BehaviorRelay<[CareerTalkMeetingListModel]>.init(value: [])
     internal let recruitMeetingRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
     internal var recruitMeetingOffset = 0 
     
     
     internal let companyRefresh:PublishSubject<Bool> = PublishSubject<Bool>.init()
-    internal let companyRes:BehaviorRelay<[CompanyModel]> = BehaviorRelay<[CompanyModel]>.init(value: [])
+    internal let companyRes:BehaviorRelay<[CompanyListModel]> = BehaviorRelay<[CompanyListModel]>.init(value: [])
     internal let companyRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
     internal var companyOffset = 0
     
@@ -93,7 +93,7 @@ class RecruitViewModel{
 
 extension RecruitViewModel{
     
-    private func getOnlineApplies(offset: Int) -> Observable<[OnlineApplyModel]>{
+    private func getOnlineApplies(offset: Int) -> Observable<[OnlineApplyListModel]>{
         
         return httpServer.getOnlineApply(offset: offset).share()
     }
@@ -142,7 +142,8 @@ extension RecruitViewModel{
         
     }
     
-    private func getRecruitMeeting(offset:Int) -> Observable<[CareerTalkMeetingModel]>{
+    private func getRecruitMeeting(offset:Int) -> Observable<[CareerTalkMeetingListModel]>{
+        
         
         return httpServer.getRecruiteMeetings(offset: offset)
     }
@@ -154,7 +155,7 @@ extension RecruitViewModel{
     }
     
     
-    private func getCompany(offset:Int) ->Observable<[CompanyModel]>{
+    private func getCompany(offset:Int) ->Observable<[CompanyListModel]>{
         return httpServer.getCompany(offset: offset)
     }
     
@@ -172,7 +173,7 @@ extension RecruitViewModel{
         return httpServer.getCompanyTagsData(data: data)
     }
     
-    private func getCompanyRecruitMeetings(companyId:String, offset:Int) -> Observable<[CareerTalkMeetingModel]>{
+    private func getCompanyRecruitMeetings(companyId:String, offset:Int) -> Observable<[CareerTalkMeetingListModel]>{
         return httpServer.getCompanyRecruitMeetings(companyId: companyId,offset: offset)
     }
     

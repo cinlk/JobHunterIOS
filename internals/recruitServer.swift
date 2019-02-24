@@ -206,8 +206,8 @@ class RecruitServer{
     private init() {}
     
     
-    internal func getOnlineApply(offset:Int) -> Observable<[OnlineApplyModel]>{
-        return httpServer.rx.request(.getOnlineApply(offset: offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapArray(OnlineApplyModel.self, tag: "applies")
+    internal func getOnlineApply(offset:Int) -> Observable<[OnlineApplyListModel]>{
+        return httpServer.rx.request(.getOnlineApply(offset: offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapArray(OnlineApplyListModel.self, tag: "applies")
     }
     
     
@@ -233,8 +233,8 @@ class RecruitServer{
         return httpServer.rx.request(.getJobById(id:id)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapObject(CompuseRecruiteJobs.self)
     }
     
-    internal func getRecruiteMeetings(offset:Int) -> Observable<[CareerTalkMeetingModel]>{
-        return httpServer.rx.request(.getRecruitMeetings(offset:offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapArray(CareerTalkMeetingModel.self, tag: "meetings")
+    internal func getRecruiteMeetings(offset:Int) -> Observable<[CareerTalkMeetingListModel]>{
+        return httpServer.rx.request(.getRecruitMeetings(offset:offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).asObservable().observeOn(MainScheduler.instance).mapArray(CareerTalkMeetingListModel.self, tag: "meetings")
     }
     
     internal func getRecruitMeetingById(id:String) -> Observable<CareerTalkMeetingModel>{
@@ -242,8 +242,8 @@ class RecruitServer{
         
     }
     
-    internal func getCompany(offset:Int) -> Observable<[CompanyModel]>{
-        return httpServer.rx.request(.getCompany(offset:offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapArray(CompanyModel.self, tag: "company")
+    internal func getCompany(offset:Int) -> Observable<[CompanyListModel]>{
+        return httpServer.rx.request(.getCompany(offset:offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapArray(CompanyListModel.self, tag: "company")
     }
     
     internal func getCompanyById(id:String) -> Observable<CompanyModel>{
@@ -273,8 +273,8 @@ class RecruitServer{
         return httpServer.rx.request(.getCompanyTagData(data: data)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapObject(ListJobsOnlineAppy.self)
     }
     
-    internal func getCompanyRecruitMeetings(companyId:String, offset:Int) -> Observable<[CareerTalkMeetingModel]>{
-        return httpServer.rx.request(.getCompanyRecruitMeetings(companyId: companyId, offset: offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapArray(CareerTalkMeetingModel.self, tag: "meetings")
+    internal func getCompanyRecruitMeetings(companyId:String, offset:Int) -> Observable<[CareerTalkMeetingListModel]>{
+        return httpServer.rx.request(.getCompanyRecruitMeetings(companyId: companyId, offset: offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapArray(CareerTalkMeetingListModel.self, tag: "meetings")
     }
 }
 

@@ -7,15 +7,15 @@
 //
 
 import UIKit
+import ObjectMapper
+
+// 默认查询附近10公里以内的数据
+fileprivate let distance:Double = 1000_0.0
 
 class NearCareerTalkMeetinVC: BaseViewController {
 
     
-    // 全局的变量 MARK
-    private lazy var location:String = ""
-    
-    
-    private lazy var datas:[CareerTalkMeetingModel] = []
+    private lazy var datas:[NearByTalkMeetingModel] = []
     
     
     
@@ -25,7 +25,7 @@ class NearCareerTalkMeetinVC: BaseViewController {
         tb.delegate = self
         tb.dataSource = self
         tb.backgroundColor = UIColor.viewBackColor()
-        tb.register(CareerTalkCell.self, forCellReuseIdentifier: CareerTalkCell.identity())
+        tb.register(NearMeetingsTableViewCell.self, forCellReuseIdentifier: NearMeetingsTableViewCell.identify())
         return tb
         
     }()
@@ -38,10 +38,7 @@ class NearCareerTalkMeetinVC: BaseViewController {
         // Do any additional setup after loading the view.
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+   
     
 
     
@@ -61,6 +58,7 @@ class NearCareerTalkMeetinVC: BaseViewController {
     override func didFinishloadData() {
         super.didFinishloadData()
         self.table.reloadData()
+        
     }
     
     override func reload() {
@@ -84,14 +82,14 @@ extension NearCareerTalkMeetinVC: UITableViewDelegate, UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: CareerTalkCell.identity(), for: indexPath) as! CareerTalkCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: NearMeetingsTableViewCell.identify(), for: indexPath) as! NearMeetingsTableViewCell
         cell.mode = self.datas[indexPath.row]
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let mode = self.datas[indexPath.row]
-        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CareerTalkCell.self, contentViewWidth: GlobalConfig.ScreenW)
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: NearMeetingsTableViewCell.self, contentViewWidth: GlobalConfig.ScreenW)
         
     }
     
@@ -100,7 +98,7 @@ extension NearCareerTalkMeetinVC: UITableViewDelegate, UITableViewDataSource{
         let mode = self.datas[indexPath.row]
         let show = CareerTalkShowViewController()
         show.hidesBottomBarWhenPushed = true
-        show.meetingID = mode.id
+        show.meetingID = mode.meetingID
         self.navigationController?.pushViewController(show, animated: true)
     }
     
@@ -111,15 +109,30 @@ extension NearCareerTalkMeetinVC{
     private func loadData(){
         
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            Thread.sleep(forTimeInterval: 3)
-            for _ in 0..<20{
-                self?.datas.append(CareerTalkMeetingModel(JSON: ["id":"dqw-dqwd","companyModel":["id":"com-dqwd-5dq","icon":"sina","name":"公司名字","describe":"达瓦大群-dqwd","isValidate":true,"isCollected":false,"address":["地址1","地址2"],"industry":["教育","医疗","化工"]],"college":"北京大学","address":"教学室二"
-                    ,"isValidate":true,"isCollected":false,"icon":"car","start_time":Date().timeIntervalSince1970,"end_time":Date().timeIntervalSince1970 + TimeInterval(3600*2),"name":"北京高华证券有限责任公司宣讲会但钱当前无多群","source":"上海交大"])!)
-            }
+            let myLocation = SingletoneClass.shared.getLocation()
             
-            DispatchQueue.main.async(execute: {
-                self?.didFinishloadData()
+            NetworkTool.request(.nearByMeetings(latitude: myLocation.coordinate.latitude.binade, longitude: myLocation.coordinate.longitude.binade, distance: distance), successCallback: { data in
+                // TODO  判断返回状态码
+                if let json  = data as? [String:Any], let body =                 Mapper<NearByTalkMeetingModel>.init().mapArray(JSONObject: json["body"])
+                {
+                //json["body"] as? [NearByTalkMeetingModel]{
+                    
+                    DispatchQueue.main.async(execute: {
+                        self?.datas = body
+                        self?.didFinishloadData()
+                    })
+                    
+                }else{
+                    self?.showError()
+                }
+                
+            }, failureCallback: { (error) in
+                DispatchQueue.main.async {
+                    self?.showError()
+                }
             })
+            
+            
         }
     }
     

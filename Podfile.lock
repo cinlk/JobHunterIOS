@@ -62,7 +62,7 @@ DEPENDENCIES:
   - UMCShare/Social/ReducedQQ
   - UMCShare/Social/ReducedSina
   - UMCShare/Social/ReducedWeChat
-  - YNDropDownMenu
+  - YNDropDownMenu (= 3.0.3)
 
 SPEC CHECKSUMS:
   Alamofire: 3ec537f71edc9804815215393ae2b1a8ea33a844
@@ -87,6 +87,6 @@ SPEC CHECKSUMS:
   UMCShare: 552b29753f1b4da87b51d96545ed19e6263df397
   YNDropDownMenu: ba608568d4ac0a37385142f723da8cfc29c7ff11
 
-PODFILE CHECKSUM: c5af65ab9de5f0d62200b5090b48aef2ec16294a
+PODFILE CHECKSUM: 5de3943d94b82f5338704f1f32a5d863f5d76afb
 
 COCOAPODS: 1.4.0

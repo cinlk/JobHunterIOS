@@ -7,25 +7,24 @@
 //
 
 import UIKit
+import ObjectMapper
+
+fileprivate let distance:Double = 1000_0
+
 
 class NearCompanyViewController: BaseViewController {
     
     
-    // 全局的变量 MARK
-    private lazy var location:String = ""
-    
-    
-    private lazy var datas:[CompanyModel] = []
-    
-    
+    private lazy var datas:[NeayByCompanyModel] = []
     
     private lazy var table:UITableView = { [unowned self] in
+        
         let tb = UITableView()
         tb.tableFooterView = UIView()
         tb.delegate = self
         tb.dataSource = self
         tb.backgroundColor = UIColor.viewBackColor()
-        tb.register(CompanyItemCell.self, forCellReuseIdentifier: CompanyItemCell.identity())
+        tb.register(NearCompanyTableViewCell.self, forCellReuseIdentifier: NearCompanyTableViewCell.identity())
         return tb
         
     }()
@@ -83,7 +82,7 @@ extension NearCompanyViewController: UITableViewDataSource, UITableViewDelegate{
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: CompanyItemCell.identity(), for: indexPath) as! CompanyItemCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: NearCompanyTableViewCell.identity(), for: indexPath) as! NearCompanyTableViewCell
         cell.mode = self.datas[indexPath.row]
         return cell
     }
@@ -93,14 +92,14 @@ extension NearCompanyViewController: UITableViewDataSource, UITableViewDelegate{
         tableView.deselectRow(at: indexPath, animated: false)
         let mode = self.datas[indexPath.row]
         let companyVC = CompanyMainVC()
-        companyVC.companyID = mode.id
+        companyVC.companyID = mode.companyID
         companyVC.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(companyVC, animated: true)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let mode = self.datas[indexPath.row]
-        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CompanyItemCell.self, contentViewWidth: GlobalConfig.ScreenW)
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: NearCompanyTableViewCell.self, contentViewWidth: GlobalConfig.ScreenW)
         
     }
 }
@@ -109,17 +108,25 @@ extension NearCompanyViewController{
     
     private func loadData(){
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            Thread.sleep(forTimeInterval: 3)
-            for _ in 0..<20{
-                self?.datas.append(CompanyModel(JSON: ["id":"dqw-dqwd","name":"公司名",
-                                                       "describe":"大哇多无多首先想到的肯定是结束减速的代理方法：scrollViewDscrollViewDidEndDecelerating代理方法的，如果做过用3个界面+scrollView实现循环滚动展示图片，那么基本上都会碰到这么问题。如何准确的监听翻页？我的解决的思路如下达瓦大文大无大无多无大无大无多哇大无多无飞啊飞分为飞飞飞达瓦大文大无大无多哇付达瓦大文大无付多无dwadwadadawdawde吊袜带挖多哇建外大街文档就frog忙不忙你有他们今天又摸排个人票买房可免费课时费\n个人个人，二哥，二\n吊袜带挖多，另外的码问了；吗\n","address":["地址1","地址2"],"icon":"sina","industry":["教育","医疗","化工"],"webSite":"https://www.baidu.com","tags":["标签1","标签1测试","标签89我的当前","当前为多","迭代器","群无多当前为多群当前","达瓦大群无多", "当前为多当前的群","当前为多无", "当前为多群无多","杜德伟七多"],"isValidate":true,"isCollected":false,"follows": arc4random()%10000])!)
+   
+            let location = SingletoneClass.shared.getLocation()
+            
+            NetworkTool.request(.nearyByCompany(latitude: location.coordinate.latitude.binade, longtitude: location.coordinate.longitude.binade, distance: distance), successCallback: { (data) in
+                if let json = data as? [String: Any], let j =   Mapper<NeayByCompanyModel>.init().mapArray(JSONObject: json["body"]){
+                    self?.datas = j
+                    
+                    DispatchQueue.main.async {
+                        self?.didFinishloadData()
+                    }
+                }
                 
+            }, failureCallback: { (error) in
+                DispatchQueue.main.async(execute: {
+                    self?.showError()
+                })
                 
-                
-            }
-            DispatchQueue.main.async(execute: {
-                self?.didFinishloadData()
             })
+           
         }
     }
     

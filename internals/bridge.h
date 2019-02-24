@@ -14,6 +14,8 @@
 #import <UMShare/UMShare.h>
 #import <UMCommon/UMCommon.h>
 #import <MBProgressHUD/MBProgressHUD.h>
+//#import <MAMapKit/MAMapKit.h>
+//#import <AMapFoundationKit/AMapFoundationKit.h>
 #endif /* bridge_h */
 
 

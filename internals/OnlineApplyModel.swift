@@ -9,12 +9,57 @@
 import UIKit
 import ObjectMapper
 
+
+class OnlineApplyListModel: NSObject, Mappable {
+    
+    internal var onlineApplyID:String?
+    internal var companyIconURL:URL?
+    internal var companyName:String?
+    internal var citys:[String]?
+    internal var name:String?
+    internal var businessField:[String]?
+    internal var endTime:Date?
+    internal var endTimeStr:String?{
+        get{
+            guard let t = endTime, let ts = showMonthAndDay(date: t) else {
+                return ""
+            }
+            return ts
+        }
+    }
+    
+    internal var outside:Bool?
+    internal var isSimple:Bool = false 
+    internal var link:URL?
+    
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+    
+        onlineApplyID <- map["online_apply_id"]
+        companyIconURL <- (map["company_icon_url"], URLTransform())
+        citys <- map["citys"]
+        businessField <- map["business_field"]
+        endTime <- (map["end_time"], DateTransform())
+        companyName <- map["company_name"]
+        name <- map["name"]
+        outside <- map["outside"]
+        link <- map["link"]
+        
+    }
+    
+    
+}
+
 class OnlineApplyModel: BaseModel {
     
     // 举办公司
-    internal var companyIcon:String = "default"
-    internal var companyName:String?
-    
+    //internal var companyIcon:String = "default"
+   // internal var companyName:String?
+    internal var company:CompanyModel?
     // 截止时间
     internal var end_time:Date?
     
@@ -73,8 +118,9 @@ class OnlineApplyModel: BaseModel {
        
         super.mapping(map: map)
         end_time <- (map["end_time"], DateTransform())
-        companyIcon <- map["company_icon"]
-        companyName <- map["company_name"]
+        company <- map["company"]
+        //companyIcon <- map["company_icon"]
+        //companyName <- map["company_name"]
         address <- map["address"]
         positions <- map["positions"]
         majors <- map["majors"]

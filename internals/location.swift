@@ -49,7 +49,7 @@ class UserLocationManager: NSObject, CLLocationManagerDelegate{
                     if let city = place.locality,   let zone =  place.subLocality,  let address = place.name{
                           SingletoneClass.shared.setAddress(city: city, zone: zone, address: address)
                     }
-                    
+                
                     print("地址\(place.name)")
                     print("城市\(place.locality)")
                     print("区\(place.subLocality)")
@@ -74,10 +74,14 @@ extension UserLocationManager{
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
+        
         print("find location")
         if let location:CLLocation = locations.last, location.horizontalAccuracy > 0{
+            SingletoneClass.shared.setUserLocation(location: location)
+            
             print("纬度\(location.coordinate.latitude)")
             print("经度\(location.coordinate.longitude)")
+            
             getCity(location: location)
         }
         

@@ -309,7 +309,7 @@ extension CompanyJobsVC:UITableViewDelegate, UITableViewDataSource{
                 cell.mode = mode
                 return cell
                 
-            }else if let mode = self.tagDatas[self.currentTag]?[indexPath.row] as? OnlineApplyModel{
+            }else if let mode = self.tagDatas[self.currentTag]?[indexPath.row] as? OnlineApplyListModel{
                 let cell = tableView.dequeueReusableCell(withIdentifier: OnlineApplyCell.identity(), for: indexPath) as!  OnlineApplyCell
                 mode.isSimple = true 
                 cell.mode = mode

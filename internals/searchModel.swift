@@ -10,6 +10,20 @@ import Foundation
 import ObjectMapper
 
 
+
+struct  TopWord: Mappable {
+    
+    var name:String?
+    
+    init?(map: Map) {
+    }
+    
+    mutating func mapping(map: Map) {
+        name <- map["name"]
+    }
+}
+
+
 struct MatchKeyWordsModel: Mappable {
     
     var type:String?
@@ -32,104 +46,104 @@ struct MatchKeyWordsModel: Mappable {
 
 
 // 请求body
-struct  searchOnlineApplyBody: Mappable {
-    
-    var word:String?
-    var city:[String]?
-    var industry:String?
-    
-    init?(map: Map) {
-        
-    }
-    
-    mutating func mapping(map: Map) {
-        word <- map["word"]
-        city <- map["city"]
-        industry <- map["industry"]
-    }
-    
-}
+//struct  searchOnlineApplyBody: Mappable {
+//    
+//    var word:String?
+//    var city:[String]?
+//    var industry:String?
+//    
+//    init?(map: Map) {
+//        
+//    }
+//    
+//    mutating func mapping(map: Map) {
+//        word <- map["word"]
+//        city <- map["city"]
+//        industry <- map["industry"]
+//    }
+//    
+//}
 
-struct searchGraduateRecruiteBody: Mappable {
-    
-    var word:String?
-    var city:[String]?
-    var industry:String?
-    var company:String?
-    
-    
-    init?(map: Map) {
-        
-    }
-    mutating func mapping(map: Map) {
-        word <- map["word"]
-        city <- map["city"]
-        industry <- map["industry"]
-        company <- map["company"]
-    }
-    
-}
-
-
-
-struct searchInternJobsBody:Mappable {
-    
-    var word:String?
-    var city:[String]?
-    var industry:String?
-    var interns:[String:String]?
-    
-    
-    init?(map: Map) {
-        
-    }
-    
-    mutating func mapping(map: Map) {
-        word <- map["word"]
-        city <- map["city"]
-        industry <- map["industry"]
-        interns <- map["interns"]
-    }
-    
-}
+//struct searchGraduateRecruiteBody: Mappable {
+//    
+//    var word:String?
+//    var city:[String]?
+//    var industry:String?
+//    var company:String?
+//    
+//    
+//    init?(map: Map) {
+//        
+//    }
+//    mutating func mapping(map: Map) {
+//        word <- map["word"]
+//        city <- map["city"]
+//        industry <- map["industry"]
+//        company <- map["company"]
+//    }
+//    
+//}
 
 
-struct  searchCareerTalkBody:Mappable {
-    
-    var word:String?
-    var college:[String]?
-    var industry:String?
-    var date:String? // TODO timinterval??
-    
-    init?(map: Map) {
-        
-    }
-    
-    mutating func mapping(map: Map) {
-        word <- map["word"]
-        college <- map["college"]
-        industry <- map["industry"]
-        date <- map["date"]
-    }
-    
-}
+
+//struct searchInternJobsBody:Mappable {
+//    
+//    var word:String?
+//    var city:[String]?
+//    var industry:String?
+//    var interns:[String:String]?
+//    
+//    
+//    init?(map: Map) {
+//        
+//    }
+//    
+//    mutating func mapping(map: Map) {
+//        word <- map["word"]
+//        city <- map["city"]
+//        industry <- map["industry"]
+//        interns <- map["interns"]
+//    }
+//    
+//}
 
 
-struct searchCompanyBody:Mappable {
-    
-    var word:String?
-    var city:[String]?
-    var field:String?
-    
-    init?(map: Map) {
-        
-    }
-    
-    mutating func mapping(map: Map) {
-        word <- map["word"]
-        city <- map["city"]
-        field <- map["field"]
-        
-    }
-}
+//struct  searchCareerTalkBody:Mappable {
+//    
+//    var word:String?
+//    var college:[String]?
+//    var industry:String?
+//    var date:String? // TODO timinterval??
+//    
+//    init?(map: Map) {
+//        
+//    }
+//    
+//    mutating func mapping(map: Map) {
+//        word <- map["word"]
+//        college <- map["college"]
+//        industry <- map["industry"]
+//        date <- map["date"]
+//    }
+//    
+//}
+
+
+//struct searchCompanyBody:Mappable {
+//    
+//    var word:String?
+//    var city:[String]?
+//    var field:String?
+//    
+//    init?(map: Map) {
+//        
+//    }
+//    
+//    mutating func mapping(map: Map) {
+//        word <- map["word"]
+//        city <- map["city"]
+//        field <- map["field"]
+//        
+//    }
+//}
 

@@ -12,79 +12,36 @@ import MJRefresh
 import RxSwift
 import RxCocoa
 
-fileprivate let leftDistance:CGFloat = 40
-fileprivate let dropViewH:CGFloat = 40
+//fileprivate let leftDistance:CGFloat = 40
+//fileprivate let dropViewH:CGFloat = 40
 fileprivate let SearchPlaceholder:String = "搜索公司/职位/宣讲会"
 
 
-
-// 搜索类型
-enum searchItem:String{
-    
-    case onlineApply = "onlineApply"
-    case graduate = "graduate"
-    case intern = "intern"
-    case meeting = "meeting"
-    case company = "company"
-    case forum = "forum"
-    case none = "none"
-    // 简历添加类型
-    case online = "online"
-    case attachment = "attachment"
+internal final class chooseBtn:UIButton {
     
     
-    var type:String{
-        get{
-            switch self {
-            case .forum:
-                return "forum" // 只是论坛
-            default:
-                return "jobs"  // 公司, 职位, 其他条件
-            }
-        }
-    }
-    
-    var describe:String{
-        get{
-            switch self {
-            case .intern:
-                return "实习"
-            case .graduate:
-                return "校招"
-            case .onlineApply:
-                return "网申"
-            case .meeting:
-                return "宣讲会"
-            case .forum:
-                return "论坛"
-            case .company:
-                return "公司"
-            case .online:
-                return "在线简历"
-            case .attachment:
-                return "附件简历"
-            default:
-                return ""
-            }
-        }
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.imageEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 0)
+        
+        // btn的元素排列
+        self.semanticContentAttribute = .forceRightToLeft
+        self.setTitleColor(UIColor.blue, for: .normal)
+        self.backgroundColor = UIColor.clear
+        //btn.addTarget(self, action: #selector(showItems(_:)), for: .touchUpInside)
+        //self.isHidden = true
+        self.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        
         
     }
     
-    static func getType(name:String)->searchItem{
-        if name == "实习"{
-            return .intern
-        }else if name == "校招"{
-            return .graduate
-        }else if name == "网申"{
-            return .onlineApply
-        }else if name == "论坛"{
-            return .forum
-        }else if name == "公司"{
-            return .company
-        }
-        return .none
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
+    
+    
+  
 }
 
 
@@ -95,34 +52,49 @@ class BaseSearchViewController: UISearchController{
     
     // 搜索类型 决定 搜索记录界面显示数据 MARK
     internal var searchType:searchItem = .none{
+        
         didSet{
+            // searchVM observeron(value)
+            NotificationCenter.default.post(name: NotificationName.searchType, object: nil, userInfo: ["searchType": searchType])
             
             // 热门关键词
-            searchVM.searchLatestHotRecord(type: searchType.type).asDriver().drive(onNext: { words in
-                self.serchRecordVC.hotItem = words
-            }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+//            searchVM.searchLatestHotRecord(type: searchType.type).asDriver().drive(onNext: { words in
+//                self.serchRecordVC.hotItem = words
+//            }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+//
             
+            self.currentMenuType = searchType == .forum ? .forum : .onlineApply
             
+            //self.currentMenuType = searchItem(rawValue: searchType.type) ?? .none
             // 搜索历史记录
-            switch searchType {
-            case .forum:
-                self.serchRecordVC.searchType = "forum"
-            case .company, .intern, .meeting, .graduate, .onlineApply:
-                //默认值
-                self.serchRecordVC.searchType = "jobs"
-
-            default:
-                break
-            }
+//            switch searchType {
+//            case .forum:
+//                self.serchRecordVC.searchType = "forum"
+//                self.currentMenuType = .forum
+//
+//            case .company, .intern, .meeting, .graduate, .onlineApply:
+//                //默认值
+//                self.serchRecordVC.searchType = "jobs"
+//                self.currentMenuType = .onlineApply
+//                self.popMenuView.datas = [.onlineApply, .graduate, .intern, .meeting, .company]
+//
+//            default:
+//                break
+//            }
+            
         }
     }
     
     internal var searchField:UITextField!
     
     // 搜索结果显示控制组件
-    internal  weak var searchShowVC:searchResultController?
+    private  weak var searchShowVC:SearchResultController?
     
-    private lazy var currentMenuType:searchItem = .onlineApply
+    private  var currentMenuType:searchItem = .none{
+        didSet{
+            self.chooseTypeBtn.setTitle(self.currentMenuType.describe, for: .normal)
+        }
+    }
 
     
     // 设置搜索bar 高度 并影藏textfield 背景img
@@ -134,60 +106,51 @@ class BaseSearchViewController: UISearchController{
     
     
     // 类型选择btn
-    internal lazy var chooseTypeBtn:UIButton = {
+    internal lazy var chooseTypeBtn:chooseBtn = {
         
-        let btn = UIButton.init(frame: CGRect.init(x: 5, y: 4.5, width: 60, height: 20))
+        let btn = chooseBtn.init(frame: CGRect.init(x: 5, y: 4.5, width: 60, height: 20))
         btn.setImage(#imageLiteral(resourceName: "arrow_nor").changesize(size: CGSize.init(width: 10, height: 10)), for: .normal)
-        btn.setTitle(currentMenuType.describe, for: .normal)
-        btn.imageEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 0)
-        
-        // btn的元素排列
-        btn.semanticContentAttribute = .forceRightToLeft
-        btn.setTitleColor(UIColor.blue, for: .normal)
-        btn.backgroundColor = UIColor.clear
         btn.addTarget(self, action: #selector(showItems(_:)), for: .touchUpInside)
         btn.isHidden = true
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-        btn.autoresizesSubviews = true
         return btn
         
     }()
     
     // 下拉菜单tableview
-    internal lazy var popMenuView:SearchTypeMenuView = { [unowned self] in
-        // 计算 btn 相对windows 的位置
+    private lazy var popMenuView:SearchTypeMenuView = { [unowned self] in
+        // 计算 btn 相对windows 的位置 ???
         //let absolute =  self.searchField.convert(self.chooseTypeBtn.frame, to: self.searchBar)
-        print("the absolue view CGrect \(self.chooseTypeBtn.frame)")
-        let popMenuView = SearchTypeMenuView(frame: CGRect.init(x: self.chooseTypeBtn.frame.origin.x + self.chooseTypeBtn.size.width, y: self.chooseTypeBtn.frame.origin.y +  self.chooseTypeBtn.size.height, width: 100, height: 160))
+        let popMenuView = SearchTypeMenuView(frame: CGRect.init(x: self.chooseTypeBtn.frame.origin.x + 10, y: GlobalConfig.NavH - 10 , width: 0, height: 0))
         popMenuView.delegate = self
         return popMenuView
     }()
     
 
     // 搜索历史和搜索匹配展示VC
-    lazy  var serchRecordVC:SearchRecodeViewController = {  [unowned self] in
-            let vc =  SearchRecodeViewController()
+    private lazy var serchRecordVC: SearchRecordeViewController = {  [unowned self] in
+            let vc = SearchRecordeViewController()
             vc.view.isHidden = true
             vc.resultDelegate = self
             return vc
     }()
     
     // 切换历史搜索和 搜索结果展示界面
-    var  showRecordView:Bool = false{
+    var showRecordView: Bool = false{
         willSet{
             self.serchRecordVC.view.isHidden = !newValue
-            self.serchRecordVC.ShowHistoryTable = (self.searchBar.text ?? "").isEmpty
+            // 历史记录 或 搜索结果  table view 显示
+            self.serchRecordVC.showHistoryTable = (self.searchBar.text ?? "").isEmpty
         }
     }
     
     
     
     //rxSwift
-    var searchBarObserver:Observable<String>!
+    var searchBarObserver:Driver<String>!
     let dispose:DisposeBag = DisposeBag()
 
-    private lazy var searchVM:searchViewModel = {
-        return searchViewModel()
+    private lazy var searchVM:SearchViewModel = {
+        return SearchViewModel()
     }()
     
     
@@ -196,7 +159,7 @@ class BaseSearchViewController: UISearchController{
         
         super.init(searchResultsController: searchResultsController)
         
-        self.searchShowVC = searchResultsController as? searchResultController
+        self.searchShowVC = searchResultsController as? SearchResultController
  
         self.hidesNavigationBarDuringPresentation = false
         self.dimsBackgroundDuringPresentation = true
@@ -241,7 +204,8 @@ class BaseSearchViewController: UISearchController{
         // 搜索结果VC的view 布局
         _ = self.serchRecordVC.view.sd_layout().topEqualToView(self.view)?.bottomEqualToView(self.view)?.rightEqualToView(self.view)?.leftEqualToView(self.view)
         _ = self.searchField.sd_layout()?.topEqualToView(self.searchBar)?.bottomEqualToView(self.searchBar)
-
+  
+        
         //self.navigationController?.navigationBar.settranslucent(false)
         //rxswift
         setViewModel()
@@ -258,11 +222,9 @@ class BaseSearchViewController: UISearchController{
     }
     
     
+    
     override func viewWillLayoutSubviews() {
-       
-        super.viewDidLayoutSubviews()
-        
-        
+        super.viewWillLayoutSubviews()
     }
     
 }
@@ -270,6 +232,7 @@ class BaseSearchViewController: UISearchController{
 
 
 extension BaseSearchViewController{
+    
     @objc private func showItems(_ btn:UIButton){
         
         searchField.resignFirstResponder()
@@ -303,7 +266,7 @@ extension BaseSearchViewController{
 
 
 
-// 搜索热门记录 点击代理实现
+// 热门记录 和  搜索的词 点击代理实现
 extension BaseSearchViewController:SearchResultDelegate{
     
     func ShowSearchResults(word: String) {
@@ -314,6 +277,9 @@ extension BaseSearchViewController:SearchResultDelegate{
         }
         
         self.searchBar.text = word
+        
+        self.showRecordView = false
+         DBFactory.shared.getSearchDB().insertSearch(type: self.searchType.searchType, name: word)
         
         if self.searchType == .forum{
             startPostSearch(word: word)
@@ -331,23 +297,20 @@ extension BaseSearchViewController{
     
     open func startSearch(word:String){
         
-        self.showRecordView = false
-        DBFactory.shared.getSearchDB().insertSearch(type: self.serchRecordVC.searchType,name: word)
         self.searchShowVC?.startSearchData(type: currentMenuType, word: word)
         self.searchBar.endEditing(true)
 
     }
-    // 搜索论坛数据
+    // 搜索论坛数据 TODO
      open func startPostSearch(word:String){
-         self.showRecordView = false
-         DBFactory.shared.getSearchDB().insertSearch(type: self.serchRecordVC.searchType,name: word)
+        
         
     }
 }
 
 
 
-// 搜索菜单代理
+// 搜索菜单切换 代理
 extension BaseSearchViewController: SearchMenuDelegate{
     
     func selectedItem(item: searchItem) {
@@ -358,14 +321,10 @@ extension BaseSearchViewController: SearchMenuDelegate{
         self.hiddenPopMenu()
         
         chooseTypeBtn.setTitle(item.describe, for: .normal)
-        if item == .meeting{
-            chooseTypeBtn.imageEdgeInsets = UIEdgeInsets(top: 0, left: 30, bottom: 0, right: 0)
-        }else{
-            chooseTypeBtn.imageEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 0)
-
-        }
+        chooseTypeBtn.imageEdgeInsets = item == .meeting ? UIEdgeInsets(top: 0, left: 30, bottom: 0, right: 0) : UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 0)
         
-        // 刷新结果界面
+        
+        // 如果是显示结果状态下  才刷新具体类型的搜索数据
         if self.showRecordView == false && refresh{
 
             if let text = self.searchBar.text, !text.isEmpty{
@@ -383,58 +342,65 @@ extension BaseSearchViewController{
     
     private func setViewModel(){
         
-       // searchBar rx
-       searchBarObserver =  self.searchBar.rx.text.orEmpty.throttle(0.3, scheduler: MainScheduler.instance).distinctUntilChanged().flatMapLatest { (query) -> Observable<String> in
-            if query.isEmpty{
-                return Observable<String>.just("")
-            }
-            return Observable<String>.just(query)
-        }.share().observeOn(MainScheduler.instance)
-     
+       // searchBar  输入框监听变化
+        searchBarObserver =  self.searchBar.rx.text.orEmpty.asDriver()
+    
+        
         searchBarObserver.map { (str) -> Bool in
             str.isEmpty
-        }.bind(to: self.popMenuView.rx.hidden).disposed(by: dispose)
+        }.asObservable().bind(to: self.popMenuView.rx.hidden).disposed(by: dispose)
         
-        searchBarObserver.bind(to: self.serchRecordVC.rx.status).disposed(by: dispose)
+        searchBarObserver.asObservable().bind(to: self.serchRecordVC.rx.status).disposed(by: dispose)
         
         // 绑定到搜索历史结果 FilterTable
-        searchBarObserver.flatMapLatest { (words) -> Observable<[String]> in
+    
+  
+        searchBarObserver.flatMapLatest { (words) -> Driver<[String]> in
         
             if words.isEmpty{
-                return  Observable<[String]>.just([])
+                return Driver<[String]>.just([])
             }
+            return  self.searchVM.searchMatchWords(type: self.currentMenuType.describe, word: words).map({ (mode) -> [String] in
+                mode.body?.words ?? []
+            }).asDriver(onErrorJustReturn: [])
             
-            return self.searchVM.searchMatchWords(type: self.searchType.type, word: words).map{ (model) -> [String] in
-                //Observable<[String]>.just(model.words ?? [])
-                model.words ?? []
-                }.catchError({ (err) -> Observable<[String]> in
-                    self.view.showToast(title: "发生错误\(err)", customImage: nil, mode: .text)
-                    //showOnlyTextHub(message: "发生错误\(err)", view: self.view)
-                    return Observable<[String]>.just([])
-                })
-            
-            }.share().bind(to: self.serchRecordVC.FilterTable.rx.items(cellIdentifier: "cell", cellType: UITableViewCell.self)){
+           }.asObservable().bind(to: self.serchRecordVC.filterTable.rx.items(cellIdentifier: "cell", cellType: UITableViewCell.self)){
                 (row, element, cell) in
                 cell.textLabel?.text = element
                 
-            }.disposed(by: dispose)
+                }.disposed(by: self.dispose)
+        
+            
+//            return self.searchVM.searchMatchWords(type: self.searchType.searchType, word: words).map{ (model) -> [String] in
+//                //Observable<[String]>.just(model.words ?? [])
+//                model.words ?? []
+//                }.catchError({ (err) -> Observable<[String]> in
+//                    self.view.showToast(title: "发生错误\(err)", customImage: nil, mode: .text)
+//                    //showOnlyTextHub(message: "发生错误\(err)", view: self.view)
+//                    return Observable<[String]>.just([])
+//                })
+//
+//            }.asObservable().bind(to: self.serchRecordVC.filterTable.rx.items(cellIdentifier: "cell", cellType: UITableViewCell.self)){
+//                (row, element, cell) in
+//                cell.textLabel?.text = element
+//
+//            }.disposed(by: dispose)
         
     
         
         // edit
         self.searchBar.rx.textDidBeginEditing.debug().throttle(0.3, scheduler: MainScheduler.instance).asDriver(onErrorJustReturn: ()).drive(onNext: {
                 self.showRecordView = true
-            
-        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        }).disposed(by: self.dispose)
+        
         
         
         // 点击搜索按钮
         self.searchBar.rx.searchButtonClicked.throttle(0.3, scheduler: MainScheduler.instance).asDriver(onErrorJustReturn: ()).debug().drive(onNext: {
             if let text =  self.searchBar.text, !text.isEmpty{
-                self.startSearch(word: text)
+                self.ShowSearchResults(word: text)
             }
-            
-        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        }).disposed(by: self.dispose)
         
         // searchController rx
       

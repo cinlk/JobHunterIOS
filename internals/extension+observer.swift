@@ -46,6 +46,7 @@ extension Reactive where Base: UIButton {
 
 
 extension Reactive where Base: SearchTypeMenuView{
+    
     var hidden: Binder<Bool>{
         return Binder.init(self.base, binding: { (target, v) in
             let t =  target as SearchTypeMenuView
@@ -55,11 +56,11 @@ extension Reactive where Base: SearchTypeMenuView{
         })
     }
 }
-extension Reactive where Base: SearchRecodeViewController{
+extension Reactive where Base: SearchRecordeViewController{
     var status: Binder<String>{
         return Binder.init(self.base, binding: { (target, v) in
-            let t =  target as SearchRecodeViewController
-            t.ShowHistoryTable = v.isEmpty
+            let t =  target as SearchRecordeViewController
+            t.showHistoryTable = v.isEmpty
             // 显示搜索历史界面
             
         })

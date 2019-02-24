@@ -12,15 +12,84 @@ import YNDropDownMenu
 
 
 fileprivate let spaceWidth:CGFloat = 25
+fileprivate let defaultChoose:String = "不限"
+
+
+fileprivate class bottomToolBar:UIToolbar{
+    
+    
+    private lazy var clearAll:UIButton = {
+        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (GlobalConfig.ScreenW - spaceWidth - 10)/2, height: 35))
+        clear.setTitle("清空", for: .normal)
+        clear.setTitleColor(UIColor.black, for: .normal)
+        clear.backgroundColor = UIColor.white
+        clear.layer.borderWidth = 1
+        clear.layer.borderColor = UIColor.black.cgColor
+        clear.addTarget(self.pview!, action: #selector(self.pview!.clear), for: .touchUpInside)
+        return clear
+        
+    }()
+    
+    private lazy var confirm:UIButton = {
+        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (GlobalConfig.ScreenW - spaceWidth - 10)/2, height: 35))
+        confirm.setTitle("确定", for: .normal)
+        confirm.setTitleColor(UIColor.white, for: .normal)
+        confirm.backgroundColor = UIColor.blue
+        confirm.addTarget(self.pview!, action: #selector(self.pview!.done), for: .touchUpInside)
+        return confirm
+        
+        
+    }()
+    
+    private lazy var space:UIBarButtonItem = {
+        let s = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
+        s.width = spaceWidth
+        return s
+    }()
+    
+    
+    
+    private weak var pview:DropInternCondtionView?
+    
+    
+    convenience init(frame:CGRect, view:DropInternCondtionView){
+        self.init(frame: frame)
+        self.pview = view
+        
+        
+        self.barStyle = .default
+        self.backgroundColor = UIColor.white
+        self.items = []
+        
+    }
+    
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.items?.append(contentsOf: [UIBarButtonItem.init(customView: clearAll),space, UIBarButtonItem.init(customView: confirm)])
+        
+    }
+}
+
+
+
 // 实习条件
 class DropInternCondtionView: YNDropDownView{
     
     private var datas:[String:[String]] = [:]{
         didSet{
             keys = datas.keys.reversed()
-            datas.keys.reversed().forEach{
-                conditions[$0] = "不限"
-            }
+//            datas.keys.reversed().forEach{
+//                conditions[$0] = "不限"
+//            }
             
         }
     }
@@ -33,35 +102,10 @@ class DropInternCondtionView: YNDropDownView{
     
     var passData: ((_ cond:[String:String]?) -> Void)?
     
-    
-    
-    // confirm button
-    internal lazy var clearAll:UIButton = {
-        let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (GlobalConfig.ScreenW - spaceWidth - 10)/2, height: 35))
-        clear.setTitle("清空", for: .normal)
-        clear.setTitleColor(UIColor.black, for: .normal)
-        clear.backgroundColor = UIColor.white
-        clear.layer.borderWidth = 1
-        clear.layer.borderColor = UIColor.black.cgColor
-        clear.addTarget(self, action: #selector(clear(_:)), for: .touchUpInside)
-        return clear
-    }()
-    
-    private lazy var confirm:UIButton = {
-        let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (GlobalConfig.ScreenW - spaceWidth - 10)/2, height: 35))
-        confirm.setTitle("确定", for: .normal)
-        confirm.setTitleColor(UIColor.white, for: .normal)
-        confirm.backgroundColor = UIColor.blue
-        confirm.addTarget(self, action: #selector(done(_:)), for: .touchUpInside)
-        return confirm
-        
-    }()
+
     // 加入toolbar
-    private lazy var toolBar:UIToolbar = {
-        let bar = UIToolbar.init()
-        bar.barStyle = .default
-        bar.backgroundColor = UIColor.white
-        bar.items = []
+    private lazy var toolBar:bottomToolBar = {
+        let bar = bottomToolBar.init(frame: CGRect.zero, view: self)
         return bar
     }()
     
@@ -114,11 +158,6 @@ class DropInternCondtionView: YNDropDownView{
         
         _ = toolBar.sd_layout().bottomEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(40)
         _ = collectionView.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.topEqualToView(self)?.heightIs(self.bounds.height)
-
-        
-        let space = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
-        space.width = spaceWidth
-        toolBar.items?.append(contentsOf: [UIBarButtonItem.init(customView: clearAll),space, UIBarButtonItem.init(customView: confirm)])
         
         loadData()
         
@@ -157,17 +196,17 @@ class DropInternCondtionView: YNDropDownView{
 
 extension DropInternCondtionView{
     
-    @objc private func clear(_ btn:UIButton){
+    @objc internal func clear(){
        
         keys.forEach{
-            conditions[$0] = "不限"
+            conditions[$0] = defaultChoose
         }
         
         self.collectionView.reloadData()
         
     }
     
-    @objc private func done(_ btn:UIButton){
+    @objc fileprivate func done(){
         self.passData?(conditions)
         self.hideMenu()
         
@@ -181,13 +220,11 @@ extension DropInternCondtionView{
 
 extension DropInternCondtionView{
     private func loadData(){
-        datas =  ["每周实习天数":["不限","1天","2天","3天","4天","5天"],
-                  
-                  "实习日薪":["不限","100以下","100-200","200以上"],
-                  "实习月数":["不限","1月","1-6月","6月以上"],
-                  "学历":["不限","大专","本科","硕士","博士"],
-                  "是否转正":["不限","提供转正"],
-        ]
+        if SingletoneClass.shared.selectedInternCondition.isEmpty{
+            // TODO
+            return
+        }
+        datas =  SingletoneClass.shared.selectedInternCondition
         
     }
 }
@@ -213,16 +250,18 @@ extension DropInternCondtionView: UICollectionViewDelegate, UICollectionViewData
             guard let name = datas[keys[indexPath.section]]?[indexPath.row] else { return UICollectionViewCell() }
             
             cell.name.text = name
+            cell.Selected = (conditions[keys[indexPath.section]]?.contains(name) ?? false) ? true : false
              //
-            if (conditions[keys[indexPath.section]]?.contains(name))!{
-                cell.name.textColor = UIColor.blue
-                cell.name.layer.borderColor = UIColor.blue.cgColor
-            }else{
-                
-                cell.name.textColor = UIColor.black
-                cell.name.layer.borderColor = UIColor.clear.cgColor
-                
-            }
+//            if (conditions[keys[indexPath.section]]?.contains(name))!{
+//                cell.name.textColor = UIColor.blue
+//                cell.name.layer.borderColor = UIColor.blue.cgColor
+//
+//            }else{
+//
+//                cell.name.textColor = UIColor.black
+//                cell.name.layer.borderColor = UIColor.clear.cgColor
+//
+//            }
             return cell
             
         }
@@ -256,8 +295,8 @@ extension DropInternCondtionView: UICollectionViewDelegate, UICollectionViewData
         guard let name = cell.name.text else {return}
         // 每个section只有一个被选中
         conditions[keys[indexPath.section]] = name
-
-        collectionView.reloadData()
+        collectionView.reloadSections([indexPath.section], animationStyle: .none)
+        //collectionView.reloadData()
     }
 }
 

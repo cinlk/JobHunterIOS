@@ -45,19 +45,6 @@ class PagetitleView: UIView {
         return v
     }()
     
-    //  可以滚动的view
-//    private lazy var scrollerTitle:UIScrollView = {
-//        let s = UIScrollView.init(frame: CGRect.zero)
-//        s.contentInsetAdjustmentBehavior = .never
-//        s.bounces = false
-//        s.scrollsToTop = false
-//        s.contentInset = UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 10)
-//        s.showsVerticalScrollIndicator = false
-//        s.showsHorizontalScrollIndicator = false
-//        s.isPagingEnabled = false
-//
-//
-//    }()
     
     init(frame:CGRect, titles:[String], lineCenter:Bool = false, itemWidth:CGFloat = 60,horizontalEdgeInset:CGFloat = 30, kNormalColor:(CGFloat, CGFloat, CGFloat) = (85, 85, 85),
          kSelectColor:(CGFloat, CGFloat, CGFloat) = (255, 128, 0)) {

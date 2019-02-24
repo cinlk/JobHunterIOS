@@ -14,20 +14,54 @@ import MJRefresh
 import ObjectMapper
 
 fileprivate let dropViewH:CGFloat = 40
-fileprivate let dropMenuTitles:[String] = ["城市","行业领域"]
+fileprivate let cityMenuHeight:CGFloat = GlobalConfig.ScreenH - 240
 
+fileprivate let dropMenuTitles:[String] = [GlobalConfig.DropMenuTitle.city,
+                                           GlobalConfig.DropMenuTitle.businessField]
+fileprivate let pass = ["不限", "全国"]
 
-class OnlineApplySearchVC: UIViewController, SearchControllerDeletgate {
+class OnlineApplySearchVC: BaseViewController, SearchControllerDeletgate {
 
+    // 初始值
+    private lazy var modes:[OnlineApplyListModel] = []
+    // 显示的值
+    private lazy var filterModes:[OnlineApplyListModel] = []
+    private lazy var firstLoad:Bool = true
+    
+    //private lazy var filterFlag:Bool = false
+    private  var condition:([String], String) = ([],""){
+        didSet{
+            
+            self.filterModes.removeAll()
+            self.modes.forEach { (mode) in
+                if (mode.businessField?.contains(condition.1) ?? false) || pass.contains(condition.1){
+                    if condition.0.contains(pass[1]){
+                        self.filterModes.append(mode)
+                        return
+                    }
+                    condition.0.forEach({ (c) in
+                        if mode.citys?.contains(c) ?? false{
+                            self.filterModes.append(mode)
+                        }
+                    })
+                }
+            }
+            
+            
+            
+            self.searchVM.onlineApplyRes.onNext(self.filterModes)
+        }
+    }
     
     private lazy var cityMenu:DropItemCityView = { [unowned self] in
-        let c = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
-        c.passData  = { citys in
-            
-            self.requestBody.city = citys
-            self.table.mj_header.beginRefreshing()
+        let c = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: cityMenuHeight))
+        c.passData  = { cities in
+            //self.filterFlag = true
+            // 多个条件过滤 TODO
+            self.condition.0 = cities
             
         }
+        
         c.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
         return c
     }()
@@ -37,9 +71,7 @@ class OnlineApplySearchVC: UIViewController, SearchControllerDeletgate {
         let v = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
       
         v.passData = { item in
-            
-            self.requestBody.industry = item
-            self.table.mj_header.beginRefreshing()
+            self.condition.1 = item
         }
         
         v.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
@@ -49,8 +81,6 @@ class OnlineApplySearchVC: UIViewController, SearchControllerDeletgate {
     
     private lazy var dropMenu:YNDropDownMenu = {
         let menu = configDropMenu(items: [cityMenu, kind], titles: dropMenuTitles, height: dropViewH)
-        menu.isHidden = false
-        
         return menu
     }()
     
@@ -64,135 +94,104 @@ class OnlineApplySearchVC: UIViewController, SearchControllerDeletgate {
         tb.rx.setDelegate(self).disposed(by: dispose)
         tb.tableHeaderView = UIView()
         tb.tableFooterView = UIView()
+        
         tb.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
         return tb
-        
     }()
-    
-    
-    // table refresh
-    
-    private lazy var refreshHeader:MJRefreshNormalHeader = {
-        let h = MJRefreshNormalHeader.init { [weak self] in
-            
-            self?.searchVM.onlineApplyRrefresh.onNext((true, (self?.requestBody)!))
-        }
-        h?.setTitle("开始刷新", for: .pulling)
-        h?.setTitle("刷新中...", for: .refreshing)
-        h?.setTitle("下拉刷新", for: .idle)
-        h?.lastUpdatedTimeLabel.isHidden = true
-        
-        return h!
-        
-    }()
-    
-    private lazy var refreshFooter:MJRefreshAutoNormalFooter = {
-        let f = MJRefreshAutoNormalFooter.init(refreshingBlock: { [weak self] in
-            
-            
-            self?.searchVM.onlineApplyRrefresh.onNext((false, (self?.requestBody)!))
-
-        })
-        f?.setTitle("上拉刷新", for: .idle)
-        f?.setTitle("刷新中...", for: .refreshing)
-        f?.setTitle("没有数据", for: .noMoreData)
-        
-        return f!
-    }()
-    
-    // 请求数据body
-    private var requestBody:searchOnlineApplyBody = searchOnlineApplyBody(JSON: [:])!
     
    
     // rxSwift
     private let dispose = DisposeBag()
-    private let searchVM = searchViewModel()
-    private var searchResult:BehaviorRelay<[OnlineApplyModel]> = BehaviorRelay<[OnlineApplyModel]>(value: [])
-    
-    
+    private let searchVM = SearchViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setView()
+        setViews()
         setViewModel()
-
-        self.table.mj_header = refreshHeader
-        self.table.mj_footer = refreshFooter
     }
-  
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // 控制其他vc 先显示时， 该vc的hub不显示
+        if self.firstLoad{
+            super.setViews()
+            self.firstLoad = !self.firstLoad
+        }
+    }
+    
+    
+    override func setViews(){
+        self.view.addSubview(table)
+        self.view.addSubview(dropMenu)
+        self.view.backgroundColor = UIColor.white
+        
+        _ = table.sd_layout().topSpaceToView(dropMenu,0)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
+        self.hub.isHidden = true 
+        self.hiddenViews.append(table)
+        self.hiddenViews.append(dropMenu)
+        
+        
+    }
+    
+    
 
 }
 
 extension OnlineApplySearchVC: UITableViewDelegate{
  
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60
+        let mode =  self.filterModes[indexPath.row]
+        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: OnlineApplyCell.self, contentViewWidth: GlobalConfig.ScreenW)
+        
+        //return 60
     }
+    
 }
 
 extension OnlineApplySearchVC{
     
-    private func setView(){
-        self.view.addSubview(table)
-        self.view.addSubview(dropMenu)
-        self.view.backgroundColor = UIColor.white
-    
-        _ = table.sd_layout().topSpaceToView(dropMenu,0)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
+   
+    private func showloading(){
+        self.hub.isHidden = false
+        self.hub.show(animated: true)
+        self.hiddenViews.forEach { (view) in
+            view.isHidden = true
+        }
     }
     
     // 搜索数据
     open func searchData(word:String){
         
-        requestBody.word = word
+        // requestBody.word = word
         
         // 选项切换的刷新
-        searchVM.searchOnlineAppy(mode: requestBody, offset: 0).catchError({ (error) -> Observable<[OnlineApplyModel]> in
-            self.view.showToast(title: "error \(error)", customImage: nil, mode: .text)
-            //showOnlyTextHub(message: "error \(error)", view: self.view)
-            return Observable<[OnlineApplyModel]>.just([])
-                
-        }).share().bind(to: searchResult).disposed(by: dispose)
-
+        searchVM.searchOnlineAppy(word: word)
+        self.showloading()
+        
         // 界面内table 自身的刷新
-        self.searchVM.onlineApplyRes.share().bind(to: searchResult).disposed(by: dispose)
+        //self.searchVM.onlineApplyRes.share().bind(to: searchResult).disposed(by: dispose)
         
     }
     
     private func setViewModel(){
         
         
-        searchResult.share().observeOn(MainScheduler.instance).bind(to: self.table.rx.items(cellIdentifier: OnlineApplyCell.identity(), cellType: OnlineApplyCell.self)){ (row, element, cell) in
+        self.searchVM.onlineApplyRes.share().observeOn(MainScheduler.instance).bind(to: self.table.rx.items(cellIdentifier: OnlineApplyCell.identity(), cellType: OnlineApplyCell.self)){ (row, element, cell) in
             cell.mode = element
             }.disposed(by: dispose)
         
-        searchResult.share().map({ applys  in
-            applys.isEmpty
-        }) .bind(to: self.dropMenu.rx.isHidden).disposed(by: dispose)
         
-        
-        // table 刷新状态
-        
-        self.searchVM.onlineApplyStatus.asDriver(onErrorJustReturn: .none).drive(onNext: { refreshStatus in
-            switch refreshStatus{
-            case .beginHeaderRefrsh:
-                self.table.mj_header.beginRefreshing()
-            case .endHeaderRefresh:
-                self.table.mj_footer.resetNoMoreData()
-                self.table.mj_header.endRefreshing()
-            case .beginFooterRefresh:
-                self.table.mj_footer.beginRefreshing()
-            case .endFooterRefresh:
-                self.table.mj_footer.endRefreshing()
-            case .NoMoreData:
-                self.table.mj_footer.endRefreshingWithNoMoreData()
-            case .error(let err):
-                self.view.showToast(title: "online appy \(err)", customImage: nil, mode: .text)
-                //showOnlyTextHub(message: "online appy \(err)", view: self.view)
-            default:
-                break
+        self.searchVM.onlineApplyRes.asDriver(onErrorJustReturn: []).drive(onNext: { modes in
+            // 搜索初始值
+            if self.modes.isEmpty{
+                self.modes = modes
             }
+            //self.modes = modes
+            self.filterModes = modes
+            self.dropMenu.isHidden = modes.isEmpty
+            self.didFinishloadData()
             
-        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        }).disposed(by: self.dispose)
     }
     
 }
@@ -201,12 +200,12 @@ extension OnlineApplySearchVC{
 
 extension OnlineApplySearchVC{
     open func resetCondition(){
-        self.cityMenu.clearAll.sendActions(for: .touchUpInside)
+        self.cityMenu.clear()
         self.kind.clearSelected()
-        self.requestBody.city = nil
-        self.requestBody.industry = nil
-        
-    }
+        self.modes = []
+     }
+    
+   
 }
 
 

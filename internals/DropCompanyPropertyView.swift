@@ -30,7 +30,11 @@ extension DropCompanyPropertyView{
     private func loadData(){
         // 从网络获取数据
         //
-        datas =   ["不限","外资企业","私营企业","国有企业","非营利企业","其他"]
+        if SingletoneClass.shared.selectedCompanyType.isEmpty{
+            // TODO
+            return
+        }
+        datas =   SingletoneClass.shared.selectedCompanyType
         
     }
 }

@@ -183,7 +183,19 @@ struct GlobalConfig {
     static let NavH:CGFloat = (UIDevice.current.isX() ? 44  : 20) + 44
     static let defaultImage = "bigCar"
     static let searchBarH:CGFloat = 30
+    static let searchTopWord:String = "搜索记录"
+    static let locale = Locale(identifier: "zh_CN")
     
+    struct DropMenuTitle {
+        static let city = "城市"
+        static let businessField = "行业分类"
+        static let subBusinessField = "职业类型"
+        static let companyType = "公司性质"
+        static let interCondition = "实习条件"
+        static let meetingTime = "宣讲时间"
+        static let college = "大学"
+        
+    }
 }
 
 struct HttpCodeRange {
@@ -201,6 +213,9 @@ struct HttpCodeRange {
     
 }
 
+struct  NotificationName {
+    static let searchType:Notification.Name =  Notification.Name.init("searchType")
+}
 
 struct TabBarItems {
     

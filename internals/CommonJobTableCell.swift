@@ -33,6 +33,10 @@ import UIKit
       
         self.contentView.addSubview(commonjobView)
         _ = commonjobView.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topEqualToView(self.contentView)?.heightIs(0)
+        //self.conte
+        // 下拉菜单 背景view 滑动是，所有cell自动变成选中状态
+        //  会出现该view默认为w灰色，设置无色
+        self.selectedBackgroundView?.backgroundColor = UIColor.clear
     }
     
     required init?(coder aDecoder: NSCoder) {

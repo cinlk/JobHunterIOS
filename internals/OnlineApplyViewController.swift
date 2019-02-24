@@ -15,7 +15,7 @@ import MJRefresh
 
 class OnlineApplyViewController: UIViewController {
     // 网申数据
-    private var localData:[OnlineApplyModel] = []
+    private var localData:[OnlineApplyListModel] = []
     
     private lazy var table:UITableView = {
         let table = UITableView()
@@ -58,7 +58,7 @@ class OnlineApplyViewController: UIViewController {
         
         let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: DROP_MENU_H), dropDownViews: [cityMenu,industryKind], dropDownViewTitles: ["城市","行业领域"])
         
-        menu.setImageWhen(normal: UIImage(named: "arrow_nor"), selected: UIImage(named: "arrow_xl"), disabled: UIImage(named: "arrow_dim"))
+        menu.setImageWhens(normal: [#imageLiteral(resourceName: "arrow_dim")], selectedTintColor: UIColor.blue, disabledTintColor: UIColor.black)
         menu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
         
         menu.setLabelFontWhen(normal: .systemFont(ofSize: 16), selected: .boldSystemFont(ofSize: 16), disabled: .systemFont(ofSize: 16))
@@ -69,7 +69,7 @@ class OnlineApplyViewController: UIViewController {
         menu.bottomLine.isHidden = false
         
         // 添加手势
-        menu.addSwipeGestureToBlurView()
+        //menu.addSwipeGestureToBlurView()
         
     
         return menu
@@ -154,11 +154,17 @@ extension OnlineApplyViewController{
     
     private func setViewModel(){
         
-          self.vm.onlineApplyRes.share().subscribe(onNext: { (modes) in
+      
+        
+        self.vm.onlineApplyRes.share().subscribe(onNext: { (modes) in
+            
                 self.localData = modes
           }, onError: { (err) in
             self.localData = []
           }).disposed(by: dispose)
+        
+       
+        
         
         self.vm.onlineApplyRes.share().bind(to: self.table.rx.items(cellIdentifier: OnlineApplyCell.identity(), cellType: OnlineApplyCell.self)) { (row, mode, cell) in
             cell.mode = mode
@@ -190,18 +196,18 @@ extension OnlineApplyViewController{
         self.table.rx.itemSelected.subscribe(onNext: { (idx) in
             self.table.deselectRow(at: idx, animated: false)
             let mode = self.localData[idx.row]
-            if  mode.outer{
+            if  mode.outside ?? false{
                 guard let urlLink = mode.link else {return}
                 //跳转外部连接
                 let wbView = BaseWebViewController()
-                wbView.mode = urlLink
+                wbView.mode = urlLink.absoluteString
                 wbView.hidesBottomBarWhenPushed = true
                 self.navigationController?.pushViewController(wbView, animated: true)
                 
             }else{
                 let show = OnlineApplyShowViewController()
                 // 传递id
-                guard let id = mode.id else {
+                guard let id = mode.onlineApplyID else {
                     return
                 }
                 show.uuid = id

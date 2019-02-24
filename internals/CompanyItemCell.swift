@@ -48,7 +48,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
         return label
     }()
     
-    
+    // 被查看个数
     private lazy var follows:UILabel = {
         let label = UILabel()
         label.isAttributedContent = true
@@ -58,21 +58,23 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
         return label
     }()
     
-   dynamic var mode:CompanyModel?{
+   dynamic var mode:CompanyListModel?{
         didSet{
             guard let mode = mode else {
                 return
             }
-            let url = URL.init(string: mode.icon)
-            self.icon.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
-            
+            if let url = mode.companyIconURL{
+                self.icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+
+            }
+        
             //self.icon.image = UIImage.init(named: mode.icon)
-            self.company.text = mode.name
-            self.types.text = mode.industry!.joined(separator: " ")
-            self.address.text = mode.address!.joined(separator: " ")
+            self.company.text = mode.companyName
+            self.types.text = mode.businessField?.joined(separator: " ")
+            self.address.text = mode.citys?.joined(separator: " ")
             
-            let fs = NSMutableAttributedString(string: String.init(describing: mode.follows) , attributes: [NSAttributedString.Key.foregroundColor:UIColor.blue])
-            fs.append(NSAttributedString.init(string: "人关注", attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray]))
+            let fs = NSMutableAttributedString(string: String.init(describing: mode.reviewCounts ?? 0) , attributes: [NSAttributedString.Key.foregroundColor:UIColor.blue])
+            fs.append(NSAttributedString.init(string: "被关注", attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray]))
             
             self.follows.attributedText = fs
             self.setupAutoHeight(withBottomViewsArray: [icon,address], bottomMargin: 10)

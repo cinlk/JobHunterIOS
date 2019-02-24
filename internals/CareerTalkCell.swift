@@ -59,19 +59,22 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
     
 
     
-   dynamic var mode:CareerTalkMeetingModel?{
+   dynamic var mode: CareerTalkMeetingListModel?{
         didSet{
             
             guard  let mode = mode  else {
                 return
             }
-            let url = URL.init(string: mode.icon)
-            self.icon.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            if let url = mode.collegeIconURL{
+                  self.icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            }
             
-            self.company.text = mode.companyModel?.name
-            self.time.text = mode.time
-            self.collage.text = mode.college! + " |"
-            self.address.text = mode.address
+          
+            
+            self.company.text = mode.companyName
+            self.time.text = mode.startTimeStr
+            self.collage.text = (mode.college ?? "" ) + " |"
+            self.address.text = mode.simplifyAddress ?? ""
             //self.type.text = "宣讲会"
             self.setupAutoHeight(withBottomViewsArray: [icon,address], bottomMargin: 5)
         }
@@ -91,6 +94,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
         _ = collage.sd_layout().leftEqualToView(company)?.topSpaceToView(company,10)?.autoHeightRatio(0)
         _ = address.sd_layout().leftSpaceToView(collage, 5)?.topEqualToView(collage)?.autoHeightRatio(0)
         
+        self.selectedBackgroundView?.backgroundColor = UIColor.clear
         
         company.setMaxNumberOfLinesToShow(2)
         collage.setMaxNumberOfLinesToShow(1)
