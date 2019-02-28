@@ -87,7 +87,9 @@ extension ApplyOnlineCell:UICollectionViewDelegateFlowLayout, UICollectionViewDe
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         // 跳转到 网申界面，显示所有对应项
-        self.selectedIndex?(mode!.title)
+        
+        self.selectedIndex?(mode?.items[indexPath.row].Field ?? "")
+       
     }
     
     

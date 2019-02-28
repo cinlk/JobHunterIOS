@@ -13,7 +13,7 @@ import YNDropDownMenu
 import MJRefresh
 
 
-fileprivate let dropMenuH:CGFloat = 40
+fileprivate let dropMenuH:CGFloat = GlobalConfig.dropMenuViewHeight
 fileprivate let dropMenuTitles:[String] = [GlobalConfig.DropMenuTitle.college,
                                            GlobalConfig.DropMenuTitle.businessField,
                                            GlobalConfig.DropMenuTitle.meetingTime]

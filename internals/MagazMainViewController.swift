@@ -53,13 +53,15 @@ class MagazMainViewController: UIViewController {
         self.view.addSubview(pageScrollTitleView)
         self.view.addSubview(pageContentV)
         // Do any additional setup after loading the view.
+        self.hidesBottomBarWhenPushed = true
+        
     }
 
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.insertCustomerView(UIColor.lightGray)
-        self.hidesBottomBarWhenPushed = true
+       
     }
     
     override func viewWillDisappear(_ animated: Bool) {

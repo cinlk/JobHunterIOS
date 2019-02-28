@@ -13,7 +13,8 @@ import YNDropDownMenu
 
 fileprivate let spaceWidth:CGFloat = 25
 fileprivate let defaultChoose:String = "不限"
-
+fileprivate let transforKey:[String:String] = ["是否转正":"can_transfer","学历":"degree","每周实习天数":"days",
+                                               "实习日薪":"pay", "实习月数":"months"]
 
 fileprivate class bottomToolBar:UIToolbar{
     
@@ -207,6 +208,13 @@ extension DropInternCondtionView{
     }
     
     @objc fileprivate func done(){
+        conditions.keys.forEach { (k) in
+            if let m = transforKey[k]{
+                 self.conditions[m] = self.conditions[k]
+                 self.conditions.removeValue(forKey: k)
+            }
+           
+        }
         self.passData?(conditions)
         self.hideMenu()
         

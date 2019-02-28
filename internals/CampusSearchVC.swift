@@ -16,7 +16,7 @@ import ObjectMapper
 fileprivate let menuTitles:[String] = [GlobalConfig.DropMenuTitle.city,
                                        GlobalConfig.DropMenuTitle.subBusinessField,
                                        GlobalConfig.DropMenuTitle.companyType]
-fileprivate let dropMenuH:CGFloat = 40
+fileprivate let dropMenuH:CGFloat = GlobalConfig.dropMenuViewHeight
 fileprivate let cityMenuHeight:CGFloat = GlobalConfig.ScreenH - 240
 fileprivate let bussinessMenuHeight:CGFloat = GlobalConfig.ScreenH - 240
 fileprivate let companyMenuHeight:CGFloat = GlobalConfig.ScreenH - 240

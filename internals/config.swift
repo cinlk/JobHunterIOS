@@ -185,6 +185,8 @@ struct GlobalConfig {
     static let searchBarH:CGFloat = 30
     static let searchTopWord:String = "搜索记录"
     static let locale = Locale(identifier: "zh_CN")
+    static let JobHomePageTitles:[String] = ["网申","校招","宣讲会","公司","实习"]
+    static let dropMenuViewHeight:CGFloat = 40 
     
     struct DropMenuTitle {
         static let city = "城市"
@@ -194,6 +196,7 @@ struct GlobalConfig {
         static let interCondition = "实习条件"
         static let meetingTime = "宣讲时间"
         static let college = "大学"
+        static let degree = "学历"
         
     }
 }

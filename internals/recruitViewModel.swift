@@ -16,38 +16,38 @@ class RecruitViewModel{
     
     
     private let dispose = DisposeBag()
-    internal let onlineApplyRefresh:PublishSubject<Bool> = PublishSubject<Bool>.init()
+    internal let onlineApplyRefresh:PublishSubject<OnlineFilterReqModel> = PublishSubject<OnlineFilterReqModel>.init()
     internal let onlineApplyRes:BehaviorRelay<[OnlineApplyListModel]> = BehaviorRelay<[OnlineApplyListModel]>.init(value: [])
     internal let onlineApplyRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
-    internal var onlineApplyOffset = 0
+    internal var onlineApplyPullDown = false
     
     
-    internal let internRefresh:PublishSubject<Bool> = PublishSubject<Bool>.init()
+    internal let internRefresh:PublishSubject<InternFilterModel> = PublishSubject<InternFilterModel>.init()
     internal let internRes:BehaviorRelay<[JobListModel]> = BehaviorRelay<[JobListModel]>.init(value: [])
     internal let internRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
-    internal var internOffset = 0
+    internal var internPullDown = false
     
     
     
-    internal let graduateRefresh:PublishSubject<Bool> = PublishSubject<Bool>.init()
+    internal let graduateRefresh:PublishSubject<GraduateFilterModel> = PublishSubject<GraduateFilterModel>.init()
     internal let graduateRes:BehaviorRelay<[JobListModel]> = BehaviorRelay<[JobListModel]>.init(value: [])
     internal let graduateRefreshStasu:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
-    internal var graduateOffset = 0
+    internal var graduatePullDown = false
     
     
     
-    internal let recruitMeetingRefresh:PublishSubject<Bool> = PublishSubject<Bool>.init()
+    internal let recruitMeetingRefresh:PublishSubject<CareerTalkFilterModel> = PublishSubject<CareerTalkFilterModel>.init()
     internal let companyRecruitMeetingRefesh:PublishSubject<(Bool, String)> = PublishSubject<(Bool, String)>.init()
     
     internal let recruitMeetingRes:BehaviorRelay<[CareerTalkMeetingListModel]> = BehaviorRelay<[CareerTalkMeetingListModel]>.init(value: [])
     internal let recruitMeetingRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
-    internal var recruitMeetingOffset = 0 
+    internal var recruitMeetingPullDown = false
     
     
-    internal let companyRefresh:PublishSubject<Bool> = PublishSubject<Bool>.init()
+    internal let companyRefresh:PublishSubject<CompanyFilterModel> = PublishSubject<CompanyFilterModel>.init()
     internal let companyRes:BehaviorRelay<[CompanyListModel]> = BehaviorRelay<[CompanyListModel]>.init(value: [])
     internal let companyRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
-    internal var companyOffset = 0
+    internal var companyPullDown = false
     
     
     
@@ -93,24 +93,14 @@ class RecruitViewModel{
 
 extension RecruitViewModel{
     
-    private func getOnlineApplies(offset: Int) -> Observable<[OnlineApplyListModel]>{
-        
-        return httpServer.getOnlineApply(offset: offset).share()
-    }
+   
     
     internal func getOnlineApplyBy(id: String) -> Observable<OnlineApplyModel>{
         return httpServer.getOnlineApplyId(id:id)
     }
     
     
-    private func getInternJobs(offset :Int) -> Observable<[JobListModel]>{
-        return httpServer.getInternJobs(offset: offset).share()
-    }
-    
-    private func getGraduateJobs(offset:Int) -> Observable<[JobListModel]>{
-        
-        return httpServer.getGraduateJobs(offset: offset).share()
-    }
+  
     
    internal func getJobById(id:String){
         
@@ -142,12 +132,6 @@ extension RecruitViewModel{
         
     }
     
-    private func getRecruitMeeting(offset:Int) -> Observable<[CareerTalkMeetingListModel]>{
-        
-        
-        return httpServer.getRecruiteMeetings(offset: offset)
-    }
-    
     
     internal func getRecruitMeetingBy(id:String) -> Observable<CareerTalkMeetingModel>{
         
@@ -155,9 +139,6 @@ extension RecruitViewModel{
     }
     
     
-    private func getCompany(offset:Int) ->Observable<[CompanyListModel]>{
-        return httpServer.getCompany(offset: offset)
-    }
     
     internal func getCompanyById(id:String) -> Observable<CompanyModel>{
         return httpServer.getCompanyById(id:id)
@@ -185,156 +166,260 @@ extension RecruitViewModel{
     
     private func onlineApply(){
         
-        onlineApplyRefresh.subscribe(onNext: { (IsPullDown) in
-            self.onlineApplyOffset = IsPullDown ? 0 : self.onlineApplyOffset + 1
+       
+        onlineApplyRefresh.do(onNext: { req in
+            self.onlineApplyPullDown = req.offset == 0 ? true : false
+        }).debug().flatMapLatest {  req in
             
-            self.getOnlineApplies(offset: self.onlineApplyOffset).subscribe(onNext: { (modes) in
-                if modes.isEmpty{
+            self.httpServer.getOnlineApply(req: req).asDriver(onErrorJustReturn: [])
+            
+            }.subscribe(onNext: { (modes) in
+                
+                // 下拉刷新没有数据
+                if modes.isEmpty &&  self.onlineApplyPullDown == false{
+                    
                     self.onlineApplyRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                     return
                 }
-                if IsPullDown{
+                // 下拉刷新
+                if  self.onlineApplyPullDown {
                     self.onlineApplyRes.accept(modes)
                     self.onlineApplyRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
                 }else{
                     self.onlineApplyRes.accept(self.onlineApplyRes.value + modes)
-                     self.onlineApplyRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
+                    self.onlineApplyRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
                 }
                 
-            }, onError: { (err) in
-                self.onlineApplyRefreshStatus.onNext(.error(err: err))
-            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
-            
-        }).disposed(by: dispose)
+            }, onError:{ err in
+                self.onlineApplyRefreshStatus.onNext(PageRefreshStatus.error(err: err))
+            }).disposed(by: self.dispose)
+        
+        
+//        onlineApplyRefresh.subscribe(onNext: { (IsPullDown) in
+//            self.onlineApplyOffset = IsPullDown ? 0 : self.onlineApplyOffset + 1
+//
+//            self.getOnlineApplies(offset: self.onlineApplyOffset).subscribe(onNext: { (modes) in
+//                if modes.isEmpty{
+//                    self.onlineApplyRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
+//                    return
+//                }
+//                if IsPullDown{
+//                    self.onlineApplyRes.accept(modes)
+//                    self.onlineApplyRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
+//                }else{
+//                    self.onlineApplyRes.accept(self.onlineApplyRes.value + modes)
+//                     self.onlineApplyRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
+//                }
+//
+//            }, onError: { (err) in
+//                self.onlineApplyRefreshStatus.onNext(.error(err: err))
+//            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+//
+//        }).disposed(by: dispose)
     }
     
     
     private func internJobs(){
         
-        internRefresh.subscribe(onNext: { (IsPullDown) in
-            
-            self.internOffset = IsPullDown ? 0 : self.internOffset + 1
-            self.getInternJobs(offset: self.internOffset).subscribe(onNext: { (interns) in
-                if interns.isEmpty {
+        internRefresh.do(onNext: { req in
+            self.internPullDown = req.offset == 0 ? true : false
+        }).flatMapLatest { req in
+            self.httpServer.getInternJobs(req: req).asDriver(onErrorJustReturn: [])
+            }.subscribe(onNext: { (modes) in
+                if modes.isEmpty && self.internPullDown == false{
                     self.internRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                     return
                 }
-                if IsPullDown{
-                    self.internRes.accept(interns)
+                if self.internPullDown{
+                    self.internRes.accept(modes)
                     self.internRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
                 }else{
-                    self.internRes.accept(self.internRes.value + interns)
+                    self.internRes.accept(self.internRes.value + modes)
                     self.internRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
                 }
                 
-            }, onError: { (err) in
-                self.internRefreshStatus.onNext(.error(err: err))
-                
-            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
-            
-        }).disposed(by: dispose)
+            }).disposed(by: self.dispose)
+//        internRefresh.subscribe(onNext: { (IsPullDown) in
+//
+//            self.internOffset = IsPullDown ? 0 : self.internOffset + 1
+//            self.getInternJobs(offset: self.internOffset).subscribe(onNext: { (interns) in
+//                if interns.isEmpty {
+//                    self.internRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
+//                    return
+//                }
+//                if IsPullDown{
+//                    self.internRes.accept(interns)
+//                    self.internRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
+//                }else{
+//                    self.internRes.accept(self.internRes.value + interns)
+//                    self.internRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
+//                }
+//
+//            }, onError: { (err) in
+//                self.internRefreshStatus.onNext(.error(err: err))
+//
+//            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+//
+//        }).disposed(by: dispose)
         
         
     }
     
     private func graduateJobs(){
-        graduateRefresh.subscribe(onNext: { (IsPullDown) in
-            self.graduateOffset = IsPullDown ? 0 : self.graduateOffset + 1
-            
-            self.getGraduateJobs(offset: self.graduateOffset).subscribe(onNext: { (jobs) in
-                if jobs.isEmpty{
+        
+        graduateRefresh.do(onNext: { req in
+            self.graduatePullDown = req.offset == 0 ? true : false
+        }).flatMapLatest { req in
+            self.httpServer.getGraduateJobs(req: req).asDriver(onErrorJustReturn: [])
+            }.subscribe(onNext: { (modes) in
+                if modes.isEmpty && self.graduatePullDown == false {
                     self.graduateRefreshStasu.onNext(PageRefreshStatus.NoMoreData)
                     return
                 }
-                if IsPullDown{
-                    self.graduateRes.accept(jobs)
+                if self.graduatePullDown{
+                    self.graduateRes.accept(modes)
                     self.graduateRefreshStasu.onNext(PageRefreshStatus.endHeaderRefresh)
                 }else{
-                    self.graduateRes.accept(self.graduateRes.value + jobs)
+                    self.graduateRes.accept(self.graduateRes.value + modes)
                     self.graduateRefreshStasu.onNext(PageRefreshStatus.endFooterRefresh)
                 }
                 
-            }, onError: { (err) in
-                self.graduateRefreshStasu.onNext(.error(err: err))
-            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
-            
-            
-        }).disposed(by: dispose)
+            }).disposed(by: self.dispose)
+        
+//        graduateRefresh.subscribe(onNext: { (IsPullDown) in
+//            self.graduateOffset = IsPullDown ? 0 : self.graduateOffset + 1
+//
+//            self.getGraduateJobs(offset: self.graduateOffset).subscribe(onNext: { (jobs) in
+//                if jobs.isEmpty{
+//                    self.graduateRefreshStasu.onNext(PageRefreshStatus.NoMoreData)
+//                    return
+//                }
+//                if IsPullDown{
+//                    self.graduateRes.accept(jobs)
+//                    self.graduateRefreshStasu.onNext(PageRefreshStatus.endHeaderRefresh)
+//                }else{
+//                    self.graduateRes.accept(self.graduateRes.value + jobs)
+//                    self.graduateRefreshStasu.onNext(PageRefreshStatus.endFooterRefresh)
+//                }
+//
+//            }, onError: { (err) in
+//                self.graduateRefreshStasu.onNext(.error(err: err))
+//            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+//
+//
+//        }).disposed(by: dispose)
     }
     // 获取最新的meetings
     private func  recruitMeeting(){
-        
-        recruitMeetingRefresh.subscribe(onNext: { (IsPullDown) in
-            self.recruitMeetingOffset = IsPullDown ? 0 : self.recruitMeetingOffset + 1
+        recruitMeetingRefresh.do(onNext: { (req) in
             
-            self.getRecruitMeeting(offset: self.recruitMeetingOffset).subscribe(onNext: { (jobs) in
-                if jobs.isEmpty{
+            self.recruitMeetingPullDown  =  req.offset == 0 ? true : false
+        }).flatMapLatest { req in
+            self.httpServer.getRecruiteMeetings(req: req).asDriver(onErrorJustReturn: [])
+            }.subscribe(onNext: { modes in
+                if modes.isEmpty && self.recruitMeetingPullDown == false {
                     self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                     return
                 }
-                if IsPullDown{
-                    self.recruitMeetingRes.accept(jobs)
+                if self.recruitMeetingPullDown{
+                    self.recruitMeetingRes.accept(modes)
                     self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
                 }else{
-                    self.recruitMeetingRes.accept(self.recruitMeetingRes.value + jobs)
+                    self.recruitMeetingRes.accept(self.recruitMeetingRes.value + modes)
                     self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
                 }
                 
-            }, onError: { (err) in
-                self.recruitMeetingRefreshStatus.onNext(.error(err: err))
-            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
-            
-            
-        }).disposed(by: dispose)
+            }).disposed(by: self.dispose)
+//        recruitMeetingRefresh.subscribe(onNext: { (IsPullDown) in
+//            self.recruitMeetingOffset = IsPullDown ? 0 : self.recruitMeetingOffset + 1
+//
+//            self.getRecruitMeeting(offset: self.recruitMeetingOffset).subscribe(onNext: { (jobs) in
+//                if jobs.isEmpty{
+//                    self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
+//                    return
+//                }
+//                if IsPullDown{
+//                    self.recruitMeetingRes.accept(jobs)
+//                    self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
+//                }else{
+//                    self.recruitMeetingRes.accept(self.recruitMeetingRes.value + jobs)
+//                    self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
+//                }
+//
+//            }, onError: { (err) in
+//                self.recruitMeetingRefreshStatus.onNext(.error(err: err))
+//            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+//
+//
+//        }).disposed(by: dispose)
     }
     
     //获取某个company 的meetings
     private func companyRecruitMeeting(){
-        companyRecruitMeetingRefesh.debug().subscribe(onNext: { (IsPullDown, companyID) in
-            self.recruitMeetingOffset = IsPullDown ? 0 : self.recruitMeetingOffset + 1
-            self.getCompanyRecruitMeetings(companyId: companyID, offset: self.recruitMeetingOffset).subscribe(onNext: { (meetings) in
-                if meetings.isEmpty{
-                    self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
-                    return
-                }
-                if IsPullDown{
-                    self.recruitMeetingRes.accept(meetings)
-                    self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
-                }else{
-                    self.recruitMeetingRes.accept(self.recruitMeetingRes.value + meetings)
-                    self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
-                }
-                
-            }, onError: { (err) in
-                self.recruitMeetingRefreshStatus.onNext(.error(err: err))
-            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
-            
-        }).disposed(by: dispose)
+        // MARK TODO ???
+//        companyRecruitMeetingRefesh.debug().subscribe(onNext: { (IsPullDown, companyID) in
+//            self.recruitMeetingOffset = IsPullDown ? 0 : self.recruitMeetingOffset + 1
+//            self.getCompanyRecruitMeetings(companyId: companyID, offset: self.recruitMeetingOffset).subscribe(onNext: { (meetings) in
+//                if meetings.isEmpty{
+//                    self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
+//                    return
+//                }
+//                if IsPullDown{
+//                    self.recruitMeetingRes.accept(meetings)
+//                    self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
+//                }else{
+//                    self.recruitMeetingRes.accept(self.recruitMeetingRes.value + meetings)
+//                    self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
+//                }
+//
+//            }, onError: { (err) in
+//                self.recruitMeetingRefreshStatus.onNext(.error(err: err))
+//            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+//
+//        }).disposed(by: dispose)
     }
     
     
     private func company(){
-        companyRefresh.subscribe(onNext: { (IsPullDown) in
-            self.companyOffset = IsPullDown ? 0 : self.companyOffset + 1
-            self.getCompany(offset: self.companyOffset).subscribe(onNext: { (companys) in
-                if companys.isEmpty{
+        
+        companyRefresh.do(onNext: { (req) in
+            self.companyPullDown =  req.offset == 0 ? true : false
+        }).flatMapLatest { req in
+            self.httpServer.getCompany(req: req).asDriver(onErrorJustReturn: [])
+            }.subscribe(onNext: { (modes) in
+                if modes.isEmpty && self.companyPullDown == false {
                     self.companyRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                     return
                 }
-                
-                if IsPullDown{
-                    self.companyRes.accept(companys)
+                if self.companyPullDown{
                     self.companyRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
+                    self.companyRes.accept(modes)
                 }else{
-                    self.companyRes.accept(self.companyRes.value + companys)
+                    self.companyRes.accept(self.companyRes.value + modes)
                     self.companyRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
                 }
-            }, onError: { (err) in
-                self.companyRefreshStatus.onNext(.error(err: err))
-            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
-            
-            
-        }).disposed(by: dispose)
+            }).disposed(by: self.dispose)
+//        companyRefresh.subscribe(onNext: { (IsPullDown) in
+//            self.companyOffset = IsPullDown ? 0 : self.companyOffset + 1
+//            self.getCompany(offset: self.companyOffset).subscribe(onNext: { (companys) in
+//                if companys.isEmpty{
+//                    self.companyRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
+//                    return
+//                }
+//
+//                if IsPullDown{
+//                    self.companyRes.accept(companys)
+//                    self.companyRefreshStatus.onNext(PageRefreshStatus.endHeaderRefresh)
+//                }else{
+//                    self.companyRes.accept(self.companyRes.value + companys)
+//                    self.companyRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
+//                }
+//            }, onError: { (err) in
+//                self.companyRefreshStatus.onNext(.error(err: err))
+//            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+//
+//
+//        }).disposed(by: dispose)
     }
     
     

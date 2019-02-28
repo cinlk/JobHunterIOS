@@ -13,39 +13,57 @@ import MJRefresh
 import YNDropDownMenu
 
 
+fileprivate let dropMenuTitles:[String] = [GlobalConfig.DropMenuTitle.city,
+                                        GlobalConfig.DropMenuTitle.subBusinessField,
+                                        GlobalConfig.DropMenuTitle.interCondition]
+
+fileprivate let dropMenuHeigh:CGFloat = GlobalConfig.ScreenH - 240
+
+fileprivate let jobHomeTitleH: CGFloat = JobHomeVC.titleHeight()
+
 
 class InternJobsViewController: UIViewController {
     
     private var datas:[JobListModel] = []
-    
+    private var req:InternFilterModel = InternFilterModel(JSON: [:])!
     
     
     private lazy var cityMenu:DropItemCityView = {
-        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 200))
-        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titlePageH)
+        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeigh))
+        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + jobHomeTitleH)
         
         city.passData = { citys in
-            self.table.mj_header.beginRefreshing()
+            if self.req.setCitys(citys: citys){
+                self.table.mj_header.beginRefreshing()
+            }
         }
         
         return city
     }()
 
     private lazy var kind:DropCarrerClassifyView = {
-        let k = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
-        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titlePageH)
-        k.passData = { s in
-            self.table.mj_header.beginRefreshing()
+        let k = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeigh))
+        k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + jobHomeTitleH)
+        k.passData = { b in
+            if self.req.setBusinessField(b: b){
+                self.table.mj_header.beginRefreshing()
+            }
+            
             
         }
         return k
     }()
     
     private lazy var intern:DropInternCondtionView = {
-        let intern = DropInternCondtionView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 200))
-        intern.backGroundBtn.frame =  CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titlePageH)
+        let intern = DropInternCondtionView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeigh))
+        intern.backGroundBtn.frame =  CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + jobHomeTitleH)
         intern.passData = {  condition in
-            self.table.mj_header.beginRefreshing()
+            guard let c = condition else {
+                return
+            }
+            if self.req.setCondition(c: c){
+                self.table.mj_header.beginRefreshing()
+            }
         }
         return intern
     }()
@@ -53,24 +71,10 @@ class InternJobsViewController: UIViewController {
     
     lazy var dropMenu: YNDropDownMenu = { [unowned self] in
         
-        
-        let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: DROP_MENU_H), dropDownViews: [cityMenu,kind,intern], dropDownViewTitles: ["城市","行业分类","实习条件"])
-        
-        
-        menu.setImageWhens(normal: [#imageLiteral(resourceName: "arrow_dim")], selectedTintColor: UIColor.blue, disabledTintColor: UIColor.black)
-        menu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
-        
+        let menu = configDropMenu(items: [cityMenu,kind,intern], titles: dropMenuTitles, height: GlobalConfig.dropMenuViewHeight, originY: 0)
         menu.setLabelFontWhen(normal: .systemFont(ofSize: 16), selected: .boldSystemFont(ofSize: 16), disabled: .systemFont(ofSize: 16))
-        menu.backgroundBlurEnabled = true
-        menu.blurEffectViewAlpha = 0.5
-        menu.showMenuSpringWithDamping = 1
-        menu.hideMenuSpringWithDamping = 1
-        menu.bottomLine.isHidden = false
         
-        //menu.addSwipeGestureToBlurView()
         return menu
-        
-        
     }()
     
     
@@ -88,8 +92,11 @@ class InternJobsViewController: UIViewController {
     
     private lazy var refreshHeader:MJRefreshNormalHeader = {
         let h = MJRefreshNormalHeader.init { [weak self] in
-            
-            self?.vm.internRefresh.onNext(true)
+            guard let s = self else {
+                return
+            }
+            s.req.setOffset(offset: 0)
+            s.vm.internRefresh.onNext(s.req)
             
         }
         h?.setTitle("开始刷新", for: .pulling)
@@ -103,7 +110,11 @@ class InternJobsViewController: UIViewController {
     
     private lazy var refreshFooter:MJRefreshAutoNormalFooter = {
         let f = MJRefreshAutoNormalFooter.init(refreshingBlock: { [weak self] in
-              self?.vm.internRefresh.onNext(false)
+            guard let s = self else {
+                return
+            }
+            s.req.setOffset(offset: s.req.offset + Int64(s.req.limit))
+            s.vm.internRefresh.onNext(s.req)
             
         })
         f?.setTitle("上拉刷新", for: .idle)
@@ -140,7 +151,7 @@ class InternJobsViewController: UIViewController {
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-         _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,DROP_MENU_H)?.bottomEqualToView(self.view)
+         _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,GlobalConfig.dropMenuViewHeight)?.bottomEqualToView(self.view)
         
     }
     
@@ -163,17 +174,11 @@ extension InternJobsViewController{
     private func setViewModel(){
         self.vm.internRes.share().subscribe(onNext: { (interns) in
             self.datas = interns
-        }, onError: { (err) in
-            self.datas = []
-        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        }).disposed(by: dispose)
         
-        self.vm.internRes.share().catchError { (err) -> Observable<[JobListModel]> in
-            print("err \(err)")
-            return Observable<[JobListModel]>.just([])
-            }.observeOn(MainScheduler.instance).bind(to: self.table.rx.items(cellIdentifier: CommonJobTableCell.identity(), cellType: CommonJobTableCell.self)){ (row, mode, cell) in
+        self.vm.internRes.share().bind(to: self.table.rx.items(cellIdentifier: CommonJobTableCell.identity(), cellType: CommonJobTableCell.self)){ (row, mode, cell) in
                 cell.showTag = false
                 cell.mode = mode
-                
         }.disposed(by: dispose)
         
         
@@ -195,7 +200,7 @@ extension InternJobsViewController{
                 break
             }
             
-        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        }).disposed(by: dispose)
         
         
         self.table.rx.itemSelected.subscribe(onNext: { (idx) in

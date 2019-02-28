@@ -141,12 +141,12 @@ class DashboardViewController: BaseViewController, UISearchControllerDelegate, U
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         self.navigationController?.navigationBar.settranslucent(true)
         self.navigationController?.view.insertSubview(navigationView, at: 1)
         //print("root viewController", UIApplication.shared.keyWindow?.rootViewController)
-    
+ 
     }
+    
     
     
     
@@ -172,12 +172,15 @@ class DashboardViewController: BaseViewController, UISearchControllerDelegate, U
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationView.removeFromSuperview()
+ 
     }
     
+  
     
     override func setViews(){
         
-        self.hidesBottomBarWhenPushed = true 
+        // MARK 切换到其他tab 在回来也会影藏tabbar !
+        //self.hidesBottomBarWhenPushed = true
         /***** table *****/
         // 分类职位 和  热门板块
         self.tables.register(MainColumnistCell.self, forCellReuseIdentifier: MainColumnistCell.identity())
@@ -258,6 +261,8 @@ class DashboardViewController: BaseViewController, UISearchControllerDelegate, U
         
     }
     
+    
+
     
     
 }
@@ -481,7 +486,9 @@ extension DashboardViewController{
                     cell.action = {
                         let subscribleView = subscribleItem()
                         //subscribleView.hidesBottomBarWhenPushed = true
-                        self.navigationController?.pushViewController(subscribleView, animated: true)
+                        
+                        //self.navigationController?.pushViewController(subscribleView, animated: true)
+                        self.navigateTo(vc: subscribleView)
                     }
                     cell.contentView.backgroundColor = UIColor.white
                     return cell
@@ -514,7 +521,8 @@ extension DashboardViewController{
                     let spe = SpecialJobVC.init(kind: btn.titleLabel?.text ?? "")
                     //spe.queryName = btn.titleLabel?.text
                     //spe.hidesBottomBarWhenPushed = true
-                    self.navigationController?.pushViewController(spe, animated: true)
+                    //self.navigationController?.pushViewController(spe, animated: true)
+                    self.navigateTo(vc: spe)
                 }
                 
                 return cell
@@ -535,7 +543,8 @@ extension DashboardViewController{
                     let web = BaseWebViewController()
                     web.mode = columnes[btn.tag].Link
                     //web.hidesBottomBarWhenPushed = true
-                    self.navigationController?.pushViewController(web, animated: true)
+                    //self.navigationController?.pushViewController(web, animated: true)
+                    self.navigateTo(vc: web)
                     
                 }
                 
@@ -549,18 +558,14 @@ extension DashboardViewController{
                 cell.selectedIndex = {
                     self.tabBarController?.selectedIndex = 1
                     //self.tabBarController?.viewControllers[1]
-                    if let nav = self.tabBarController?.viewControllers?[1] as?  UINavigationController, let target = nav.viewControllers[0] as? JobHomeVC{
-                        target.scrollToCareerTalk = true
-                    }
-                    
+                    self.perform(#selector(self.moveToCareerTalk), with: nil, afterDelay: TimeInterval(0.5))
+                   
                 }
                 // 查看具体的宣讲会
                 cell.selectItem = { mode in
                     let talkShow = CareerTalkShowViewController()
                     talkShow.meetingID = mode.meetingID!
-                    //talkShow.hidesBottomBarWhenPushed = true
-                    self.navigationController?.pushViewController(talkShow, animated: true)
-                    
+                    self.navigateTo(vc: talkShow)
                 }
                 
                 
@@ -574,26 +579,7 @@ extension DashboardViewController{
                 cell.selectedIndex = { name in
                     // 切换tab 的item
                     self.tabBarController?.selectedIndex = 1
-                    if let nav = self.tabBarController?.viewControllers?[1] as?  UINavigationController, let target = nav.viewControllers[0] as? JobHomeVC{
-                        
-                        //perform(#selecto, with: <#T##Any?#>, afterDelay: <#T##TimeInterval#>)
-                        // 登录jobhome 加载完后 才有chidlvc TODO  顺序？
-                        target.scrollToOnlineAppy = true
-                        
-                        
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
-                            // 查询某个行业的数据
-                            if !name.isEmpty, let vc = target.childVC[0] as? OnlineApplyViewController {
-                                //vc.type = name
-                            }
-                            // 跳转到 网申栏目
-                            if name.isEmpty{
-                                
-                            }
-                            
-                        })
-                        
-                    }
+                    self.perform(#selector(self.showOnlineApply), with: name, afterDelay: TimeInterval(0.5))
                 }
                 return cell
             //MARK  不显示 job 数据
@@ -616,6 +602,34 @@ extension DashboardViewController{
     }
     
 }
+
+extension DashboardViewController {
+    
+    @objc  private func moveToCareerTalk(){
+        if let nav = self.tabBarController?.viewControllers?[1] as?  UINavigationController, let target = nav.viewControllers[0] as? JobHomeVC{
+            target.scrollToCareerTalk = true
+        }
+    }
+    
+    @objc private func showOnlineApply(name:String){
+        
+        if let nav = self.tabBarController?.viewControllers?[1] as?  UINavigationController, let target = nav.viewControllers[0] as? JobHomeVC{
+            target.scrollToOnlineAppy = true
+            
+            // 默认显示数据
+            if name.isEmpty{
+                return
+            }
+            if let vc = target.children[0] as? OnlineApplyViewController{
+                //d查找指定name的数据 TODO
+                
+            }
+            
+        }
+        
+    }
+}
+
 // viewmodel
 extension DashboardViewController{
     
@@ -632,7 +646,9 @@ extension DashboardViewController{
             //let map = testMapViewController()
             //self.navigationController?.pushViewController(map, animated: true)
             let near = NearByViewController()
-            self.navigationController?.pushViewController(near, animated: true)
+            
+            //self.navigationController?.pushViewController(near, animated: true)
+            self.navigateTo(vc: near)
 //            if  let _ = SingletoneClass.shared.getAddress(){
 //                let show = NearByViewController()
 //                //show.hidesBottomBarWhenPushed = true
@@ -664,8 +680,9 @@ extension DashboardViewController{
                 if let cell = self.tables.cellForRow(at: indexpath) as? ScrollerNewsCell, let titles = cell.mode{
                     let news = MagazMainViewController()
                     news.titles = titles
-                    
-                    self.navigationController?.pushViewController(news, animated: true)
+                    //news
+                    //self.navigationController?.pushViewController(news, animated: true)
+                    self.navigateTo(vc: news)
                 }
                 
                 
@@ -681,8 +698,8 @@ extension DashboardViewController{
                 //detail.hidesBottomBarWhenPushed = true
                 //detail.jobID = jobModel.id!
                 //detail.kind = (id: jobModel.id!, type: jobModel.kind!)
-                self.navigationController?.pushViewController(detail, animated: true)
-                
+                //self.navigationController?.pushViewController(detail, animated: true)
+                self.navigateTo(vc: detail)
             }
             
         }).disposed(by: disposebag)
@@ -792,6 +809,12 @@ extension DashboardViewController{
         
     }
     
+    
+    private func navigateTo(vc:UIViewController){
+        self.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(vc, animated: true)
+        self.hidesBottomBarWhenPushed = false
+    }
     // show details
 //    private func showDetails(jobModel:CompuseRecruiteJobs){
 //

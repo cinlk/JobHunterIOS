@@ -13,43 +13,66 @@ import MJRefresh
 import YNDropDownMenu
 
 
+fileprivate let dropMenuTitles:[String] = [GlobalConfig.DropMenuTitle.city,
+                                        GlobalConfig.DropMenuTitle.businessField,
+                                        GlobalConfig.DropMenuTitle.companyType]
+
+fileprivate let dropMenuHeight:CGFloat = GlobalConfig.ScreenH - 240
+fileprivate let jobHomeTitleH: CGFloat = JobHomeVC.titleHeight()
+
 class CompanyListViewController: UIViewController {
 
     
     private var datas:[CompanyListModel] = []
+    private lazy var req:CompanyFilterModel = CompanyFilterModel(JSON: [:])!
     
-    internal lazy var cityMenu:DropItemCityView = {
-        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 200))
+    private lazy var cityMenu:DropItemCityView = {
+        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeight))
+        city.passData = { citys in
+            if self.req.setCitys(citys: citys){
+                self.table.mj_header.beginRefreshing()
+            }
+        }
         // 覆盖指定高度
-        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titlePageH)
+        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + jobHomeTitleH)
         return city
     }()
     
-    internal lazy var industryKind:DropItemIndustrySectorView = {
-        let indus = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
+    private lazy var industryKind:DropItemIndustrySectorView = {
+        let indus = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeight))
         
-        indus.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titlePageH)
+        indus.passData = { b in
+            if self.req.setBusinessField(b: b){
+                self.table.mj_header.beginRefreshing()
+            }
+        }
+        indus.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + jobHomeTitleH)
         
         return indus
         
     }()
     
+    private lazy var companyType:DropCompanyPropertyView = {
+        let comp = DropCompanyPropertyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeight))
+        
+        comp.passData = { t in
+            if self.req.setCompanyType(t: t){
+                self.table.mj_header.beginRefreshing()
+            }
+        }
+        comp.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + jobHomeTitleH)
+        
+        return comp
+    }()
+    
+    
+    
     // 自定义条件选择下拉菜单view
     private lazy var dropMenu: YNDropDownMenu = { [unowned self] in
         
         
-        let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: DROP_MENU_H), dropDownViews: [cityMenu,industryKind], dropDownViewTitles: ["城市","行业领域"])
-        
-        menu.setImageWhens(normal: [#imageLiteral(resourceName: "arrow_dim")], selectedTintColor: UIColor.blue, disabledTintColor: UIColor.black)
-        menu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
-        
+        let menu = configDropMenu(items: [cityMenu,industryKind, companyType], titles: dropMenuTitles, height: GlobalConfig.dropMenuViewHeight, originY: 0)
         menu.setLabelFontWhen(normal: .systemFont(ofSize: 16), selected: .boldSystemFont(ofSize: 16), disabled: .systemFont(ofSize: 16))
-        menu.backgroundBlurEnabled = true
-        menu.blurEffectViewAlpha = 0.5
-        menu.showMenuSpringWithDamping = 1
-        menu.hideMenuSpringWithDamping = 1
-        menu.bottomLine.isHidden = false
-        //menu.addSwipeGestureToBlurView()
         return menu
         
     }()
@@ -68,7 +91,11 @@ class CompanyListViewController: UIViewController {
     // refresh
     private lazy var refreshHeader:MJRefreshNormalHeader = {
         let h = MJRefreshNormalHeader.init { [weak self] in
-            self?.vm.companyRefresh.onNext(true)
+            guard let s = self else {
+                return
+            }
+            s.req.setOffset(offset: 0)
+            s.vm.companyRefresh.onNext(s.req)
         }
         h?.setTitle("开始刷新", for: .pulling)
         h?.setTitle("刷新中...", for: .refreshing)
@@ -80,7 +107,11 @@ class CompanyListViewController: UIViewController {
     
     private lazy var refreshFooter:MJRefreshAutoNormalFooter = {
         let f = MJRefreshAutoNormalFooter.init(refreshingBlock: { [weak self] in
-            self?.vm.companyRefresh.onNext(false)
+            guard let s = self else {
+                return
+            }
+            s.req.setOffset(offset: s.req.offset + Int64(s.req.limit))
+            s.vm.companyRefresh.onNext(s.req)
         })
         f?.setTitle("上拉刷新", for: .idle)
         f?.setTitle("刷新中...", for: .refreshing)
@@ -107,7 +138,7 @@ class CompanyListViewController: UIViewController {
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,DROP_MENU_H)?.bottomEqualToView(self.view)
+        _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,GlobalConfig.dropMenuViewHeight)?.bottomEqualToView(self.view)
     }
     
     
@@ -141,11 +172,9 @@ extension CompanyListViewController{
         
         self.vm.companyRes.share().asDriver(onErrorJustReturn: []).drive(onNext: { (companys) in
             self.datas = companys
-        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        }).disposed(by: dispose)
         
-        self.vm.companyRes.share().catchError { (err) -> Observable<[CompanyListModel]> in
-            return  Observable<[CompanyListModel]>.just([])
-            }.observeOn(MainScheduler.instance).bind(to: self.table.rx.items(cellIdentifier: CompanyItemCell.identity(), cellType: CompanyItemCell.self)) { (row, mode, cell) in
+        self.vm.companyRes.share().bind(to: self.table.rx.items(cellIdentifier: CompanyItemCell.identity(), cellType: CompanyItemCell.self)) { (row, mode, cell) in
                 cell.mode = mode
         }.disposed(by: dispose)
     
@@ -168,7 +197,7 @@ extension CompanyListViewController{
                 break
             }
             
-        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        }).disposed(by: dispose)
     
         
         self.table.rx.itemSelected.subscribe(onNext: { (idx) in

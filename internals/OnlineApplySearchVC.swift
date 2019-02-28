@@ -13,7 +13,8 @@ import RxCocoa
 import MJRefresh
 import ObjectMapper
 
-fileprivate let dropViewH:CGFloat = 40
+fileprivate let dropViewH:CGFloat = GlobalConfig.dropMenuViewHeight
+
 fileprivate let cityMenuHeight:CGFloat = GlobalConfig.ScreenH - 240
 
 fileprivate let dropMenuTitles:[String] = [GlobalConfig.DropMenuTitle.city,

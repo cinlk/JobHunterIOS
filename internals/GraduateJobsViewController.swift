@@ -12,36 +12,58 @@ import RxSwift
 import RxCocoa
 import MJRefresh
 
+fileprivate let dropMenuTitles:[String] = [GlobalConfig.DropMenuTitle.city,
+                                        GlobalConfig.DropMenuTitle.subBusinessField,
+                                        GlobalConfig.DropMenuTitle.degree]
+
+
+fileprivate let dropMenuHeigh:CGFloat = GlobalConfig.ScreenH - 240
+
 
 class GraduateJobsViewController: UIViewController {
 
 
     private var datas:[JobListModel] = []
-    
+    private var req: GraduateFilterModel = GraduateFilterModel(JSON: [:])!
     
     internal lazy var cityMenu:DropItemCityView = {
-        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 200))
+        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeigh))
         // 覆盖指定高度
+        city.passData = { citys in
+            if self.req.setCitys(citys: citys){
+                self.table.mj_header.beginRefreshing()
+            }
+            
+        }
         
-        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titlePageH)
+        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titleHeight())
         return city
     }()
     
     
     // 职业类型
     lazy var careerClassify:DropCarrerClassifyView = { [unowned self] in
-        let v1 = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
-        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titlePageH)
+        let subBusiness = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeigh))
+        subBusiness.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titleHeight())
+        subBusiness.passData = { field in
+            if self.req.setBusinessField(b: field){
+                self.table.mj_header.beginRefreshing()
+            }
+        }
         
-        
-        return v1
+        return subBusiness
     }()
     
     
     
     lazy var degree:DropDegreeMenuView = { [unowned self] in
-        let v = DropDegreeMenuView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 45*5))
-        v.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titlePageH)
+        let v = DropDegreeMenuView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeigh))
+        v.passData = { degree in
+            if self.req.setDegree(d: degree){
+                self.table.mj_header.beginRefreshing()
+            }
+        }
+        v.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titleHeight())
         
         return v
     }()
@@ -52,29 +74,16 @@ class GraduateJobsViewController: UIViewController {
     // 自定义条件选择下拉菜单view
     private lazy var dropMenu: YNDropDownMenu = { [unowned self] in
         
-        
-        let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: DROP_MENU_H), dropDownViews: [cityMenu,careerClassify,degree], dropDownViewTitles: ["城市","行业分类","学历"])
-        
-        menu.setImageWhens(normal: [#imageLiteral(resourceName: "arrow_dim")], selectedTintColor: UIColor.blue, disabledTintColor: UIColor.black)
-        menu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
-        
+        let menu = configDropMenu(items: [cityMenu,careerClassify,degree], titles: dropMenuTitles, height: GlobalConfig.dropMenuViewHeight, originY: 0)
         menu.setLabelFontWhen(normal: .systemFont(ofSize: 16), selected: .boldSystemFont(ofSize: 16), disabled: .systemFont(ofSize: 16))
-        menu.backgroundBlurEnabled = true
-        menu.blurEffectViewAlpha = 0.5
-        menu.showMenuSpringWithDamping = 1
-        menu.hideMenuSpringWithDamping = 1
-        menu.bottomLine.isHidden = false
-        //menu.addSwipeGestureToBlurView()
-        
         return menu
-        
         
     }()
     
     
     private lazy var table:UITableView = {
-        let table = UITableView()
         
+        let table = UITableView()
         table.register(CommonJobTableCell.self, forCellReuseIdentifier: CommonJobTableCell.identity())
         table.tableFooterView = UIView()
         table.rx.setDelegate(self).disposed(by: dispose)
@@ -86,8 +95,11 @@ class GraduateJobsViewController: UIViewController {
     
     private lazy var refreshHeader:MJRefreshNormalHeader = {
         let h = MJRefreshNormalHeader.init { [weak self] in
-            
-            self?.vm.graduateRefresh.onNext(true)
+            guard let s = self else {
+                return
+            }
+            s.req.setOffset(offset: 0)
+            s.vm.graduateRefresh.onNext(s.req)
         }
         h?.setTitle("开始刷新", for: .pulling)
         h?.setTitle("刷新中...", for: .refreshing)
@@ -100,8 +112,11 @@ class GraduateJobsViewController: UIViewController {
     
     private lazy var refreshFooter:MJRefreshAutoNormalFooter = {
         let f = MJRefreshAutoNormalFooter.init(refreshingBlock: { [weak self] in
-            
-            self?.vm.graduateRefresh.onNext(false)
+            guard let s = self else {
+                return
+            }
+            s.req.setOffset(offset: s.req.offset + Int64(s.req.limit))
+            s.vm.graduateRefresh.onNext(s.req)
         })
         f?.setTitle("上拉刷新", for: .idle)
         f?.setTitle("刷新中...", for: .refreshing)
@@ -137,7 +152,7 @@ class GraduateJobsViewController: UIViewController {
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,DROP_MENU_H)?.bottomEqualToView(self.view)
+        _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,GlobalConfig.dropMenuViewHeight)?.bottomEqualToView(self.view)
     }
     
 }
@@ -157,9 +172,7 @@ extension GraduateJobsViewController{
         
         self.vm.graduateRes.share().subscribe(onNext: { (jobs) in
             self.datas = jobs
-        }, onError: { (err) in
-            self.datas = []
-        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        }).disposed(by: dispose)
         
         
         self.vm.graduateRes.share().bind(to: self.table.rx.items(cellIdentifier: CommonJobTableCell.identity(), cellType: CommonJobTableCell.self)){ (row, mode, cell) in
@@ -177,14 +190,14 @@ extension GraduateJobsViewController{
                 case .NoMoreData:
                     self.table.mj_footer.endRefreshingWithNoMoreData()
                 case .error(let err):
-                    print("get err \(err)")
+                    self.view.showToast(title: "error \(err)", customImage: nil, mode: .text)
                     self.table.mj_footer.endRefreshing()
                     self.table.mj_header.endRefreshing()
                 default:
                     break
             }
             
-        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        }).disposed(by: dispose)
         
         // table
         

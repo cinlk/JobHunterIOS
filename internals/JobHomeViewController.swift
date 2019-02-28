@@ -12,21 +12,20 @@ import UIKit
 
 
 fileprivate let topColor =  UIColor.init(r: 231, g: 41, b: 46, alpha: 1)
+fileprivate let titlePageH:CGFloat = 35
 
-class JobHomeVC: UIViewController {
 
-    static let titlePageH:CGFloat = 35
+class JobHomeVC: UIViewController, UISearchControllerDelegate {
+
     
     private lazy var curentIndex:Int = 0
-    
     // 跳转到宣讲会
     internal var scrollToCareerTalk:Bool?{
         didSet{
-            if scrollToCareerTalk!{
+            if scrollToCareerTalk ?? false{
                 self.pageContent.moveToIndex(2)
                 self.pageTitleView.changeTitleWithProgress(1, sourceIndex: curentIndex, targetIndex: 2)
                  curentIndex = 2
-
             }
         }
     }
@@ -38,25 +37,36 @@ class JobHomeVC: UIViewController {
                 self.pageContent.moveToIndex(0)
                 self.pageTitleView.changeTitleWithProgress(1, sourceIndex: curentIndex, targetIndex: 0)
                 curentIndex = 0
-                
             }
         }
     }
     
     // 搜索控件
-    private lazy var searchController:BaseSearchViewController = BaseSearchViewController(searchResultsController: SearchResultController())
-    
-    
-    // 搜索包裹searchBar 的view
-    private lazy var searchBarContainer:UIView = {
-        // 搜索框
-        let searchBarFrame = CGRect(x: 0, y:0, width: GlobalConfig.ScreenW, height: GlobalConfig.searchBarH)
-        let searchBarContainer = UIView(frame:searchBarFrame)
-        searchBarContainer.backgroundColor = UIColor.clear
-        return searchBarContainer
+    private lazy var searchController:BaseSearchViewController = {
+        let sc = BaseSearchViewController(searchResultsController: SearchResultController())
+        sc.delegate = self
+        sc.searchType = .company
+        return sc
     }()
     
+    private var presentSearchControllFlag:Bool = false {
+        willSet{
+            self.searchController.setSearchBar(open: newValue)
+            self.navigationController?.navigationBar.settranslucent(!newValue)
+            self.tabBarController?.tabBar.isHidden = newValue
+            (self.navigationController as? JobHomeNavigation)?.currentStyle =  newValue ? .default : .lightContent
+        }
+    }
+
+    // 搜索包裹searchBar 的view 目的限制高度，不然navibar 自适应高度为56
+    private lazy var wrapBar:UIView = {
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.searchBarH))
+        v.backgroundColor = UIColor.clear
+        v.addSubview(self.searchController.searchBar)
+        return v
+    }()
     
+    // 控制content 滑动
     internal var isScrollEnabled:Bool = true{
         didSet{
             self.pageContent.collectionView.isScrollEnabled = isScrollEnabled
@@ -65,7 +75,7 @@ class JobHomeVC: UIViewController {
     
     // 滑动栏
     private lazy var pageTitleView: PagetitleView = {  [unowned self] in
-        let view = PagetitleView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: JobHomeVC.titlePageH), titles: JOB_PAGE_TITLES,lineCenter:true)
+        let view = PagetitleView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: titlePageH), titles: GlobalConfig.JobHomePageTitles, lineCenter:true)
         view.delegate = self
         view.backgroundColor = topColor
         // 设置属性
@@ -75,10 +85,12 @@ class JobHomeVC: UIViewController {
         return view
     }()
     
-    internal var childVC:[UIViewController] = []
+    
 
     // 内容vc
     private lazy var pageContent:PageContentView = { [unowned self] in
+        var childVC:[UIViewController] = []
+        
         // 网申职位
         let applyVC:OnlineApplyViewController = OnlineApplyViewController()
         childVC.append(applyVC)
@@ -97,7 +109,7 @@ class JobHomeVC: UIViewController {
         childVC.append(internJob)
         
      
-        let content = PageContentView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH + JobHomeVC.titlePageH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH - JobHomeVC.titlePageH), childVCs: self.childVC, pVC: self)
+        let content = PageContentView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH + titlePageH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH - titlePageH), childVCs: childVC, pVC: self)
         content.delegate = self
         return content
         
@@ -120,15 +132,17 @@ class JobHomeVC: UIViewController {
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        _ = searchController.searchBar.sd_layout().leftSpaceToView(searchBarContainer,0)?.rightSpaceToView(searchBarContainer,0)?.topEqualToView(searchBarContainer)?.bottomEqualToView(searchBarContainer)
+        
+        _ = self.searchController.searchBar.sd_layout()?.topEqualToView(wrapBar)?.bottomEqualToView(wrapBar)?.leftEqualToView(wrapBar)?.rightEqualToView(wrapBar)
+        self.wrapBar.layoutSubviews()
+        self.searchController.searchField.layer.cornerRadius = self.searchController.searchBar.height/2
+        
         
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        //self.navigationController?.removeCustomerView()
         // 子 vc 覆盖 navibar view
         self.navigationController?.removeCustomerView()
-        
          
     }
     
@@ -136,35 +150,35 @@ class JobHomeVC: UIViewController {
 }
 
 extension JobHomeVC {
+    
     private func setViews(){
-        
-        
         // searchController 占时新的控制视图时，显示在当前视图上
         self.definesPresentationContext  = true
-        
         // 影藏返回按钮文字
         navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
 
-        
-        // 保证Controller 和 搜索container 高度一致, 搜索框左右圆角正常
-        searchController.height = GlobalConfig.searchBarH
-        // searchBar 放入containerview
-        searchBarContainer.addSubview(searchController.searchBar)
-        //搜索条件menu
-//        searchController.popMenuView.datas = [.onlineApply, .graduate, .intern, .meeting, .company]
-        //searchController.hidesNavigationBarDuringPresentation = false
-        // 搜索containerview 作为title viwe
-        self.navigationItem.titleView = searchBarContainer
-        searchController.delegate = self
-        searchController.searchType = .company
-        
-        
+        self.navigationItem.titleView = wrapBar
         // 加入titleview
         self.view.addSubview(self.pageTitleView)
         // 加入contentview
         self.view.addSubview(pageContent)
         
+        
+        // 搜索代理
+        _ = self.searchController.rx.willPresent.takeUntil(self.rx.deallocated).subscribe(onNext: { _ in
+            self.presentSearchControllFlag = true
+        })
+        _ = self.searchController.rx.didDismiss.takeUntil(self.rx.deallocated).subscribe(onNext: { _ in
+            self.presentSearchControllFlag = false
+        })
+    
     }
+    
+    class func titleHeight() -> CGFloat{
+        return titlePageH
+    }
+    
+    
 }
 
 // pagetitle 代理实现
@@ -183,26 +197,5 @@ extension JobHomeVC: PageContentViewScrollDelegate{
     }
 }
 
-
-// 搜索代理
-extension JobHomeVC: UISearchControllerDelegate {
-    
-    func willPresentSearchController(_ searchController: UISearchController) {
-        self.searchController.searchBar.setPositionAdjustment(UIOffset.init(horizontal: 60, vertical: 0), for: .search)
-        self.searchController.setSearchBar(open: true)
-        
-        self.navigationController?.navigationBar.settranslucent(false)
-        self.tabBarController?.tabBar.isHidden = true
-        
-    }
-    
-    func didDismissSearchController(_ searchController: UISearchController) {
-        self.searchController.searchBar.setPositionAdjustment(UIOffset.init(horizontal: 0, vertical: 0), for: .search)
-        self.searchController.setSearchBar(open: false)
-        
-        self.navigationController?.navigationBar.settranslucent(true)
-        self.tabBarController?.tabBar.isHidden = false
-    }
-}
 
 

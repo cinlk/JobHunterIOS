@@ -19,18 +19,18 @@ import ObjectMapper
 enum RecruitTarget{
     
     //case getOnlineApply(mode:RecruitOnlineApply, offset:Int)
-    case getOnlineApply(offset:Int)
+    case getOnlineApply(req:OnlineFilterReqModel)
     case getOnlineApplyById(id:String)
-    case getInternJobs(offset:Int)
-    case getGraduateJobs(offset:Int)
+    case getInternJobs(req:InternFilterModel)
+    case getGraduateJobs(req:GraduateFilterModel)
     case getJobById(id:String)
     case getCompanyJobs(companyId:String, offset:Int)
     //case getCompanyJobsOnlineAppy(companyId:String, offset:Int)
     case getCompanyTagData(data:TagsDataItem)
     case getCompanyRecruitMeetings(companyId:String, offset:Int)
-    case getRecruitMeetings(offset:Int)
+    case getRecruitMeetings(req:CareerTalkFilterModel)
     case getRecruitMeetingById(id:String)
-    case getCompany(offset:Int)
+    case getCompany(req:CompanyFilterModel)
     case getCompanyById(id:String)
     case getWarnJobMessage
     
@@ -42,29 +42,33 @@ extension RecruitTarget: TargetType{
     
     
     var baseURL: URL {
-        return URL.init(string: "https://127.0.0.1:9090/app/api/")!
+        return URL.init(string: GlobalConfig.BASE_URL)!
+    }
+    
+    var prefix:String{
+        return "recruite/"
     }
     
     var path: String {
         switch  self {
-        case .getOnlineApply(let offset):
-            return "onlineApply/list/\(offset)"
+        case .getOnlineApply(_):
+            return self.prefix +  "online"
         case .getOnlineApplyById(let id):
             return "onlineApply/item/\(id)"
-        case .getInternJobs(let offset):
-            return "job/intern/\(offset)"
-        case .getGraduateJobs(let offset):
-            return "job/graduate/\(offset)"
+        case .getInternJobs(_):
+            return self.prefix + "intern"
+        case .getGraduateJobs(_):
+            return self.prefix + "graduate"
         case .getJobById(let id):
             return "job/item/\(id)"
-        case .getRecruitMeetings(let offset):
-            return "recruitMeeting/list/\(offset)"
+        case .getRecruitMeetings(_):
+            return self.prefix +  "carreerTalk"
         case .getRecruitMeetingById(let id):
             return "recruitMeeting/item/\(id)"
         case .getCompanyRecruitMeetings(let companyId, let offset):
             return "company/recruitMeeting/\(companyId)/\(offset)"
-        case .getCompany(let offset):
-            return "company/list/\(offset)"
+        case .getCompany(_):
+            return self.prefix +  "company"
         case .getCompanyJobs(let companyId, let offset):
             return "company/jobs\(companyId)/\(offset)"
         case .getCompanyById(let id):
@@ -84,21 +88,21 @@ extension RecruitTarget: TargetType{
         
         switch  self {
         case .getOnlineApply(_):
-            return Method.get
+            return Method.post
         case .getOnlineApplyById(_):
             return Method.get
         case .getInternJobs(_):
-            return Method.get
+            return Method.post
         case .getGraduateJobs(_):
-            return Method.get
+            return Method.post
         case .getRecruitMeetings(_):
-            return Method.get
+            return Method.post
         case .getRecruitMeetingById(_):
             return Method.get
         case .getJobById(_):
             return Method.get
         case .getCompany(_):
-            return Method.get
+            return Method.post
         case .getCompanyById(_):
             return Method.get
         case .getCompanyJobs(_, _):
@@ -152,22 +156,27 @@ extension RecruitTarget: TargetType{
     
     var task: Task {
         switch  self {
-        case .getOnlineApply(_):
-            return .requestPlain
+        case .getOnlineApply(let req):
+            
+            return .requestParameters(parameters: req.toJSON(), encoding: JSONEncoding.default)
         case .getOnlineApplyById(_):
             return .requestPlain
-        case .getInternJobs(_):
-            return .requestPlain
-        case .getGraduateJobs(_):
-            return .requestPlain
+        case .getInternJobs(let req):
+            //return .requestPlain
+            return .requestParameters(parameters: req.toJSON(), encoding: JSONEncoding.default)
+        case .getGraduateJobs(let req):
+            //return .requestPlain
+            return .requestParameters(parameters: req.toJSON(), encoding: JSONEncoding.default)
         case .getJobById(_):
             return .requestPlain
-        case .getRecruitMeetings(_):
-            return .requestPlain
+        case .getRecruitMeetings(let req):
+            //return .requestPlain
+            return .requestParameters(parameters: req.toJSON(), encoding: JSONEncoding.default)
         case .getRecruitMeetingById(_):
             return .requestPlain
-        case .getCompany(_):
-            return .requestPlain
+        case .getCompany(let req):
+            //return .requestPlain
+            return .requestParameters(parameters: req.toJSON(), encoding: JSONEncoding.default)
         case .getCompanyJobs(_, _):
             return .requestPlain
         case .getCompanyById(_):
@@ -184,7 +193,7 @@ extension RecruitTarget: TargetType{
     }
     
     var headers: [String : String]? {
-        return ["User-Agent":"ios", "Accept":"application/json;charset=UTF-8"]
+        return nil
     }
     
     
@@ -206,8 +215,9 @@ class RecruitServer{
     private init() {}
     
     
-    internal func getOnlineApply(offset:Int) -> Observable<[OnlineApplyListModel]>{
-        return httpServer.rx.request(.getOnlineApply(offset: offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapArray(OnlineApplyListModel.self, tag: "applies")
+    internal func getOnlineApply(req:OnlineFilterReqModel) -> Observable<[OnlineApplyListModel]>{
+        
+        return httpServer.rx.request(.getOnlineApply(req: req)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).asObservable().observeOn(MainScheduler.instance).mapArray(OnlineApplyListModel.self, tag: "body")
     }
     
     
@@ -216,16 +226,16 @@ class RecruitServer{
         
     }
     
-    internal  func getInternJobs(offset:Int) ->Observable<[JobListModel]>{
+    internal  func getInternJobs(req: InternFilterModel) ->Observable<[JobListModel]>{
         
-        return httpServer.rx.request(.getInternJobs(offset: offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapArray(JobListModel.self, tag: "jobs")
+        return httpServer.rx.request(.getInternJobs(req: req)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).asObservable().observeOn(MainScheduler.instance).mapArray(JobListModel.self, tag: "body")
         
     }
     
     
-    internal func getGraduateJobs(offset:Int) ->Observable<[JobListModel]>{
+    internal func getGraduateJobs(req:GraduateFilterModel) ->Observable<[JobListModel]>{
         
-        return httpServer.rx.request(.getGraduateJobs(offset:offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapArray(JobListModel.self, tag: "jobs")
+        return httpServer.rx.request(.getGraduateJobs(req:req)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).asObservable().observeOn(MainScheduler.instance).mapArray(JobListModel.self, tag: "body")
     }
     
     
@@ -233,8 +243,8 @@ class RecruitServer{
         return httpServer.rx.request(.getJobById(id:id)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapObject(CompuseRecruiteJobs.self)
     }
     
-    internal func getRecruiteMeetings(offset:Int) -> Observable<[CareerTalkMeetingListModel]>{
-        return httpServer.rx.request(.getRecruitMeetings(offset:offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).asObservable().observeOn(MainScheduler.instance).mapArray(CareerTalkMeetingListModel.self, tag: "meetings")
+    internal func getRecruiteMeetings(req:CareerTalkFilterModel) -> Observable<[CareerTalkMeetingListModel]>{
+        return httpServer.rx.request(.getRecruitMeetings(req:req)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).asObservable().observeOn(MainScheduler.instance).mapArray(CareerTalkMeetingListModel.self, tag: "body")
     }
     
     internal func getRecruitMeetingById(id:String) -> Observable<CareerTalkMeetingModel>{
@@ -242,8 +252,8 @@ class RecruitServer{
         
     }
     
-    internal func getCompany(offset:Int) -> Observable<[CompanyListModel]>{
-        return httpServer.rx.request(.getCompany(offset:offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapArray(CompanyListModel.self, tag: "company")
+    internal func getCompany(req: CompanyFilterModel) -> Observable<[CompanyListModel]>{
+        return httpServer.rx.request(.getCompany(req:req)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).asObservable().observeOn(MainScheduler.instance).mapArray(CompanyListModel.self, tag: "body")
     }
     
     internal func getCompanyById(id:String) -> Observable<CompanyModel>{

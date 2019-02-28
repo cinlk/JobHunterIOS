@@ -13,23 +13,53 @@ import MJRefresh
 import YNDropDownMenu
 
 
+fileprivate let dropMenuTitles:[String] = [GlobalConfig.DropMenuTitle.college,
+                                           GlobalConfig.DropMenuTitle.businessField,
+                                           GlobalConfig.DropMenuTitle.meetingTime]
+
+fileprivate let dropMenuHeight:CGFloat = GlobalConfig.ScreenH - 240
+fileprivate let jobHomeTitleH: CGFloat = JobHomeVC.titleHeight()
+
+
 class CareerTalkMeetingViewController: UIViewController {
 
     
     private var datas:[CareerTalkMeetingListModel] = []
+    private var req:CareerTalkFilterModel = CareerTalkFilterModel(JSON: [:])!
+   
     
     internal lazy var industry:DropItemIndustrySectorView = {
-        let indus = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
+        let indus = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeight))
         
-        indus.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titlePageH)
+        indus.passData = { b in
+            if self.req.setBusinessField(b: b){
+                self.table.mj_header.beginRefreshing()
+            }
+        }
+        indus.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + jobHomeTitleH)
         
         return indus
         
     }()
     
     internal lazy var colleges: DropCollegeItemView = {
-        let college = DropCollegeItemView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 200))
-        college.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titlePageH)
+        let college = DropCollegeItemView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeight))
+      
+        college.passData = { c in
+            if let first = c.first{
+                if first.value.contains("不限"){
+                    if self.req.setCitys(city: first.key){
+                        self.table.mj_header.beginRefreshing()
+                    }
+                }else{
+                    if self.req.setCollege(colleges:  first.value){
+                        self.table.mj_header.beginRefreshing()
+                    }
+                }
+            }
+        }
+        college.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + jobHomeTitleH)
+        
         
         return college
     }()
@@ -37,8 +67,12 @@ class CareerTalkMeetingViewController: UIViewController {
     internal lazy var meetingTime:DropValidTimeView = {  [unowned self] in
         
         let v1 = DropValidTimeView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 45*3))
-        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titlePageH)
-        
+        v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + jobHomeTitleH)
+        v1.passData = { t in
+            if self.req.setTime(t: t){
+                self.table.mj_header.beginRefreshing()
+            }
+        }
         return v1
     }()
 
@@ -48,22 +82,9 @@ class CareerTalkMeetingViewController: UIViewController {
     lazy var dropMenu: YNDropDownMenu = { [unowned self] in
         
         
-        let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: DROP_MENU_H), dropDownViews: [colleges, industry, meetingTime], dropDownViewTitles: ["学校","行业领域","宣讲时间"])
-        // 不遮挡子view，子view 改变frame
-        //menu.clipsToBounds = false
-    
-        menu.setImageWhens(normal: [#imageLiteral(resourceName: "arrow_dim")], selectedTintColor: UIColor.blue, disabledTintColor: UIColor.black)
-        menu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
-        
+        let menu = configDropMenu(items: [colleges, industry, meetingTime], titles: dropMenuTitles, height: GlobalConfig.dropMenuViewHeight, originY: 0)
         menu.setLabelFontWhen(normal: .systemFont(ofSize: 16), selected: .boldSystemFont(ofSize: 16), disabled: .systemFont(ofSize: 16))
-        menu.backgroundBlurEnabled = true
-        menu.blurEffectViewAlpha = 0.5
-        menu.showMenuSpringWithDamping = 1
-        menu.hideMenuSpringWithDamping = 1
-        menu.bottomLine.isHidden = false
-        //menu.addSwipeGestureToBlurView()
         return menu
-        
     }()
     
     
@@ -83,7 +104,11 @@ class CareerTalkMeetingViewController: UIViewController {
     private lazy var refreshHeader:MJRefreshNormalHeader = {
         
         let h = MJRefreshNormalHeader.init { [weak self] in
-            self?.vm.recruitMeetingRefresh.onNext(true)
+            guard let s = self else {
+                return
+            }
+            s.req.setOffset(offset: 0)
+            s.vm.recruitMeetingRefresh.onNext(s.req)
         }
         
         h?.setTitle("开始刷新", for: .pulling)
@@ -97,8 +122,11 @@ class CareerTalkMeetingViewController: UIViewController {
     
     private lazy var refreshFooter:MJRefreshAutoNormalFooter = {
         let f = MJRefreshAutoNormalFooter.init(refreshingBlock: { [weak self] in
-            
-            self?.vm.recruitMeetingRefresh.onNext(false)
+            guard let s = self else {
+                return
+            }
+            s.req.setOffset(offset: s.req.offset + Int64(s.req.limit))
+            s.vm.recruitMeetingRefresh.onNext(s.req)
         })
         
         f?.setTitle("上拉刷新", for: .idle)
@@ -127,7 +155,7 @@ class CareerTalkMeetingViewController: UIViewController {
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,DROP_MENU_H)?.bottomEqualToView(self.view)
+        _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,GlobalConfig.dropMenuViewHeight)?.bottomEqualToView(self.view)
     }
     
     
@@ -161,16 +189,10 @@ extension CareerTalkMeetingViewController{
         //rxSwift
         self.vm.recruitMeetingRes.share().subscribe(onNext: { (meetings) in
             self.datas = meetings
-        }, onError: { (err) in
-            self.datas = []
-        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        }).disposed(by: dispose)
         
-        self.vm.recruitMeetingRes.share().catchError { (err) -> Observable<[CareerTalkMeetingListModel]> in
-            print("err \(err)")
-            return Observable<[CareerTalkMeetingListModel]>.just([])
-            }.observeOn(MainScheduler.instance).bind(to: self.table.rx.items(cellIdentifier: CareerTalkCell.identity(), cellType: CareerTalkCell.self)){ (row, mode, cell) in
+        self.vm.recruitMeetingRes.share().bind(to: self.table.rx.items(cellIdentifier: CareerTalkCell.identity(), cellType: CareerTalkCell.self)){ (row, mode, cell) in
                 cell.mode = mode
-                
         }.disposed(by: dispose)
         
         

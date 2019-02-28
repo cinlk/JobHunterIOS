@@ -30,7 +30,7 @@ let NavBarH:CGFloat = 44
 // navigation View 高度
 //let GlobalConfig.NavH:CGFloat = 64
 let TOOLBARH:CGFloat = 44
-let DROP_MENU_H:CGFloat = 40 
+ 
 
 // 屏幕宽高
 
@@ -55,7 +55,6 @@ let SCROLLER_IMG = "banner3"
 
 // 搜索分类
 // job 板块
-let JOB_PAGE_TITLES = ["网申","校招","宣讲会","公司","实习"]
 
 
 

@@ -13,9 +13,28 @@ import RxSwift
 import MJRefresh
 
 
+
+fileprivate let dropTitles:[String] = [GlobalConfig.DropMenuTitle.city,
+                                       GlobalConfig.DropMenuTitle.businessField]
+
+fileprivate let jobHomeTitleH: CGFloat = JobHomeVC.titleHeight()
+
+fileprivate let dropMenuHeigh:CGFloat = GlobalConfig.ScreenH - 240
+
+
 class OnlineApplyViewController: UIViewController {
     // 网申数据
     private var localData:[OnlineApplyListModel] = []
+    // 请求数据
+    private var req:OnlineFilterReqModel = OnlineFilterReqModel(JSON: [:])!
+
+    internal var search:String = ""{
+        didSet{
+            // 搜索关键字匹配的数据 TODO
+            
+            //self.table.reloadData()
+        }
+    }
     
     private lazy var table:UITableView = {
         let table = UITableView()
@@ -30,57 +49,51 @@ class OnlineApplyViewController: UIViewController {
     
     
     internal lazy var cityMenu:DropItemCityView = {
-        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 200))
+        let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeigh))
         // 覆盖指定高度
         city.passData = { citys in
-            
+            if self.req.setCitys(citys: citys){
+                // 刷新数据
+                self.table.mj_header.beginRefreshing()
+            }
             
         }
         
-        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titlePageH)
+        city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + jobHomeTitleH)
         return city
     }()
     
     // 行业分类
     internal lazy var industryKind:DropItemIndustrySectorView = {
-        let indus = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
+        let indus = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeigh))
         indus.passData = { kind in
-            
+            if self.req.setBusinessField(b: kind){
+                // 刷新数据
+                self.table.mj_header.beginRefreshing()
+            }
         }
-        indus.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titlePageH)
+        indus.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + jobHomeTitleH)
         return indus
     }()
     
     
+
     // 条件选择下拉菜单view
     lazy var dropMenu: YNDropDownMenu = { [unowned self] in
-        
-        
-        let menu = YNDropDownMenu.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: DROP_MENU_H), dropDownViews: [cityMenu,industryKind], dropDownViewTitles: ["城市","行业领域"])
-        
-        menu.setImageWhens(normal: [#imageLiteral(resourceName: "arrow_dim")], selectedTintColor: UIColor.blue, disabledTintColor: UIColor.black)
-        menu.setLabelColorWhen(normal: .black, selected: .blue, disabled: .gray)
-        
-        menu.setLabelFontWhen(normal: .systemFont(ofSize: 16), selected: .boldSystemFont(ofSize: 16), disabled: .systemFont(ofSize: 16))
-        menu.backgroundBlurEnabled = true
-        menu.blurEffectViewAlpha = 0.5
-        menu.showMenuSpringWithDamping = 1
-        menu.hideMenuSpringWithDamping = 1
-        menu.bottomLine.isHidden = false
-        
-        // 添加手势
-        //menu.addSwipeGestureToBlurView()
-        
-    
-        return menu
-        
+          let menu = configDropMenu(items: [cityMenu,industryKind], titles: dropTitles, height: GlobalConfig.dropMenuViewHeight, originY: 0)
+          menu.setLabelFontWhen(normal: .systemFont(ofSize: 16), selected: .boldSystemFont(ofSize: 16), disabled: .systemFont(ofSize: 16))
+          return menu
     }()
     
     
     // refresh
     private lazy var refreshHeader:MJRefreshNormalHeader = {
         let h = MJRefreshNormalHeader.init { [weak self] in
-            self?.vm.onlineApplyRefresh.onNext(true)
+            guard let s = self else{
+                return
+            }
+            s.req.setOffset(offset: 0)
+            s.vm.onlineApplyRefresh.onNext(s.req)
             
         }
         h?.setTitle("开始刷新", for: .pulling)
@@ -94,7 +107,11 @@ class OnlineApplyViewController: UIViewController {
     
     private lazy var refreshFooter:MJRefreshAutoNormalFooter = {
         let f = MJRefreshAutoNormalFooter.init(refreshingBlock: { [weak self] in
-            self?.vm.onlineApplyRefresh.onNext(false)
+            guard let s = self else{
+                return
+            }
+            s.req.setOffset(offset: s.req.offset + Int64(s.req.limit))
+            s.vm.onlineApplyRefresh.onNext(s.req)
             
         })
         f?.setTitle("上拉刷新", for: .idle)
@@ -124,7 +141,7 @@ class OnlineApplyViewController: UIViewController {
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,DROP_MENU_H)?.bottomEqualToView(self.view)
+        _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,GlobalConfig.dropMenuViewHeight)?.bottomEqualToView(self.view)
     }
     
   
@@ -157,10 +174,7 @@ extension OnlineApplyViewController{
       
         
         self.vm.onlineApplyRes.share().subscribe(onNext: { (modes) in
-            
                 self.localData = modes
-          }, onError: { (err) in
-            self.localData = []
           }).disposed(by: dispose)
         
        
@@ -179,6 +193,7 @@ extension OnlineApplyViewController{
             case .endHeaderRefresh:
                 self.table.mj_footer.resetNoMoreData()
                 self.table.mj_header.endRefreshing()
+                
             case .NoMoreData:
                 self.table.mj_footer.endRefreshingWithNoMoreData()
             case .error(let err):
@@ -190,9 +205,9 @@ extension OnlineApplyViewController{
                 break
             }
             
-        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        }).disposed(by: dispose)
         
-        // table
+        // table check
         self.table.rx.itemSelected.subscribe(onNext: { (idx) in
             self.table.deselectRow(at: idx, animated: false)
             let mode = self.localData[idx.row]
