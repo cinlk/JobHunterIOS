@@ -38,6 +38,14 @@ class BaseFilter: Mappable {
 
 class OnlineFilterReqModel: BaseFilter {
     
+    // 搜索关键字的网申信息
+    var typeField:String = ""{
+        didSet{
+            self.limit = 10
+            self.offset = 0
+        }
+    }
+    
     var citys:[String] = []{
         didSet{
             self.limit = 10
@@ -61,6 +69,7 @@ class OnlineFilterReqModel: BaseFilter {
         super.mapping(map: map)
         citys <- map["citys"]
         businessField <- map["business_field"]
+        typeField <- map["type_field"]
        
     }
     
@@ -92,7 +101,7 @@ class OnlineFilterReqModel: BaseFilter {
    override func toJSON() -> [String : Any] {
     
         return ["citys" : self.citys, "business_field": self.businessField,
-            "offset": self.offset, "limit" : self.limit]
+                "offset": self.offset, "limit" : self.limit, "type_field": self.typeField]
     }
     
 }
@@ -442,45 +451,99 @@ struct RecruitOnlineApply: Mappable {
 
 
 // 职位和网申混合数据
-struct  ListJobsOnlineAppy: Mappable {
-    //var jobs:[CompuseRecruiteJobs] = []
-    var onlineAppys:[OnlineApplyModel] = []
+//struct  ListJobsOnlineAppy: Mappable {
+//    //var jobs:[CompuseRecruiteJobs] = []
+//    var onlineAppys:[OnlineApplyModel] = []
+//    
+//    var tagJobs:[String:[CompuseRecruiteJobs]] = [:]
+//    
+//    
+//    init?(map: Map) {
+//        
+//    }
+//    
+//    mutating func mapping(map: Map) {
+//        tagJobs <- map["tag_jobs"]
+//        onlineAppys <- map["online_apply"]
+//    }
+//    
+//}
+
+
+
+struct  CompanyRecruitMeetingFilterModel: Mappable {
     
-    var tagJobs:[String:[CompuseRecruiteJobs]] = [:]
-    
+    var companyID:String?
+    var offset:Int64 = 0
+    var limit:Int64 = 10
     
     init?(map: Map) {
         
     }
     
     mutating func mapping(map: Map) {
-        tagJobs <- map["tag_jobs"]
-        onlineAppys <- map["online_apply"]
+        
+        companyID <- map["company_id"]
+        offset <- map["offset"]
+        limit <- map["limit"]
+    }
+    
+    mutating func setOffset(offset:Int64){
+        self.offset = offset
+    }
+    
+    func toJSON() -> [String : Any] {
+        
+        return ["company_id": self.companyID ?? "", "offset": self.offset, "limit": self.limit]
     }
     
 }
 
-
 // 分类tag请求 body
-struct  TagsDataItem: Mappable {
+struct  CompanyTagFilterModel: Mappable {
     
-    var isPullDown:Bool = false
     // 记录tag 的offset
-    var tagsOffset:[String:Int] = [:]
-    // 获取指定tag 的数据
-    // 为all时 获取所有tag的数据，偏移为0
-    var tag:String = ""
+    var offset:Int64 = 0
+    var limit:Int64 = 2
+    
+    var tag:String = ""{
+        didSet{
+            if oldValue == "全部"{
+                return
+            }
+            offset = 0
+            limit = 2
+        }
+    }
     var companyId:String = ""
     
     init?(map: Map) {}
     
     mutating func mapping(map: Map) {
         
-        tagsOffset <- map["tag_offset"]
+        offset <- map["offset"]
+        limit <- map["limit"]
         tag <- map["tag"]
         companyId <- map["company_id"]
-        isPullDown <- map["is_pull_down"]
         
+    }
+    
+    mutating func setTag(t:String) -> Bool{
+        if self.tag != t {
+            self.tag = t
+            return true
+        }
+        return false
+    }
+    
+    mutating func setOffset(offset:Int64){
+        self.offset = offset
+    }
+    
+    mutating func toJSON() -> [String : Any] {
+         
+        return ["company_id": self.companyId, "tag" : self.tag, "offset" : self.offset,
+                "limit" : self.limit]
     }
 }
 

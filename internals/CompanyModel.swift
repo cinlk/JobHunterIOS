@@ -63,6 +63,31 @@ class CompanyListModel: NSObject,  Mappable{
     }
 }
 
+class SimpleCompanyModel: NSObject, Mappable{
+    
+    var companyID:String?
+    var iconURL:URL?
+    var name:String?
+    var citys:[String]?
+    var businessField:[String]?
+    var staff:String?
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        companyID <- map["company_id"]
+        iconURL <- (map["icon_url"], URLTransform())
+        name <- map["name"]
+        citys <- map["citys"]
+        businessField <- map["business_field"]
+        staff <- map["staff"]
+    }
+    
+    
+}
+
 // 公司数据model
 
 class  CompanyModel: BaseModel {
@@ -73,23 +98,25 @@ class  CompanyModel: BaseModel {
     // 简单描述
     internal var simpleDes:String?
     // 地点
-    internal var address:[String]?
+    internal var citys:[String]?
     // 员工人数
-    internal var staffs:Int = 0
+    internal var staff:String = ""
     
     // 福利标签
     internal var tags:[String]?
+    // 职位类型标签
+    internal var jobTags:[String]?
     // 所属行业
-    internal var industry:[String]?
+    internal var businessField:[String]?
     
     // 关注人数
-    internal var follows:Int = 0
+    internal var reviewCounts:Int = 0
     
     
     // 发布的职位
-    internal var jobs:[CompuseRecruiteJobs]?
+    internal var jobs:[JobListModel]?
     // 宣讲会
-    internal var careerTalk:[CareerTalkMeetingModel]?
+    internal var careerTalk:[CareerTalkMeetingListModel]?
     
     
     
@@ -97,32 +124,37 @@ class  CompanyModel: BaseModel {
     required init?(map: Map) {
         super.init(map: map)
         
-        if map.JSON["address"] == nil || map.JSON["industry"] == nil {
-            return nil
-        }
+//        if map.JSON["address"] == nil || map.JSON["industry"] == nil {
+//            return nil
+//        }
         
-        if map.JSON["icon"] == nil{
-            // 公司默认图标
-            self.icon = "default"
-        }
+//        if map.JSON["icon"] == nil{
+//            // 公司默认图标
+//            self.icon = "default"
+//        }
         
         
     }
+    
     
    override func mapping(map: Map) {
         super.mapping(map: map)
         
-    
+        // 默认值
+        //jobTags.insert("全部", at: 0)
         describe <- map["describe"]
         simpleDes <- map["simple_des"]
-        address <- map["address"]
-        staffs <- map["staffs"]
+        citys <- map["citys"]
+        staff <- map["staff"]
         tags <- map["tags"]
-        industry <- map["industry"]
-        follows <- map["follows"]
+        jobTags <- map["job_tags"]
+        businessField <- map["business_field"]
+        reviewCounts <- map["review_counts"]
         jobs <- map["jobs"]
-        careerTalk <- map["recruit_meeting"]
-        
+        careerTalk <- map["career_talks"]
     }
+    
+    
+    
 }
 

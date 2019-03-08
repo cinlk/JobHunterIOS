@@ -207,7 +207,8 @@ extension InternJobsViewController{
             self.table.deselectRow(at: idx, animated: false)
             let mode = self.datas[idx.row]
             let internJob = JobDetailViewController()
-            internJob.uuid = mode.jobId!
+            
+            internJob.job = (mode.jobId!, .intern)
             
             internJob.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(internJob, animated: true)

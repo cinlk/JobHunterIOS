@@ -215,7 +215,7 @@ extension PasswordLoggingViewController{
                 guard let pv = self.parentVC else {
                     return
                 }
-                pv.performSegue(withIdentifier: pv.mainSegueIdentiy, sender: nil)
+                pv.navBack ? pv.dismiss(animated: true, completion: nil) : pv.performSegue(withIdentifier: pv.mainSegueIdentiy, sender: nil)
                 return
             }
             

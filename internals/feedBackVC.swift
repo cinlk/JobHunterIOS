@@ -101,7 +101,7 @@ class feedBackVC: BaseTableViewController {
         tableView.backgroundColor = UIColor.viewBackColor()
         tableView.tableFooterView = photo
         tableView.keyboardDismissMode = .onDrag
-        tableView.register(feedBackTypeCell.self, forCellReuseIdentifier: feedBackTypeCell.identity())
+        tableView.register(FeedBackTypeCell.self, forCellReuseIdentifier: FeedBackTypeCell.identity())
         tableView.register(TextAndPhontoCell.self, forCellReuseIdentifier: TextAndPhontoCell.identity())
         self.title = "反馈意见"
         self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "发送", style: .plain, target: self, action: #selector(sendComment))
@@ -166,7 +166,7 @@ extension feedBackVC {
         
         switch sectionTitle[indexPath.section] {
         case .problem:
-            if let cell =  tableView.dequeueReusableCell(withIdentifier: feedBackTypeCell.identity(), for: indexPath) as? feedBackTypeCell{
+            if let cell =  tableView.dequeueReusableCell(withIdentifier: FeedBackTypeCell.identity(), for: indexPath) as? FeedBackTypeCell{
                 cell.mode = problems
                 cell.selectItem = { theme in
                    // print(theme)
@@ -198,7 +198,7 @@ extension feedBackVC {
         switch sectionTitle[indexPath.section] {
         case .problem:
            
-            return tableView.cellHeight(for: indexPath, model: problems, keyPath: "mode", cellClass: feedBackTypeCell.self, contentViewWidth: GlobalConfig.ScreenW)
+            return tableView.cellHeight(for: indexPath, model: problems, keyPath: "mode", cellClass: FeedBackTypeCell.self, contentViewWidth: GlobalConfig.ScreenW)
         case .idea:
             return TextAndPhontoCell.cellHeight()
             

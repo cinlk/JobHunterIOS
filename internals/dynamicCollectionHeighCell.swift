@@ -12,8 +12,7 @@ import UIKit
 fileprivate let cellIdentity = "cell"
 fileprivate let itemHeight:CGFloat = 30
 
-@objcMembers class feedBackTypeCell: UITableViewCell {
-    
+@objcMembers class FeedBackTypeCell: UITableViewCell {
     
     
     internal var selectItem:((_ item:String)->Void)?
@@ -77,7 +76,7 @@ fileprivate let itemHeight:CGFloat = 30
 }
 
 
-extension feedBackTypeCell: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource{
+extension FeedBackTypeCell: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource{
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
@@ -95,7 +94,8 @@ extension feedBackTypeCell: UICollectionViewDelegate, UICollectionViewDelegateFl
         
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentity, for: indexPath) as! itemCell
-        cell.btn.setTitle(mode[indexPath.row], for: .normal)
+        //cell.btn.setTitle(mode[indexPath.row], for: .normal)
+        cell.title = mode[indexPath.row]
         return cell
         
     }
@@ -106,8 +106,9 @@ extension feedBackTypeCell: UICollectionViewDelegate, UICollectionViewDelegateFl
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         if let cell = collectionView.cellForItem(at: indexPath) as? itemCell{
-            cell.btn.isSelected = true
-            cell.btn.backgroundColor = UIColor.orange
+//            cell.btn.isSelected = true
+//            cell.btn.backgroundColor = UIColor.orange
+            cell.isSelected = false
             self.selectItem?(mode![indexPath.row])
         }
        
@@ -118,8 +119,9 @@ extension feedBackTypeCell: UICollectionViewDelegate, UICollectionViewDelegateFl
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         
         if let cell = collectionView.cellForItem(at: indexPath) as? itemCell{
-            cell.btn.isSelected = false
-            cell.btn.backgroundColor = UIColor.lightGray
+//            cell.btn.isSelected = false
+            //cell.btn.backgroundColor = UIColor.lightGray
+            cell.isSelected = true
         }
         
         
@@ -140,7 +142,20 @@ extension feedBackTypeCell: UICollectionViewDelegate, UICollectionViewDelegateFl
 
 private class itemCell:UICollectionViewCell{
     
-    internal lazy var btn:UIButton = {
+    
+    var title:String = ""{
+        didSet{
+            self.btn.setTitle(title, for: .normal)
+        }
+    }
+    
+    override var isSelected: Bool{
+        didSet{
+            self.btn.isSelected = isSelected
+            self.btn.backgroundColor = isSelected ? UIColor.orange : UIColor.lightGray
+        }
+    }
+    private lazy var btn:UIButton = {
         let btn = UIButton.init(type: UIButton.ButtonType.custom)
         btn.layer.borderWidth = 0
         btn.layer.cornerRadius = 5

@@ -63,8 +63,8 @@ class showResumeVC: UIViewController {
     }()
     
     // tableHeadView
-    private lazy var tabHeader:personTableHeader = {
-        let view = personTableHeader.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: tableHeaderH))
+    private lazy var tabHeader:PersonTableHeader = {
+        let view = PersonTableHeader.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: tableHeaderH))
         view.isHR = false
         return view
     }()
@@ -102,7 +102,7 @@ extension showResumeVC{
     private func loadData(){
         
        
-        tabHeader.mode = (image: resumeBaseinfo.tx, name:resumeBaseinfo.name!, introduce:"")
+        //tabHeader.mode = (image: resumeBaseinfo.tx, name:resumeBaseinfo.name!, introduce:"")
         (nagView.viewWithTag(1) as! UILabel).text = resumeBaseinfo.name
         tabHeader.layoutSubviews()
         table.tableHeaderView = tabHeader

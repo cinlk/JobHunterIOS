@@ -98,7 +98,7 @@ extension NearCareerTalkMeetinVC: UITableViewDelegate, UITableViewDataSource{
         let mode = self.datas[indexPath.row]
         let show = CareerTalkShowViewController()
         show.hidesBottomBarWhenPushed = true
-        show.meetingID = mode.meetingID
+        show.meetingID = mode.meetingID ?? ""
         self.navigationController?.pushViewController(show, animated: true)
     }
     

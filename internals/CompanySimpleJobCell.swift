@@ -8,7 +8,7 @@
 
 import UIKit
 
-@objcMembers class companySimpleJobCell: UITableViewCell {
+@objcMembers class CompanySimpleJobCell: UITableViewCell {
 
    
     private lazy var jobName:UILabel = {
@@ -61,14 +61,14 @@ import UIKit
     }()
     
 
-    dynamic var mode:CompuseRecruiteJobs?{
+    dynamic var mode:SimpleJobModel?{
         didSet{
             guard  let mode = mode  else {
                 return
             }
             jobName.text = mode.name
             address.text = mode.addressStr
-            degree.text =  mode.education + " |"
+            degree.text =  (mode.education ?? "") + " |"
             create_time.text = mode.creatTimeStr
             // TODO 改成 attache image ？？
             internTag.isHidden =  mode.kind! == .intern ? false : true
@@ -89,7 +89,7 @@ import UIKit
         _ = address.sd_layout().leftSpaceToView(degree,5)?.topEqualToView(degree)?.autoHeightRatio(0)
         
         jobName.setMaxNumberOfLinesToShow(2)
-        address.setMaxNumberOfLinesToShow(2)
+        address.setMaxNumberOfLinesToShow(1)
         
         
     }

@@ -7,12 +7,14 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
+import RxDataSources
 
 
 // 与companyMainVC 一致
-fileprivate let sections:Int = 3
 fileprivate var sectionHeight:CGFloat = 10
-fileprivate let companyAddress = "d公司网址"
+fileprivate let companyAddress = "公司网址"
 
 
 class CompanyDetailVC: UIViewController {
@@ -22,8 +24,7 @@ class CompanyDetailVC: UIViewController {
         let tb = UITableView.init(frame: CGRect.zero)
         tb.tableFooterView = UIView.init()
         tb.backgroundColor = UIColor.viewBackColor()
-        tb.delegate = self
-        tb.dataSource = self
+        tb.rx.setDelegate(self).disposed(by: self.dispose)
         tb.contentInsetAdjustmentBehavior = .never
         tb.separatorStyle = .none
         //tb.bounces = false
@@ -31,14 +32,14 @@ class CompanyDetailVC: UIViewController {
         let head = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH))
         head.backgroundColor = UIColor.viewBackColor()
         tb.tableHeaderView = head
-        
+        // 添加手势, 覆盖cell 的点击
+        tb.addGestureRecognizer(self.tap)
         tb.contentInset = UIEdgeInsets.init(top: 0, left: 0, bottom: 30, right: 0)
         // cell
-        tb.register(feedBackTypeCell.self, forCellReuseIdentifier: feedBackTypeCell.identity())
-        tb.register(contentAndTitleCell.self, forCellReuseIdentifier: contentAndTitleCell.identity())
-        tb.register(worklocateCell.self, forCellReuseIdentifier: worklocateCell.identity())
-        tb.register(subIconAndTitleCell.self, forCellReuseIdentifier: subIconAndTitleCell.identity())
-        
+        tb.register(FeedBackTypeCell.self, forCellReuseIdentifier: FeedBackTypeCell.identity())
+        tb.register(CompanyDetailCell.self, forCellReuseIdentifier: CompanyDetailCell.identity())
+        tb.register(WorklocateCell.self, forCellReuseIdentifier: WorklocateCell.identity())
+        tb.register(SubIconAndTitleCell.self, forCellReuseIdentifier: SubIconAndTitleCell.identity())
         return tb
         
     }()
@@ -49,13 +50,36 @@ class CompanyDetailVC: UIViewController {
     private lazy var tap :UIGestureRecognizer  = {
         let tap = UITapGestureRecognizer()
         tap.addTarget(self, action: #selector(open))
+        //tap.delegate = self
         
         return tap
     }()
     
+    private let sections: BehaviorRelay<[CompanyDetailMultiSection]> = BehaviorRelay<[CompanyDetailMultiSection]>.init(value: [])
+    
+    private var dataSource:RxTableViewSectionedReloadDataSource<CompanyDetailMultiSection>!
+    private let dispose:DisposeBag = DisposeBag()
+    
     var detailModel:CompanyModel?{
         didSet{
-            self.detailTable.reloadData()
+            guard  let mode = detailModel, mode.id != nil else {
+                return
+            }
+            var sections:[CompanyDetailMultiSection] = []
+            if let tags = mode.tags{
+                sections.append(CompanyDetailMultiSection.companyTagSection(title: "", items: [CompanyDetailItem.tags(mode: tags)]))
+            }
+            if let detail = mode.describe{
+                sections.append(CompanyDetailMultiSection.companyDetailSection(title: "", items: [CompanyDetailItem.detail(mode: detail)]))
+            }
+            if let locations = mode.citys{
+                sections.append(CompanyDetailMultiSection.companyLocation(title: "", items: [CompanyDetailItem.location(mode: locations)]))
+            }
+            if let link = mode.link{
+                sections.append(CompanyDetailMultiSection.companyLink(title: "", items: [CompanyDetailItem.link(mode: link.absoluteString)]))
+            }
+            self.sections.accept(sections)
+            //self.detailTable.reloadData()
         }
         
     }
@@ -63,6 +87,8 @@ class CompanyDetailVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
+        setViewModel()
+        
         
     }
 
@@ -75,72 +101,62 @@ class CompanyDetailVC: UIViewController {
     
     
     
+    private func setViewModel(){
+        
+        self.dataSource = RxTableViewSectionedReloadDataSource<CompanyDetailMultiSection>.init(configureCell: { (dataSource, table, indexPath, _) -> UITableViewCell in
+            switch dataSource[indexPath]{
+            case .tags(let mode):
+                let cell  = table.dequeueReusableCell(withIdentifier: FeedBackTypeCell.identity(), for: indexPath) as! FeedBackTypeCell
+                cell.collectionView.isUserInteractionEnabled = false
+                cell.mode = mode
+                return cell
+                
+            case .detail(let mode):
+                let cell  = table.dequeueReusableCell(withIdentifier: CompanyDetailCell.identity(), for: indexPath) as! CompanyDetailCell
+                cell.mode = mode
+                return cell
+                
+            case .location(let mode):
+                let cell  = table.dequeueReusableCell(withIdentifier: WorklocateCell.identity(), for: indexPath) as! WorklocateCell
+                cell.mode = mode
+                
+                return cell
+            case .link(let mode):
+                
+                let cell = table.dequeueReusableCell(withIdentifier: SubIconAndTitleCell.identity(), for: indexPath) as! SubIconAndTitleCell
+                
+                cell.content.isUserInteractionEnabled = true
+                cell.content.attributedText = NSAttributedString.init(string: mode, attributes: [NSAttributedString.Key.foregroundColor:UIColor.blue, NSAttributedString.Key.link: link])
+                // 添加没反应!
+                //cell.content.removeGestureRecognizer(self.tap)
+                //cell.content.addGestureRecognizer(self.tap)
+                cell.mode = mode
+                cell.icon.image  = #imageLiteral(resourceName: "link")
+                cell.iconName.text = companyAddress
+                return cell
+                
+            }
+        })
+        
+        self.sections.asDriver(onErrorJustReturn: []).drive(self.detailTable.rx.items(dataSource: self.dataSource)).disposed(by: self.dispose)
+        
+        self.detailTable.rx.itemSelected.subscribe(onNext: { (indexPath) in
+            self.detailTable.deselectRow(at: indexPath, animated: false)
+        }).disposed(by: self.dispose)
+        
+
+        
+    }
+    
+    
+    
 
 }
 
 
 
-extension CompanyDetailVC: UITableViewDelegate, UITableViewDataSource{
-    
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        if let web = detailModel?.link, !web.isEmpty{
-            return sections + 1
-        }
-        return   sections
-        
-        
-    }
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        return 1
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        switch indexPath.section{
-        
-        case 0:
-            let cell  = tableView.dequeueReusableCell(withIdentifier: feedBackTypeCell.identity(), for: indexPath) as! feedBackTypeCell
-            cell.collectionView.isUserInteractionEnabled = false
-            
-            cell.mode = detailModel?.tags  ?? []
-            return cell
-            
-        case 1:
-            let cell  = tableView.dequeueReusableCell(withIdentifier: contentAndTitleCell.identity(), for: indexPath) as! contentAndTitleCell
-            cell.des = detailModel?.describe  ?? ""
-            return cell
-        case 2:
-            let cell  = tableView.dequeueReusableCell(withIdentifier: worklocateCell.identity(), for: indexPath) as! worklocateCell
-            cell.mode = detailModel?.address
-            //cell.chooseAddress
-            return cell
-        
-        case 3:
-            guard let link = detailModel?.link else {
-                break
-            }
-            
-            let cell = tableView.dequeueReusableCell(withIdentifier: subIconAndTitleCell.identity(), for: indexPath) as! subIconAndTitleCell
-            
-            cell.content.isUserInteractionEnabled = true
-            cell.content.attributedText = NSAttributedString.init(string: link, attributes: [NSAttributedString.Key.foregroundColor:UIColor.blue, NSAttributedString.Key.link: link])
-            cell.content.removeGestureRecognizer(tap)
-            cell.content.addGestureRecognizer(tap)
-            //cell.mode = detailModel?.webSite
-            cell.icon.image  = #imageLiteral(resourceName: "link")
-            cell.iconName.text = companyAddress
-            return cell
-        default:
-            break
-            
-        }
-        
-        return UITableViewCell()
-        
-        
-    }
+extension CompanyDetailVC: UITableViewDelegate{
+
     
     // section 高度
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -152,60 +168,57 @@ extension CompanyDetailVC: UITableViewDelegate, UITableViewDataSource{
     
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-       
-        switch indexPath.section {
-        case 0:
-            let tags =  detailModel?.tags ?? []
-            return tableView.cellHeight(for: indexPath, model: tags, keyPath: "mode", cellClass: feedBackTypeCell.self, contentViewWidth: GlobalConfig.ScreenW)
-        case 1:
-            let des  = detailModel?.describe ?? ""
-            return tableView.cellHeight(for: indexPath, model: des, keyPath: "des", cellClass: contentAndTitleCell.self, contentViewWidth: GlobalConfig.ScreenW)
-        case 2:
-           
-            return tableView.cellHeight(for: indexPath, model: detailModel?.address, keyPath: "mode", cellClass: worklocateCell.self, contentViewWidth: GlobalConfig.ScreenW)
-            
-        case 3:
-            let mode = detailModel?.link
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: subIconAndTitleCell.self, contentViewWidth: GlobalConfig.ScreenW) + 20
-            
-            
-        default:
-            break
+        switch self.dataSource[indexPath] {
+        case .tags(let mode):
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: FeedBackTypeCell.self, contentViewWidth: GlobalConfig.ScreenW)
+        case .detail(let mode):
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CompanyDetailCell.self, contentViewWidth: GlobalConfig.ScreenW)
+        case .location(let mode):
+             return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: WorklocateCell.self, contentViewWidth: GlobalConfig.ScreenW)
+        case .link(let mode):
+             return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: SubIconAndTitleCell.self, contentViewWidth: GlobalConfig.ScreenW) + 20
         }
-
-        return 0
         
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: false)
-        
-    }
+    
 }
 
 
 extension CompanyDetailVC{
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
-        let offsetY = scrollView.contentOffset.y
         // 向上滑动
-        if offsetY > 0 {
-             delegate?.scrollUp(view: self.detailTable, height: offsetY)
-        }else{
-             delegate?.scrollUp(view: self.detailTable, height: 0)
-        }
-        
-       
+        let offsetY = scrollView.contentOffset.y
+        offsetY > 0 ? delegate?.scrollUp(view: self.detailTable, height: offsetY) :  delegate?.scrollUp(view: self.detailTable, height: 0)
     }
 }
 
+//extension CompanyDetailVC:UIGestureRecognizerDelegate{
+//    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+//        return false
+//    }
+//}
+
 extension CompanyDetailVC{
-    @objc private func open(){
+    
+    @objc private func open(tap: UITapGestureRecognizer){
+        // 判断点击的位置
+        let location = tap.location(in: self.detailTable)
+        guard let indexPath = self.detailTable.indexPathForRow(at: location) else{
+            return
+        }
+        // 判断link 的cell
+        guard  let cell = self.detailTable.cellForRow(at: indexPath) as? SubIconAndTitleCell, let link = cell.mode else {
+            return
+        }
         
-        openApp(appURL: (detailModel?.link)!, completion:{
+        // url
+        openApp(appURL: link, completion:{
             bool in
-            
+            if bool == false{
+                self.view.showToast(title: "网页打开失败", customImage: nil, mode: .text)
+            }
         })
     }
 }

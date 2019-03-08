@@ -23,11 +23,28 @@ protocol SearchControllerDeletgate: class {
 }
 
 
+class MyNav:UINavigationController{
+    
+    override init(rootViewController: UIViewController) {
+        super.init(rootViewController: rootViewController)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    
+    }
+}
+
 class SearchResultController: BaseViewController {
 
     private var searchChildVC:[UIViewController] = []
     
     internal lazy var searchFildContent:PageContentView = { [unowned self] in
+        
         
         let os = OnlineApplySearchVC.init()
         let cs = CampusSearchVC.init()

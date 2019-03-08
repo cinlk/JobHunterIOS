@@ -7,10 +7,10 @@
 //
 
 import UIKit
+import Kingfisher
 
 
-
-class personTableHeader: UIView {
+class PersonTableHeader: UIView {
 
     
     private lazy var avatarImg:UIImageView = {
@@ -51,10 +51,13 @@ class personTableHeader: UIView {
             }
         }
     }
-    var  mode:(image:String,name:String, introduce:String)?{
+    var  mode:(image:URL?, name:String, introduce:String)?{
         didSet{
             guard let mode = mode else { return }
-            self.avatarImg.image = UIImage.init(named: mode.image)
+            if let iconURL = mode.image{
+                self.avatarImg.kf.setImage(with: Source.network(iconURL), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+            }
+            //self.avatarImg.image = UIImage.init(named: mode.image)
             self.nameTitle.text = mode.name
             self.introduce.text = mode.introduce
             

@@ -28,11 +28,14 @@ class OnlineApplyViewController: UIViewController {
     // 请求数据
     private var req:OnlineFilterReqModel = OnlineFilterReqModel(JSON: [:])!
 
-    internal var search:String = ""{
+    internal var search:String?{
         didSet{
-            // 搜索关键字匹配的数据 TODO
+            req.citys = []
+            req.businessField = ""
+            req.typeField = search ?? ""
+            //self.vm.onlineApplyRefresh.onNext(req)
+            self.table.mj_header.beginRefreshing()
             
-            //self.table.reloadData()
         }
     }
     
@@ -145,15 +148,18 @@ class OnlineApplyViewController: UIViewController {
     }
     
   
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        if localData.count > 0{
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if localData.count > 0 {
             return
         }
-        
-        self.table.mj_header.beginRefreshing()
-        
+        // 延迟来 判断是有是search 优先
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            if self.search == nil{
+                self.table.mj_header.beginRefreshing()
+            }
+        }
+       
     }
 
 }
@@ -171,13 +177,9 @@ extension OnlineApplyViewController{
     
     private func setViewModel(){
         
-      
-        
         self.vm.onlineApplyRes.share().subscribe(onNext: { (modes) in
                 self.localData = modes
           }).disposed(by: dispose)
-        
-       
         
         
         self.vm.onlineApplyRes.share().bind(to: self.table.rx.items(cellIdentifier: OnlineApplyCell.identity(), cellType: OnlineApplyCell.self)) { (row, mode, cell) in
@@ -212,6 +214,7 @@ extension OnlineApplyViewController{
             self.table.deselectRow(at: idx, animated: false)
             let mode = self.localData[idx.row]
             if  mode.outside ?? false{
+             
                 guard let urlLink = mode.link else {return}
                 //跳转外部连接
                 let wbView = BaseWebViewController()
@@ -228,6 +231,7 @@ extension OnlineApplyViewController{
                 show.uuid = id
                 show.hidesBottomBarWhenPushed = true
                 self.navigationController?.pushViewController(show, animated: true)
+                show.hidesBottomBarWhenPushed = false
                
             }
             

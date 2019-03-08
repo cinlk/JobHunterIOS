@@ -29,7 +29,7 @@ func getKeyBoardHight() -> CGFloat{
 let NavBarH:CGFloat = 44
 // navigation View 高度
 //let GlobalConfig.NavH:CGFloat = 64
-let TOOLBARH:CGFloat = 44
+//let TOOLBARH:CGFloat = 44
  
 
 // 屏幕宽高
@@ -59,7 +59,7 @@ let SCROLLER_IMG = "banner3"
 
 
 //NOTIFICATION
-let JOBTAG_NAME = "whichTag"
+
 
 
 

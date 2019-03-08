@@ -108,7 +108,7 @@ extension MeetingCollectedVC: UITableViewDelegate, UITableViewDataSource{
         
         let mode = self.datas[indexPath.row]
         let show = CareerTalkShowViewController()
-        show.meetingID = mode.meetingID
+        show.meetingID = mode.meetingID ?? ""
         self.navigationController?.pushViewController(show, animated: true)
         
         

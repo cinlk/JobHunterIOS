@@ -14,11 +14,11 @@ import MapKit
 public enum PazNavigationApp {
     case AppleMaps
     case GoogleMaps
-    case Navigon
-    case TomTom
-    case Waze
+//    case Navigon
+//    case TomTom
+//    case Waze
     
-    public static let AllValues: [PazNavigationApp] = [.AppleMaps, .GoogleMaps, .Navigon, .TomTom, .Waze]
+    public static let AllValues: [PazNavigationApp] = [.AppleMaps, .GoogleMaps]
     
     public static var AvailableServices: [PazNavigationApp] {
         var availableServices = [PazNavigationApp]()
@@ -36,12 +36,12 @@ public enum PazNavigationApp {
             return "苹果地图"
         case .GoogleMaps:
             return "谷歌地图"
-        case .Navigon:
-            return "Navigon"
-        case .TomTom:
-            return "TomTom"
-        case .Waze:
-            return "Waze"
+//        case .Navigon:
+//            return "Navigon"
+//        case .TomTom:
+//            return "TomTom"
+//        case .Waze:
+//            return "Waze"
         }
     }
     
@@ -51,12 +51,12 @@ public enum PazNavigationApp {
             return "maps.apple.com://"
         case .GoogleMaps:
             return "comgooglemaps://"
-        case .Navigon:
-            return "navigon://"
-        case .TomTom:
-            return "tomtomhome://"
-        case .Waze:
-            return "waze://"
+//        case .Navigon:
+//            return "navigon://"
+//        case .TomTom:
+//            return "tomtomhome://"
+//        case .Waze:
+//            return "waze://"
         }
         
     }
@@ -82,12 +82,12 @@ public enum PazNavigationApp {
             urlString.append("?q=\(coordinate.latitude),\(coordinate.longitude)=d&t=h")
         case .GoogleMaps:
             urlString.append("?saddr=&daddr=\(coordinate.latitude),\(coordinate.longitude)&directionsmode=driving")
-        case .Navigon:
-            urlString.append("coordinate/\(name)/\(coordinate.longitude)/\(coordinate.latitude)")
-        case .TomTom:
-            urlString.append("geo:action=navigateto&lat=\(coordinate.latitude)&long=\(coordinate.longitude)&name=\(name)")
-        case .Waze:
-            urlString.append("?ll=\(coordinate.latitude),\(coordinate.longitude)&navigate=yes")
+//        case .Navigon:
+//            urlString.append("coordinate/\(name)/\(coordinate.longitude)/\(coordinate.latitude)")
+//        case .TomTom:
+//            urlString.append("geo:action=navigateto&lat=\(coordinate.latitude)&long=\(coordinate.longitude)&name=\(name)")
+//        case .Waze:
+//            urlString.append("?ll=\(coordinate.latitude),\(coordinate.longitude)&navigate=yes")
         }
         let urlwithPercentEscapes = urlString.addingPercentEncoding( withAllowedCharacters: .urlQueryAllowed) ?? urlString
         

@@ -183,11 +183,7 @@ extension CareerTalkSearchVC{
             cell.mode = element
             }.disposed(by: dispose)
         
-//        searchResult.share().map({ applys  in
-//            applys.isEmpty
-//        }) .bind(to: self.dropMenu.rx.isHidden).disposed(by: dispose)
-//
-        
+    
         // table 刷新状态
         self.searchVM.carrerTalkRes.asDriver(onErrorJustReturn: []).drive(onNext: { (modes) in
             if self.modes.isEmpty{
@@ -197,6 +193,14 @@ extension CareerTalkSearchVC{
             self.dropMenu.isHidden = modes.isEmpty
             self.didFinishloadData()
             
+        }).disposed(by: self.dispose)
+        
+        self.table.rx.itemSelected.subscribe(onNext: { (indexPath) in
+            let mode = self.filterModes[indexPath.row]
+            let vc = CareerTalkShowViewController()
+            vc.meetingID = mode.meetingID ?? ""
+            vc.hidesBottomBarWhenPushed = true
+         self.presentingViewController?.navigationController?.pushViewController(vc, animated: true)
         }).disposed(by: self.dispose)
         
     }

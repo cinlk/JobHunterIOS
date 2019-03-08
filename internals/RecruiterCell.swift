@@ -17,6 +17,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 40, height: 40)
     private lazy var title: UILabel = {
         let label = UILabel.init()
         label.textAlignment = .left
+        label.text = "职位发布者"
         label.font = UIFont.boldSystemFont(ofSize: 18)
         label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - imgSize.width - 20)
         return label
@@ -71,13 +72,14 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 40, height: 40)
                 return
             }
             
-            title.text = "职位发布者"
-            // 头像？？
             
-            let url = URL.init(string: mode.icon ?? "")
-            self.icon.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            // 头像 
+            if let url = mode.icon{
+                self.icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            }
+      
             name.text = mode.name
-            position.text = mode.position
+            position.text = mode.title
             onlineTime.text = "最近活跃:" + mode.ontimeStr
             self.setupAutoHeight(withBottomViewsArray: [icon,position], bottomMargin: 5)
         }

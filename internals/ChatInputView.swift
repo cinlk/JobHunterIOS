@@ -8,7 +8,7 @@
 
 import UIKit
 
-fileprivate let textContentH:CGFloat = TOOLBARH - 10
+fileprivate let textContentH:CGFloat = GlobalConfig.toolBarH - 10
 fileprivate let maxWordCount:Int = 200
 
 protocol ChatInputViewDelegate: class  {

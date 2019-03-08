@@ -13,7 +13,7 @@ import UIKit
 fileprivate let cellH:CGFloat = 30
 
 
-@objcMembers  class worklocateCell: TitleTableViewCell {
+@objcMembers  class WorklocateCell: TitleTableViewCell {
 
     
     var chooseAddress:((_ adress:String)->Void)?
@@ -60,7 +60,7 @@ fileprivate let cellH:CGFloat = 30
     }
 }
 
-extension worklocateCell: UITableViewDataSource, UITableViewDelegate{
+extension WorklocateCell: UITableViewDataSource, UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return mode?.count ?? 0

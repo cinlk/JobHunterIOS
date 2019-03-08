@@ -11,15 +11,6 @@ import SwiftDate
 import UserNotifications
 
 
-//
-
-
- 
-
-
-
-
-
 public func getCitys(filename:String)->[String:[String]]{
     
     guard  let filePath = Bundle.main.path(forResource: filename, ofType: "plist")else{
@@ -85,6 +76,7 @@ func openApp(appURL: String, completion: @escaping ((_ success: Bool)->())) {
 func  getUUID()->String{
     return UUID().uuidString.lowercased()
 }
+
 
 
 

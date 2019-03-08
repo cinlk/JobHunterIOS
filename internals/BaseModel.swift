@@ -16,7 +16,7 @@ class BaseModel:NSObject, Mappable, Comparable{
     internal var id:String?
     
     // 数据展示 对应的 website 界面url地址（用于分享）
-    internal var link:String?
+    internal var link:URL?
     
     // 名字 （必须）
     internal var name:String?
@@ -31,7 +31,7 @@ class BaseModel:NSObject, Mappable, Comparable{
     // 创建时间
     internal var create_time:Date?
     // 图片url (可选, 给出默认值)
-    internal var icon:String = "default"
+    internal var iconURL:URL?
     
     
     
@@ -57,12 +57,12 @@ class BaseModel:NSObject, Mappable, Comparable{
     func mapping(map: Map) {
         id <- map["id"]
         name <- map["name"]
-        isValidate <- map["validate"]
-        isCollected <- map["collected"]
-        isApply <- map["applied"]
+        isValidate <- map["is_validate"]
+        isCollected <- map["is_collected"]
+        isApply <- map["is_apply"]
         create_time <- (map["created_time"], DateTransform())
-        icon <- map["icon"]
-        link <- map["link"]
+        iconURL <- (map["icon_url"], URLTransform())
+        link <- (map["link"], URLTransform())
         
     }
     

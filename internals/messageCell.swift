@@ -158,9 +158,9 @@ class messageCell: UITableViewCell {
         // 自己发的消息
         if messageInfo.sender?.userID  ==  myself.userID{
             
-            if let icon = myself.icon {
-                let url = URL.init(string: icon)
-                self.avatar.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            if let iconURL = myself.icon {
+                
+                self.avatar.kf.setImage(with: Source.network(iconURL), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }else{
                 // 使用默认头像
                 self.avatar.image =  #imageLiteral(resourceName: "default")
@@ -180,9 +180,9 @@ class messageCell: UITableViewCell {
         // 别人发的消息
         else{
             
-            if let icon = chatUser.icon {
-                let url = URL.init(string: icon)
-                self.avatar.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            if let iconURL = chatUser.icon {
+                
+                self.avatar.kf.setImage(with: Source.network(iconURL), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }else{
                 self.avatar.image =  #imageLiteral(resourceName: "default")
             }

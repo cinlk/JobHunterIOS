@@ -244,7 +244,7 @@ extension QuickLoggingViewController{
                 guard let pv = self.parentVC else {
                     return
                 }
-                pv.performSegue(withIdentifier: pv.mainSegueIdentiy, sender: nil)
+                pv.navBack ? pv.dismiss(animated: true, completion: nil) : pv.performSegue(withIdentifier: pv.mainSegueIdentiy, sender: nil)
                 return
             }
             self.view.showToast(title: res.returnMsg ?? "登录失败", customImage: nil, mode: .text)

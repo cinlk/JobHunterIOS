@@ -193,6 +193,14 @@ extension OnlineApplySearchVC{
             self.didFinishloadData()
             
         }).disposed(by: self.dispose)
+        
+        self.table.rx.itemSelected.subscribe(onNext: { (indexPath) in
+            let mode = self.filterModes[indexPath.row]
+            let vc = OnlineApplyShowViewController()
+            vc.uuid = mode.onlineApplyID ?? ""
+            vc.hidesBottomBarWhenPushed = true
+        self.presentingViewController?.navigationController?.pushViewController(vc, animated: true)
+        }).disposed(by: self.dispose)
     }
     
 }

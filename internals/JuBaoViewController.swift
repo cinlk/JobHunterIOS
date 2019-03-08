@@ -9,153 +9,148 @@
 import UIKit
 
 
-fileprivate let tableFootViewH:CGFloat = 200
 import RxSwift
 import RxCocoa
 
 
-class JuBaoViewController: BaseViewController {
+
+fileprivate let tableFootViewH:CGFloat = 200
+fileprivate let viewTitle:String = "举报界面"
+fileprivate let TOTAL_NUM:Int = 200
+
+private class  tableFootView:UIView{
+    
+    private weak var vc:JuBaoViewController?
+    
+    
+    internal lazy var comfirm:UIButton = {  [unowned self] in
+        
+        let btn = UIButton.init(frame: CGRect.zero)
+        btn.backgroundColor = UIColor.blue
+        btn.setTitle("提交", for: .normal)
+        btn.addTarget(self.vc!, action: #selector(self.vc!.submit), for: .touchUpInside)
+        return btn
+        
+    }()
+    
+    // 详细输入textView
+    internal lazy var inputField:UITextView = { [unowned self] in
+        let text = UITextView()
+        text.delegate = self.vc!
+        text.font = UIFont.systemFont(ofSize: 16)
+        text.keyboardType = UIKeyboardType.default
+        text.inputAccessoryView =  UIToolbar.NumberkeyBoardDone(title: "完成", vc: self.vc!, selector: #selector(self.vc!.done(_:)))
+        
+        return text
+    }()
+    
+    
+    convenience init(frame:CGRect, vc:JuBaoViewController){
+        self.init(frame: frame)
+        self.vc = vc
+    }
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.addSubview(inputField)
+        self.addSubview(comfirm)
+        
+        _ = inputField.sd_layout().leftSpaceToView(self,10)?.rightSpaceToView(self,10)?.topSpaceToView(self,10)?.bottomSpaceToView(comfirm,10)
+        _ = comfirm.sd_layout().leftSpaceToView(self,10)?.rightSpaceToView(self,10)?.heightIs(25)?.bottomSpaceToView(self,20)
+        
+    }
+    
+    
+}
+
+
+class JuBaoViewController: UIViewController {
 
     //  举报那个job
     internal var jobID:String?{
         didSet{
-            self.vm.getJobWarnMessages().asDriver(onErrorJustReturn: []).drive(onNext: { (items) in
-                self.resonse = items
-                
-            }).disposed(by: dispose)
+            if SingletoneClass.shared.jobWarns.isEmpty{
+                // TODO  获取数据
+            }
+            self.resonse = SingletoneClass.shared.jobWarns
         }
     }
     
     // 数据
     private var resonse:[String]?{
         didSet{
-            self.didFinishloadData()
+             self.table.reloadData()
         }
     }
     
     private lazy var table:UITableView = {  [unowned self] in
+        
+        // header
+        let tableheader = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 30))
+        tableheader.backgroundColor = UIColor.clear
+        let label = UILabel.init()
+        label.text =  "请选择原因"
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
+        tableheader.addSubview(label)
+        _ = label.sd_layout().leftSpaceToView(tableheader,10)?.topSpaceToView(tableheader,5)?.autoHeightRatio(0)
+        label.font = UIFont.systemFont(ofSize: 14)
+            
+   
+        
        var table = UITableView.init()
        table.backgroundColor = UIColor.viewBackColor()
        table.delegate = self
        table.dataSource = self
-        table.keyboardDismissMode = UIScrollView.KeyboardDismissMode.onDrag
+       table.keyboardDismissMode = UIScrollView.KeyboardDismissMode.onDrag
        table.tableHeaderView = tableheader
-       table.tableFooterView = bv
+       tableFooter.layoutSubviews()
+       table.tableFooterView = tableFooter
         
        return table
         
     }()
     
-    private lazy var comfirm:UIButton = {  [unowned self] in
-        
-        let btn = UIButton.init(frame: CGRect.zero)
-        btn.backgroundColor = UIColor.blue
-        btn.setTitle("提交", for: .normal)
-        btn.addTarget(self, action: #selector(submit), for: .touchUpInside)
-        return btn
-    
-    }()
-    
-    private lazy var  bv:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: tableFootViewH))
-        v.addSubview(inputField)
-        v.addSubview(comfirm)
-        return v
-    }()
-    
-    // 详细输入textView
-    private lazy var inputField:UITextView = { [unowned self] in
-        let text = UITextView()
-        text.delegate = self
-        
-        text.font = UIFont.systemFont(ofSize: 16)
-        text.keyboardType = UIKeyboardType.default
-        text.inputAccessoryView =  UIToolbar.NumberkeyBoardDone(title: "完成", vc: self, selector: #selector(done(_:)))
-        return text
-    }()
-    
-    private lazy var tableheader:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 30))
-        v.backgroundColor = UIColor.clear
-        let label = UILabel.init()
-        label.text =  "请选择原因"
-        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
-        v.addSubview(label)
-        _ = label.sd_layout().leftSpaceToView(v,10)?.topSpaceToView(v,5)?.autoHeightRatio(0)
-        label.font = UIFont.systemFont(ofSize: 14)
-        return v
-        
-    }()
    
-    private var details:String = ""
+    
+    private lazy var  tableFooter:tableFootView = {
+        let v = tableFootView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: tableFootViewH), vc: self)
+        return v
+    }()
+    
+    private var reason:String = ""
     private var selectIndex:Int = -1
     
-    //rxSwift
-    
-    let dispose = DisposeBag()
-    let vm:RecruitViewModel = RecruitViewModel()
-    
-    
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setViews()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow(_:)), name:
-            UIResponder.keyboardWillShowNotification, object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardHidden(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        self.setViewModel()
         
     }
+    
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        //self.navigationController?.insertCustomerView()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        //self.navigationController?.removeCustomerView()
-    }
-    
-    
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-  
     
     override func viewWillLayoutSubviews() {
-        
+        super.viewWillLayoutSubviews()
         _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
-        _ = inputField.sd_layout().leftSpaceToView(bv,10)?.rightSpaceToView(bv,10)?.topSpaceToView(bv,10)?.bottomSpaceToView(comfirm,10)
-        _ = comfirm.sd_layout().leftSpaceToView(bv,10)?.rightSpaceToView(bv,10)?.heightIs(25)?.bottomSpaceToView(bv,20)
         
     }
     
+    private func setViews() {
     
-    
-    override func setViews() {
-        
-        self.title = "举报界面"
+        self.title = viewTitle
         self.view.addSubview(table)
-        
-        self.hiddenViews.append(table)
-        super.setViews()
-        
     }
     
-    override func didFinishloadData() {
-        super.didFinishloadData()
-        self.table.reloadData()
-
-    }
-
-    
-    override func reload() {
-        super.reload()
-        
-    }
 
 }
 
@@ -164,34 +159,36 @@ class JuBaoViewController: BaseViewController {
 
 extension JuBaoViewController{
     
-    @objc private func done(_ text:UITextView){
-        self.inputField.endEditing(true)
-    }
-    
-    @objc private func keyboardShow(_ notify: Notification){
-        if  let keyboradFram = notify.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as? CGRect{
-            
-            let comfirmToTable = comfirm.convert(comfirm.origin, to: table)
-            let bottonHeight = GlobalConfig.ScreenH - (comfirmToTable.y + comfirm.frame.height)
-            let scrollUpHeight = keyboradFram.height - bottonHeight - GlobalConfig.NavH
-            
-            if scrollUpHeight > 0{
-                UIView.animate(withDuration: 0.3) {
-                    self.table.contentInset = UIEdgeInsets(top: -scrollUpHeight,left: 0, bottom: 0, right: 0)
+    private func setViewModel(){
+    _ = NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification).takeUntil(self.rx.deallocated).subscribe(onNext: { (notify) in
+            if  let keyboradFram = notify.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect{
+                
+                //  table 上移距离计算
+                let comfirmToTable = self.tableFooter.comfirm.convert(self.tableFooter.comfirm.origin, to: self.table)
+                let bottonHeight = GlobalConfig.ScreenH - (comfirmToTable.y + self.tableFooter.comfirm.frame.height)
+                let scrollUpHeight = keyboradFram.height - bottonHeight - GlobalConfig.NavH
+                
+                if scrollUpHeight > 0{
+                    UIView.animate(withDuration: 0.3) {
+                        self.table.contentInset = UIEdgeInsets(top: -scrollUpHeight,left: 0, bottom: 0, right: 0)
+                    }
+                    
                 }
-            
             }
-        }
+        })
         
-        
+        _ = NotificationCenter.default.rx.notification(UIResponder.keyboardWillHideNotification).takeUntil(self.rx.deallocated).subscribe(onNext: { (notify) in
+                UIView.animate(withDuration: 0.3) {
+                    self.table.contentInset = UIEdgeInsets.zero
+                }
+            })
     }
     
-    @objc private func keyboardHidden(_ notify: Notification){
-        UIView.animate(withDuration: 0.3) {
-            self.table.contentInset = UIEdgeInsets.zero
-        }
-        
+    @objc internal func done(_ text:UITextView){
+        self.tableFooter.inputField.endEditing(true)
     }
+    
+
 }
 
 extension JuBaoViewController: UITextViewDelegate{
@@ -202,11 +199,38 @@ extension JuBaoViewController: UITextViewDelegate{
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        details = textView.text
+        reason = textView.text
         
     }
     
-    
+    // 限制字数 TODO
+    func textViewDidChange(_ textView: UITextView) {
+        
+        if textView.text.count > 150 {
+            
+            //获得已输出字数与正输入字母数
+            let selectRange = textView.markedTextRange
+            
+            //获取高亮部分
+            if let selectRange = selectRange {
+                let position =  textView.position(from: (selectRange.start), offset: 0)
+                if (position != nil) {
+                    return
+                }
+            }
+            
+            let textContent = textView.text
+            let textNum = textContent?.count
+            
+            //截取200个字
+            if textNum! > TOTAL_NUM {
+                let index = textContent?.index((textContent?.startIndex)!, offsetBy: TOTAL_NUM)
+                let str = textContent?.substring(to: index!)
+                textView.text = str
+            }
+        }
+        
+    }
 }
 
 extension JuBaoViewController:UITableViewDelegate,UITableViewDataSource{
@@ -246,7 +270,7 @@ extension JuBaoViewController:UITableViewDelegate,UITableViewDataSource{
         v.backgroundColor = UIColor.clear
         
         let label = UILabel.init(frame: CGRect.zero)
-        label.text = "详情描述"
+        label.text = "详情描述(200字以内)"
         label.font = UIFont.systemFont(ofSize: 14)
         label.setSingleLineAutoResizeWithMaxWidth(200)
         v.addSubview(label)
@@ -261,10 +285,12 @@ extension JuBaoViewController:UITableViewDelegate,UITableViewDataSource{
 }
 
 extension JuBaoViewController{
-    @objc func submit(){
-        
-       self.inputField.endEditing(true)
-       print(selectIndex,details)
+    
+    @objc internal func submit(){
+       self.tableFooter.inputField.endEditing(true)
+       print(selectIndex,reason)
+       // 提交到服务器 TODO
+       self.navigationController?.popvc(animated: true)
         
     }
 }

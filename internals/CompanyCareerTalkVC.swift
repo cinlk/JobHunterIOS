@@ -14,9 +14,15 @@ import MJRefresh
 
 class CompanyCareerTalkVC: BaseViewController {
 
-    internal var mode:CompanyModel?
+    internal var mode:CompanyModel?{
+        didSet{
+            guard let m = mode else {
+                return
+            }
+            self.req.companyID = m.id ?? ""
+        }
+    }
     
-    private var datas:[CareerTalkMeetingListModel] = []
     
     // deleagte
     weak var delegate:CompanySubTableScrollDelegate?
@@ -35,38 +41,41 @@ class CompanyCareerTalkVC: BaseViewController {
     }()
 
     
-    private var headRefreshed:Bool = false{
-        didSet{
-            self.table.mj_header.isHidden = headRefreshed
-        }
-    }
+    private var headRefreshed:Bool = false
     
     //refresh table
-    private lazy var  headRefresh:MJRefreshNormalHeader = { [unowned self] in
+    private lazy var  headRefresh:MJRefreshNormalHeader = { [weak self] in
         
         let h = MJRefreshNormalHeader.init {
-            self.vm.companyRecruitMeetingRefesh.onNext((true,(self.mode?.id)!))
+            guard let s = self  else {
+                return
+            }
+            s.req.setOffset(offset: 0)
+            s.vm.companyRecruitMeetingRefesh.onNext(s.req)
         }
-        
+      
         h?.lastUpdatedTimeLabel.isHidden = true
+        h?.stateLabel.isHidden = true 
         return h!
     }()
     
-    private lazy var  footRefresh:MJRefreshAutoNormalFooter = {
+    private lazy var  footRefresh:MJRefreshAutoNormalFooter = { [weak self] in
         let f = MJRefreshAutoNormalFooter.init {
-    
-            self.vm.companyRecruitMeetingRefesh.onNext((false,(self.mode?.id)!))
+            guard let s = self else {
+                return
+            }
+            s.req.setOffset(offset: s.req.offset + s.req.limit)
+            s.vm.companyRecruitMeetingRefesh.onNext(s.req)
         }
-        
-        f?.setTitle("上拉刷新", for: .idle)
-        f?.setTitle("刷新中...", for: .refreshing)
-        f?.setTitle("没有数据", for: .noMoreData)
+        f?.isRefreshingTitleHidden = true
+        f?.stateLabel.isHidden = true
         return f!
     }()
     
     //rxSwift
-    let dispose = DisposeBag()
-    let vm:RecruitViewModel = RecruitViewModel()
+    private let dispose = DisposeBag()
+    private let vm:RecruitViewModel = RecruitViewModel()
+    private var req:CompanyRecruitMeetingFilterModel = CompanyRecruitMeetingFilterModel(JSON: [:])!
     
     
     
@@ -79,8 +88,10 @@ class CompanyCareerTalkVC: BaseViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if self.headRefreshed == false && self.datas.isEmpty{
+        
+        if self.headRefreshed == false{
             self.table.mj_header.beginRefreshing()
+            self.headRefreshed = true
         }
     }
     
@@ -105,6 +116,8 @@ class CompanyCareerTalkVC: BaseViewController {
     }
     override func reload() {
         super.reload()
+        self.req.setOffset(offset: 0)
+        self.vm.companyRecruitMeetingRefesh.onNext(self.req)
     }
 }
 
@@ -112,30 +125,30 @@ extension CompanyCareerTalkVC {
     
     private func setViewModel(){
         
+        self.errorView.tap.asDriver().drive(onNext: { _ in
+            self.reload()
+        }).disposed(by: self.dispose)
         //
-        self.vm.recruitMeetingRes.asDriver(onErrorJustReturn: []).drive(onNext: { (meetings) in
-            self.datas = meetings
-        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
         
-        self.vm.recruitMeetingRes.share().catchErrorJustReturn([]).bind(to: self.table.rx.items(cellIdentifier: CareerTalkCell.identity(), cellType: CareerTalkCell.self)){ (row, mode, cell) in
+        self.vm.companyRecruitMeetingRes.asDriver(onErrorJustReturn: []).drive(self.table.rx.items(cellIdentifier: CareerTalkCell.identity(), cellType: CareerTalkCell.self)){ (row, mode, cell) in
+            mode.companyName = self.mode?.name
             cell.mode = mode
             
-        }.disposed(by: dispose)
+        }.disposed(by: self.dispose)
         
         
-        self.vm.recruitMeetingRefreshStatus.share().subscribe(onNext: { (status) in
+        
+        self.vm.companyRecruitMeetingRefeshStatus.share().subscribe(onNext: { (status) in
             switch status{
             case .endHeaderRefresh:
                 self.table.mj_header.endRefreshing()
                 self.table.mj_footer.resetNoMoreData()
-                self.headRefreshed = true
                 self.didFinishloadData()
             case .endFooterRefresh:
                 self.table.mj_footer.endRefreshing()
             case .NoMoreData:
                 self.table.mj_footer.endRefreshingWithNoMoreData()
             case .error(let err):
-                self.headRefreshed = false
                 self.view.showToast(title: "err \(err)", customImage: nil, mode: .text)
                 //showOnlyTextHub(message: "err \(err)", view: self.view)
                 self.showError()
@@ -150,10 +163,10 @@ extension CompanyCareerTalkVC {
         //table
         self.table.rx.itemSelected.subscribe(onNext: { (idx) in
             self.table.deselectRow(at: idx, animated: false)
-            let mode = self.datas[idx.row]
+            let mode = self.vm.companyRecruitMeetingRes.value[idx.row]
             let show = CareerTalkShowViewController()
             show.hidesBottomBarWhenPushed = true
-            show.meetingID = mode.meetingID
+            show.meetingID = mode.meetingID ?? ""
             self.navigationController?.pushViewController(show, animated: true)
         }).disposed(by: dispose)
         
@@ -163,7 +176,7 @@ extension CompanyCareerTalkVC {
 extension CompanyCareerTalkVC: UITableViewDelegate{
    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let mode = self.datas[indexPath.row]
+        let mode = self.vm.companyRecruitMeetingRes.value[indexPath.row]
         return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CareerTalkCell.self, contentViewWidth: GlobalConfig.ScreenW)
     }
     
@@ -183,11 +196,7 @@ extension CompanyCareerTalkVC{
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
         let offsetY = scrollView.contentOffset.y
-        if offsetY > 0{
-            delegate?.scrollUp(view: self.table, height: offsetY)
-        }else{
-            delegate?.scrollUp(view: self.table, height: 0)
-        }
+        offsetY > 0 ? delegate?.scrollUp(view: self.table, height: offsetY) : delegate?.scrollUp(view: self.table, height: 0)
     }
 }
 

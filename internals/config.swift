@@ -186,7 +186,9 @@ struct GlobalConfig {
     static let searchTopWord:String = "搜索记录"
     static let locale = Locale(identifier: "zh_CN")
     static let JobHomePageTitles:[String] = ["网申","校招","宣讲会","公司","实习"]
-    static let dropMenuViewHeight:CGFloat = 40 
+    static let dropMenuViewHeight:CGFloat = 40
+    static let toolBarH:CGFloat = 44
+    
     
     struct DropMenuTitle {
         static let city = "城市"
@@ -198,6 +200,11 @@ struct GlobalConfig {
         static let college = "大学"
         static let degree = "学历"
         
+    }
+    
+    struct StoryBordVCName {
+        static let Main = "Main"
+        static let LoginVC = "login"
     }
 }
 
@@ -218,6 +225,7 @@ struct HttpCodeRange {
 
 struct  NotificationName {
     static let searchType:Notification.Name =  Notification.Name.init("searchType")
+    static let jobTag: Notification.Name = Notification.Name.init("jobTag")
 }
 
 struct TabBarItems {

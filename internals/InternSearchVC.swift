@@ -172,11 +172,14 @@ extension InternSearchVC{
             
         }).disposed(by: self.dispose)
         
-//        searchResult.share().map { jobs in
-//            jobs.isEmpty
-//        }.bind(to: self.dropMenu.rx.isHidden).disposed(by: dispose)
-//
-        
+        self.table.rx.itemSelected.subscribe(onNext: { (indexPath) in
+            let mode = self.filterModes[indexPath.row]
+            let vc = JobDetailViewController()
+            vc.job = (mode.jobId!, .intern)
+            vc.hidesBottomBarWhenPushed = true
+        self.presentingViewController?.navigationController?.pushViewController(vc, animated: true)
+            
+        }).disposed(by: self.dispose)
         
     
        

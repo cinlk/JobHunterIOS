@@ -23,8 +23,8 @@ class aboutUS: BaseViewController {
     private var mode:AboutUsModel?
     
     // header
-    private lazy var header:personTableHeader = {
-        let v = personTableHeader.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: headerViewH))
+    private lazy var header:PersonTableHeader = {
+        let v = PersonTableHeader.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: headerViewH))
         v.isHR = false
         return v
     }()
@@ -91,7 +91,7 @@ class aboutUS: BaseViewController {
     override func  didFinishloadData() {
         super.didFinishloadData()
         
-        self.header.mode = (image: mode?.appIcon ?? "default", name:mode?.appName ?? "" , introduce: mode?.appDes ?? "")
+        //self.header.mode = (image: mode?.appIcon ?? "default", name:mode?.appName ?? "" , introduce: mode?.appDes ?? "")
         self.header.backgroundColor = UIColor.viewBackColor()
         
         self.footer.mode =  (company:mode!.company ?? "",version: mode!.version ?? "", copyRight:mode!.copyRight ?? "")

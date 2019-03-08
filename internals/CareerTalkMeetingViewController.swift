@@ -224,7 +224,7 @@ extension CareerTalkMeetingViewController{
             let show = CareerTalkShowViewController()
             show.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(show, animated: true)
-            show.meetingID = mode.meetingID
+            show.meetingID = mode.meetingID ?? ""
             
             
         }).disposed(by: dispose)

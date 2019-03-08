@@ -60,7 +60,7 @@ class BaseViewController: UIViewController {
     //获取数据后正常显示
    internal func didFinishloadData(){
         
-         
+        self.navigationController?.navigationBar.settranslucent(true)
         hub.hide(animated: true)
         self.hiddenViews.forEach{
             $0.isHidden = false
@@ -89,7 +89,7 @@ class BaseViewController: UIViewController {
     
     // 跳转到登录界面  TODO
     internal func login(){
-        
+        fatalError("not implement")
     }
     
 }

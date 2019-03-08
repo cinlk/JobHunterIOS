@@ -161,7 +161,13 @@ extension CampusSearchVC{
             
         }).disposed(by: self.dispose)
         
-        
+        self.table.rx.itemSelected.subscribe(onNext: { (indexPath) in
+            let mode = self.filterModes[indexPath.row]
+            let vc = JobDetailViewController()
+            vc.job = (mode.jobId!, .graduate)
+            vc.hidesBottomBarWhenPushed = true
+         self.presentingViewController?.navigationController?.pushViewController(vc, animated: true)
+        }).disposed(by: self.dispose)
     }
     
     

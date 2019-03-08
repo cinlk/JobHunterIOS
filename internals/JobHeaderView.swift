@@ -9,7 +9,6 @@
 import UIKit
 
 fileprivate let labelMaxWidth:CGFloat = 200
-fileprivate let imgSize:CGSize = CGSize.init(width: 15, height: 15)
 fileprivate let leftWidth:CGFloat = 30
 fileprivate let topHeight:CGFloat = 10
 fileprivate let internalLeft:CGFloat = 2
@@ -79,7 +78,7 @@ class JobDetailHeader:UIView {
         return label
     }()
     
-    private lazy var perDay:UILabel = {
+    private lazy var payDay:UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 13)
         label.setSingleLineAutoResizeWithMaxWidth(labelMaxWidth)
@@ -150,7 +149,7 @@ class JobDetailHeader:UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = UIColor.white
-        internViews = [month, perDay,monthIcon, dayIcon]
+        internViews = [month, payDay,monthIcon, dayIcon]
         
         
         let views:[UIView] = [jobName,address,type,education,des, typeIcon,locateIcon,degreeIcon,yuanIcon,salary]
@@ -199,7 +198,7 @@ class JobDetailHeader:UIView {
             internViews.forEach{
                 $0.isHidden = true
             }
-            self.type.text = "校招"
+            self.type.text = kind.describe
         
             _ = yuanIcon.sd_layout().topEqualToView(type)?.leftSpaceToView(type,leftWidth)?.widthRatioToView(degreeIcon,1)?.heightRatioToView(degreeIcon,1)
             
@@ -213,7 +212,7 @@ class JobDetailHeader:UIView {
             address.setMaxNumberOfLinesToShow(2)
 
             _ = des.sd_layout().topSpaceToView(address,topHeight)?.leftEqualToView(jobName)?.autoHeightRatio(0)
-
+            des.setMaxNumberOfLinesToShow(3)
             self.setupAutoHeight(withBottomViewsArray: [des,address], bottomMargin: 5)
             
         // 实习
@@ -225,8 +224,8 @@ class JobDetailHeader:UIView {
             typeIcon.isHidden = true
             type.isHidden = true
             
-            self.month.text = item.months
-            self.perDay.text = item.perDay
+            self.month.text = "\(item.months)"
+            self.payDay.text = "\(item.payDay)"
             
             _ = yuanIcon.sd_layout().topEqualToView(education)?.leftSpaceToView(education,leftWidth)?.widthRatioToView(degreeIcon,1)?.heightRatioToView(degreeIcon,1)
             
@@ -237,19 +236,20 @@ class JobDetailHeader:UIView {
             
             _ = dayIcon.sd_layout().leftEqualToView(degreeIcon)?.topSpaceToView(degreeIcon,topHeight)?.widthRatioToView(degreeIcon,1)?.heightRatioToView(degreeIcon,1)
             
-            _ = perDay.sd_layout().leftSpaceToView(dayIcon,internalLeft)?.topEqualToView(dayIcon)?.autoHeightRatio(0)
+            _ = payDay.sd_layout().leftSpaceToView(dayIcon,internalLeft)?.topEqualToView(dayIcon)?.autoHeightRatio(0)
             
             
             
-            _ = locateIcon.sd_layout().leftEqualToView(yuanIcon)?.topEqualToView(perDay)?.widthRatioToView(degreeIcon,1)?.heightRatioToView(degreeIcon,1)
+            _ = locateIcon.sd_layout().leftEqualToView(yuanIcon)?.topEqualToView(payDay)?.widthRatioToView(degreeIcon,1)?.heightRatioToView(degreeIcon,1)
             
             _ = address.sd_layout().leftSpaceToView(locateIcon,internalLeft)?.topEqualToView(locateIcon)?.autoHeightRatio(0)
             
             
             address.setMaxNumberOfLinesToShow(1)
 
-            _ = des.sd_layout().topSpaceToView(perDay,topHeight)?.leftEqualToView(jobName)?.autoHeightRatio(0)
-            self.setupAutoHeight(withBottomViewsArray: [des,address,perDay], bottomMargin: 5)
+            _ = des.sd_layout().topSpaceToView(payDay,topHeight)?.leftEqualToView(jobName)?.autoHeightRatio(0)
+            des.setMaxNumberOfLinesToShow(3)
+            self.setupAutoHeight(withBottomViewsArray: [des,address,payDay], bottomMargin: 5)
 
             
         }

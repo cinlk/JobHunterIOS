@@ -8,7 +8,7 @@
 
 import UIKit
 import ObjectMapper
-
+import Kingfisher
 
 fileprivate let notifiyName:String = "jobCollectedVC"
 
@@ -113,7 +113,7 @@ extension jobCollectedVC: UITableViewDelegate, UITableViewDataSource{
         let mode = datas[indexPath.row]
         
         let JobDetail =  JobDetailViewController()
-        JobDetail.uuid = mode.id!
+        JobDetail.job = (mode.id!, mode.kind ?? .none)
         //JobDetail.kind = (id:  mode.id!, type: mode.kind!)
         self.navigationController?.pushViewController(JobDetail, animated: true)
         
@@ -255,7 +255,9 @@ extension jobCollectedVC{
             guard  let mode = mode  else {
                 return
             }
-            self.icon.image = UIImage.init(named: mode.icon)
+            if let url = mode.iconURL{
+                self.icon.kf.setImage(with: Source.network(url), placeholder: UIImage.init(named: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            }
             self.companyName.text = mode.company?.name
             self.position.text = mode.name
             self.address.text = mode.addressStr

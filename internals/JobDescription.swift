@@ -18,13 +18,15 @@ import UIKit
         label.textAlignment = .left
         label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         label.font = UIFont.boldSystemFont(ofSize: 20)
+        label.text = "职位描述"
         return label
     }()
     private lazy var works: UILabel = {
         let label = UILabel.init()
         label.textAlignment = .left
         label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
-         label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.text = "工作职责"
         return label
         
     }()
@@ -41,6 +43,7 @@ import UIKit
         label.textAlignment = .left
         label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.text = "任职资格"
         return label
         
     }()
@@ -62,11 +65,10 @@ import UIKit
     
     dynamic var mode:CompuseRecruiteJobs?{
         didSet{
-            topdescription.text = "职位描述"
-            works.text = "工作职责"
-            workcontent.text = mode?.works
-            demand.text = "任职资格"
-            demandInfo.text = mode?.requirement
+           
+            
+            workcontent.text = mode?.WorkContent
+            demandInfo.text = mode?.needSkills
             self.setupAutoHeight(withBottomView: demandInfo, bottomMargin: 10)
             
         }

@@ -14,7 +14,8 @@ import Kingfisher
     
     private lazy var icon:UIImageView = {
         let img = UIImageView.init(frame: CGRect.zero)
-        img.contentMode = .scaleAspectFill
+        img.contentMode = .scaleAspectFit
+        img.clipsToBounds = true
         return img
     }()
     
@@ -37,21 +38,26 @@ import Kingfisher
     }()
     
     
-    dynamic var mode:CompanyModel?{
+    dynamic var mode:SimpleCompanyModel?{
         didSet{
             guard let mode = mode else {
                 return
             }
-            let url = URL.init(string: mode.icon)
-            icon.kf.setImage(with: Source.network(url!), placeholder: UIImage.init(named: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            
+            if let url = mode.iconURL{
+                icon.kf.setImage(with: Source.network(url), placeholder: UIImage.init(named: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            }
+            
             
             name.text = mode.name
-            let address = "地址:" +  (mode.address?.joined(separator: " ")  ?? "")
-            let industry = "行业:" + (mode.industry?.joined(separator: " ") ?? "")
-            let staff  = "\n人员数:\(mode.staffs)"
+            let address = "地址:" +  (mode.citys?.joined(separator: " ")  ?? "")
+            let industry = "行业:" + (mode.businessField?.joined(separator: " ") ?? "")
+            let staff  = "\n人员数:\(mode.staff ?? "")"
             let res = [address, industry, staff]
-            detail.attributedText =   NSAttributedString.init(string: res.joined(separator: " "))
-            
+           
+            let para = NSMutableParagraphStyle.init()
+            para.lineSpacing = 5
+            detail.attributedText = NSAttributedString.init(string: res.joined(separator: " "), attributes: [NSAttributedString.Key.paragraphStyle:para])
             self.setupAutoHeight(withBottomViewsArray: [icon, detail], bottomMargin: 5)
             
         }
@@ -64,7 +70,7 @@ import Kingfisher
         self.selectionStyle = .none
         self.contentView.sd_addSubviews(views)
         
-        _ = icon.sd_layout().leftSpaceToView(self.contentView,5)?.topSpaceToView(self.contentView,5)?.widthIs(45)?.heightIs(45)
+        _ = icon.sd_layout().leftSpaceToView(self.contentView,5)?.topSpaceToView(self.contentView,5)?.widthIs(60)?.heightIs(50)
         _ = name.sd_layout().leftSpaceToView(icon,10)?.topEqualToView(icon)?.autoHeightRatio(0)
         _ = detail.sd_layout().leftEqualToView(name)?.topSpaceToView(name,2.5)?.autoHeightRatio(0)
         

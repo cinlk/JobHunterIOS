@@ -9,16 +9,150 @@
 import UIKit
 import RxCocoa
 import RxSwift
+import RxDataSources
 import Kingfisher
 
 fileprivate let cellIdentity:String = "cell"
+fileprivate let vcTitle:String = "公司详情"
+fileprivate var headerThreld:CGFloat = 0
 fileprivate let shareViewH = SingletoneClass.shared.shareViewH
+
+
+
+
+private class contentCollection:UICollectionView, UICollectionViewDelegate {
+    
+    private lazy var dispose:DisposeBag = DisposeBag.init()
+    
+    private var vcs:BehaviorRelay<[UIViewController]> = BehaviorRelay<[UIViewController]>.init(value: [])
+    private weak var vc:CompanyMainVC?
+    private var startScrollerOffsetX:CGFloat = 0
+    
+    convenience  init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout,  vcs: [UIViewController], vc:CompanyMainVC) {
+        self.init(frame: frame, collectionViewLayout: layout)
+        self.vcs.accept(vcs)
+        self.vc = vc
+        
+    }
+    
+    override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
+        super.init(frame: frame, collectionViewLayout: layout)
+  
+        self.rx.setDelegate(self).disposed(by: self.dispose)
+        //coll.dataSource = self
+        self.bounces = false
+        self.scrollsToTop = false
+        self.isPagingEnabled = true
+        self.backgroundColor = UIColor.viewBackColor()
+        //coll.autoresizingMask  = [.flexibleWidth,.flexibleHeight]
+        self.showsVerticalScrollIndicator = false
+        self.showsHorizontalScrollIndicator = false
+        self.register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellIdentity)
+        
+        setViewModel()
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    
+    private func setViewModel(){
+        self.vcs.bind(to: self.rx.items(cellIdentifier: cellIdentity, cellType: UICollectionViewCell.self)){
+            index, model, cell in
+            
+            model.view.frame = cell.contentView.bounds
+            cell.contentView.addSubview(model.view)
+            
+        }.disposed(by: self.dispose)
+        
+        self.rx.itemSelected.subscribe(onNext: { indexPath in
+            self.deselectItem(at: indexPath, animated: true)
+        }).disposed(by: self.dispose)
+        
+        self.rx.didScroll.subscribe(onNext: { _ in
+            if self.vc?.isClick ?? true  {
+                return
+            }
+            
+            
+            let currentOffsetX = self.contentOffset.x
+            var progress:CGFloat = 0
+            var sourceIndex =  0
+            var targetIndex = 0
+            
+            let sWidth = self.frame.width
+            
+            if currentOffsetX > self.startScrollerOffsetX{
+                progress = currentOffsetX / sWidth  - floor( currentOffsetX / sWidth)
+                sourceIndex = Int(currentOffsetX / sWidth )
+                targetIndex = sourceIndex + 1 >=  self.vcs.value.count ? self.vcs.value.count - 1 : sourceIndex + 1
+                
+                if currentOffsetX - self.startScrollerOffsetX == sWidth{
+                    progress = 1
+                    targetIndex = sourceIndex
+                }
+                
+                
+            }else{
+                progress = 1 - (currentOffsetX / sWidth - floor(currentOffsetX / sWidth))
+                targetIndex = Int(currentOffsetX / sWidth)
+                sourceIndex = targetIndex + 1 >= self.vcs.value.count ? self.vcs.value.count - 1 : targetIndex  + 1
+                
+            }
+            
+            self.vc?.changeTitle(progress, sourceIndex: sourceIndex, targetIndex: targetIndex)
+            
+            
+            
+        }).disposed(by: self.dispose)
+        
+        
+        self.rx.willBeginDragging.subscribe(onNext: { _ in
+            self.vc?.isClick = false
+            self.startScrollerOffsetX = self.contentOffset.x
+            self.vc?.syncOffset()
+        }).disposed(by: self.dispose)
+    }
+    
+    
+}
+
+
+
+private class collectingBtn:UIButton {
+    
+    
+    private lazy var collectImg:UIImage = {
+       return UIImage.init(named: "heart")!.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate)
+    }()
+    
+    private lazy var selectedCollectImg:UIImage = {
+       return  UIImage.init(named: "selectedHeart")!.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate)
+    }()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        self.setImage(collectImg, for: .normal)
+        self.setImage(selectedCollectImg, for: .selected)
+        self.clipsToBounds = true
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+
 
 class CompanyMainVC: BaseViewController {
     
     // 共同的headview高度
     static var headerViewH:CGFloat = 0
-    static var headerThreld:CGFloat = 0
     
     // 从job 页面跳转过来
     internal var companyID:String?{
@@ -34,46 +168,23 @@ class CompanyMainVC: BaseViewController {
     }
     
     
-    private lazy var collectedBtn:UIButton = {
+    private lazy var collectedBtn:collectingBtn = {
         // 收藏
-
-        let collected = UIImage.init(named: "heart")!.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate)
-        
-        let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
+        let btn = collectingBtn.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
         btn.addTarget(self, action: #selector(collectedCompany(btn:)), for: .touchUpInside)
-        btn.setImage(collected, for: .normal)
-        
-        let selectedCollection =  UIImage.init(named: "selectedHeart")!.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate)
-        
-        btn.setImage(selectedCollection, for: .selected)
-        btn.clipsToBounds = true
-        
         return btn
     }()
     
-    private lazy var flowLayout:UICollectionViewFlowLayout = { [unowned self] in
+   
+    private lazy var collectionView:contentCollection = {  [unowned self] in
+        
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 0
         layout.minimumInteritemSpacing = 0
         // 与顶部留出间隔
         layout.itemSize = CGSize.init(width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH -  GlobalConfig.NavH)
         layout.scrollDirection = .horizontal
-        return layout
-    }()
-    
-    private lazy var collectionView:UICollectionView = {  [unowned self] in
-        let coll = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: self.flowLayout)
-        coll.delegate = self
-        coll.dataSource = self
-        coll.bounces = false
-        coll.scrollsToTop = false
-        coll.isPagingEnabled = true
-        coll.backgroundColor = UIColor.viewBackColor()
-        //coll.autoresizingMask  = [.flexibleWidth,.flexibleHeight]
-        coll.showsVerticalScrollIndicator = false
-        coll.showsHorizontalScrollIndicator = false
-        coll.register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellIdentity)
-       
+        let coll = contentCollection.init(frame: CGRect.zero, collectionViewLayout: layout, vcs: self.subVC, vc: self)
         return coll
     }()
     
@@ -87,28 +198,40 @@ class CompanyMainVC: BaseViewController {
     
     
     
-    private lazy var headerView:CompanyHeaderView = {
-        let header = CompanyHeaderView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: 0))
+    private lazy var headerView:companyHeaderView = {
+        let header = companyHeaderView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: 0))
         header.backgroundColor = UIColor.white
         header.delegate = self
         return header
     
     }()
     
-    
-    private var isClick:Bool = false
+    // 记录点击
+    internal var isClick:Bool = false
     
     private var subVC:[UIViewController] = []
-    private lazy var companyDetail:CompanyDetailVC = CompanyDetailVC()
-    private lazy var companyJobs:CompanyJobsVC = CompanyJobsVC()
-    private lazy var companyCarrerTalk:CompanyCareerTalkVC = CompanyCareerTalkVC()
+    private lazy var companyDetail:CompanyDetailVC = {
+       let c = CompanyDetailVC()
+       self.subVC.append(c)
+       c.delegate = self
+       return c
+    }()
     
+    private lazy var companyJobs:CompanyJobsVC = {
+       let c = CompanyJobsVC()
+       self.subVC.append(c)
+       c.delegate = self
+       return c
+    }()
+    private lazy var companyCarrerTalk:CompanyCareerTalkVC = {
+       let c = CompanyCareerTalkVC()
+       self.subVC.append(c)
+       c.delegate = self
+       return c
+    }()
     
-    private var barItems:[UIButton] = []
+   
     
-    //
-    // scorllerStartX
-    private var startScrollerOffsetX:CGFloat = 0
     
     
     //rxSwift
@@ -122,8 +245,6 @@ class CompanyMainVC: BaseViewController {
         self.setViews()
         setViewModel()
         
-        
-        // Do any additional setup after loading the view.
     }
     
     
@@ -147,35 +268,20 @@ class CompanyMainVC: BaseViewController {
     
     override func setViews() {
         
-        self.title = "公司详情"
+        self.addSharedBarItem()
+        self.title = vcTitle
         self.view.backgroundColor = UIColor.viewBackColor()
+        
         self.addChild(companyDetail)
         self.addChild(companyJobs)
         self.addChild(companyCarrerTalk)
         
-        subVC.append(companyDetail)
-        subVC.append(companyJobs)
-        subVC.append(companyCarrerTalk)
         
         // 顺序
         self.view.addSubview(collectionView)
         self.view.addSubview(headerView)
-        
-        self.addSharedBarItem()
-        
-        companyDetail.delegate = self
-        companyJobs.delegate = self
-        companyCarrerTalk.delegate = self
-        
-        _ = collectionView.sd_layout().topSpaceToView(self.view,GlobalConfig.NavH)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
-       
-        
         self.hiddenViews.append(collectionView)
         self.hiddenViews.append(headerView)
-        
-        barItems.forEach{
-            self.hiddenViews.append($0)
-        }
         
         
         super.setViews()
@@ -184,13 +290,13 @@ class CompanyMainVC: BaseViewController {
     override func didFinishloadData() {
         
         self.headerView.mode = mode
-        
         headerView.layoutSubviews()
         CompanyMainVC.headerViewH = headerView.frame.height
  
         
-        //  30 是计算的固定值： label 的高度和line之间的高度
-        CompanyMainVC.headerThreld = CompanyMainVC.headerViewH - 30
+        //  line 到
+       
+        headerThreld = CompanyMainVC.headerViewH - self.headerView.getLineToBottonDistance()
         // 调整子vc 的tableheader高度
         companyJobs.joblistTable.tableHeaderView?.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height:  CompanyMainVC.headerViewH)
         companyDetail.detailTable.tableHeaderView?.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH)
@@ -205,7 +311,7 @@ class CompanyMainVC: BaseViewController {
         self.companyCarrerTalk.mode = mode 
         // 收藏数据从服务器获取??
         
-        collectedBtn.isSelected =  (mode?.isCollected)!
+        collectedBtn.isSelected =  mode?.isCollected ?? false 
      
        
         super.didFinishloadData()
@@ -214,9 +320,23 @@ class CompanyMainVC: BaseViewController {
 
     override func reload() {
         super.reload()
+        self.query.onNext(self.companyID!)
+    }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
         
+        _ = collectionView.sd_layout().topSpaceToView(self.view,GlobalConfig.NavH)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.bottomEqualToView(self.view)
         
     }
+    
+    @objc override internal  func login(){
+        //print("login")
+        let loginvc = UIStoryboard.init(name: GlobalConfig.StoryBordVCName.Main, bundle: nil).instantiateViewController(withIdentifier: GlobalConfig.StoryBordVCName.LoginVC) as! UserLogginViewController
+        loginvc.navBack = true
+        self.present(loginvc, animated: true, completion: nil)
+    }
+    
 }
 
 
@@ -227,15 +347,20 @@ extension CompanyMainVC{
     
     private func setViewModel(){
         
-        query.asDriver(onErrorJustReturn: "").drive(onNext: { (id) in
-            self.vm.getCompanyById(id: id).share().subscribe(onNext: { (mode) in
-                self.mode = mode
-            }, onError: { (err) in
-                self.showError()
-                print("query company error \(err)")
-            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
-            
-        }).disposed(by: dispose)
+        self.errorView.tap.asDriver().drive(onNext: { _ in
+            self.reload()
+        }).disposed(by: self.dispose)
+        query.flatMapLatest { id  in
+            self.vm.getCompanyById(id: id).asDriver(onErrorJustReturn: ResponseModel<CompanyModel>(JSON: [:])! )
+            }.share().subscribe(onNext: { (res) in
+                guard HttpCodeRange.filterSuccessResponse(target: res.code ?? -1), let body = res.body else {
+                    self.showError()
+                    return
+                }
+                self.mode = body
+                
+            }).disposed(by: self.dispose)
+
     }
 }
 
@@ -247,8 +372,6 @@ extension CompanyMainVC{
     private func addSharedBarItem(){
         
         // 分享
-  
-        
         let up =  UIImage.init(named: "upload")!.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate)
         
         let shareBtn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
@@ -256,12 +379,7 @@ extension CompanyMainVC{
         shareBtn.addTarget(self, action: #selector(share), for: .touchUpInside)
         shareBtn.setImage(up, for: .normal)
         shareBtn.clipsToBounds = true
-        
- 
         self.navigationItem.setRightBarButtonItems([UIBarButtonItem.init(customView: shareBtn), UIBarButtonItem.init(customView: collectedBtn)], animated: false)
-        
-        barItems.append(shareBtn)
-        barItems.append(collectedBtn)
         
         
     }
@@ -270,8 +388,25 @@ extension CompanyMainVC{
         shareapps.showShare()
     }
 
+    private func verifyLogin() -> Bool{
+        if !GlobalUserInfo.shared.isLogin {
+            
+            self.view.presentAlert(type: UIAlertController.Style.alert, title: "请先登录", message: nil, items: [actionEntity.init(title: "确定", selector: #selector(login), args: nil)], target: self) { (ac) in
+                self.present(ac, animated: true, completion: nil)
+            }
+            // 跳转到登录界面
+            return false
+        }
+        return true
+    }
     
-    @objc func collectedCompany(btn:UIButton){
+  
+    
+    @objc private func collectedCompany(btn:UIButton){
+        // 判断用户登录
+        if !verifyLogin(){
+            return
+        }
         
         // MARK 修改公司状态 已经为收藏
         let str =  (mode?.isCollected)! ? "取消收藏" : "收藏成功"
@@ -283,7 +418,7 @@ extension CompanyMainVC{
 }
 
 
-extension CompanyMainVC: CompanyHeaderViewDelegate{
+extension CompanyMainVC: companyHeaderViewDelegate{
     
     func scrollContentAtIndex(index: Int) {
         isClick = true
@@ -334,70 +469,19 @@ extension CompanyMainVC: shareViewDelegate{
 
 extension CompanyMainVC{
   
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if isClick  {
-            return
-        }
-        
-        
-        if scrollView == collectionView{
-            
-            let currentOffsetX = scrollView.contentOffset.x
-            var progress:CGFloat = 0
-            var sourceIndex =  0
-            var targetIndex = 0
-            
-            let sWidth = scrollView.frame.width
-            
-            if currentOffsetX > startScrollerOffsetX{
-                progress = currentOffsetX / sWidth  - floor( currentOffsetX / sWidth)
-                sourceIndex = Int(currentOffsetX / sWidth )
-                targetIndex = sourceIndex + 1 >=  subVC.count ? subVC.count - 1 : sourceIndex + 1
-                
-                if currentOffsetX - startScrollerOffsetX == sWidth{
-                    progress = 1
-                    targetIndex = sourceIndex
-                }
-                
-                
-            }else{
-                progress = 1 - (currentOffsetX / sWidth - floor(currentOffsetX / sWidth))
-                targetIndex = Int(currentOffsetX / sWidth)
-                sourceIndex = targetIndex + 1 >= subVC.count ? subVC.count - 1 : targetIndex  + 1
-                
-            }
-            
-            self.changeTitle(progress, sourceIndex: sourceIndex, targetIndex: targetIndex)
-            
-        }
-        
-    }
-    
-    // 左右切换
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        isClick = false
-        
-        if scrollView == collectionView{
-            startScrollerOffsetX = scrollView.contentOffset.x
-            syncOffset()
-        }
-    }
-    
-    
-    
     //tableview 最大偏移判断
-    private func syncOffset(){
+    internal func syncOffset(){
         let maxoffset = max(companyDetail.detailTable.contentOffset.y, companyJobs.joblistTable.contentOffset.y, companyCarrerTalk.table.contentOffset.y)
-        if maxoffset >= CompanyMainVC.headerThreld{
-            if companyDetail.detailTable.contentOffset.y < CompanyMainVC.headerThreld{
-                companyDetail.detailTable.contentOffset = CGPoint.init(x: 0, y: CompanyMainVC.headerThreld)
+        if maxoffset >= headerThreld{
+            if companyDetail.detailTable.contentOffset.y < headerThreld{
+                companyDetail.detailTable.contentOffset = CGPoint.init(x: 0, y: headerThreld)
             }
-            if companyJobs.joblistTable.contentOffset.y < CompanyMainVC.headerThreld{
-                companyJobs.joblistTable.contentOffset = CGPoint.init(x: 0, y: CompanyMainVC.headerThreld)
+            if companyJobs.joblistTable.contentOffset.y < headerThreld{
+                companyJobs.joblistTable.contentOffset = CGPoint.init(x: 0, y: headerThreld)
 
             }
-            if companyCarrerTalk.table.contentOffset.y < CompanyMainVC.headerThreld{
-                companyCarrerTalk.table.contentOffset = CGPoint.init(x: 0, y: CompanyMainVC.headerThreld)
+            if companyCarrerTalk.table.contentOffset.y < headerThreld{
+                companyCarrerTalk.table.contentOffset = CGPoint.init(x: 0, y: headerThreld)
             }
         }
     }
@@ -409,18 +493,18 @@ extension CompanyMainVC: CompanySubTableScrollDelegate{
     func scrollUp(view:UITableView,height:CGFloat){
         
         
-        if height >= CompanyMainVC.headerThreld{
+        if height >= headerThreld{
             // 改变头部视图
-            self.headerView.frame = CGRect.init(x: 0, y: GlobalConfig.NavH - CompanyMainVC.headerThreld, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH)
+            self.headerView.frame = CGRect.init(x: 0, y: GlobalConfig.NavH - headerThreld, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH)
             self.navigationItem.title = mode?.name
             return
             
-        }else if height > 0 && height < CompanyMainVC.headerThreld{
+        }else if height > 0 && height < headerThreld{
             self.headerView.frame = CGRect.init(x: 0, y: GlobalConfig.NavH - height, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH)
             
         }else{
             self.headerView.frame = CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH)
-            self.navigationItem.title = "公司详情"
+            self.navigationItem.title = vcTitle
             
         }
         
@@ -434,52 +518,26 @@ extension CompanyMainVC: CompanySubTableScrollDelegate{
     }
 }
 
-extension CompanyMainVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return subVC.count
-    }
-    
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        collectionView.deselectItem(at: indexPath, animated: false)
-        return
-    }
-    
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentity, for: indexPath)
-        let vc = subVC[indexPath.row]
-        vc.view.frame = cell.contentView.bounds
-        cell.contentView.addSubview(vc.view)
-        return cell
-    }
-    
-}
 
 
 // 代理
-fileprivate protocol CompanyHeaderViewDelegate: class {
+fileprivate protocol companyHeaderViewDelegate: class {
     func scrollContentAtIndex(index:Int)
     func changeTitle(_ progress:CGFloat, sourceIndex:Int, targetIndex : Int)
     
 }
 
-fileprivate class CompanyHeaderView:UIView{
+fileprivate class companyHeaderView:UIView{
     
-    var kNormalColor : (CGFloat, CGFloat, CGFloat) = (85, 85, 85)
-    var kSelectColor : (CGFloat, CGFloat, CGFloat) = (65, 105, 225)
+    private var kNormalColor : (CGFloat, CGFloat, CGFloat) = (85, 85, 85)
+    private var kSelectColor : (CGFloat, CGFloat, CGFloat) = (65, 105, 225)
     
-    weak var delegate:CompanyHeaderViewDelegate?
+    weak var delegate:companyHeaderViewDelegate?
     
     private lazy var icon:UIImageView = {
         let img = UIImageView.init()
         img.clipsToBounds = true
-        img.contentMode = .scaleAspectFit
+        img.contentMode = .scaleAspectFill
         return img
     }()
     
@@ -574,14 +632,15 @@ fileprivate class CompanyHeaderView:UIView{
             guard  let mode = mode  else {
                 return
             }
-            let url = URL.init(string: mode.icon)
-            self.icon.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            if let url = mode.iconURL{
+                icon.kf.setImage(with: Source.network(url), placeholder: UIImage.init(named: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            }
             
             self.companyName.text = mode.name
             self.des.text = mode.simpleDes
-            let address = mode.address?.joined(separator: " ") ?? "-"
-            let industry = mode.industry?.joined(separator: " ") ?? "-"
-            let staff = "人员数: \(mode.staffs)"
+            let address = mode.citys?.joined(separator: " ") ?? "-"
+            let industry = mode.businessField?.joined(separator: " ") ?? "-"
+            let staff = "人员数: \(mode.staff)"
             self.kinds.text = address + "|" + industry + "\n" + staff
             self.setupAutoHeight(withBottomViewsArray: [detail,jobs], bottomMargin: 5)
             
@@ -620,6 +679,10 @@ fileprivate class CompanyHeaderView:UIView{
         
     }
     
+    internal func getLineToBottonDistance()->CGFloat{
+        return self.frame.height - self.line.frame.origin.y - self.line.frame.height
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         
@@ -634,7 +697,7 @@ fileprivate class CompanyHeaderView:UIView{
     
 }
 
-extension CompanyHeaderView{
+extension companyHeaderView{
     
     open func changeTitle(_ progress:CGFloat, sourceIndex:Int, targetIndex : Int){
         

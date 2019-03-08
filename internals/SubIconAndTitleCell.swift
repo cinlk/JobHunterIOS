@@ -8,7 +8,7 @@
 
 import UIKit
 
-@objcMembers class subIconAndTitleCell: TitleTableViewCell {
+@objcMembers class SubIconAndTitleCell: TitleTableViewCell {
 
     
     
@@ -16,8 +16,6 @@ import UIKit
         let lable = UILabel.init()
         lable.textAlignment = .left
         lable.textColor = UIColor.black
-        lable.text = " "
-        
         lable.font = UIFont.systemFont(ofSize: 16)
         lable.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
         return lable

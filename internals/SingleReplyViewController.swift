@@ -15,7 +15,7 @@ class SingleReplyViewController: BaseViewController {
 
     
     private lazy var keyboardH:CGFloat = 0
-    private lazy var InputViewHeigh:CGFloat = TOOLBARH
+    private lazy var InputViewHeigh:CGFloat = GlobalConfig.toolBarH
     
     
     
@@ -403,14 +403,14 @@ extension SingleReplyViewController{
 extension SingleReplyViewController: ChatInputViewDelegate{
     
     func changeBarHeight(textView: UITextView, height: CGFloat) {
-        let pointY:CGFloat = GlobalConfig.ScreenH - keyboardH - TOOLBARH - height
+        let pointY:CGFloat = GlobalConfig.ScreenH - keyboardH - GlobalConfig.toolBarH - height
         //print(height)
         if height == 0 {
-            InputViewHeigh = TOOLBARH
+            InputViewHeigh = GlobalConfig.toolBarH
             
             self.inputText.frame = CGRect.init(x: 0, y: pointY, width: GlobalConfig.ScreenW, height: InputViewHeigh)
         }else{
-            InputViewHeigh = TOOLBARH + height
+            InputViewHeigh = GlobalConfig.toolBarH + height
             self.inputText.frame = CGRect.init(x: 0, y: pointY, width: GlobalConfig.ScreenW, height: InputViewHeigh)
         }
         

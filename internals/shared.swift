@@ -306,6 +306,9 @@ class SingletoneClass {
     // app用户协议地址
     public var appAgreementURL:String? = "http://www.immomo.com/agreement.html"
     
+    // job举报信息
+    public var jobWarns:[String] = []
+    
     private var userDefaule: UserDefaults = UserDefaults.standard
     
     
@@ -516,7 +519,16 @@ extension SingletoneClass{
             group.leave()
         }
         
-        
+        group.enter()
+        NetworkTool.request(.jobWarns, successCallback: { (data) in
+            if let res = Mapper<ResponseModel<JobWarnList>>().map(JSONObject: data)?.body, let w = res.warns{
+                self.jobWarns = w
+                print(self.jobWarns, "-------")
+            }
+            group.leave()
+        }) { (error) in
+            group.leave()
+        }
         
         //  需要等待用户登录后 TODO
 //        DispatchQueue.global().async(group: group, qos: .userInitiated, flags: .inheritQoS) {

@@ -172,7 +172,7 @@ extension SpecialJobVC{
             self.tableView.deselectRow(at: indexPath, animated: false)
             if let cell = self.tableView.cellForRow(at: indexPath) as? CommonJobTableCell, let id = cell.mode?.jobId{
                 let vc = JobDetailViewController()
-                vc.uuid = id
+                vc.job =  (id, cell.mode?.kind ?? .none)
                 self.navigationController?.pushViewController(vc, animated: true)
             }
             

@@ -205,7 +205,7 @@ extension DetailDeliveryStatus{
         }else if mode.jobtype == .graduate || mode.jobtype == .intern{
             let jobV = JobDetailViewController()
            
-            jobV.uuid = mode.id!
+            jobV.job = (mode.id ?? "", mode.jobtype)
             //jobV.kind = (id: mode.id!, type: mode.jobtype)
             self.navigationController?.pushViewController(jobV, animated: true)
         }

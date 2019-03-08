@@ -10,31 +10,28 @@ import UIKit
 import RxSwift
 import RxCocoa
 import MJRefresh
+import RxDataSources
 
-// 与companyMainVC 一致
-fileprivate let sections:Int = 2
-fileprivate let applyTag:String = "网申"
-
+fileprivate let firstTag = "全部"
 class CompanyJobsVC: BaseViewController {
 
     // 职位
-    internal var companyMode: CompanyModel?
-
-    // 界面初始进入 获取所有tags 的职位
-    private lazy var allTags:[String] = []
-    // 刷新当前的tag 职位
-    private var currentTag:String = ""
-    
-    // tagClass table datasource
-    private var tagDatas:[String:[Any]] = [:]
-    
-    private var hearRefreshed:Bool = false{
+    internal var companyMode: CompanyModel?{
         didSet{
-            self.joblistTable.mj_header.isHidden = hearRefreshed
+            guard  let mode = companyMode, var tags = mode.jobTags else {
+                return
+            }
+            // 插入默认值
+            tags.insert(firstTag, at: 0)
+            self.companyTags.accept(tags)
+            _ = self.requestBody.companyId = mode.id ?? ""
+            _ = self.requestBody.setTag(t: tags.first!)
             
         }
     }
+
     
+    private var firstRefreshead:Bool = false
     
     
     lazy var joblistTable:UITableView = {
@@ -42,8 +39,9 @@ class CompanyJobsVC: BaseViewController {
         let tb = UITableView.init(frame: CGRect.zero)
         tb.tableFooterView = UIView.init()
         tb.backgroundColor = UIColor.viewBackColor()
-        tb.delegate = self
-        tb.dataSource = self
+        tb.rx.setDelegate(self).disposed(by: self.dispose)
+        
+        //tb.dataSource = self
         tb.separatorStyle = .singleLine
         //tb.bounces = false
         tb.contentInsetAdjustmentBehavior = .never
@@ -51,9 +49,8 @@ class CompanyJobsVC: BaseViewController {
         head.backgroundColor = UIColor.viewBackColor()
         tb.tableHeaderView = head
         tb.register(JobTagsCell.self, forCellReuseIdentifier: JobTagsCell.identity())
-        tb.register(companySimpleJobCell.self, forCellReuseIdentifier: companySimpleJobCell.identity())
-        // 网申
-        tb.register(OnlineApplyCell.self, forCellReuseIdentifier: OnlineApplyCell.identity())
+        tb.register(CompanySimpleJobCell.self, forCellReuseIdentifier: CompanySimpleJobCell.identity())
+        // 不应该放在这里 网申
         return tb
     }()
     
@@ -66,50 +63,44 @@ class CompanyJobsVC: BaseViewController {
     private lazy var refreshHeader:MJRefreshNormalHeader = {
         
         let h = MJRefreshNormalHeader.init { [weak self] in
-            self?.requestBody.isPullDown = true
-            self?.requestBody.tag = "all"
-            self?.vm.combinationlistRefresh.onNext((self?.requestBody)!)
+            //self?.requestBody.tag = ""
+            guard let s = self else {
+                return
+            }
+            s.requestBody.setOffset(offset: 0)
+            s.vm.combinationlistRefresh.onNext(s.requestBody)
         }
-        
         h?.lastUpdatedTimeLabel.isHidden = true
-        
+        h?.stateLabel.isHidden = true
         return h!
         
     }()
     
     private lazy var refreshFooter:MJRefreshAutoNormalFooter = {
         let f = MJRefreshAutoNormalFooter.init(refreshingBlock: { [weak self] in
-            self?.requestBody.isPullDown = false
-            self?.requestBody.tag = (self?.currentTag)!
-           
-            // 当前下拉的tag
-            if let offset = self?.requestBody.tagsOffset[(self?.currentTag)!]{
-                self?.requestBody.tagsOffset[(self?.currentTag)!] = offset + 1
+            guard let s = self else {
+                return
             }
-            
-            self?.vm.combinationlistRefresh.onNext((self?.requestBody)!)
+            s.requestBody.setOffset(offset: s.requestBody.offset  + s.requestBody.limit)
+            s.vm.combinationlistRefresh.onNext(s.requestBody)
 
         })
-        
-        f?.setTitle("上拉刷新", for: .idle)
-        f?.setTitle("刷新中...", for: .refreshing)
-        f?.setTitle("没有数据", for: .noMoreData)
-        
+        f?.stateLabel.isHidden = true
         return f!
     }()
     
     
     
     
-    private  lazy var requestBody:TagsDataItem = {
-        return TagsDataItem(JSON: ["tag":"all","tag_offset":[:],"company_id":self.companyMode!.id,"is_pull_down":true])!
-    }()
-    
+    private  lazy var requestBody:CompanyTagFilterModel =  CompanyTagFilterModel(JSON: [:])!
     
     //rxSwift
-    let dispose = DisposeBag()
-    let vm:RecruitViewModel = RecruitViewModel()
-    
+    private let dispose = DisposeBag()
+    private let vm:RecruitViewModel = RecruitViewModel()
+    private var combine:Driver<[CompanyTagJobSectionModel]>!
+    // company tags
+    private let companyTags:BehaviorRelay<[String]> = BehaviorRelay<[String]>.init(value: [])
+    private var dataSource:RxTableViewSectionedReloadDataSource<CompanyTagJobSectionModel>!
     
     
     override func viewDidLoad() {
@@ -117,30 +108,15 @@ class CompanyJobsVC: BaseViewController {
         self.setViews()
         setViewModel()
         
-        
-        //self.loadData()
-        //监听job 的tag 变化 刷新第二个table
-       
-        NotificationCenter.default.rx.notification(Notification.Name.init(rawValue: JOBTAG_NAME), object: nil).subscribe(onNext: { (notify) in
-            
-            if let name = notify.object as? String {
-                if self.currentTag == name{
-                    return
-                }
-                self.joblistTable.mj_footer.resetNoMoreData()
-                self.currentTag = name
-                self.joblistTable.reloadSections([1], animationStyle: .none)
-            }
-            
-        }).disposed(by: dispose)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // view显示时头部只刷新一次
-        if self.tagDatas.isEmpty && self.hearRefreshed == false{
+        if self.firstRefreshead == false{
             self.joblistTable.mj_header.beginRefreshing()
+            self.firstRefreshead = true
         }
+       
     }
     
     
@@ -159,23 +135,12 @@ class CompanyJobsVC: BaseViewController {
         self.joblistTable.mj_header = refreshHeader
         self.joblistTable.mj_footer = refreshFooter
         
-        
-    }
-    
-    override func didFinishloadData() {
-        
-        super.didFinishloadData()
-        // 默认选中第一个tag 或网申
-        self.joblistTable.reloadData()
-    }
-    
-    override func showError() {
-        super.showError()
-        
     }
     
     override func reload() {
         super.reload()
+        self.requestBody.setOffset(offset: 0)
+        self.vm.combinationlistRefresh.onNext(self.requestBody)
     }
 
 }
@@ -184,6 +149,8 @@ class CompanyJobsVC: BaseViewController {
 
 extension CompanyJobsVC{
     
+    
+    
     private func  setViewModel(){
         //
         (self.errorView as EorrorPageDelegate).tap.drive(onNext: {
@@ -191,140 +158,102 @@ extension CompanyJobsVC{
             
         }).disposed(by: self.dispose)
         
-        self.vm.combinationlistRes.share().subscribe(onNext: { (mode) in
-           
-            if self.requestBody.isPullDown{
-                if mode.tagJobs.isEmpty && mode.onlineAppys.isEmpty{
-                    self.view.showToast(title: "no data", customImage: nil, mode: .text)
-                    //showOnlyTextHub(message: "no data", view: self.view)
-                    super.didFinishloadData()
-                    // 显示没有数据界面
-                    return
-                }
-                
-                // job 的tag 和职位
-                mode.tagJobs.forEach({ (key,jobs) in
-                    
-                    self.tagDatas[key] = jobs
-                    if !self.allTags.contains(key){
-                        self.allTags.append(key)
-                        self.requestBody.tagsOffset[key] = 1
-                    }
-                })
-                // 网申职位
-                if mode.onlineAppys.count > 0{
-                    self.tagDatas[applyTag] = mode.onlineAppys
-                    if !self.allTags.contains(applyTag){
-                        self.allTags.append(applyTag)
-                        self.requestBody.tagsOffset[applyTag] = 1
-                    }
-                }
-                // 默认选中第一个tag
-                if self.allTags.count > 0{
-                     self.currentTag = self.allTags[0]
-                }
-               
-                
-            // 获取某个 tag 的职位列表
-            }else{
-                
-                if self.currentTag == applyTag{
-                    self.tagDatas[applyTag] =  mode.onlineAppys
-                }else{
-                    if let  jobs = mode.tagJobs[self.currentTag]{
-                        self.tagDatas[self.currentTag] =  jobs
-                    }
-                }
-                
-            }
         
-            self.didFinishloadData()
+        self.dataSource = RxTableViewSectionedReloadDataSource<CompanyTagJobSectionModel>.init(configureCell: { (dataSource, table, indexPath, _) -> UITableViewCell in
+            switch dataSource[indexPath]{
+                case .TagsItem(let mode):
+                    let cell = table.dequeueReusableCell(withIdentifier: JobTagsCell.identity(), for: indexPath) as! JobTagsCell
+                    cell.mode = mode
+                    return cell
+                
+                case .JobsItem(let mode):
+                    let cell = table.dequeueReusableCell(withIdentifier: CompanySimpleJobCell.identity(), for: indexPath) as! CompanySimpleJobCell
+                        cell.mode = mode
+                        return cell
+                        
+            }
+        })
+        
+        self.combine = Driver<[CompanyTagJobSectionModel]>.combineLatest(self.companyTags.asDriver(onErrorJustReturn: []), self.vm.combinationlistRes.asDriver(onErrorJustReturn: []), resultSelector: { (tags, modes)  in
             
+            var sections:[CompanyTagJobSectionModel] = []
+            if !tags.isEmpty{
+                sections.append(CompanyTagJobSectionModel.TagsSection(title: "", items: [CompanyTagJobItem.TagsItem(mode: tags)]))
+            }
+            for (_, item) in modes.enumerated(){
+                
+                sections.append(CompanyTagJobSectionModel.JobsSection(title: "", items: [CompanyTagJobItem.JobsItem(mode: item)]))
+            }
             
+            return sections
+        })
+        // tag section(不变化的)  jobs section(变化的)
+        
+        self.combine.drive(self.joblistTable.rx.items(dataSource: self.dataSource)).disposed(by: self.dispose)
+    
+        
+        NotificationCenter.default.rx.notification(NotificationName.jobTag, object: nil).subscribe(onNext: { (notify) in
             
-        }, onError: { (err) in
-            self.showError()
-            print("quey list err \(err)")
-            //super.didFinishloadData()
+            if let name = notify.object as? String {
+                
+                if self.requestBody.setTag(t: name){
+                    //self.joblistTable.mj_header.beginRefreshing()
+                    self.requestBody.setOffset(offset: 0)
+                    self.vm.combinationlistRefresh.onNext(self.requestBody)
+                    
+                }
+            }
             
-        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        }).disposed(by: dispose)
         
         self.vm.combinationlistRefreshStatus.asDriver(onErrorJustReturn: .none).drive(onNext: { (status) in
             switch status{
-            case .endHeaderRefresh:
-                self.joblistTable.mj_footer.resetNoMoreData()
-                self.joblistTable.mj_header.endRefreshing()
-                self.hearRefreshed = true
-            case .endFooterRefresh:
-                self.joblistTable.mj_footer.endRefreshing()
+                case .endHeaderRefresh:
+                    self.joblistTable.mj_footer.resetNoMoreData()
+                    self.joblistTable.mj_header.endRefreshing()
+                   // self.hearRefreshed = true
+                    self.didFinishloadData()
+                case .endFooterRefresh:
+                    self.joblistTable.mj_footer.endRefreshing()
                 
-            case .NoMoreData:
-                self.joblistTable.mj_footer.endRefreshingWithNoMoreData()
-            case .error(let err):
-                //self.showError()
-                self.hearRefreshed = false
-                print("refresh error \(err)")
-                self.view.showToast(title: "获取数据失败\(err)", customImage: nil, mode: .text)
-                //showOnlyTextHub(message: "获取数据失败\(err)", view: self.view)
-                super.didFinishloadData()
-                self.joblistTable.mj_header.endRefreshing()
-                self.joblistTable.mj_footer.endRefreshing()
+                case .NoMoreData:
+                    self.joblistTable.mj_footer.endRefreshingWithNoMoreData()
+                case .error(let err):
+                    //self.showError()
+                    //self.hearRefreshed = false
+                    
+                    self.view.showToast(title: "获取数据失败\(err)", customImage: nil, mode: .text)
+                    //showOnlyTextHub(message: "获取数据失败\(err)", view: self.view)
+                    self.showError()
+                    self.joblistTable.mj_header.endRefreshing()
+                    self.joblistTable.mj_footer.endRefreshing()
                 
-            default:
-                break
+                default:
+                    break
             }
-        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        }).disposed(by: dispose)
         
-        //
+        self.joblistTable.rx.itemSelected.subscribe(onNext: { (indexPath) in
+            
+            self.joblistTable.deselectRow(at: indexPath, animated: true)
+            switch self.dataSource[indexPath]{
+                case .JobsItem(let mode):
+                    let job: JobDetailViewController = JobDetailViewController()
+                    job.job = (mode.id ?? "", mode.kind ?? .none)
+                    //job.kind = (id: mode.id!, type: mode.kind!)
+                    job.hidesBottomBarWhenPushed = true
+                    self.navigationController?.pushViewController(job, animated: true)
+                default:
+                    break
+            }
+        }).disposed(by: self.dispose)
         
     }
 }
 
 
 
-extension CompanyJobsVC:UITableViewDelegate, UITableViewDataSource{
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return  self.allTags.count > 0 ? sections: 0
-        
-    }
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        return section ==  0 ?   (self.allTags.count > 0 ? 1 : 0) :  (self.tagDatas[self.currentTag]?.count  ?? 0)
-        
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        
-        switch indexPath.section{
-        
-        case 0:
-            let cell = tableView.dequeueReusableCell(withIdentifier: JobTagsCell.identity(), for: indexPath) as! JobTagsCell
-            cell.mode = self.allTags
-            return cell
-        case 1:
-            if let mode = self.tagDatas[self.currentTag]?[indexPath.row] as? CompuseRecruiteJobs{
-                let cell = tableView.dequeueReusableCell(withIdentifier: companySimpleJobCell.identity(), for: indexPath) as! companySimpleJobCell
-                cell.mode = mode
-                return cell
-                
-            }else if let mode = self.tagDatas[self.currentTag]?[indexPath.row] as? OnlineApplyListModel{
-                let cell = tableView.dequeueReusableCell(withIdentifier: OnlineApplyCell.identity(), for: indexPath) as!  OnlineApplyCell
-                mode.isSimple = true 
-                cell.mode = mode
-                return cell
-            }
-           
-        default:
-            break
-        }
-        
-        
-        return UITableViewCell.init()
-        
-        
-    }
+extension CompanyJobsVC:UITableViewDelegate{
     
     // section 高度
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -335,64 +264,14 @@ extension CompanyJobsVC:UITableViewDelegate, UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-    
-       
-        switch indexPath.section {
-        case 0:
-            return tableView.cellHeight(for: indexPath, model: self.allTags, keyPath: "mode", cellClass: JobTagsCell.self, contentViewWidth: GlobalConfig.ScreenW)
-            
-        case 1:
-            return 55
-        default:
-            break
-        }
-        
-        return 0
-        
-    }
-    
-    
-    
-    //查看job
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        tableView.deselectRow(at: indexPath, animated: false)
-        
-        if indexPath.section == 1{
-            
-            if let mode =  self.tagDatas[self.currentTag]?[indexPath.row] as? CompuseRecruiteJobs{
-                
-                let job: JobDetailViewController = JobDetailViewController()
-                job.uuid = mode.id!
-                //job.kind = (id: mode.id!, type: mode.kind!)
-                
-                job.hidesBottomBarWhenPushed = true
-                self.navigationController?.pushViewController(job, animated: true)
-            }
-            else if let mode = self.tagDatas[self.currentTag]?[indexPath.row] as? OnlineApplyModel{
-                if mode.outer == true && mode.link != nil{
-                    
-                    //跳转外部连接
-                    let wbView = BaseWebViewController()
-                    wbView.mode = mode.link
-                    wbView.hidesBottomBarWhenPushed = true
-                    self.navigationController?.pushViewController(wbView, animated: true)
-                }else{
-                    // 内部网申数据 
-                    let show = OnlineApplyShowViewController()
-                    // 传递id
-                    show.uuid = "dqwdqwd"
-                    //show.onlineApplyID = mode.id
-                    show.hidesBottomBarWhenPushed = true
-                    self.navigationController?.pushViewController(show, animated: true)
-                }
-                
-                
-            }
+        switch  self.dataSource[indexPath] {
+        case .TagsItem(let mode):
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: JobTagsCell.self, contentViewWidth: GlobalConfig.ScreenW)
+        case .JobsItem(let mode):
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CompanySimpleJobCell.self, contentViewWidth: GlobalConfig.ScreenW)
         }
         
     }
-    
     
 }
 
@@ -401,12 +280,7 @@ extension CompanyJobsVC{
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
         let offsetY = scrollView.contentOffset.y
-        if offsetY > 0{
-            delegate?.scrollUp(view: self.joblistTable, height: offsetY)
-        }else{
-            delegate?.scrollUp(view: self.joblistTable, height: 0)
-        }
+        offsetY > 0 ? delegate?.scrollUp(view: self.joblistTable, height: offsetY) : delegate?.scrollUp(view: self.joblistTable, height: 0)
     }
-    
-    
+
 }

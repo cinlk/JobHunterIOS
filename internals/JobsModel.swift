@@ -81,6 +81,86 @@ class JobListModel: NSObject, Mappable{
     
 }
 
+class SimpleJobModel: NSObject, Mappable{
+    
+    var id:String?
+    var name:String?
+    var address:[String] = []
+    
+    // 工作地址
+    internal var addressStr:String{
+        get{
+            // 最多5多个地址（前5个地址）
+            if address.count > 5{
+                return   address[0..<5].joined(separator: " ")
+            }
+            return   address.joined(separator: " ")
+        }
+    }
+    
+    var education:String?
+    var created_time:Date?
+    
+    internal var creatTimeStr:String{
+        get{
+            
+            guard let time = self.created_time else { return "" }
+            
+            if let str = showMonthAndDay(date: time){
+                return str
+            }
+            return ""
+        }
+    }
+    
+    internal var type:String?{
+        didSet{
+            guard type != nil else {
+                kind = .none
+                return
+            }
+            kind = jobType.init(rawValue: type!)
+        }
+    }
+    internal var kind:jobType?
+    
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        id <- map["id"]
+        name <- map["name"]
+        address <- map["address"]
+        education <- map["education"]
+        created_time <- (map["created_time"],DateTransform())
+        type <- map["type"]
+        
+      
+    
+        
+        
+    }
+    
+    
+}
+
+class CompanyTagJobs: SimpleJobModel{
+    
+    
+    var tags:[String]?
+    
+    required init?(map: Map) {
+        super.init(map: map)
+    }
+    
+    override func mapping(map: Map) {
+        super.mapping(map: map)
+        tags <- map["tags"]
+    }
+}
+
 // MARK 添加更多的属性，比如id，标签等？？
 class CompuseRecruiteJobs :BaseModel{
     
@@ -102,20 +182,20 @@ class CompuseRecruiteJobs :BaseModel{
    internal var benefits:String?
     
    // 关联的公司
-   internal var company:CompanyModel?
+   internal var company:SimpleCompanyModel?
     
    // 发布者
-   internal var hr:HRPersonModel?
+   internal var recruiter:HRPersonModel?
     
     
    // 应聘者技能要求
-   internal var requirement:String?
+   internal var needSkills:String?
    // 职位工作内容
-   internal var works:String?
+   internal var WorkContent:String?
     
    // 职位类型 (对应筛选行业条件)
-   internal var industry:[String] = []
-    internal var major:[String] = []
+   internal var businessField:[String] = []
+   internal var major:[String] = []
     
    // 对应公司里 职位筛选条件
    internal var jobtags:[String] = []
@@ -126,7 +206,7 @@ class CompuseRecruiteJobs :BaseModel{
    internal var isTalked:Bool?
    
    //浏览次数
-   internal var readNums:Int64 = 0
+   internal var reviewCounts:Int64 = 0
     
    // 工作城市
    internal var addressCity:[String] = []
@@ -152,10 +232,12 @@ class CompuseRecruiteJobs :BaseModel{
    internal var applyEndTime:Date?
     
     // 实习数据
-   internal var perDay:String = "面议"
-   internal var months:String = "面议"
+   internal var payDay:Int = 0
+   internal var months:Int = 0
    // 可转正
    internal var isStuff:Bool = false
+   internal var days:Int = 0
+    
   
     
     
@@ -191,17 +273,20 @@ class CompuseRecruiteJobs :BaseModel{
         address <- map["address"]
         salary <- map["salary"]
         education <- map["education"]
-        perDay <- map["per_day"]
-        months <- map["month"]
+        
+        days <- map["days"]
+        payDay <- map["pay_day"]
+        months <- map["months"]
         isStuff <- map["is_staff"]
-        isTalked <- map["is_talk"]
+        isTalked <- map["can_transfer"]
         applyEndTime <- (map["apply_end_time"], DateTransform())
-        readNums <- map["read_num"]
-        hr <- map["hr"]
-        requirement <- map["requirement"]
-        works <- map["works"]
+        reviewCounts <- map["review_counts"]
+        
+        recruiter <- map["recruiter"]
+        needSkills <- map["need_skills"]
+        WorkContent <- map["work_content"]
         addressCity <- map["city"]
-        industry <- map["industry"]
+        businessField <- map["business_field"]
         major <- map["major"]
         jobtags <- map["job_tags"]
         

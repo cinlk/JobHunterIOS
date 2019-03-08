@@ -47,7 +47,8 @@ extension String {
     
     
     var htmlToAttributedString: NSAttributedString? {
-        guard let data =  data(using: .utf8, allowLossyConversion: true) else { return NSAttributedString() }
+        
+        guard let data =  self.data(using: String.Encoding.unicode, allowLossyConversion: true) else { return NSAttributedString() }
         do {
             return try NSAttributedString(data: data, options: [NSAttributedString.DocumentReadingOptionKey.documentType:  NSAttributedString.DocumentType.html], documentAttributes: nil)
         } catch {

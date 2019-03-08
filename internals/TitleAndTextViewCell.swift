@@ -25,10 +25,15 @@ class TitleAndTextViewCell: UITableViewCell {
         text.font = UIFont.systemFont(ofSize: 16)
         text.textAlignment = .left
         text.isEditable = false
-        
         return text
         
     }()
+    
+    internal lazy var richView:RichTextView = {
+        let rich = RichTextView.init(frame: CGRect.zero)
+        rich.isScrollEnabled = false
+        return rich
+     }()
     
     // 分割线
     private lazy var line:UIView = {
@@ -42,13 +47,14 @@ class TitleAndTextViewCell: UITableViewCell {
         self.contentView.addSubview(content)
         self.contentView.addSubview(name)
         self.contentView.addSubview(line)
+        self.contentView.addSubview(richView)
         
         _ = name.sd_layout().topSpaceToView(self.contentView,5)?.leftSpaceToView(self.contentView,10)?.autoHeightRatio(0)
         _ = line.sd_layout().leftEqualToView(name)?.rightSpaceToView(self.contentView,10)?.topSpaceToView(name,5)?.heightIs(1)
         // 高度？
         _ = content.sd_layout().leftEqualToView(name)?.topSpaceToView(line,10)?.rightEqualToView(line)?.heightIs(0)
         
-        
+        _ = richView.sd_layout().leftEqualToView(name)?.topSpaceToView(line,10)?.rightEqualToView(line)?.heightIs(0)
         
         
     }

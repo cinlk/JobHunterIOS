@@ -17,7 +17,7 @@ class PostContentViewController: BaseTableViewController {
 
     
     private lazy var keyboardH:CGFloat = 0
-    private lazy var InputViewHeigh:CGFloat = TOOLBARH
+    private lazy var InputViewHeigh:CGFloat = GlobalConfig.toolBarH
     
     
  
@@ -130,7 +130,7 @@ class PostContentViewController: BaseTableViewController {
         self.tableView.keyboardDismissMode = .onDrag
         self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.register(ReplyPostTableViewCell.self, forCellReuseIdentifier: ReplyPostTableViewCell.identity())
-        self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: TOOLBARH + 10, right: 0)
+        self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: GlobalConfig.toolBarH + 10, right: 0)
     
         //简体键盘
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -403,14 +403,14 @@ extension PostContentViewController{
 extension PostContentViewController: ChatInputViewDelegate{
     
     func changeBarHeight(textView: UITextView, height: CGFloat) {
-        let pointY:CGFloat = GlobalConfig.ScreenH - keyboardH - TOOLBARH - height
+        let pointY:CGFloat = GlobalConfig.ScreenH - keyboardH - GlobalConfig.toolBarH - height
         //print(height)
         if height == 0 {
-            InputViewHeigh = TOOLBARH
+            InputViewHeigh = GlobalConfig.toolBarH
             
             self.inputText.frame = CGRect.init(x: 0, y: pointY, width: GlobalConfig.ScreenW, height: InputViewHeigh)
         }else{
-            InputViewHeigh = TOOLBARH + height
+            InputViewHeigh = GlobalConfig.toolBarH + height
             self.inputText.frame = CGRect.init(x: 0, y: pointY, width: GlobalConfig.ScreenW, height: InputViewHeigh)
         }
      

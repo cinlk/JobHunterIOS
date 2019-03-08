@@ -69,12 +69,17 @@ import Kingfisher
     
     
         didSet{
-        
-            let url = URL.init(string: mode?.sender?.icon ?? "")
-            self.imageV.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            
+            if let url = mode?.sender?.icon{
+                 self.imageV.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            }
+           
             
             name.text = mode?.sender?.name
-            self.avartar.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            if let iconURL  = mode?.sender?.icon{
+                self.avartar.kf.setImage(with: Source.network(iconURL), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            }
+            
             //avartar.image = UIImage.init(data: (mode?.sender?.icon)!)
             bubbleBackGround.setupAutoHeight(withBottomView: imageV, bottomMargin: 10)
             // 获取计算后的高度

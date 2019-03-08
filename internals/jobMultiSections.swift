@@ -7,9 +7,6 @@
 //
 
 import Foundation
-import RxDataSources
-import RxSwift
-import RxCocoa
 import Differentiator
 
 
@@ -25,7 +22,7 @@ enum JobMultiSectionModel {
 
 enum JobSectionItem {
 
-    case CompanySectionItem(mode:CompanyModel)
+    case CompanySectionItem(mode:SimpleCompanyModel)
     case HRSectionItem(mode:HRPersonModel)
     case JobDescribeSectionItem(mode:CompuseRecruiteJobs)
     case AddressSectionItem(adress:[String])
@@ -92,3 +89,49 @@ extension JobMultiSectionModel{
 
 
 
+
+
+// 职位tag 和职位
+enum CompanyTagJobSectionModel{
+    case TagsSection(title:String, items:[CompanyTagJobItem])
+    case JobsSection(title:String, items:[CompanyTagJobItem])
+}
+
+enum CompanyTagJobItem {
+    case TagsItem(mode:[String])
+    case JobsItem(mode:CompanyTagJobs)
+}
+
+
+extension CompanyTagJobSectionModel: SectionModelType{
+    typealias Item = CompanyTagJobItem
+    
+    
+    var items: [CompanyTagJobItem]{
+        switch self {
+        case .TagsSection(title: _, let items):
+            return items
+        case .JobsSection(title: _, let items):
+            return items
+        }
+    }
+    
+    var title:String{
+        switch self {
+        case .TagsSection(let title, _):
+            return title
+        case .JobsSection(let title, _):
+            return title
+        }
+    }
+    
+    init(original: CompanyTagJobSectionModel, items: [CompanyTagJobSectionModel.Item]) {
+        switch original {
+            case .TagsSection(let title, _):
+                self = .TagsSection(title: title, items: items)
+            case .JobsSection(let title, _):
+                self = .JobsSection(title: title, items: items)
+        }
+    }
+    
+}

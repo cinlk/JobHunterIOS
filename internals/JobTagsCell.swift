@@ -93,7 +93,8 @@ extension JobTagsCell{
         
         // 消息通知刷新tableview
         if let tag = btn.titleLabel?.text{
-            NotificationCenter.default.post(name: NSNotification.Name.init(JOBTAG_NAME), object: tag)
+            
+            NotificationCenter.default.post(name: NotificationName.jobTag, object: tag)
         }
         
         

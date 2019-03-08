@@ -155,6 +155,11 @@ class GraduateJobsViewController: UIViewController {
         _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,GlobalConfig.dropMenuViewHeight)?.bottomEqualToView(self.view)
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        //self.navigationController
+    }
+    
 }
 
 
@@ -205,8 +210,10 @@ extension GraduateJobsViewController{
             self.table.deselectRow(at: idx, animated: false)
             let mode = self.datas[idx.row]
             let graduateJob = JobDetailViewController()
-            graduateJob.uuid = mode.jobId!
-            
+            guard let id = mode.jobId else {
+                return
+            }
+            graduateJob.job = (id, .graduate)
             graduateJob.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(graduateJob, animated: true)
             

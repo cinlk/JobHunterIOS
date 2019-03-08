@@ -84,7 +84,7 @@ class MyVisitor: BaseTableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         tableView.deselectRow(at: indexPath, animated: false)
-        let vc = publisherControllerView()
+        let vc = PublisherControllerView()
         vc.userID = mode[indexPath.row].userID!
         vc.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(vc, animated: true)

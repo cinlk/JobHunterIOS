@@ -15,7 +15,7 @@ import ObjectMapper
 class conversationModel:NSObject, Mappable{
     
     // 聊天对象
-    var user:PersonModel?
+    var user:HRPersonModel?
     // last message
     var message:MessageBoby?
     var unReadCount:Int?
@@ -49,10 +49,10 @@ class PersonModel:NSObject, Mappable{
     
     var userID:String?
     var name:String?
-    var company:String?
+    
     // 
     //var icon:Data?
-    var icon:String?
+    var icon:URL?
     var roles:[String]?
     var identity:String?
     // 屏蔽 不接受和发送信息
@@ -65,19 +65,19 @@ class PersonModel:NSObject, Mappable{
     
     
     required init?(map: Map) {
-        if map.JSON["user_id"] == nil || map.JSON["name"] == nil || map.JSON["roles"] == nil {
-            return nil
-        }
+//        if map.JSON["user_id"] == nil || map.JSON["name"] == nil || map.JSON["roles"] == nil {
+//            return nil
+//        }
     }
     
     func mapping(map: Map) {
         
-        userID <- map["userID"]
+        userID <- map["user_id"]
         name <- map["name"]
-        company <- map["company"]
+        
         //base64 转换为data
         //icon <- (map["icon"], DataTransformBase64())
-        icon <- map["icon"]
+        icon <- (map["user_icon"], URLTransform())
         roles <- map["roles"]
         identity <- map["identity"]
         //isShield <- map["isShield"]
@@ -91,8 +91,8 @@ class PersonModel:NSObject, Mappable{
 class HRPersonModel: PersonModel {
     
     var online:Date?
-    var position:String?
-    
+    var title:String?
+    var company:String?
     
     var  ontimeStr:String{
         get{
@@ -106,16 +106,17 @@ class HRPersonModel: PersonModel {
     
     required init?(map: Map) {
         super.init(map: map)
-        if map.JSON["online"] == nil || map.JSON["position"] == nil{
-            return nil
-        }
+//        if map.JSON["online"] == nil || map.JSON["title"] == nil{
+//            return nil
+//        }
     }
     
     override func mapping(map: Map) {
         super.mapping(map: map)
         
-        online <- (map["online"], DateTransform())
-        position <- map["position"]
+        online <- (map["online_time"], DateTransform())
+        title <- map["title"]
+        company <- map["company"]
     }
     
     

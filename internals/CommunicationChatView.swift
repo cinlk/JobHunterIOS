@@ -20,7 +20,7 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     
     
     // 聊天对象
-    private var hr:PersonModel!
+    private var hr:HRPersonModel!
     
     // 聊天对话数据集合
     private var tableSource:NSMutableArray = []
@@ -126,7 +126,7 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
         let alertV = UIAlertController.init(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
         alertV.addAction(UIAlertAction.init(title: "查看TA的名片", style: UIAlertAction.Style.default, handler: { (action) in
             // MARK
-            let pubHR = publisherControllerView()
+            let pubHR = PublisherControllerView()
             pubHR.userID = self.hr.userID!
             self.navigationController?.pushViewController(pubHR, animated: true)
         }))
@@ -142,7 +142,7 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     
 
     
-    init(hr:PersonModel, row:Int? = nil) {
+    init(hr:HRPersonModel, row:Int? = nil) {
         
         self.currentRow = row
         self.hr = hr
@@ -205,9 +205,9 @@ extension CommunicationChatView {
         
         self.view.backgroundColor = UIColor.backGroundColor()
         
-        navTitle = hr.name! + "@" + hr.company!
+        navTitle = hr.name! + "@" + (hr.company  ?? "")
         self.title = navTitle
-        
+      
         // 影藏返回按钮文字
         navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
         
@@ -447,13 +447,13 @@ extension CommunicationChatView{
             // 先改变view 后 在显示vc
             self.moveBar(distance: 0){
                 let job = JobDetailViewController()
-                job.uuid = mes.jobID!
+                //job.uuid = mes.jobID!
                 self.navigationController?.pushViewController(job, animated: true)
             }
         }else{
     
             let job = JobDetailViewController()
-            job.uuid = mes.jobID!
+            //job.uuid = mes.jobID!
             self.navigationController?.pushViewController(job, animated: true)
             
         }

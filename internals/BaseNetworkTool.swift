@@ -35,6 +35,8 @@ public enum GlobaHttpRequest {
     case internCondition
     // 城市大学
     case cityCollege
+    // 职位举报信息
+    case jobWarns
     
     
     
@@ -85,6 +87,8 @@ extension GlobaHttpRequest: TargetType{
             return self.urlPrefix + "intern/condition"
         case .cityCollege:
             return self.urlPrefix + "city/college"
+        case .jobWarns:
+            return self.urlPrefix + "jobs/warns"
         
         }
     }
@@ -92,7 +96,7 @@ extension GlobaHttpRequest: TargetType{
     public  var method: Moya.Method {
         switch self {
         case .guideData, .adviseImages, .helloMsg, .citys, .bussinessField, .subBusinessField,
-             .companyType, .internCondition, .cityCollege:
+             .companyType, .internCondition, .cityCollege, .jobWarns:
             return .get
         case .userlogin, .news, .nearByMeetings, .nearyByCompany:
             return .post
@@ -110,7 +114,7 @@ extension GlobaHttpRequest: TargetType{
     
     public var task: Task {
         switch self {
-        case .guideData, .helloMsg, .adviseImages, .logout, .citys, .bussinessField, .subBusinessField, .companyType, .internCondition, .cityCollege:
+        case .guideData, .helloMsg, .adviseImages, .logout, .citys, .bussinessField, .subBusinessField, .companyType, .internCondition, .cityCollege, .jobWarns:
             return Task.requestPlain
         case let .userlogin(phone, password):
             return .requestParameters(parameters: ["phone": phone, "password":password], encoding: JSONEncoding.default)
@@ -156,7 +160,7 @@ class NetworkTool {
         )
         switch target{
             
-        case .guideData, .adviseImages, .citys, .bussinessField:
+        case .guideData, .adviseImages, .citys, .bussinessField, .jobWarns:
             timeout = 10
         case .helloMsg, .userlogin, .logout, .news:
             timeout = 30

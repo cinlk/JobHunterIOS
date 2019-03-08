@@ -18,30 +18,26 @@ import RxDataSources
 import Social
 
 fileprivate let tableViewHeaderH:CGFloat  = 148
+fileprivate let jobTitle:String = "职位详情"
+fileprivate let cellMode:String = "mode"
 
 class JobDetailViewController: BaseShowJobViewController {
     
-    private var mode:CompuseRecruiteJobs?{
+//    private var mode:CompuseRecruiteJobs?{
+//        didSet{
+//            didFinishloadData()
+//        }
+//    }
+    
+    
+    internal var job:(String, jobType) = ("", .none){
         didSet{
-            didFinishloadData()
+            query.onNext(job)
         }
     }
     
     
-    internal var uuid:String = ""{
-        didSet{
-            query.onNext(uuid)
-        }
-    }
-
-    
-    private var showToolBar:Bool = false{
-        didSet{
-            self.navigationController?.setToolbarHidden(!showToolBar, animated: true)
-        }
-    }
-    
-    // 数据库
+    //数据库记录会话历史
     private let conversationManager = ConversationManager.shared
     
     private lazy var jobheader:JobDetailHeader = { [unowned self] in
@@ -51,7 +47,7 @@ class JobDetailViewController: BaseShowJobViewController {
     }()
     
     
-    
+    // 投诉
     private lazy var warnBtn:UIButton  = {
         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 25, height: 25))
         let warnIcon = UIImage.init(named: "warn")?.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate)
@@ -66,7 +62,8 @@ class JobDetailViewController: BaseShowJobViewController {
     
     private lazy var apply:UIButton = {
         
-        let apply = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 100, height: TOOLBARH))
+        let apply = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 100, height: GlobalConfig.toolBarH))
+   
         apply.addTarget(self, action: #selector(onlineApply(_:)), for: .touchUpInside)
         apply.setTitle("投递简历", for: .normal)
         apply.setTitle("已投递简历", for: .selected)
@@ -81,7 +78,7 @@ class JobDetailViewController: BaseShowJobViewController {
     
     private lazy var talk:UIButton = {
         // 宽度加上20 填满整个view
-        let talk = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW - collectedBtn.width - apply.width + 20, height: TOOLBARH))
+        let talk = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW - collectedBtn.width - apply.width + 20, height: GlobalConfig.toolBarH))
         talk.setTitle("和ta聊聊", for: .normal)
         talk.setTitle("继续沟通", for: .selected)
         talk.backgroundColor = UIColor.blue
@@ -93,34 +90,46 @@ class JobDetailViewController: BaseShowJobViewController {
         return talk
     }()
     
+    //
+    private lazy var warnVC:JuBaoViewController =  JuBaoViewController()
     
     //rxSwift
-    let dispose = DisposeBag()
-    let vm:RecruitViewModel = RecruitViewModel()
-    let query:BehaviorSubject<String> = BehaviorSubject<String>.init(value: "")
-    var dataSoure: RxTableViewSectionedReloadDataSource<JobMultiSectionModel>!
+    private let dispose = DisposeBag()
+    private let vm:RecruitViewModel = RecruitViewModel()
+    private let query:BehaviorSubject<(String, jobType)> = BehaviorSubject<(String, jobType)>.init(value: ("", jobType.none))
+    
+    private let mode:BehaviorRelay<CompuseRecruiteJobs> = BehaviorRelay<CompuseRecruiteJobs>.init(value: CompuseRecruiteJobs(JSON: [:])!)
+    
+    
+    private var dataSoure: RxTableViewSectionedReloadDataSource<JobMultiSectionModel>!
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.hidesBottomBarWhenPushed = true
         self.setViews()
+        self.setToolBarItems()
         self.setViewModel()
-        
     }
 
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if self.showToolBar == false{
-            self.showToolBar = false
-        }
-        self.hidesBottomBarWhenPushed = true 
+        
+        //
+        self.navigationController?.setToolbarHidden(false, animated: true)
+        //self.navigationController?.navigationBar.settranslucent(false)
+        self.navigationController?.insertCustomerView()
+
+
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-         self.showToolBar = false
+         //self.showToolBar = false
+        //self.navigationController?.setToolbarHidden(true, animated: true)
+        //self.navigationController?.navigationBar.settranslucent(true)
+        self.navigationController?.removeCustomerView()
     }
     
 
@@ -138,20 +147,20 @@ class JobDetailViewController: BaseShowJobViewController {
         
         self.hiddenViews.append(warnBtn)
         super.setViews()
-        self.title = "职位详情"
+        self.title = jobTitle
         
         table.register(CompanySimpleCell.self, forCellReuseIdentifier: CompanySimpleCell.identity())
         table.register(JobDescription.self, forCellReuseIdentifier: JobDescription.identity())
-        table.register(worklocateCell.self, forCellReuseIdentifier: worklocateCell.identity())
+        table.register(WorklocateCell.self, forCellReuseIdentifier: WorklocateCell.identity())
         table.register(RecruiterCell.self, forCellReuseIdentifier: RecruiterCell.identity())
-        table.register(subIconAndTitleCell.self, forCellReuseIdentifier: subIconAndTitleCell.identity())
+        table.register(SubIconAndTitleCell.self, forCellReuseIdentifier: SubIconAndTitleCell.identity())
         table.backgroundColor = UIColor.viewBackColor()
         table.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 15, right: 0)
         
         shareapps.delegate = self
         table.rx.setDelegate(self).disposed(by: dispose)
         
-        self.addBarItems()
+        
         
        
     }
@@ -161,54 +170,72 @@ class JobDetailViewController: BaseShowJobViewController {
         
         super.didFinishloadData()
         
-        
-        // 获取数据失败怎么办
-        guard mode != nil else {
-            return
-        }
-        
-        jobheader.mode = mode
+        jobheader.mode = mode.value
         jobheader.layoutSubviews()
         self.table.tableHeaderView = jobheader
         // 是否关注
-        collectedBtn.isSelected =  (mode?.isCollected)!
-        apply.isSelected = (mode?.isApply)!
-        apply.isUserInteractionEnabled = !(mode?.isApply)!
-        talk.isSelected = ( mode?.isTalked)!
+        
+        collectedBtn.isSelected =  mode.value.isCollected ?? false
+        apply.isSelected = mode.value.isApply  ?? false
+        apply.isUserInteractionEnabled = mode.value.isApply == true ? false : true
+        talk.isSelected = mode.value.isTalked ?? false
         
         // 控制toolbar 界面加载完成后在显示
-        self.showToolBar = true
+        //self.showToolBar = true
+        self.navigationController?.setToolbarHidden(false, animated: true)
         
     }
 
     
     override func reload() {
         super.reload()
-        query.onNext(uuid)
+        self.navigationController?.setToolbarHidden(true, animated: true)
+        query.onNext(job)
+       
         // TODO 出现错误 如何再刷新？？
     }
     
     
     // 收藏
     override func collected(_ btn:UIButton){
-        let str =  (mode?.isCollected)! ? "取消收藏" : "收藏成功"
-        collectedBtn.isSelected = !(mode?.isCollected)!
-        self.view.showToast(title: str, customImage: nil, mode: .text)
-        //showOnlyTextHub(message: str, view: self.view)
-        mode?.isCollected = collectedBtn.isSelected
+        
+        guard let _ = mode.value.id, let collect = mode.value.isCollected else {
+            return
+        }
+        // 判断有效用户
+        if !verifyLogin(){
+            return
+        }
+        
+        let state = collect ? "取消收藏" : "收藏成功"
+        // 服务器更新状态 回调 TODO
+        // 改变状态
+        collectedBtn.isSelected = !collect
+        self.view.showToast(title: state, customImage: nil, mode: .text)
+        mode.value.isCollected = collectedBtn.isSelected
         
     }
     
-    
+    // 投递简历
     @objc func onlineApply(_ btn:UIButton){
-        
-        if mode?.isApply == false{
-            apply.isSelected = true
-            apply.isUserInteractionEnabled = false
-            self.view.showToast(title: "投递简历成功", duration: 5, customImage: UIImageView.init(image: UIImage.init(named: "checkmark")?.withRenderingMode(.alwaysTemplate)), mode: .customView)
-            //showCustomerImageHub(message: "投递简历成功", view: self.view, image: #imageLiteral(resourceName: "checkmark").withRenderingMode(.alwaysTemplate))
-            mode?.isApply = true
+        // 判断有效用户
+        guard let _ = mode.value.id, let applyed = mode.value.isApply else {
+            return
         }
+        if !verifyLogin(){
+            return
+        }
+        
+        if applyed{
+            return
+        }
+        
+        // 网络请求 投递职位, 成功回调
+        apply.isSelected = true
+        apply.isUserInteractionEnabled = false
+        self.view.showToast(title: "投递简历成功", duration: 5, customImage: UIImageView.init(image: UIImage.init(named: "checkmark")?.withRenderingMode(.alwaysTemplate)), mode: .customView)
+        mode.value.isApply = true
+        
        
         
         
@@ -218,64 +245,65 @@ class JobDetailViewController: BaseShowJobViewController {
     // 和hr 交流该职位
     @objc func talkHR(_ btn:UIButton){
         
-        guard  let mode = mode  else {
+        guard  let _  = mode.value.id  else {
             return
         }
-        // 查看数据库， 如果之前没有交流过则发送jobdescribe message
-        if mode.isTalked == false{
-            // 本地自己发送的消息 总是read的
-            // 打招呼消息
-            
-            do{
-                
-                
-                if let  jobDescribeMessage = JobDescriptionlMessage(JSON: ["messageID":getUUID(),"creat_time":Date.init().timeIntervalSince1970,"type":MessgeType.jobDescribe.rawValue,"isRead":true, "receiver": mode.hr!.toJSON(), "sender":myself.toJSON(), "jobID":mode.id, "jobTypeDes":mode.kind?.describe, "icon": "sina", "jobName":"产品开发","company":"公司名称","salary":"薪水面议","tags":["标签1","标签2","标签3","标签4"]]){
-                    
-                
-                    
-                    
-                    // 打招呼消息
-                    let greetingMessage = MessageBoby(JSON: ["messageID":getUUID(),"content": GreetingMsg.data(using: String.Encoding.utf8)!.base64EncodedString(),"receiver": mode.hr!.toJSON(), "sender":myself.toJSON(),"isRead":true,"creat_time":Date.init().timeIntervalSince1970,
-                                                             "type":MessgeType.text.rawValue])
-                    
-                    greetingMessage?.sender = myself
-                    greetingMessage?.receiver = mode.hr!
-                    
-                    var messages:[MessageBoby] = []
-                    
-                    //
-                    // 允许带招呼用语
-                    if IsGreeting{
-                        messages.append(jobDescribeMessage)
-                        messages.append(greetingMessage!)
-                        
-                        
-                    }else{
-                        messages.append(jobDescribeMessage)
-                    }
-                    conversationManager.firstChatWith(person: mode.hr!, messages: messages)
-                    
-                    
-                }
-                
-            }catch{
-                print(error)
-                return
-            }
-            
-            mode.isTalked = true
-
-            
-            
-        }
         
-        talk.isSelected = true 
-        // 跳转到和hr的聊天界面
-        let chatView = CommunicationChatView(hr: mode.hr!)
-        
-        chatView.hidesBottomBarWhenPushed = true
-        
-        self.navigationController?.pushViewController(chatView, animated: true)
+//        // 查看数据库， 如果之前没有交流过则发送jobdescribe message
+//        if mode.isTalked == false{
+//            // 本地自己发送的消息 总是read的
+//            // 打招呼消息
+//
+//            do{
+//
+//
+//                if let  jobDescribeMessage = JobDescriptionlMessage(JSON: ["messageID":getUUID(),"creat_time":Date.init().timeIntervalSince1970,"type":MessgeType.jobDescribe.rawValue,"isRead":true, "receiver": mode.hr!.toJSON(), "sender":myself.toJSON(), "jobID":mode.id, "jobTypeDes":mode.kind?.describe, "icon": "sina", "jobName":"产品开发","company":"公司名称","salary":"薪水面议","tags":["标签1","标签2","标签3","标签4"]]){
+//
+//
+//
+//
+//                    // 打招呼消息
+//                    let greetingMessage = MessageBoby(JSON: ["messageID":getUUID(),"content": GreetingMsg.data(using: String.Encoding.utf8)!.base64EncodedString(),"receiver": mode.hr!.toJSON(), "sender":myself.toJSON(),"isRead":true,"creat_time":Date.init().timeIntervalSince1970,
+//                                                             "type":MessgeType.text.rawValue])
+//
+//                    greetingMessage?.sender = myself
+//                    greetingMessage?.receiver = mode.hr!
+//
+//                    var messages:[MessageBoby] = []
+//
+//                    //
+//                    // 允许带招呼用语
+//                    if IsGreeting{
+//                        messages.append(jobDescribeMessage)
+//                        messages.append(greetingMessage!)
+//
+//
+//                    }else{
+//                        messages.append(jobDescribeMessage)
+//                    }
+//                    conversationManager.firstChatWith(person: mode.hr!, messages: messages)
+//
+//
+//                }
+//
+//            }catch{
+//                print(error)
+//                return
+//            }
+//
+//            mode.isTalked = true
+//
+//
+//
+//        }
+//
+//        talk.isSelected = true
+//        // 跳转到和hr的聊天界面
+//        let chatView = CommunicationChatView(hr: mode.hr!)
+//
+//        chatView.hidesBottomBarWhenPushed = true
+//
+//        self.navigationController?.pushViewController(chatView, animated: true)
         
         
     }
@@ -284,22 +312,24 @@ class JobDetailViewController: BaseShowJobViewController {
 }
 
 
-
-
-extension JobDetailViewController: UITableViewDelegate{
-    
-    
+extension JobDetailViewController {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView == self.table{
             if scrollView.contentOffset.y > GlobalConfig.NavH{
-                self.navigationItem.title = mode?.name
+                self.navigationItem.title = mode.value.name
                 
             }else if scrollView.contentOffset.y <= 0 {
-                self.navigationItem.title = "职位详情"
+                self.navigationItem.title = jobTitle
             }
         }
     }
+    
+}
+
+
+extension JobDetailViewController: UITableViewDelegate{
+    
     
     // section header 高度
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -316,15 +346,15 @@ extension JobDetailViewController: UITableViewDelegate{
         switch  self.dataSoure[indexPath]{
             
         case .CompanySectionItem(let mode):
-            return  tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CompanySimpleCell.self, contentViewWidth: GlobalConfig.ScreenW)
+            return  tableView.cellHeight(for: indexPath, model: mode, keyPath: cellMode, cellClass: CompanySimpleCell.self, contentViewWidth: GlobalConfig.ScreenW)
         case .HRSectionItem(let mode):
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: RecruiterCell.self, contentViewWidth: GlobalConfig.ScreenW)
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: cellMode, cellClass: RecruiterCell.self, contentViewWidth: GlobalConfig.ScreenW)
         case .JobDescribeSectionItem(let mode):
-            return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: JobDescription.self, contentViewWidth: GlobalConfig.ScreenW)
+            return tableView.cellHeight(for: indexPath, model: mode, keyPath: cellMode, cellClass: JobDescription.self, contentViewWidth: GlobalConfig.ScreenW)
         case .AddressSectionItem(let address):
-            return tableView.cellHeight(for: indexPath, model: address, keyPath: "mode", cellClass: worklocateCell.self, contentViewWidth: GlobalConfig.ScreenW)
+            return tableView.cellHeight(for: indexPath, model: address, keyPath: cellMode, cellClass: WorklocateCell.self, contentViewWidth: GlobalConfig.ScreenW)
         case .EndTimeSectionItem(let time):
-            return tableView.cellHeight(for: indexPath, model: time, keyPath: "mode", cellClass: subIconAndTitleCell.self, contentViewWidth: GlobalConfig.ScreenW) + 20
+            return tableView.cellHeight(for: indexPath, model: time, keyPath: cellMode, cellClass: SubIconAndTitleCell.self, contentViewWidth: GlobalConfig.ScreenW) + 20
         }
         
     }
@@ -337,6 +367,7 @@ extension JobDetailViewController: UITableViewDelegate{
             switch dataSource[indexPath]{
             case .CompanySectionItem(let mode):
                 let cell  = table.dequeueReusableCell(withIdentifier: CompanySimpleCell.identity(), for: indexPath) as! CompanySimpleCell
+                //cell.mode = mode
                 cell.mode = mode
                 return cell
                 
@@ -347,11 +378,13 @@ extension JobDetailViewController: UITableViewDelegate{
             case .JobDescribeSectionItem(let mode):
                 let cell  = table.dequeueReusableCell(withIdentifier: JobDescription.identity(), for: indexPath) as! JobDescription
                 cell.mode = mode
-                self.mode = mode 
+                // 职位信息
+                //self.mode = mode
+                self.mode.accept(mode)
                 
                 return cell
             case .AddressSectionItem(let address):
-                let cell = table.dequeueReusableCell(withIdentifier: worklocateCell.identity(), for: indexPath) as! worklocateCell
+                let cell = table.dequeueReusableCell(withIdentifier: WorklocateCell.identity(), for: indexPath) as! WorklocateCell
                 cell.mode = address
                 cell.chooseAddress = { address in
                     
@@ -361,7 +394,7 @@ extension JobDetailViewController: UITableViewDelegate{
                     geocoder.geocodeAddressString(address) {
                         (placemarks, error) in
                         guard error == nil else {
-                            print(error!)
+                            self.view.showToast(title: "获取地址失败\(error)", customImage: nil, mode: .text)
                             return
                         }
                         place = placemarks?.first?.location?.coordinate
@@ -373,7 +406,7 @@ extension JobDetailViewController: UITableViewDelegate{
                 }
                 return cell
             case .EndTimeSectionItem(let time):
-                let cell =  table.dequeueReusableCell(withIdentifier: subIconAndTitleCell.identity(), for: indexPath) as! subIconAndTitleCell
+                let cell =  table.dequeueReusableCell(withIdentifier: SubIconAndTitleCell.identity(), for: indexPath) as! SubIconAndTitleCell
                 cell.mode = time
                 cell.iconName.text = "截止时间"
                 cell.icon.image = #imageLiteral(resourceName: "clock")
@@ -387,21 +420,21 @@ extension JobDetailViewController: UITableViewDelegate{
 
 extension JobDetailViewController {
     
-     private func  addBarItems(){
+     private func  setToolBarItems(){
         
         // 举报item
         
         self.navigationItem.rightBarButtonItems?.append(UIBarButtonItem.init(customView: warnBtn))
         // toolbar 添加item
         
-        let rightSpace = UIBarButtonItem.init(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        rightSpace.width = 10
-        self.toolbarItems?.append(rightSpace)
+//        let rightSpace = UIBarButtonItem.init(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+//        rightSpace.width = 10
+//        self.toolbarItems?.append(rightSpace)
         self.toolbarItems?.append(UIBarButtonItem.init(customView: apply))
         self.toolbarItems?.append(UIBarButtonItem.init(customView: talk))
-        let last = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
-        last.width = -20
-        self.toolbarItems?.append(last)
+//        let last = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
+//        last.width = -20
+//        self.toolbarItems?.append(last)
         
         
     }
@@ -410,39 +443,44 @@ extension JobDetailViewController {
         
         self.dataSoure = self.dataSource()
         
-        query.debug().asDriver(onErrorJustReturn: "").drive(onNext: { (id) in
-            self.vm.getJobById(id: id)
+        query.subscribe(onNext: { (id, t) in
+            self.vm.getJobById(id: id, type: t)
         }).disposed(by: dispose)
         
         // TODO 错误处理，从新加载数据， 会多次绑定table 错误？？
-        self.vm.jobMultiSection.debug().drive(self.table.rx.items(dataSource: self.dataSoure)).disposed(by: dispose)
-        
-        
-        self.vm.jobMultiSection.drive(onNext: { (mode) in
-            if mode.isEmpty{
+        self.vm.jobMultiSection.asDriver(onErrorJustReturn: []).do(onNext: { res in
+            if res.isEmpty{
                 self.showError()
-            }else{
-                //self.mode =  mode[2].items as? CompuseRecruiteJobs
             }
-        }).disposed(by: dispose)
+        }).drive(self.table.rx.items(dataSource: self.dataSoure)).disposed(by: dispose)
         
         
+        _ = self.mode.share().takeUntil(self.rx.deallocated).subscribe(onNext: { (mode) in
+            guard let _ =  mode.id  else {
+                return
+            }
+            self.didFinishloadData()
+            
+        })
+        self.errorView.tap.asDriver().drive(onNext: { _ in
+            self.reload()
+        }).disposed(by: self.dispose)
         // table
         self.table.rx.itemSelected.subscribe(onNext: { (idx) in
             if idx.section == 0 {
                 let companyVC =  CompanyMainVC()
                 companyVC.hidesBottomBarWhenPushed = true
-                companyVC.companyID = self.mode?.company?.id
+                companyVC.companyID = self.mode.value.company?.companyID
                 
                 self.navigationController?.pushViewController(companyVC, animated: true)
                 
             }else if idx.section == 1{
-                let hrvc = publisherControllerView()
-                hrvc.hidesBottomBarWhenPushed = true
-                guard let id = self.mode?.hr?.userID else {
+                let hrvc = PublisherControllerView()
+                guard let id = self.mode.value.recruiter?.userID else {
                     return
                 }
                 hrvc.userID =  id
+                hrvc.hidesBottomBarWhenPushed = true
                 self.navigationController?.pushViewController(hrvc, animated: true)
             }
             
@@ -482,9 +520,11 @@ extension JobDetailViewController{
     
     // 举报
     @objc func warn(){
-        let warnVC = JuBaoViewController()
-        warnVC.jobID = mode?.id
+        guard let id = mode.value.id else {
+            return
+        }
         
+        warnVC.jobID = id
         warnVC.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(warnVC, animated: true)
     }

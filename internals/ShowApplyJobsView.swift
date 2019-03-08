@@ -10,20 +10,16 @@ import UIKit
 
 
 
-
-
-
 protocol showApplyJobsDelegate: class {
     
     func apply(view:ShowApplyJobsView, jobIndex:Int)
     
 }
 
-class ShowApplyJobsView: UIView {
 
+private class topView:UIView {
     
-    internal var cellH:CGFloat = 40
-    internal var fixedH:CGFloat = 80
+    internal var pv:ShowApplyJobsView?
     
     private lazy var selecTitle:UILabel = {
         let label = UILabel.init()
@@ -41,7 +37,7 @@ class ShowApplyJobsView: UIView {
         btn.setTitle("取消", for: .normal)
         btn.setTitleColor(UIColor.lightGray, for: .normal)
         btn.backgroundColor = UIColor.clear
-        btn.addTarget(self, action: #selector(cancel), for: .touchUpInside)
+        btn.addTarget(self.pv!, action: #selector(self.pv!.cancel), for: .touchUpInside)
         return btn
     }()
     
@@ -52,19 +48,55 @@ class ShowApplyJobsView: UIView {
         return v
     }()
     
+    convenience init(frame:CGRect ,v:ShowApplyJobsView){
+        self.init(frame: frame)
+        self.pv = v
+    }
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let views:[UIView] = [selecTitle, cancelBtn, line]
+        self.sd_addSubviews(views)
+        _ = selecTitle.sd_layout().topSpaceToView(self,10)?.leftSpaceToView(self,10)?.autoHeightRatio(0)
+        _ = cancelBtn.sd_layout().rightSpaceToView(self,10)?.topEqualToView(selecTitle)?.widthIs(40)?.heightRatioToView(selecTitle,0.8)
+        _ = line.sd_layout().topSpaceToView(selecTitle,5)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(1)
+        
+        selecTitle.setMaxNumberOfLinesToShow(1)
+        self.setupAutoHeight(withBottomView: line, bottomMargin: 0)
+    }
+    
+}
+
+fileprivate let cellIdentity:String = "cell"
+fileprivate let cellH:CGFloat = 40
+fileprivate let maxRow:Int = 7
+
+class ShowApplyJobsView: UIView {
+
+    
+    private lazy var  tv:topView = {
+        let v = topView.init(frame: CGRect.zero, v: self)
+        return v
+    }()
+    
     private lazy var contentTable:UITableView = {
         let table = UITableView()
         table.backgroundColor = UIColor.white
         table.tableFooterView = UIView()
         table.delegate = self
         table.dataSource = self
-        table.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        table.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentity)
         return table
     }()
-    
-    
-    
-   
     
     private lazy var bottomBtn:UIButton = {
         let btn  = UIButton()
@@ -117,23 +149,22 @@ extension ShowApplyJobsView{
     private func setView(){
         self.backgroundColor = UIColor.white
 
-        let views:[UIView] =  [selecTitle, cancelBtn, line, contentTable, bottomBtn]
+        let views:[UIView] =  [tv, contentTable, bottomBtn]
         self.sd_addSubviews(views)
         //self.autoresizingMask = [.]
         self.clipsToBounds = true
-        _ = selecTitle.sd_layout().topSpaceToView(self,10)?.leftSpaceToView(self,10)?.autoHeightRatio(0)
-        _ = cancelBtn.sd_layout().rightSpaceToView(self,10)?.topEqualToView(selecTitle)?.widthIs(40)?.heightRatioToView(selecTitle,0.8)
-        _ = line.sd_layout().topSpaceToView(selecTitle,5)?.leftEqualToView(self)?.rightEqualToView(self)?.heightIs(1)
+        
+    }
+    
+    override func layoutSubviews() {
+        _ = tv.sd_layout()?.topEqualToView(self)?.leftEqualToView(self)?.rightEqualToView(self)
         
         _ = bottomBtn.sd_layout().leftEqualToView(self)?.rightEqualToView(self)?.bottomEqualToView(self)?.heightIs(40)
-
         
-        _ = contentTable.sd_layout().topSpaceToView(line,0)?.leftEqualToView(self)?.rightEqualToView(self)?.bottomSpaceToView(bottomBtn,0)
+        _ = contentTable.sd_layout().topSpaceToView(tv,0)?.leftEqualToView(self)?.rightEqualToView(self)?.bottomSpaceToView(bottomBtn,0)
         
+        super.layoutSubviews()
         
- 
-        
-        selecTitle.setMaxNumberOfLinesToShow(1)
     }
 }
 
@@ -151,7 +182,7 @@ extension ShowApplyJobsView: UITableViewDataSource, UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell =  tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        let cell =  tableView.dequeueReusableCell(withIdentifier: cellIdentity, for: indexPath)
         cell.textLabel?.text =  jobs[indexPath.row]
         cell.selectionStyle = .none
         cell.textLabel?.textColor =  indexPath.row == selectIndex ? UIColor.blue : UIColor.black
@@ -200,7 +231,7 @@ extension ShowApplyJobsView{
         self.hidden()
     }
     
-    @objc private func cancel(){
+    @objc internal func cancel(){
         self.hidden()
         
     }
@@ -210,7 +241,10 @@ extension ShowApplyJobsView{
        
         UIApplication.shared.keyWindow?.insertSubview(showJobsBackGround , belowSubview: self)
         
-        let height = CGFloat(min(jobs.count, 7)) * self.cellH + self.fixedH
+        // TODO  tv 的高度不能获取, 给出手动计算的值
+        
+        let height = CGFloat(min(jobs.count, maxRow)) * cellH + self.bottomBtn.frame.height + 36
+        //print(self.bottomBtn.frame.height, self.tv.frame.height)
         
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             self.frame = CGRect.init(x: 0, y: GlobalConfig.ScreenH - height, width: GlobalConfig.ScreenW, height: height)

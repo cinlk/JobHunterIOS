@@ -95,7 +95,7 @@ class JobInviteViewController: BaseTableViewController {
         }else if mode.type == .graduate || mode.type == .intern{
             let jobV = JobDetailViewController()
             
-            jobV.uuid = mode.jobID!
+            jobV.job = (mode.jobID!, mode.type)
             self.navigationController?.pushViewController(jobV, animated: true)
         }
         

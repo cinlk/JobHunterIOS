@@ -10,6 +10,8 @@ import UIKit
 import ObjectMapper
 
 
+
+
 class OnlineApplyListModel: NSObject, Mappable {
     
     internal var onlineApplyID:String?
@@ -46,8 +48,8 @@ class OnlineApplyListModel: NSObject, Mappable {
         endTime <- (map["end_time"], DateTransform())
         companyName <- map["company_name"]
         name <- map["name"]
-        outside <- map["outside"]
-        link <- map["link"]
+        outside <- map["out_side"]
+        link <-  (map["link"], URLTransform())
         
     }
     
@@ -77,7 +79,7 @@ class OnlineApplyModel: BaseModel {
     
     
     // 工作城市
-    internal var address:[String]?
+    internal var citys:[String]?
     // 专业
     internal var majors:[String]?
     // 职位
@@ -93,7 +95,7 @@ class OnlineApplyModel: BaseModel {
     internal var outer:Bool = true
     
     // 网申招聘描述（MARK）
-    internal var contentType:String = "text" // html 或 text
+    internal var contentType:String? // html 或 text
     internal var content:String?
     
     // cell 视图显示条件
@@ -104,12 +106,12 @@ class OnlineApplyModel: BaseModel {
     required init?(map: Map) {
         super.init(map: map)
       
-        if map.JSON["end_time"] == nil{
-            return nil
-        }
-        if map.JSON["outer"] != nil && (map.JSON["outer"] as! Bool) == true && map.JSON["link"] == nil{
-            return nil
-        }
+//        if map.JSON["end_time"] == nil{
+//            return nil
+//        }
+//        if map.JSON["outer"] != nil && (map.JSON["outer"] as! Bool) == true && map.JSON["link"] == nil{
+//            return nil
+//        }
         
         
     }
@@ -121,12 +123,12 @@ class OnlineApplyModel: BaseModel {
         company <- map["company"]
         //companyIcon <- map["company_icon"]
         //companyName <- map["company_name"]
-        address <- map["address"]
+        citys <- map["citys"]
         positions <- map["positions"]
         majors <- map["majors"]
         contentType <- map["content_type"]
         content <- map["content"]
-        outer <- map["outer"]
+        outer <- map["out_side"]
         
         
         

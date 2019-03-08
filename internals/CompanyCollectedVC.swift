@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Kingfisher
 
 fileprivate let notifiyName:String = "CompanyCollectedVC"
 
@@ -225,7 +225,10 @@ extension CompanyCollectedVC{
             guard  let mode = mode  else {
                 return
             }
-            self.icon.image = UIImage.init(named: mode.icon)
+            if let url = mode.iconURL{
+                self.icon.kf.setImage(with: Source.network(url), placeholder: UIImage.init(named: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+            }
+            
             self.companyName.text = mode.name
             // 必须的 参数
             self.describe.text = mode.simpleDes

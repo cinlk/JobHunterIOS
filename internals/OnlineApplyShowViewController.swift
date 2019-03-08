@@ -9,39 +9,68 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import RxDataSources
 import Kingfisher
 
 
+
 fileprivate let minTableRow:Int = 7
+fileprivate let applyTitle:String = "申请"
+fileprivate let collectedTitle:[String] = ["取消收藏", "收藏成功"]
+fileprivate let headIconSize:CGSize = CGSize.init(width: 50, height: 50)
+
+private class navBackView:UIView {
+    
+    
+    ///
+    
+    
+    private lazy var lb:UILabel = {
+        
+        let label = UILabel()
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
+        label.textColor = UIColor.white
+        label.textAlignment = .center
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        return label
+    }()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.backgroundColor = UIColor.green
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.addSubview(lb)
+        _ = lb.sd_layout().centerXEqualToView(self)?.bottomSpaceToView(self,15)?.autoHeightRatio(0)
+    }
+    
+    internal func setLabel(name:String){
+        self.lb.text = name
+    }
+    
+    
+}
 
 class OnlineApplyShowViewController: BaseShowJobViewController {
     
+    private var richH:CGFloat = 0
     
     internal var uuid:String = ""{
         didSet{
              query.onNext(uuid)
+            
         }
     }
-    private var mode:OnlineApplyModel?{
-        
-        didSet{
-            didFinishloadData()
-        }
-    }
-    
     // 自定义头部
     private lazy var headerView: tableHeader = tableHeader()
-    
-    private lazy var apply:UIButton = { [unowned self] in
-        
-        let apply = UIButton.init(frame: CGRect.init(x: 0, y: 0, width:  GlobalConfig.ScreenW - collectedBtn.width + 20, height: TOOLBARH))
-        apply.addTarget(self, action: #selector(onlineApply(_:)), for: .touchUpInside)
-        apply.setTitle("申请", for: .normal)
-        apply.setTitleColor(UIColor.white, for: .normal)
-        apply.backgroundColor = UIColor.blue
-        return apply
-        
-    }()
     
     
     private lazy var  showJobsView: ShowApplyJobsView = {
@@ -52,20 +81,9 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
   
 
 
-    private lazy var naviBackView:UIView = {
-        let view = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH))
-        view.backgroundColor = UIColor.green
+    private lazy var naviBackView:navBackView = {
+        let view = navBackView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH))
         view.alpha = 0
-        
-        let label = UILabel()
-        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
-        label.textColor = UIColor.white
-        label.textAlignment = .center
-        label.font = UIFont.boldSystemFont(ofSize: 16)
-        label.tag = 10
-        view.addSubview(label)
-        _ = label.sd_layout().centerXEqualToView(view)?.bottomSpaceToView(view,15)?.autoHeightRatio(0)
-        
         return view
     }()
     
@@ -75,6 +93,8 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
     private let dispose = DisposeBag()
     private let vm:RecruitViewModel = RecruitViewModel()
     private let query:BehaviorSubject<String> = BehaviorSubject<String>.init(value: "")
+    private let mode:BehaviorRelay<OnlineApplyModel> = BehaviorRelay<OnlineApplyModel>.init(value: OnlineApplyModel(JSON: [:])!)
+    
     
     
     
@@ -83,6 +103,7 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
         super.viewDidLoad()
         setViews()
         setViewModel()
+    
        
         // Do any additional setup after loading the view.
     }
@@ -90,66 +111,45 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        self.navigationController?.setToolbarHidden(mode == nil, animated: false)
-        self.navigationController?.navigationBar.tintColor = UIColor.white
-        self.navigationController?.view.insertSubview(naviBackView, at: 1)
-         UIApplication.shared.keyWindow?.addSubview(showJobsView)
-        (self.navigationController as? JobHomeNavigation)?.currentStyle = .lightContent
+        self.setViewState(show: true)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        
         super.viewWillDisappear(animated)
-        self.navigationController?.setToolbarHidden(true, animated: false)
-        naviBackView.removeFromSuperview()
-        self.navigationController?.navigationBar.tintColor = UIColor.black
-        (self.navigationController as? JobHomeNavigation)?.currentStyle = .default
-        showJobsView.removeFromSuperview()
+        self.setViewState(show: false)
     }
     
     override func setViews(){
         super.setViews()
-        
-        
-        table.backgroundColor = UIColor.viewBackColor()
-        table.contentInsetAdjustmentBehavior = .never
-        table.dataSource = self
-        table.delegate = self
-        
-        table.register(applyJobsCell.self, forCellReuseIdentifier: applyJobsCell.identity())
-        
-        // share 分享界面代理
-        shareapps.delegate = self
-        
-        // 加入申请按钮，按钮长度填充toolbar长度，不产生空隙
-        let rightSpace = UIBarButtonItem.init(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        rightSpace.width = 20
-        
-        
-        
-        self.toolbarItems?.append(rightSpace)
-        self.toolbarItems?.append(UIBarButtonItem.init(customView: apply))
-        let last = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
-        last.width = -20
-        self.toolbarItems?.append(last)
-        // 先影藏底部bar
-        
-        
+        self.configTable()
+        self.setToolBar()
+        self.shareapps.delegate = self
+        self.hidesBottomBarWhenPushed = true
+ 
     }
     
+
     
-    override func didFinishloadData() {
-        super.didFinishloadData()
-        self.finishLoadData()
-        
+    override func showError() {
+        super.showError()
+        self.navigationController?.navigationBar.settranslucent(false)
     }
     
     override func reload() {
         super.reload()
-        // 重新建立观察序列
-        setViewModel()
         query.onNext(uuid)
+    }
+    
+    
+    @objc private func onlineApply(_ btn:UIButton){
+        if !verifyLogin(){
+            return
+        }
+        // 识别职位投递简历??
+        guard  let jobs = mode.value.positions, jobs.count > 0 else {
+            return
+        }
+        self.showJobsView.show()
     }
     
     
@@ -157,20 +157,25 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
     // 收藏
     override func collected(_ btn:UIButton){
         
-        if !GlobalUserInfo.shared.isLogin {
-            showAlert(error: "请登录", vc: self)
+        if !verifyLogin(){
             return
         }
-        // 用户收藏 数据
-        let str  = collectedBtn.isSelected ? "取消收藏" : "收藏成功"
+        
+        // 用户收藏 数据 TODO
+        let str  = collectedBtn.isSelected ? collectedTitle[0] : collectedTitle[1]
         collectedBtn.isSelected = !collectedBtn.isSelected
         self.view.showToast(title: str, customImage: nil, mode: .text)
         //showOnlyTextHub(message: str, view: self.view)
-        mode?.isCollected = collectedBtn.isSelected
+        // 发送数据到服务器 TODO
+        mode.value.isCollected = collectedBtn.isSelected
         
         
     }
+    
+   
 
+    
+  
 }
 
 
@@ -178,9 +183,11 @@ extension OnlineApplyShowViewController: showApplyJobsDelegate{
     
 
     func apply(view: ShowApplyJobsView, jobIndex: Int) {
+        // 发送网络请求 TODO
         print("投递职位 \(jobIndex)")
     }
-    
+
+
     
 }
 
@@ -201,31 +208,56 @@ extension OnlineApplyShowViewController{
         }
     }
     
-    
-    private func finishLoadData(){
+    // 如何填充慢toolbar TODO
+    private func setToolBar(){
         
-        (naviBackView.viewWithTag(10) as! UILabel).text = mode?.name
-        showJobsView.jobs = mode?.positions ?? []
-        
-        headerView.mode = mode
-        headerView.layoutSubviews()
-        table.tableHeaderView = headerView
-        table.reloadData()
-        
-        collectedBtn.isSelected =  mode!.isCollected!
-        
-        self.navigationController?.setToolbarHidden(false, animated: true)
+        let apply = UIButton.init(frame: CGRect.init(x: 0, y: 0, width:  GlobalConfig.ScreenW - collectedBtn.width, height: GlobalConfig.toolBarH))
+        apply.addTarget(self, action: #selector(onlineApply(_:)), for: .touchUpInside)
+        apply.setTitle(applyTitle, for: .normal)
+        apply.setTitleColor(UIColor.white, for: .normal)
+        apply.backgroundColor = UIColor.blue
+        //self.navigationController?.toolbar.contentMode = .scaleAspectFill
+ 
+        self.toolbarItems?.append(UIBarButtonItem.init(customView: apply))
+ 
     }
     
-
+    private func configTable(){
+        
+        table.backgroundColor = UIColor.viewBackColor()
+        table.contentInsetAdjustmentBehavior = .never
+        table.rx.setDelegate(self).disposed(by: self.dispose)
+        table.register(ApplyJobsCell.self, forCellReuseIdentifier: ApplyJobsCell.identity())
+       
+        
+    }
     
-
+    
+    // 控制其他view的状态
+    private func setViewState(show:Bool){
+        
+        if show{
+            self.navigationController?.setToolbarHidden(mode.value.id == nil, animated: false)
+            self.navigationController?.navigationBar.tintColor = UIColor.white
+            self.navigationController?.view.insertSubview(naviBackView, at: 1)
+            UIApplication.shared.keyWindow?.addSubview(showJobsView)
+            (self.navigationController as? JobHomeNavigation)?.currentStyle = .lightContent
+            
+        }else{
+            self.navigationController?.setToolbarHidden(true, animated: false)
+            naviBackView.removeFromSuperview()
+            self.navigationController?.navigationBar.tintColor = UIColor.black
+            (self.navigationController as? JobHomeNavigation)?.currentStyle = .default
+            showJobsView.removeFromSuperview()
+        }
+    }
+    
     
     
 }
 
 
-// share分享代理实现
+// share分享代理实现  TODO
 extension OnlineApplyShowViewController:shareViewDelegate{
     
     func handleShareType(type: UMSocialPlatformType, view: UIView) {
@@ -256,51 +288,66 @@ extension OnlineApplyShowViewController:shareViewDelegate{
 }
 
 
-// 公司主页网申
-extension OnlineApplyShowViewController{
-    
-    @objc private func onlineApply(_ btn:UIButton){
-        if !GlobalUserInfo.shared.isLogin{
-            showAlert(error: "请登录", vc: self)
-            return
-        }
-        // 识别职位投递简历??
-        guard  let jobs = mode?.positions, jobs.count > 0 else {
-            return
-        }
-        self.showJobsView.show()
-    }
-    
-}
+
 
 extension OnlineApplyShowViewController{
     
     private func setViewModel(){
         
         
-        query.subscribeOn(MainScheduler.instance).share().flatMapLatest { (id) -> Observable<OnlineApplyModel> in
-            
-            self.vm.getOnlineApplyBy(id: id)
-            }.subscribe(onNext: { (mode) in
-                self.mode = mode
-            }, onError: { (err) in
-                print("get error \(err)")
-                self.showError()
-                
-            }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+        self.errorView.tap.asDriver().drive(onNext: { _ in
+            self.reload()
+        }).disposed(by: self.dispose)
         
+       _ = query.flatMapLatest {  id in
+            // TODO 处理http请求错误
+            self.vm.getOnlineApplyBy(id: id).asDriver(onErrorJustReturn: ResponseModel<OnlineApplyModel>(JSON: [:])!)
+        
+            }.debug().takeUntil(self.rx.deallocated).subscribe(onNext: { (resp) in
+                if !HttpCodeRange.filterSuccessResponse(target: resp.code ?? -1){
+                        // 出错
+                    self.view.showToast(title: "error\(resp.returnMsg ?? "")", customImage: nil, mode: .text)
+                    self.showError()
+                    return
+                  }
+                if let  data = resp.body{
+                    self.mode.accept(data)
+                }
+            })
+        
+        
+        mode.subscribe(onNext: { m in
+            self.didFinishloadData()
+            self.naviBackView.setLabel(name: m.name ?? "")
+            self.showJobsView.jobs = m.positions ?? []
+            self.headerView.mode = m
+            self.headerView.layoutSubviews()
+            self.table.tableHeaderView = self.headerView
+            self.table.reloadData()
+            self.collectedBtn.isSelected =  m.isCollected ?? false
+            self.navigationController?.setToolbarHidden(false, animated: true)
+            
+        }).disposed(by: self.dispose)
+        
+        mode.map({ (m)  in
+            [m]
+        }).bind(to: self.table.rx.items(cellIdentifier: ApplyJobsCell.identity(), cellType: ApplyJobsCell.self)){ (row, mode, cell) in
+            if mode.id == nil{
+                return
+            }
+            cell.mode = mode
+            
+            
+        }.disposed(by: self.dispose)
+
         
     }
    
 }
 
-extension OnlineApplyShowViewController: UITableViewDelegate, UITableViewDataSource{
+extension OnlineApplyShowViewController: UITableViewDelegate{
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
-    }
-    
-    
+
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 10
     }
@@ -308,21 +355,14 @@ extension OnlineApplyShowViewController: UITableViewDelegate, UITableViewDataSou
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         return UIView()
     }
-    
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: applyJobsCell.identity(), for: indexPath) as! applyJobsCell
-        guard let mode = mode  else {
-            return UITableViewCell()
-        }
-        cell.mode = mode
-        return cell
-    }
-    
+
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        
-        return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: applyJobsCell.self, contentViewWidth: GlobalConfig.ScreenW)
+        if mode.value.id == nil{
+            return 0
+        }
+        // richText 高度适应(执行顺便，先返回计算前的高度! 如何解决??) 
+        return tableView.cellHeight(for: indexPath, model: mode.value, keyPath: "mode", cellClass: ApplyJobsCell.self, contentViewWidth: GlobalConfig.ScreenW)
     }
     
 }
@@ -401,13 +441,14 @@ private class tableHeader:UIView{
                 return
             }
         
-            //let url = URL.init(string: mode.companyIcon)
+            if let url = mode.iconURL{
+                self.icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "home"), options: nil, progressBlock: nil, completionHandler: nil)
+            }
+             self.name.text = mode.name ?? ""
             
-            //self.icon.kf.setImage(with: Source.network(url!), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
-            self.address.text = mode.address?.joined(separator: " ")
+            self.address.text = mode.citys?.joined(separator: " ")
             self.time.text = "截止时间: " + mode.endTimeStr
-            //self.name.text = mode.companyName
-            self.positions.text = mode.positions?.joined(separator: " ")
+             self.positions.text = mode.positions?.joined(separator: " ")
             self.setupAutoHeight(withBottomViewsArray: [icon,time], bottomMargin: 5)
             
         }
@@ -420,7 +461,7 @@ private class tableHeader:UIView{
         
         let views:[UIView] = [icon, name, addressIcon, address,timeIcon, time, positions, positionIcon]
         self.sd_addSubviews(views)
-        _ = icon.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(self, GlobalConfig.NavH)?.widthIs(45)?.heightIs(45)
+        _ = icon.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(self, GlobalConfig.NavH)?.widthIs(headIconSize.width)?.heightIs(headIconSize.height)
         _ = name.sd_layout().leftSpaceToView(icon,10)?.topEqualToView(icon)?.autoHeightRatio(0)
         _ = addressIcon.sd_layout().topSpaceToView(name,5)?.leftEqualToView(name)?.widthIs(15)?.heightIs(15)
         _ = address.sd_layout().leftSpaceToView(addressIcon,10)?.topEqualToView(addressIcon)?.autoHeightRatio(0)

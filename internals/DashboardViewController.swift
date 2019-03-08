@@ -614,16 +614,14 @@ extension DashboardViewController {
     @objc private func showOnlineApply(name:String){
         
         if let nav = self.tabBarController?.viewControllers?[1] as?  UINavigationController, let target = nav.viewControllers[0] as? JobHomeVC{
-            target.scrollToOnlineAppy = true
+          
             
-            // 默认显示数据
-            if name.isEmpty{
-                return
-            }
             if let vc = target.children[0] as? OnlineApplyViewController{
                 //d查找指定name的数据 TODO
-                
+                vc.search = name
             }
+            target.scrollToOnlineAppy = true
+            
             
         }
         
@@ -694,7 +692,7 @@ extension DashboardViewController{
             else if  let cell = self.tables.cellForRow(at: indexpath) as? CommonJobTableCell, let data = cell.mode{
                 
                 let detail = JobDetailViewController()
-                detail.uuid = data.jobId ?? ""
+                detail.job = (data.jobId ?? "", data.kind ?? .none)
                 //detail.hidesBottomBarWhenPushed = true
                 //detail.jobID = jobModel.id!
                 //detail.kind = (id: jobModel.id!, type: jobModel.kind!)

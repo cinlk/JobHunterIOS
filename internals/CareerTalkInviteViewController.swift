@@ -90,7 +90,7 @@ class CareerTalkInviteViewController: BaseTableViewController {
         tableView.deselectRow(at: indexPath, animated: false)
         let mode = datas[indexPath.row]
         let show = CareerTalkShowViewController()
-        show.meetingID =  mode.meetingID
+        show.meetingID =  mode.meetingID ?? ""
         self.navigationController?.pushViewController(show, animated: true)
        
         

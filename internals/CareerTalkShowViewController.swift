@@ -10,39 +10,28 @@ import UIKit
 import EventKitUI
 import RxSwift
 import RxCocoa
+import RxDataSources
 
 fileprivate let viewTitle:String = "宣讲会详情"
+fileprivate let collectedStr:[String] = ["取消收藏", "收藏成功"]
 
 class CareerTalkShowViewController: BaseShowJobViewController {
 
     
     private lazy var headerView:CareerTalkHeaderView = CareerTalkHeaderView()
     
-    private var mode:CareerTalkMeetingModel?{
-        didSet{
-            self.didFinishloadData()
-        }
-    }
     
     // 根据id 查询数据
-    var meetingID:String?{
+    internal var meetingID:String = ""{
         didSet{
-           query.onNext(meetingID!)
+           query.onNext(meetingID)
         }
     }
-    
-    private var showTooBar:Bool = false{
-        didSet{
-            self.navigationController?.setToolbarHidden(!showTooBar, animated: false)
-
-        }
-    }
-    
     
     private lazy var apply:UIButton = {
         
-        let apply = UIButton.init(frame: CGRect.init(x: 0, y: 0, width:  GlobalConfig.ScreenW - collectedBtn.width + 20, height: TOOLBARH))
-        apply.addTarget(self, action: #selector(AddCalendar(_:)), for: .touchUpInside)
+        let apply = UIButton.init(frame: CGRect.init(x: 0, y: 0, width:  GlobalConfig.ScreenW - collectedBtn.width, height: GlobalConfig.toolBarH))
+        apply.addTarget(self, action: #selector(addCalendar(_:)), for: .touchUpInside)
         apply.setTitle("添加到日历", for: .normal)
         apply.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         apply.setTitleColor(UIColor.white, for: .normal)
@@ -53,9 +42,12 @@ class CareerTalkShowViewController: BaseShowJobViewController {
     
     
     //rxSwift
-    let dispose = DisposeBag()
-    let vm:RecruitViewModel = RecruitViewModel()
-    let query:BehaviorSubject<String> = BehaviorSubject<String>.init(value: "")
+    private let dispose = DisposeBag()
+    private let vm:RecruitViewModel = RecruitViewModel()
+    private let query:BehaviorSubject<String> = BehaviorSubject<String>.init(value: "")
+    private var dataSoure:RxTableViewSectionedReloadDataSource<RecruitMeetingSectionModel>!
+    private var mode:BehaviorRelay<CareerTalkMeetingModel> = BehaviorRelay<CareerTalkMeetingModel>.init(value: CareerTalkMeetingModel(JSON: [:])!)
+    
     
     
     
@@ -63,6 +55,7 @@ class CareerTalkShowViewController: BaseShowJobViewController {
         super.viewDidLoad()
         setViews()
         setViewModel()
+        
        
 
         // Do any additional setup after loading the view.
@@ -70,18 +63,19 @@ class CareerTalkShowViewController: BaseShowJobViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        //self.navigationController?.insertCustomerView()
-        // 第一次加载 为false，不显示 直到获取数据后 设置为true 显示
-        if self.showTooBar == false{
-            self.showTooBar = false
-        }
-        self.hidesBottomBarWhenPushed = true 
+   
+        self.navigationController?.setToolbarHidden(false, animated: true)
+        //self.navigationController?.navigationBar.settranslucent(false)
+        self.navigationController?.insertCustomerView()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         //self.navigationController?.removeCustomerView()
-        self.showTooBar = false
+        self.navigationController?.setToolbarHidden(true, animated: true)
+        //elf.navigationController?.navigationBar.settranslucent(true)
+        self.navigationController?.removeCustomerView()
+
     }
     
     
@@ -90,11 +84,9 @@ class CareerTalkShowViewController: BaseShowJobViewController {
        
         
         super.setViews()
-        setToolBar()
-      
+        //setToolBar()
+        self.toolbarItems?.append(UIBarButtonItem.init(customView: apply))
         self.title = viewTitle
-        table.delegate = self
-        table.dataSource = self
         table.register(CompanySimpleCell.self, forCellReuseIdentifier: CompanySimpleCell.identity())
         // 内容cell
         table.register(CareerTalkContentCell.self, forCellReuseIdentifier: CareerTalkContentCell.identity())
@@ -104,30 +96,40 @@ class CareerTalkShowViewController: BaseShowJobViewController {
     }
     
     
-    override func didFinishloadData() {
+    private func didFinishloadData(mode: CareerTalkMeetingModel) {
         super.didFinishloadData()
         
         headerView.mode = mode
         headerView.layoutSubviews()
         table.tableHeaderView = headerView
-        table.reloadData()
-        collectedBtn.isSelected = (mode?.isCollected)!
-        self.showTooBar = true
+       
+        collectedBtn.isSelected = mode.isCollected ?? false
+        self.navigationController?.setToolbarHidden(false, animated: true)
+
     }
     
     override func reload() {
         super.reload()
         // TODO 出现错误 重新获取序列数据
+        query.onNext(self.meetingID)
     }
     
     // 收藏
     override func collected(_ btn:UIButton){
+        guard  let IsCollected = mode.value.isCollected else {
+            return
+        }
         
-        let str =  (mode?.isCollected)! ? "取消收藏" : "收藏成功"
-        collectedBtn.isSelected = !(mode?.isCollected)!
+        if !verifyLogin(){
+            return
+        }
+        
+        let str =  IsCollected ? collectedStr[0] : collectedStr[1]
+        collectedBtn.isSelected = IsCollected
         self.view.showToast(title: str, customImage: nil, mode: .text)
         //showOnlyTextHub(message: str, view: self.view)
-        mode?.isCollected = !(mode?.isCollected)!
+        // 上传到服务器
+        mode.value.isCollected = !IsCollected
         
     }
 
@@ -168,40 +170,92 @@ extension CareerTalkShowViewController{
     
     private func setViewModel(){
         
-        query.asDriver(onErrorJustReturn: "").drive(onNext: { (id) in
-            self.vm.getRecruitMeetingBy(id: id).share().subscribe(onNext: { (mode) in
-                self.mode = mode
-            }, onError: { (err) in
+        table.rx.setDelegate(self).disposed(by: self.dispose)
+
+        
+        self.errorView.tap.asDriver().drive(onNext: { _ in
+            self.reload()
+        }).disposed(by: self.dispose)
+        
+        
+        query.subscribe(onNext: { (id) in
+            self.vm.getRecruitMeetingBy(id: id)
+            
+        }).disposed(by: dispose)
+        
+        dataSoure = RxTableViewSectionedReloadDataSource<RecruitMeetingSectionModel>.init(configureCell: { (dataSource, table, indexPath, _) -> UITableViewCell in
+            switch dataSource[indexPath]{
+            case .CompanyItem(let mode):
+                let cell = table.dequeueReusableCell(withIdentifier: CompanySimpleCell.identity(), for: indexPath) as! CompanySimpleCell
+                cell.mode = mode
+                return cell
+                
+            case .RecruitMeeting(let mode):
+                
+                let cell = table.dequeueReusableCell(withIdentifier: CareerTalkContentCell.identity(), for: indexPath) as! CareerTalkContentCell
+                cell.name.text = "宣讲内容"
+                cell.mode = mode
+                self.mode.accept(mode)
+                
+                return cell
+                
+            }
+        })
+        
+        self.mode.subscribe(onNext: { (mode) in
+            guard let _ = mode.id else {
+                return
+            }
+            self.didFinishloadData(mode: mode)
+            
+            
+        }).disposed(by: self.dispose)
+           // 错误处理
+        self.vm.recruitMeetingMultiSection.asDriver(onErrorJustReturn: []).do(onNext: { (res) in
+            if res.isEmpty{
                 self.showError()
-                self.view.showLoading(title: "query get error \(err)", customImage: nil, mode: .text)
-                //showOnlyTextHub(message: "query get error \(err)", view: self.view)
-            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
-            
-            
-        }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
+            }
+        }).drive(self.table.rx.items(dataSource: self.dataSoure)).disposed(by: self.dispose)
+        
+     
+       
+        
+        self.table.rx.itemSelected.subscribe(onNext: { (indexPath) in
+            switch self.dataSoure[indexPath]{
+            case .CompanyItem(let mode):
+                let com = CompanyMainVC()
+                com.companyID = mode.companyID
+                com.hidesBottomBarWhenPushed = true
+                self.navigationController?.pushViewController(com, animated: true)
+            default:
+                break
+            }
+        }).disposed(by: self.dispose)
+        
+        
         
     }
 }
 extension CareerTalkShowViewController{
     
     
-    private func setToolBar(){
-        
-        let rightSpace = UIBarButtonItem.init(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        rightSpace.width = 20
-        
-        
-        self.toolbarItems?.append(rightSpace)
-        self.toolbarItems?.append(UIBarButtonItem.init(customView: apply))
-        let last = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
-        last.width = -20
-        self.toolbarItems?.append(last)
-        
-    }
+//    private func setToolBar(){
+//
+//        let rightSpace = UIBarButtonItem.init(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+//        rightSpace.width = 20
+//
+//
+//        self.toolbarItems?.append(rightSpace)
+//        self.toolbarItems?.append(UIBarButtonItem.init(customView: apply))
+//        let last = UIBarButtonItem.init(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
+//        last.width = -20
+//        self.toolbarItems?.append(last)
+//
+//    }
     
-    @objc private func AddCalendar(_ btn:UIButton){
+    @objc private func addCalendar(_ btn:UIButton){
        
-        guard let mode = mode  else {
+        guard let _ = mode.value.id  else {
             return
         }
         
@@ -210,19 +264,16 @@ extension CareerTalkShowViewController{
         // Request access to calendar first
         store.requestAccess(to: .event, completion: { (granted, error) in
             if granted {
-                print("calendar allowed")
-                
-                
                 // create the event object
                 let event = EKEvent(eventStore: store)
                 
-                event.title = mode.name
-                event.startDate = mode.start_time
-                event.endDate = mode.end_time
-                event.location =  mode.college!   + "-" + mode.address!
+                event.title = self.mode.value.name
+                event.startDate = self.mode.value.startTime
+                event.endDate = self.mode.value.endTime
+                event.location =  (self.mode.value.college ?? "")   + "-" + (self.mode.value.address ?? "")
                 
-                if let url = mode.link{
-                    event.url = URL.init(string: url)
+                if let url = self.mode.value.link{
+                    event.url = url
                 }
                 
                 
@@ -232,9 +283,6 @@ extension CareerTalkShowViewController{
                 event.addAlarm(alarm)
                 
                 event.calendar = store.defaultCalendarForNewEvents
-                
-                
-                
                 let controller = EKEventEditViewController()
                 controller.event = event
                 controller.eventStore = store
@@ -244,7 +292,7 @@ extension CareerTalkShowViewController{
             }
             else
             {
-                print("calendar not allowed")
+                self.view.showToast(title: "permit calender", customImage: nil, mode: .text)
             }
         })
         
@@ -264,16 +312,11 @@ extension CareerTalkShowViewController: EKEventEditViewDelegate{
 }
 
 
-extension CareerTalkShowViewController: UITableViewDataSource, UITableViewDelegate{
+extension CareerTalkShowViewController: UITableViewDelegate{
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
-    }
+   
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return  1
-    }
-    
+  
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
         return UIView()
@@ -284,53 +327,16 @@ extension CareerTalkShowViewController: UITableViewDataSource, UITableViewDelega
     }
     
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch  indexPath.section {
-        case 0:
-            let cell = tableView.dequeueReusableCell(withIdentifier: CompanySimpleCell.identity(), for: indexPath) as! CompanySimpleCell
-            cell.mode = mode?.companyModel
-            
-            return cell
-        case 1:
-            let cell = tableView.dequeueReusableCell(withIdentifier: CareerTalkContentCell.identity(), for: indexPath) as! CareerTalkContentCell
-            cell.name.text = "宣讲内容"
-            cell.mode = mode
-            return cell
-        default:
-            break
-        }
-        
-        return UITableViewCell()
-        
-       
-        
-    }
-    
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 0 {
-            let com = CompanyMainVC()
-            com.companyID = mode?.companyModel?.id
-            com.hidesBottomBarWhenPushed = true
-            self.navigationController?.pushViewController(com, animated: true)
-        }
-    }
-    
+  
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if indexPath.section == 0 {
-            //return  CompanySimpleCell.cellHeight()
-            return table.cellHeight(for: indexPath, model: mode?.companyModel, keyPath: "mode", cellClass: CompanySimpleCell.self, contentViewWidth: GlobalConfig.ScreenW)
+        switch self.dataSoure[indexPath] {
+            case .CompanyItem(let mode):
+                return table.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CompanySimpleCell.self, contentViewWidth: GlobalConfig.ScreenW)
+            case .RecruitMeeting(let mode):
+                return table.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CareerTalkContentCell.self, contentViewWidth: GlobalConfig.ScreenW)
         }
-        
-        guard let mode = mode else { return 0 }
-        
-        
-        return table.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: CareerTalkContentCell.self, contentViewWidth: GlobalConfig.ScreenW)
     }
-    
-    
-    
-    
+
 }
 
 
@@ -410,8 +416,8 @@ private class CareerTalkHeaderView:UIView{
             self.name.text = mode.name
             self.address.text = "举办地点: " + mode.college! + " " +  mode.address!
             self.time.text =   "举办时间: " + mode.startTimeStr
-            if let source = mode.source{
-            self.source.text = "来源: " +  source
+            if let source = mode.reference{
+                self.source.text = "来源: " +  source
             }else{
                 self.source.isHidden = true
                 self.sourceIcon.isHidden = true

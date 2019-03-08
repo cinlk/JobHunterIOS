@@ -19,6 +19,15 @@ fileprivate let titles  = ["快捷登录","密码登录"]
 class UserLogginViewController: UIViewController {
 
     let mainSegueIdentiy = "showMain"
+    // 是否是其他界面调整过来，非程序启动进入
+    internal var navBack:Bool = false{
+        didSet{
+            if navBack{
+                self.skipBtn.setTitle("取消", for: .normal)
+                //self.skipBtn.isHidden = true
+            }
+        }
+    }
     
     lazy var currentIndex = 0
     
@@ -182,7 +191,7 @@ extension UserLogginViewController{
                 }
              
             }).disposed(by: self.dispose)
-            self.performSegue(withIdentifier: self.mainSegueIdentiy, sender: nil)
+            self.navBack ? self.dismiss(animated: true, completion: nil) : self.performSegue(withIdentifier: self.mainSegueIdentiy, sender: nil)
             
         })
         
@@ -228,14 +237,16 @@ extension UserLogginViewController: PageContentViewScrollDelegate{
 
 extension UserLogginViewController{
     
-override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    
-    if segue.identifier == mainSegueIdentiy{
-        let _ = segue.destination as? MainTabBarViewController
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+   
+        if segue.identifier == mainSegueIdentiy{
+            let _ = segue.destination as? MainTabBarViewController
+            
+            }
         
-        }
-    
     }
+    
+    
 }
 
 

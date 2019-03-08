@@ -19,6 +19,7 @@ import UIKit
                 return
             }
             if mode.contentType == "html"{
+                // TODO 
                 self.content.attributedText = mode.content?.htmlToAttributedString
             }else{
                 self.content.text = mode.content
