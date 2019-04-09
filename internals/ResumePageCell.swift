@@ -43,7 +43,7 @@ import UIKit
             }else{
                 MarginWidth = 40 + 20 + 20
             }
-            if let size = mode.name?.getStringCGRect(size: CGSize.init(width: GlobalConfig.ScreenW - MarginWidth, height: CGFloat(20)), font: UIFont.systemFont(ofSize: 14)){
+            if let size = mode.name?.rect(withFont: UIFont.systemFont(ofSize: 14), size: CGSize.init(width: GlobalConfig.ScreenW - MarginWidth, height: CGFloat(20))){
                 _ = self.textTitle.sd_layout().widthIs(size.width)
             }
             self.checkMark.isHidden = !mode.isDefault!

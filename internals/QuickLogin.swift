@@ -75,4 +75,9 @@ class LoginViewModel{
         return server.anonymouseLogin()
     }
     
+    
+    func getUserInfo(token:String) -> Observable<Any> {
+        return server.userInfo(token:token)
+    }
+    
 }

@@ -37,12 +37,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //  获取地理位置
         UserLocationManager.shared.getLocation()
         
+        // 初始化数据库
+        //_ = SqliteManager.shared
         // 友盟第三方接口
         UMengInitial()
         
         SingletoneClass.shared.setSharedApps(condition: nil)
         
+        //im sdk
+        AVOSCloud.setApplicationId(GlobalConfig.LeanCloudApp.AppId, clientKey: GlobalConfig.LeanCloudApp.AppKey)
         
+    
+        AVOSCloud.setAllLogsEnabled(true)
+        
+        
+        //GlobalUserInfo.shared.baseInfo(role: UserRole.role.anonymous, token: "token", account: "" , pwd: "")
+        
+    
+        
+//        var testObj:AVObject = AVObject.init(className: "demo")
+//        testObj["demo"] = 123
+//        
+//        testObj.save()
         // 高德地图配置
 //        AMapServices.shared()?.apiKey = "4afc428898376c1810581289501ec549"
 //        AMapServices.shared()?.enableHTTPS = false
@@ -56,6 +72,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        KingfisherManager.shared.downloader = imgManager
 //
      
+        
         
         return true
     }
@@ -159,6 +176,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+// test  消息通知
+
 
 // 文件共享
 extension AppDelegate{
@@ -228,6 +247,7 @@ extension AppDelegate{
     
     
 }
+
 
 
 //extension AppDelegate{

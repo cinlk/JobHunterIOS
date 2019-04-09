@@ -187,7 +187,6 @@ extension ChatBarView: UITextViewDelegate{
    
     func textViewDidChange(_ textView: UITextView) {
         
-        
 
         let height =  textView.sizeThatFits(CGSize.init(width: textView.width, height: CGFloat(textView.font!.lineHeight))).height
         
@@ -205,14 +204,9 @@ extension ChatBarView: UITextViewDelegate{
             delegate?.chatBarUpdateHeight(height: 0)
             textView.frame = CGRect.init(x: 5, y: 5, width: GlobalConfig.ScreenW - 60 - 20, height: 35)
 
-        }else{
-            
         }
 
-        
         textView.scrollRangeToVisible(textView.selectedRange)
-        
-        
         
     }
     // 发送文本消息

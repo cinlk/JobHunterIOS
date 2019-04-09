@@ -33,6 +33,7 @@ enum RecruitTarget{
     case getCompany(req:CompanyFilterModel)
     case getCompanyById(id:String)
     case getRecruiterById(id:String)
+   
     
     case none
 }
@@ -204,7 +205,7 @@ extension RecruitTarget: TargetType{
     }
     
     var headers: [String : String]? {
-        return nil
+        return ["Authorization":  GlobalUserInfo.shared.getToken()]
     }
     
     
@@ -273,10 +274,7 @@ class RecruitServer{
     }
     
     
-    
-    internal func getCompanylistJobs(companyId:String, offset:Int) -> Observable<[CompuseRecruiteJobs]>{
-        return httpServer.rx.request(.getCompanyJobs(companyId:companyId, offset: offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).filterSuccessfulStatusCodes().asObservable().observeOn(MainScheduler.instance).mapArray(CompuseRecruiteJobs.self, tag: "list_jobs")
-    }
+
     
     
     internal func getCompanyTagsData(req:CompanyTagFilterModel) -> Observable<[CompanyTagJobs]>{

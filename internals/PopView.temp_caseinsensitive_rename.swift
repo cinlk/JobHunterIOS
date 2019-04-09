@@ -8,8 +8,10 @@
 
 import UIKit
 
-class popView: UIView {
 
+class PopView: UIView {
+
+    static let offsetX:CGFloat = -200
     
     private lazy var title:UILabel = { [unowned self] in
         let t = UILabel()
@@ -55,7 +57,7 @@ class popView: UIView {
 }
 
 
-extension popView{
+extension PopView{
     
     open func showPop(height:CGFloat = 0){
         
@@ -74,15 +76,13 @@ extension popView{
         
         backView.removeFromSuperview()
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-            self.frame.origin.x = -300
-        }, completion: { bool in
-            self.viewWithTag(10)?.removeFromSuperview()
-        })
+            self.frame.origin.x = offsetX
+        }, completion: nil)
         
     }
 }
 
-extension popView{
+extension PopView{
     open func setTitleAndView(title:String, view:UIView){
         self.title.text = title
         view.tag = 10

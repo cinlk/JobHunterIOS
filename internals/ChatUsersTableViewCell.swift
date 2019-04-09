@@ -29,7 +29,8 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
         label.textAlignment = .left
         label.textColor = UIColor.lightGray
         label.font = UIFont.systemFont(ofSize: 14)
-        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 60)
+        label.lineBreakMode = NSLineBreakMode.byTruncatingTail
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width - 40)
         return label
     }()
     
@@ -57,31 +58,30 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
     
     
     
-    dynamic var mode:conversationModel?{
+    dynamic var mode:ChatListModel?{
         didSet{
             
-            guard let user = mode?.user else { return }
-            guard let mes = mode?.message else { return }
+            //guard let user = mode? else { return }
+            guard let mes = mode?.lastMessage else { return }
             
             
-            
-            
-            if let num = mode?.unReadCount{
+            if let num = mode?.unReadNum{
                 self.outerIconView.pp.addBadge(number: num)
                 self.outerIconView.pp.setBadge(height: 15)
                 self.outerIconView.pp.moveBadge(x: -5, y: 5)
             }
             
             
-            if let url = user.icon {
+            if let url = mode?.recruiterIconURL {
             self.icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }
-            
-            self.name.text =  user.name! + "@" + user.company!
+            // 加入hr 的公司名称 ?
+            self.name.text =  mode?.recruiterName
             
             self.content.text = mes.getDescribe()
             
             self.time.text =  mes.talkTime
+            print(mes.toJSON())
             self.setupAutoHeight(withBottomViewsArray: [icon,content], bottomMargin: 10)
            
         }

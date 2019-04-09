@@ -252,11 +252,14 @@ extension EditPostViewController{
             return
         }
         
+        // 用户已经登录 TODO
+        
+        
         // 发送到服务七 获取id数据 和 icon 等数据
         
         // 构造postArticle 数据
-        if let article = PostArticleModel(JSON: ["id":getUUID(),"title":"文字标题等等","authorID":myself.userID,
-                                                 "authorName":myself.name,"colleage":"我的大学","authorIcon":myself.icon,"createTime":Date().timeIntervalSince1970,"kind":data.type]){
+        if let article = PostArticleModel(JSON: ["id":getUUID(),"title":"文字标题等等","authorID": GlobalUserInfo.shared.getId() ,
+                                                 "authorName": GlobalUserInfo.shared.getName(),"colleage":"我的大学","authorIcon": GlobalUserInfo.shared.getIcon()?.absoluteString,"createTime":Date().timeIntervalSince1970,"kind":data.type]){
             
             NotificationCenter.default.post(name: Notification.Name.init(data.type), object: nil, userInfo: ["mode":article])
 

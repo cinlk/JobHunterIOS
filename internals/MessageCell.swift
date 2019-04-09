@@ -16,10 +16,10 @@ fileprivate let extraWitdhTextView:CGFloat = 10
 fileprivate let fontSize:CGFloat = 16
 
 
-class messageCell: UITableViewCell {
+class MessageCell: UITableViewCell {
 
     private lazy  var avatar:UIImageView = {
-       let img = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: avatarSize.width, height: avatarSize.height))
+       let img = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.AvatarSize.width, height: GlobalConfig.AvatarSize.height))
         img.clipsToBounds = true
         img.backgroundColor = UIColor.clear
         return img 
@@ -92,16 +92,16 @@ class messageCell: UITableViewCell {
     class func heightForCell(messageInfo:MessageBoby)->CGFloat{
         
         guard let content = messageInfo.content else { return 0 }
-        guard let strs = String.init(data:  content, encoding: String.Encoding.utf8) else { return  0 }
+        guard let strs = String.init(data: content, encoding: String.Encoding.utf8) else { return  0 }
         
         
         let replaceStr =  GetChatEmotion.shared.findAttrStr(text: strs, font: UIFont.systemFont(ofSize: fontSize), replace:  true )
         
         let labelSize:CGSize = UITextView.sizeOfString(string: replaceStr?.string as! NSString , font: UIFont.systemFont(ofSize: fontSize), maxWidth: textWidth)
         
-        if labelSize.height < avatarSize.height && labelSize.height <= UIFont.systemFont(ofSize: fontSize).lineHeight{
+        if labelSize.height < GlobalConfig.AvatarSize.height && labelSize.height <= UIFont.systemFont(ofSize: fontSize).lineHeight{
             
-            return avatarSize.height + 10 + 5
+            return GlobalConfig.AvatarSize.height + 10 + 5
         }
         return labelSize.height + 15 + 5 + 20
         
@@ -109,7 +109,7 @@ class messageCell: UITableViewCell {
     
     
     
-    func setupMessageCell(messageInfo:MessageBoby,chatUser:PersonModel){
+    func setupMessageCell(messageInfo:MessageBoby,chatUser:PersonModel?){
         
         guard let content = messageInfo.content, let strs = String.init(data: content, encoding: String.Encoding.utf8), let attrStr =  GetChatEmotion.shared.findAttrStr(text: strs, font: UIFont.systemFont(ofSize: fontSize)) else {
             
@@ -118,10 +118,13 @@ class messageCell: UITableViewCell {
             return
             
         }
+        //String.init(data: <#T##Data#>, encoding: <#T##String.Encoding#>)
         
         let paragrahStyle = NSMutableParagraphStyle()
         paragrahStyle.lineBreakMode = .byCharWrapping
         attrStr.addAttributes([NSAttributedString.Key.paragraphStyle: paragrahStyle], range: NSRange.init(location: 0, length: attrStr.length))
+        
+        //print(content.base64EncodedString(), attrStr)
         self.messgeText.attributedText = attrStr
         
         
@@ -133,13 +136,13 @@ class messageCell: UITableViewCell {
         
         // 高度加5 textview 换行后内容正常显示
         labelSize = CGSize.init(width: labelSize.width, height: labelSize.height + CGFloat(5))
-        
+        // 内容高度
         var h:CGFloat = 0
         var y:CGFloat = 0
         let line =  Int(labelSize.height / (messgeText.font?.lineHeight)!)
         // 只有一行字 居中显示
         if  line == 1 {
-            y = (avatarSize.height - labelSize.height) / 2
+            y = (GlobalConfig.AvatarSize.height - labelSize.height) / 2
  
         }else{
             // 内容向下偏移
@@ -156,9 +159,9 @@ class messageCell: UITableViewCell {
         let bubleSize:CGSize = CGSize.init(width: labelSize.width + 10 + 5 + extraWitdhTextView, height: h + 10)
 
         // 自己发的消息
-        if messageInfo.sender?.userID  ==  myself.userID{
+        if messageInfo.senderId ==  GlobalUserInfo.shared.getId(){
             
-            if let iconURL = myself.icon {
+            if let iconURL = GlobalUserInfo.shared.getIcon() {
                 
                 self.avatar.kf.setImage(with: Source.network(iconURL), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }else{
@@ -166,7 +169,7 @@ class messageCell: UITableViewCell {
                 self.avatar.image =  #imageLiteral(resourceName: "default")
             }
             
-            self.avatar.frame = CGRect.init(x: GlobalConfig.ScreenW-avatarSize.width-5 , y: 0, width: avatarSize.width, height: avatarSize.height)
+            self.avatar.frame = CGRect.init(x: GlobalConfig.ScreenW-GlobalConfig.AvatarSize.width-5 , y: 0, width: GlobalConfig.AvatarSize.width, height: GlobalConfig.AvatarSize.height)
             
             // 拉伸图片
             self.bubleBackGround.image = UIImage.resizeableImage(name: "mebubble")
@@ -180,13 +183,13 @@ class messageCell: UITableViewCell {
         // 别人发的消息
         else{
             
-            if let iconURL = chatUser.icon {
+            if let iconURL = chatUser?.icon {
                 
                 self.avatar.kf.setImage(with: Source.network(iconURL), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }else{
                 self.avatar.image =  #imageLiteral(resourceName: "default")
             }
-            self.avatar.frame = CGRect.init(x: 5, y: 0, width: avatarSize.width, height: avatarSize.height)
+            self.avatar.frame = CGRect.init(x: 5, y: 0, width: GlobalConfig.AvatarSize.width, height: GlobalConfig.AvatarSize.height)
             
             
             // 拉伸图片
@@ -207,7 +210,7 @@ class messageCell: UITableViewCell {
 
 
 
-extension messageCell: UITextViewDelegate{
+extension MessageCell: UITextViewDelegate{
     func textView(_ textView: UITextView, shouldInteractWith textAttachment: NSTextAttachment, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         if textAttachment.isKind(of: ChatEmotionAttachment.self){
             return false
@@ -220,7 +223,7 @@ extension messageCell: UITextViewDelegate{
     
 }
 
-extension messageCell{
+extension MessageCell{
     // bubble view 能点击
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let bubbleCGRect = self.contentView.convert(point, to: bubleBackGround)

@@ -55,17 +55,16 @@ struct ConfigColor {
 
 
 // chat bar
-let ChatInputBarH:CGFloat = 45.0
+
 let ChatKeyBoardH:CGFloat =  258.0
 
 // chat view
-let avatarSize:CGSize = CGSize.init(width: 45, height: 45)
+//let avatarSize:CGSize = CGSize.init(width: 45, height: 45)
 
 // 本地 登录后自己的信息 （用于测试）
-let myself:PersonModel = PersonModel(JSON: ["userID":"123456","company":"","name":"来自地球大于6","role":"求职","icon": #imageLiteral(resourceName: "evil").toBase64String()])!
+//let myself:PersonModel = PersonModel(JSON: ["userID": GlobalConfig.LeanCloudApp.User1, "company":"","name":"来自地球大于6","role":"求职","icon": #imageLiteral(resourceName: "evil").toBase64String()])!
 
 // 匿名用户
-
 
 
 // global greeting msg
@@ -188,7 +187,10 @@ struct GlobalConfig {
     static let JobHomePageTitles:[String] = ["网申","校招","宣讲会","公司","实习"]
     static let dropMenuViewHeight:CGFloat = 40
     static let toolBarH:CGFloat = 44
+    static let ChatInputBarH:CGFloat = 45
     
+    static let DBName:String = "app.db"
+    static let AvatarSize:CGSize = CGSize.init(width: 45, height: 45)
     
     struct DropMenuTitle {
         static let city = "城市"
@@ -205,6 +207,15 @@ struct GlobalConfig {
     struct StoryBordVCName {
         static let Main = "Main"
         static let LoginVC = "login"
+    }
+    struct LeanCloudApp {
+        static let AppId = "Wg3eXD1ftMSGqoDJhsFgy5xk-gzGzoHsz"
+        static let AppKey = "iXpuFsScQm6YzIjK0fXGnob9"
+        static let MasterKey = "PVrKTVDpgMveiCFBrjJGqKmc"
+        // test user
+        static let User1 = "5c885f55fe88c20065e160c8"
+        static let User2 = "5c885f55fe88c20065e160c8"
+        static let ConversationID = "5c88f876fb4ffe00638220a0"
     }
 }
 
@@ -226,6 +237,8 @@ struct HttpCodeRange {
 struct  NotificationName {
     static let searchType:Notification.Name =  Notification.Name.init("searchType")
     static let jobTag: Notification.Name = Notification.Name.init("jobTag")
+    static let refreshChatList: Notification.Name = Notification.Name.init("refreshChat")
+    static let refreshChatRow: Notification.Name = Notification.Name.init("refreshChatRow")
 }
 
 struct TabBarItems {
@@ -255,8 +268,20 @@ struct UserRole {
         case hr = "hr"
         case seeker = "seeker"
         case anonymous = "anonymous"
+        
+        var describe:String{
+            switch self {
+            case .hr:
+                return "hr"
+            case .seeker:
+                return "seeker"
+            case .anonymous:
+                return "anonymous"
+          
+            }
+        }
     }
     
-    
+   
     
 }

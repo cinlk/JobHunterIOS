@@ -8,12 +8,11 @@
 
 import Foundation
 import SQLite
-
+import CryptoSwift
 
 
 class DBError:Error{
     var message :String
-    
     init(message:String) {
             self.message = message
     }
@@ -24,23 +23,18 @@ class  DBFactory{
     
     private let dbManager:SqliteManager = SqliteManager.shared
     
-    private let userTable:LoginUserTable
     private let searchTable:SearchHistory
     // 消息
     private let messageTable:MessageTable
-    private let conversationTable:ConversationTable
+    private let conversationTable:SingleConversationTable
     
     static let shared:DBFactory = DBFactory()
     
     private  init() {
-        userTable = LoginUserTable.init(dbManager: self.dbManager)
+    
         searchTable = SearchHistory.init(dbManager: self.dbManager)
         messageTable = MessageTable.init(dbManage: self.dbManager)
-        conversationTable = ConversationTable.init(dbManage: self.dbManager)
-    }
-    
-    open func getUserDB()->LoginUserTable{
-        return self.userTable
+        conversationTable = SingleConversationTable.init(dbManage: self.dbManager)
     }
     
     open func getSearchDB()->SearchHistory{
@@ -51,7 +45,7 @@ class  DBFactory{
         return self.messageTable
     }
     
-    open func getConversationDB()->ConversationTable{
+    open func getConversationDB()->SingleConversationTable{
         return self.conversationTable
     }
     
@@ -65,100 +59,33 @@ class  DBFactory{
 extension DBFactory{
     
     // 删除会话原子操作
-    func deteletAllMessage(userID: String)-> Error?{
+    func deteletAllMessage(conversationId: String) throws {
 
         
         do{
             try self.dbManager.db?.transaction(block: {
-                try conversationTable.deleteConversationBy(userID: userID)
-                try messageTable.removeAllMessageBy(userID: userID)
+                // MARK TODO
+                try messageTable.removeConversationMessage(conversationId: conversationId)
+                try conversationTable.deleteConversationBy(conversationId: conversationId)
+                
             })
         }catch{
             
-            return error
+            throw error
         }
         
-        return nil
+     
         
     }
 }
 
 
-
-// 存储用户的账号，如果有多个账号（选择最新的账号进行自动登录）
-struct LoginUserTable{
-    
-    static let user = Table("user")
-    static let id = Expression<Int64>("id")
-    static let account = Expression<String>("account")
-    static let password = Expression<String>("password")
-    // 开启自动登录
-    static let auto = Expression<Bool>("auto")
-    
-    // 更新时间
-    static let latestTime = Expression<Date>("time")
-    
-    
-    private let dbManager:SqliteManager
-    init(dbManager:SqliteManager) {
-        self.dbManager = dbManager
-    }
-    
-    
-    
-    func currentUser()->((account:String, password:String, auto:Bool)?, Error?){
-        
-        do{
-            // 选择最新更新时间行
-           
-            if let user = try dbManager.db?.pluck(LoginUserTable.user.order(LoginUserTable.latestTime.desc)){
-                return ((user[LoginUserTable.account], user[LoginUserTable.password], user[LoginUserTable.auto]), nil)
-            }
-        }catch{
-    
-            return (nil, error)
-        }
-        
-        return (nil, nil)
-    }
-    
-    func insertUser(account:String, password:String, auto:Bool){
-        
-        do{
-             try dbManager.db?.run(LoginUserTable.user.insert(or: OnConflict.replace, LoginUserTable.account <- account, LoginUserTable.password <- password,LoginUserTable.auto <- auto, LoginUserTable.latestTime <- Date()))
-            
-        // 失败记录日志
-        }catch{
-            //NSLog(<#T##format: String##String#>, <#T##args: CVarArg...##CVarArg#>)
-            print(error)
-        }
-    }
-    
-    func deleteUser(account:String){
-        
-        do{
-            try dbManager.db?.run(LoginUserTable.user.filter(LoginUserTable.account == account).delete())
-        }catch{
-        
-        }
-    }
-    
-    
-    func setLoginAuto(account:String, auto:Bool){
-        do{
-            try dbManager.db?.run(LoginUserTable.user.filter(LoginUserTable.account == account).update(LoginUserTable.auto <- auto))
-        }catch{
-            print(error)
-        }
-    }
-    
-}
 
 
 // 搜索历史
 struct SearchHistory {
-    static let search = Table("search")
     
+    static let search = Table("search")
     //
     static let id = Expression<Int64>("id")
     // 搜索类型
@@ -250,17 +177,19 @@ struct MessageTable {
     static let message =  Table("message")
     // 自增的消息id 主键
     static let id = Expression<Int64>("id")
+    // 属于conversation
+    static let conversationId = Expression<String>("conversation_id")
     // 唯一约束 索引
-    static let messageID = Expression<String>("messageID")
+    //static let messageID = Expression<String>("messageID")
     static let type = Expression<String>("type")
     // 根据不同类型解析不同类型数据
     static let content = Expression<Data?>("content")
     static let create_time = Expression<Date>("create_time")
-    static let read_time = Expression<Date>("read_time")
+    //static let read_time = Expression<Date>("read_time")
     
     static let isRead = Expression<Bool>("isRead")
-    static let senderID = Expression<String>("senderID")
-    static let receiverID = Expression<String>("receiverID")
+    static let senderID = Expression<String>("sender_id")
+    static let receiverID = Expression<String>("receiver_id")
     
     private let dbManager:SqliteManager
     
@@ -271,253 +200,268 @@ struct MessageTable {
     
     
     
-    
-    // 获取某条消息
-    func getMessageByID(msgID:String) -> MessageBoby?{
-        
-        do{
-            let one = MessageTable.message.filter(MessageTable.messageID == msgID)
-            if let item =  try self.dbManager.db?.pluck(one){
-                let contentString = item[MessageTable.content]?.base64EncodedString()
-                return MessageBoby(JSON: ["messageID":item[MessageTable.messageID],
-                    "type":item[MessageTable.type],
-                    "content": contentString,
-                    "isRead":item[MessageTable.isRead],
-                    // Date 时间转换
-                    "creat_time": item[MessageTable.create_time].timeIntervalSince1970 ])
-                
-            }
-        }catch{
-            print(error)
-        }
-        
-        return nil
+    // 清楚未读消息标记
+    func closeUnReadMessage(conversationId:String) throws {
+        let target = MessageTable.message.filter(MessageTable.conversationId == conversationId)
+        try self.dbManager.db?.run(target.update(MessageTable.isRead <- true))
     }
     
-    // 从最后向前查询 （sender 给我发的消息， 我给sender 发送的消息）
-    func getMessages(chatWith:PersonModel, start:Int, limit:Int)->[MessageBoby]{
+    // 获取某条消息
+//    func getMessageByID(msgID:String) -> MessageBoby?{
+//
+//        do{
+//            let one = MessageTable.message.filter(MessageTable.messageID == msgID)
+//            if let item =  try self.dbManager.db?.pluck(one){
+//                let contentString = item[MessageTable.content]?.base64EncodedString()
+//                return MessageBoby(JSON: ["messageID":item[MessageTable.messageID],
+//                    "type":item[MessageTable.type],
+//                    "content": contentString,
+//                    "isRead":item[MessageTable.isRead],
+//                    // Date 时间转换
+//                    "creat_time": item[MessageTable.create_time].timeIntervalSince1970 ])
+//
+//            }
+//        }catch{
+//            print(error)
+//        }
+//
+//        return nil
+//    }
+    
+    // 从最后向前查询 某个conversation对话的消息: table 上滑动加载历史消息
+    func getMessages(conversationId:String, start:Int, limit:Int) throws  ->[MessageBoby]{
+        
         var res:[MessageBoby] = []
         
         do{
             // 查找 发给我的消息 好 我发给ta的消息
-            let query = MessageTable.message.select([MessageTable.messageID,MessageTable.type,MessageTable.content, MessageTable.isRead,MessageTable.senderID, MessageTable.create_time]).filter((MessageTable.senderID == chatWith.userID! && MessageTable.receiverID == myself.userID!)||(MessageTable.senderID == myself.userID! && MessageTable.receiverID == chatWith.userID!)).order(MessageTable.create_time.desc, MessageTable.id.desc).limit(limit, offset: start)
+            let query = MessageTable.message.select([MessageTable.type,MessageTable.content, MessageTable.isRead, MessageTable.create_time, MessageTable.conversationId, MessageTable.senderID, MessageTable.receiverID]).filter(MessageTable.conversationId == conversationId).order(MessageTable.create_time.desc).limit(limit, offset: start)
             
-            for item in try self.dbManager.db!.prepare(query){
+            guard let rows =  try self.dbManager.db?.prepare(query) else {
+                return []
+            }
+            
+            for item in rows{
                 
-                guard let messageType = MessgeType(rawValue: item[MessageTable.type]) else {
+                guard let messageType =  MessgeType(rawValue: item[MessageTable.type]) else {
                     continue
                 }
                 
-                var mb:MessageBoby?
-                
-                
-                // 转为具体的消息类型
-                switch  messageType {
-                    case .bigGif, .smallGif:
-                        guard let path = String.init(data: item[MessageTable.content]!, encoding: String.Encoding.utf8) else {
-                            continue
-                        }
-                        
-                        mb =  GigImageMessage(JSON: ["messageID":item[MessageTable.messageID],
-                                                 "type":item[MessageTable.type],
-                                                 "localGifPath":path,
-                                                 "isRead":item[MessageTable.isRead],
-                                                 "creat_time": item[MessageTable.create_time].timeIntervalSince1970])
-                    
-                case .picture:
-                    guard let path = String.init(data: item[MessageTable.content]!, encoding: String.Encoding.utf8) else {
-                        continue
-                    }
-                    mb = PicutreMessage(JSON: ["messageID":item[MessageTable.messageID],
-                                                   "type":item[MessageTable.type],
-                                                   "imageFileName":path,
-                                                   "isRead":item[MessageTable.isRead],
-                                                   "creat_time": item[MessageTable.create_time].timeIntervalSince1970])
-                case .text:
-                    
-                    mb =  MessageBoby(JSON: ["messageID":item[MessageTable.messageID],
-                                             "type":item[MessageTable.type],
-                                             "content":item[MessageTable.content]!.base64EncodedString(),
-                                             "isRead":item[MessageTable.isRead],
-                                             "creat_time": item[MessageTable.create_time].timeIntervalSince1970])
-                case .jobDescribe:
-                   
-                    guard let content = item[MessageTable.content] else {
-                        continue
-                    }
-                    
-                    let json = try JSONSerialization.jsonObject(with: content, options: []) as? [String : Any]
-
-            
-                    mb = JobDescriptionlMessage(JSON: ["messageID":item[MessageTable.messageID],
-                                    "type":item[MessageTable.type],
-                                    "content":item[MessageTable.content]!.base64EncodedString(),
-                                    "isRead":item[MessageTable.isRead],
-                                    "creat_time":item[MessageTable.create_time].timeIntervalSince1970,
-                                    "jobID":json!["jobID"]!,"jobTypeDes":json?["jobTypeDes"] ?? "", "icon":json?["icon"] ?? "default","jobName":json!["jobName"]!,
-                                    "company":json?["company"] ?? "","salary":json?["salary"]  ?? "","tags":json?["tags"] ?? ""])
-                    
-                    
-                    
-                   
-                    
-                default:
-                        break
+               
+                guard let data = item[MessageTable.content] else {
+                    continue
                 }
-                
-          
-                
-                if item[MessageTable.senderID]  == chatWith.userID {
-                    mb?.sender = chatWith
-                    mb?.receiver = myself
-                    
-                }else if item[MessageTable.senderID] == myself.userID{
-                    mb?.sender = myself
-                    mb?.receiver = chatWith
-                }
-                
-                
-                if let mb = mb {
+               
+                if let mb =  MessageTable.buildMsg(messageType: messageType, item: item, data:data) {
                     res.append(mb)
                 }
                 
             }
-            // 翻转排序，从时间低到高顺序
+            // 翻转排序，从时间低到高顺序 显示在该页
             return res.reversed()
             
             
         }catch{
-            print(error)
+            throw error
         }
-        return []
+        
+        
     }
-    
-    
-    
 
-    
-// 获取未读的消息
-func getUnReadMessages(SenderID: String) -> Int?{
-    
-    do{
-        let query = MessageTable.message.filter(MessageTable.senderID == SenderID && MessageTable.isRead == false).count
-        if let count =  try self.dbManager.db?.scalar(query){
-            return count
-        }
+    static func buildMsg(messageType:MessgeType, item:Row, data:Data) -> MessageBoby?{
         
-    }catch{
-        print(error)
-    }
-    
-    return  nil
-}
-    
-// 清楚未读消息
-func clearUnReadeMessage(SenderID :String){
-    do{
-        
-        // TEST
-        let target = MessageTable.message.filter(MessageTable.senderID == SenderID && MessageTable.isRead == false)
-        try  self.dbManager.db?.run(target.update(MessageTable.isRead <- true))
-        
-        
-    }catch{
-        print(error)
-    }
-    
-}
- 
-    
-func insertMessage(message: MessageBoby) throws {
-    do{
-        if message.isKind(of: JobDescriptionlMessage.self){
-            try self.insertJobMessage(message: message as! JobDescriptionlMessage)
-        }else if message.isKind(of: GigImageMessage.self){
-            try self.insertGifMessage(message: message as! GigImageMessage)
-        }else if message.isKind(of: PicutreMessage.self){
-            try self.insertPictureMessage(message: message as! PicutreMessage)
-        }else{
-            try self.insertBaseMessage(message: message)
-        }
-        
-    }catch{
-        throw error
-    }
-    
-    
-}
-func insertBaseMessage(message:MessageBoby) throws{
-        do{
-            guard let sender = message.sender else {
-                return
-            }
-            guard  let receiver = message.receiver else {
-                return
+        // 转为具体的消息类型
+        switch  messageType {
+        case .bigGif, .smallGif:
+            guard let name = String.init(data: data, encoding: String.Encoding.utf8) else {
+                return nil
             }
             
-           try self.dbManager.db?.run(MessageTable.message.insert(MessageTable.messageID <- message.messageID!,MessageTable.senderID <- sender.userID!,
+            return  GifImageMessage(JSON: [
+                "type": messageType.describe,
+                "local_gif_name":name,
+                // 必须加上content，聊天列表展示界面会用
+                "content": name,
+                "is_read":item[MessageTable.isRead],
+                "creat_time":item[MessageTable.create_time].timeIntervalSince1970,
+                "conversation_id": item[MessageTable.conversationId],
+                "sender_id":item[MessageTable.senderID],
+                "receiver_id":item[MessageTable.receiverID]
+                ])
+            
+            
+        case .picture:
+            guard let path = String.init(data: data, encoding: String.Encoding.utf8) else {
+                return nil
+            }
+            return PicutreMessage(JSON: [
+                "type": messageType.describe,
+                "imageFileName":path,
+                "is_read":item[MessageTable.isRead],
+                "creat_time": item[MessageTable.create_time].timeIntervalSince1970,
+                "conversation_id": item[MessageTable.conversationId],
+                "sender_id":item[MessageTable.senderID],
+                "receiver_id":item[MessageTable.receiverID]
+                ])
+        case .text:
+            
+            return MessageBoby(JSON: [
+                "type": messageType.describe,
+                "content":item[MessageTable.content]!,
+                "is_read":item[MessageTable.isRead],
+                "creat_time": item[MessageTable.create_time].timeIntervalSince1970,
+                "conversation_id": item[MessageTable.conversationId],
+                "sender_id":item[MessageTable.senderID],
+                "receiver_id":item[MessageTable.receiverID]
+                ])
+            
+            
+        case .jobDescribe:
+            
+            guard let content = item[MessageTable.content] else {
+                return nil
+            }
+            
+            guard let json = try? JSONSerialization.jsonObject(with: content, options: []) as? [String : Any] else {
+                return nil
+            }
+        
+            
+            return JobDescriptionlMessage(JSON: [
+                "type": messageType.describe,
+                "content":item[MessageTable.content]!,
+                "isRead":item[MessageTable.isRead],
+                "creat_time":item[MessageTable.create_time].timeIntervalSince1970,
+                "sender_id":item[MessageTable.senderID],
+                "receiver_id":item[MessageTable.receiverID],
+                "job_id":json["job_id"] ?? "","job_type_des":json["job_type_des"] ?? "", "icon":json["icon"] ?? "default","job_name":json["job_name"] ?? "",
+                "company":json["company"] ?? "","salary":json["salary"]  ?? "","tags":json["tags"] ?? [],
+                "conversation_id": item[MessageTable.conversationId]])
+            
+        default:
+            return nil
+        }
+        
+    }
+    
+    // 获取未读的消息
+    // 获取消息, ack 确认 lencloud 消息流程 MARK
+    
+//    func getUnReadMessages(SenderID: String) -> Int?{
+//
+//        do{
+//            let query = MessageTable.message.filter(MessageTable.senderID == SenderID && MessageTable.isRead == false).count
+//            if let count =  try self.dbManager.db?.scalar(query){
+//                return count
+//            }
+//
+//        }catch{
+//            print(error)
+//        }
+//
+//        return  nil
+//    }
+    
+// 清楚未读消息
+//    func clearUnReadeMessage(SenderID :String){
+//        do{
+//
+//            // TEST
+//            let target = MessageTable.message.filter(MessageTable.senderID == SenderID && MessageTable.isRead == false)
+//            try  self.dbManager.db?.run(target.update(MessageTable.isRead <- true))
+//
+//
+//        }catch{
+//            print(error)
+//        }
+//
+//    }
+ 
+    
+    func insertMessage(message: MessageBoby) throws {
+        do{
+            if message.isKind(of: JobDescriptionlMessage.self){
+                try self.insertJobMessage(message: message as! JobDescriptionlMessage)
+            }else if message.isKind(of: GifImageMessage.self){
+                try self.insertGifMessage(message: message as! GifImageMessage)
+            }else if message.isKind(of: PicutreMessage.self){
+                try self.insertPictureMessage(message: message as! PicutreMessage)
+            }else{
+                try self.insertBaseMessage(message: message)
+            }
+            
+        }catch{
+            throw error
+        }
+    }
+    
+    
+    func insertBaseMessage(message:MessageBoby) throws{
+        
+        do{
+           
+          
+           try self.dbManager.db?.run(MessageTable.message.insert(
                 MessageTable.content <-  message.content ?? Data(),
                 MessageTable.create_time <- message.creat_time!,
-                MessageTable.isRead <- message.isRead, MessageTable.type <- message.type!,
-                MessageTable.receiverID <- receiver.userID!, MessageTable.read_time <- Date.init(timeIntervalSince1970: 0)))
+                MessageTable.isRead <- message.isRead,
+                MessageTable.type <- message.type!,
+                MessageTable.conversationId <- message.conversayionId!,
+                MessageTable.senderID <- message.senderId!,
+                MessageTable.receiverID <- message.receiveId!
+            ))
             
             
         }catch{
             // 抛出异常
             throw error
-            //print(error)
         }
     }
     
     private func insertJobMessage(message:JobDescriptionlMessage) throws{
+        
         do{
             
-            guard let sender = message.sender else {
-                throw DBError.init(message: "sender invalidate")
-            }
-            guard  let receiver = message.receiver else {
-                throw DBError.init(message: "receiver invalidate")
-            }
-            
-            
             // json 数据
-            guard  let content =  message.JsonContentToDate()  else { return }
+            guard  let content =  message.JsonContentToDate()  else {
+                throw DBError.init(message: "job content invalidate")
+                //return
+            }
             
             try self.dbManager.db?.run(MessageTable.message.insert(
-                                        MessageTable.messageID <- message.messageID!,MessageTable.senderID <- sender.userID!,
                                         MessageTable.content <- content,
                                         MessageTable.create_time <-  message.creat_time!,
-                                        MessageTable.isRead <- message.isRead, MessageTable.type <- message.type!,
-                                        MessageTable.receiverID <- receiver.userID!, MessageTable.read_time <- Date()))
+                                        MessageTable.isRead <- message.isRead,
+                                        MessageTable.type <- message.type!,
+                                        MessageTable.conversationId <- message.conversayionId!,
+                                        MessageTable.senderID <- message.senderId!,
+                                        MessageTable.receiverID <- message.receiveId!
+                                    ))
             
         }catch{
-            print(error)
+            throw error
         }
     }
     
-    private func insertGifMessage(message:GigImageMessage) throws{
+    
+    private func insertGifMessage(message:GifImageMessage) throws{
         do{
-            guard let sender = message.sender else {
+           
+            guard let data = message.pathToData() else{
+                
                 return
             }
-            guard  let receiver = message.receiver else {
-                return
-            }
-            
-            
-            guard let content = message.localGifPath else {
-                return
-            }
-            
-            guard let data = content.data(using: String.Encoding.utf8, allowLossyConversion: false) else { return }
             
             try self.dbManager.db?.run(MessageTable.message.insert(
-                                    MessageTable.messageID <- message.messageID!,
-                                    MessageTable.senderID <- sender.userID!,
-                                    MessageTable.content <- data,
-                                    MessageTable.create_time <- message.creat_time!,
-                                    MessageTable.isRead <- message.isRead, MessageTable.type <- message.type!,
-                                    MessageTable.receiverID <- receiver.userID!, MessageTable.read_time <- Date()))
+                            MessageTable.content <- data,
+                            MessageTable.create_time <- message.creat_time!,
+                            MessageTable.isRead <- message.isRead,
+                            MessageTable.type <- message.type!,
+                            MessageTable.conversationId <- message.conversayionId!,
+                            MessageTable.senderID <- message.senderId!,
+                            MessageTable.receiverID <- message.receiveId!
+                        ))
+            
         }catch{
             throw error
         }
@@ -525,23 +469,21 @@ func insertBaseMessage(message:MessageBoby) throws{
     
     private func insertPictureMessage(message: PicutreMessage) throws{
         do{
-            guard let sender = message.sender else {
-                return
-            }
-            guard  let receiver = message.receiver else {
-                return
-            }
+           
             // 文件路径
-            guard let imgName = message.imageFileName else { return }
-            guard let data =  imgName.data(using: String.Encoding.utf8, allowLossyConversion: false) else {return}
+            guard let data = message.pathToData() else {
+                return
+            }
             
             try self.dbManager.db?.run(MessageTable.message.insert(
-                                     MessageTable.messageID <- message.messageID!,
-                                    MessageTable.senderID <- sender.userID!,
                                     MessageTable.content <- data,
                                     MessageTable.create_time <- message.creat_time!,
-                                    MessageTable.isRead <- message.isRead, MessageTable.type <- message.type!,
-                                    MessageTable.receiverID <- receiver.userID!, MessageTable.read_time <- Date()))
+                                    MessageTable.isRead <- message.isRead,
+                                    MessageTable.type <- message.type!,
+                                    MessageTable.conversationId <- message.conversayionId!,
+                                    MessageTable.senderID <- message.senderId!,
+                                    MessageTable.receiverID <- message.receiveId!
+                            ))
             
         }catch{
             throw error
@@ -549,33 +491,38 @@ func insertBaseMessage(message:MessageBoby) throws{
     }
     
     
-    func removeAllMessageBy(userID:String)  throws{
+    func removeConversationMessage(conversationId:String)  throws{
         
-        let targets = MessageTable.message.filter(MessageTable.receiverID == userID || MessageTable.senderID == userID)
+        let targets = MessageTable.message.filter(MessageTable.conversationId == conversationId)
         try self.dbManager.db?.run(targets.delete())
-        
     }
     
     
 }
 
-// 会话表
-struct  ConversationTable {
+// 会话表(求职者关于某个job 和hr的会话)
+struct  SingleConversationTable {
     
-    static let conversation = Table("conversation")
+    static let conversation = Table("single_conversation")
     
-    // 主机 自增id
-    static let id = Expression<Int64>("id")
-    // 主键（被交流对象）
-    static let userID = Expression<String>("userID")
+    
+    // 主键
+    static let conversationId = Expression<String>("conversation_id")
+    
+    static let myid = Expression<String>("my_id")
+    static let recruiterId = Expression<String>("recruiter_id")
+    static let jobId = Expression<String>("job_id")
+    static let createdTime = Expression<Date>("created_time")
     // others??
     
     // 最后一条消息 (可以为空)
-    static let messageID = Expression<String>("messageID")
+    //static let messageID = Expression<String>("messageID")
     
+    static let recruiterName = Expression<String>("recruiter_name")
+    static let recruiterIconURL = Expression<String>("recruiter_icon_url")
     // 置顶
     static let isUP = Expression<Bool>("isUP")
-    static let upTime = Expression<Date>("upTime")
+    static let upTime = Expression<Date?>("upTime")
     
     private let dbManager:SqliteManager
     
@@ -583,37 +530,62 @@ struct  ConversationTable {
         self.dbManager = dbManage
     }
     
-    // 结果根据置顶 时间从大到小排序, 第二id 从小到大（保证为置顶的数据保持原来位置）
-    func getAllConversations() -> [[String:Any]]?{
+    // 结果根据置顶 时间从大到小排序, 创建时间 从小到大（保证为置顶的数据保持原来位置）
+    func getAllConversations() throws ->  [SingleConversation] {
+        
+        var res = [SingleConversation]()
+        
         do{
-            
-            var res = [[String:Any]]()
-            
-            for item in try self.dbManager.db!.prepare(ConversationTable.conversation.order(ConversationTable.upTime.desc, ConversationTable.id.asc)) {
-                res.append(["userID":item[ConversationTable.userID], "messageID":item[ConversationTable.messageID],
-                            "isUP":item[ConversationTable.isUP], "upTime":item[ConversationTable.upTime].timeIntervalSince1970])
+        
+            for item in try self.dbManager.db!.prepare(SingleConversationTable.conversation.order( SingleConversationTable.createdTime.desc)) {
+                if let s = SingleConversation(JSON:[
+                    "conversation_id": item[SingleConversationTable.conversationId],
+                    "my_id": item[SingleConversationTable.myid],
+                    "recruiter_id": item[SingleConversationTable.recruiterId],
+                    "created_time": item[SingleConversationTable.createdTime].timeIntervalSince1970,
+                    "job_id": item[SingleConversationTable.jobId],
+                    "up_time": item[SingleConversationTable.upTime]?.timeIntervalSince1970,
+                    "is_up": item[SingleConversationTable.isUP],
+                    "recruiter_name": item[SingleConversationTable.recruiterName],
+                    "recruiter_icon_url": item[SingleConversationTable.recruiterIconURL]
+                    ]){
+                    
+                    res.append(s)
+                }
             }
             
-            return res
+           
             
         }catch{
-            print(error)
+            throw error
         }
         
-        return nil
+        return res
+        
     }
     
     // 获取某个会话
-    func getOneConversation(userID:String)-> [String:Any]?{
+    func getOneConversation(conversationId:String) throws -> SingleConversation?{
+        
         do{
-            let target = ConversationTable.conversation.filter(ConversationTable.userID == userID)
+            let target = SingleConversationTable.conversation.filter(SingleConversationTable.conversationId == conversationId)
             if let row = try self.dbManager.db?.pluck(target){
-                return ["userID":row[ConversationTable.userID],"messageID":row[ConversationTable.messageID],"isUP":row[ConversationTable.isUP],"upTime":row[ConversationTable.upTime].timeIntervalSince1970]
-                
+                return SingleConversation(JSON:[
+                    "conversation_id": row[SingleConversationTable.conversationId],
+                    "my_id": row[SingleConversationTable.myid],
+                    "recruiter_id": row[SingleConversationTable.recruiterId],
+                    "created_time": row[SingleConversationTable.createdTime].timeIntervalSince1970,
+                    "job_id": row[SingleConversationTable.jobId],
+                    "up_time": row[SingleConversationTable.upTime]?.timeIntervalSince1970,
+                    "is_up": row[SingleConversationTable.isUP],
+                    "recruiter_name": row[SingleConversationTable.recruiterName],
+                    "recruiter_icon_url": row[SingleConversationTable.recruiterIconURL]
+                    
+                    ])
             }
             
         }catch{
-            print(error)
+            throw error
         }
         
         return nil
@@ -622,50 +594,91 @@ struct  ConversationTable {
     
     
     // 插入数据
-    func insertConversationDate(userID:String, messageID:String, upTime:Date = Date(), isUP:Bool = false){
+    func insertConversationDate(data: SingleConversation) throws{
+        
         do{
+            let query = SingleConversationTable.conversation.filter(SingleConversationTable.conversationId == data.conversationId!)
             
-            try self.dbManager.db?.run(ConversationTable.conversation.insert(ConversationTable.userID <- userID,
-                                                                             ConversationTable.messageID <- messageID,
-                                                                             ConversationTable.isUP <- isUP,
-                                                                             ConversationTable.upTime <- upTime))
+            // 检查是否存在
+            if let _ =  try self.dbManager.db?.pluck(query){
+            }else{
+                try self.dbManager.db?.run(
+                    SingleConversationTable.conversation.insert(
+                    SingleConversationTable.conversationId <- data.conversationId!,
+                    SingleConversationTable.myid <- data.myid!,
+                    SingleConversationTable.recruiterId <- data.recruiterId!,
+                    SingleConversationTable.upTime <- data.upTime,
+                    SingleConversationTable.createdTime <- data.createdTime ?? Date(),
+                    SingleConversationTable.isUP <- data.isUp ?? false,
+                    SingleConversationTable.jobId <- data.jobId!,
+                    SingleConversationTable.recruiterIconURL <- data.recruiterIconURL?.absoluteString ?? "",
+                    SingleConversationTable.recruiterName <- data.recruiterName ?? ""
+                ))
+            }
+            
+            
             
         }catch{
-            print(error)
+             throw error
         }
     }
     
-    // 更新 最后的会话id
-    func upDateConversationMessageID(userID:String, messageID:String, date:Date){
+    func getLastMessage(conversationId:String) throws -> MessageBoby?{
+        
+        let target = SingleConversationTable.conversation.filter(SingleConversationTable.conversationId == conversationId)
         do{
+            if let row = try self.dbManager.db?.pluck(target){
+                let id = row[SingleConversationTable.conversationId]
+                let lastMsg = MessageTable.message.filter(MessageTable.conversationId == id ).order(MessageTable.create_time.desc)
+                if let msg =  try self.dbManager.db?.pluck(lastMsg){
+                    guard let messageType =  MessgeType(rawValue: msg[MessageTable.type]) else {
+                        return nil
+                    }
+                    guard let data = msg[MessageTable.content] else {
+                        return nil
+                    }
+                    
+                    return MessageTable.buildMsg(messageType: messageType, item: msg, data: data)
+                }
+                
+            }
             
-            let target = ConversationTable.conversation.filter(ConversationTable.userID == userID)
-            try self.dbManager.db?.run(target.update(ConversationTable.upTime <- date,ConversationTable.messageID <- messageID))
         }catch{
-            print(error)
+            throw error
         }
+       
+        return nil
     }
+    // 更新 最后的会话id
+//    func upDateConversationMessageID(userID:String, messageID:String, date:Date){
+//        do{
+//
+//            let target = ConversationTable.conversation.filter(ConversationTable.userID == userID)
+//            try self.dbManager.db?.run(target.update(ConversationTable.upTime <- date,ConversationTable.messageID <- messageID))
+//        }catch{
+//            print(error)
+//        }
+//    }
     
     
     // 更新置顶状态
-    func upDateConversationUpStatus(userID:String, isUP:Bool){
+    func setUpConversation(conversationId:String, up:Bool) throws{
         
         do{
-            
-            let target = ConversationTable.conversation.filter(ConversationTable.userID == userID)
-            try self.dbManager.db?.run(target.update(ConversationTable.isUP <- isUP))
+            let target = SingleConversationTable.conversation.filter(SingleConversationTable.conversationId == conversationId)
+            try self.dbManager.db?.run(target.update(SingleConversationTable.isUP <- up, SingleConversationTable.upTime <- Date.init()))
             
         }catch{
-            print(error)
+            throw error
         }
     }
     
     
     
     // 删除会话
-    func deleteConversationBy(userID:String) throws{
+    func deleteConversationBy(conversationId:String) throws{
        
-        let target = ConversationTable.conversation.filter(ConversationTable.userID == userID)
+        let target = SingleConversationTable.conversation.filter(SingleConversationTable.conversationId == conversationId)
         try self.dbManager.db?.run(target.delete())
     }
     

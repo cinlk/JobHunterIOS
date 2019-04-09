@@ -45,9 +45,9 @@ import UIKit
     }
     
     init(isRemove: Bool) {
-        self.isRemove = (isRemove)
+        self.isRemove = isRemove
     }
     init(isEmpty: Bool) {
-        self.isEmpty = (isEmpty)
+        self.isEmpty = isEmpty
     }
 }

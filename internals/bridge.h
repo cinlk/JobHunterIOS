@@ -10,12 +10,14 @@
 #define bridge_h
 
 #import <SDAutoLayout/SDAutoLayout.h>
-#import <SocketRocket/SocketRocket.h>
+//#import <SocketRocket/SocketRocket.h>
 #import <UMShare/UMShare.h>
 #import <UMCommon/UMCommon.h>
 #import <MBProgressHUD/MBProgressHUD.h>
 //#import <MAMapKit/MAMapKit.h>
 //#import <AMapFoundationKit/AMapFoundationKit.h>
+#import <AVOSCloud/AVOSCloud.h>
+#import <AVOSCloudIM/AVIMClient.h>
 #endif /* bridge_h */
 
 

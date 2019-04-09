@@ -77,14 +77,14 @@ class AppFileManager{
     }
     
     // 清楚该用户下所有image
-    open func deleteDirBy(userID:String){
-        let userPath = imagePath + "/" + userID
+    open func deleteDirBy(conversationId:String) throws {
+        let userPath = imagePath + "/" + conversationId
         do{
             if SingletoneClass.fileManager.fileExists(atPath: userPath){
                 try SingletoneClass.fileManager.removeItem(atPath: userPath)
             }
         }catch{
-            print(error)
+            throw error 
         }
     }
     

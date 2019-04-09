@@ -49,10 +49,14 @@ final class DataTransformBase64: TransformType {
     
     
     public func transformFromJSON(_ value: Any?) -> Data? {
-        if let  dataBase64 = value as? String{
-            
-            return  Data.init(base64Encoded: dataBase64)
+        // 转换为base64
+        if let  content = value as? String, let base64content = content.data(using: String.Encoding.utf8)?.base64EncodedString(){
+            return  Data.init(base64Encoded: base64content)
         }
+        if let data = value as? Data{
+            return data
+        }
+        
         return nil
     }
     

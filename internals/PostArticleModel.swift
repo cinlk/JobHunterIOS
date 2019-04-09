@@ -21,7 +21,8 @@ class PostBaseModel: NSObject, Mappable{
     var authorName:String?
     var colleage:String?
     
-    var authorIcon:String = "default"
+    var authorIcon:URL?
+    
     var createTime:Date?
     
     
@@ -56,7 +57,7 @@ class PostBaseModel: NSObject, Mappable{
         authorID <- map["authorID"]
         authorName <- map["authorName"]
         colleage <- map["colleage"]
-        authorIcon <- map["authorIcon"]
+        authorIcon <- (map["authorIcon"], URLTransform())
         createTime <- (map["createTime"],DateTransform())
         thumbUP <- map["thumbUP"]
         reply <- map["reply"]

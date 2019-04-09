@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Kingfisher
 
 fileprivate let viewTitle:String = "回帖"
 
@@ -42,7 +42,7 @@ class SingleReplyViewController: BaseViewController {
     
     internal var mode:FirstReplyModel?{
         didSet{
-            mycomment = mode?.authorID == myself.userID
+            mycomment = mode?.authorID ==  GlobalUserInfo.shared.getId()
             headerView.mode = mode
             currentSenderName = mode!.authorName!
             headerView.layoutSubviews()
@@ -222,7 +222,7 @@ extension SingleReplyViewController: UITableViewDataSource, UITableViewDelegate{
         //currentReceiverName = mode.authorName!
         currentSelecteCell = indexPath.row
         
-        if  allSubReplys[indexPath.row].authorID == myself.userID{
+        if  allSubReplys[indexPath.row].authorID == GlobalUserInfo.shared.getId() {
             buildAlert(showDelete: true)
         }
         buildAlert(showDelete: false)
@@ -480,8 +480,12 @@ internal class  singleHeaderView:PostHeaderView{
             guard  let mode = mode  else {
                 return
             }
+            if let url = mode.authorIcon{
+              self.userIcon.kf.setImage(with: Source.network(url), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+            }
+            
             self.userName.text = mode.authorName
-            self.userIcon.image = UIImage.init(named: mode.authorIcon)
+            //self.userIcon.image = UIImage.init(named: mode.authorIcon)
             self.createTime.text = mode.createTimeStr
             self.contentText.text = mode.replyContent
             
@@ -535,8 +539,12 @@ internal class  singleHeaderView:PostHeaderView{
                 return
             }
          
+            if let url = mode.authorIcon{
+                self.authorIcon.kf.setImage(with: Source.network(url), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+            }
+            
             self.creatTime.text = mode.createTimeStr
-            self.authorIcon.image = UIImage.init(named: mode.authorIcon)
+            //self.authorIcon.image = UIImage.init(named: mode.authorIcon)
             self.postType.text = ""
             
             let authNameStr = NSMutableAttributedString.init(string: mode.authorName!, attributes: [NSAttributedString.Key.foregroundColor:UIColor.black, NSAttributedString.Key.font:UIFont.systemFont(ofSize: 14)])

@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Kingfisher
  
 fileprivate let viewTitle:String = "帖子详情"
 fileprivate let shareViewH = SingletoneClass.shared.shareViewH
@@ -152,7 +152,7 @@ class PostContentViewController: BaseTableViewController {
         self.tableHeader.mode = self.contentMode!
         self.tableHeader.layoutSubviews()
         self.tableView.tableHeaderView = self.tableHeader
-        self.mypost = contentMode?.authorID == myself.userID
+        self.mypost = contentMode?.authorID == GlobalUserInfo.shared.getId()
         self.inputText.isHidden = false
         
         if mypost{
@@ -471,8 +471,11 @@ fileprivate class contentHeaderView:PostHeaderView{
             guard let mode = mode  else {
                 return
             }
+            if let url = mode.authorIcon{
+                self.userIcon.kf.setImage(with: Source.network(url), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+            }
             self.contentTitle.text = mode.title
-            self.userIcon.image = UIImage.init(named: mode.authorIcon)
+            //self.userIcon.image = UIImage.init(named: mode.authorIcon)
             
             let authNameStr = NSMutableAttributedString.init(string: mode.authorName!, attributes: [NSAttributedString.Key.foregroundColor:UIColor.black, NSAttributedString.Key.font:UIFont.systemFont(ofSize: 14)])
             authNameStr.append(NSAttributedString.init(string: " " + mode.colleage!, attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray, NSAttributedString.Key.font:UIFont.systemFont(ofSize: 14)]))

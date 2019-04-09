@@ -51,7 +51,7 @@ extension UIButton {
         let imageSize = self.imageRect(forContentRect: self.frame)
         
         // 字符串才能计算实际的width
-        guard  let titleSize = self.titleLabel?.text?.getStringCGRect(size: CGSize.init(width: self.width, height: 0), font: (self.titleLabel?.font)!) else {
+        guard  let titleSize = self.titleLabel?.text?.rect(withFont: (self.titleLabel?.font)!, size:  CGSize.init(width: self.width, height: 0)) else {
             return
         }
         

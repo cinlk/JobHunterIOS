@@ -186,9 +186,11 @@ extension UserLogginViewController{
             
             GlobalUserInfo.shared.isLogin = false
             self.quickVM.anonymouseLogin().asDriver(onErrorJustReturn: ResponseModel<LoginSuccess>(JSON: [:])!).drive(onNext: { (res) in
-                if let token = res.body?.token{
-                       GlobalUserInfo.shared.baseInfo(role: UserRole.role.anonymous, token: token, account: "" , pwd: "")
+                 guard let token = res.body?.token else{
+                    return
                 }
+                
+                GlobalUserInfo.shared.baseInfo(token: token, account: "" , pwd: "", lid: "", data: ["role": UserRole.role.anonymous.describe])
              
             }).disposed(by: self.dispose)
             self.navBack ? self.dismiss(animated: true, completion: nil) : self.performSegue(withIdentifier: self.mainSegueIdentiy, sender: nil)

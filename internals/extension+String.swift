@@ -13,11 +13,23 @@ import Foundation
 
 extension String {
     
-    func getStringCGRect(size:CGSize, font:UIFont) -> CGRect{
+//    func getStringCGRect(size:CGSize, font:UIFont) -> CGRect{
+//
+//        let constraintRect = CGSize(width: size.width, height: CGFloat.greatestFiniteMagnitude)
+//        let sSize = self.boundingRect(with: constraintRect, options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: font], context: nil)
+//        return sSize
+//    }
     
-        let constraintRect = CGSize(width: size.width, height: CGFloat.greatestFiniteMagnitude)
-        let sSize = self.boundingRect(with: constraintRect, options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: font], context: nil)
-        return sSize
+    func rect(withFont font: UIFont, size: CGSize) -> CGRect {
+        return (self as NSString).boundingRect(with: size, options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: font], context: nil)
+    }
+    /// 根据固定的size和font计算文字的height
+    func height(withFont font: UIFont, size: CGSize) -> CGFloat {
+        return self.rect(withFont: font, size: size).height
+    }
+    /// 根据固定的size和font计算文字的width
+    func width(withFont font: UIFont, size: CGSize) -> CGFloat {
+        return self.rect(withFont: font, size: size).width
     }
     
     

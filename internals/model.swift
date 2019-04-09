@@ -34,13 +34,20 @@ class CodeSuccess: Mappable, CustomStringConvertible{
 class  LoginSuccess: Mappable{
     
     var token: String?
-
+    var role:String?
+    var leanCloudId:String?
+    
+    
     required init?(map: Map) {
         
     }
     
     func mapping(map: Map) {
+        
+        leanCloudId <- map["lean_cloud_id"]
         token <- map["token"]
+        
+        
     }
     
     

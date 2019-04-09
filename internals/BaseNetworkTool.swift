@@ -16,6 +16,7 @@ public enum GlobaHttpRequest {
     case helloMsg
     case adviseImages
     case userlogin(phone:String, password:String)
+    case userInfo(token:String)
     case logout
     case setHelloMsg(index:Int)
     // 获取新闻栏目数据
@@ -65,6 +66,8 @@ extension GlobaHttpRequest: TargetType{
             return self.urlPrefix + "advise/image"
         case .userlogin:
             return   "account/login/pwd"
+        case .userInfo(_):
+            return    "account/userinfo"
         case .logout:
             return  "account/logout"
         case .setHelloMsg:
@@ -96,7 +99,7 @@ extension GlobaHttpRequest: TargetType{
     public  var method: Moya.Method {
         switch self {
         case .guideData, .adviseImages, .helloMsg, .citys, .bussinessField, .subBusinessField,
-             .companyType, .internCondition, .cityCollege, .jobWarns:
+             .companyType, .internCondition, .cityCollege, .jobWarns, .userInfo:
             return .get
         case .userlogin, .news, .nearByMeetings, .nearyByCompany:
             return .post
@@ -114,7 +117,7 @@ extension GlobaHttpRequest: TargetType{
     
     public var task: Task {
         switch self {
-        case .guideData, .helloMsg, .adviseImages, .logout, .citys, .bussinessField, .subBusinessField, .companyType, .internCondition, .cityCollege, .jobWarns:
+        case .guideData, .helloMsg, .adviseImages, .logout, .citys, .bussinessField, .subBusinessField, .companyType, .internCondition, .cityCollege, .jobWarns, .userInfo(_):
             return Task.requestPlain
         case let .userlogin(phone, password):
             return .requestParameters(parameters: ["phone": phone, "password":password], encoding: JSONEncoding.default)
@@ -134,6 +137,8 @@ extension GlobaHttpRequest: TargetType{
         switch  self {
         case .logout:
             return ["Authorization": GlobalUserInfo.shared.getToken()]
+        case .userInfo(let token):
+            return ["Authorization": token]
         default:
             return nil
         }

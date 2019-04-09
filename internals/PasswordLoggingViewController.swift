@@ -209,17 +209,31 @@ extension PasswordLoggingViewController{
             self.viewModel.passwordLogin(accont: self.account.value, pwd: self.pwd.value).asDriver(onErrorJustReturn: Mapper<ResponseModel<LoginSuccess>>().map(JSON: [:])!)
         }).takeUntil(self.rx.deallocated).subscribe(onNext: { res in
             
-            if let token = res.body?.token{
-                 GlobalUserInfo.shared.baseInfo(role: UserRole.role.seeker, token: token, account: self.account.value , pwd: self.pwd.value)
+            guard let token =  res.body?.token, let lid = res.body?.leanCloudId else{
+                self.view.showToast(title: res.returnMsg ?? "用户名或密码错误", customImage: nil, mode: .text)
+                return
+            }
+            
+            self.viewModel.getUserInfo(token: token).asDriver(onErrorJustReturn: "").drive(onNext: { (json) in
+                guard let j = json as? [String:Any], let  data = j["body"] as? [String:Any]
+                else {
+                    self.view.showToast(title: "获取用户信息失败", customImage: nil, mode: .text)
+                    return
+                }
+                // 判断用户角色 切换场景 TODO
+                
+                GlobalUserInfo.shared.baseInfo(token: token, account: self.account.value , pwd: self.pwd.value, lid: lid, data: data)
                 
                 guard let pv = self.parentVC else {
                     return
                 }
                 pv.navBack ? pv.dismiss(animated: true, completion: nil) : pv.performSegue(withIdentifier: pv.mainSegueIdentiy, sender: nil)
-                return
-            }
+                
+            }).disposed(by: self.dispose)
+               
+           
             
-             self.view.showToast(title: res.returnMsg ?? "用户名或密码错误", customImage: nil, mode: .text)
+            
             
         })
         

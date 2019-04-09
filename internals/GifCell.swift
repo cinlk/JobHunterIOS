@@ -10,10 +10,10 @@ import UIKit
 import Kingfisher
 
 
-class gifCell: UITableViewCell {
+class GifCell: UITableViewCell {
 
     
-    private var avatar:UIImageView = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: avatarSize.width, height: avatarSize.height))
+    private var avatar:UIImageView = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.AvatarSize.width, height: GlobalConfig.AvatarSize.height))
     
     private lazy var gif:UIImageView =  {
         let img = UIImageView.init(frame: CGRect.zero)
@@ -47,9 +47,9 @@ class gifCell: UITableViewCell {
         return "gifCell"
     }
     
-    func setupPictureCell(messageInfo:GigImageMessage, chatUser:PersonModel){
+    func setupPictureCell(messageInfo:GifImageMessage, chatUser:PersonModel?){
         
-        guard let gifName =  messageInfo.localGifPath else {
+        guard let gifName =  messageInfo.localGifName else {
             return
         }
         
@@ -60,7 +60,7 @@ class gifCell: UITableViewCell {
             return
         }
         
-        // 图片数据
+        // 图片数据  本地file  或者网络url??
         let data = NSData.init(contentsOf: NSURL.init(fileURLWithPath: gifPath) as URL)
         // 组合gif动态图
         let animationImage = UIImage.animationImageWithData(data: data)
@@ -69,11 +69,11 @@ class gifCell: UITableViewCell {
         
         // 图片宽度
         let gifWidth:CGFloat =  messageInfo.messageType == .bigGif ? 100 : 60
-
         
         
-        if myself.userID  == messageInfo.sender?.userID{
-            if let iconURL = myself.icon {
+        
+        if GlobalUserInfo.shared.getId()  == messageInfo.senderId{
+            if let iconURL = GlobalUserInfo.shared.getIcon() {
                 self.avatar.kf.setImage(with: Source.network(iconURL), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }else{
                 // default 头像
@@ -81,13 +81,13 @@ class gifCell: UITableViewCell {
             }
             
             
-            self.avatar.frame = CGRect.init(x: GlobalConfig.ScreenW - avatarSize.width - 5 , y: 5, width: avatarSize.width, height: avatarSize.height)
+            self.avatar.frame = CGRect.init(x: GlobalConfig.ScreenW - GlobalConfig.AvatarSize.width - 5 , y: 5, width: GlobalConfig.AvatarSize.width, height: GlobalConfig.AvatarSize.height)
             
             self.gif.frame = CGRect.init(x: GlobalConfig.ScreenW - 5 - self.avatar.frame.width - 5 - gifWidth - 10, y: 10, width: gifWidth, height: gifWidth)
             
             
         }else{
-            if let iconURL = chatUser.icon {
+            if let iconURL = chatUser?.icon {
                 
                 self.avatar.kf.setImage(with: Source.network(iconURL), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }else{
@@ -95,7 +95,7 @@ class gifCell: UITableViewCell {
                 self.avatar.image =  #imageLiteral(resourceName: "default")
             }
             
-            self.avatar.frame = CGRect.init(x: 5, y: 5, width: avatarSize.width, height: avatarSize.height)
+            self.avatar.frame = CGRect.init(x: 5, y: 5, width: GlobalConfig.AvatarSize.width, height: GlobalConfig.AvatarSize.height)
             self.gif.frame = CGRect.init(x: self.avatar.frame.width+5+10, y: 15, width: gifWidth, height: gifWidth)
 
         }

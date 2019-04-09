@@ -22,8 +22,8 @@ class PrivacySetting: BaseViewController {
     
     // popView
     
-    private lazy var popCompanyView:popView = { [unowned self] in
-        let v = popView.init(frame: CGRect.init(x: -200, y: (GlobalConfig.ScreenH - 100)/2 , width: 200, height: 60))
+    private lazy var popCompanyView:PopView = { [unowned self] in
+        let v = PopView.init(frame: CGRect.init(x: -200, y: (GlobalConfig.ScreenH - 100)/2 , width: 200, height: 60))
         v.layer.cornerRadius = 10
         v.layer.masksToBounds = true
         v.backgroundColor = UIColor.white

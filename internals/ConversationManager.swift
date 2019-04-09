@@ -27,134 +27,167 @@ class ConversationManager: NSObject {
     
     
     // 获取某个会话
-    open func getConversationBy(userID:String)->conversationModel?{
+    open func getConversationBy(conversationId:String) ->ChatListModel?{
         
-        guard var item = conversationTable.getOneConversation(userID: userID) else {
-            return nil
-        }
-        guard let mes = messageTable.getMessageByID(msgID: (item["messageID"] as! String)) else {
-            return nil
-        }
-        
-        // 更加userID 获取用户信息
-        item["user"] = ["userID":userID,"company":"大大大","name":"我是hr","role":"hr","icon": #imageLiteral(resourceName: "hr").toBase64String()]
-        item["message"] = mes.toJSON()
-        
-        
-        // 判断数据是否存在
-        guard let one   = conversationModel(JSON: item) else {
-            return nil
+    
+        do{
             
+            guard let item = try conversationTable.getOneConversation(conversationId: conversationId)  else {
+                return nil
+            }
+            guard let  mode = ChatListModel(JSON: item.toJSON())
+            else{
+                return nil
+            }
+            
+            if let msg = try conversationTable.getLastMessage(conversationId: item.conversationId ?? ""){
+                mode.lastMessage = msg
+            }
+            
+            return mode
+            
+        }catch {
+            print(error)
+            return nil
         }
-                
-        return one
+     
         
     }
     // 获取全部会话 和 是否存在未读消息
-    open func getConversaions()-> ([conversationModel], Bool){
-        var conversationModes:[conversationModel] = []
-        var unReadMes:Bool = false
+    open func getConversaions()-> [ChatListModel]{
         
-         // 查出所有的会话 得到userid
-        guard let res = conversationTable.getAllConversations() else { return ([], unReadMes) }
-        for var item in res{
+        var conversationModes:[ChatListModel] = []
+        
+         // 查出所有的会话
+        guard let cons =  try? conversationTable.getAllConversations() else {
+            return []
+        }
+        
+        
+        for  c in cons{
             
-            
-            // 最后一个消息
-            if let mes = messageTable.getMessageByID(msgID: item["messageID"] as! String){
-                    //mode.message = mes
-               
-                item["message"] = mes.toJSON()
-            }
-            // 聊天对象id
-            if let userID =  item["userID"] as? String{
-                // 从服务器获取 用户信息
-               
-                item["user"] = ["userID":userID,"company":"大大大","name":"我是hr","role":"hr","icon": #imageLiteral(resourceName: "hr").toBase64String()]
-                
-                 // 获取 发送者未读的消息
-                if let unReadCount =  messageTable.getUnReadMessages(SenderID: userID){
-                    item["unReadCount"] = unReadCount
-                    unReadMes = true
-                }
-                
-            }
-            // 判断数据是否存在
-            if let model  = conversationModel(JSON: item){
-                
-                 conversationModes.append(model)
-            }
            
+            guard let  tmp  = ChatListModel.init(JSON: c.toJSON())
+                
+                else {
+                continue
+                }
+           // tmp.recruiterIconURL = c.recruiterIconURL
+            // 最后一条消息
+            if let msg =  try? conversationTable.getLastMessage(conversationId: c.conversationId!){
+                tmp.lastMessage = msg
             
+            }
+            print(tmp.toJSON())
+            conversationModes.append(tmp)
         }
         
         
         // 置顶的在前面  然后更加时间降序排序
         conversationModes.sort { (a, b) -> Bool in
-            if  (a.isUP && b.isUP) || (a.isUP == false && b.isUP == false) {
-                return a.upTime! >= b.upTime!
-
-            }else if a.isUP && b.isUP == false{
+            
+            if  a.isUp && b.isUp {
+                let atime = a.upTime ?? Date.init(timeIntervalSince1970: 0)
+                let btime = b.upTime ?? Date.init(timeIntervalSince1970: 0)
+                
+                return atime >= btime
+                
+            }else if a.isUp && b.isUp == false{
                 return true
+            }else if  a.isUp == false && b.isUp == false  {
+                let atime = a.createdTime ?? Date.init(timeIntervalSince1970: 0)
+                let btime = b.createdTime ?? Date.init(timeIntervalSince1970: 0)
+                
+                return atime >= btime
             }else{
                 return false
             }
             
             
+            
         }
         
-        return (conversationModes, unReadMes)
+        return conversationModes
         
     }
-    // 删除会话 删除聊天对象记录 和 消息历史记录
-    open func removeConversationBy(userID:String, complete:((_ bool:Bool)->Void)){
+    // 删除会话
+    open func removeConversationBy(id:String, complete:((_ bool:Bool, _ error: Error?)->Void)){
         
-        
-        
-        // MARK 原子操作??
-        if let error =  DBFactory.shared.deteletAllMessage(userID: userID){
-            complete(false)
-            return 
+        do{
+            try AppFileManager.shared.deleteDirBy(conversationId: id)
+            try DBFactory.shared.deteletAllMessage(conversationId: id)
+        }catch{
+             
+            complete(false, error)
+            return
         }
-        
-        // 删除对话存储的images
-        AppFileManager.shared.deleteDirBy(userID: userID)
-        complete(true)
+
+        complete(true, nil)
         
         
     }
     
+    // 创建会话
+    open func createConversation(data: SingleConversation) -> Bool{
+        do{
+            try conversationTable.insertConversationDate(data: data)
+            return true
+        }catch{
+            print(error)
+        }
+        
+        return false
+    }
 
     
     
     // 获取某人 历史聊天信息，从最近开始查
     
-    open func getLatestMessageBy(chatWith:PersonModel,start:Int,limit:Int)->[MessageBoby]{
-    
-        return  messageTable.getMessages(chatWith:chatWith, start: start, limit: limit)
+    open func getLatestMessageBy(conversationId:String,start:Int,limit:Int)->[MessageBoby]{
         
+        do{
+            return try messageTable.getMessages(conversationId: conversationId, start: start, limit: limit)
+
+        }catch{
+            print(error)
+        }
+        
+        return []
+        //return  messageTable.getMessages(chatWith:chatWith, start: start, limit: limit)
+
     }
     
 
     // 添加到communication 表 (默认不是置顶的)
-    open func insertConversationItem(messageID:String,userID:String, date:Date){
-        conversationTable.insertConversationDate(userID: userID, messageID: messageID, upTime: date)
-    }
-    
-    open func updateConversationMessageID(messageID:String, userID:String, date: Date){
-        conversationTable.upDateConversationMessageID(userID: userID, messageID: messageID, date: date)
-    }
-    
-    open func updateConversationUPStatus(userID:String, isUp:Bool){
-        conversationTable.upDateConversationUpStatus(userID: userID, isUP: isUp)
+//    open func insertConversationItem(messageID:String,userID:String, date:Date){
+//        conversationTable.insertConversationDate(userID: userID, messageID: messageID, upTime: date)
+//    }
+//
+//    open func updateConversationMessageID(messageID:String, userID:String, date: Date){
+//        conversationTable.upDateConversationMessageID(userID: userID, messageID: messageID, date: date)
+//    }
+//
+    open func setUpConversation(conversationId:String, isUp:Bool) -> Bool{
+        do{
+           try conversationTable.setUpConversation(conversationId: conversationId, up: isUp)
+
+        }catch{
+            return false
+        }
+        return true
     }
     
     
     // 清楚会话未读消息
-    open func clearUnReadMessageBy(userID:String){
-        messageTable.clearUnReadeMessage(SenderID: userID)
+    open func clearUnReadMessageBy(conversationId:String) -> Bool{
+        do{
+            try messageTable.closeUnReadMessage(conversationId: conversationId)
+
+        }catch{
+            return false
+        }
         
-        
+        return true
     }
     
     // 插入消息表
@@ -162,12 +195,16 @@ class ConversationManager: NSObject {
         guard items.count > 0 else {
             return
         }
+        
         do{
             try items.forEach{ try messageTable.insertMessage(message: $0)}
         }catch{
+            print("insert message \(error)")
             throw error
         }
     }
+    
+    
     
     
     // 事务提交  先保证前面语句成功 在提交后面语句， 只有发生异常 才会回滚，
@@ -179,14 +216,13 @@ class ConversationManager: NSObject {
         }
         
         do{
-           
-           try SqliteManager.shared.db?.transaction(block: {
-                try self.insertMessageItem(items: messages)
-            self.insertConversationItem(messageID: (messages.last?.messageID!)!, userID: person.userID!, date: (messages.last?.creat_time)!)
-            
-            
-            
-            })
+//           try SqliteManager.shared.db?.transaction(block: {
+//                try self.insertMessageItem(items: messages)
+//            self.insertConversationItem(messageID: (messages.last?.messageID!)!, userID: GlobalConfig.LeanCloudApp.User2 , date: (messages.last?.creat_time)!)
+//
+//
+//
+//            })
         }catch{
             print(error)
         }

@@ -238,14 +238,23 @@ extension QuickLoggingViewController{
             
             self.quickVM.quickLogin(phone: self.phoneNumber.value, code: self.verifyCode.value).asDriver(onErrorJustReturn: Mapper<ResponseModel<LoginSuccess>>().map(JSON: [:])!)
         }).takeUntil(self.rx.deallocated).subscribe(onNext: { (res) in
-            if let token =  res.body?.token{
-                GlobalUserInfo.shared.baseInfo(role: UserRole.role.seeker, token: token, account: "", pwd: "")
-                // 跳转到主界面
-                guard let pv = self.parentVC else {
-                    return
-                }
-                pv.navBack ? pv.dismiss(animated: true, completion: nil) : pv.performSegue(withIdentifier: pv.mainSegueIdentiy, sender: nil)
-                return
+            if let token =  res.body?.token,  let lid = res.body?.leanCloudId{
+                
+                // 获取用户信息
+                self.quickVM.getUserInfo(token: token).asDriver(onErrorJustReturn: "").drive(onNext: { (any) in
+                    if let json = any as? [String:Any], let data = json["body"] as? [String:Any]{
+                        
+                        GlobalUserInfo.shared.baseInfo(token: token, account: self.phoneNumber.value, pwd: "", lid: lid, data: data)
+                        // 跳转到主界面
+                        guard let pv = self.parentVC else {
+                            return
+                        }
+                        pv.navBack ? pv.dismiss(animated: true, completion: nil) : pv.performSegue(withIdentifier: pv.mainSegueIdentiy, sender: nil)
+                        return
+                        
+                    }
+                }).disposed(by: self.dispose)
+                
             }
             self.view.showToast(title: res.returnMsg ?? "登录失败", customImage: nil, mode: .text)
             

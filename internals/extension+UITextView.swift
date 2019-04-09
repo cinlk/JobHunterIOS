@@ -15,7 +15,7 @@ extension UITextView {
     
     class func sizeOfString(string:NSString,font:UIFont,maxWidth:CGFloat)->CGSize{
         
-        let size = string.boundingRect(with: CGSize.init(width: maxWidth, height: 1200), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font:font], context: nil).size
+        let size = string.boundingRect(with: CGSize.init(width: maxWidth, height: CGFloat.greatestFiniteMagnitude), options: NSStringDrawingOptions.usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font:font], context: nil).size
         // 与边框的距离
         return CGSize.init(width: size.width, height: size.height)
         
@@ -65,7 +65,6 @@ extension UITextView {
         
         // 这里改变字体大小（默认是12）
        
-        
         self.font = font
         attrMStr.replaceCharacters(in: range, with: attrImageStr)
         // 设置attrs 的font 大小  段落格式 不自动换行

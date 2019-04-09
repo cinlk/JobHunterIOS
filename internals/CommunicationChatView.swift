@@ -7,32 +7,189 @@
 //
 
 import UIKit
+import ObjectMapper
 import MobileCoreServices
 import Photos
+import RxCocoa
+import RxSwift
 
 
 fileprivate let charMoreViewH:CGFloat = 216
-fileprivate let popViewH:CGFloat = 200
-// 聊天对话 界面
-class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
+fileprivate let popViewCGSize:CGSize = CGSize.init(width: 200, height: 200)
+fileprivate let quikReplyTitle:String = "选择回复内容"
 
+
+protocol chatContentTableViewDelegate: class {
+    // 点击cell 显示message 内容代理
+    func showContent(mes: MessageBoby)
+    func storageImage(image:UIImage)
+    func beginDragTableView()
+}
+// 显示聊天内容的table
+fileprivate  class chatContentTableView:UITableView{
+    
+    weak var chatDelegate:chatContentTableViewDelegate?
+    // 聊天数据
+    var datas:NSMutableArray = []
+    private var hr:HRPersonModel?
+    private var firstLoad:Bool = false
+    
+    convenience init(frame: CGRect, style: UITableView.Style, chatVC: CommunicationChatView){
+        self.init(frame: frame, style: style)
+        //self.datas = chatVC.tableSource
+        self.hr = chatVC.hr
+        self.firstLoad = chatVC.firstLoad
+    }
+    
+    override init(frame: CGRect, style: UITableView.Style) {
+        super.init(frame: frame, style: style)
+        self.dataSource = self
+        self.delegate = self
+        self.showsVerticalScrollIndicator = true
+        self.showsHorizontalScrollIndicator = false
+        self.tableFooterView = UIView.init()
+        self.separatorStyle = .none
+        self.backgroundColor = UIColor.viewBackColor()
+        self.contentInset = UIEdgeInsets(top: 5, left: 0, bottom: 0, right: 0)
+        self.keyboardDismissMode = .onDrag
+        
+        self.register(MessageCell.self, forCellReuseIdentifier: MessageCell.reuseidentify())
+        self.register(JobMessageCell.self, forCellReuseIdentifier: JobMessageCell.identitiy())
+        self.register(GifCell.self, forCellReuseIdentifier: GifCell.reuseidentify())
+        self.register(ImageCell.self, forCellReuseIdentifier: ImageCell.reuseIdentify())
+        self.register(ChatTimeCell.self, forCellReuseIdentifier: ChatTimeCell.identity())
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     
+}
+
+
+extension chatContentTableView:  UITableViewDelegate, UITableViewDataSource{
     
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.datas.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        
+        if let message  = self.datas.object(at: indexPath.row) as? MessageBoby{
+            
+            if message.isKind(of: GifImageMessage.self){
+                let cell = tableView.dequeueReusableCell(withIdentifier: GifCell.reuseidentify(), for: indexPath) as! GifCell
+                cell.setupPictureCell(messageInfo: message as! GifImageMessage , chatUser: self.hr)
+                return cell
+            }else if message.isKind(of: JobDescriptionlMessage.self){
+                let cell = tableView.dequeueReusableCell(withIdentifier: JobMessageCell.identitiy(), for: indexPath) as! JobMessageCell
+                cell.mode = message as? JobDescriptionlMessage
+                return cell
+            }else if message.isKind(of: PicutreMessage.self){
+                let cell = tableView.dequeueReusableCell(withIdentifier: ImageCell.reuseIdentify(), for: indexPath) as! ImageCell
+                cell.mode = message as? PicutreMessage
+                //cell.storeImage = storeImageFromCell
+                cell.storeImage = chatDelegate?.storageImage
+                return cell
+            }else if message.isKind(of: TimeMessage.self){
+                let cell = tableView.dequeueReusableCell(withIdentifier: ChatTimeCell.identity(), for: indexPath) as! ChatTimeCell
+                cell.model = message as? TimeMessage
+                return cell
+                
+                // 文本数据
+            }else{
+                
+                let cell = tableView.dequeueReusableCell(withIdentifier: MessageCell.reuseidentify(), for: indexPath) as! MessageCell
+                cell.setupMessageCell(messageInfo: message, chatUser: self.hr)
+                return cell
+            }
+            
+        }
+        return UITableViewCell()
+    }
+    
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        if let message:MessageBoby  = self.datas.object(at: indexPath.row) as? MessageBoby{
+            
+            switch message.messageType{
+            case .text:
+                return MessageCell.heightForCell(messageInfo: message)
+                
+            case .smallGif,.bigGif:
+                // 计算得到的值
+                return message.messageType == .bigGif ? 120 : 80
+                
+            case .picture:
+                let message = self.datas.object(at: indexPath.row) as! PicutreMessage
+                return tableView.cellHeight(for: indexPath, model: message, keyPath: "mode", cellClass: ImageCell.self, contentViewWidth: GlobalConfig.ScreenW)
+                
+            case .jobDescribe:
+                let message = self.datas.object(at: indexPath.row) as! JobDescriptionlMessage
+                return tableView.cellHeight(for: indexPath, model: message, keyPath: "mode", cellClass: JobMessageCell.self, contentViewWidth: GlobalConfig.ScreenW)
+                
+            case .time:
+                return ChatTimeCell.cellHeight()
+            default:
+                break
+            }
+        }
+        
+        return 0
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let mes = self.datas.object(at: indexPath.row) as? JobDescriptionlMessage{
+            //showJobView(mes: mes)
+            chatDelegate?.showContent(mes: mes)
+        }
+    }
+    
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        // 加载最后可见cell 后，第一次进入view时滚动到最底部的cell
+        if indexPath.row == tableView.indexPathsForVisibleRows?.last?.row && firstLoad{
+            tableView.scrollToRow(at: IndexPath.init(row: self.datas.count - 1, section: 0), at: .bottom, animated: true)
+            firstLoad = false
+            
+        }
+    }
+    
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        self.chatDelegate?.beginDragTableView()
+    }
+    
+}
+
+// 聊天对话 界面
+class CommunicationChatView: UIViewController {
+
     // 聊天对象
-    private var hr:HRPersonModel!
-    
-    // 聊天对话数据集合
-    private var tableSource:NSMutableArray = []
+    fileprivate var hr:HRPersonModel?{
+        didSet{
+            self.title = (self.hr?.name ?? "") + "@" + (self.hr?.company ?? "")
+        }
+    }
+    // hr 的id
+    private var recruiterId:String?
+    //fileprivate var tableSource:NSMutableArray = []
     
     // 记录 device keyboard frame
     private var keyboardFrame:CGRect?
     
     // 记录输入框高度
-    private var currentChatBarHright:CGFloat = ChatInputBarH
-    
-   
-    
+    private var currentChatBarHright:CGFloat = GlobalConfig.ChatInputBarH
     
     // 会话数据库管理操作
     private lazy var conversationManager:ConversationManager = ConversationManager.shared
@@ -40,41 +197,26 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     // 会话显示启示位置（0 表示最后一位）
     private var startMessageIndex:Int = 0
     // 每次获取会话 的个数(每次table 上拉刷新)
-    private var limit:Int = 10
-    
-    private var firstLoad:Bool = true
+    private let limit:Int = 10
+    // 第一次加载
+    fileprivate var firstLoad:Bool = true
     
     // 本地文件管理
     fileprivate let appImageManager = AppFileManager.shared
     
-    
-    private var navTitle:String = ""
-    
-    // 聊天列表界面跳转来 记录行
+    // 聊天列表界面跳转来 记录当前行
     private var currentRow:Int?
     
-    
-    private lazy var tableView:UITableView = { [unowned self] in
-        
-        let tb = UITableView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH - ChatInputBarH),style: .plain)
-       
-        tb.delegate = self
-        tb.dataSource = self
-        tb.showsHorizontalScrollIndicator = false
-        tb.showsVerticalScrollIndicator = true
-        tb.tableFooterView = UIView.init()
-        tb.register(messageCell.self, forCellReuseIdentifier: messageCell.reuseidentify())
-        tb.register(JobMessageCell.self, forCellReuseIdentifier: JobMessageCell.identitiy())
-        tb.register(gifCell.self, forCellReuseIdentifier: gifCell.reuseidentify())
-        tb.register(ImageCell.self, forCellReuseIdentifier: ImageCell.reuseIdentify())
-        tb.register(ChatTimeCell.self, forCellReuseIdentifier: ChatTimeCell.identity())
-        tb.separatorStyle = .none
-        tb.backgroundColor = UIColor.viewBackColor()
-        tb.contentInset = UIEdgeInsets(top: 5, left: 0, bottom: 0, right: 0)
-        
-        // 滑动tableview 影藏键盘
-        tb.keyboardDismissMode = .onDrag
-        
+    // 对话实例， 发送消息用，接收消息
+    private var conversation:AVIMConversation?
+ 
+    // rxswift
+    private let messageHttp:MessageHttpServer = MessageHttpServer.shared
+    private let dispose:DisposeBag = DisposeBag.init()
+    // 聊天内容显示table
+    private lazy var tableView:chatContentTableView = { [unowned self] in
+        let tb = chatContentTableView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH - GlobalConfig.ChatInputBarH),style: .plain, chatVC: self)
+        tb.chatDelegate = self
         return tb
     }()
     
@@ -98,6 +240,7 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
             (name: "相机",icon: #imageLiteral(resourceName: "camera"), type: ChatMoreType.camera),
             (name: "快捷回复",icon: #imageLiteral(resourceName: "autoMessage"), type: ChatMoreType.feedback)
         ]
+        // TODO 加入其它发送类型
         
         return moreV
     }()
@@ -111,30 +254,33 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     }()
     
     //快捷回复界面
-    private lazy var replyPopView:popView = {
-       let v = popView.init(frame: CGRect.init(x: -300, y: (GlobalConfig.ScreenH - 200)/2, width: 200, height: popViewH))
+    private lazy var replyPopView:PopView = {
+       let v = PopView.init(frame: CGRect.init(x: PopView.offsetX, y: (GlobalConfig.ScreenH - popViewCGSize.height)/2, width: popViewCGSize.width, height: popViewCGSize.height))
+        
+       let replyTable  =  quickReplyView(frame: CGRect.zero)
+       replyTable.selecteDelagate  = self
+       
+       v.setTitleAndView(title: quikReplyTitle, view: replyTable)
        v.layer.masksToBounds = true
        v.layer.cornerRadius = 10
        return v
     }()
     
-
     
-
+    private lazy var recruiteVC = PublisherControllerView()
     
     private lazy var alertView:UIAlertController = { [unowned self] in
         let alertV = UIAlertController.init(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
         alertV.addAction(UIAlertAction.init(title: "查看TA的名片", style: UIAlertAction.Style.default, handler: { (action) in
             // MARK
-            let pubHR = PublisherControllerView()
-            pubHR.userID = self.hr.userID!
-            self.navigationController?.pushViewController(pubHR, animated: true)
+            guard let hr = self.hr, let id = hr.userID else {
+                return
+            }
+            self.recruiteVC.userID = id
+            self.navigationController?.pushViewController(self.recruiteVC, animated: true)
         }))
         alertV.addAction(UIAlertAction.init(title: "屏蔽TA", style: .default, handler: { (action) in
-            print("屏蔽TA")
-            // 更新服务器数据
-            
-            
+            // 更新conversation    不能发消息
         }))
         alertV.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: nil))
         return alertV
@@ -142,11 +288,12 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     
 
     
-    init(hr:HRPersonModel, row:Int? = nil) {
+    init(recruiterId:String, row:Int? = nil, conversation:AVIMConversation? = nil) {
+        super.init(nibName: nil, bundle: nil)
         
         self.currentRow = row
-        self.hr = hr
-        super.init(nibName: nil, bundle: nil)
+        self.conversation = conversation
+        self.recruiterId = recruiterId
         
     }
     
@@ -158,14 +305,11 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
     
     
     override func viewDidLoad() {
+        
         super.viewDidLoad()
-        
         self.setViews()
+        self.setViewModel()
         self.chatRecordLoad()
-        
-        self.navigationController?.delegate = self
-        
-        
     }
 
    
@@ -187,14 +331,10 @@ class CommunicationChatView: UIViewController, UINavigationControllerDelegate {
 
     }
     
-   
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
     
     
 }
+
 
 
 
@@ -203,15 +343,12 @@ extension CommunicationChatView {
     
     private func setViews(){
         
+        self.navigationController?.delegate = self
         self.view.backgroundColor = UIColor.backGroundColor()
-        
-        navTitle = hr.name! + "@" + (hr.company  ?? "")
-        self.title = navTitle
-      
         // 影藏返回按钮文字
         navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
-        
-        self.setupNavigateBtn()
+        // 更多baritem按钮
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(image:  UIImage.init(named: "more")!.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(moreButton))
         
         self.view.addSubview(tableView)
         self.view.addSubview(chatBarView)
@@ -220,31 +357,87 @@ extension CommunicationChatView {
         
         
         
-        _  = chatBarView.sd_layout().leftEqualToView(self.view)?.yIs(GlobalConfig.ScreenH - ChatInputBarH)?.rightEqualToView(self.view)?.heightIs(ChatInputBarH)
+        _  = chatBarView.sd_layout().leftEqualToView(self.view)?.yIs(GlobalConfig.ScreenH - GlobalConfig.ChatInputBarH)?.rightEqualToView(self.view)?.heightIs(GlobalConfig.ChatInputBarH)
         
         _ = emotion.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.chatBarView,0)?.heightIs(charMoreViewH)
         
         _ = moreView.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.chatBarView,0)?.heightIs(charMoreViewH)
         
-        // 监听keyborad
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+    }
+    
+    
+    private func setViewModel(){
         
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardhidden), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+    // 获取recruiter
+    messageHttp.getRecruiterInfo(userId: self.recruiterId!).subscribe(onNext: { (mode) in
+            if let m = mode.body{
+                self.hr = m
+            }
+            
+        }).disposed(by: self.dispose)
+        
+    NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification, object: nil).subscribe(onNext: { (notify) in
+            
+            
+            guard  let h =  notify.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
+                return
+            }
+            self.keyboardFrame =  h
+            
+            
+            // 影藏
+            self.emotion.isHidden = true
+            self.moreView.isHidden = true
+            self.moveBar(distance: self.keyboardFrame?.height ?? 0)
+            
+        }).disposed(by: self.dispose)
+        
+    NotificationCenter.default.rx.notification(UIResponder.keyboardWillHideNotification, object: nil).subscribe(onNext: { (notify) in
+            
+            self.keyboardFrame = CGRect.zero
+            
+            if self.chatBarView.keyboardType == .emotion || self.chatBarView.keyboardType == .more{
+                return
+            }
+            self.moveBar(distance: 0)
+            
+            
+        }).disposed(by: self.dispose)
         
     }
     
     
-    func setupNavigateBtn(){
-       
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(image:  UIImage.init(named: "more")!.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(moreButton))
+    
+    // 加载历史聊天记录 (未读消息如何处理TODO)
+    private func chatRecordLoad(){
+        // 任务顺序执行
+        //  获取历史消息
+        let mes = self.conversationManager.getLatestMessageBy(conversationId: (self.conversation?.conversationId)!, start: self.startMessageIndex, limit: self.limit)
+        
+        if mes.count > 0 {
+            // 添加time 消息
+            let after = self.addTimeMsg(mes:mes)
+            for item in after{
+                //self.tableSource.add(item)
+                self.tableView.datas.add(item)
+            }
+            // start位置偏移量， MARK 上拉查询刷新记录
+            self.startMessageIndex += mes.count
+        }
+        // 刷新table
+        self.tableView.reloadData()
     }
+    
+    
+    
     
 }
 
 
 
 
-extension CommunicationChatView{
+extension CommunicationChatView: UINavigationControllerDelegate{
     
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         // 从job 跳转来的，返回后 需要刷新 chatlist
@@ -252,138 +445,35 @@ extension CommunicationChatView{
             NotificationCenter.default.post(name: NSNotification.Name.init("refreshChat"), object: nil)
         }
         
-        
-        
     }
-    
     
 }
 
 
 
-
-// table
-extension CommunicationChatView: UITableViewDelegate,UITableViewDataSource{
+extension CommunicationChatView: chatContentTableViewDelegate{
     
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.tableSource.count
-    }
-    
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        
-        if let message  = self.tableSource.object(at: indexPath.row) as? MessageBoby{
-            
-            if message.isKind(of: GigImageMessage.self){
-                let cell = tableView.dequeueReusableCell(withIdentifier: gifCell.reuseidentify(), for: indexPath) as! gifCell
-                cell.setupPictureCell(messageInfo: message as! GigImageMessage , chatUser: hr)
-                return cell
-            }else if message.isKind(of: JobDescriptionlMessage.self){
-                let cell = tableView.dequeueReusableCell(withIdentifier: JobMessageCell.identitiy(), for: indexPath) as! JobMessageCell
-                cell.mode = message as? JobDescriptionlMessage
-                return cell
-            }else if message.isKind(of: PicutreMessage.self){
-                let cell = tableView.dequeueReusableCell(withIdentifier: ImageCell.reuseIdentify(), for: indexPath) as! ImageCell
-                cell.mode = message as? PicutreMessage
-                cell.storeImage = storeImageFromCell
-                return cell
-            }else if message.isKind(of: TimeMessage.self){
-                let cell = tableView.dequeueReusableCell(withIdentifier: ChatTimeCell.identity(), for: indexPath) as! ChatTimeCell
-                cell.model = message as? TimeMessage
-                return cell
-                
-            // 文本数据
-            }else{
-                
-                let cell = tableView.dequeueReusableCell(withIdentifier: messageCell.reuseidentify(), for: indexPath) as! messageCell
-                cell.setupMessageCell(messageInfo: message, chatUser: hr)
-                return cell
-            }
-
-    }
-        return UITableViewCell()
-        
-        
-    }
-    
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        
-        if let message:MessageBoby  = self.tableSource.object(at: indexPath.row) as? MessageBoby{
-            
-            switch message.messageType{
-            case .text:
-                return messageCell.heightForCell(messageInfo: message)    
-                
-            case .smallGif,.bigGif:
-                // 计算得到的值
-                return message.messageType == .bigGif ? 120 : 80
-                
-            case .picture:
-                let message = self.tableSource.object(at: indexPath.row) as! PicutreMessage
-                 return tableView.cellHeight(for: indexPath, model: message, keyPath: "mode", cellClass: ImageCell.self, contentViewWidth: GlobalConfig.ScreenW)
-                
-            case .jobDescribe:
-                let message = self.tableSource.object(at: indexPath.row) as! JobDescriptionlMessage
-                return tableView.cellHeight(for: indexPath, model: message, keyPath: "mode", cellClass: JobMessageCell.self, contentViewWidth: GlobalConfig.ScreenW)
-                
-             case .time:
-                return ChatTimeCell.cellHeight()
-            default:
-                break
-            }
-        }
-        
-        return 0
-    }
-    
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        if let mes = self.tableSource.object(at: indexPath.row) as? JobDescriptionlMessage{
-            showJobView(mes: mes)
-        }
-        
-    }
-    
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        // 加载最后可见cell 后，第一次进入view时滚动到最底部的cell
-        if indexPath.row == tableView.indexPathsForVisibleRows?.last?.row && firstLoad{
-            tableView.scrollToRow(at: IndexPath.init(row: self.tableSource.count - 1, section: 0), at: .bottom, animated: true)
-            firstLoad = false
-            
+    func showContent(mes: MessageBoby) {
+        if let jobMsg = mes as? JobDescriptionlMessage{
+             self.showJobView(mes: jobMsg)
         }
     }
     
+    func storageImage(image: UIImage) {
+        self.storeImageFromCell(image: image)
+    }
     
+    func beginDragTableView() {
+        if self.chatBarView.keyboardType != .none{
+            self.hiddenChatBarView()
+        }
+    }
     
 }
+
 
 extension CommunicationChatView{
     
-    // 加载历史聊天记录
-    private func chatRecordLoad(){
-        //
-        let mes = conversationManager.getLatestMessageBy(chatWith: hr, start: startMessageIndex, limit: limit)
-        
-        if mes.count > 0 {
-            // 添加time 消息
-            let after = addTimeMsg(mes:mes)
-            for item in after{
-                self.tableSource.add(item)
-            }
-            
-            // start位置偏移量， MARK 上拉查询刷新记录
-            startMessageIndex += limit
-        }
-    }
     
     // 添加时间message
     private func addTimeMsg(mes:[MessageBoby]) -> [MessageBoby]{
@@ -406,7 +496,12 @@ extension CommunicationChatView{
     fileprivate func createTimeMsg(msg: MessageBoby) -> TimeMessage{
         
         // 时间消息
-        let time = TimeMessage(JSON: ["messageID":getUUID(), "type":MessgeType.time.rawValue,"creat_time":msg.creat_time!.timeIntervalSince1970])!
+    
+        let time = TimeMessage(JSON: ["type":MessgeType.time.rawValue,
+                                      "creat_time":msg.creat_time!.timeIntervalSince1970,
+                                      "receiver_id": msg.receiveId,
+                                      "sender_id": msg.senderId,
+                                      "conversation_id": msg.conversayionId])!
         time.timeStr = LXFChatMsgTimeHelper.shared.chatTimeString(with: time.creat_time?.timeIntervalSince1970)
         return time
         
@@ -430,14 +525,12 @@ extension CommunicationChatView{
         // 隐藏键盘
         self.hiddenChatBarView()
         
-        
         self.present(alertView, animated: true, completion: nil)
     }
     
     
     
     // 显示jod详细界面
-    
     private func showJobView(mes:JobDescriptionlMessage){
         
         self.chatBarView.inputText.resignFirstResponder()
@@ -448,22 +541,25 @@ extension CommunicationChatView{
             self.moveBar(distance: 0){
                 let job = JobDetailViewController()
                 //job.uuid = mes.jobID!
+                job.job = (mes.jobID!, mes.jobtype)
+                job.fromChatVC = true
                 self.navigationController?.pushViewController(job, animated: true)
+                
             }
         }else{
     
             let job = JobDetailViewController()
+            job.job = (mes.jobID!, mes.jobtype)
             //job.uuid = mes.jobID!
+            job.fromChatVC = true
             self.navigationController?.pushViewController(job, animated: true)
+            
             
         }
         self.chatBarView.keyboardType = .none
-        
     }
     
 }
-
-
 
 
 extension CommunicationChatView: chatMoreViewDelegate{
@@ -473,7 +569,6 @@ extension CommunicationChatView: chatMoreViewDelegate{
         switch type {
         // MARK
         case .pic:
-            
             
             if self.getPhotoLibraryAuthorization() == false{
                 
@@ -512,7 +607,7 @@ extension CommunicationChatView: chatMoreViewDelegate{
             
         case .feedback:
             // 显示
-            showReplyPopView()
+            replyPopView.showPop(height: popViewCGSize.height)
             
         // 模拟器相机不能用
         case .camera:
@@ -597,36 +692,84 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
         }
         // 清理inputview
         self.chatBarView.inputText.text = ""
-        let messagebody:MessageBoby = MessageBoby(JSON: ["messageID":getUUID(), "type":MessgeType.text.rawValue,"content":message.data(using:String.Encoding.utf8)!.base64EncodedString(),"creat_time":Date.init().timeIntervalSince1970,"isRead":true])!
         
-        messagebody.sender = myself
-        messagebody.receiver = self.hr
+        // 构建消息发送  和 存入数据库 流程 session ?
+        
+        let textIM = AVIMMessage.init(content: message)
+        self.conversation?.send(textIM, callback: { (success, error) in
+            if success{
+                // 插入数据库
+                if let msg = Mapper<MessageBoby>.init().map(JSON: [
+                    "conversation_id": self.conversation?.conversationId,
+                    "type": MessgeType.text.describe,
+                    "content": textIM.content,
+                    "creat_time": Date.init().timeIntervalSince1970,
+                    "isRead": true,
+                    "sender_id":GlobalUserInfo.shared.getId(),
+                    "receiver_id": self.hr?.userID]){
+                    try? self.conversationManager.insertMessageItem(items: [msg])
+                    self.reloads(mes: msg)
+                }
+                
+                return
+            }
+            
+            if error != nil{
+                self.view.showToast(title: "发送消息失败\(error)", customImage: nil, mode: .text)
+            }
+        })
         
         
-        self.reloads(mes: messagebody)
+        
         
     }
     
-    //   gif 图片路径
+   
     func sendGifMessage(emotion: MChatEmotion, type:MessgeType){
-        
-        guard let path = emotion.text else {
+        // gif 名字
+        guard let name = emotion.text else {
             return
         }
-        if  let message = GigImageMessage(JSON: ["messageID":getUUID(), "type":type.rawValue,"localGifPath":path,"creat_time":Date.init().timeIntervalSince1970,"isRead":true]){
-            message.sender = myself
-            message.receiver = self.hr
-            self.reloads(mes: message)
-            
-        }
+        
+        // 发送text消息 注意类型
+        // 存入数据库
+        // 刷新table
+        let textIM = AVIMTextMessage.init(text: "gif 消息", attributes: ["type": type.describe, "name": name])
+        self.conversation?.send(textIM, callback: { (success, error) in
+            if success{
+                //let msg = GigImageMessage
+                if let gifMsg = Mapper<GifImageMessage>.init().map(JSON: [
+                    "conversation_id": self.conversation?.conversationId,
+                    "type": type.describe,
+                    "creat_time": Date.init().timeIntervalSince1970,
+                    "isRead": true,
+                    "sender_id": GlobalUserInfo.shared.getId(),
+                    "receiver_id": self.hr?.userID,
+                    "local_gif_name": name]){
+                    
+                    try? self.conversationManager.insertMessageItem(items: [gifMsg])
+                    self.reloads(mes: gifMsg)
+                }
+                return
+            }
+            if error != nil{
+                print(error)
+                self.view.showToast(title: "发送gif失败\(error)", customImage: nil, mode: .text)
+            }
+        })
+        
+       
         
     }
     // 快捷回复
     func sendReply(content:String){
         
         if let message = MessageBoby(JSON: ["messageID":getUUID(), "type":MessgeType.text.rawValue,"content":content.data(using:String.Encoding.utf8)!.base64EncodedString(),"creat_time":Date.init().timeIntervalSince1970,"isRead":true]){
-            message.sender = myself
-            message.receiver = self.hr
+            //message.sender = myself
+            //message.receiver = self.hr
+            message.senderId = GlobalUserInfo.shared.getId()
+            message.receiveId = self.hr?.userID
+            
             self.reloads(mes: message)
         }
         
@@ -639,8 +782,11 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
         if let message = PicutreMessage(JSON: ["messageID":getUUID(),"type":MessgeType.picture.rawValue,
                                             "creat_time":Date.init().timeIntervalSince1970,
                                             "isRead":true,"imageFileName": imageName]){
-            message.sender = myself
-            message.receiver = self.hr
+            //message.sender = myself
+            //message.receiver = self.hr
+            message.senderId = GlobalUserInfo.shared.getId()
+            message.receiveId = self.hr?.userID
+            
             self.reloads(mes: message)
             
         }
@@ -652,33 +798,27 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
         // 0  刷新table 和 存入数据库,
         // 1 数据要在 tableview，根据网络 判断发送状态（sended??）并刷新显示发送失败状态
         // 2 是否可以删除发送失败的数据？
-        do{
-            try SqliteManager.shared.db?.transaction(block: {
-                
-                try self.conversationManager.insertMessageItem(items: [mes])
-                self.conversationManager.updateConversationMessageID(messageID: mes.messageID!, userID: self.hr!.userID!, date: mes.creat_time!)
-                
-            })
+     
             
-            // 判断时间间隔
-            if LXFChatMsgTimeHelper.shared.needAddMinuteModel(preModel: self.tableSource.lastObject as! MessageBoby, curModel: mes){
-                self.tableSource.add(createTimeMsg(msg: mes))
-            }
-            
-            self.tableSource.add(mes)
-            
-            self.tableView.reloadData()
-            let path:NSIndexPath = NSIndexPath.init(row: self.tableSource.count-1, section: 0)
-            self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)
-            //3  数据插入本地数据库 后通知更新 converation 会话界面，显示内容
-            
-            if let row = currentRow{
-                NotificationCenter.default.post(name: NSNotification.Name.init("refreshChatRow"), object: nil, userInfo: ["row":row,"userID":hr.userID!])
-            }
-            
-        }catch{
-            print(error)
+        // 判断时间间隔
+        if LXFChatMsgTimeHelper.shared.needAddMinuteModel(preModel: self.tableView.datas.lastObject as! MessageBoby, curModel: mes){
+            //self.tableSource.add(createTimeMsg(msg: mes))
+             self.tableView.datas.add(createTimeMsg(msg: mes))
         }
+        
+        //self.tableSource.add(mes)
+         self.tableView.datas.add(mes)
+        
+        createTimeMsg(msg: mes)
+        self.tableView.reloadData()
+        let path:NSIndexPath = NSIndexPath.init(row: self.tableView.datas.count-1, section: 0)
+        self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: true)
+        //3  数据插入本地数据库 后通知更新 converation 会话界面，显示内容
+        
+        if let row = currentRow{
+            NotificationCenter.default.post(name: NotificationName.refreshChatRow, object: nil, userInfo: ["row":row, "conversationId": mes.conversayionId])
+        }
+            
         
     }
     
@@ -711,10 +851,10 @@ extension CommunicationChatView: ChatBarViewDelegate{
         }else{
             y = keyboardFrame?.height ?? 0
         }
-        let height = ChatInputBarH + height
+        let height = GlobalConfig.ChatInputBarH + height
         _ = self.chatBarView.sd_layout().yIs(GlobalConfig.ScreenH - y - height)?.heightIs(height)
         self.tableView.frame = CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH - height - y)
-        let row = IndexPath.init(row: self.tableSource.count - 1   , section: 0)
+        let row = IndexPath.init(row: self.tableView.datas.count - 1   , section: 0)
         self.tableView.scrollToRow(at: row, at: .none, animated: true)
         self.currentChatBarHright =  height
         
@@ -741,8 +881,8 @@ extension CommunicationChatView{
             self.chatBarView.frame  = CGRect.init(x: 0, y: GlobalConfig.ScreenH - distance - self.currentChatBarHright, width: GlobalConfig.ScreenW, height: self.currentChatBarHright)
             
             // tableview滑动到底部
-            if distance != 0 {
-                let path = IndexPath.init(row: self.tableSource.count-1, section: 0)
+            if distance != 0 && self.tableView.datas.count > 0 {
+                let path = IndexPath.init(row: self.tableView.datas.count-1, section: 0)
                 self.tableView.scrollToRow(at: path, at: .bottom, animated: true)
             }
         }) { bool in
@@ -753,38 +893,7 @@ extension CommunicationChatView{
     }
     
     
-    
-    
-    @objc func keyboardhidden(sender:NSNotification){
-        
-        keyboardFrame = CGRect.zero
-        
-        if chatBarView.keyboardType == .emotion || chatBarView.keyboardType == .more{
-            return
-        }
-        self.moveBar(distance: 0)
-        
-    }
-    // 显示文本输入框
-    @objc  func keyboardShow(sender:NSNotification){
-        
-        guard  let h =  sender.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
-            return
-        }
-        keyboardFrame =  h
-    
-        
-        // 影藏
-        self.emotion.isHidden = true
-        self.moreView.isHidden = true
-        self.moveBar(distance: keyboardFrame?.height ?? 0)
-        
-    }
-    
 
-
-   
-    
     
     // 相册使用权判断
    private  func getPhotoLibraryAuthorization() -> Bool {
@@ -811,25 +920,6 @@ extension CommunicationChatView{
 }
 
 
-extension CommunicationChatView {
-    
-    
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        
-        if self.chatBarView.keyboardType != .none{
-            self.hiddenChatBarView()
-        }
-    }
-    
-    private func showReplyPopView(){
-        let replyTable  =  quickReplyView(frame: CGRect.zero)
-        replyTable.selecteDelagate  = self
-        replyPopView.setTitleAndView(title: "选择回复内容", view: replyTable)
-        replyPopView.showPop(height: popViewH)
-    }
-    
-    
-}
 
 // 手势代理
 extension CommunicationChatView: UIGestureRecognizerDelegate{
@@ -851,6 +941,8 @@ extension CommunicationChatView: ReplyMessageDelegate{
     
     func didSelectedMessage(view: UITableView, message: String) {
         self.replyPopView.dismiss()
+        // 影藏更多内容
+        
         self.sendReply(content: message)
     }
 }
@@ -906,7 +998,11 @@ extension CommunicationChatView: UIImagePickerControllerDelegate{
             
             do{
                 // 图片存在聊天对象 本地文件夹
-                try  appImageManager.createImageFile(userID: self.hr.userID!,fileName: imageName, image: imageData!)
+                guard let hr = self.hr else {
+                    self.view.showToast(title: "hr 不存在", customImage: nil, mode: .text)
+                    return
+                }
+                try  appImageManager.createImageFile(userID:  hr.userID!, fileName: imageName, image: imageData!)
                 self.sendImage(Data: imageData!, imageName: imageName)
                 
             }catch{
@@ -944,6 +1040,8 @@ extension CommunicationChatView{
         
     }
     
+   
+    
     // 方法必须是这样
     @objc  private func saveImage(image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: AnyObject){
         
@@ -952,3 +1050,7 @@ extension CommunicationChatView{
     
     }
 }
+
+
+
+ 

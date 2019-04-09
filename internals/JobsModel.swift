@@ -186,6 +186,8 @@ class CompuseRecruiteJobs :BaseModel{
     
    // 发布者
    internal var recruiter:HRPersonModel?
+   // 对话id
+   internal var conversation:String?
     
     
    // 应聘者技能要求
@@ -199,8 +201,7 @@ class CompuseRecruiteJobs :BaseModel{
     
    // 对应公司里 职位筛选条件
    internal var jobtags:[String] = []
-    // 发布者ID
-   internal var publisherID:String?
+
     
    // 和hr聊天标记
    internal var isTalked:Bool?
@@ -224,7 +225,7 @@ class CompuseRecruiteJobs :BaseModel{
         }
     }
    
-   internal var salary:String = "面议"
+   internal var salary:String = ""
     
    internal var education:String = "不限"
     
@@ -278,7 +279,7 @@ class CompuseRecruiteJobs :BaseModel{
         payDay <- map["pay_day"]
         months <- map["months"]
         isStuff <- map["is_staff"]
-        isTalked <- map["can_transfer"]
+        isTalked <- map["is_talk"]
         applyEndTime <- (map["apply_end_time"], DateTransform())
         reviewCounts <- map["review_counts"]
         
@@ -289,6 +290,7 @@ class CompuseRecruiteJobs :BaseModel{
         businessField <- map["business_field"]
         major <- map["major"]
         jobtags <- map["job_tags"]
+        conversation <- map["conversation_id"]
         
         
     }

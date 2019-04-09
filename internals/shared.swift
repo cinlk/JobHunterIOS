@@ -10,6 +10,8 @@
 
 import Foundation
 import Moya
+import RxCocoa
+import RxSwift
 import Alamofire
 import ObjectMapper
 import CoreLocation
@@ -24,11 +26,12 @@ extension UserDefaults{
     static let userPassword = "userPassword"
     static let firstOpen = "firstOpen"
     static let token = "token"
+    static let remember = "remember"
     
     public var localKeys:[String]{
         get{
             return [UserDefaults.locPermit, UserDefaults.userAccount,
-                    UserDefaults.userPassword]
+                    UserDefaults.userPassword, UserDefaults.remember]
         }
     }
     
@@ -162,10 +165,21 @@ public struct ShareAppItem {
 //}
 
 // 用户信息
-class GlobalUserInfo {
+class GlobalUserInfo: NSObject {
     
     
     private static let single = GlobalUserInfo()
+    
+    // leancloud user
+    private var imClient:AVIMClient?
+    //private var connected:Bool = false
+    private var leanCloudUserId:String?
+    
+    // 接收消息处理
+    internal let receiveMessage: PublishRelay<AVIMTypedMessage> =  PublishRelay<AVIMTypedMessage>.init()
+
+    
+    
     
     open class var shared: GlobalUserInfo{
         get{
@@ -179,16 +193,10 @@ class GlobalUserInfo {
     }()
     
   
-    public var isLogin:Bool = false {
-        willSet{
-            if newValue == false{
-                self.role = .anonymous
-            }
-        }
-    }
+    public var isLogin:Bool = false
     
     private var token:String = ""
-    
+ 
     private var account:String? {
         get{
             return self.userDefault.string(forKey: UserDefaults.userAccount)
@@ -204,26 +212,55 @@ class GlobalUserInfo {
         }
         set{
             self.userDefault.set(newValue, forKey: UserDefaults.userPassword)
+            //  如果有密码 设置自动登录
+            if let v = newValue, !v.isEmpty{
+                self.userDefault.set(true, forKey: UserDefaults.remember)
+            }
         }
     }
-    private var role:UserRole.role = UserRole.role.anonymous
     
-    init() {}
-    
-    
-    open func baseInfo(role: UserRole.role, token:String, account:String, pwd:String){
-        
-        self.token = token
-        self.role = role
-        switch self.role{
-        case .anonymous:
-            self.isLogin = false
-        case .hr, .seeker:
-            self.isLogin = true
-            self.account = account
-            self.password = pwd
+//    private var remember:Bool{
+//
+//    }
+    private var role:UserRole.role = UserRole.role.anonymous{
+        didSet{
+            switch self.role{
+            case .anonymous:
+                self.isLogin = false
+            case .hr, .seeker:
+                self.isLogin = true
+               
+            }
+            
         }
-        return
+    }
+    
+    
+    
+    private var userData:[String:Any] = [:]{
+        didSet{
+            if let role = userData["role"] as? String{
+                self.role = UserRole.role(rawValue: role) ?? .anonymous
+            }
+        }
+    }
+    
+    
+    
+    override init() {}
+    
+    
+    open func baseInfo(token:String, account:String, pwd:String,  lid:String, data:[String:Any]){
+    
+        
+        
+        self.userData = data
+        self.token = token
+        self.account = account
+        self.password = pwd
+        self.imClient =  AVIMClient.init(clientId: lid)
+        self.imClient?.delegate = self
+        // 获取用户信息
         
         
     }
@@ -240,19 +277,160 @@ class GlobalUserInfo {
         return self.token
     }
     
+    open func getId() -> String?{
+        
+        return self.userData["user_id"] as? String
+    }
+    
+    open func getName() -> String?{
+        return self.userData["name"] as? String
+    }
+    
+    open func getIcon() -> URL?{
+        guard  let icon_url = self.userData["user_icon"] as? String else {
+            return nil
+        }
+        return  URL.init(string: icon_url)
+    }
+    
+//    open func getUserId() -> String{
+//        return self.userId
+//    }
     open func clear(){
         self.account = nil
         self.password = nil
         self.token = ""
+        self.isLogin = false
+        self.imClient?.close(callback: { (success, error) in
+            
+        })
         self.role = .anonymous
-        UserDefaults.standard.removeObject(forKey: UserDefaults.userAccount)
-        UserDefaults.standard.removeObject(forKey: UserDefaults.userPassword)
+        UserDefaults.standard.localKeys.forEach { key in
+            UserDefaults.standard.removeObject(forKey: key)
+        }
+        
+        //UserDefaults.standard.removeObject(forKey: UserDefaults.userAccount)
+        //UserDefaults.standard.removeObject(forKey: UserDefaults.userPassword)
         //UserDefaults.standard.removeObject(forKey: <#T##String#>)
     }
+    
+    
+    internal func openConnected(completed: @escaping (_:Bool, _ :Error?)->Void){
+        
+        self.imClient?.open { (success, error) in
+            completed(success, error)
+        }
+        // cconversation
+    }
+    
+    internal func buildConversation(conversation:String?, talkWith:String, jobId:String, completed:@escaping (_:AVIMConversation?, _:Error?) -> Void){
+        guard  let im = self.imClient else {
+            completed(nil, NSError.init())
+            return
+        }
+        
+       
+        
+        // 新建会话
+        if conversation == nil{
+            // 先查最新的会话 是否已经存在 TODO
+            // name 要唯一
+            let conversationName = im.clientId + "_" + jobId + "_" + talkWith
+            let query = im.conversationQuery()
+            query.whereKey("name", equalTo: conversationName)
+            query.order(byDescending: "createdAt")
+            // 不查本地缓存
+            query.cachePolicy  = .ignoreCache
+            query.findConversations { (cons, error) in
+                if let c = cons?.first{
+                   
+                    completed(c, error)
+          
+                }else{
+                    self.imClient?.createConversation(withName: conversationName, clientIds: [talkWith], callback: { (cons, err) in
+                        print("create conversation \(cons) \(err)")
+                        completed(cons, err)
+                    })
+                }
+               
+            }
+            return
+            
+        }
+        
+         // 查找 并加入会话
+        if  let cid = conversation, !cid.isEmpty{
+            
+            self.imClient?.conversationQuery().getConversationById(cid, callback: { (convs, error) in
+                completed(convs, error)
+            })
+            
+            return
+        }
+        completed(nil, NSError.init())
+        
+        
+        
+       
+        
+    }
+  
 
 }
 
 
+
+extension GlobalUserInfo: AVIMClientDelegate{
+    
+    func imClientPaused(_ imClient: AVIMClient) {
+        
+    }
+    
+    func imClientResuming(_ imClient: AVIMClient) {
+        
+    }
+    
+    func imClientResumed(_ imClient: AVIMClient) {
+        
+    }
+    
+    func imClientClosed(_ imClient: AVIMClient, error: Error?) {
+        
+    }
+    
+    
+    func conversation(_ conversation: AVIMConversation, didReceive message: AVIMTypedMessage) {
+        
+        //print(conversation,message)
+        let sender = conversation.clientId ?? ""
+        switch message.mediaType {
+        case .text:
+            let txt = message as? AVIMTextMessage
+            //txt?.content
+            //print(txt)
+            let option = AVIMMessageOption.init()
+            option.priority = .high
+            
+            let replyText = AVIMTextMessage.init(content: "reply")
+            replyText.text = "你好\(txt?.text)"
+            replyText.attributes = nil
+            
+            print("receive msg from \(sender) with content \(txt?.text)")
+            conversation.send(replyText, option: option, progressBlock: { (progress) in
+                print(progress)
+            }) { (success, error) in
+                print(success, error)
+            }
+        case .image:
+            let im =  message as? AVIMImageMessage
+            
+        default:
+            break
+        }
+        
+    }
+    
+}
 
 
 
@@ -542,7 +720,7 @@ extension SingletoneClass{
 //        }
       
         // TODO  用户协议网址
-        
+        // 等待所有任务并发执行后 才执行最后这一步
         group.notify(queue: DispatchQueue.main){
             finished(true)
         }
@@ -551,7 +729,12 @@ extension SingletoneClass{
     // 用户登录
     func userLogin(completed: @escaping (Bool)->Void){
         
-       
+        let remember = UserDefaults.standard.bool(forKey: UserDefaults.remember)
+        guard  remember == true  else {
+            completed(false)
+            return
+        }
+        
         guard let account = GlobalUserInfo.shared.getAccount() else{
             completed(false)
             return
@@ -563,15 +746,26 @@ extension SingletoneClass{
         }
         
         NetworkTool.request(GlobaHttpRequest.userlogin(phone: account, password: password), successCallback: { (json) in
-            if let res =  Mapper<ResponseModel<LoginSuccess>>().map(JSONObject: json), let token = res.body?.token{
-                completed(true)
+            if let res =  Mapper<ResponseModel<LoginSuccess>>().map(JSONObject: json), let token = res.body?.token, let lid = res.body?.leanCloudId{
+              
                 // 返回TOKEN TODO
                 // 记录用户名和密码
-                GlobalUserInfo.shared.baseInfo(role: UserRole.role.seeker, token: token , account: account, pwd: password)
+                NetworkTool.request(.userInfo(token: token), successCallback: { (json) in
+                    if let j = json as? [String:Any], let data = j["body"] as? [String:Any]{
+                        GlobalUserInfo.shared.baseInfo(token: token , account: account, pwd: password, lid: lid, data: data)
+                        completed(true)
+                        return
+                    }
+                    
+                }, failureCallback: { (error) in
+                    completed(false)
+                })
                 // 设置用户角色 TODO
                 // 根据角色却换不同界面
+            }else{
+                completed(false)
             }
-            
+           
         }) { (error) in
             completed(false)
         }

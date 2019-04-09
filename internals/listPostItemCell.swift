@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Kingfisher
 
 fileprivate let iconSize:CGSize = CGSize.init(width: 30, height: 30)
 
@@ -25,7 +25,10 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 30, height: 30)
                 self.postType.text = ""
             }
             self.creatTime.text = mode.createTimeStr
-            self.authorIcon.image = UIImage.init(named: mode.authorIcon)
+            if let url = mode.authorIcon  {
+                self.authorIcon.kf.setImage(with: Source.network(url), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+            }
+            //self.authorIcon.image = UIImage.init(named: mode.authorIcon)
             let authNameStr = NSMutableAttributedString.init(string: mode.authorName!, attributes: [NSAttributedString.Key.foregroundColor:UIColor.black, NSAttributedString.Key.font:UIFont.systemFont(ofSize: 14)])
             authNameStr.append(NSAttributedString.init(string: " " + mode.colleage!, attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray, NSAttributedString.Key.font:UIFont.systemFont(ofSize: 14)]))
             

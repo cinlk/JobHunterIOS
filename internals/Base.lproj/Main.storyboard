@@ -102,7 +102,7 @@
         <!--Message Main-->
         <scene sceneID="nmn-QP-Tl5">
             <objects>
-                <viewController id="7yL-La-ZI6" customClass="messageMain" customModule="internals" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="7yL-La-ZI6" customClass="MessageMain" customModule="internals" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="jhM-CP-n1z"/>
                         <viewControllerLayoutGuide type="bottom" id="85f-o8-iDj"/>

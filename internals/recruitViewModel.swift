@@ -16,6 +16,7 @@ class RecruitViewModel{
     
     
     private let dispose = DisposeBag()
+    
     internal let onlineApplyRefresh:PublishSubject<OnlineFilterReqModel> = PublishSubject<OnlineFilterReqModel>.init()
     internal let onlineApplyRes:BehaviorRelay<[OnlineApplyListModel]> = BehaviorRelay<[OnlineApplyListModel]>.init(value: [])
     internal let onlineApplyRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
@@ -59,10 +60,6 @@ class RecruitViewModel{
     
     //company list jobs
     internal let combinationlistRefresh:PublishSubject<CompanyTagFilterModel> = PublishSubject<CompanyTagFilterModel>.init()
-    
-    
-    
-    //internal let combinationlistRes:BehaviorRelay<ListJobsOnlineAppy> = BehaviorRelay<ListJobsOnlineAppy>.init(value: ListJobsOnlineAppy(JSON: [:])!)
     
     internal let combinationlistRes:BehaviorRelay<[CompanyTagJobs]> = BehaviorRelay<[CompanyTagJobs]>.init(value: [])
    // private var  tmpCombinatiobs:ListJobsOnlineAppy = ListJobsOnlineAppy(JSON: [:])!
@@ -209,6 +206,9 @@ extension RecruitViewModel{
             
         }.asDriver(onErrorJustReturn: []).drive(recruiterMultiSection).disposed(by: self.dispose)
     }
+    
+    
+
     
     
 }

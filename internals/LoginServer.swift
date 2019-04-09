@@ -34,6 +34,8 @@ enum LoginManager {
     case bindWeixin
     case binWeibo
     
+    case userInfo(token:String)
+    
 }
 
 
@@ -74,6 +76,8 @@ extension LoginManager: TargetType{
             return self.urlPrefix +  "password"
         case .registryAccount(_, _, _):
             return self.urlPrefix +  "registry/pwd"
+        case .userInfo(_):
+            return self.urlPrefix + "userinfo"
         default:
             return self.urlPrefix +  "login"
         }
@@ -101,7 +105,7 @@ extension LoginManager: TargetType{
     
     var task: Task{
         switch self {
-        case  .getVerifyCode(_), .resetPwdCode(_):
+        case  .getVerifyCode(_), .resetPwdCode(_), .userInfo(_):
             //return .requestParameters(parameters: ["phone": phone], encoding: JSONEncoding.default)
             return .requestPlain
         case  .quickLogin(let identity , let code, let phone):
@@ -138,7 +142,12 @@ extension LoginManager: TargetType{
     
     
     var headers: [String : String]? {
-       
+        switch self {
+        case .userInfo(let token):
+            return ["Authorization": token]
+        default:
+            break
+        }
         return  nil
     }
     
@@ -219,6 +228,10 @@ class LoginServer {
         return provider.rx.request(.anonymouse).debug().asObservable().mapObject(ResponseModel<LoginSuccess>.self)
     }
     
+    // 获取用户信息
+    func userInfo(token:String) -> Observable<Any>{
+        return provider.rx.request(.userInfo(token: token)).asObservable().mapJSON(failsOnEmptyData: true)
+    }
 }
 
 

@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreLocation
+import ObjectMapper
 import MapKit
 import RxSwift
 import RxCocoa
@@ -29,6 +30,7 @@ class JobDetailViewController: BaseShowJobViewController {
 //        }
 //    }
     
+    internal var fromChatVC: Bool = false
     
     internal var job:(String, jobType) = ("", .none){
         didSet{
@@ -66,7 +68,7 @@ class JobDetailViewController: BaseShowJobViewController {
    
         apply.addTarget(self, action: #selector(onlineApply(_:)), for: .touchUpInside)
         apply.setTitle("投递简历", for: .normal)
-        apply.setTitle("已投递简历", for: .selected)
+        //apply.setTitle("已投递简历", for: .selected)
         apply.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         apply.titleLabel?.textAlignment = .center
         apply.backgroundColor = UIColor.green
@@ -103,10 +105,12 @@ class JobDetailViewController: BaseShowJobViewController {
     
     private var dataSoure: RxTableViewSectionedReloadDataSource<JobMultiSectionModel>!
     
+    // message server
+    private let mserver:MessageHttpServer = MessageHttpServer.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.hidesBottomBarWhenPushed = true
+        //self.hidesBottomBarWhenPushed = true
         self.setViews()
         self.setToolBarItems()
         self.setViewModel()
@@ -115,9 +119,12 @@ class JobDetailViewController: BaseShowJobViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        //print("presented ", self.navigationController?.cont)
         //
+        
         self.navigationController?.setToolbarHidden(false, animated: true)
+        
+       
         //self.navigationController?.navigationBar.settranslucent(false)
         self.navigationController?.insertCustomerView()
 
@@ -129,7 +136,13 @@ class JobDetailViewController: BaseShowJobViewController {
          //self.showToolBar = false
         //self.navigationController?.setToolbarHidden(true, animated: true)
         //self.navigationController?.navigationBar.settranslucent(true)
+        
         self.navigationController?.removeCustomerView()
+       
+        self.navigationController?.setToolbarHidden(true, animated: true)
+        
+       
+
     }
     
 
@@ -178,7 +191,7 @@ class JobDetailViewController: BaseShowJobViewController {
         collectedBtn.isSelected =  mode.value.isCollected ?? false
         apply.isSelected = mode.value.isApply  ?? false
         apply.isUserInteractionEnabled = mode.value.isApply == true ? false : true
-        talk.isSelected = mode.value.isTalked ?? false
+        talk.setTitle(mode.value.isTalked ?? false ? "继续沟通":"和ta聊聊", for: .normal)
         
         // 控制toolbar 界面加载完成后在显示
         //self.showToolBar = true
@@ -243,11 +256,193 @@ class JobDetailViewController: BaseShowJobViewController {
     
     
     // 和hr 交流该职位
+    // TODO 发送消息失败处理
     @objc func talkHR(_ btn:UIButton){
         
-        guard  let _  = mode.value.id  else {
+        guard  let id  = mode.value.id  else {
             return
         }
+        
+        //self.mode.value.recruiter?.userID = GlobalConfig.LeanCloudApp.User2
+       
+        
+        // 用户是否登录
+        if !verifyLogin(){
+            return
+        }
+        
+        // test 假设已经有用户
+//        GlobalUserInfo.shared.baseInfo(role: UserRole.role.seeker, token: "token", account: "", pwd: "", lid: lid)
+        
+        
+        guard let recruiteIMid = self.mode.value.recruiter?.leanCloudId else {
+            self.view.showToast(title: "can't find im accout for recruiter", duration: 3, customImage: nil, mode: .text)
+            return
+        }
+        
+        //
+        if  let talked = mode.value.isTalked, let conid = self.mode.value.conversation, talked{
+            // 获取conversation
+            GlobalUserInfo.shared.openConnected { (sucess, error) in
+                if sucess{
+                    GlobalUserInfo.shared.buildConversation(conversation: conid, talkWith: recruiteIMid, jobId: id, completed: { (con, error) in
+                        if let err = error {
+                            print(err)
+                            self.view.showToast(title: "获取会话失败", customImage: nil, mode: .text)
+                            return
+                        }
+                        if self.fromChatVC{
+                            self.navigationController?.popvc(animated: true)
+                            
+                            
+                            //self.navigationController?.popViewController(animated: true)
+                        }else{
+                            //  跳转到聊天界面
+                            self.navToChatVC(con: con!)
+                        }
+                       
+                        
+                    })
+                }else{
+                    self.view.showToast(title: "\(error)", customImage: nil, mode: .text)
+                }
+            }
+            
+            
+        }else{
+            
+           
+            // 发送消息 成功后 才切换界面
+            GlobalUserInfo.shared.openConnected { (success, error) in
+                if success{
+                    GlobalUserInfo.shared.buildConversation(conversation: self.mode.value.conversation, talkWith: recruiteIMid, jobId: id, completed: { (cons, error) in
+                       // print("build conversation \(cons)")
+                         // 发送消息
+                        if let err = error {
+                            print(err)
+                            self.view.showToast(title: "获取会话失败", customImage: nil, mode: .text)
+                            
+                            return
+                        }
+                        
+                        guard let conData = SingleConversation(JSON: ["conversation_id": cons?.conversationId, "my_id": GlobalUserInfo.shared.getId()!, "recruiter_id": self.mode.value.recruiter?.userID ,"job_id": self.mode.value.id, "recruiter_name": self.mode.value.recruiter?.name,"recruiter_icon_url":self.mode.value.recruiter?.icon?.absoluteString, "created_time": Date.init().timeIntervalSince1970]) else{
+                            self.view.showToast(title: "empty conversation id", customImage: nil, mode: .text)
+                            
+                            return
+                        }
+                        
+                        // 创建conversation 到数据库
+                        if self.conversationManager.createConversation(data: conData) == false{
+                            self.view.showToast(title: "数据库存储会话失败", customImage: nil, mode: .text)
+                            return
+                        }
+                        // 发送消息
+                        // 发送job 类型消息 和 存入数据库
+                        guard let jobMsg = JobDescriptionlMessage.init(JSON: [
+                        "creat_time":Date.init().timeIntervalSince1970,
+                        "type": MessgeType.jobDescribe.describe,
+                        "isRead":true,
+                        "conversation_id": conData.conversationId,
+                        "receiver_id": self.mode.value.recruiter?.userID,
+                        "sender_id": GlobalUserInfo.shared.getId()!,
+                        "job_id": self.mode.value.id!,
+                        "job_type_des": self.mode.value.type,
+                        "icon": self.mode.value.iconURL?.absoluteString, "job_name": self.mode.value.name,
+                        "company": self.mode.value.company?.name,"salary": self.mode.value.salary ,"tags": self.mode.value.jobtags]) else{
+                            
+                            self.view.showToast(title: "创建job消息类型失败", customImage: nil, mode: .text)
+                            return
+                        }
+                        
+                        
+                        var err:Error?
+                        
+                        let sendJob = AVIMTextMessage.init(text: jobMsg.toJSONString(prettyPrint: true)!, attributes: ["type": MessgeType.jobDescribe.describe])
+                        cons?.send(sendJob, callback: { (success, error) in
+                            if success{
+                                do{
+                                    try self.conversationManager.insertMessageItem(items: [jobMsg])
+                                }catch{
+                                    err = error
+                                    //print(error)
+                                }
+                            }else{
+                                err = error
+                            }
+                            
+                        })
+                        
+                        if err != nil{
+                            self.view.showToast(title: "存入消息或发送job消息失败\(err)", customImage: nil, mode: .text)
+                            return
+                        }
+                        guard let helloMsg = Mapper<MessageBoby>().map(JSON: [
+                            "content": "你好 对该职位感兴趣!", "type": MessgeType.text.describe,
+                            "isRead":true, "creat_time": Date.init().timeIntervalSince1970,
+                            "sender_id": GlobalUserInfo.shared.getId(), "receiver_id":
+                                self.mode.value.recruiter!.userID, "conversation_id": cons?.conversationId!])else{
+                                    self.view.showToast(title: "构建打招呼用语失败", customImage: nil, mode: .text)
+
+                                    return
+                        }
+                        // 发送打招呼用语消息  和 存入数据库
+                        let sendHello = AVIMTextMessage.init(text: "你好 对该职位感兴趣!", attributes: ["type": MessgeType.text.describe])
+                        cons?.send(sendHello, callback: { (success, error) in
+                            if success{
+                                do{
+                                    try self.conversationManager.insertMessageItem(items: [helloMsg])
+                                    // 执行顺序？？
+                                    self.mserver.createConversation(conid: conData.conversationId!, recruiteId: (self.mode.value.recruiter?.userID)!, jobId: self.mode.value.id!).asDriver(onErrorJustReturn: false).drive(onNext: { (success) in
+                                        if success{
+                                            self.mode.value.isTalked = true
+                                            self.talk.setTitle("继续沟通", for: .normal)
+                                            // 发送通知给聊天界面
+                                            NotificationCenter.default.post(name: NotificationName.refreshChatList, object: nil)
+                                            // 跳转到界面
+                                            self.navToChatVC(con: cons!)
+                                        }else{
+                                            self.view.showToast(title: "创建服务器会话失败", duration: 2, customImage: nil, mode: .text)
+                                        }
+                                        
+                                    }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+                                    
+                                }catch{
+                                    err = error
+                                }
+                                
+                            }else{
+                                err = error
+                            }
+                        })
+                        if err != nil{
+                            self.view.showToast(title: "存入消息或发送hello消息失败\(err)", customImage: nil, mode: .text)
+                            return
+                        }
+        
+                        // 创建记录到服务器  如果失败（在查询记录，有则更新记录） TODO
+                        // 先存conversation数据库,  成功后， 在http发送请求创建会话, 在构建消息，存入数据库
+                        // 有bug TODO
+                        
+
+                    })
+                }
+            }
+            
+        }
+    }
+    
+        // 创建会话并记录conversation（会话过期 后台检查??）
+        // 构建打招呼消息 发送
+        
+//            let oldConv =  self.imClient？.conversation(forId: "5c88f876fb4ffe00638220a0")
+//            oldConv?.join(callback: { (succes, error) in
+//                print(success, error)
+//            })
+            
+            
+            // 加入conversation
+            // 跳转到聊天界面
+        
         
 //        // 查看数据库， 如果之前没有交流过则发送jobdescribe message
 //        if mode.isTalked == false{
@@ -306,10 +501,79 @@ class JobDetailViewController: BaseShowJobViewController {
 //        self.navigationController?.pushViewController(chatView, animated: true)
         
         
-    }
     
+    
+    // 构建消息
+    // 确保消息发送成功 TODO
+//    private func sendMsg(cons: AVIMConversation?, completed: @escaping (Bool, Error?)->Void){
+//
+//        var messages:[AVIMTypedMessage] = []
+//        messages.append(AVIMTextMessage.init(text: "打招呼用语", attributes: ["type" : "text"]))
+//        guard let scon = SingleConversation(JSON: ["conversation_id": cons?.conversationId!, "my_id": GlobalUserInfo.shared.getId()!, "recruiter_id": self.mode.value.recruiter?.userID! ,"job_id": self.mode.value.id!, "recruiter_name": self.mode.value.recruiter?.name!,"recruiter_icon_url":self.mode.value.recruiter?.icon?.absoluteString, "created_time": Date.init().timeIntervalSince1970]) else{
+//            print("构建会话错误")
+//            // MARK
+//            completed(false, NSError.init())
+//            return
+//        }
+//         // 数据库创建会话
+//        if self.conversationManager.createConversation(data: scon) == false{
+//            self.view.showToast(title: "数据库存储会话失败", customImage: nil, mode: .text)
+//            completed(false, NSError.init())
+//            return
+//        }
+//
+//        // 发送消息  等待所有消息发送成功 在执行complete TODO
+//        //var localMsg:[MessageBoby] = []
+//        let group = DispatchGroup.init()
+//        var err:Error?
+//
+//        for (last, msg) in messages.enumerated(){
+//            print("send msg \(msg)")
+//            group.enter()
+//            cons?.send(msg, progressBlock: { (progress) in
+//            }, callback: { (success, error) in
+//                group.leave()
+//                if success{
+//                    guard let m = Mapper<MessageBoby>().map(JSON: [
+//                        "content": msg.text!, "type": MessgeType.text.describe,
+//                        "isRead":true, "creat_time": Date.init().timeIntervalSince1970,
+//                        "sender_id": GlobalUserInfo.shared.getId(), "receiver_id":
+//                            self.mode.value.recruiter!.userID, "conversation_id": cons?.conversationId!]) else{
+//                        return
+//                    }
+//
+//                    // mesg 存入数据库(失败 可以容忍？？ TODO)
+//                    //消息存入数据库 (存入失败 TODO)
+//                    try? self.conversationManager.insertMessageItem(items: [m])
+//                }else{
+//                    err = error
+//                    print(error)
+//                }
+//
+//            })
+//        }
+//        // 回调
+//        group.notify(queue: DispatchQueue.main) {
+//             completed(err == nil ? true : false, err)
+//
+//        }
+//
+//    }
 
+    
+    private func navToChatVC(con: AVIMConversation){
+        guard let rid = self.mode.value.recruiter?.userID else {
+            return
+        }
+        let chatView = CommunicationChatView(recruiterId: rid, conversation: con)
+        chatView.hidesBottomBarWhenPushed = true
+        
+        self.navigationController?.pushViewController(chatView, animated: true)
+        
+    }
 }
+
+
 
 
 extension JobDetailViewController {

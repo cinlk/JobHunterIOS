@@ -79,7 +79,7 @@ class SimpleCompanyModel: NSObject, Mappable{
     func mapping(map: Map) {
         companyID <- map["company_id"]
         iconURL <- (map["icon_url"], URLTransform())
-        name <- map["name"]
+        name <- map["company_name"]
         citys <- map["citys"]
         businessField <- map["business_field"]
         staff <- map["staff"]

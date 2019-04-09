@@ -8,6 +8,7 @@
 
 import Foundation
 
+fileprivate let cellSpacing:CGFloat = 5
 
 class TableViewHeader:UIView{
     
@@ -28,12 +29,15 @@ class TableViewHeader:UIView{
     private lazy var collectionView:UICollectionView = {
         let layout = UICollectionViewFlowLayout.init()
         layout.minimumLineSpacing =  10
-        layout.minimumInteritemSpacing = 5
+        layout.minimumInteritemSpacing = cellSpacing
+        
         // 每行3个元素
-        layout.itemSize = CGSize.init(width: (GlobalConfig.ScreenW - 60) / 4 , height: 20)
+        //layout.itemSize = CGSize.init(width: (GlobalConfig.ScreenW - 40 - 10 ) / 3 , height: 20)
         layout.sectionInset = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 0)
+        
         // collection view  初始高度
-        let coll = UICollectionView.init(frame: CGRect.init(x: 0, y: 25, width: GlobalConfig.ScreenW - 40, height: GlobalConfig.ScreenH), collectionViewLayout: layout)
+        // 减去40, flowlayout 会使用该宽度
+        let coll = UICollectionView.init(frame: CGRect.init(x: 0, y: 25, width: GlobalConfig.ScreenW - 40 , height: GlobalConfig.ScreenH), collectionViewLayout: layout)
         coll.backgroundColor = UIColor.clear
         coll.dataSource = self
         coll.delegate = self
@@ -47,8 +51,14 @@ class TableViewHeader:UIView{
     
     var chooseItem:((_ word:String)->Void)?
     
+    private var modeWidth:[CGFloat] = []
     var mode:[String]?{
         didSet{
+            // 计算元素宽度
+            mode?.forEach({ item in
+                let size =  item.rect(withFont: UIFont.systemFont(ofSize: 12), size: CGSize.init(width: GlobalConfig.ScreenW - 40, height: 20))
+                modeWidth.append(size.width)
+            })
             
             self.collectionView.reloadData()
             // 布局后的高度
@@ -109,8 +119,15 @@ extension TableViewHeader:UICollectionViewDelegateFlowLayout, UICollectionViewDa
         }
     }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize.init(width: modeWidth[indexPath.row] , height: 20)
+    }
     
     
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return cellSpacing
+    }
     
 }
 

@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Kingfisher
 
 class ReplyPostTableViewCell: ForumBaseCell {
 
@@ -16,9 +16,12 @@ class ReplyPostTableViewCell: ForumBaseCell {
             guard let mode = mode else {
                 return
             }
+            if let url = mode.authorIcon{
+              self.authorIcon.kf.setImage(with: Source.network(url), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+            }
             
             self.creatTime.text = mode.createTimeStr
-            self.authorIcon.image = UIImage.init(named: mode.authorIcon)
+            //self.authorIcon.image = UIImage.init(named: mode.authorIcon)
             self.postType.text = ""
             
             

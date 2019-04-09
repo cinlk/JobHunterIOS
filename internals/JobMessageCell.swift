@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 fileprivate let desText:String = "你刚刚投递了这个职位"
 fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
@@ -104,12 +105,17 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
                 
                 return
             }
-            
-            self.icon.image = UIImage.init(named: mode.icon)
+            //print(mode.toJSON())
+            if let url = URL.init(string: mode.icon){
+                self.icon.kf.setImage(with: Source.network(url), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+            }else{
+                self.icon.image = #imageLiteral(resourceName: "swift")
+            }
+           
             self.company.text = mode.company
             self.jobName.text = mode.jobName
             self.tags.text = mode.tags.joined(separator: " ")
-            self.salary.text = mode.salary
+            self.salary.text = "薪水: " +  (mode.salary.isEmpty ? "面谈" : mode.salary)
             self.setupAutoHeight(withBottomView: self.tags, bottomMargin: 20)
        
            

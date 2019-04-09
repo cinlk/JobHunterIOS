@@ -7,18 +7,20 @@
 //
 
 import UIKit
+import RxCocoa
+import RxSwift
 
-class ChatListViewController: UITableViewController {
 
-    
+fileprivate let deleteTitle:String = "删除"
+
+class ChatListViewController: BaseTableViewController {
+
     // 数据库
     private lazy var cManager:ConversationManager = ConversationManager.shared
     
     // 和那些人聊天
-    private var cModel:[conversationModel] = []
-    private var unRead:Bool = false
-    
-    
+    private var cModel:[ChatListModel] = []
+    //private var unRead:Bool = false
     private var deleteRow = 0
     
     private lazy var deleteAlertShow:UIAlertController = {
@@ -32,28 +34,69 @@ class ChatListViewController: UITableViewController {
         
     }()
     
+    private let httpServer:MessageHttpServer = MessageHttpServer.shared
+    private let dispose:DisposeBag = DisposeBag()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
-        refresh()
-        
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
+        loadMessage()
+        //self.tableView.refreshControl?
         
     }
     
     
-    deinit {
-        NotificationCenter.default.removeObserver(self)
+    override  func setViews(){
+        // 聊天会话cell
+        self.tableView.register(ChatUsersTableViewCell.self, forCellReuseIdentifier: ChatUsersTableViewCell.identity())
+        // 数据
+        self.tableView.separatorStyle = .singleLine
+        self.tableView.backgroundColor = UIColor.viewBackColor()
+        self.tableView.tableFooterView = UIView()
+        self.tableView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 45, right: 0)
+        
+        // 设置h下拉刷新d事件
+        self.tableView.refreshControl = UIRefreshControl.init()
+        self.tableView.refreshControl?.addTarget(self, action: #selector(refresh), for: UIControl.Event.valueChanged)
+        // 刷新聊天对象列表
+    NotificationCenter.default.rx.notification(NotificationName.refreshChatList).subscribe(onNext: { (notify) in
+            self.loadMessage()
+        
+        }).disposed(by: self.dispose)
+        // 刷新某行聊天数据
+        NotificationCenter.default.rx.notification(NotificationName.refreshChatRow, object: nil).subscribe(onNext: { (notify) in
+            
+            guard  let row = notify.userInfo?["row"] as? Int else {
+                return
+            }
+            guard let conid = notify.userInfo?["conversationId"] as? String else {
+                return
+            }
+            
+            
+            if let new = self.cManager.getConversationBy(conversationId: conid){
+                self.cModel[row] = new
+                self.sortMode(datas: &self.cModel)
+                self.tableView.reloadRows(at: [IndexPath.init(row: row, section: 0)], with: .automatic)
+                
+            }
+        }).disposed(by: self.dispose)
+//        // 监听新的对话message
+//        NotificationCenter.default.addObserver(self, selector: #selector(addMessage), name: NSNotification.Name.init("refreshChat"), object: nil)
+//
+//
+//        // 对话添加消息后 监听
+//        NotificationCenter.default.addObserver(self, selector: #selector(refreshRow), name: NSNotification.Name.init("refreshChatRow"), object: nil)
+//
     }
+    
+    
+    override func didFinishloadData() {
+        super.didFinishloadData()
+        self.tableView.reloadData()
+    }
+    
+   
     
     // MARK: - Table view data source
     
@@ -72,10 +115,9 @@ class ChatListViewController: UITableViewController {
         
         
         let cell = tableView.dequeueReusableCell(withIdentifier: ChatUsersTableViewCell.identity(), for: indexPath) as! ChatUsersTableViewCell
-        let user = cModel[indexPath.row]
-        cell.backgroundColor = user.isUP ? UIColor.init(r: 225, g: 255, b: 255) : UIColor.white
-        
-        cell.mode = user
+        let m = cModel[indexPath.row]
+        cell.backgroundColor = m.isUp ? UIColor.init(r: 225, g: 255, b: 255) : UIColor.white
+        cell.mode = m
         return cell
         
         
@@ -94,21 +136,50 @@ class ChatListViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         let conv = cModel[indexPath.row]
         
-        //var weakSelf d = sef
-        let chatView = CommunicationChatView(hr: conv.user!, row: indexPath.row)
+        // 获取hr 信息
+        //conv.recruiterId
+        
+        // TODO
+        //let chatView = CommunicationChatView(hr: conv.user!, row: indexPath.row)
         
         // 清楚 该会话未读消息标记
-        if  let _ = conv.unReadCount {
-            cManager.clearUnReadMessageBy(userID: (conv.user?.userID)!)
-            conv.unReadCount = nil
-            // 阅读未读数据后  刷新该行
-            tableView.reloadRows(at: [indexPath], with: .automatic)
+        if  let _ = conv.unReadNum {
+            if cManager.clearUnReadMessageBy(conversationId: conv.conversationId!){
+                conv.unReadNum = nil
+                // 阅读未读数据后  刷新该行
+                tableView.reloadRows(at: [indexPath], with: .automatic)
+            }else{
+                // 失败 TODO
+                return
+            }
+           
+        }
+        
+        // 获取会话con
+        GlobalUserInfo.shared.openConnected { (sucess, error) in
+            if sucess{
+                
+                GlobalUserInfo.shared.buildConversation(conversation: conv.conversationId, talkWith: conv.recruiterId!, jobId: conv.jobId!, completed: { (con, error) in
+                    if let err = error {
+                        //print(err)
+                        self.view.showToast(title: "获取会话失败", customImage: nil, mode: .text)
+                        return
+                    }
+                    //  跳转到聊天界面
+                    let chatVC = CommunicationChatView.init(recruiterId: conv.recruiterId!, row: indexPath.row, conversation: con)
+                    
+                    chatVC.hidesBottomBarWhenPushed = true
+                    self.navigationController?.pushViewController(chatVC, animated: true)
+                    
+                })
+            }else{
+                self.view.showToast(title: "\(error)", customImage: nil, mode: .text)
+            }
         }
         
         
-        chatView.hidesBottomBarWhenPushed = true
         
-        self.navigationController?.pushViewController(chatView, animated: true)
+      
         
     }
     
@@ -127,18 +198,18 @@ class ChatListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         // 判断是否已近置顶
         let mode = cModel[indexPath.row]
-        let status = mode.isUP ? "取消置顶" : "置顶"
+        let status = mode.isUp ? "取消置顶" : "置顶"
         
         let edit = UITableViewRowAction.init(style: .normal, title: status) { (action, index) in
             
-            self.cManager.updateConversationUPStatus(userID: (mode.user?.userID)!, isUp: !mode.isUP)
-            
-            mode.isUP = !mode.isUP
-            
-            // 置顶的在前面  然后更加时间降序排序
-            self.sortMode(datas: &self.cModel)
-            
-            tableView.reloadData()
+            if self.cManager.setUpConversation(conversationId: mode.conversationId!, isUp: !mode.isUp){
+                mode.isUp = !mode.isUp
+                // 置顶的在前面  然后更加时间降序排序
+                self.sortMode(datas: &self.cModel)
+                
+                tableView.reloadData()
+            }
+           
             
             
         }
@@ -147,7 +218,7 @@ class ChatListViewController: UITableViewController {
         edit.accessibilityFrame  = CGRect.init(x: 0, y: 0, width: 30, height: 30)
         
         // 用 normal 状态 自己控制删除cell
-        let delete = UITableViewRowAction.init(style: .normal, title: "删除") { [unowned self] (action, index) in
+        let delete = UITableViewRowAction.init(style: .normal, title: deleteTitle) { [unowned self] (action, index) in
             self.deleteRow = indexPath.row
             self.present(self.deleteAlertShow, animated: true, completion: nil)
             
@@ -166,7 +237,7 @@ class ChatListViewController: UITableViewController {
         
         // 判断是否已近置顶
         let mode = cModel[indexPath.row]
-        let status = mode.isUP ? "取消置顶" : "置顶"
+        let status = mode.isUp ? "取消置顶" : "置顶"
         
         
         let deleteAction = UIContextualAction.init(style: UIContextualAction.Style.normal, title: "删除", handler: { (action, view, completion) in
@@ -182,15 +253,20 @@ class ChatListViewController: UITableViewController {
         
         let editAction = UIContextualAction.init(style: UIContextualAction.Style.normal, title: status, handler: { (action, view, completion) in
            
-            self.cManager.updateConversationUPStatus(userID: (mode.user?.userID)!, isUp: !mode.isUP)
+            if self.cManager.setUpConversation(conversationId: mode.conversationId!, isUp: !mode.isUp){
+                mode.isUp = !mode.isUp
+                
+                // 置顶的在前面  然后更加时间降序排序
+                self.sortMode(datas: &self.cModel)
+                
+                tableView.reloadData()
+                completion(true)
+            }
 
-            mode.isUP = !mode.isUP
+          
             
-            // 置顶的在前面  然后更加时间降序排序
-            self.sortMode(datas: &self.cModel)
-
-            tableView.reloadData()
-            completion(true)
+            
+           
         })
         
         editAction.backgroundColor = UIColor.blue
@@ -205,83 +281,65 @@ class ChatListViewController: UITableViewController {
 
 
 
-extension ChatListViewController {
-    
-    private func setViews(){
-        // 聊天会话cell
-        self.tableView.register(ChatUsersTableViewCell.self, forCellReuseIdentifier: ChatUsersTableViewCell.identity())
-        // 数据
-        self.tableView.separatorStyle = .singleLine
-        self.tableView.backgroundColor = UIColor.viewBackColor()
-        self.tableView.tableFooterView = UIView()
-        self.tableView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 45, right: 0)
-        
-        // 监听新的对话message
-        NotificationCenter.default.addObserver(self, selector: #selector(refresh), name: NSNotification.Name.init("refreshChat"), object: nil)
-        
-        // 对话添加消息后 监听
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshRow), name: NSNotification.Name.init("refreshChatRow"), object: nil)
-        
-    }
-    
- 
-}
+
 
 extension ChatListViewController{
     
-    // 刷新数据
+    // 刷新
     @objc private func refresh(){
-       
-        (cModel,unRead) = cManager.getConversaions()
+        self.tableView.refreshControl?.beginRefreshing()
+        self.loadMessage()
+        self.tableView.refreshControl?.endRefreshing()
         
+    }
+    // 本地加入新的h聊天记录
+    @objc private func addMessage(){
         
-        //  为读消息 显示提示
-//        if  unRead{
-//            self.navigationController?.tabBarItem.pp.addDot(color: UIColor.red)
-//
-//         }
-        
-        self.tableView.reloadData()
+    }
+    
+    // 获取本地历史消息 和 远程服务器最新消息
+    private func loadMessage(){
+        // 登录的用户
+        if GlobalUserInfo.shared.isLogin == false {
+            self.didFinishloadData()
+            return
+        }
+//        guard let userId = GlobalUserInfo.shared.getAccount() else {
+//            return
+//        }
+
+        // 获取历史 cconversation list
+        cModel =  cManager.getConversaions()
+ 
+        self.didFinishloadData()
+     
     }
     
     
     
-    // 详细聊天界面 输入数据后 返回 刷新某行数据
-   @objc private func refreshRow(notify:Notification){
-        
-        
-        guard  let row = notify.userInfo?["row"] as? Int else {
-            return
-        }
-        guard let userID = notify.userInfo?["userID"] as? String else {
-            return
-        }
-        
-        
-        if let new = cManager.getConversationBy(userID: userID){
-            cModel[row] = new
-            
-            self.sortMode(datas: &cModel)
-            self.tableView.reloadRows(at: [IndexPath.init(row: row, section: 0)], with: .automatic)
-            
-        }
-        
-        
-    }
+   
     
     
     // 列表排序
-    private func sortMode( datas: inout [conversationModel]){
+    private func sortMode( datas: inout [ChatListModel]){
         guard datas.count > 0 else {
             return
         }
         
         datas.sort { (a, b) -> Bool in
-            if  (a.isUP && b.isUP) || (a.isUP == false && b.isUP == false) {
-                return a.upTime! >= b.upTime!
+            if  a.isUp && b.isUp {
+                let atime = a.upTime ?? Date.init(timeIntervalSince1970: 0)
+                let btime = b.upTime ?? Date.init(timeIntervalSince1970: 0)
                 
-            }else if a.isUP && b.isUP == false{
+                return atime >= btime
+                
+            }else if a.isUp && b.isUp == false{
                 return true
+            }else if  a.isUp == false && b.isUp == false  {
+                let atime = a.createdTime ?? Date.init(timeIntervalSince1970: 0)
+                let btime = b.createdTime ?? Date.init(timeIntervalSince1970: 0)
+                
+                return atime >= btime
             }else{
                 return false
             }
@@ -293,21 +351,27 @@ extension ChatListViewController{
     // 删除某行
     private func deleteMode(row:Int){
         
-        let user = self.cModel[row]
-        guard  let userID = user.user?.userID else {
+        let c = self.cModel[row]
+        guard  let conid = c.conversationId else {
             return
         }
         
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            self?.cManager.removeConversationBy(userID: userID, complete:  { bool in
+            // 服务器数据删除 TODO
+            // 本地数据删除
+            self?.cManager.removeConversationBy(id: conid) { bool, error in
+                
+                
                 if bool{
                     DispatchQueue.main.async {
                         self?.cModel.remove(at: row)
                         self?.tableView.deleteRows(at: [IndexPath.init(row: row, section: 0)], with: .automatic)
                     }
+                }else{
+                    print(error)
                     
                 }
-            })
+            }
         }
       
        
