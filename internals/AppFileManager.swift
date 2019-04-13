@@ -44,14 +44,15 @@ class AppFileManager{
         
     }
     
-    open func createImageFile(userID:String, fileName:String, image:Data) throws {
+    open func createImageFile(userID:String, fileName:String, image:Data, complete: @escaping ((_ success:Bool, _ err:Error?)->Void)) throws {
         // 用户子文件夹判断
         let userDir = imagePath + "/" + userID
         if  SingletoneClass.fileManager.fileExists(atPath: userDir) == false{
             do{
                 try  SingletoneClass.fileManager.createDirectory(atPath: userDir, withIntermediateDirectories: true, attributes: nil)
             }catch{
-                print(error)
+                complete(false, error)
+                throw error
             }
         }
         
@@ -60,8 +61,9 @@ class AppFileManager{
         do{
            
             try image.write(to: URL.init(fileURLWithPath: path), options: Data.WritingOptions.fileProtectionMask)
+            complete(true, nil)
         }catch{
-            print(error)
+            complete(false, error)
             throw error
         }
     }

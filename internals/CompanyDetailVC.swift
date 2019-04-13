@@ -58,7 +58,7 @@ class CompanyDetailVC: UIViewController {
     private let sections: BehaviorRelay<[CompanyDetailMultiSection]> = BehaviorRelay<[CompanyDetailMultiSection]>.init(value: [])
     
     private var dataSource:RxTableViewSectionedReloadDataSource<CompanyDetailMultiSection>!
-    private let dispose:DisposeBag = DisposeBag()
+    private lazy var  dispose:DisposeBag = DisposeBag()
     
     var detailModel:CompanyModel?{
         didSet{

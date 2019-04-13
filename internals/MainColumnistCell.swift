@@ -18,7 +18,7 @@ class MainColumnistCell: BaseScrollerTableViewCell,UIScrollViewDelegate {
     
    private var itemViews:[UIView] = []
 
-   private lazy var topView:UIView = {
+   private lazy var topView:UIView = { [unowned self] in
         let v = UIView()
         v.backgroundColor = UIColor.white
         let label = UILabel()
@@ -53,7 +53,7 @@ class MainColumnistCell: BaseScrollerTableViewCell,UIScrollViewDelegate {
        
          super.layoutSubviews()
         //scrollView.sd_resetLayout()
-        scrollView.sd_resetNewLayout()
+        //scrollView.sd_resetNewLayout()
         self.contentView.addSubview(topView)
         _ = topView.sd_layout().leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.topEqualToView(self.contentView)?.heightIs(topViewH)
         
@@ -129,7 +129,7 @@ extension MainColumnistCell{
         }
         
         scrollView.sd_addSubviews(itemViews)
-        itemViews.forEach { view in
+        itemViews.forEach { [unowned self] view in
             // cell 动态调整高度
             _ = view.sd_layout()?.bottomEqualToView(self.scrollView)?.topEqualToView(self.scrollView)?.xIs( CGFloat(view.tag) * (width + 5))?.yIs(0)?.widthIs(width)
         }

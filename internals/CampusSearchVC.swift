@@ -45,7 +45,7 @@ class CampusSearchVC: BaseViewController, SearchControllerDeletgate {
     
     private  lazy var cityMenu:DropItemCityView =  {
          let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: cityMenuHeight))
-         city.passData = { citys in
+         city.passData = { [unowned self] citys in
             self.condition.0 = citys
             
         }
@@ -57,7 +57,7 @@ class CampusSearchVC: BaseViewController, SearchControllerDeletgate {
     
     private lazy var businessKind:DropCarrerClassifyView = {
         let k = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: bussinessMenuHeight))
-        k.passData = {  industry in
+        k.passData = { [unowned self] industry in
             self.condition.1 = industry
         }
         k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
@@ -66,7 +66,7 @@ class CampusSearchVC: BaseViewController, SearchControllerDeletgate {
     
     private lazy var company:DropCompanyPropertyView = {
         let c = DropCompanyPropertyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height:  companyMenuHeight))
-        c.passData = { company in
+        c.passData = {[unowned self]  company in
            
             self.condition.2 = company
         }
@@ -82,7 +82,7 @@ class CampusSearchVC: BaseViewController, SearchControllerDeletgate {
     
     
     
-    private lazy var table:UITableView = {
+    private lazy var table:UITableView = { [unowned self] in
         let tb = UITableView.init()
         tb.register(CommonJobTableCell.self, forCellReuseIdentifier: CommonJobTableCell.identity())
         tb.rx.setDelegate(self).disposed(by:dispose)
@@ -150,7 +150,11 @@ extension CampusSearchVC{
         }.disposed(by: dispose)
         
         
-        self.searchVM.graduateRes.asDriver(onErrorJustReturn: []).drive(onNext: { (modes) in
+        self.searchVM.graduateRes.asDriver(onErrorJustReturn: []).drive(onNext: { [weak self] (modes) in
+            guard let `self` = self else {
+                return
+            }
+            
             if self.modes.isEmpty{
                 self.modes = modes
             }
@@ -161,12 +165,14 @@ extension CampusSearchVC{
             
         }).disposed(by: self.dispose)
         
-        self.table.rx.itemSelected.subscribe(onNext: { (indexPath) in
-            let mode = self.filterModes[indexPath.row]
-            let vc = JobDetailViewController()
-            vc.job = (mode.jobId!, .graduate)
-            vc.hidesBottomBarWhenPushed = true
-         self.presentingViewController?.navigationController?.pushViewController(vc, animated: true)
+        self.table.rx.itemSelected.subscribe(onNext: {  [weak self] (indexPath) in
+            if let mode = self?.filterModes[indexPath.row]{
+                let vc = JobDetailViewController()
+                vc.job = (mode.jobId!, .graduate)
+                vc.hidesBottomBarWhenPushed = true
+                self?.presentingViewController?.navigationController?.pushViewController(vc, animated: true)
+            }
+           
         }).disposed(by: self.dispose)
     }
     

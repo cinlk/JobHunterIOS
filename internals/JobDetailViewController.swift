@@ -62,7 +62,7 @@ class JobDetailViewController: BaseShowJobViewController {
  
     // apply
     
-    private lazy var apply:UIButton = {
+    private lazy var apply:UIButton = { [unowned self] in 
         
         let apply = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 100, height: GlobalConfig.toolBarH))
    
@@ -78,7 +78,7 @@ class JobDetailViewController: BaseShowJobViewController {
         
     }()
     
-    private lazy var talk:UIButton = {
+    private lazy var talk:UIButton = { [unowned self] in
         // 宽度加上20 填满整个view
         let talk = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW - collectedBtn.width - apply.width + 20, height: GlobalConfig.toolBarH))
         talk.setTitle("和ta聊聊", for: .normal)
@@ -145,6 +145,10 @@ class JobDetailViewController: BaseShowJobViewController {
 
     }
     
+    
+    deinit {
+        print("deinit jobvc")
+    }
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -297,6 +301,10 @@ class JobDetailViewController: BaseShowJobViewController {
                             
                             //self.navigationController?.popViewController(animated: true)
                         }else{
+                            // 删除app 后，重新安装，需要重建conversation
+                            guard let _ =  self.createConversation(con: con) else{
+                                return
+                            }
                             //  跳转到聊天界面
                             self.navToChatVC(con: con!)
                         }
@@ -304,7 +312,7 @@ class JobDetailViewController: BaseShowJobViewController {
                         
                     })
                 }else{
-                    self.view.showToast(title: "\(error)", customImage: nil, mode: .text)
+                    self.view.showToast(title: "\(String(describing: error))", customImage: nil, mode: .text)
                 }
             }
             
@@ -315,7 +323,7 @@ class JobDetailViewController: BaseShowJobViewController {
             // 发送消息 成功后 才切换界面
             GlobalUserInfo.shared.openConnected { (success, error) in
                 if success{
-                    GlobalUserInfo.shared.buildConversation(conversation: self.mode.value.conversation, talkWith: recruiteIMid, jobId: id, completed: { (cons, error) in
+                    GlobalUserInfo.shared.buildConversation(conversation: self.mode.value.conversation, talkWith: recruiteIMid, jobId: id, completed: { (con, error) in
                        // print("build conversation \(cons)")
                          // 发送消息
                         if let err = error {
@@ -325,32 +333,28 @@ class JobDetailViewController: BaseShowJobViewController {
                             return
                         }
                         
-                        guard let conData = SingleConversation(JSON: ["conversation_id": cons?.conversationId, "my_id": GlobalUserInfo.shared.getId()!, "recruiter_id": self.mode.value.recruiter?.userID ,"job_id": self.mode.value.id, "recruiter_name": self.mode.value.recruiter?.name,"recruiter_icon_url":self.mode.value.recruiter?.icon?.absoluteString, "created_time": Date.init().timeIntervalSince1970]) else{
-                            self.view.showToast(title: "empty conversation id", customImage: nil, mode: .text)
-                            
+                        guard let _ =  self.createConversation(con: con) else{
                             return
                         }
                         
-                        // 创建conversation 到数据库
-                        if self.conversationManager.createConversation(data: conData) == false{
-                            self.view.showToast(title: "数据库存储会话失败", customImage: nil, mode: .text)
-                            return
-                        }
                         // 发送消息
                         // 发送job 类型消息 和 存入数据库
                         guard let jobMsg = JobDescriptionlMessage.init(JSON: [
                         "creat_time":Date.init().timeIntervalSince1970,
                         "type": MessgeType.jobDescribe.describe,
-                        "isRead":true,
-                        "conversation_id": conData.conversationId,
-                        "receiver_id": self.mode.value.recruiter?.userID,
+                        "is_read":true,
+                        "conversation_id": (con?.conversationId)! ,
+                        "receiver_id": (self.mode.value.recruiter?.userID)!,
                         "sender_id": GlobalUserInfo.shared.getId()!,
                         "job_id": self.mode.value.id!,
-                        "job_type_des": self.mode.value.type,
-                        "icon": self.mode.value.iconURL?.absoluteString, "job_name": self.mode.value.name,
-                        "company": self.mode.value.company?.name,"salary": self.mode.value.salary ,"tags": self.mode.value.jobtags]) else{
+                        "job_type_des": self.mode.value.type ?? "none",
+                        "icon": self.mode.value.iconURL?.absoluteString ?? "default",
+                        "job_name": self.mode.value.name ?? "",
+                        "company": self.mode.value.company?.name ?? "",
+                        "salary": self.mode.value.salary ,
+                        "tags": self.mode.value.jobtags]) else{
                             
-                            self.view.showToast(title: "创建job消息类型失败", customImage: nil, mode: .text)
+                        self.view.showToast(title: "创建job消息类型失败", customImage: nil, mode: .text)
                             return
                         }
                         
@@ -358,7 +362,7 @@ class JobDetailViewController: BaseShowJobViewController {
                         var err:Error?
                         
                         let sendJob = AVIMTextMessage.init(text: jobMsg.toJSONString(prettyPrint: true)!, attributes: ["type": MessgeType.jobDescribe.describe])
-                        cons?.send(sendJob, callback: { (success, error) in
+                        con?.send(sendJob, callback: { (success, error) in
                             if success{
                                 do{
                                     try self.conversationManager.insertMessageItem(items: [jobMsg])
@@ -373,33 +377,38 @@ class JobDetailViewController: BaseShowJobViewController {
                         })
                         
                         if err != nil{
-                            self.view.showToast(title: "存入消息或发送job消息失败\(err)", customImage: nil, mode: .text)
+                            self.view.showToast(title: "存入消息或发送job消息失败\(String(describing: err))", customImage: nil, mode: .text)
                             return
                         }
                         guard let helloMsg = Mapper<MessageBoby>().map(JSON: [
-                            "content": "你好 对该职位感兴趣!", "type": MessgeType.text.describe,
-                            "isRead":true, "creat_time": Date.init().timeIntervalSince1970,
-                            "sender_id": GlobalUserInfo.shared.getId(), "receiver_id":
-                                self.mode.value.recruiter!.userID, "conversation_id": cons?.conversationId!])else{
-                                    self.view.showToast(title: "构建打招呼用语失败", customImage: nil, mode: .text)
+                            "content": "你好 对该职位感兴趣!",
+                            "type": MessgeType.text.describe,
+                            "is_read":true,
+                            "creat_time": Date.init().timeIntervalSince1970,
+                            "sender_id": GlobalUserInfo.shared.getId()!,
+                            "receiver_id": (self.mode.value.recruiter?.userID)!,
+                            "conversation_id": (con?.conversationId)!
+                            ])else{
+                            self.view.showToast(title: "构建打招呼用语失败", customImage: nil, mode: .text)
 
                                     return
                         }
                         // 发送打招呼用语消息  和 存入数据库
                         let sendHello = AVIMTextMessage.init(text: "你好 对该职位感兴趣!", attributes: ["type": MessgeType.text.describe])
-                        cons?.send(sendHello, callback: { (success, error) in
+                        con?.send(sendHello, callback: { (success, error) in
                             if success{
                                 do{
                                     try self.conversationManager.insertMessageItem(items: [helloMsg])
                                     // 执行顺序？？
-                                    self.mserver.createConversation(conid: conData.conversationId!, recruiteId: (self.mode.value.recruiter?.userID)!, jobId: self.mode.value.id!).asDriver(onErrorJustReturn: false).drive(onNext: { (success) in
+                                    self.mserver.createConversation(conid: (con?.conversationId)!, recruiteId: (self.mode.value.recruiter?.userID)!, jobId: self.mode.value.id!).asDriver(onErrorJustReturn: false).drive(onNext: { (success) in
                                         if success{
+                                            self.mode.value.conversation = con?.conversationId
                                             self.mode.value.isTalked = true
                                             self.talk.setTitle("继续沟通", for: .normal)
                                             // 发送通知给聊天界面
                                             NotificationCenter.default.post(name: NotificationName.refreshChatList, object: nil)
                                             // 跳转到界面
-                                            self.navToChatVC(con: cons!)
+                                            self.navToChatVC(con: con!)
                                         }else{
                                             self.view.showToast(title: "创建服务器会话失败", duration: 2, customImage: nil, mode: .text)
                                         }
@@ -415,7 +424,7 @@ class JobDetailViewController: BaseShowJobViewController {
                             }
                         })
                         if err != nil{
-                            self.view.showToast(title: "存入消息或发送hello消息失败\(err)", customImage: nil, mode: .text)
+                            self.view.showToast(title: "存入消息或发送hello消息失败\(String(describing: err))", customImage: nil, mode: .text)
                             return
                         }
         
@@ -431,134 +440,31 @@ class JobDetailViewController: BaseShowJobViewController {
         }
     }
     
-        // 创建会话并记录conversation（会话过期 后台检查??）
-        // 构建打招呼消息 发送
+    // 创建conversation
+    private func createConversation(con: AVIMConversation?) -> SingleConversation?{
         
-//            let oldConv =  self.imClient？.conversation(forId: "5c88f876fb4ffe00638220a0")
-//            oldConv?.join(callback: { (succes, error) in
-//                print(success, error)
-//            })
+        guard let conData = SingleConversation(JSON: [
+            "conversation_id": (con?.conversationId)!,
+            "my_id": GlobalUserInfo.shared.getId()!,
+            "recruiter_id": (self.mode.value.recruiter?.userID)! ,
+            "job_id": (self.mode.value.id)!,
+            "recruiter_name": self.mode.value.recruiter?.name ?? "",
+            "recruiter_icon_url":self.mode.value.recruiter?.icon?.absoluteString ?? "default",
+            "created_time": Date.init().timeIntervalSince1970]) else{
+                
+            self.view.showToast(title: "empty conversation id", customImage: nil, mode: .text)
             
-            
-            // 加入conversation
-            // 跳转到聊天界面
+            return nil
+        }
         
+        // 创建conversation 到数据库
+        if self.conversationManager.createConversation(data: conData) == false{
+            self.view.showToast(title: "数据库存储会话失败", customImage: nil, mode: .text)
+            return nil
+        }
         
-//        // 查看数据库， 如果之前没有交流过则发送jobdescribe message
-//        if mode.isTalked == false{
-//            // 本地自己发送的消息 总是read的
-//            // 打招呼消息
-//
-//            do{
-//
-//
-//                if let  jobDescribeMessage = JobDescriptionlMessage(JSON: ["messageID":getUUID(),"creat_time":Date.init().timeIntervalSince1970,"type":MessgeType.jobDescribe.rawValue,"isRead":true, "receiver": mode.hr!.toJSON(), "sender":myself.toJSON(), "jobID":mode.id, "jobTypeDes":mode.kind?.describe, "icon": "sina", "jobName":"产品开发","company":"公司名称","salary":"薪水面议","tags":["标签1","标签2","标签3","标签4"]]){
-//
-//
-//
-//
-//                    // 打招呼消息
-//                    let greetingMessage = MessageBoby(JSON: ["messageID":getUUID(),"content": GreetingMsg.data(using: String.Encoding.utf8)!.base64EncodedString(),"receiver": mode.hr!.toJSON(), "sender":myself.toJSON(),"isRead":true,"creat_time":Date.init().timeIntervalSince1970,
-//                                                             "type":MessgeType.text.rawValue])
-//
-//                    greetingMessage?.sender = myself
-//                    greetingMessage?.receiver = mode.hr!
-//
-//                    var messages:[MessageBoby] = []
-//
-//                    //
-//                    // 允许带招呼用语
-//                    if IsGreeting{
-//                        messages.append(jobDescribeMessage)
-//                        messages.append(greetingMessage!)
-//
-//
-//                    }else{
-//                        messages.append(jobDescribeMessage)
-//                    }
-//                    conversationManager.firstChatWith(person: mode.hr!, messages: messages)
-//
-//
-//                }
-//
-//            }catch{
-//                print(error)
-//                return
-//            }
-//
-//            mode.isTalked = true
-//
-//
-//
-//        }
-//
-//        talk.isSelected = true
-//        // 跳转到和hr的聊天界面
-//        let chatView = CommunicationChatView(hr: mode.hr!)
-//
-//        chatView.hidesBottomBarWhenPushed = true
-//
-//        self.navigationController?.pushViewController(chatView, animated: true)
-        
-        
-    
-    
-    // 构建消息
-    // 确保消息发送成功 TODO
-//    private func sendMsg(cons: AVIMConversation?, completed: @escaping (Bool, Error?)->Void){
-//
-//        var messages:[AVIMTypedMessage] = []
-//        messages.append(AVIMTextMessage.init(text: "打招呼用语", attributes: ["type" : "text"]))
-//        guard let scon = SingleConversation(JSON: ["conversation_id": cons?.conversationId!, "my_id": GlobalUserInfo.shared.getId()!, "recruiter_id": self.mode.value.recruiter?.userID! ,"job_id": self.mode.value.id!, "recruiter_name": self.mode.value.recruiter?.name!,"recruiter_icon_url":self.mode.value.recruiter?.icon?.absoluteString, "created_time": Date.init().timeIntervalSince1970]) else{
-//            print("构建会话错误")
-//            // MARK
-//            completed(false, NSError.init())
-//            return
-//        }
-//         // 数据库创建会话
-//        if self.conversationManager.createConversation(data: scon) == false{
-//            self.view.showToast(title: "数据库存储会话失败", customImage: nil, mode: .text)
-//            completed(false, NSError.init())
-//            return
-//        }
-//
-//        // 发送消息  等待所有消息发送成功 在执行complete TODO
-//        //var localMsg:[MessageBoby] = []
-//        let group = DispatchGroup.init()
-//        var err:Error?
-//
-//        for (last, msg) in messages.enumerated(){
-//            print("send msg \(msg)")
-//            group.enter()
-//            cons?.send(msg, progressBlock: { (progress) in
-//            }, callback: { (success, error) in
-//                group.leave()
-//                if success{
-//                    guard let m = Mapper<MessageBoby>().map(JSON: [
-//                        "content": msg.text!, "type": MessgeType.text.describe,
-//                        "isRead":true, "creat_time": Date.init().timeIntervalSince1970,
-//                        "sender_id": GlobalUserInfo.shared.getId(), "receiver_id":
-//                            self.mode.value.recruiter!.userID, "conversation_id": cons?.conversationId!]) else{
-//                        return
-//                    }
-//
-//                    // mesg 存入数据库(失败 可以容忍？？ TODO)
-//                    //消息存入数据库 (存入失败 TODO)
-//                    try? self.conversationManager.insertMessageItem(items: [m])
-//                }else{
-//                    err = error
-//                    print(error)
-//                }
-//
-//            })
-//        }
-//        // 回调
-//        group.notify(queue: DispatchQueue.main) {
-//             completed(err == nil ? true : false, err)
-//
-//        }
-//
-//    }
+        return  conData
+    }
 
     
     private func navToChatVC(con: AVIMConversation){
@@ -658,7 +564,7 @@ extension JobDetailViewController: UITableViewDelegate{
                     geocoder.geocodeAddressString(address) {
                         (placemarks, error) in
                         guard error == nil else {
-                            self.view.showToast(title: "获取地址失败\(error)", customImage: nil, mode: .text)
+                            self.view.showToast(title: "获取地址失败\(String(describing: error))", customImage: nil, mode: .text)
                             return
                         }
                         place = placemarks?.first?.location?.coordinate

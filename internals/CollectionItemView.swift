@@ -26,7 +26,7 @@ class TableViewHeader:UIView{
         
     }()
     
-    private lazy var collectionView:UICollectionView = {
+    private lazy var collectionView:UICollectionView = {  [unowned self] in
         let layout = UICollectionViewFlowLayout.init()
         layout.minimumLineSpacing =  10
         layout.minimumInteritemSpacing = cellSpacing
@@ -55,9 +55,9 @@ class TableViewHeader:UIView{
     var mode:[String]?{
         didSet{
             // 计算元素宽度
-            mode?.forEach({ item in
+            mode?.forEach({ [weak self]  item in
                 let size =  item.rect(withFont: UIFont.systemFont(ofSize: 12), size: CGSize.init(width: GlobalConfig.ScreenW - 40, height: 20))
-                modeWidth.append(size.width)
+                self?.modeWidth.append(size.width)
             })
             
             self.collectionView.reloadData()

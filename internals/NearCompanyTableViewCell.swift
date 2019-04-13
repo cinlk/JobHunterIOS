@@ -65,9 +65,10 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 80, height: 80)
                  self.companyIcon.kf.setImage(with: Source.network(url), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
             }
            
+            
             self.companyName.text = mode.companyName
-            self.distance.text = "\(mode.distance)"
-            self.reviews.text =  "\(mode.reviewCounts)"
+            self.distance.text = "\(String(describing: mode.distance))"
+            self.reviews.text =  "\(String(describing: mode.reviewCounts))"
             
             self.setupAutoHeight(withBottomViewsArray: [companyIcon, businessField], bottomMargin: 10)
         }

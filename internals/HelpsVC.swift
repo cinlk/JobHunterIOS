@@ -180,7 +180,7 @@ extension HelpsVC: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
-        if let index = selectedCellIndexPath.index(of: indexPath){
+        if let index = selectedCellIndexPath.firstIndex(of: indexPath){
             selectedCellIndexPath.remove(at: index)
         }else{
             selectedCellIndexPath.append(indexPath)
@@ -232,7 +232,7 @@ extension HelpsVC{
 extension HelpsVC: headerCollectionViewDelegate{
     
     func chooseItem(name: String, row: Int) {
-        if let guide = self.mode?.guide[row], let url = guide.guideURL{
+        if let guide = self.mode?.guide[row], let _ = guide.guideURL{
             let wb = BaseWebViewController()
             wb.mode = "http://www.sohu.com/a/144471615_687630"
             self.navigationController?.pushViewController(wb, animated: true)

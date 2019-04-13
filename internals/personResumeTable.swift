@@ -417,7 +417,7 @@ extension personResumeTable: addResumeItenDelegate{
     func addNewItem(type: ResumeSubItems) {
         // 重新排序
         pManager.sortByEndTime(type: type)
-        self.tableView.reloadSections([viewType.index(of: type)!], animationStyle: .automatic)
+        self.tableView.reloadSections([viewType.firstIndex(of: type)!], animationStyle: .automatic)
     }
     
 }

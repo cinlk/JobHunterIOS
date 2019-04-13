@@ -277,7 +277,7 @@ extension SelectedTowTableView{
         let currentNode = second[row]
         // 再次点击取消
         if currentNode.selected == true, let text = cell.textLabel?.text{
-            if let  index = citys.index(of: text){
+            if let  index = citys.firstIndex(of: text){
                 citys.remove(at: index)
             }
             

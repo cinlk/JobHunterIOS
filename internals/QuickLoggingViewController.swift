@@ -75,7 +75,7 @@ class QuickLoggingViewController: UIViewController, UITableViewDelegate {
         return vc
     }()
     
-     lazy var tableView:UITableView = {
+     lazy var tableView:UITableView = {  [unowned self] in
         let tb = UITableView.init(frame: CGRect.zero)
         tb.tableHeaderView = UIView()
         tb.tableFooterView = tableFootView
@@ -152,14 +152,21 @@ extension QuickLoggingViewController{
     private func setViewModel(){
         
         // 查看协议
-        _ = self.tableFootView.btn.rx.tap.takeUntil(self.rx.deallocated).subscribe { _ in
+        _ = self.tableFootView.btn.rx.tap.takeUntil(self.rx.deallocated).subscribe {  [weak self] _ in
+            guard let `self` = self else{
+                return
+            }
             self.navigationController?.pushViewController(self.agreeMentVC, animated: true)
         }
         
      
         
         // table
-        let dataSource = RxTableViewSectionedAnimatedDataSource<AnimatableSectionModel<String,String>>.init(configureCell:  { (_, table, index, element) -> UITableViewCell in
+        let dataSource = RxTableViewSectionedAnimatedDataSource<AnimatableSectionModel<String,String>>.init(configureCell:  { [weak self] (_, table, index, element) -> UITableViewCell in
+            guard let `self` = self else {
+                return UITableViewCell()
+            }
+            
             if  let cell = table.dequeueReusableCell(withIdentifier: InnerTextFiledCell.identity(), for: index) as?  InnerTextFiledCell{
                 if index.row == 0 {
                     
@@ -200,18 +207,19 @@ extension QuickLoggingViewController{
         
         // 验证码btn 可用
         verifyBtnValid.asObservable().debug().bind(to: self.verifyBtn.rx.rxEnable).disposed(by: dispose)
-        _ = self.verifyBtn.rx.tap.throttle(1, scheduler: MainScheduler.instance).map({
-            self.codeNumber.start()
-        }).flatMapLatest { _ in
+        _ = self.verifyBtn.rx.tap.throttle(1, scheduler: MainScheduler.instance).map({ [weak self] in
+            self?.codeNumber.start()
+        }).flatMapLatest {  [unowned self] _ in
+            
             self.quickVM.sendCode(phone: self.phoneNumber.value).asDriver(onErrorJustReturn: Mapper<ResponseModel<CodeSuccess>>.init().map(JSON: [:])!)
             
-            }.takeUntil(self.rx.deallocated).subscribe(onNext: { (res) in
+            }.takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] (res) in
                 
                 if  let code = res.code,  HttpCodeRange.filterSuccessResponse(target: code) {
                     return
                 }
-                self.codeNumber.stop()
-                self.view.showToast(title: res.returnMsg ?? "发送失败", customImage: nil, mode: .text)
+                self?.codeNumber.stop()
+                self?.view.showToast(title: res.returnMsg ?? "发送失败", customImage: nil, mode: .text)
                 
                 
             })
@@ -219,9 +227,9 @@ extension QuickLoggingViewController{
         
         
         // 登录按钮可用
-        let obCode = verifyCode.asObservable().map{ (v) -> Bool in
+        let obCode = verifyCode.asObservable().map{ [weak self] (v) -> Bool in
             
-            return v.count == 6 && Int(v) != nil && self.parentVC?.currentIndex == 0
+            return v.count == 6 && Int(v) != nil && (self?.parentVC?.currentIndex ?? -1) == 0
         }.share()
         
         
@@ -232,21 +240,24 @@ extension QuickLoggingViewController{
         verifyLoginBtn.asObservable().debug().bind(to: self.parentVC!.loggingBtn.rx.rxEnable).disposed(by: dispose)
         
         // 验证码登录
-        _ = self.parentVC?.loggingBtn.rx.tap.throttle(0.5, scheduler: MainScheduler.instance).filter({
-             self.parentVC?.currentIndex == 0
-        }).flatMapLatest({ _ in
+        _ = self.parentVC?.loggingBtn.rx.tap.throttle(0.5, scheduler: MainScheduler.instance).filter({ [weak self] in
+             self?.parentVC?.currentIndex == 0
+        }).flatMapLatest({ [unowned self] _ in
             
             self.quickVM.quickLogin(phone: self.phoneNumber.value, code: self.verifyCode.value).asDriver(onErrorJustReturn: Mapper<ResponseModel<LoginSuccess>>().map(JSON: [:])!)
-        }).takeUntil(self.rx.deallocated).subscribe(onNext: { (res) in
+        }).takeUntil(self.rx.deallocated).subscribe(onNext: {  [weak self] (res) in
+            guard let `self` = self else{
+                return
+            }
             if let token =  res.body?.token,  let lid = res.body?.leanCloudId{
-                
+               
                 // 获取用户信息
-                self.quickVM.getUserInfo(token: token).asDriver(onErrorJustReturn: "").drive(onNext: { (any) in
+                self.quickVM.getUserInfo(token: token).asDriver(onErrorJustReturn: "").drive(onNext: { [weak self] (any) in
                     if let json = any as? [String:Any], let data = json["body"] as? [String:Any]{
                         
-                        GlobalUserInfo.shared.baseInfo(token: token, account: self.phoneNumber.value, pwd: "", lid: lid, data: data)
+                        GlobalUserInfo.shared.baseInfo(token: token, account: self?.phoneNumber.value ?? "", pwd: "", lid: lid, data: data)
                         // 跳转到主界面
-                        guard let pv = self.parentVC else {
+                        guard let pv = self?.parentVC else {
                             return
                         }
                         pv.navBack ? pv.dismiss(animated: true, completion: nil) : pv.performSegue(withIdentifier: pv.mainSegueIdentiy, sender: nil)

@@ -37,7 +37,7 @@ class BaseWebViewController: UIViewController {
     
     
     //share
-    private lazy var sharedView:ShareView = {
+    private lazy var sharedView:ShareView = { [unowned self] in
         let share = ShareView.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: shareViewH))
         share.delegate = self
         return share
@@ -135,7 +135,7 @@ extension BaseWebViewController {
         _ = progressView.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,64)?.heightIs(2)
         
         webView.frame = self.view.frame        
-        webView.rx.observe(String.self, keyStr).subscribe(onNext: { (newValue) in
+        webView.rx.observe(String.self, keyStr).subscribe(onNext: { [unowned self]  (newValue) in
             self.progressView.isHidden = self.webView.estimatedProgress == 1
             self.progressView.setProgress(Float(self.webView.estimatedProgress), animated: true)
         }).disposed(by: dispose)
@@ -200,7 +200,7 @@ extension BaseWebViewController: WKNavigationDelegate{
         if (error as NSError).code == -999 {
             return
         }
-        print("error ---> \(error)")
+        //print("error ---> \(error)")
         progressView.isHidden = true
         progressView.setProgress(0, animated: false)
     }
@@ -229,7 +229,7 @@ extension BaseWebViewController: WKUIDelegate{
     
     // 内容加载 错误
     func  webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        print("error ++++++ \(error)")
+        //print("error ++++++ \(error)")
         progressView.isHidden = true
         progressView.setProgress(0, animated: false)
         

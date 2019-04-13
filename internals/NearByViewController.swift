@@ -16,7 +16,7 @@ fileprivate let titles:[String] = ["宣讲会", "公司"]
 class NearByViewController: UIViewController {
 
 
-    private var childVC:[UIViewController] = []
+  
     
     private lazy var pagetitle:PagetitleView = { [unowned self] in
         let title = PagetitleView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: pageTitleH),  titles: titles, itemWidth: 100, horizontalEdgeInset: 80)
@@ -30,7 +30,7 @@ class NearByViewController: UIViewController {
     
     private lazy var pageContent:PageContentView = {  [unowned self] in
       
-        
+        var childVC:[UIViewController] = []
         let career = NearCareerTalkMeetinVC()
         let company = NearCompanyViewController()
         

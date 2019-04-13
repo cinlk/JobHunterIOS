@@ -106,7 +106,7 @@ class BaseSearchViewController: UISearchController{
     
     
     // 类型选择btn
-    internal lazy var chooseTypeBtn:chooseBtn = {
+    internal lazy var chooseTypeBtn:chooseBtn = { [unowned self] in
         
         let btn = chooseBtn.init(frame: CGRect.init(x: 5, y: 4.5, width: 60, height: 20))
         btn.setImage(#imageLiteral(resourceName: "arrow_nor").changesize(size: CGSize.init(width: 10, height: 10)), for: .normal)
@@ -147,7 +147,8 @@ class BaseSearchViewController: UISearchController{
     
     //rxSwift
     var searchBarObserver:Driver<String>!
-    let dispose:DisposeBag = DisposeBag()
+    // let 导致dispose lock ？？
+    private lazy var dispose:DisposeBag = DisposeBag()
 
     private lazy var searchVM:SearchViewModel = {
         return SearchViewModel()
@@ -355,7 +356,7 @@ extension BaseSearchViewController{
         // 绑定到搜索历史结果 FilterTable
     
   
-        searchBarObserver.flatMapLatest { (words) -> Driver<[String]> in
+        searchBarObserver.flatMapLatest {  [unowned self] (words) -> Driver<[String]> in
         
             if words.isEmpty{
                 return Driver<[String]>.just([])
@@ -389,16 +390,16 @@ extension BaseSearchViewController{
     
         
         // edit
-        self.searchBar.rx.textDidBeginEditing.debug().throttle(0.3, scheduler: MainScheduler.instance).asDriver(onErrorJustReturn: ()).drive(onNext: {
-                self.showRecordView = true
+        self.searchBar.rx.textDidBeginEditing.debug().throttle(0.3, scheduler: MainScheduler.instance).asDriver(onErrorJustReturn: ()).drive(onNext: { [weak self] in
+                self?.showRecordView = true
         }).disposed(by: self.dispose)
         
         
         
         // 点击搜索按钮
-        self.searchBar.rx.searchButtonClicked.throttle(0.3, scheduler: MainScheduler.instance).asDriver(onErrorJustReturn: ()).debug().drive(onNext: {
-            if let text =  self.searchBar.text, !text.isEmpty{
-                self.ShowSearchResults(word: text)
+        self.searchBar.rx.searchButtonClicked.throttle(0.3, scheduler: MainScheduler.instance).asDriver(onErrorJustReturn: ()).debug().drive(onNext: {  [weak self] in
+            if let text =  self?.searchBar.text, !text.isEmpty{
+                self?.ShowSearchResults(word: text)
             }
         }).disposed(by: self.dispose)
         

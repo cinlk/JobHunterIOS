@@ -18,7 +18,7 @@ fileprivate let defaultSelecName:String = "全国"
 fileprivate class bottomToolBar:UIToolbar{
     
     
-    private lazy var clearAll:UIButton = {
+    private lazy var clearAll:UIButton = {  [unowned self] in
         let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (GlobalConfig.ScreenW - spaceWidth - 10)/2 , height: 35))
         clear.setTitle("清空", for: .normal)
         clear.setTitleColor(UIColor.black, for: .normal)
@@ -29,7 +29,7 @@ fileprivate class bottomToolBar:UIToolbar{
         return clear
     }()
     
-    private lazy var confirm:UIButton = {
+    private lazy var confirm:UIButton = {  [unowned self]  in
         let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (GlobalConfig.ScreenW - spaceWidth - 10)/2 , height: 35))
         confirm.setTitle("确定", for: .normal)
         confirm.setTitleColor(UIColor.white, for: .normal)
@@ -138,7 +138,7 @@ class DropItemCityView: YNDropDownView {
     }()
     
     // 全局的 透明背景view
-    internal lazy var backGroundBtn:UIButton = {
+    internal lazy var backGroundBtn:UIButton = {  [unowned self]  in 
         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 0))
         btn.addTarget(self, action: #selector(hidden), for: .touchUpInside)
         btn.backgroundColor = UIColor.clear
@@ -281,7 +281,7 @@ extension DropItemCityView:UICollectionViewDataSource, UICollectionViewDelegate,
             return
         }
         if selected.contains(defaultSelecName){
-            selected.remove(at: selected.index(of: defaultSelecName)!)
+            selected.remove(at: selected.firstIndex(of: defaultSelecName)!)
             let cell = collectionView.cellForItem(at: IndexPath.init(row: 0, section: 0)) as! CollectionTextCell
             //cell.name.textColor = UIColor.black
             //cell.name.layer.borderColor = UIColor.clear.cgColor
@@ -290,7 +290,7 @@ extension DropItemCityView:UICollectionViewDataSource, UICollectionViewDelegate,
         
         if selected.contains(text){
             // 取消选择状态
-            selected.remove(at: selected.index(of: text)!)
+            selected.remove(at: selected.firstIndex(of: text)!)
             //cell.name.textColor = UIColor.black
             //cell.name.layer.borderColor = UIColor.clear.cgColor
             cell.Selected = false

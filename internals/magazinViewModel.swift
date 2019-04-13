@@ -27,30 +27,30 @@ class MagazineViewModel {
         
         
         
-        self.refresh.subscribe(onNext: { pullDown in
+        self.refresh.subscribe(onNext: { [unowned self] pullDown in
             self.offset = pullDown ? 0 : self.offset + 1
             
             let tmp = self.models.value
             
             
-            NetworkTool.request(.news(type: "test", offset: self.offset), successCallback: { (json) in
+            NetworkTool.request(.news(type: "test", offset: self.offset), successCallback: { [weak self] (json) in
                 
                 guard let res = json as? [String: Any], let r = res["body"] as? [[String: Any]] else {
-                    self.refreshState.onNext(.error(err: NSError.init(domain: "json decode failed", code: -9999, userInfo: nil)))
+                    self?.refreshState.onNext(.error(err: NSError.init(domain: "json decode failed", code: -9999, userInfo: nil)))
                     return
                 }
                 
                 if pullDown{
-                    self.models.accept(Mapper<MagazineModel>().mapArray(JSONArray: r))
-                    self.refreshState.onNext(.endHeaderRefresh)
+                    self?.models.accept(Mapper<MagazineModel>().mapArray(JSONArray: r))
+                    self?.refreshState.onNext(.endHeaderRefresh)
                 }else{
                     let objs = Mapper<MagazineModel>().mapArray(JSONArray: r)
                     if objs.isEmpty{
-                        self.refreshState.onNext(.NoMoreData)
+                        self?.refreshState.onNext(.NoMoreData)
                         return
                     }
-                    self.models.accept(tmp + objs)
-                    self.refreshState.onNext(.endFooterRefresh)
+                    self?.models.accept(tmp + objs)
+                    self?.refreshState.onNext(.endFooterRefresh)
                 }
                 
                 

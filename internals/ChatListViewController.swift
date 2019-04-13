@@ -23,7 +23,8 @@ class ChatListViewController: BaseTableViewController {
     //private var unRead:Bool = false
     private var deleteRow = 0
     
-    private lazy var deleteAlertShow:UIAlertController = {
+    private lazy var deleteAlertShow:UIAlertController = { [unowned self] in
+        
         let alertVC = UIAlertController.init(title: "请确认", message: "删除后聊天记录不存在", preferredStyle: UIAlertController.Style.alert)
         
         alertVC.addAction(UIAlertAction.init(title: "确定", style: .default, handler: { (action) in
@@ -35,7 +36,7 @@ class ChatListViewController: BaseTableViewController {
     }()
     
     private let httpServer:MessageHttpServer = MessageHttpServer.shared
-    private let dispose:DisposeBag = DisposeBag()
+    private lazy var  dispose:DisposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,12 +60,12 @@ class ChatListViewController: BaseTableViewController {
         self.tableView.refreshControl = UIRefreshControl.init()
         self.tableView.refreshControl?.addTarget(self, action: #selector(refresh), for: UIControl.Event.valueChanged)
         // 刷新聊天对象列表
-    NotificationCenter.default.rx.notification(NotificationName.refreshChatList).subscribe(onNext: { (notify) in
-            self.loadMessage()
+    NotificationCenter.default.rx.notification(NotificationName.refreshChatList).subscribe(onNext:  {  [weak self] (notify) in
+            self?.loadMessage()
         
         }).disposed(by: self.dispose)
         // 刷新某行聊天数据
-        NotificationCenter.default.rx.notification(NotificationName.refreshChatRow, object: nil).subscribe(onNext: { (notify) in
+        NotificationCenter.default.rx.notification(NotificationName.refreshChatRow, object: nil).subscribe(onNext: { [weak self] (notify) in
             
             guard  let row = notify.userInfo?["row"] as? Int else {
                 return
@@ -74,7 +75,7 @@ class ChatListViewController: BaseTableViewController {
             }
             
             
-            if let new = self.cManager.getConversationBy(conversationId: conid){
+            if let new = self?.cManager.getConversationBy(conversationId: conid), let `self` = self{
                 self.cModel[row] = new
                 self.sortMode(datas: &self.cModel)
                 self.tableView.reloadRows(at: [IndexPath.init(row: row, section: 0)], with: .automatic)
@@ -97,6 +98,10 @@ class ChatListViewController: BaseTableViewController {
     }
     
    
+    
+    deinit {
+        print("deinit chatlistvc")
+    }
     
     // MARK: - Table view data source
     
@@ -156,24 +161,24 @@ class ChatListViewController: BaseTableViewController {
         }
         
         // 获取会话con
-        GlobalUserInfo.shared.openConnected { (sucess, error) in
+        GlobalUserInfo.shared.openConnected { [weak self] (sucess, error) in
             if sucess{
                 
                 GlobalUserInfo.shared.buildConversation(conversation: conv.conversationId, talkWith: conv.recruiterId!, jobId: conv.jobId!, completed: { (con, error) in
-                    if let err = error {
+                    if error != nil {
                         //print(err)
-                        self.view.showToast(title: "获取会话失败", customImage: nil, mode: .text)
+                        self?.view.showToast(title: "获取会话失败", customImage: nil, mode: .text)
                         return
                     }
                     //  跳转到聊天界面
                     let chatVC = CommunicationChatView.init(recruiterId: conv.recruiterId!, row: indexPath.row, conversation: con)
                     
                     chatVC.hidesBottomBarWhenPushed = true
-                    self.navigationController?.pushViewController(chatVC, animated: true)
+                    self?.navigationController?.pushViewController(chatVC, animated: true)
                     
                 })
             }else{
-                self.view.showToast(title: "\(error)", customImage: nil, mode: .text)
+                self?.view.showToast(title: "\(String(describing: error))", customImage: nil, mode: .text)
             }
         }
         
@@ -200,7 +205,7 @@ class ChatListViewController: BaseTableViewController {
         let mode = cModel[indexPath.row]
         let status = mode.isUp ? "取消置顶" : "置顶"
         
-        let edit = UITableViewRowAction.init(style: .normal, title: status) { (action, index) in
+        let edit = UITableViewRowAction.init(style: .normal, title: status) { [unowned self] (action, index) in
             
             if self.cManager.setUpConversation(conversationId: mode.conversationId!, isUp: !mode.isUp){
                 mode.isUp = !mode.isUp
@@ -240,7 +245,7 @@ class ChatListViewController: BaseTableViewController {
         let status = mode.isUp ? "取消置顶" : "置顶"
         
         
-        let deleteAction = UIContextualAction.init(style: UIContextualAction.Style.normal, title: "删除", handler: { (action, view, completion) in
+        let deleteAction = UIContextualAction.init(style: UIContextualAction.Style.normal, title: "删除", handler: { [unowned self] (action, view, completion) in
            
             self.deleteRow = indexPath.row
             self.present(self.deleteAlertShow, animated: true, completion: nil)
@@ -251,7 +256,7 @@ class ChatListViewController: BaseTableViewController {
         deleteAction.backgroundColor = UIColor.red
         
         
-        let editAction = UIContextualAction.init(style: UIContextualAction.Style.normal, title: status, handler: { (action, view, completion) in
+        let editAction = UIContextualAction.init(style: UIContextualAction.Style.normal, title: status, handler: { [unowned self] (action, view, completion) in
            
             if self.cManager.setUpConversation(conversationId: mode.conversationId!, isUp: !mode.isUp){
                 mode.isUp = !mode.isUp
@@ -368,7 +373,7 @@ extension ChatListViewController{
                         self?.tableView.deleteRows(at: [IndexPath.init(row: row, section: 0)], with: .automatic)
                     }
                 }else{
-                    print(error)
+                    //print(error)
                     
                 }
             }

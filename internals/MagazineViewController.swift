@@ -98,8 +98,8 @@ class MagazineViewController: BaseViewController {
 extension MagazineViewController{
     
     private func tableRefresh(){
-       self.table.mj_header = MJRefreshNormalHeader.init(refreshingBlock: {
-                self.vm.refresh.onNext(true)
+       self.table.mj_header = MJRefreshNormalHeader.init(refreshingBlock: { [weak self] in
+                self?.vm.refresh.onNext(true)
        })
        (self.table.mj_header as! MJRefreshNormalHeader).activityIndicatorViewStyle = .gray
        (self.table.mj_header as! MJRefreshNormalHeader).lastUpdatedTimeLabel.isHidden = true
@@ -107,8 +107,8 @@ extension MagazineViewController{
        (self.table.mj_header as! MJRefreshNormalHeader).setTitle("开始刷新", for: .pulling)
        (self.table.mj_header as! MJRefreshNormalHeader).setTitle("结束", for: .idle)
 
-        self.table.mj_footer = MJRefreshAutoNormalFooter.init(refreshingBlock: {
-            self.vm.refresh.onNext(false)
+        self.table.mj_footer = MJRefreshAutoNormalFooter.init(refreshingBlock: { [weak self] in
+            self?.vm.refresh.onNext(false)
         })
         (self.table.mj_footer as! MJRefreshAutoNormalFooter).setTitle("上拉刷新", for: .idle)
         (self.table.mj_footer as! MJRefreshAutoNormalFooter).setTitle("刷新", for: .refreshing)
@@ -135,8 +135,8 @@ extension MagazineViewController: UITableViewDelegate{
     private func setViewModel(){
         
         
-        self.errorView.tap.drive(onNext: { _ in
-            self.reload()
+        self.errorView.tap.drive(onNext: { [weak self]  _ in
+            self?.reload()
         }).disposed(by: self.dispose)
         
        self.table.rx.setDelegate(self).disposed(by: self.dispose)
@@ -162,32 +162,32 @@ extension MagazineViewController: UITableViewDelegate{
         
        
         
-        self.table.rx.itemSelected.asDriver().drive(onNext: { (indexPath) in
+        self.table.rx.itemSelected.asDriver().drive(onNext: {  [weak self]  (indexPath) in
 
-            self.table.deselectRow(at: indexPath, animated: false)
+            self?.table.deselectRow(at: indexPath, animated: false)
             let webview = BaseWebViewController()
-            if let cell = self.table.cellForRow(at: indexPath) as? MagineTableViewCell{
+            if let cell = self?.table.cellForRow(at: indexPath) as? MagineTableViewCell{
                 webview.mode = cell.mode?.link
-                self.navigationController?.pushViewController(webview, animated: true)
+                self?.navigationController?.pushViewController(webview, animated: true)
             }
         }).disposed(by: self.dispose)
         
         
-        _ = self.vm.refreshState.takeUntil(self.rx.deallocated).subscribe(onNext: { (state) in
+        _ = self.vm.refreshState.takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] (state) in
             switch state {
                 
             case .endHeaderRefresh:
-                self.table.mj_footer.resetNoMoreData()
-                self.table.mj_header.endRefreshing(completionBlock: {
-                    self.didFinishloadData()
+                self?.table.mj_footer.resetNoMoreData()
+                self?.table.mj_header.endRefreshing(completionBlock: { [weak self] in
+                    self?.didFinishloadData()
                 })
             case .endFooterRefresh:
-                self.table.mj_footer.endRefreshing()
+                self?.table.mj_footer.endRefreshing()
             case .NoMoreData:
-                self.table.mj_footer.endRefreshingWithNoMoreData()
+                self?.table.mj_footer.endRefreshingWithNoMoreData()
             case  let .error(err):
-                self.view.showToast(title: "\(err)", customImage: nil, mode: .text)
-                self.showError()
+                self?.view.showToast(title: "\(err)", customImage: nil, mode: .text)
+                self?.showError()
                 
             default:
                 break

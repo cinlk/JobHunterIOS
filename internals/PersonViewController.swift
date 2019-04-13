@@ -113,7 +113,7 @@ fileprivate class personTable:BaseTableView<[(image:UIImage, title:String)]>{
     
     override func setHeaderView(data:Any?) {
         
-        if let data = data as? (image:String,name:String, introduce:String){
+        if let _ = data as? (image:String,name:String, introduce:String){
             let head  = PersonTableHeader.init(frame:CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: tableHeaderH))
             head.isHR = false
             head.backgroundColor = UIColor.orange

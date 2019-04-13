@@ -143,16 +143,17 @@ class ConversationManager: NSObject {
     
     // 获取某人 历史聊天信息，从最近开始查
     
-    open func getLatestMessageBy(conversationId:String,start:Int,limit:Int)->[MessageBoby]{
+    open func getLatestMessageBy(conversationId:String,startTime:Date, limit:Int)->([MessageBoby], Error?){
         
         do{
-            return try messageTable.getMessages(conversationId: conversationId, start: start, limit: limit)
+            return (try messageTable.getMessages(conversationId: conversationId, startTime: startTime, limit: limit), nil)
 
         }catch{
-            print(error)
+           // print(error)
+            return ([], error)
         }
         
-        return []
+        //return []
         //return  messageTable.getMessages(chatWith:chatWith, start: start, limit: limit)
 
     }
@@ -215,7 +216,7 @@ class ConversationManager: NSObject {
             return
         }
         
-        do{
+//        do{
 //           try SqliteManager.shared.db?.transaction(block: {
 //                try self.insertMessageItem(items: messages)
 //            self.insertConversationItem(messageID: (messages.last?.messageID!)!, userID: GlobalConfig.LeanCloudApp.User2 , date: (messages.last?.creat_time)!)
@@ -223,9 +224,9 @@ class ConversationManager: NSObject {
 //
 //
 //            })
-        }catch{
-            print(error)
-        }
+//        }catch{
+//            print(error)
+//        }
        
     }
     

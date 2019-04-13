@@ -36,7 +36,7 @@ class InternSearchVC: BaseViewController, SearchControllerDeletgate {
     
     private lazy var cityMenu:DropItemCityView = { [unowned self] in
         let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropDownHeight))
-        city.passData = { citys in
+        city.passData = { [unowned self] citys in
 //            self.requestBody.city = citys
 //            self.table.mj_header.beginRefreshing()
             self.condition.0 = citys
@@ -49,7 +49,7 @@ class InternSearchVC: BaseViewController, SearchControllerDeletgate {
     
     private lazy var kindMenu:DropCarrerClassifyView = { [unowned self] in
         let k = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropDownHeight))
-        k.passData = { industry in
+        k.passData = { [unowned self] industry in
 //            self.requestBody.industry = industry
 //            self.table.mj_header.beginRefreshing()
             self.condition.1 = industry
@@ -63,7 +63,7 @@ class InternSearchVC: BaseViewController, SearchControllerDeletgate {
     
     private lazy var internMenu:DropInternCondtionView = { [unowned self] in
         let i = DropInternCondtionView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropDownHeight))
-        i.passData = {  condition in
+        i.passData = {  [unowned self] condition in
 //            self.requestBody.interns = condition
 //            self.table.mj_header.beginRefreshing()
             
@@ -162,7 +162,11 @@ extension InternSearchVC{
             }.disposed(by: dispose)
         
         
-        self.searchVM.internRes.asDriver(onErrorJustReturn: []).drive(onNext: { (modes) in
+        self.searchVM.internRes.asDriver(onErrorJustReturn: []).drive(onNext: { [weak self] (modes) in
+            guard let `self` = self else {
+                return
+            }
+            
             if self.modes.isEmpty{
                 self.modes = modes
             }
@@ -172,12 +176,14 @@ extension InternSearchVC{
             
         }).disposed(by: self.dispose)
         
-        self.table.rx.itemSelected.subscribe(onNext: { (indexPath) in
-            let mode = self.filterModes[indexPath.row]
-            let vc = JobDetailViewController()
-            vc.job = (mode.jobId!, .intern)
-            vc.hidesBottomBarWhenPushed = true
-        self.presentingViewController?.navigationController?.pushViewController(vc, animated: true)
+        self.table.rx.itemSelected.subscribe(onNext: { [weak self] (indexPath) in
+            if let mode = self?.filterModes[indexPath.row]{
+                let vc = JobDetailViewController()
+                vc.job = (mode.jobId!, .intern)
+                vc.hidesBottomBarWhenPushed = true
+                self?.presentingViewController?.navigationController?.pushViewController(vc, animated: true)
+            }
+           
             
         }).disposed(by: self.dispose)
         

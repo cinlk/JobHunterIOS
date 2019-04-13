@@ -1,12 +1,3 @@
-//
-//  LXFChatMsgTimeHelper.swift
-//  LXFWeChat
-//
-//  Created by 林洵锋 on 2017/1/8.
-//  Copyright © 2017年 林洵锋. All rights reserved.
-//
-//  GitHub: https://github.com/LinXunFeng
-//  简书: http://www.jianshu.com/users/31e85e7a22a2
 
 import UIKit
 import SwiftDate
@@ -22,8 +13,6 @@ class LXFChatMsgTimeHelper: NSObject {
     override init() {
         super.init()
         // 设置时区
-    
-   
     }
 }
 

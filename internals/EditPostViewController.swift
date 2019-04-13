@@ -258,8 +258,8 @@ extension EditPostViewController{
         // 发送到服务七 获取id数据 和 icon 等数据
         
         // 构造postArticle 数据
-        if let article = PostArticleModel(JSON: ["id":getUUID(),"title":"文字标题等等","authorID": GlobalUserInfo.shared.getId() ,
-                                                 "authorName": GlobalUserInfo.shared.getName(),"colleage":"我的大学","authorIcon": GlobalUserInfo.shared.getIcon()?.absoluteString,"createTime":Date().timeIntervalSince1970,"kind":data.type]){
+        if let article = PostArticleModel(JSON: ["id":getUUID(),"title":"文字标题等等","authorID": GlobalUserInfo.shared.getId()! ,
+                                                 "authorName": GlobalUserInfo.shared.getName() ?? "","colleage":"我的大学","authorIcon": GlobalUserInfo.shared.getIcon()?.absoluteString ?? "" ,"createTime":Date().timeIntervalSince1970,"kind":data.type]){
             
             NotificationCenter.default.post(name: Notification.Name.init(data.type), object: nil, userInfo: ["mode":article])
 
@@ -306,13 +306,13 @@ private class mytext:UITextView{
     }()
     
     //类型选择
-    internal  lazy var postType:UIBarButtonItem = UIBarButtonItem.init(title: "选择板块", style: .plain, target: vc, action: "chooseType")
+    internal  lazy var postType:UIBarButtonItem = UIBarButtonItem.init(title: "选择板块", style: .plain, target: vc, action: Selector(("chooseType")))
     // 图片
     
     
     // 影藏键盘
     
-    internal lazy var hiddenKeyboard:UIBarButtonItem = UIBarButtonItem.init(image: UIImage.init(named: "keyboard")?.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate), style: .plain, target: vc, action: "hidKeyboard")
+    internal lazy var hiddenKeyboard:UIBarButtonItem = UIBarButtonItem.init(image: UIImage.init(named: "keyboard")?.changesize(size: CGSize.init(width: 25, height: 25)).withRenderingMode(.alwaysTemplate), style: .plain, target: vc, action: Selector(("hidKeyboard")))
     
     
     

@@ -154,10 +154,11 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        let views:[UIView] = [icon, jobName, company, address, degree, create_time, checkNums]
+        var views:[UIView] = [icon, jobName, company, address, degree, create_time, checkNums]
         
         self.sd_addSubviews(views)
         setLayout()
+        views.removeAll()
         
     }
     

@@ -32,7 +32,7 @@ class PageScrollTitleView:UIView {
         v.backgroundColor = ConfigColor.PageTitleColor.SublineColor
         return v
     }()
-    private lazy var scrollerView:UIScrollView = {
+    private lazy var scrollerView:UIScrollView = { [unowned self] in 
         
         let s = UIScrollView.init(frame: CGRect.zero)
         s.contentInsetAdjustmentBehavior = .never

@@ -34,7 +34,7 @@ class  SqliteManager{
         
         let url = SingletoneClass.fileManager.urls(for: .documentDirectory, in: .userDomainMask)
         let dbPath = url.last?.appendingPathComponent(dbName)
-        print("dataBase--->", dbPath)
+        print("dataBase--->\(String.init(describing: dbPath))")
         let exist = SingletoneClass.fileManager.fileExists(atPath: dbPath!.path)
         if !exist{
             SingletoneClass.fileManager.createFile(atPath: dbPath!.path, contents: nil, attributes: nil)
@@ -62,6 +62,7 @@ class  SqliteManager{
             // 开启外键约束 (sqlite 默认没开启)
             try db?.execute("PRAGMA foreign_keys = ON;")
             //try db?.execute("PRAGMA foreign_keys;")
+          
             try createSearchTable()
             try createMessageTable()
             try createConversationTable()
@@ -167,6 +168,7 @@ extension SqliteManager{
         }catch{
              throw error
         }
+        
     }
 }
 

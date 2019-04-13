@@ -36,7 +36,7 @@ class CompanySearchVC: BaseViewController, SearchControllerDeletgate {
     private lazy var cityMenu:DropItemCityView = { [unowned self] in
         let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW,
                                                             height: dropMenuHeight))
-        city.passData = { citys in
+        city.passData = { [unowned self] citys in
             self.condition.0 = citys
         }
         city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
@@ -47,7 +47,7 @@ class CompanySearchVC: BaseViewController, SearchControllerDeletgate {
     private lazy var kind:DropItemIndustrySectorView = { [unowned self] in
         let k = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW,
                                                                height: dropMenuHeight))
-        k.passData = {  s in
+        k.passData = { [unowned self]  s in
             self.condition.1 = s
         }
         k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH)
@@ -62,7 +62,7 @@ class CompanySearchVC: BaseViewController, SearchControllerDeletgate {
     }()
     
     
-    private lazy var table:UITableView = {
+    private lazy var table:UITableView = { [unowned self] in
         let tb = UITableView()
         tb.register(CompanyItemCell.self, forCellReuseIdentifier: CompanyItemCell.identity())
         tb.rx.setDelegate(self).disposed(by: dispose)
@@ -150,7 +150,10 @@ extension CompanySearchVC{
             cell.mode = element
         }.disposed(by: dispose)
         
-        self.searchVM.companyRes.asDriver(onErrorJustReturn: []).drive(onNext: { (modes) in
+        self.searchVM.companyRes.asDriver(onErrorJustReturn: []).drive(onNext: { [weak self](modes) in
+            guard let `self` = self else {
+                return
+            }
             if self.modes.isEmpty{
                 self.modes = modes
             }

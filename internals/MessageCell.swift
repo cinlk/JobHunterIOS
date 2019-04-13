@@ -18,7 +18,7 @@ fileprivate let fontSize:CGFloat = 16
 
 class MessageCell: UITableViewCell {
 
-    private lazy  var avatar:UIImageView = {
+    private lazy  var avatar:UIImageView = { [unowned self] in
        let img = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.AvatarSize.width, height: GlobalConfig.AvatarSize.height))
         img.clipsToBounds = true
         img.backgroundColor = UIColor.clear
@@ -26,7 +26,7 @@ class MessageCell: UITableViewCell {
         
     }()
     
-    private lazy var messgeText:UITextView = {
+    private lazy var messgeText:UITextView = { [unowned self] in 
         let text = UITextView.init(frame: CGRect.zero)
         text.isScrollEnabled = false
         text.isEditable = false
@@ -97,7 +97,7 @@ class MessageCell: UITableViewCell {
         
         let replaceStr =  GetChatEmotion.shared.findAttrStr(text: strs, font: UIFont.systemFont(ofSize: fontSize), replace:  true )
         
-        let labelSize:CGSize = UITextView.sizeOfString(string: replaceStr?.string as! NSString , font: UIFont.systemFont(ofSize: fontSize), maxWidth: textWidth)
+        let labelSize:CGSize = UITextView.sizeOfString(string: (replaceStr?.string)! as! NSString , font: UIFont.systemFont(ofSize: fontSize), maxWidth: textWidth)
         
         if labelSize.height < GlobalConfig.AvatarSize.height && labelSize.height <= UIFont.systemFont(ofSize: fontSize).lineHeight{
             

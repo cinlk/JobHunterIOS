@@ -35,7 +35,11 @@ class AdvertiseViewController: UIViewController {
         return image
     }()
     
-    private lazy var countBtn:UIButton = {
+    private lazy var countBtn:UIButton = { [weak self] in
+        
+        guard let `self` = self else {
+            return UIButton.init()
+        }
         let btn = UIButton()
         btn.addTarget(self, action: #selector(skip), for: .touchUpInside)
         btn.alpha = 0.5
@@ -72,16 +76,17 @@ extension AdvertiseViewController{
         _ = countBtn.sd_layout().topSpaceToView(backGroundImage,40)?.rightSpaceToView(backGroundImage,20)?.widthIs(60)?.heightIs(20)
         
         
+        
     }
     
    
     
     private func startTimer(){
         if timer == nil {
-            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { (t) in
-                self.times -= 1
+            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self]  (t) in
+                self?.times -= 1
             }
-            RunLoop.current.add(timer!, forMode: RunLoop.Mode.common)
+           // RunLoop.current.add(timer!, forMode: RunLoop.Mode.common)
         }
     }
     

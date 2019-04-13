@@ -25,7 +25,7 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 80, height: 80)
             self.collegeName.text = mode.college
             self.simplifyAddress.text = mode.address
             self.startTime.text = mode.startTimeStr
-            self.distance.text = "\(mode.distance)"
+            self.distance.text = "\(String(describing: mode.distance))"
             
             self.setupAutoHeight(withBottomViewsArray: [self.simplifyAddress,self.collegeIcon], bottomMargin: 10)
             

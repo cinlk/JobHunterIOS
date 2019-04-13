@@ -35,7 +35,7 @@ fileprivate class datePickerView:UIView {
         return picker
     }()
     
-    private lazy var cancelBtn:UIButton = {
+    private lazy var cancelBtn:UIButton = { [unowned self] in
         let btn = UIButton()
         btn.setTitle("取消", for: .normal)
         btn.setTitleColor(UIColor.black, for: .normal)
@@ -44,7 +44,7 @@ fileprivate class datePickerView:UIView {
         return btn
     }()
     
-    private lazy var confirmBtn:UIButton = {
+    private lazy var confirmBtn:UIButton = {  [unowned self] in
         let btn = UIButton()
         btn.setTitle("确定", for: .normal)
         btn.setTitleColor(UIColor.white, for: .normal)
@@ -90,7 +90,7 @@ class DropValidTimeView: BaseSingleItemDropView {
     
     private lazy var dateStr:String = ""
     
-    private lazy var datePicker:datePickerView = {
+    private lazy var datePicker:datePickerView = {  [unowned self] in
         //创建日期选择器
         let datePicker = datePickerView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH + menuH, width: GlobalConfig.ScreenW, height: pickerViewH), v:self )
         datePicker.isHidden = true

@@ -46,7 +46,7 @@ class ChatBarView: UIView {
     var keyboardType: ChatKeyboardType = .none
     
     
-    private lazy var chatMoreButton:UIButton = {
+    private lazy var chatMoreButton:UIButton = { [unowned self] in
         var button = UIButton.init(type: UIButton.ButtonType.custom)
         button.backgroundColor = UIColor.clear
         button.setImage(#imageLiteral(resourceName: "chatMore").changesize(size: CGSize.init(width: iconSize.width, height: iconSize.height)).withRenderingMode(.alwaysTemplate), for: .normal)
@@ -57,7 +57,7 @@ class ChatBarView: UIView {
         
     }()
     
-    private lazy var chatEmotionButton:UIButton = {
+    private lazy var chatEmotionButton:UIButton = { [unowned self] in
         var button = UIButton.init(type: UIButton.ButtonType.custom)
         // 默认是表情 输入view
         button.setImage(#imageLiteral(resourceName: "smile").changesize(size: CGSize.init(width: iconSize.width, height: iconSize.height)).withRenderingMode(.alwaysTemplate), for: .normal)
@@ -71,7 +71,7 @@ class ChatBarView: UIView {
     }()
     
     // 输入框
-    lazy var inputText:UITextView = {
+    lazy var inputText:UITextView = { [unowned self] in 
         let inputV = UITextView(frame: CGRect.init(x: 5, y: 5, width: GlobalConfig.ScreenW - 60 - 10 - 10, height: 35))
         
         inputV.font = UIFont.systemFont(ofSize: 16.0)

@@ -30,7 +30,7 @@ class PopView: UIView {
     }()
     
     
-    private lazy var backView:UIButton = {
+    private lazy var backView:UIButton = { [unowned self] in 
         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH))
         btn.alpha = 0.5
         btn.backgroundColor = UIColor.lightGray

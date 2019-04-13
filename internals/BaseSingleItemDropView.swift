@@ -30,7 +30,7 @@ class BaseSingleItemDropView: YNDropDownView {
     private var index:IndexPath?
     
     
-    internal lazy var table:UITableView = {
+    internal lazy var table:UITableView = {  [unowned self] in
         let table = UITableView()
         table.tableFooterView = UIView()
         table.delegate = self
@@ -44,7 +44,7 @@ class BaseSingleItemDropView: YNDropDownView {
     
     
     // 全局的 透明背景view
-    internal lazy var backGroundBtn:UIButton = {
+    internal lazy var backGroundBtn:UIButton = {  [unowned self]  in 
         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 0))
         btn.addTarget(self, action: #selector(hidden), for: .touchUpInside)
         btn.backgroundColor = UIColor.clear

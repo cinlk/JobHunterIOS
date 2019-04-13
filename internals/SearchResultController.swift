@@ -41,10 +41,11 @@ class MyNav:UINavigationController{
 
 class SearchResultController: BaseViewController {
 
-    private var searchChildVC:[UIViewController] = []
+    
     
     internal lazy var searchFildContent:PageContentView = { [unowned self] in
         
+        var searchChildVC:[UIViewController] = []
         
         let os = OnlineApplySearchVC.init()
         let cs = CampusSearchVC.init()

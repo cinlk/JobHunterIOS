@@ -29,9 +29,8 @@ extension UIImage{
         
         if data != nil {
             
-            let source:CGImageSource = CGImageSourceCreateWithData(data as! CFData, nil)!
-            
-            
+            let cdata = data as! CFData
+            let source:CGImageSource = CGImageSourceCreateWithData(cdata, nil)!
             let count:size_t = CGImageSourceGetCount(source)
             
             var animatedImage:UIImage?
@@ -154,6 +153,7 @@ extension UIImage{
         
         let newImage:UIImage = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
+
         return newImage.withRenderingMode(renderMode)
     }
     
@@ -161,7 +161,8 @@ extension UIImage{
     class func resizeableImage(name:String)->UIImage{
         
         let image = UIImage.init(named: name)!
-
+        
+        
         return image.resizableImage(withCapInsets: UIEdgeInsets.init(top: 22, left: 26, bottom: 22, right: 26), resizingMode: .stretch).withRenderingMode(.alwaysTemplate)
         
     }

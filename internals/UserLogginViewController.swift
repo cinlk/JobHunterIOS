@@ -43,7 +43,7 @@ class UserLogginViewController: UIViewController {
         return image
     }()
     
-    private lazy var itemTitleView:PagetitleView = {
+    private lazy var itemTitleView:PagetitleView = { [unowned self] in
         let title = PagetitleView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW - 20, height: 30), titles: titles, itemWidth: 100)
         title.delegate = self
         return title
@@ -61,7 +61,7 @@ class UserLogginViewController: UIViewController {
         return content
     }()
     
-     lazy var loggingBtn:UIButton = {
+     lazy var loggingBtn:UIButton = { [unowned self] in
         let btn = UIButton.init()
         btn.setTitle("登 录", for: .normal)
         btn.setTitleColor(UIColor.white, for: .normal)
@@ -89,13 +89,13 @@ class UserLogginViewController: UIViewController {
     
     
     // 第三方登录
-    private lazy var socialAppLoginView:ThirdPartLoginView = {
+    private lazy var socialAppLoginView:ThirdPartLoginView = { [unowned self] in
         let view = ThirdPartLoginView()
         view.delegate = self
         return view 
     }()
     
-    private lazy var tapGestur:UITapGestureRecognizer = {
+    private lazy var tapGestur:UITapGestureRecognizer = { [unowned self] in
         let tap = UITapGestureRecognizer()
         tap.numberOfTapsRequired  = 1
         tap.addTarget(self, action: #selector(cancelEdit))
@@ -103,7 +103,7 @@ class UserLogginViewController: UIViewController {
     }()
     
     private var dispose = DisposeBag()
-     private var quickVM = LoginViewModel()
+    private var quickVM = LoginViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -161,17 +161,17 @@ extension UserLogginViewController{
     
     private func viewModel(){
         _ = NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification).takeUntil(
-            self.rx.deallocated).subscribe { notify in
+            self.rx.deallocated).subscribe { [weak self] (notify) in
                 UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseInOut, animations: {
                     //notify.element?.userInfo
                     // TODO  根据键盘计算 高度
-                    self.view.frame.origin.y = -100
+                    self?.view.frame.origin.y = -100
                 }, completion: nil)
         }
         
-        _ = NotificationCenter.default.rx.notification(UIResponder.keyboardWillHideNotification).takeUntil(self.rx.deallocated).subscribe(onNext: { _ in
+        _ = NotificationCenter.default.rx.notification(UIResponder.keyboardWillHideNotification).takeUntil(self.rx.deallocated).subscribe(onNext: {  [weak self]  _ in
             UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseInOut, animations: {
-                self.view.frame.origin.y = 0
+                self?.view.frame.origin.y = 0
                 
             }, completion: nil)
             
@@ -182,10 +182,13 @@ extension UserLogginViewController{
         
         
         // 匿名使用
-        _ = self.skipBtn.rx.tap.takeUntil(self.rx.deallocated).subscribe({ _ in
+        _ = self.skipBtn.rx.tap.takeUntil(self.rx.deallocated).subscribe({ [weak self] _ in
+            guard let `self` = self else {
+                return
+            }
             
             GlobalUserInfo.shared.isLogin = false
-            self.quickVM.anonymouseLogin().asDriver(onErrorJustReturn: ResponseModel<LoginSuccess>(JSON: [:])!).drive(onNext: { (res) in
+            self.quickVM.anonymouseLogin().asDriver(onErrorJustReturn: ResponseModel<LoginSuccess>(JSON: [:])!).drive(onNext: {   (res) in
                  guard let token = res.body?.token else{
                     return
                 }
@@ -257,6 +260,7 @@ extension UserLogginViewController{
 extension UserLogginViewController: SocialAppLoginDelegate{
     
     func verifyLoggable(view: UIView, type: UMSocialPlatformType, respons: UMSocialUserInfoResponse) {
+        
         // 判断response 已经有绑定的手机号？
         // 如果没有绑定对应的账号（手机或邮箱）
         switch type {

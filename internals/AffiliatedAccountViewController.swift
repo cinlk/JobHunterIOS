@@ -71,7 +71,7 @@ class AffiliatedAccountViewController: UIViewController {
     }()
     
     
-    private lazy var tapGestur:UITapGestureRecognizer = {
+    private lazy var tapGestur:UITapGestureRecognizer = {  [unowned self] in
         let tap = UITapGestureRecognizer()
         tap.numberOfTapsRequired  = 1
         tap.addTarget(self, action: #selector(cancelEdit))
@@ -144,17 +144,17 @@ extension AffiliatedAccountViewController{
         self.view.addGestureRecognizer(tapGestur)
     
         
-        self.accountText.rx.text.subscribe(onNext: { (str) in
-                self.accountText.leftImage?.isHighlighted = str?.count != 0
+        self.accountText.rx.text.subscribe(onNext: {  [weak self]   (str) in
+                self?.accountText.leftImage?.isHighlighted = str?.count != 0
         }).disposed(by: self.dispose)
-        self.verifyCode.rx.text .subscribe(onNext: { (str) in
-                self.verifyCode.leftImage?.isHighlighted = str?.count != 0
+        self.verifyCode.rx.text .subscribe(onNext: { [weak self]   (str) in
+                self?.verifyCode.leftImage?.isHighlighted = str?.count != 0
         }).disposed(by: self.dispose)
         
         self.codeNumber?.obCount.bind(to: self.verifyBtn.rx.isEnabled).disposed(by: self.dispose)
         
-        _ = self.verifyBtn.rx.tap.takeUntil(self.rx.deallocated).subscribe({ _ in
-            self.codeNumber?.start()
+        _ = self.verifyBtn.rx.tap.takeUntil(self.rx.deallocated).subscribe({ [weak self]  _ in
+            self?.codeNumber?.start()
            
         })
          // 发送验证码接口
@@ -167,8 +167,8 @@ extension AffiliatedAccountViewController{
       
         // 判断 确定按钮是否可用
         
-        _ = self.confirmBtn.rx.tap.takeUntil(self.rx.deallocated).subscribe(onNext: { _ in
-            self.view.endEditing(true)
+        _ = self.confirmBtn.rx.tap.takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self]  _ in
+            self?.view.endEditing(true)
             
             //guard let phone =  self.accountText.text
             
@@ -176,7 +176,7 @@ extension AffiliatedAccountViewController{
             // 成功跳转到主界面
             let vc = UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "main") as! MainTabBarViewController
             
-            self.present(vc, animated: true, completion: nil)
+            self?.present(vc, animated: true, completion: nil)
             //self.navigationController?.popvc(animated: true)
             
         })

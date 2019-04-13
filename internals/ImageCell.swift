@@ -55,22 +55,23 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
                 return
             }
             
-            guard let imageName = mode.imageFileName else {
-                avartar.isHidden = true
-                imageV.isHidden = true
-                return
-            }
+//            guard let imageName = mode.fileName else {
+//                avartar.isHidden = true
+//                imageV.isHidden = true
+//                return
+//            }
             
             if let url = GlobalUserInfo.shared.getIcon(){
                 self.avartar.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }
             
-          
+            
+            
             
             // 获取images
-            if let imageData =  appFileManger.getImageDataBy(userID: (mode.receiveId)!, fileName: imageName){
-                self.imageV.image = UIImage.init(data: imageData)
-            }
+//            if let imageData =  appFileManger.getImageDataBy(userID: (mode.receiveId)!, fileName: imageName){
+//                self.imageV.image = UIImage.init(data: imageData)
+//            }
             imageV.sd_clearAutoLayoutSettings()
             
             // 背景图片拉伸
@@ -78,22 +79,33 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
             var stretchImage:UIImage!
             var bubbleMaskImage:UIImage!
             
-            // 自己发的消息
+            // 自己发的图片消息, 从本地获取图片
             if mode.senderId == GlobalUserInfo.shared.getId(){
+                
+                if let imageData = appFileManger.getImageDataBy(userID: (mode.receiveId)!, fileName: mode.fileName ?? ""){
+                    self.imageV.image = UIImage.init(data: imageData)
+                }else{
+                    // TODO
+                }
                 
                 stretchImage = UIImage.init(named: "senderImageMask")
                 bubbleMaskImage = stretchImage?.resizableImage(withCapInsets: stretchInset, resizingMode: .stretch)
                 
                 
                 
-                avartar.frame = CGRect.init(x: GlobalConfig.ScreenW - 45 - 5, y: 5, width: 45, height: 45)
+                avartar.frame = CGRect.init(x: GlobalConfig.ScreenW - 45 - 5, y: 5, width: GlobalConfig.AvatarSize.width, height: GlobalConfig.AvatarSize.height)
                 _ = imageV.sd_layout().rightSpaceToView(avartar,10)?.topEqualToView(self.avartar)?.widthIs(imageSize.width)?.heightIs(imageSize.height)
                 
                 
             }else{
+                // 从网络url  获取图片???
+                if let imageUrl = mode.fileUrl{
+                    self.imageV.kf.setImage(with: Source.network(imageUrl), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+                }
+                
                 stretchImage = UIImage.init(named: "receiverImageMask")
                 bubbleMaskImage = stretchImage?.resizableImage(withCapInsets: stretchInset, resizingMode: .stretch)
-                avartar.frame = CGRect.init(x: 5, y: 5, width: 45, height: 45)
+                avartar.frame = CGRect.init(x: 5, y: 5, width: GlobalConfig.AvatarSize.width, height: GlobalConfig.AvatarSize.height)
                 _ = imageV.sd_layout().leftSpaceToView(avartar,10)?.topEqualToView(self.avartar)?.widthIs(imageSize.width)?.heightIs(imageSize.height)
                 
             }
@@ -139,7 +151,9 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
         fatalError("init(coder:) has not been implemented")
     }
     
-    
+    deinit {
+        print("deinit imageCell")
+    }
 
     class func reuseIdentify()->String{
         return "imageCell"
@@ -186,13 +200,14 @@ extension ImageCell{
          
             // 保存
             let longpress = UILongPressGestureRecognizer.init(target: self, action: #selector(store(tap:)))
-            longpress.minimumPressDuration = 2
+            longpress.minimumPressDuration = 1
             zoomImageView.addGestureRecognizer(longpress)
             
             keyWindow.addSubview(self.blackBackgroundView!)
             keyWindow.addSubview(zoomImageView)
             
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                
                 //根据屏幕计算放大后的尺寸
                 self.blackBackgroundView?.alpha = 1
                 let height = self.startingFrame!.height / self.startingFrame!.width * keyWindow.frame.width
@@ -226,7 +241,7 @@ extension ImageCell{
     
     @objc private func store(tap: UILongPressGestureRecognizer){
         // 结束状态才执行，不然present alertVC 多次 警告
-        if  tap.state == .began{
+        if  tap.state == .ended{
             self.storeImage?(self.imageV.image!)
         }
     }

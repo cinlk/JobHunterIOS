@@ -19,7 +19,7 @@ fileprivate let transforKey:[String:String] = ["是否转正":"can_transfer","�
 fileprivate class bottomToolBar:UIToolbar{
     
     
-    private lazy var clearAll:UIButton = {
+    private lazy var clearAll:UIButton = { [unowned self] in
         let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (GlobalConfig.ScreenW - spaceWidth - 10)/2, height: 35))
         clear.setTitle("清空", for: .normal)
         clear.setTitleColor(UIColor.black, for: .normal)
@@ -31,7 +31,7 @@ fileprivate class bottomToolBar:UIToolbar{
         
     }()
     
-    private lazy var confirm:UIButton = {
+    private lazy var confirm:UIButton = { [unowned self] in
         let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (GlobalConfig.ScreenW - spaceWidth - 10)/2, height: 35))
         confirm.setTitle("确定", for: .normal)
         confirm.setTitleColor(UIColor.white, for: .normal)
@@ -112,7 +112,7 @@ class DropInternCondtionView: YNDropDownView{
     
     
     
-    private lazy var layout:UICollectionViewFlowLayout = { 
+    private lazy var layout:UICollectionViewFlowLayout = {
        
         let layout = UICollectionViewFlowLayout.init()
         layout.itemSize  = CGSize.init(width: (GlobalConfig.ScreenW - 50)/3, height: 35)
@@ -142,7 +142,7 @@ class DropInternCondtionView: YNDropDownView{
     
     
     // 全局的 透明背景view
-    internal lazy var backGroundBtn:UIButton = {
+    internal lazy var backGroundBtn:UIButton = { [unowned self] in
         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 0))
         btn.addTarget(self, action: #selector(hidden), for: .touchUpInside)
         btn.backgroundColor = UIColor.clear
@@ -208,7 +208,7 @@ extension DropInternCondtionView{
     }
     
     @objc fileprivate func done(){
-        conditions.keys.forEach { (k) in
+        conditions.keys.forEach { [unowned self]    (k) in
             if let m = transforKey[k]{
                  self.conditions[m] = self.conditions[k]
                  self.conditions.removeValue(forKey: k)

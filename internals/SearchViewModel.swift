@@ -68,16 +68,16 @@ class SearchViewModel {
     func searchOnlineAppy(word:String){
     
         
-        searchServer.searchOnlineAppy(word: word).asDriver(onErrorJustReturn: []).drive(onNext: { (modes) in
-            self.onlineApplyRes.onNext(modes)
+        searchServer.searchOnlineAppy(word: word).asDriver(onErrorJustReturn: []).drive(onNext: { [weak self] (modes) in
+            self?.onlineApplyRes.onNext(modes)
         }).disposed(by: self.disposeBag)
     }
     
     
     func searchGraduteJobs(word: String){
         
-        searchServer.searchGraduateJobs(word:word).asDriver(onErrorJustReturn: []).drive(onNext: { (modes) in
-            self.graduateRes.onNext(modes)
+        searchServer.searchGraduateJobs(word:word).asDriver(onErrorJustReturn: []).drive(onNext: { [weak self] (modes) in
+            self?.graduateRes.onNext(modes)
         }).disposed(by: self.disposeBag)
         
     }
@@ -85,8 +85,8 @@ class SearchViewModel {
     
     func searchInternJobs(word: String){
         
-        searchServer.searchInternJobs(word: word).asDriver(onErrorJustReturn: []).drive(onNext: { (modes) in
-            self.internRes.onNext(modes)
+        searchServer.searchInternJobs(word: word).asDriver(onErrorJustReturn: []).drive(onNext: { [weak self] (modes) in
+            self?.internRes.onNext(modes)
         }).disposed(by: self.disposeBag)
         
     }
@@ -94,16 +94,16 @@ class SearchViewModel {
     
     func searchCareerTalkMeetins(word: String){
         
-        searchServer.searchCareerTalkMeetins(word: word).asDriver(onErrorJustReturn: []).drive(onNext: { (modes) in
-            self.carrerTalkRes.onNext(modes)
+        searchServer.searchCareerTalkMeetins(word: word).asDriver(onErrorJustReturn: []).drive(onNext: { [weak self] (modes) in
+            self?.carrerTalkRes.onNext(modes)
         }).disposed(by: self.disposeBag)
     }
     
     
     func searchCompany(word:String){
         
-        searchServer.searchCompany(word: word).asDriver(onErrorJustReturn: []).drive(onNext: { (modes) in
-            self.companyRes.onNext(modes)
+        searchServer.searchCompany(word: word).asDriver(onErrorJustReturn: []).drive(onNext: { [weak self] (modes) in
+            self?.companyRes.onNext(modes)
         }).disposed(by: self.disposeBag)
     }
     

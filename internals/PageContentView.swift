@@ -19,7 +19,7 @@ class PageContentView: UIView {
 
     fileprivate var startOffsetX:CGFloat = 0
     private var childVCs:[UIViewController]?
-    private var pVC:UIViewController?
+    private weak var pVC:UIViewController?
     weak var delegate:PageContentViewScrollDelegate?
     fileprivate var isCkick:Bool = false
     
@@ -48,8 +48,8 @@ class PageContentView: UIView {
         super.init(frame: frame)
         self.childVCs = childVCs
         self.pVC = pVC
-        childVCs.forEach { (vc) in
-            self.pVC?.addChild(vc)
+        childVCs.forEach { [weak self] (vc) in
+            self?.pVC?.addChild(vc)
         
         }
         

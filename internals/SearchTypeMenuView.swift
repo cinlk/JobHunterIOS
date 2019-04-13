@@ -28,7 +28,7 @@ class SearchTypeMenuView: UIView {
         }
     }
     
-    private lazy var dispose:DisposeBag = DisposeBag.init()
+    //private lazy var dispose:DisposeBag = DisposeBag.init()
     
     private var arrowWidth:CGFloat = 15
     private var arrowHeight:CGFloat = 10
@@ -72,7 +72,7 @@ class SearchTypeMenuView: UIView {
     }()
 
     // 蒙层view
-    private lazy var backgroundBtn:UIButton = {
+    private lazy var backgroundBtn:UIButton = {  [unowned self] in
         
         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH))
         btn.addTarget(self, action: #selector(dismiss), for: .touchUpInside)
@@ -87,11 +87,11 @@ class SearchTypeMenuView: UIView {
         self.frame.size = CGSize.init(width: frameWidth, height: 0)
         self.arrowLeftMargin = arrowLeftMargin
        
-        _ = NotificationCenter.default.rx.notification(NotificationName.searchType).takeUntil(self.rx.deallocated).subscribe(onNext: { (notify) in
+        _ = NotificationCenter.default.rx.notification(NotificationName.searchType).takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] (notify) in
             if let searchType = notify.userInfo?["searchType"] as? searchItem{
                 switch searchType{
                     case .company, .intern, .meeting, .graduate, .onlineApply:
-                        self.datas = [.company, .intern, .meeting, .graduate, .onlineApply]
+                        self?.datas = [.company, .intern, .meeting, .graduate, .onlineApply]
                 default:
                     break
                 }

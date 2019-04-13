@@ -95,11 +95,32 @@ extension String {
     func wrap<T>(_ expressions: [Expressible]) -> Expression<T> {
         return wrap(", ".join(expressions))
     }
-
+    // fix bug #903
+    private func trimName(_ function: String) -> String {
+        return function.components(separatedBy: "(").first ?? function
+    }
+    
+    func infix<T>(_ lhs: Expressible, _ rhs: Expressible, wrap: Bool = true, function: String = #function) -> Expression<T> {
+        return trimName(function).infix(lhs, rhs, wrap: wrap)
+    }
+    
+    func wrap<T>(_ expression: Expressible, function: String = #function) -> Expression<T> {
+        return trimName(function).wrap(expression)
+    }
+    
+    func wrap<T>(_ expressions: [Expressible], function: String = #function) -> Expression<T> {
+        return trimName(function).wrap(", ".join(expressions))
+    }
+    
 }
 
 func infix<T>(_ lhs: Expressible, _ rhs: Expressible, wrap: Bool = true, function: String = #function) -> Expression<T> {
-    return function.infix(lhs, rhs, wrap: wrap)
+    var funcStr = function
+    if let range = funcStr.range(of: "(_:_:)") {
+        funcStr.removeSubrange(range)
+    }
+    
+    return funcStr.infix(lhs, rhs, wrap: wrap)
 }
 
 func wrap<T>(_ expression: Expressible, function: String = #function) -> Expression<T> {
@@ -108,7 +129,10 @@ func wrap<T>(_ expression: Expressible, function: String = #function) -> Express
 
 func wrap<T>(_ expressions: [Expressible], function: String = #function) -> Expression<T> {
     return function.wrap(", ".join(expressions))
+
 }
+
+
 
 func transcode(_ literal: Binding?) -> String {
     guard let literal = literal else { return "NULL" }

@@ -81,7 +81,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
             self.content.text = mes.getDescribe()
             
             self.time.text =  mes.talkTime
-            print(mes.toJSON())
+            //print(mes.toJSON())
             self.setupAutoHeight(withBottomViewsArray: [icon,content], bottomMargin: 10)
            
         }

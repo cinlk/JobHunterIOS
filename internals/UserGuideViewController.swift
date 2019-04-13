@@ -85,7 +85,7 @@ class UserGuideViewController: UIViewController, UICollectionViewDelegate {
     private var dispose: DisposeBag = DisposeBag.init()
     
    
-    private lazy var collectionView:UICollectionView = {
+    private lazy var collectionView:UICollectionView = { [unowned self] in
         let cv = CollectionView.init(frame: self.view.bounds, collectionViewLayout: UICollectionViewLayout.init())
         cv.rx.setDelegate(self).disposed(by: dispose)
         return cv
@@ -176,17 +176,21 @@ extension UserGuideViewController{
     private func setViewModel(){
         
         // rx button
-        self.continueBtn.rx.tap.asDriver().drive(onNext: {
-            self.pageController.currentPage += 1
+        self.continueBtn.rx.tap.asDriver().drive(onNext: { [weak self] in
+            self?.pageController.currentPage += 1
             // 最后登录界面
-            self.changeView(last: self.pageController.currentPage == self.datas.count)
+            self?.changeView(last: self?.pageController.currentPage == self?.datas.count)
             
             
         }).disposed(by: dispose)
         
         
         
-        self.skipBtn.rx.tap.asDriver().drive(onNext: {
+        self.skipBtn.rx.tap.asDriver().drive(onNext: { [weak self] in
+            guard let `self` = self else {
+                return
+            }
+            
             self.pageController.currentPage = self.datas.count
             self.changeView(last: true)
            
@@ -195,7 +199,12 @@ extension UserGuideViewController{
         
         
         // rx collection data
-        self.collectionView.rx.willEndDragging.asDriver().drive(onNext: { (arg0) in
+        self.collectionView.rx.willEndDragging.asDriver().drive(onNext: {  [weak self] (arg0) in
+            guard let `self` = self else {
+                return
+            }
+            
+            
             let (_, targetContentOffset) = arg0
             
             let index: Int = Int(targetContentOffset.pointee.x / self.view.frame.width)
@@ -204,8 +213,11 @@ extension UserGuideViewController{
         }).disposed(by: dispose)
         
         
-        let dataSource = RxCollectionViewSectionedReloadDataSource<SectionModel<String, GuideItems>>(configureCell: { (dataSource, cv, indexPath, element) -> UICollectionViewCell in
+        let dataSource = RxCollectionViewSectionedReloadDataSource<SectionModel<String, GuideItems>>(configureCell: { [weak self] (dataSource, cv, indexPath, element) -> UICollectionViewCell in
             
+            guard let `self` = self else {
+                return UICollectionViewCell.init()
+            }
             if indexPath.row == self.datas.count {
                 let cell = cv.dequeueReusableCell(withReuseIdentifier: UserGuideLogginCell.identity(), for: indexPath)
                 return cell

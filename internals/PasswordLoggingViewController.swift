@@ -76,7 +76,7 @@ class PasswordLoggingViewController: UIViewController, UITableViewDelegate {
         return tableFooter.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 40))
     }()
     
-    private lazy var tableView: UITableView = {
+    private lazy var tableView: UITableView = { [unowned self] in
         let tb = UITableView()
         tb.tableHeaderView = UIView()
         tb.tableFooterView = tableFootView
@@ -92,7 +92,7 @@ class PasswordLoggingViewController: UIViewController, UITableViewDelegate {
     //rxswift
     private var account:BehaviorRelay<String> = BehaviorRelay<String>(value: "")
     private var pwd:BehaviorRelay<String> = BehaviorRelay<String>(value: "")
-    private var dispose:DisposeBag = DisposeBag()
+    private lazy var dispose:DisposeBag = DisposeBag()
     private var viewModel:LoginViewModel = LoginViewModel()
     
    
@@ -132,24 +132,27 @@ extension PasswordLoggingViewController{
     private func setViewModel(){
         
         // 重置密码
-        _ = self.tableFootView.forgetPasswordBtn.rx.tap.takeUntil(self.rx.deallocated).subscribe { _ in
+        _ = self.tableFootView.forgetPasswordBtn.rx.tap.takeUntil(self.rx.deallocated).subscribe {  [weak self] _ in
             let vc = ResetPasswordViewController()
             vc.isResetPwd = true
             vc.resetBtn.setTitle("重置密码", for: .normal)
-            self.navigationController?.pushViewController(vc, animated: true)
+            self?.navigationController?.pushViewController(vc, animated: true)
         }
         
         // 注册账号
-        _ = self.tableFootView.registryNewAccountBtn.rx.tap.takeUntil(self.rx.deallocated).subscribe(onNext: { _ in
+        _ = self.tableFootView.registryNewAccountBtn.rx.tap.takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self]  _ in
             let vc = ResetPasswordViewController()
             vc.isResetPwd = false
             vc.resetBtn.setTitle("确认", for: .normal)
-            self.navigationController?.pushViewController(vc, animated: true)
+            self?.navigationController?.pushViewController(vc, animated: true)
         })
         
         
         // 密码明文显示
-        _ = self.lash.rx.tap.takeUntil(self.rx.deallocated).subscribe(onNext: { _ in
+        _ = self.lash.rx.tap.takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] _ in
+            guard let `self` = self else{
+                return
+            }
             self.lash.isSelected = !self.lash.isSelected
             self.lash.tintColor =  self.lash.isSelected ? UIColor.orange : UIColor.lightGray
             if let cell = self.tableView.cellForRow(at: IndexPath.init(row: 1, section: 0)) as? InnerTextFiledCell{
@@ -158,9 +161,11 @@ extension PasswordLoggingViewController{
         })
         
         // table
-        let dataSource = RxTableViewSectionedAnimatedDataSource<AnimatableSectionModel<String,String>>.init(configureCell:  { (_, table, index, element) -> UITableViewCell in
+        let dataSource = RxTableViewSectionedAnimatedDataSource<AnimatableSectionModel<String,String>>.init(configureCell:  {  [weak self] (_, table, index, element) -> UITableViewCell in
+            guard let `self` = self else {
+                return UITableViewCell()
+            }
             
-          
             if let cell = table.dequeueReusableCell(withIdentifier: InnerTextFiledCell.identity()) as? InnerTextFiledCell{
                 
                 if index.row == 0 {
@@ -192,7 +197,7 @@ extension PasswordLoggingViewController{
         self.tableView.rx.setDelegate(self).disposed(by: self.dispose)
         
         // 登录按钮检查 当前view
-        let enableLogin = Observable.combineLatest(account.share().map({  a in
+        let enableLogin = Observable.combineLatest(account.share().map({  [unowned self]  a in
            return a.count == 11  && Int(a) != nil && self.parentVC?.currentIndex == 1
         }), pwd.map({ p in
             p.count >= 6
@@ -203,28 +208,30 @@ extension PasswordLoggingViewController{
         enableLogin.bind(to: self.parentVC!.loggingBtn.rx.rxEnable).disposed(by: dispose)
         
         // 登录
-        _ = self.parentVC?.loggingBtn.rx.tap.throttle(0.5, scheduler: MainScheduler.instance).filter({
-             self.parentVC?.currentIndex == 1
-        }).flatMapLatest({ _ in
+        _ = self.parentVC?.loggingBtn.rx.tap.throttle(0.5, scheduler: MainScheduler.instance).filter({  [weak self] in
+             self?.parentVC?.currentIndex == 1
+        }).flatMapLatest({   [unowned self] _ in
             self.viewModel.passwordLogin(accont: self.account.value, pwd: self.pwd.value).asDriver(onErrorJustReturn: Mapper<ResponseModel<LoginSuccess>>().map(JSON: [:])!)
-        }).takeUntil(self.rx.deallocated).subscribe(onNext: { res in
-            
+        }).takeUntil(self.rx.deallocated).subscribe(onNext: {   [weak self] res in
+            guard let `self` = self else {
+                return
+            }
             guard let token =  res.body?.token, let lid = res.body?.leanCloudId else{
                 self.view.showToast(title: res.returnMsg ?? "用户名或密码错误", customImage: nil, mode: .text)
                 return
             }
             
-            self.viewModel.getUserInfo(token: token).asDriver(onErrorJustReturn: "").drive(onNext: { (json) in
+            self.viewModel.getUserInfo(token: token).asDriver(onErrorJustReturn: "").drive(onNext: {  [weak self] (json) in
                 guard let j = json as? [String:Any], let  data = j["body"] as? [String:Any]
                 else {
-                    self.view.showToast(title: "获取用户信息失败", customImage: nil, mode: .text)
+                    self?.view.showToast(title: "获取用户信息失败", customImage: nil, mode: .text)
                     return
                 }
                 // 判断用户角色 切换场景 TODO
                 
-                GlobalUserInfo.shared.baseInfo(token: token, account: self.account.value , pwd: self.pwd.value, lid: lid, data: data)
+                GlobalUserInfo.shared.baseInfo(token: token, account: self?.account.value ?? "" , pwd: self?.pwd.value ?? "", lid: lid, data: data)
                 
-                guard let pv = self.parentVC else {
+                guard let pv = self?.parentVC else {
                     return
                 }
                 pv.navBack ? pv.dismiss(animated: true, completion: nil) : pv.performSegue(withIdentifier: pv.mainSegueIdentiy, sender: nil)

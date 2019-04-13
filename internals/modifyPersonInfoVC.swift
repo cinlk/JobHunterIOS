@@ -173,7 +173,7 @@ extension modifyPersonInfoVC: changeDataDelegate{
         diction[type] = value
         isChange = true
         
-        self.tableView.reloadRows(at: [IndexPath.init(row: keys.index(of: type)!, section: 0)], with: .automatic)
+        self.tableView.reloadRows(at: [IndexPath.init(row: keys.firstIndex(of: type)!, section: 0)], with: .automatic)
     }
     
 
@@ -222,6 +222,9 @@ extension modifyPersonInfoVC: UIImagePickerControllerDelegate,UINavigationContro
             print("拒绝授权")
         case .restricted:
             print("限制授权")
+            break
+            
+        @unknown default:
             break
         }
         

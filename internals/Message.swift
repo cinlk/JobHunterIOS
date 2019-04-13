@@ -13,11 +13,14 @@ enum MessgeType:String {
     case none = "none"
     case text = "text"
     case picture = "picture"
+    // 只有表情为 small gif
     case smallGif =  "smallGif"
+    // 其他都是biggif
     case bigGif = "bigGif"
     case voice = "voice"
     case jobDescribe = "jobDescribe"
     //case personCard = "personCard"
+    case location = "location"
     case time = "time"
     
     var describe:String{
@@ -36,6 +39,8 @@ enum MessgeType:String {
             return "jobDescribe"
         case .time:
             return "time"
+        case .location:
+            return "location"
         default:
             return ""
         }
@@ -193,6 +198,8 @@ class MessageBoby: NSObject, Mappable{
         case .smallGif,.bigGif:
             return String.init(data: data, encoding: String.Encoding.utf8) ?? ""
             
+        case .location:
+            return "[地理位置]"
             
         default:
             break
@@ -302,6 +309,37 @@ class  GifImageMessage:MessageBoby{
 }
 
 
+// 地理位置消息
+class LocationMessage: MessageBoby{
+    
+    var latitude: Double?
+    var longitude: Double?
+    var address: String?
+    
+    required init?(map: Map) {
+        super.init(map: map)
+        if map.JSON["latitude"] == nil || map.JSON["longitude"] == nil{
+            return nil 
+        }
+    }
+    
+    override func mapping(map: Map) {
+        super.mapping(map: map)
+        latitude <- map["latitude"]
+        longitude <- map["longitude"]
+        address <- map["address"]
+    }
+    
+    func location2Data() -> Data?{
+        
+        let json:[String:Any] = ["latitude": self.latitude ?? "", "longitude": self.longitude ?? "", "address": self.address ?? ""]
+        
+        if let data = try? JSONSerialization.data(withJSONObject: json, options: JSONSerialization.WritingOptions.prettyPrinted){
+            return data
+        }
+        return nil
+    }
+}
 
 
 // 时间消息 单独抽取显示cell
@@ -324,25 +362,35 @@ class TimeMessage: MessageBoby{
 // 图片消息
 class PicutreMessage:MessageBoby{
     
-    // 存储照片名字（文件系统查找指定路劲下的名字）
-    var imageFileName:String?
+    //自己发送的图片 存储照片名字（文件系统查找指定路劲下的名字）
+    var fileName:String?
+    
+    // 接受的图片 为url地址（leancloud）
+    var fileUrl:URL?
     
     required init?(map: Map) {
         super.init(map: map)
-        if map.JSON["imageFileName"] == nil{
+        if map.JSON["fileName"] == nil{
             return
         }
-        
     }
     
     override func mapping(map: Map) {
         super.mapping(map: map)
-        imageFileName <- map["imageFileName"]
+        fileName <- map["fileName"]
+        fileUrl <- (map["fileUrl"], URLTransform())
     }
 
     func pathToData() -> Data?{
         
-        return self.imageFileName?.data(using: String.Encoding.utf8, allowLossyConversion: false)
+        if let localNameData =  self.fileName?.data(using: String.Encoding.utf8, allowLossyConversion: false){
+            return localNameData
+        }
+        if let urlNameDAta = self.fileUrl?.absoluteString.data(using: String.Encoding.utf8, allowLossyConversion: false){
+            return urlNameDAta
+        }
+        
+        return nil
     }
     
 }

@@ -32,9 +32,9 @@ extension EnterAppViewController{
             performSelector(onMainThread: #selector(showUserGuide), with: nil, waitUntilDone: false)
         }else{
             // 登录成功跳转到广告界面
-            SingletoneClass.shared.userLogin { (b) in
+            SingletoneClass.shared.userLogin { [weak self] (b) in
                 
-                b ? self.performSelector(onMainThread: #selector(self.showAdvertise), with: nil, waitUntilDone: false) : self.performSelector(onMainThread: #selector(self.showLogging), with: nil, waitUntilDone: false)
+                b ? self?.performSelector(onMainThread: #selector(self?.showAdvertise), with: nil, waitUntilDone: false) : self?.performSelector(onMainThread: #selector(self?.showLogging), with: nil, waitUntilDone: false)
             }
         }
     }
@@ -66,6 +66,10 @@ extension EnterAppViewController{
         if let vc  =  UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "main") as? MainTabBarViewController{
             present(vc, animated: true, completion: nil)
         }
+        // 排除 disposebag 内存泄露问题
+//        let vc = UIViewController.init()
+//        vc.view.backgroundColor = UIColor.red
+//        present(vc, animated: <#T##Bool#>, completion: <#T##(() -> Void)?##(() -> Void)?##() -> Void#>)
     }
     
     func finishShowGuide() {

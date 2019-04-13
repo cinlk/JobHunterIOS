@@ -5,7 +5,7 @@ target 'internals' do
 	pod 'Alamofire' 
 	#pod 'SwiftyJSON', :git => 'https://github.com/appsailor/SwiftyJSON.git' 
 	pod 'SDAutoLayout' 
-	pod 'SQLite.swift' 
+	pod 'SQLite.swift', '~> 0.11.5'
         pod 'YNDropDownMenu', '3.0.3'
 	#pod 'CocoaAsyncSocket'
 	#pod 'SocketRocket'
@@ -37,5 +37,7 @@ target 'internals' do
         #pod 'UMCShare/Social/WeChat'	
 	#pod 'UMCShare/Social/QQ'
 	#pod 'UMCShare/Social/Sina'
+	# 内存泄露工具
+	pod 'MLeaksFinder'
 
 end

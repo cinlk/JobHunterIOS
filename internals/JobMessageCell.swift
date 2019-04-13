@@ -22,7 +22,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
         return icon
     }()
     
-    private lazy var jobName: UILabel = {
+    private lazy var jobName: UILabel = { 
         let jobName = UILabel()
         jobName.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 45 - 30)
         jobName.textAlignment = .left

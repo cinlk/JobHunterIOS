@@ -57,7 +57,7 @@ extension UIViewController{
         
         UMSocialManager.default().share(to: type, messageObject: mesObj, currentViewController: self) { (data, error) in
             if error != nil{
-                if (error as! NSError).code == 2009{
+                if (error! as NSError).code == 2009{
                     print("操作取消")
                     return
                 }
@@ -65,7 +65,7 @@ extension UIViewController{
                 //                    showOnlyTextHub(message: "请先安装应用", view: view)
                 //                    print("出现错误\(error)")
             }else{
-                print(data)
+                //print(data)
             }
         }
     }

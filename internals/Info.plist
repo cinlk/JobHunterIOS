@@ -76,6 +76,8 @@
 	<string>1</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>baidumap</string>
+		<string>qqmap</string>
 		<string>alipay</string>
 		<string>mqqopensdkapiV3</string>
 		<string>mqqopensdkapiV2</string>

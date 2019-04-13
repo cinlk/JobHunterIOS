@@ -46,6 +46,7 @@ class MainPageViewMode {
       
         // table section 数据组合
         // onError SpeicalRecommand 返回任意空值
+        
         sections = Driver.combineLatest(self.combinationRecommands.asDriver(onErrorJustReturn: Mapper<SpecialRecommands>().map(JSON: [:])!), self.compuseJobItems.asDriver(onErrorJustReturn: [])){ comb, jobs in
             
             (comb, jobs)
@@ -82,25 +83,26 @@ class MainPageViewMode {
             if IsPullDown{
                 // 并发获取 结果
             
+                
                 Observable.zip(self.demoServer.getLastestCategory(),
                                self.demoServer.getMainRecommands(),
-                               self.demoServer.getRecommandJobs(offset: self.index, limit: 10)).subscribe(onNext: { (categories, recommands, jobs) in
+                               self.demoServer.getRecommandJobs(offset: self.index, limit: 10)).subscribe(onNext: { [weak self] (categories, recommands, jobs) in
                                 
                                 print("get recommands \(recommands)")
-                                self.banners.onNext(categories)
-                                self.combinationRecommands.onNext(recommands)
-                                self.moreData = jobs.isEmpty ? false : true
-                                self.allJobs = jobs
-                                self.compuseJobItems.onNext(self.allJobs)
-                                self.refreshStatus.onNext(.endHeaderRefresh)
+                                self?.banners.onNext(categories)
+                                self?.combinationRecommands.onNext(recommands)
+                                self?.moreData = jobs.isEmpty ? false : true
+                                self?.allJobs = jobs
+                                self?.compuseJobItems.onNext(self?.allJobs ?? [])
+                                self?.refreshStatus.onNext(.endHeaderRefresh)
                                 
                                 
-                               }, onError:{ error in
+                               }, onError:{ [weak self] (error) in
                                 
-                                self.refreshStatus.onNext(.error(err: error))
-                                self.banners.onError(error)
-                                self.combinationRecommands.onError(error)
-                                self.compuseJobItems.onError(error)
+                                self?.refreshStatus.onNext(.error(err: error))
+                                self?.banners.onError(error)
+                                self?.combinationRecommands.onError(error)
+                                self?.compuseJobItems.onError(error)
                                 
                                }).disposed(by: self.disposebag)
                 
@@ -109,14 +111,14 @@ class MainPageViewMode {
             }
             else{
                 
-                self.demoServer.getRecommandJobs(offset: self.index, limit: 10).subscribe(onNext: { (jobs) in
-                     self.moreData = jobs.isEmpty ? false : true
-                     self.allJobs += jobs
-                     self.compuseJobItems.onNext(self.allJobs)
+                self.demoServer.getRecommandJobs(offset: self.index, limit: 10).subscribe(onNext: { [weak self] (jobs) in
+                     self?.moreData = jobs.isEmpty ? false : true
+                     self?.allJobs += jobs
+                     self?.compuseJobItems.onNext(self?.allJobs ?? [])
                     
-                }, onError: { (err) in
-                    self.refreshStatus.onNext(.error(err: err))
-                    self.compuseJobItems.onError(err)
+                }, onError: {  [weak self] (err) in
+                    self?.refreshStatus.onNext(.error(err: err))
+                    self?.compuseJobItems.onError(err)
                     return
                 }).disposed(by: self.disposebag)
                 

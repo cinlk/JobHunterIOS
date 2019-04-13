@@ -34,15 +34,15 @@ class OnlineApplySearchVC: BaseViewController, SearchControllerDeletgate {
         didSet{
             
             self.filterModes.removeAll()
-            self.modes.forEach { (mode) in
+            self.modes.forEach { [weak self]   (mode) in
                 if (mode.businessField?.contains(condition.1) ?? false) || pass.contains(condition.1){
                     if condition.0.contains(pass[1]){
-                        self.filterModes.append(mode)
+                        self?.filterModes.append(mode)
                         return
                     }
-                    condition.0.forEach({ (c) in
+                    condition.0.forEach({  [weak self]  (c) in
                         if mode.citys?.contains(c) ?? false{
-                            self.filterModes.append(mode)
+                            self?.filterModes.append(mode)
                         }
                     })
                 }
@@ -56,7 +56,7 @@ class OnlineApplySearchVC: BaseViewController, SearchControllerDeletgate {
     
     private lazy var cityMenu:DropItemCityView = { [unowned self] in
         let c = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: cityMenuHeight))
-        c.passData  = { cities in
+        c.passData  = {[unowned self] cities in
             //self.filterFlag = true
             // 多个条件过滤 TODO
             self.condition.0 = cities
@@ -71,7 +71,7 @@ class OnlineApplySearchVC: BaseViewController, SearchControllerDeletgate {
     private lazy var kind:DropItemIndustrySectorView = { [unowned self] in
         let v = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - 240))
       
-        v.passData = { item in
+        v.passData = { [unowned self]  item in
             self.condition.1 = item
         }
         
@@ -182,7 +182,10 @@ extension OnlineApplySearchVC{
             }.disposed(by: dispose)
         
         
-        self.searchVM.onlineApplyRes.asDriver(onErrorJustReturn: []).drive(onNext: { modes in
+        self.searchVM.onlineApplyRes.asDriver(onErrorJustReturn: []).drive(onNext: {[weak self]   modes in
+            guard let `self` = self else {
+                return
+            }
             // 搜索初始值
             if self.modes.isEmpty{
                 self.modes = modes
@@ -194,12 +197,13 @@ extension OnlineApplySearchVC{
             
         }).disposed(by: self.dispose)
         
-        self.table.rx.itemSelected.subscribe(onNext: { (indexPath) in
-            let mode = self.filterModes[indexPath.row]
+        self.table.rx.itemSelected.subscribe(onNext: { [weak self] (indexPath) in
+            
+            let mode = self?.filterModes[indexPath.row]
             let vc = OnlineApplyShowViewController()
-            vc.uuid = mode.onlineApplyID ?? ""
+            vc.uuid = mode?.onlineApplyID ?? ""
             vc.hidesBottomBarWhenPushed = true
-        self.presentingViewController?.navigationController?.pushViewController(vc, animated: true)
+            self?.presentingViewController?.navigationController?.pushViewController(vc, animated: true)
         }).disposed(by: self.dispose)
     }
     

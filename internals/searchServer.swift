@@ -40,7 +40,7 @@ extension SearchTarget: TargetType{
         switch self {
         case .getHotestRecords(let type):
             return "search/word/\(type)"
-        case .searchKeyWords(let word, let type):
+        case .searchKeyWords(_,_):
             return "search/similar"
         case .searchOnlineAppy(_):
             return "search/online"

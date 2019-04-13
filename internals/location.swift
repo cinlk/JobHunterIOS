@@ -19,19 +19,34 @@ class UserLocationManager: NSObject, CLLocationManagerDelegate{
         super.init()
         self.col = CLLocationManager()
         self.col?.desiredAccuracy =  kCLLocationAccuracyBest
-        self.col?.distanceFilter = kCLLocationAccuracyKilometer
+        self.col?.distanceFilter = 10
+        
+        
         self.col?.delegate = self
         
     }
     
     
-    open func getLocation(){
-        if SingletoneClass.shared.userLocationPermit{
-            self.col?.startUpdatingLocation()
-        }else{
-            self.col?.requestAlwaysAuthorization()
-            self.col?.requestWhenInUseAuthorization()
+    open func getLocation() -> Bool {
+        
+        if CLLocationManager.locationServicesEnabled() == false {
+            return false
         }
+        
+        switch CLLocationManager.authorizationStatus() {
+        // 第一次使用时 会显示授权
+        case .notDetermined:
+            self.col?.requestAlwaysAuthorization()
+            
+        case .denied:
+            return false
+        case .restricted:
+            return false
+        default:
+            self.col?.startUpdatingLocation()
+            
+        }
+        return true
         
     }
     
@@ -45,14 +60,36 @@ class UserLocationManager: NSObject, CLLocationManagerDelegate{
         
         geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
             if  error == nil{
-                if let place = placemarks?.first{
-                    if let city = place.locality,   let zone =  place.subLocality,  let address = place.name{
-                          SingletoneClass.shared.setAddress(city: city, zone: zone, address: address)
+                //print(placemarks?.count)
+                if let place = placemarks?.last{
+                    //print(place.name)
+                    var address = ""
+                    if let country = place.country {
+                        address.append("\(country) ")
                     }
-                
-                    print("地址\(place.name)")
-                    print("城市\(place.locality)")
-                    print("区\(place.subLocality)")
+                    if let administrativeArea = place.administrativeArea {
+                        address.append("\(administrativeArea)")
+                    }
+                    if let subAdministrativeArea = place.subAdministrativeArea {
+                        address.append("\(subAdministrativeArea)")
+                    }
+                    if let locality = place.locality {
+                        address.append("\(locality)")
+                    }
+                    if let subLocality = place.subLocality {
+                        address.append("\(subLocality)")
+                    }
+                    if let thoroughfare = place.thoroughfare {
+                        address.append("\(thoroughfare)")
+                    }
+                    // 获取不到门牌 ???
+                    if let subThoroughfare = place.subThoroughfare {
+                        address.append("门牌：\(subThoroughfare)\n")
+                    }
+                    
+                   
+                    //print(address)
+                    SingletoneClass.shared.setAddress(address: address)
                 
                 }else{
                     print("获取不到位置")
@@ -75,13 +112,13 @@ extension UserLocationManager{
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
         
-        print("find location")
-        if let location:CLLocation = locations.last, location.horizontalAccuracy > 0{
+        print("find location \(locations.count)")
+        if let location:CLLocation = locations.first, location.horizontalAccuracy > 0{
             SingletoneClass.shared.setUserLocation(location: location)
             
             print("纬度\(location.coordinate.latitude)")
             print("经度\(location.coordinate.longitude)")
-            
+            //print(manager.location?.coordinate.latitude, manager.location?.coordinate.longitude)
             getCity(location: location)
         }
         
@@ -96,10 +133,12 @@ extension UserLocationManager{
         case .authorizedAlways:
             fallthrough
         case .authorizedWhenInUse:
-            SingletoneClass.shared.setUserLocation(permit: true)
-        default:
-            SingletoneClass.shared.setUserLocation(permit: false)
+            self.col?.startUpdatingLocation()
+            //SingletoneClass.shared.setUserLocation(permit: true)
             
+        default:
+            //SingletoneClass.shared.setUserLocation(permit: false)
+            break
         }
         
         
@@ -124,7 +163,7 @@ extension UserLocationManager{
         default:
             break
         }
-        print("get location error", error)
+        print("get location error \(String.init(describing: error))")
         
         manager.stopUpdatingLocation()
     }

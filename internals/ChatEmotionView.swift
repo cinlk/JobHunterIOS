@@ -37,6 +37,7 @@ class ChatEmotionView: UIView {
         data.append(ChatEmotionHelper.getAllEmotions())
         data.append(ChatEmotionHelper.getAllEmotion2(emotionName:"emotion2", type: ".gif", vType: .smallGif))
         data.append(ChatEmotionHelper.getAllEmotion2(emotionName: "emotion3", type: ".gif", vType: .bigGif))
+        data.append(ChatEmotionHelper.getAllEmotion2(emotionName: "emotion4", type: ".gif", vType: .bigGif))
         
         return data
         
@@ -236,7 +237,10 @@ extension ChatEmotionView: UICollectionViewDelegate,UICollectionViewDataSource, 
             let cell = collectView.dequeueReusableCell(withReuseIdentifier: baseEmotionView.identity(), for: indexPath) as! baseEmotionView
             cell.emotions = datas[0]
             // 插入标签到输入框
-            cell.insertEmotion = { emo in
+            cell.insertEmotion = { [weak self] emo in
+                guard let `self` = self else {
+                    return
+                }
                 self.delegate?.chatEmotionView(emotionView: self, didSelectedEmotion: emo)
                 
             }
@@ -246,7 +250,10 @@ extension ChatEmotionView: UICollectionViewDelegate,UICollectionViewDataSource, 
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: gifEmotionView.identity(), for: indexPath) as! gifEmotionView
             cell.emotions = datas[indexPath.row]
             // 区分不同类型 gif
-            cell.sendGif = { emo in
+            cell.sendGif = {  [weak self] emo in
+                guard let `self` = self else {
+                    return
+                }
                 self.delegate?.chatEmotionGifSend(emotionView: self, didSelectedEmotion: emo, type: emo.type)
             }
             return cell

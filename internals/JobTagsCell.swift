@@ -89,7 +89,7 @@ extension JobTagsCell{
         
         btn.isSelected = true
         btn.backgroundColor = UIColor.blue
-        currentSelected = btns.index(of: btn)!
+        currentSelected = btns.firstIndex(of: btn)!
         
         // 消息通知刷新tableview
         if let tag = btn.titleLabel?.text{

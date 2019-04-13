@@ -70,7 +70,7 @@ class ResetPasswordViewController: UIViewController {
         return tx
     }()
     
-    private lazy var tapGestur:UITapGestureRecognizer = {
+    private lazy var tapGestur:UITapGestureRecognizer = {  [unowned self] in
         let tap = UITapGestureRecognizer()
         tap.numberOfTapsRequired  = 1
         tap.addTarget(self, action: #selector(cancelEdit))
@@ -84,7 +84,7 @@ class ResetPasswordViewController: UIViewController {
     
     var isResetPwd:Bool = false
     
-    private var dispose:DisposeBag = DisposeBag()
+    private lazy var dispose:DisposeBag = DisposeBag()
     
     private var loginViewModel =  LoginViewModel()
     
@@ -153,23 +153,27 @@ extension ResetPasswordViewController{
         enableverifyBtn.bind(to: verifyBtn.rx.rxEnable).disposed(by: dispose)
         
         // 明文密码 显示
-        _ = self.lash.rx.tap.takeUntil(self.rx.deallocated).debug().subscribe(onNext: {
+        _ = self.lash.rx.tap.takeUntil(self.rx.deallocated).debug().subscribe(onNext: {  [weak self] in
+            guard let `self` = self else {
+                return
+            }
             self.lash.isSelected = !self.lash.isSelected
             self.lash.tintColor =  self.lash.isSelected ? UIColor.orange : UIColor.lightGray
             self.inputPassword.isSecureTextEntry = !self.lash.isSelected
         })
         
         // 获取验证码
-        self.verifyBtn.rx.tap.map({
-            self.codeNumber.start()
-        }).flatMapLatest {  _ in
+        self.verifyBtn.rx.tap.map({  [weak self] in
+            self?.codeNumber.start()
+        }).flatMapLatest {   [unowned self]  _ in
             self.loginViewModel.sendCode(phone: self.inputAccount.text ?? "", self.isResetPwd).asDriver(onErrorJustReturn: Mapper<ResponseModel<CodeSuccess>>().map(JSON: [:])!)
-            }.subscribe(onNext: { res in
+            }.subscribe(onNext: {   [weak self] res in
+                
                 if  let code = res.code,  HttpCodeRange.filterSuccessResponse(target: code){
                     return
                 }
-                self.codeNumber.stop()
-                self.view.showToast(title: res.returnMsg ??  "获取验证码失败", customImage: nil, mode: .text)
+                self?.codeNumber.stop()
+                self?.view.showToast(title: res.returnMsg ??  "获取验证码失败", customImage: nil, mode: .text)
                 
             }).disposed(by: self.dispose)
     
@@ -190,24 +194,26 @@ extension ResetPasswordViewController{
         
         if isResetPwd{
             // 重置密码
-            _ = resetBtn.rx.tap.throttle(0.5, scheduler: MainScheduler.instance).filter({
-                self.isResetPwd
-            }).flatMapLatest {  _ in
+            _ = resetBtn.rx.tap.throttle(0.5, scheduler: MainScheduler.instance).filter({  [weak self] in
+                self?.isResetPwd ?? false
+            }).flatMapLatest {    [unowned self] _ in
                 
                 self.loginViewModel.resetPassword(account: self.inputAccount.text ?? "", code: self.inputVerifyCode.text ?? "", pwd: self.inputPassword.text ?? "").asDriver(onErrorJustReturn: ResponseModel<LoginSuccess>(JSON: [:])!)
-                }.takeUntil(self.rx.deallocated).subscribe(onNext: { res in
-                    
+                }.takeUntil(self.rx.deallocated).subscribe(onNext: {  [weak self]  res in
+                    guard let `self` = self else {
+                        return
+                    }
                     
                     guard let code = res.code, HttpCodeRange.filterSuccessResponse(target: code), let token = res.body?.token else {
                         self.view.showToast(title: res.returnMsg ?? "设置密码失败", customImage: nil, mode: .text)
                         return
                     }
-                    self.loginViewModel.getUserInfo(token: token).asDriver(onErrorJustReturn: "").drive(onNext: { json in
+                    self.loginViewModel.getUserInfo(token: token).asDriver(onErrorJustReturn: "").drive(onNext: {  [weak self] json in
                         guard let j = json as? [String:Any], let  data = j["body"] as? [String:Any] else {
-                            self.view.showToast(title: "获取用户信息失败", customImage: nil, mode: .text)
+                            self?.view.showToast(title: "获取用户信息失败", customImage: nil, mode: .text)
                             return
                         }
-                        GlobalUserInfo.shared.baseInfo(token: token, account: self.inputAccount.text! , pwd: self.inputPassword.text!, lid: res.body?.leanCloudId ?? "", data: data)
+                        GlobalUserInfo.shared.baseInfo(token: token, account: self?.inputAccount.text ?? "" , pwd: self?.inputPassword.text ?? "", lid: res.body?.leanCloudId ?? "", data: data)
                         
                     }).disposed(by: self.dispose)
                     
@@ -217,12 +223,14 @@ extension ResetPasswordViewController{
   
         }else{
             // 注册账号
-            _ = resetBtn.rx.tap.throttle(0.5, scheduler: MainScheduler.instance).filter({
-                !self.isResetPwd
-            }).flatMapLatest({ _ in
+            _ = resetBtn.rx.tap.throttle(0.5, scheduler: MainScheduler.instance).filter({  [weak self] in
+                !(self?.isResetPwd ?? true)
+            }).flatMapLatest({  [unowned self] _ in
                 self.loginViewModel.registryAccount(account: self.inputAccount.text ?? "", code: self.inputVerifyCode.text ?? "", pwd: self.inputPassword.text ?? "").asDriver(onErrorJustReturn: Mapper<ResponseModel<LoginSuccess>>().map(JSON: [:])!)
-            }).takeUntil(self.rx.deallocated).subscribe(onNext: { res in
-                
+            }).takeUntil(self.rx.deallocated).subscribe(onNext: {  [weak self]res in
+                guard let `self` = self else{
+                    return
+                }
                 guard let code = res.code, let token = res.body?.token, HttpCodeRange.filterSuccessResponse(target: code) else  {
                     //self.view.showToast(title: "注册失败", customImage: nil, mode: .text)
                     // 跳转
@@ -231,12 +239,12 @@ extension ResetPasswordViewController{
                 }
                 // 注册成功
                 
-                self.loginViewModel.getUserInfo(token: token).asDriver(onErrorJustReturn: "").drive(onNext: { json in
+                self.loginViewModel.getUserInfo(token: token).asDriver(onErrorJustReturn: "").drive(onNext: {  [weak self] json in
                     guard let j = json as? [String:Any], let  data = j["body"] as? [String:Any] else {
-                        self.view.showToast(title: "获取用户信息失败", customImage: nil, mode: .text)
+                        self?.view.showToast(title: "获取用户信息失败", customImage: nil, mode: .text)
                         return
                     }
-                    GlobalUserInfo.shared.baseInfo(token: token, account: self.inputAccount.text! , pwd: self.inputPassword.text!, lid: res.body?.leanCloudId ?? "", data: data)
+                    GlobalUserInfo.shared.baseInfo(token: token, account: self?.inputAccount.text ?? "" , pwd: self?.inputPassword.text ?? "", lid: res.body?.leanCloudId ?? "", data: data)
                     
                 }).disposed(by: self.dispose)
                 

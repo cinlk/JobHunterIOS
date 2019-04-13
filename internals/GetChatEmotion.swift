@@ -22,6 +22,14 @@ class GetChatEmotion: NSObject {
         baseEmotion = ChatEmotionHelper.getAllEmotions()
         gifEmotion2 = ChatEmotionHelper.getAllEmotion2(emotionName: "emotion2", type: ".gif")
         gifEmotion3 = ChatEmotionHelper.getAllEmotion2(emotionName: "emotion3", type: ".gif")
+        gifEmotion3.append(contentsOf: ChatEmotionHelper.getAllEmotion2(emotionName: "emotion4", type: ".gif"))
+    }
+    
+    deinit {
+        print("deinit GetChatEmotion")
+        baseEmotion = []
+        gifEmotion2 = []
+        gifEmotion3 = []
     }
     // MARK:- 查找属性字符串的方法
     

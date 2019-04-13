@@ -36,7 +36,7 @@ class DashboardViewController: BaseViewController, UISearchControllerDelegate, U
     
     
     // 搜索控制控件
-    private lazy var searchController:BaseSearchViewController? = {
+    private lazy var searchController:BaseSearchViewController? = { [unowned self] in
         let sc = BaseSearchViewController.init(searchResultsController: SearchResultController())
         sc.delegate = self
         sc.searchType = .company
@@ -60,7 +60,7 @@ class DashboardViewController: BaseViewController, UISearchControllerDelegate, U
         }
     }
     // 附近职位btn
-    private lazy var  nearBtn:UIButton = {
+    private lazy var  nearBtn:UIButton = { [unowned self] in
         
         let btn = UIButton.init(frame: CGRect.zero)
         
@@ -176,6 +176,9 @@ class DashboardViewController: BaseViewController, UISearchControllerDelegate, U
     }
     
   
+    deinit {
+        print("deinit dashboardvc")
+    }
     
     override func setViews(){
         
@@ -483,12 +486,12 @@ extension DashboardViewController{
                     cell.SectionTitle.font = UIFont.systemFont(ofSize: 16)
                     
                     
-                    cell.action = {
+                    cell.action = { [weak self] in
                         let subscribleView = subscribleItem()
                         //subscribleView.hidesBottomBarWhenPushed = true
                         
                         //self.navigationController?.pushViewController(subscribleView, animated: true)
-                        self.navigateTo(vc: subscribleView)
+                        self?.navigateTo(vc: subscribleView)
                     }
                     cell.contentView.backgroundColor = UIColor.white
                     return cell
@@ -517,12 +520,12 @@ extension DashboardViewController{
                 //cell.setItems(width: GlobalConfig.ScreenW/4, height: JobFiledH, items: fields)
                cell.setItems(width: GlobalConfig.ScreenW/4, items: fields)
                 
-               cell.selectedItem = { (btn) in
+               cell.selectedItem = { [weak self]  (btn) in
                     let spe = SpecialJobVC.init(kind: btn.titleLabel?.text ?? "")
                     //spe.queryName = btn.titleLabel?.text
                     //spe.hidesBottomBarWhenPushed = true
                     //self.navigationController?.pushViewController(spe, animated: true)
-                    self.navigateTo(vc: spe)
+                    self?.navigateTo(vc: spe)
                 }
                 
                 return cell
@@ -539,12 +542,12 @@ extension DashboardViewController{
                 //cell.setItems(width: GlobalConfig.ScreenW/3 - 20, height: ColumnH, items: columnes)
                 cell.setItems(width: GlobalConfig.ScreenW/3 - 20, items: columnes)
                 
-                cell.selectedItem = { (btn) in
+                cell.selectedItem = {  [weak self]   (btn) in
                     let web = BaseWebViewController()
                     web.mode = columnes[btn.tag].Link
                     //web.hidesBottomBarWhenPushed = true
                     //self.navigationController?.pushViewController(web, animated: true)
-                    self.navigateTo(vc: web)
+                    self?.navigateTo(vc: web)
                     
                 }
                 
@@ -555,17 +558,17 @@ extension DashboardViewController{
                
                 cell.mode = (title:"热门宣讲会",item:meets)
                 // 查看所有热门宣讲会
-                cell.selectedIndex = {
-                    self.tabBarController?.selectedIndex = 1
+                cell.selectedIndex = { [weak self] in
+                    self?.tabBarController?.selectedIndex = 1
                     //self.tabBarController?.viewControllers[1]
-                    self.perform(#selector(self.moveToCareerTalk), with: nil, afterDelay: TimeInterval(0.5))
+                    self?.perform(#selector(self?.moveToCareerTalk), with: nil, afterDelay: TimeInterval(0.5))
                    
                 }
                 // 查看具体的宣讲会
-                cell.selectItem = { mode in
+                cell.selectItem = {  [weak self] (mode) in
                     let talkShow = CareerTalkShowViewController()
                     talkShow.meetingID = mode.meetingID!
-                    self.navigateTo(vc: talkShow)
+                    self?.navigateTo(vc: talkShow)
                 }
                 
                 
@@ -576,10 +579,10 @@ extension DashboardViewController{
                 cell.mode = (title:"热门网申", items: applys)
                 
                // cell.sel
-                cell.selectedIndex = { name in
+                cell.selectedIndex = {  [weak self] (name) in
                     // 切换tab 的item
-                    self.tabBarController?.selectedIndex = 1
-                    self.perform(#selector(self.showOnlineApply), with: name, afterDelay: TimeInterval(0.5))
+                    self?.tabBarController?.selectedIndex = 1
+                    self?.perform(#selector(self?.showOnlineApply), with: name, afterDelay: TimeInterval(0.5))
                 }
                 return cell
             //MARK  不显示 job 数据
@@ -634,19 +637,19 @@ extension DashboardViewController{
     private func loadViewModel(){
         
         // 错误界面触发 重新加载数据
-        self.errorView.tap.drive(onNext: { _ in
-            self.reload()
+        self.errorView.tap.drive(onNext: { [weak self]  _ in
+            self?.reload()
         }).disposed(by: self.disposebag)
         
         // 周边按钮
-        self.nearBtn.rx.tap.asDriver().drive(onNext: { _ in
+        self.nearBtn.rx.tap.asDriver().drive(onNext: { [weak self] _ in
             //  地址位置授权判断 TODO
             //let map = testMapViewController()
             //self.navigationController?.pushViewController(map, animated: true)
             let near = NearByViewController()
             
             //self.navigationController?.pushViewController(near, animated: true)
-            self.navigateTo(vc: near)
+            self?.navigateTo(vc: near)
 //            if  let _ = SingletoneClass.shared.getAddress(){
 //                let show = NearByViewController()
 //                //show.hidesBottomBarWhenPushed = true
@@ -658,11 +661,11 @@ extension DashboardViewController{
         }).disposed(by: self.disposebag)
         
         // 搜索vc 显示
-       _ =  self.searchController?.rx.willPresent.takeUntil(self.rx.deallocated).subscribe(onNext: {
-                self.presentSearchControllFlag = true
+       _ =  self.searchController?.rx.willPresent.takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] in
+                self?.presentSearchControllFlag = true
         })
-       _ = self.searchController?.rx.didDismiss.takeUntil(self.rx.deallocated).subscribe(onNext: {
-                self.presentSearchControllFlag = false
+       _ = self.searchController?.rx.didDismiss.takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] in
+                self?.presentSearchControllFlag = false
         })
         
         //
@@ -670,17 +673,17 @@ extension DashboardViewController{
         
         self.tables.rx.setDelegate(self).disposed(by: disposebag)
         
-        self.tables.rx.itemSelected.subscribe(onNext: { (indexpath) in
-            self.tables.deselectRow(at: indexpath, animated: true)
+        self.tables.rx.itemSelected.subscribe(onNext: { [weak self]  (indexpath) in
+            self?.tables.deselectRow(at: indexpath, animated: true)
             if indexpath.section == 0{
                 
                 //  新闻专栏标题  不超过4个 TODO
-                if let cell = self.tables.cellForRow(at: indexpath) as? ScrollerNewsCell, let titles = cell.mode{
+                if let cell = self?.tables.cellForRow(at: indexpath) as? ScrollerNewsCell, let titles = cell.mode{
                     let news = MagazMainViewController()
                     news.titles = titles
                     //news
                     //self.navigationController?.pushViewController(news, animated: true)
-                    self.navigateTo(vc: news)
+                    self?.navigateTo(vc: news)
                 }
                 
                 
@@ -689,7 +692,7 @@ extension DashboardViewController{
             else if indexpath.section == 1{
                 return
             }
-            else if  let cell = self.tables.cellForRow(at: indexpath) as? CommonJobTableCell, let data = cell.mode{
+            else if  let cell = self?.tables.cellForRow(at: indexpath) as? CommonJobTableCell, let data = cell.mode{
                 
                 let detail = JobDetailViewController()
                 detail.job = (data.jobId ?? "", data.kind ?? .none)
@@ -697,7 +700,7 @@ extension DashboardViewController{
                 //detail.jobID = jobModel.id!
                 //detail.kind = (id: jobModel.id!, type: jobModel.kind!)
                 //self.navigationController?.pushViewController(detail, animated: true)
-                self.navigateTo(vc: detail)
+                self?.navigateTo(vc: detail)
             }
             
         }).disposed(by: disposebag)

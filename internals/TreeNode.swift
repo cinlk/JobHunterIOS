@@ -395,7 +395,7 @@ class SelectItemUtil {
                 let node = component.init(type: .children, key: "不限", parent: parent, item: [], point:(level,index))
                 tree.buildData(node: node)
                 index += 1
-                res.remove(at: res.index(of: "不限")!)
+                res.remove(at: res.firstIndex(of: "不限")!)
             }
             for item in res{
                 let node = component.init(type: .children, key: item, parent: parent, item: [], point:(level,index))

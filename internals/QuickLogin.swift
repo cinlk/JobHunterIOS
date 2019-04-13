@@ -13,7 +13,7 @@ import Moya
 
 class LoginViewModel{
     
-    private var dispose:DisposeBag = DisposeBag()
+    //private var dispose:DisposeBag = DisposeBag()
     
     // server handler
     private var server = LoginServer.shared

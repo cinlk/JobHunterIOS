@@ -48,7 +48,7 @@ final class clearAllView:UIView {
 
     private weak  var vc:SearchRecordeViewController?
     
-    private lazy var lb:UILabel = {
+    private lazy var lb:UILabel = { [unowned self] in
         let lb = UILabel.init(frame: CGRect.zero)
         lb.font = UIFont.systemFont(ofSize: 16)
         lb.textColor = UIColor.lightGray
@@ -57,20 +57,26 @@ final class clearAllView:UIView {
         lb.textAlignment = .center
         lb.isUserInteractionEnabled = true
         
+        
+        if  let vc = self.vc  {
+            let ges = UITapGestureRecognizer()
+            ges.addTarget(vc, action: #selector(self.vc?.deleteAll))
+            lb.addGestureRecognizer(ges)
+        }
+        
+       
         return lb
     }()
     
-    private lazy var gesture:UITapGestureRecognizer = {
-        let ges = UITapGestureRecognizer()
-        
-        ges.addTarget(self.vc, action: #selector(self.vc?.deleteAll))
-        return ges
-    }()
+//    private lazy var gesture:UITapGestureRecognizer = { [unowned self] in
+//
+//        return ges
+//    }()
     
     convenience init(frame: CGRect, vc:SearchRecordeViewController){
         self.init(frame: frame)
         self.vc = vc
-        lb.addGestureRecognizer(self.gesture)
+        //lb.addGestureRecognizer(self.gesture)
     }
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -136,13 +142,13 @@ class SearchRecordeViewController: UIViewController {
             let h = TableViewHeader.init(frame: CGRect.zero)
             h.backgroundColor = UIColor.white
             h.label.text = headeTitle
-            h.chooseItem = { (word) in
-                self.resultDelegate?.ShowSearchResults(word: word)
+            h.chooseItem = { [weak self] (word) in
+                self?.resultDelegate?.ShowSearchResults(word: word)
             }
             return h
     }()
     
-    private lazy var clearAllLabel: clearAllView = {
+    private lazy var clearAllLabel: clearAllView = { [unowned self] in
             let v = clearAllView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 40), vc: self)
             return v
     }()
@@ -278,13 +284,17 @@ extension SearchRecordeViewController{
         
         
         
-        NotificationCenter.default.rx.notification(NotificationName.searchType).subscribe(onNext: { (notify) in
+        NotificationCenter.default.rx.notification(NotificationName.searchType).subscribe(onNext: {  [weak self] (notify) in
+            guard let `self` = self else {
+                return
+            }
+            
             if let searchType = notify.userInfo?["searchType"] as? searchItem{
                 // 搜索热门关键词
                 //searchType.getHotestWords()
                 // TODO 缓存失效时间
                 //self.hotItem = ["测试1", "测试2", "测试3"]
-                self.searchVM.searchLatestHotRecord(type: searchType.searchType).debug().subscribe(onNext: { (obj) in
+                self.searchVM.searchLatestHotRecord(type: searchType.searchType).debug().subscribe(onNext: { [weak self] (obj) in
                     if let code = obj.code, HttpCodeRange.filterSuccessResponse(target: code), let body = obj.body{
                         var tmp:[String] = []
                         for  (_, item) in  body.enumerated(){
@@ -293,7 +303,7 @@ extension SearchRecordeViewController{
                             }
                             
                         }
-                        self.hotItem = tmp
+                        self?.hotItem = tmp
                     }
                 }).disposed(by: self.dispose)
                 
@@ -308,20 +318,20 @@ extension SearchRecordeViewController{
         }).disposed(by: self.dispose)
         
         // 选择某个词
-        filterTable.rx.modelSelected(String.self).subscribe(onNext: { (str) in
-             self.resultDelegate?.ShowSearchResults(word: str)
+        filterTable.rx.modelSelected(String.self).subscribe(onNext: { [weak self] (str) in
+             self?.resultDelegate?.ShowSearchResults(word: str)
         }).disposed(by: dispose)
         
-        historyTable.rx.modelSelected(String.self).subscribe(onNext: { (str) in
+        historyTable.rx.modelSelected(String.self).subscribe(onNext: {  [weak self] (str) in
             if str == GlobalConfig.searchTopWord{
                 return
             }
-            self.resultDelegate?.ShowSearchResults(word: str)
+            self?.resultDelegate?.ShowSearchResults(word: str)
         }).disposed(by: dispose)
         
         
-        searchItems.share().asDriver(onErrorJustReturn: []).drive(onNext: { items in
-             self.historyTable.tableFooterView?.isHidden =  items.count == 0
+        searchItems.share().asDriver(onErrorJustReturn: []).drive(onNext: { [weak self]  items in
+             self?.historyTable.tableFooterView?.isHidden =  items.count == 0
         
             }).disposed(by: dispose)
         
@@ -353,7 +363,10 @@ extension SearchRecordeViewController{
             //btn.tag = cIdx.row - 1
             
             //btn.addTarget(self, action: #selector(self.removeItem), for: .touchUpInside)
-            _ = btn.rx.tap.takeUntil(self.rx.deallocated).subscribe(onNext: { _ in
+            _ = btn.rx.tap.takeUntil(self.rx.deallocated).subscribe(onNext: {  [weak self] _ in
+                guard let `self` = self else {
+                    return
+                }
                 
                 self.searchTable.deleteSearch(type: self.searchType,name: element)
                 self.searchItems.onNext(self.searchTable.getSearches(type: self.searchType))

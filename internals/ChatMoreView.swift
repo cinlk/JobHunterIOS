@@ -13,6 +13,7 @@ enum ChatMoreType:String{
     case camera = "camera"
     //case mycard = "personCard"
     case feedback = "text"// 快捷回复
+    case location = "location"
     case voice = "voice"
     
 }

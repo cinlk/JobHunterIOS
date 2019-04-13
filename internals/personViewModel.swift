@@ -31,8 +31,16 @@ class  personModelManager {
         // 从服务器湖获取数据
         self.currentResumeID = resumeID
        
-        mode[currentResumeID] = ResumeMode(JSON: ["educationInfo":[],"internInfo":[],"skills":[],"projectInfo":[],
-                                     "studentWorkInfo":[],"practiceInfo":[],"resumeOtherInfo":[],"estimate": selfEstimateModel(JSON: [:])?.toJSON()])
+        mode[currentResumeID] = ResumeMode(JSON: [
+            "educationInfo":[],
+            "internInfo":[],
+            "skills":[],
+            "projectInfo":[],
+            "studentWorkInfo":[],
+            "practiceInfo":[],
+            "resumeOtherInfo":[],
+            "estimate": selfEstimateModel(JSON: [:])?.toJSON() ?? [:]
+            ])
         
         integrity = 58
         

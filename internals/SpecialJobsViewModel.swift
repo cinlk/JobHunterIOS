@@ -30,12 +30,13 @@ class SpecailJobViewModel {
         self.kind = kind
         self.limit = limit
         
-        refresh.share().do(onNext:{ b in
+        refresh.share().do(onNext:{ [unowned self] b in
+            
                 self.offset = b ? 0 : self.offset + 1
-        }).flatMapLatest{ (b)  in
+        }).flatMapLatest{ [unowned self] (b)  in
                 return self.httpServer.getJobsBy(kind: self.kind, offset: self.offset, limit: self.limit)
                 
-            }.subscribe(onNext: { (model) in
+            }.subscribe(onNext: { [unowned self]  (model) in
                 if let code = model.code, HttpCodeRange.filterSuccessResponse(target: code) {
                     let res = model.body ?? []
                     if self.refresh.value == true{

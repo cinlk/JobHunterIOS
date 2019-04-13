@@ -44,8 +44,7 @@ extension MessegeHttpReq: TargetType{
             return self.prefix + "talkWith/\(userId)"
         case .newConversation(_,_,_):
             return self.prefix + "conversation"
-        default:
-            return ""
+      
         }
     }
     

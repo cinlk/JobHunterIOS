@@ -223,10 +223,14 @@ extension JuBaoViewController: UITextViewDelegate{
             let textNum = textContent?.count
             
             //截取200个字
-            if textNum! > TOTAL_NUM {
-                let index = textContent?.index((textContent?.startIndex)!, offsetBy: TOTAL_NUM)
-                let str = textContent?.substring(to: index!)
-                textView.text = str
+            if textNum ?? 0 > TOTAL_NUM {
+                if let index = textContent?.index(textContent!.startIndex, offsetBy: TOTAL_NUM){
+                    let str = textContent![..<index]
+                    textView.text = String.init(str)
+                }
+              
+                //let str = textContent?.substring(to: index!)
+              
             }
         }
         

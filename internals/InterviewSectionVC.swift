@@ -60,7 +60,7 @@ extension InterviewSectionVC{
             Thread.sleep(forTimeInterval: 3)
             
             for _ in 0..<10{
-                if let data = PostArticleModel(JSON: ["id":"dqwd-dqwdqwd","title":"标题题","authorID":"dqwddqwdd","authorName":"我的名字","colleage":"北京大学","authorIcon":"chicken","createTime":Date().timeIntervalSince1970,"kind":self?.type?.rawValue,"thumbUP":2303,"reply":101]){
+                if let data = PostArticleModel(JSON: ["id":"dqwd-dqwdqwd","title":"标题题","authorID":"dqwddqwdd","authorName":"我的名字","colleage":"北京大学","authorIcon":"chicken","createTime":Date().timeIntervalSince1970,"kind":self?.type?.rawValue ?? "none","thumbUP":2303,"reply":101]){
                    
                     self?.modes.append(data)
                 }

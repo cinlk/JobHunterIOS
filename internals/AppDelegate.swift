@@ -26,16 +26,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
        
         
         // 获取的初始化数据？
-        SingletoneClass.shared.getInitialData { (b) in
+        SingletoneClass.shared.getInitialData { [weak self] (b) in
             
             let enter = EnterAppViewController()
-            self.window = UIWindow(frame: UIScreen.main.bounds)
-            self.window?.makeKeyAndVisible()
-            self.window?.rootViewController = enter
+            self?.window = UIWindow(frame: UIScreen.main.bounds)
+            self?.window?.makeKeyAndVisible()
+            self?.window?.rootViewController = enter
         
         }
         //  获取地理位置
-        UserLocationManager.shared.getLocation()
+        if  UserLocationManager.shared.getLocation() == false {
+            print("地理位置不可用")
+        }
         
         // 初始化数据库
         //_ = SqliteManager.shared
@@ -164,6 +166,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
     }
+    
     
 //    @objc func logout(){
 //        if GlobalUserInfo.shared.isLogin{

@@ -44,34 +44,29 @@ extension UserDefaults{
 
 // 记录当前用户地理位置 城市 和区
 fileprivate struct CurrentUserAddress {
-    
-    private var city:String
-    private var zone:String
+
+
     private var address:String
     private var userLocation: CLLocation
-    
+
     init() {
-        self.city = ""
-        self.zone = ""
         self.address = ""
         self.userLocation = CLLocation.init(latitude: CLLocationDegrees.init(), longitude: CLLocationDegrees.init())
     }
-    
-    mutating func set(city:String, zone:String, address:String){
-        self.city = city
-        self.zone = zone
+
+    mutating func set(address:String){
         self.address = address
     }
-    
+
     mutating func setLocation(location: CLLocation){
         self.userLocation = location
     }
-    
+
     //
     func getAddress() -> String?{
         return self.address  == "" ? nil : self.address
     }
-    
+
     func getLocation() -> CLLocation{
         return self.userLocation
     }
@@ -171,12 +166,12 @@ class GlobalUserInfo: NSObject {
     private static let single = GlobalUserInfo()
     
     // leancloud user
-    private var imClient:AVIMClient?
+    private  var imClient:AVIMClient?
     //private var connected:Bool = false
     private var leanCloudUserId:String?
     
     // 接收消息处理
-    internal let receiveMessage: PublishRelay<AVIMTypedMessage> =  PublishRelay<AVIMTypedMessage>.init()
+    //internal let receiveMessage: PublishRelay<AVIMTypedMessage> =  PublishRelay<AVIMTypedMessage>.init()
 
     
     
@@ -341,14 +336,14 @@ class GlobalUserInfo: NSObject {
             query.order(byDescending: "createdAt")
             // 不查本地缓存
             query.cachePolicy  = .ignoreCache
-            query.findConversations { (cons, error) in
+            query.findConversations { [weak self] (cons, error) in
                 if let c = cons?.first{
                    
                     completed(c, error)
           
                 }else{
-                    self.imClient?.createConversation(withName: conversationName, clientIds: [talkWith], callback: { (cons, err) in
-                        print("create conversation \(cons) \(err)")
+                    self?.imClient?.createConversation(withName: conversationName, clientIds: [talkWith], callback: { (cons, err) in
+                        print("create conversation \(String(describing: cons)) \(String(describing: err))")
                         completed(cons, err)
                     })
                 }
@@ -412,17 +407,17 @@ extension GlobalUserInfo: AVIMClientDelegate{
             option.priority = .high
             
             let replyText = AVIMTextMessage.init(content: "reply")
-            replyText.text = "你好\(txt?.text)"
+            replyText.text = "你好\(String(describing: txt?.text))"
             replyText.attributes = nil
             
-            print("receive msg from \(sender) with content \(txt?.text)")
+            print("receive msg from \(sender) with content \(String(describing: txt?.text))")
             conversation.send(replyText, option: option, progressBlock: { (progress) in
                 print(progress)
             }) { (success, error) in
-                print(success, error)
+                //print(success, error)
             }
         case .image:
-            let im =  message as? AVIMImageMessage
+            let _ =  message as? AVIMImageMessage
             
         default:
             break
@@ -446,7 +441,7 @@ class SingletoneClass {
     }
     
     
-    fileprivate var messageHi:FirstHelloMsg?
+    fileprivate  var messageHi:FirstHelloMsg?
     
     
      fileprivate lazy var currentUserAddress: CurrentUserAddress = {
@@ -464,6 +459,9 @@ class SingletoneClass {
             }
         }
     }
+    
+    // 用户地址
+    //public var userAddress:String?
     
     // 引导界面数据
     public var guidanceData:ResponseArrayModel<GuideItems>?
@@ -489,6 +487,7 @@ class SingletoneClass {
     
     private var userDefaule: UserDefaults = UserDefaults.standard
     
+   
     
     
 
@@ -502,11 +501,11 @@ class SingletoneClass {
     
     
     // user location authorized
-    open  var userLocationPermit:Bool {
-        get{
-            return self.getUserLocationPermit()
-        }
-    }
+//    open  var userLocationPermit:Bool {
+//        get{
+//            return self.getUserLocationPermit()
+//        }
+//    }
 //    open var accessToken:String {
 //        get {
 //            return self.userDefaule.string(forKey: "token") ?? "fake"
@@ -524,15 +523,15 @@ class SingletoneClass {
     }
     
     // 设置到缓存
-    open func setUserLocation(permit:Bool){
-        self.userDefaule.set(permit, forKey: UserDefaults.locPermit)
-    }
+//    open func setUserLocation(permit:Bool){
+//        self.userDefaule.set(permit, forKey: UserDefaults.locPermit)
+//    }
     
     // 存储到缓存
-    private func getUserLocationPermit() -> Bool{
-       return self.userDefaule.bool(forKey: UserDefaults.locPermit)
-        
-    }
+//    private func getUserLocationPermit() -> Bool{
+//       return self.userDefaule.bool(forKey: UserDefaults.locPermit)
+//
+//    }
     
     
     
@@ -542,9 +541,10 @@ class SingletoneClass {
 extension SingletoneClass{
  
     
-    public func setAddress(city:String, zone:String, address:String){
-        self.currentUserAddress.set(city: city, zone: zone, address: address)
+    public func setAddress(address:String){
+        self.currentUserAddress.set(address: address)
     }
+    
     public func getAddress() -> String?{
         return self.currentUserAddress.getAddress()
     }
@@ -553,7 +553,7 @@ extension SingletoneClass{
     }
     
     public func setUserLocation(location: CLLocation){
-       
+
         self.currentUserAddress.setLocation(location: location)
     }
     
@@ -612,10 +612,10 @@ extension SingletoneClass{
         
         group.enter()
         // 请求也是在其它线程 异步执行
-        NetworkTool.request(GlobaHttpRequest.guideData, successCallback: { (data) in
+        NetworkTool.request(GlobaHttpRequest.guideData, successCallback: {  [weak self] (data) in
             // swiftJson
             
-            self.guidanceData =  Mapper<ResponseArrayModel<GuideItems>>().map(JSONObject: data)
+            self?.guidanceData =  Mapper<ResponseArrayModel<GuideItems>>().map(JSONObject: data)
            
             group.leave()
         }, failureCallback: { (error) in
@@ -623,18 +623,18 @@ extension SingletoneClass{
         })
         
         group.enter()
-        NetworkTool.request(GlobaHttpRequest.adviseImages, successCallback: { (data) in
+        NetworkTool.request(GlobaHttpRequest.adviseImages, successCallback: { [weak self] (data) in
             
-            self.adviseImage  = Mapper<ResponseModel<AdViseImage>>().map(JSONObject: data)
+            self?.adviseImage  = Mapper<ResponseModel<AdViseImage>>().map(JSONObject: data)
             group.leave()
         }) { (error) in
             group.leave()
         }
         // 需要选择的数据 TODO
         group.enter()
-        NetworkTool.request(.citys, successCallback: { (data) in
+        NetworkTool.request(.citys, successCallback: {[weak self]   (data) in
             if let res = Mapper<ResponseModel<SelectedCityModel>>().map(JSONObject: data)?.body, let citys = res.citys{
-                self.selectedCity = citys
+                self?.selectedCity = citys
             }
             group.leave()
         }) { (error) in
@@ -642,9 +642,9 @@ extension SingletoneClass{
         }
         
         group.enter()
-        NetworkTool.request(.bussinessField, successCallback: { (data) in
+        NetworkTool.request(.bussinessField, successCallback: { [weak self] (data) in
             if let res = Mapper<ResponseModel<BussinessFieldModel>>().map(JSONObject: data)?.body, let field = res.fields{
-                self.selectedBusinessField = field
+                self?.selectedBusinessField = field
             }
             group.leave()
         }) { (error) in
@@ -652,10 +652,10 @@ extension SingletoneClass{
         }
         
         group.enter()
-        NetworkTool.request(.subBusinessField, successCallback: { (data) in
+        NetworkTool.request(.subBusinessField, successCallback: { [weak self] (data) in
             if let res = Mapper<ResponseModel<SubBusinessFieldModel>>().map(JSONObject: data)?.body,
                 let field = res.fields{
-                self.selectedSubBusinessField = field
+                self?.selectedSubBusinessField = field
             }
             group.leave()
         }) { (error) in
@@ -663,10 +663,10 @@ extension SingletoneClass{
         }
         
         group.enter()
-        NetworkTool.request(.companyType, successCallback: { (data) in
+        NetworkTool.request(.companyType, successCallback: { [weak self] (data) in
             if let res = Mapper<ResponseModel<CompanyTypeModel>>().map(JSONObject: data)?.body,
                 let type = res.type{
-                self.selectedCompanyType = type
+                self?.selectedCompanyType = type
             }
             
             group.leave()
@@ -676,10 +676,10 @@ extension SingletoneClass{
         
         
         group.enter()
-        NetworkTool.request(.internCondition, successCallback: { (data) in
+        NetworkTool.request(.internCondition, successCallback: {  [weak self] (data) in
             if let res = Mapper<ResponseModel<InternConditionModel>>().map(JSONObject: data)?.body,
                 let condition = res.condition{
-                self.selectedInternCondition = condition
+                self?.selectedInternCondition = condition
             }
             
             group.leave()
@@ -688,9 +688,9 @@ extension SingletoneClass{
         }
         
         group.enter()
-        NetworkTool.request(.cityCollege, successCallback: { (data) in
+        NetworkTool.request(.cityCollege, successCallback: {  [weak self] (data) in
             if let res = Mapper<ResponseModel<CitysCollegeModel>>().map(JSONObject: data)?.body, let c = res.cityCollege{
-                self.selectedcityCollege = c
+                self?.selectedcityCollege = c
             }
             group.leave()
         }) { (error) in
@@ -698,10 +698,10 @@ extension SingletoneClass{
         }
         
         group.enter()
-        NetworkTool.request(.jobWarns, successCallback: { (data) in
+        NetworkTool.request(.jobWarns, successCallback: {  [weak self] (data) in
             if let res = Mapper<ResponseModel<JobWarnList>>().map(JSONObject: data)?.body, let w = res.warns{
-                self.jobWarns = w
-                print(self.jobWarns, "-------")
+                self?.jobWarns = w
+                //print(self.jobWarns, "-------")
             }
             group.leave()
         }) { (error) in
@@ -783,6 +783,7 @@ extension SingletoneClass{
     public func setSharedApps(condition:Any?){
         
         ShareAppItem.init(name: "复制链接", image: UIImage.init(named: "copyIcon"), type: UMSocialPlatformType.copyLink, bubbles: nil).canOpen(items: &self.shareItems)
+        
         ShareAppItem.init(name: "更多", image: UIImage.init(named: "moreShare"), type: UMSocialPlatformType.more, bubbles: nil).canOpen(items: &self.shareItems)
         ShareAppItem.init(url: ConfigSharedApp.qq.url, name: ConfigSharedApp.qq.name, image: ConfigSharedApp.qq.image, type: ConfigSharedApp.qq.type, bubbles: nil).canOpen(items: &self.shareItems)
         ShareAppItem.init(url: ConfigSharedApp.qqZone.url, name: ConfigSharedApp.qqZone.name, image: ConfigSharedApp.qqZone.image, type: ConfigSharedApp.qqZone.type, bubbles: nil).canOpen(items: &self.shareItems)

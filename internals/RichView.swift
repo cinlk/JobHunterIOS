@@ -146,7 +146,7 @@ extension RichTextView: WKUIDelegate,WKNavigationDelegate{
             
             //计算高度
             if let webHeight = result as! CGFloat?{
-                self.webView.sd_layout()?.heightIs(webHeight)
+                _ = self.webView.sd_layout()?.heightIs(webHeight)
 //                self.webView.snp.updateConstraints({ (make) in
 //                    make.height.equalTo(webHeight)
 //                })
@@ -174,7 +174,7 @@ extension RichTextView: WKUIDelegate,WKNavigationDelegate{
             if str.hasPrefix("hxqimage-preview"){  // 点击了图片
                 
                 //加载图片
-                if let clickImg = (navigationAction.request.url as NSURL?)?.resourceSpecifier{
+                if let _ = (navigationAction.request.url as NSURL?)?.resourceSpecifier{
                     if isShowImage{
                         //handleImageWithName(clickImg)
                     }

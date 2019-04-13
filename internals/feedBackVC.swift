@@ -274,7 +274,7 @@ extension feedBackVC: UIImagePickerControllerDelegate, UINavigationControllerDel
         print("cancel")
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+    private func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
         var outputImage:UIImage?
         if let image = info[UIImagePickerController.InfoKey.originalImage.rawValue

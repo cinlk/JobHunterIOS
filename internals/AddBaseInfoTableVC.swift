@@ -218,7 +218,7 @@ extension AddBaseInfoTableViewController: AddItemCellUpdate{
     func updateTextfield(value: String, type: ResumeInfoType){
         diction[type] = value
         isChange = true 
-        self.tableView.reloadRows(at: [IndexPath.init(row: keys.index(of: type)!, section: 0)], with: .automatic)
+        self.tableView.reloadRows(at: [IndexPath.init(row: keys.firstIndex(of: type)!, section: 0)], with: .automatic)
      }
 
 }

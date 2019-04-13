@@ -62,14 +62,14 @@ class ErrorPageView: UIView,EorrorPageDelegate  {
     
     override func layoutSubviews() {
         
-        let views:[UIView] = [wifiImage, des , resetBtn]
+        var views:[UIView] = [wifiImage, des , resetBtn]
         self.sd_addSubviews(views)
         _ = wifiImage.sd_layout().centerXEqualToView(self)?.topSpaceToView(self,15)?.widthIs(iconSize.width)?.autoHeightRatio(1)
         _ = des.sd_layout().topSpaceToView(wifiImage,10)?.centerXEqualToView(wifiImage)?.autoHeightRatio(0)
         _ = resetBtn.sd_layout().topSpaceToView(des,10)?.leftEqualToView(des)?.rightEqualToView(des)?.heightIs(30)
         
         super.layoutSubviews()
-        
+        views.removeAll()
     }
     
     required init?(coder aDecoder: NSCoder) {

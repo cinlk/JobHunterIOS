@@ -179,8 +179,7 @@ struct MessageTable {
     static let id = Expression<Int64>("id")
     // 属于conversation
     static let conversationId = Expression<String>("conversation_id")
-    // 唯一约束 索引
-    //static let messageID = Expression<String>("messageID")
+
     static let type = Expression<String>("type")
     // 根据不同类型解析不同类型数据
     static let content = Expression<Data?>("content")
@@ -229,13 +228,13 @@ struct MessageTable {
 //    }
     
     // 从最后向前查询 某个conversation对话的消息: table 上滑动加载历史消息
-    func getMessages(conversationId:String, start:Int, limit:Int) throws  ->[MessageBoby]{
+    func getMessages(conversationId:String, startTime:Date, limit:Int) throws  ->[MessageBoby]{
         
         var res:[MessageBoby] = []
         
         do{
             // 查找 发给我的消息 好 我发给ta的消息
-            let query = MessageTable.message.select([MessageTable.type,MessageTable.content, MessageTable.isRead, MessageTable.create_time, MessageTable.conversationId, MessageTable.senderID, MessageTable.receiverID]).filter(MessageTable.conversationId == conversationId).order(MessageTable.create_time.desc).limit(limit, offset: start)
+            let query = MessageTable.message.select([MessageTable.type,MessageTable.content, MessageTable.isRead, MessageTable.create_time, MessageTable.conversationId, MessageTable.senderID, MessageTable.receiverID]).filter(MessageTable.conversationId == conversationId && MessageTable.create_time < startTime).order(MessageTable.create_time.desc).limit(limit)
             
             guard let rows =  try self.dbManager.db?.prepare(query) else {
                 return []
@@ -291,12 +290,14 @@ struct MessageTable {
             
             
         case .picture:
-            guard let path = String.init(data: data, encoding: String.Encoding.utf8) else {
+            guard let name = String.init(data: data, encoding: String.Encoding.utf8) else {
                 return nil
             }
             return PicutreMessage(JSON: [
                 "type": messageType.describe,
-                "imageFileName":path,
+                "fileName": name, // 本地image 文件名字
+                "content": name,
+                "fileUrl": name, // 这里是url 地址
                 "is_read":item[MessageTable.isRead],
                 "creat_time": item[MessageTable.create_time].timeIntervalSince1970,
                 "conversation_id": item[MessageTable.conversationId],
@@ -330,13 +331,33 @@ struct MessageTable {
             return JobDescriptionlMessage(JSON: [
                 "type": messageType.describe,
                 "content":item[MessageTable.content]!,
-                "isRead":item[MessageTable.isRead],
+                "is_read":item[MessageTable.isRead],
                 "creat_time":item[MessageTable.create_time].timeIntervalSince1970,
                 "sender_id":item[MessageTable.senderID],
                 "receiver_id":item[MessageTable.receiverID],
                 "job_id":json["job_id"] ?? "","job_type_des":json["job_type_des"] ?? "", "icon":json["icon"] ?? "default","job_name":json["job_name"] ?? "",
                 "company":json["company"] ?? "","salary":json["salary"]  ?? "","tags":json["tags"] ?? [],
                 "conversation_id": item[MessageTable.conversationId]])
+        case .location:
+            guard let content = item[MessageTable.content] else{
+                return nil
+            }
+            guard let json = try? JSONSerialization.jsonObject(with: content, options: []) as? [String: Any] else{
+                return nil
+            }
+            
+            return LocationMessage(JSON: [
+                
+                "type": messageType.describe,
+                "content":item[MessageTable.content]!,
+                "is_read":item[MessageTable.isRead],
+                "creat_time":item[MessageTable.create_time].timeIntervalSince1970,
+                "sender_id":item[MessageTable.senderID],
+                "receiver_id":item[MessageTable.receiverID],
+                "conversation_id": item[MessageTable.conversationId],
+                "latitude": json["latitude"] ?? "",
+                "longitude": json["longitude"] ?? "",
+                "address": json["address"] ?? ""])
             
         default:
             return nil
@@ -386,7 +407,10 @@ struct MessageTable {
                 try self.insertGifMessage(message: message as! GifImageMessage)
             }else if message.isKind(of: PicutreMessage.self){
                 try self.insertPictureMessage(message: message as! PicutreMessage)
-            }else{
+            }else if message.isKind(of: LocationMessage.self){
+                try self.insertLocationMessage(message: message as! LocationMessage)
+            }
+            else{
                 try self.insertBaseMessage(message: message)
             }
             
@@ -490,6 +514,24 @@ struct MessageTable {
         }
     }
     
+    private func insertLocationMessage(message: LocationMessage) throws{
+        do{
+            guard let data = message.location2Data() else {
+                return
+            }
+            try self.dbManager.db?.run(MessageTable.message.insert(
+                    MessageTable.content <- data,
+                    MessageTable.create_time <- message.creat_time!,
+                    MessageTable.isRead <- message.isRead,
+                    MessageTable.type <- message.type!,
+                    MessageTable.conversationId <- message.conversayionId!,
+                    MessageTable.senderID <- message.senderId!,
+                    MessageTable.receiverID <- message.receiveId!
+            ))
+        }catch{
+            throw error
+        }
+    }
     
     func removeConversationMessage(conversationId:String)  throws{
         
@@ -544,7 +586,7 @@ struct  SingleConversationTable {
                     "recruiter_id": item[SingleConversationTable.recruiterId],
                     "created_time": item[SingleConversationTable.createdTime].timeIntervalSince1970,
                     "job_id": item[SingleConversationTable.jobId],
-                    "up_time": item[SingleConversationTable.upTime]?.timeIntervalSince1970,
+                    "up_time": item[SingleConversationTable.upTime]?.timeIntervalSince1970 ?? Date.init(timeIntervalSince1970: 0),
                     "is_up": item[SingleConversationTable.isUP],
                     "recruiter_name": item[SingleConversationTable.recruiterName],
                     "recruiter_icon_url": item[SingleConversationTable.recruiterIconURL]
@@ -576,7 +618,7 @@ struct  SingleConversationTable {
                     "recruiter_id": row[SingleConversationTable.recruiterId],
                     "created_time": row[SingleConversationTable.createdTime].timeIntervalSince1970,
                     "job_id": row[SingleConversationTable.jobId],
-                    "up_time": row[SingleConversationTable.upTime]?.timeIntervalSince1970,
+                    "up_time": row[SingleConversationTable.upTime]?.timeIntervalSince1970 ?? Date.init(timeIntervalSince1970: 0),
                     "is_up": row[SingleConversationTable.isUP],
                     "recruiter_name": row[SingleConversationTable.recruiterName],
                     "recruiter_icon_url": row[SingleConversationTable.recruiterIconURL]
@@ -609,7 +651,7 @@ struct  SingleConversationTable {
                     SingleConversationTable.recruiterId <- data.recruiterId!,
                     SingleConversationTable.upTime <- data.upTime,
                     SingleConversationTable.createdTime <- data.createdTime ?? Date(),
-                    SingleConversationTable.isUP <- data.isUp ?? false,
+                    SingleConversationTable.isUP <- data.isUp ,
                     SingleConversationTable.jobId <- data.jobId!,
                     SingleConversationTable.recruiterIconURL <- data.recruiterIconURL?.absoluteString ?? "",
                     SingleConversationTable.recruiterName <- data.recruiterName ?? ""

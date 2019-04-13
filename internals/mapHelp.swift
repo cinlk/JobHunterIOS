@@ -14,11 +14,14 @@ import MapKit
 public enum PazNavigationApp {
     case AppleMaps
     case GoogleMaps
+    case GaodeMaps
+    case QQMaps
+    case BaiduMaps
 //    case Navigon
 //    case TomTom
 //    case Waze
     
-    public static let AllValues: [PazNavigationApp] = [.AppleMaps, .GoogleMaps]
+    public static let AllValues: [PazNavigationApp] = [.AppleMaps, .GoogleMaps, .GaodeMaps, .QQMaps, .BaiduMaps]
     
     public static var AvailableServices: [PazNavigationApp] {
         var availableServices = [PazNavigationApp]()
@@ -27,6 +30,7 @@ public enum PazNavigationApp {
                 availableServices.append(app)
             }
         }
+        
         return availableServices
     }
     
@@ -36,6 +40,12 @@ public enum PazNavigationApp {
             return "苹果地图"
         case .GoogleMaps:
             return "谷歌地图"
+        case .GaodeMaps:
+            return "高德地图"
+        case .QQMaps:
+            return "腾讯地图"
+        case .BaiduMaps:
+            return "百度地图"
 //        case .Navigon:
 //            return "Navigon"
 //        case .TomTom:
@@ -51,6 +61,12 @@ public enum PazNavigationApp {
             return "maps.apple.com://"
         case .GoogleMaps:
             return "comgooglemaps://"
+        case .GaodeMaps:
+            return "iosamap://"
+        case .QQMaps:
+            return "qqmap://"
+        case .BaiduMaps:
+            return "baidumap://"
 //        case .Navigon:
 //            return "navigon://"
 //        case .TomTom:
@@ -81,7 +97,13 @@ public enum PazNavigationApp {
         case .AppleMaps:
             urlString.append("?q=\(coordinate.latitude),\(coordinate.longitude)=d&t=h")
         case .GoogleMaps:
-            urlString.append("?saddr=&daddr=\(coordinate.latitude),\(coordinate.longitude)&directionsmode=driving")
+        urlString.append("?saddr=&daddr=\(coordinate.latitude),\(coordinate.longitude)&directionsmode=driving")
+        case .GaodeMaps:
+            urlString.append( "navi?sourceApplication=我的app&backScheme=iosamap://&lat=\(coordinate.latitude)&lon=\(coordinate.longitude)&dev=0&style=2")
+        case .BaiduMaps:
+        urlString.append("map/direction?destination=latlng:\(coordinate.latitude),\(coordinate.longitude)|&mode=driving")
+        case .QQMaps:
+        urlString.append("map/routeplan?type=drive&tocoord=\(coordinate.latitude),\(coordinate.longitude)&coord_type=1&policy=0")
 //        case .Navigon:
 //            urlString.append("coordinate/\(name)/\(coordinate.longitude)/\(coordinate.latitude)")
 //        case .TomTom:

@@ -50,7 +50,7 @@ extension Reactive where Base: SearchTypeMenuView{
     var hidden: Binder<Bool>{
         return Binder.init(self.base, binding: { (target, v) in
             let t =  target as SearchTypeMenuView
-           if v == true{
+            if v == true{
                 t.dismiss()
             }
         })

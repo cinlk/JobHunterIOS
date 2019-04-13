@@ -316,7 +316,7 @@ extension SelectedThreeTableView{
         let currentNode = last[row]
         // 再次点击取消
         if currentNode.selected == true, let text = cell.textLabel?.text{
-            if let  index = results.index(of: text){
+            if let  index = results.firstIndex(of: text){
                 results.remove(at: index)
             }
             

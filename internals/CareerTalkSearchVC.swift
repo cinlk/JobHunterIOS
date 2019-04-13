@@ -37,7 +37,7 @@ class CareerTalkSearchVC: BaseViewController, SearchControllerDeletgate{
     
     private lazy var colleageMenu: DropCollegeItemView = { [unowned self] in
         let college = DropCollegeItemView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeight))
-        college.passData = { colleges in
+        college.passData = {  [unowned self] colleges in
 //            self.requestBody.college = colleges
 //            self.table.mj_header.beginRefreshing()
             self.condition.0 = colleges
@@ -52,7 +52,7 @@ class CareerTalkSearchVC: BaseViewController, SearchControllerDeletgate{
     private lazy var kind: DropItemIndustrySectorView = { [unowned self] in
         let k = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeight))
         
-        k.passData = { industry in
+        k.passData = {[unowned self]  industry in
 //            self.requestBody.industry = industry
 //            self.table.mj_header.beginRefreshing()
             self.condition.1 = industry
@@ -68,7 +68,7 @@ class CareerTalkSearchVC: BaseViewController, SearchControllerDeletgate{
     private lazy var meetingTimeMenu:DropValidTimeView = { [unowned self] in
         
         let m = DropValidTimeView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: DropValidTimeView.myHeigh()))
-        m.passData = { date in
+        m.passData = { [unowned self] date in
 
             self.condition.2 = date
         }
@@ -86,7 +86,7 @@ class CareerTalkSearchVC: BaseViewController, SearchControllerDeletgate{
     }()
     
     
-    private lazy var table:UITableView = {
+    private lazy var table:UITableView = { [unowned self] in
         let t = UITableView()
         t.register(CareerTalkCell.self, forCellReuseIdentifier: CareerTalkCell.identity())
         t.tableFooterView = UIView()
@@ -185,7 +185,10 @@ extension CareerTalkSearchVC{
         
     
         // table 刷新状态
-        self.searchVM.carrerTalkRes.asDriver(onErrorJustReturn: []).drive(onNext: { (modes) in
+        self.searchVM.carrerTalkRes.asDriver(onErrorJustReturn: []).drive(onNext: { [weak self] (modes) in
+            guard let `self` = self else {
+                return
+            }
             if self.modes.isEmpty{
                 self.modes = modes
             }
@@ -195,12 +198,14 @@ extension CareerTalkSearchVC{
             
         }).disposed(by: self.dispose)
         
-        self.table.rx.itemSelected.subscribe(onNext: { (indexPath) in
-            let mode = self.filterModes[indexPath.row]
-            let vc = CareerTalkShowViewController()
-            vc.meetingID = mode.meetingID ?? ""
-            vc.hidesBottomBarWhenPushed = true
-         self.presentingViewController?.navigationController?.pushViewController(vc, animated: true)
+        self.table.rx.itemSelected.subscribe(onNext: { [weak self] (indexPath) in
+            if let mode = self?.filterModes[indexPath.row]{
+                let vc = CareerTalkShowViewController()
+                vc.meetingID = mode.meetingID ?? ""
+                vc.hidesBottomBarWhenPushed = true
+                self?.presentingViewController?.navigationController?.pushViewController(vc, animated: true)
+            }
+          
         }).disposed(by: self.dispose)
         
     }

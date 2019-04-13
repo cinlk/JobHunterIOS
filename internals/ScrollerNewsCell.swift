@@ -92,25 +92,32 @@ extension ScrollerNewsCell{
     private func startScheduler(){
         
         if self.timer == nil {
-            self.timer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { [unowned self] (time) in
+            
+            self.timer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block:  { [weak self]  (time) in
+                guard let `self` = self else {
+                    return
+                }
                 // 模拟无限循环 pickerDataSize 数很大
-                if self.count <= self.pickerDataSize{
+                if self.count   <= self.pickerDataSize{
                     self.count += 2
                     self.scroller.scrollToRow(at: IndexPath.init(row: self.count, section: 0), at: UITableView.ScrollPosition.none, animated: true)
                     // 重置
+                    
                     if self.count >= self.pickerDataSize{
                         self.count = 0
                     }
                 }
             })
             
-            RunLoop.current.add(self.timer!, forMode: RunLoop.Mode.common)
+            //RunLoop.current.add(self.timer!, forMode: RunLoop.Mode.common)
         }
     }
     
     private func stopScheduler(){
         self.timer?.invalidate()
         self.timer = nil
+        
+        //RunLoop.current.remove(<#T##aPort: Port##Port#>, forMode: <#T##RunLoop.Mode#>)
     }
 }
 

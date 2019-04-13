@@ -417,7 +417,21 @@ extension SingleReplyViewController: ChatInputViewDelegate{
     }
     
     func sendMessage(textView: UITextView) {
-        if let text = textView.text, let new = SecondReplyModel(JSON: ["id":self.mode?.id,"replyID":self.mode?.replyID, "subreplyID":getUUID(),"replyContent":text,"receiver":currentSenderName,"authorID":self.mode?.authorID,"authorName":self.mode?.authorName,"authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":0,"reply":0]){
+        if let text = textView.text, let new = SecondReplyModel(JSON: [
+            "id": (self.mode?.id)!,
+            "replyID": (self.mode?.replyID)!,
+            "subreplyID": getUUID(),
+            "replyContent":text,
+            "receiver": currentSenderName,
+            "authorID": (self.mode?.authorID)!,
+            "authorName": (self.mode?.authorName)!,
+            "authorIcon":"chicken",
+            "colleage":"北京大学",
+            "createTime":Date().timeIntervalSince1970,
+            "kind":"jobs",
+            "isLike":false,
+            "thumbUP":0,
+            "reply":0]){
             allSubReplys.append(new)
             self.table.reloadData()
         }

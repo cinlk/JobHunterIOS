@@ -179,8 +179,6 @@ class NetworkTool {
         
     }, requestClosure: { (endpoint, done) in
         do{
-            
-            
             var req = try endpoint.urlRequest()
             req.timeoutInterval = timeout
             if let reqData = req.httpBody{

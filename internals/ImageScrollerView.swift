@@ -83,8 +83,11 @@ extension ImageScrollerView{
 //    }
     
     open func setPagePosition(view:UIView){
-        
-        view.insertSubview(self.page, aboveSubview: self)
+        weak var p  = self.page
+        if let _ = p{
+            view.insertSubview(p!, aboveSubview: self)
+        }
+       
     }
     
     private func setRunning(){
@@ -94,8 +97,8 @@ extension ImageScrollerView{
             
             }.enumerated().flatMapLatest { (index, element)   in
                 Observable.just(element)
-            }.takeUntil(self.rx.deallocated).subscribe(onNext: { _ in
-                self.moveToRight()
+            }.takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] _ in
+                self?.moveToRight()
                 
             })
         

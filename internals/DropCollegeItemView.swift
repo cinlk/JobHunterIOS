@@ -100,7 +100,7 @@ fileprivate class topAddress:UIView{
 fileprivate class bottomToolBar:UIToolbar{
     
     
-    private lazy var clearAll:UIButton = {
+    private lazy var clearAll:UIButton = {  [unowned self] in
     
         let clear = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: (GlobalConfig.ScreenW - spaceWidth - 10)/2, height: 35))
         clear.setTitle("清空", for: .normal)
@@ -113,7 +113,7 @@ fileprivate class bottomToolBar:UIToolbar{
         
     }()
     
-    private lazy var confirm:UIButton = {
+    private lazy var confirm:UIButton = {  [unowned self]  in
         let confirm = UIButton.init(frame: CGRect.init(x: 0, y: 0, width:  (GlobalConfig.ScreenW - spaceWidth - 10)/2, height: 35))
         confirm.setTitle("确定", for: .normal)
         confirm.setTitleColor(UIColor.white, for: .normal)
@@ -166,7 +166,7 @@ class DropCollegeItemView: YNDropDownView {
 
     
     
-    private lazy var topAddressView:topAddress = {
+    private lazy var topAddressView:topAddress = {  [unowned self]  in
         let t = topAddress.init(frame: CGRect.zero, v: self)
         return t
     }()
@@ -185,7 +185,7 @@ class DropCollegeItemView: YNDropDownView {
     
     
     
-    private lazy var collection:UICollectionView = {
+    private lazy var collection:UICollectionView = {  [unowned self]  in
         
         let col = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: flowLayout)
         col.contentInset = UIEdgeInsets(top: 5, left: 10, bottom: 45, right: 10)
@@ -215,14 +215,14 @@ class DropCollegeItemView: YNDropDownView {
     
     
     // 加入toolbar
-    private lazy var toolBar:bottomToolBar = {
+    private lazy var toolBar:bottomToolBar = {  [unowned self]  in
         let bar = bottomToolBar.init(frame: CGRect.zero, view: self)
         return bar
     }()
     
     
     // 全局的 透明背景view
-    internal lazy var backGroundBtn:UIButton = {
+    internal lazy var backGroundBtn:UIButton = {  [unowned self]  in
         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 0))
         btn.addTarget(self, action: #selector(hidden), for: .touchUpInside)
         btn.backgroundColor = UIColor.clear
@@ -238,7 +238,7 @@ class DropCollegeItemView: YNDropDownView {
         didSet{
             
             // 默认城市n类所有大学
-            datas.keys.reversed().forEach{
+            datas.keys.reversed().forEach{ [unowned self]  in
                 selected[$0] = [defaulAllCollege]
                 //datas[$0]?.insert(defaulAllCollege, at: 0)
             }
@@ -329,8 +329,8 @@ extension DropCollegeItemView{
 extension DropCollegeItemView{
     
     @objc internal func reset(){
-        selected.keys.forEach { (k) in
-            selected[k] = [defaulAllCollege]
+        selected.keys.forEach {  [unowned self]  (k) in
+            self.selected[k] = [defaulAllCollege]
         }
 //        selected[currentCity]!.removeAll()
 //        selected[currentCity]! = [defaulAllCollege]
@@ -383,8 +383,8 @@ extension DropCollegeItemView{
         currentCity = name
         self.collection.reloadData()
 
-        self.changeAreaView(frame: CGRect.init(x: 0, y: topAddressHeight, width: GlobalConfig.ScreenW, height: 1), complete: {
-            self.topAddressView.setText(text: addressPre + name)
+        self.changeAreaView(frame: CGRect.init(x: 0, y: topAddressHeight, width: GlobalConfig.ScreenW, height: 1), complete: { [weak self] in
+            self?.topAddressView.setText(text: addressPre + name)
         })
         isOpenAreaView = false
         
@@ -458,7 +458,7 @@ extension DropCollegeItemView: UICollectionViewDataSource, UICollectionViewDeleg
             
             if selected[currentCity]!.contains(name){
                 // 取消选择状态
-                selected[currentCity]!.remove(at: selected[currentCity]!.index(of: name)!)
+                selected[currentCity]!.remove(at: selected[currentCity]!.firstIndex(of: name)!)
                 
             }else{
                 if selected[currentCity]!.count >= maxCount{

@@ -34,17 +34,17 @@ class ValidateNumber {
         obCount.onNext(false)
         _ = Observable<Int>.interval(1, scheduler: MainScheduler.instance).debug().takeUntil(end).takeWhile({ (i) -> Bool in
             i <= count
-        }).subscribe(onNext: { i in
+        }).subscribe(onNext: { [weak self]  i in
             
             if i == count{
 //                self.b?.setTitle("获取验证码", for: .normal)
 //                self.b?.setTitleColor(UIColor.blue, for: .normal)
 //
 //                self.obCount.onNext(true)
-                self.stop(true)
+                self?.stop(true)
             }else{
-                self.b?.setTitle("重新获取(\(count - i))", for: .normal)
-                self.b?.setTitleColor(UIColor.lightGray, for: .normal)
+                self?.b?.setTitle("重新获取(\(count - i))", for: .normal)
+                self?.b?.setTitleColor(UIColor.lightGray, for: .normal)
             }
             
             

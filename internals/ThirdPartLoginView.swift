@@ -36,7 +36,7 @@ class ThirdPartLoginView: UIView {
         return label
     }()
     
-    private lazy var weixinBtn:UIButton = {
+    private lazy var weixinBtn:UIButton = { [unowned self] in
         
         let btn = UIButton()
         btn.setBackgroundImage(UIImage.init(named: "wechat_circle"), for: .normal)
@@ -48,7 +48,7 @@ class ThirdPartLoginView: UIView {
         
     }()
     
-    private lazy var weiboBtn:UIButton = {
+    private lazy var weiboBtn:UIButton = { [unowned self]  in
         let btn = UIButton()
         btn.setBackgroundImage(UIImage.init(named: "weibo_circle"), for: .normal)
         btn.setBackgroundImage(UIImage.init(named: "weibo_circle"), for: .highlighted)
@@ -60,7 +60,7 @@ class ThirdPartLoginView: UIView {
         return btn
     }()
     
-    private lazy var qqBtn:UIButton = {
+    private lazy var qqBtn:UIButton = { [unowned self]  in
         let btn = UIButton()
         btn.setBackgroundImage(UIImage.init(named: "qq_circle"), for: .normal)
         btn.setBackgroundImage(UIImage.init(named: "qq_circle"), for: .highlighted)
@@ -118,9 +118,9 @@ extension ThirdPartLoginView{
         
         UMSocialManager.default().getUserInfo(with: .wechatSession, currentViewController: nil) { (res, error) in
             if error != nil {
-                self.delegate?.showError(view: self, message: "\(error)")
+                self.delegate?.showError(view: self, message: "\(String(describing: error))")
             }else{
-                print(res)
+                print("\(String(describing: res))")
             }
         }
         
@@ -150,30 +150,30 @@ extension ThirdPartLoginView{
     }
     @objc private func loginQQ(){
         
-        UMSocialManager.default().getUserInfo(with: .QQ, currentViewController: nil) { (res, error) in
+        UMSocialManager.default().getUserInfo(with: .QQ, currentViewController: nil) {[unowned self]   (res, error) in
             if error != nil {
                 
-                print(error)
+                print(String.init(describing: error))
                // self.delegate?.showError(view: self, message: error.debugDescription)
                 //self.delegate?.showError(view: self, message: error)
             }else{
                 if let response = res as? UMSocialUserInfoResponse{
                     
                     // 得到授权信息
-                    print("---------\(response)")
-                    print(response.uid)
-                    print(response.openid)
-                    print(response.unionId)
-                    print(response.accessToken)
-                    print(response.expiration)
-                    
-                    // 用户信息
-                    print(response.name)
-                    print(response.iconurl)
-                    print(response.unionGender)
-                    
-                    // sdk 数据源
-                    print(response.originalResponse)
+//                    print("---------\(response)")
+//                    print(response.uid)
+//                    print(response.openid)
+//                    print(response.unionId)
+//                    print(response.accessToken)
+//                    print(response.expiration)
+//                    
+//                    // 用户信息
+//                    print(response.name)
+//                    print(response.iconurl)
+//                    print(response.unionGender)
+//                    
+//                    // sdk 数据源
+//                    print(response.originalResponse)
                     self.delegate?.verifyLoggable(view: self, type: .QQ, respons: response)
                     //self.delegate?.verifyLoggable(view: self, type: .QQ, respons: response)
                 }

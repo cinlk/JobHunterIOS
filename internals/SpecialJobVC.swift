@@ -22,7 +22,7 @@ class SpecialJobVC: BaseViewController {
     
     private var firstLoad:Bool = true
     
-    private lazy var tableView:UITableView = {
+    private lazy var tableView:UITableView = { [unowned self] in
         let table = UITableView.init(frame: CGRect.zero)
         table.backgroundColor = UIColor.viewBackColor()
         table.tableFooterView = UIView()
@@ -122,8 +122,8 @@ extension SpecialJobVC{
     
     private func setRefresh(){
         
-        self.tableView.mj_header = MJRefreshNormalHeader.init(refreshingBlock: {
-            self.vm.refresh.accept(true)
+        self.tableView.mj_header = MJRefreshNormalHeader.init(refreshingBlock: { [weak self] in
+            self?.vm.refresh.accept(true)
         })
         (self.tableView.mj_header as! MJRefreshNormalHeader).activityIndicatorViewStyle = .gray
         (self.tableView.mj_header as! MJRefreshNormalHeader).lastUpdatedTimeLabel.isHidden = true
@@ -131,8 +131,8 @@ extension SpecialJobVC{
         (self.tableView.mj_header as! MJRefreshNormalHeader).setTitle("开始刷新", for: .pulling)
         (self.tableView.mj_header as! MJRefreshNormalHeader).setTitle("结束", for: .idle)
         
-        self.tableView.mj_footer = MJRefreshAutoNormalFooter.init(refreshingBlock: {
-            self.vm.refresh.accept(false)
+        self.tableView.mj_footer = MJRefreshAutoNormalFooter.init(refreshingBlock: { [weak self] in
+            self?.vm.refresh.accept(false)
         })
         (self.tableView.mj_footer as! MJRefreshAutoNormalFooter).setTitle("上拉刷新", for: .idle)
         (self.tableView.mj_footer as! MJRefreshAutoNormalFooter).setTitle("刷新", for: .refreshing)
@@ -145,8 +145,8 @@ extension SpecialJobVC{
         
         
         self.tableView.rx.setDelegate(self).disposed(by: self.dispose)
-        self.errorView.tap.asDriver().drive(onNext: { _ in
-            self.reload()
+        self.errorView.tap.asDriver().drive(onNext: { [weak self] _ in
+            self?.reload()
             
         }).disposed(by: self.dispose)
        
@@ -168,31 +168,31 @@ extension SpecialJobVC{
             return [SectionModel<String, JobListModel>.init(model: "", items: jobs)]
         }.asDriver(onErrorJustReturn: []).drive(self.tableView.rx.items(dataSource: dataSource)).disposed(by: self.dispose)
         
-        self.tableView.rx.itemSelected.subscribe(onNext: { (indexPath) in
-            self.tableView.deselectRow(at: indexPath, animated: false)
-            if let cell = self.tableView.cellForRow(at: indexPath) as? CommonJobTableCell, let id = cell.mode?.jobId{
+        self.tableView.rx.itemSelected.subscribe(onNext: { [weak self] (indexPath) in
+            self?.tableView.deselectRow(at: indexPath, animated: false)
+            if let cell = self?.tableView.cellForRow(at: indexPath) as? CommonJobTableCell, let id = cell.mode?.jobId{
                 let vc = JobDetailViewController()
                 vc.job =  (id, cell.mode?.kind ?? .none)
-                self.navigationController?.pushViewController(vc, animated: true)
+                self?.navigationController?.pushViewController(vc, animated: true)
             }
             
         }).disposed(by: self.dispose)
         
         
-        self.vm.refreshState.asDriver(onErrorJustReturn: .none).drive(onNext: { (status) in
+        self.vm.refreshState.asDriver(onErrorJustReturn: .none).drive(onNext: { [weak self] (status) in
             switch status{
             case .endHeaderRefresh:
-                self.tableView.mj_header.endRefreshing(completionBlock: {
-                    self.didFinishloadData()
+                self?.tableView.mj_header.endRefreshing(completionBlock: { [weak self] in
+                    self?.didFinishloadData()
                 })
-                self.tableView.mj_footer.resetNoMoreData()
+                self?.tableView.mj_footer.resetNoMoreData()
             case .endFooterRefresh:
-                self.tableView.mj_footer.endRefreshing()
+                self?.tableView.mj_footer.endRefreshing()
             case .NoMoreData:
-                self.tableView.mj_footer.endRefreshingWithNoMoreData()
+                self?.tableView.mj_footer.endRefreshingWithNoMoreData()
             case .error(let err):
                 print(err)
-                self.showError()
+                self?.showError()
             default:
                 break
             }

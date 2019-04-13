@@ -19,7 +19,7 @@ class UserGuideLogginCell: UICollectionViewCell {
         return image
     }()
     
-    private lazy var loggingBtn:UIButton = {
+    private lazy var loggingBtn:UIButton = { [unowned self] in 
         let btn = UIButton()
         btn.setTitle("登录", for: .normal)
         btn.titleLabel?.textAlignment = .center
