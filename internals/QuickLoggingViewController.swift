@@ -68,12 +68,7 @@ class QuickLoggingViewController: UIViewController, UITableViewDelegate {
     
     weak var parentVC:UserLogginViewController?
     
-    private lazy var agreeMentVC:BaseWebViewController = {
-        let vc = BaseWebViewController()
-        vc.mode = SingletoneClass.shared.appAgreementURL
-        vc.showRightBtn = false
-        return vc
-    }()
+    
     
      lazy var tableView:UITableView = {  [unowned self] in
         let tb = UITableView.init(frame: CGRect.zero)
@@ -152,11 +147,11 @@ extension QuickLoggingViewController{
     private func setViewModel(){
         
         // 查看协议
-        _ = self.tableFootView.btn.rx.tap.takeUntil(self.rx.deallocated).subscribe {  [weak self] _ in
-            guard let `self` = self else{
-                return
-            }
-            self.navigationController?.pushViewController(self.agreeMentVC, animated: true)
+        _ = self.tableFootView.btn.rx.tap.takeUntil(self.rx.deallocated).subscribe {   _ in
+            let vc = BaseWebViewController()
+            vc.mode = SingletoneClass.shared.appAgreementURL
+            vc.showRightBtn = false
+            self.navigationController?.pushViewController(vc , animated: true)
         }
         
      
@@ -172,14 +167,15 @@ extension QuickLoggingViewController{
                     
                     cell.textFiled.leftImage = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30), image: #imageLiteral(resourceName: "me").withRenderingMode(.alwaysTemplate), highlightedImage: #imageLiteral(resourceName: "sina").withRenderingMode(.alwaysTemplate))
                     // 监听账号值
-                    cell.textFiled.rx.text.orEmpty.share().bind(to: self.phoneNumber).disposed(by: self.dispose)
+                    
+                    cell.textFiled.rx.text.orEmpty.share().bind(to: self.phoneNumber).disposed(by: cell.disposeBag)
                     
                 }else if index.row == 1{
                     cell.textFiled.leftImage = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30), image: #imageLiteral(resourceName: "password").withRenderingMode(.alwaysTemplate), highlightedImage: #imageLiteral(resourceName: "sina").withRenderingMode(.alwaysTemplate))
                     cell.textFiled.rightBtn = self.verifyBtn
                     cell.textFiled.righPadding = 10
                     // 验证码
-                    cell.textFiled.rx.text.orEmpty.share().bind(to: self.verifyCode).disposed(by: self.dispose)
+                    cell.textFiled.rx.text.orEmpty.share().bind(to: self.verifyCode).disposed(by: cell.disposeBag)
                     
                 }
                 

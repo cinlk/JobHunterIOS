@@ -120,7 +120,8 @@ class BaseWebViewController: UIViewController {
     
     deinit {
         // 如果key 不存在，崩溃
-        webView.removeObserver(self, forKeyPath: keyStr)
+        //webView.removeObserver(self, forKeyPath: keyStr)
+        print("deinit webVC")
         webView.navigationDelegate = nil
     }
     

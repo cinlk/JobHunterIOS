@@ -130,6 +130,9 @@ class UserLogginViewController: UIViewController {
     }
 
     
+    deinit {
+        print("deinit userloginVC")
+    }
     
     
     

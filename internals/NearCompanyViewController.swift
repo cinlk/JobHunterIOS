@@ -68,6 +68,9 @@ class NearCompanyViewController: BaseViewController {
     }
     
     
+    deinit {
+        print("deinit aroundCompany \(String.init(describing: self))")
+    }
 }
 
 

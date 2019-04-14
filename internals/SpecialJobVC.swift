@@ -98,6 +98,9 @@ class SpecialJobVC: BaseViewController {
         
     }
     
+    deinit {
+        print("deinit specialJobVC \(String.init(describing: self))")
+    }
   
     
 
@@ -151,7 +154,7 @@ extension SpecialJobVC{
         }).disposed(by: self.dispose)
        
         
-        let dataSource = RxTableViewSectionedReloadDataSource<SectionModel<String, JobListModel>>(configureCell: { (ds, table, indePath, element) -> UITableViewCell in
+        let dataSource = RxTableViewSectionedReloadDataSource<SectionModel<String, JobListModel>>(configureCell: {   (ds, table, indePath, element) -> UITableViewCell in
             
             if let cell = table.dequeueReusableCell(withIdentifier: CommonJobTableCell.identity(), for: indePath) as? CommonJobTableCell{
                 // 显示实习标记

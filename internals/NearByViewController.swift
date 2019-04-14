@@ -69,6 +69,10 @@ class NearByViewController: UIViewController {
 
     }
     
+    deinit {
+        print("deinit nearAroundVC \(String.init(describing: self))")
+    }
+    
 }
 
 

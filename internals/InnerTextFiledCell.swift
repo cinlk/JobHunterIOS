@@ -7,9 +7,12 @@
 //
 
 import UIKit
+import RxSwift
 
 class InnerTextFiledCell: UITableViewCell {
 
+    
+    internal lazy var disposeBag:DisposeBag = DisposeBag.init()
     
     internal lazy var textFiled:CustomerTextField = {  [unowned self ] in
         let field = CustomerTextField.init(frame: CGRect.zero)
@@ -35,6 +38,10 @@ class InnerTextFiledCell: UITableViewCell {
     }
     
     
+    
+    override func prepareForReuse() {
+        disposeBag = DisposeBag.init()
+    }
     class func identity()->String{
         return "innerTextFiledCell"
     }
@@ -48,5 +55,7 @@ extension InnerTextFiledCell{
     @objc private func done(){
         self.textFiled.resignFirstResponder()
     }
+    
+    
 }
 

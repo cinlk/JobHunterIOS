@@ -110,6 +110,10 @@ class AffiliatedAccountViewController: UIViewController {
 
     }
     
+    
+    deinit {
+        print("deinit  thirdaccount \(String.init(describing: self))")
+    }
 
 }
 

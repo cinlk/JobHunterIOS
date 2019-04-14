@@ -132,6 +132,9 @@ class MainPageViewMode {
         
     }
     
+    deinit {
+        print("deinit mainpageViewModel \(String.init(describing: self))")
+    }
 }
 
 

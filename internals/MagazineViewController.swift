@@ -56,6 +56,10 @@ class MagazineViewController: BaseViewController {
         
     }
     
+    deinit {
+        print("deinit magazinedetail \(String.init(describing: self))")
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
        

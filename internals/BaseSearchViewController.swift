@@ -11,6 +11,7 @@ import YNDropDownMenu
 import MJRefresh
 import RxSwift
 import RxCocoa
+ 
 
 //fileprivate let leftDistance:CGFloat = 40
 //fileprivate let dropViewH:CGFloat = 40
@@ -222,7 +223,11 @@ class BaseSearchViewController: UISearchController{
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        print("deinit basesearchView \(String.init(describing: self))")
+    }
     
+   
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -365,7 +370,7 @@ extension BaseSearchViewController{
                 mode.body?.words ?? []
             }).asDriver(onErrorJustReturn: [])
             
-           }.asObservable().bind(to: self.serchRecordVC.filterTable.rx.items(cellIdentifier: "cell", cellType: UITableViewCell.self)){
+           }.asObservable().bind(to: self.serchRecordVC.filterTable.rx.items(cellIdentifier: "cell", cellType: UITableViewCell.self)){ 
                 (row, element, cell) in
                 cell.textLabel?.text = element
                 

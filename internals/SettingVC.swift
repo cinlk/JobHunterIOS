@@ -69,6 +69,9 @@ class SettingVC: UIViewController {
     
   
     
+    deinit {
+        print("deinit settingVC\(String.init(describing: self))")
+    }
     
 
 }
@@ -186,17 +189,17 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource{
         case .logout:
             
             let cell = tableView.cellForRow(at: indexPath)
-            cell?.presentAlert(type: .alert, title: nil, message: "是否退出登录", items: [actionEntity.init(title: "退出", selector: #selector(logout), args: nil)], target: self, complete: { alert in
-                self.present(alert, animated: true, completion: nil)
+            cell?.presentAlert(type: .alert, title: nil, message: "是否退出登录", items: [actionEntity.init(title: "退出", selector: #selector(logout), args: nil)], target: self, complete: { [weak self] alert in
+                self?.present(alert, animated: true, completion: nil)
             })
             
         
         case .evaluationUS:
             //evaluationApp()
             let cell = tableView.cellForRow(at: indexPath)
-            cell?.presentAlert(type: .alert, title: "觉得好用的话，给我个评价吧！", message: nil, items: [actionEntity.init(title: "好的", selector: #selector(evaluationApp), args: "itms-apps://itunes.apple.com/app/id444934666")], target: self, complete: { alert in
-                self.present(alert, animated: true, completion: nil)
-                
+            cell?.presentAlert(type: .alert, title: "觉得好用的话，给我个评价吧！", message: nil, items: [actionEntity.init(title: "好的", selector: #selector(evaluationApp), args: "itms-apps://itunes.apple.com/app/id444934666")], target: self, complete: { [weak self] alert in
+                self?.present(alert, animated: true, completion: nil)
+//
             })
             
         case .feedBack:
@@ -273,12 +276,25 @@ extension SettingVC {
     private func navgateToLginVC(){
         // 登录界面进入
         if  let _ = self.presentingViewController as? LoginNavigationController{
+
             self.dismiss(animated: true, completion: nil)
         }else{
-            // 直接进入
-            let loginView =  UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "loginNav") as! LoginNavigationController
+             // 直接进入
+            self.view.window?.rootViewController?.dismiss(animated: true, completion: {
+                let loginView =  UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "loginNav") as! LoginNavigationController
             
-            self.present(loginView, animated: true, completion: nil)
+                UIApplication.shared.keyWindow?.rootViewController?.present(loginView, animated: true, completion: nil)
+               // self?.view.window?.rootViewController?.present(loginView, animated: true, completion: nil)
+            })
+            
+//            self.dismiss(animated: true) { [weak self] in
+//
+//                // 直接进入
+//                let loginView =  UIStoryboard.init(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "loginNav") as! LoginNavigationController
+//
+//                self?.present(loginView, animated: true, completion: nil)
+//            }
+           
         }
     }
 }

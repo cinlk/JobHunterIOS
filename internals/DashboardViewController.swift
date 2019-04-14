@@ -98,7 +98,7 @@ class DashboardViewController: BaseViewController, UISearchControllerDelegate, U
     
     
     // 包裹searchbar 的view, 来限制高度，不然navibar 自适应高度为56
-    private lazy var wrapBar:UIView = {
+    private lazy var wrapBar:UIView = { [unowned self] in
         let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.searchBarH))
         v.backgroundColor = UIColor.clear
         v.addSubview(self.searchController?.searchBar ?? UIView())
@@ -477,16 +477,15 @@ extension DashboardViewController{
     func dataSource() -> RxTableViewSectionedReloadDataSource<MultiSecontions>{
         
         ///RxTableViewSectionedAnimatedDataSource
-        return RxTableViewSectionedReloadDataSource<MultiSecontions>.init(configureCell: { (dataSource, table, idxPath, _) -> UITableViewCell in
+        // 加上 weak self 解决内存泄露
+        return RxTableViewSectionedReloadDataSource<MultiSecontions>.init(configureCell: { [weak self]  (dataSource, table, idxPath, _) -> UITableViewCell in
             // 推荐职位cell
             if idxPath.section == 5 && idxPath.row == 0 {
                 if let cell = table.dequeueReusableCell(withIdentifier: SectionCellView.identity(), for: idxPath) as? SectionCellView{
                     cell.mode = "推荐职位"
                     cell.rightBtn.setTitle("我的订阅", for: .normal)
                     cell.SectionTitle.font = UIFont.systemFont(ofSize: 16)
-                    
-                    
-                    cell.action = { [weak self] in
+                    cell.action = {
                         let subscribleView = subscribleItem()
                         //subscribleView.hidesBottomBarWhenPushed = true
                         
@@ -520,7 +519,7 @@ extension DashboardViewController{
                 //cell.setItems(width: GlobalConfig.ScreenW/4, height: JobFiledH, items: fields)
                cell.setItems(width: GlobalConfig.ScreenW/4, items: fields)
                 
-               cell.selectedItem = { [weak self]  (btn) in
+               cell.selectedItem = {   (btn) in
                     let spe = SpecialJobVC.init(kind: btn.titleLabel?.text ?? "")
                     //spe.queryName = btn.titleLabel?.text
                     //spe.hidesBottomBarWhenPushed = true
@@ -542,7 +541,7 @@ extension DashboardViewController{
                 //cell.setItems(width: GlobalConfig.ScreenW/3 - 20, height: ColumnH, items: columnes)
                 cell.setItems(width: GlobalConfig.ScreenW/3 - 20, items: columnes)
                 
-                cell.selectedItem = {  [weak self]   (btn) in
+                cell.selectedItem = {  (btn) in
                     let web = BaseWebViewController()
                     web.mode = columnes[btn.tag].Link
                     //web.hidesBottomBarWhenPushed = true
@@ -558,17 +557,20 @@ extension DashboardViewController{
                
                 cell.mode = (title:"热门宣讲会",item:meets)
                 // 查看所有热门宣讲会
-                cell.selectedIndex = { [weak self] in
+                cell.selectedIndex = {
                     self?.tabBarController?.selectedIndex = 1
                     //self.tabBarController?.viewControllers[1]
                     self?.perform(#selector(self?.moveToCareerTalk), with: nil, afterDelay: TimeInterval(0.5))
                    
                 }
                 // 查看具体的宣讲会
-                cell.selectItem = {  [weak self] (mode) in
+                cell.selectItem = {  (mode) in
                     let talkShow = CareerTalkShowViewController()
-                    talkShow.meetingID = mode.meetingID!
-                    self?.navigateTo(vc: talkShow)
+                    if let id = mode.meetingID{
+                        talkShow.meetingID = id
+                        self?.navigateTo(vc: talkShow)
+                    }
+                   
                 }
                 
                 
@@ -579,7 +581,7 @@ extension DashboardViewController{
                 cell.mode = (title:"热门网申", items: applys)
                 
                // cell.sel
-                cell.selectedIndex = {  [weak self] (name) in
+                cell.selectedIndex = { (name) in
                     // 切换tab 的item
                     self?.tabBarController?.selectedIndex = 1
                     self?.perform(#selector(self?.showOnlineApply), with: name, afterDelay: TimeInterval(0.5))
@@ -620,7 +622,8 @@ extension DashboardViewController {
           
             
             if let vc = target.children[0] as? OnlineApplyViewController{
-                //d查找指定name的数据 TODO
+                //查找指定name的数据 TODO
+                // name 为空 不查找, 显示默认数据
                 vc.search = name
             }
             target.scrollToOnlineAppy = true
@@ -641,13 +644,13 @@ extension DashboardViewController{
             self?.reload()
         }).disposed(by: self.disposebag)
         
-        // 周边按钮
+//        // 周边按钮
         self.nearBtn.rx.tap.asDriver().drive(onNext: { [weak self] _ in
             //  地址位置授权判断 TODO
             //let map = testMapViewController()
             //self.navigationController?.pushViewController(map, animated: true)
             let near = NearByViewController()
-            
+
             //self.navigationController?.pushViewController(near, animated: true)
             self?.navigateTo(vc: near)
 //            if  let _ = SingletoneClass.shared.getAddress(){
@@ -657,26 +660,26 @@ extension DashboardViewController{
 //            }else{
 //                UserLocationManager.shared.getLocation()
 //            }
-            
+
         }).disposed(by: self.disposebag)
-        
-        // 搜索vc 显示
+//
+//        // 搜索vc 显示
        _ =  self.searchController?.rx.willPresent.takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] in
                 self?.presentSearchControllFlag = true
         })
        _ = self.searchController?.rx.didDismiss.takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] in
                 self?.presentSearchControllFlag = false
         })
-        
-        //
+
+//        //
         vm = MainPageViewMode.init()
-        
+//
         self.tables.rx.setDelegate(self).disposed(by: disposebag)
-        
+
         self.tables.rx.itemSelected.subscribe(onNext: { [weak self]  (indexpath) in
             self?.tables.deselectRow(at: indexpath, animated: true)
             if indexpath.section == 0{
-                
+
                 //  新闻专栏标题  不超过4个 TODO
                 if let cell = self?.tables.cellForRow(at: indexpath) as? ScrollerNewsCell, let titles = cell.mode{
                     let news = MagazMainViewController()
@@ -685,15 +688,15 @@ extension DashboardViewController{
                     //self.navigationController?.pushViewController(news, animated: true)
                     self?.navigateTo(vc: news)
                 }
-                
-                
+
+
             }
-            
+
             else if indexpath.section == 1{
                 return
             }
             else if  let cell = self?.tables.cellForRow(at: indexpath) as? CommonJobTableCell, let data = cell.mode{
-                
+
                 let detail = JobDetailViewController()
                 detail.job = (data.jobId ?? "", data.kind ?? .none)
                 //detail.hidesBottomBarWhenPushed = true
@@ -702,18 +705,19 @@ extension DashboardViewController{
                 //self.navigationController?.pushViewController(detail, animated: true)
                 self?.navigateTo(vc: detail)
             }
-            
+
         }).disposed(by: disposebag)
-        
-        
-        
-        
-        // section data bind to tableDatasource
+
+
+
+
+//        // section data bind to tableDatasource
+        // 导致 自身引用未释放？
         vm.sections.asDriver().drive(self.tables.rx.items(dataSource: self.dataSource())).disposed(by: disposebag)
-        
+//
         vm.refreshStatus.asDriver(onErrorJustReturn: .none).drive(onNext: {
             [weak self] status in
-            
+
             switch status{
             case .beginHeaderRefrsh:
                 self?.tables.mj_header.beginRefreshing()
@@ -721,11 +725,11 @@ extension DashboardViewController{
                 // 重置下拉刷新状态
                 self?.tables.mj_footer.resetNoMoreData()
                 //正常结束刷新后，显示界面
-                self?.tables.mj_header.endRefreshing(completionBlock: {
+                self?.tables.mj_header.endRefreshing(completionBlock: { [weak self] in
                     self?.didFinishloadData()
                 })
-               
-            
+
+
             case .beginFooterRefresh:
                 self?.tables.mj_footer.beginRefreshing()
             case .endFooterRefresh:
@@ -736,20 +740,20 @@ extension DashboardViewController{
                 // 加载错误 TODO
                 // 网络没信号 TODO
                 self?.showError()
-                
+
             default:
                 break
             }
         }).disposed(by: disposebag)
-        
-        
-    
+
+
+
         // 轮播图
-        vm.banners.asDriver(onErrorJustReturn: []).debug().drive(onNext: { [unowned self]  (rotates) in
+        vm.banners.asDriver(onErrorJustReturn: []).debug().drive(onNext: { [weak self]  (rotates) in
             //self.page.numberOfPages = rotates.count
             //RotateCategory
             var copy =  rotates as [ImageBanner]
-            self.imagescroller.buildImages(banners: &copy)
+            self?.imagescroller.buildImages(banners: &copy)
 //
 //            let width = self.imagescroller.width
 //            let height = self.imagescroller.height
@@ -757,8 +761,8 @@ extension DashboardViewController{
 //            rotates.forEach{
 //                self.rotateText.append($0.link ?? "")
 //            }
-            
-            
+
+
 //            if rotates.isEmpty{
 //                return
 //            }else{
@@ -771,7 +775,7 @@ extension DashboardViewController{
 //                var  arrays = rotates
 //                arrays.append(first)
 //                arrays.insert(last, at: 0)
-            
+
 //                for (n,item) in arrays.enumerated(){
 //
 //                    guard  item.imageURL != nil, item.link != nil else { continue }
@@ -805,7 +809,7 @@ extension DashboardViewController{
                 //self.imagescroller.createTimer()
 //                self.imagescroller.startScroller()
 //                self.imagescroller.pageCount = rotates.count
-                
+
             }).disposed(by: disposebag)
         
     }
@@ -871,23 +875,6 @@ extension DashboardViewController{
         
     }
 }
-
-// 点击banner
-//extension DashboardViewController{
-//
-//    @objc private func selectBanner(_ tap:UITapGestureRecognizer){
-//        guard  let image = tap.view as? UIImageView else {
-//            return
-//        }
-//        if image.tag < rotateText.count && image.tag >= 0{
-//            //
-//            let webView = BaseWebViewController()
-//            webView.mode = rotateText[image.tag]
-//            webView.hidesBottomBarWhenPushed = true
-//            self.navigationController?.pushViewController(webView, animated: true)
-//        }
-//    }
-//}
 
 
 

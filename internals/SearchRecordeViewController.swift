@@ -87,6 +87,7 @@ final class clearAllView:UIView {
         
     }
     
+   
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -228,6 +229,10 @@ class SearchRecordeViewController: UIViewController {
         
         
     }
+    
+    deinit {
+        print("deinit searchRecord \(String.init(describing: self))")
+    }
 
 }
 
@@ -281,9 +286,7 @@ extension SearchRecordeViewController{
 extension SearchRecordeViewController{
     
     private func setViewModel(){
-        
-        
-        
+    
         NotificationCenter.default.rx.notification(NotificationName.searchType).subscribe(onNext: {  [weak self] (notify) in
             guard let `self` = self else {
                 return
@@ -337,8 +340,11 @@ extension SearchRecordeViewController{
         
         
         
-        searchItems.share().debug().observeOn(MainScheduler.instance).bind(to: self.historyTable.rx.items(cellIdentifier: cellIdentity, cellType: UITableViewCell.self)){ (row, element, cell) in
-            
+        // 加上 weak self 释放 ！！
+        searchItems.share().debug().observeOn(MainScheduler.instance).bind(to: self.historyTable.rx.items(cellIdentifier: cellIdentity, cellType: UITableViewCell.self)){ [weak self] (row, element, cell) in
+            guard let `self` = self else {
+                return
+            }
             if row == 0 {
                 cell.selectionStyle = .none
                 cell.textLabel?.text =  element
@@ -363,7 +369,7 @@ extension SearchRecordeViewController{
             //btn.tag = cIdx.row - 1
             
             //btn.addTarget(self, action: #selector(self.removeItem), for: .touchUpInside)
-            _ = btn.rx.tap.takeUntil(self.rx.deallocated).subscribe(onNext: {  [weak self] _ in
+             btn.rx.tap.subscribe(onNext: {  [weak self] _ in
                 guard let `self` = self else {
                     return
                 }
@@ -371,7 +377,7 @@ extension SearchRecordeViewController{
                 self.searchTable.deleteSearch(type: self.searchType,name: element)
                 self.searchItems.onNext(self.searchTable.getSearches(type: self.searchType))
 
-            })
+            }).disposed(by: self.dispose)
             cell.separatorInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 0)
             cell.accessoryView = btn
         }.disposed(by: dispose)

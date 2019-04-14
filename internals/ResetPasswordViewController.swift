@@ -107,6 +107,9 @@ class ResetPasswordViewController: UIViewController {
     }
 
 
+    deinit {
+        print("deinit resetpassword \(String.init(describing: self))")
+    }
 }
 
 extension ResetPasswordViewController{

@@ -46,7 +46,9 @@ class MainTabBarViewController: UITabBarController {
     }
     
     
-    
+    deinit {
+        print("deinit maintab")
+    }
     
 
     

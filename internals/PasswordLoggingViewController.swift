@@ -171,7 +171,11 @@ extension PasswordLoggingViewController{
                 if index.row == 0 {
                     
                     cell.textFiled.leftImage = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30), image: #imageLiteral(resourceName: "me").withRenderingMode(.alwaysTemplate), highlightedImage: nil)
-                    cell.textFiled.rx.text.orEmpty.bind(to: self.account).disposed(by: self.dispose)
+                    cell.textFiled.rx.text.orEmpty.bind(to: self.account).disposed(by: cell.disposeBag)
+                    if let account =  GlobalUserInfo.shared.getAccount(){
+                        cell.textFiled.text = account
+                        cell.textFiled.rx.text.onNext(account)
+                    }
                     
                 }else if index.row == 1{
                     
@@ -179,7 +183,11 @@ extension PasswordLoggingViewController{
                     cell.textFiled.rightBtn = self.lash
                     cell.textFiled.showLine = false
                     cell.textFiled.isSecureTextEntry = true
-                    cell.textFiled.rx.text.orEmpty.bind(to: self.pwd).disposed(by: self.dispose)
+                    cell.textFiled.rx.text.orEmpty.bind(to: self.pwd).disposed(by: cell.disposeBag)
+                    if let pwd = GlobalUserInfo.shared.getPassword(){
+                        cell.textFiled.text = pwd
+                        cell.textFiled.rx.text.onNext(pwd)
+                    }
                 }
                 cell.textFiled.placeholder = element
                 cell.textFiled.leftView?.tintColor = UIColor.orange

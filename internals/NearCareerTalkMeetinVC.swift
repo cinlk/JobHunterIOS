@@ -66,6 +66,9 @@ class NearCareerTalkMeetinVC: BaseViewController {
         self.loadData()
     }
     
+    deinit {
+        print("deinit aroundCarrerTalkVC \(String.init(describing: self))")
+    }
 
 }
 

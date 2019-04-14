@@ -80,19 +80,9 @@ class SearchResultController: BaseViewController {
         super.setViews()
     }
     
-//    override func showError() {
-//        super.showError()
-//    }
-//
-//    override func reload() {
-//        super.reload()
-//
-//    }
-//
-//    override func didFinishloadData() {
-//        // 不让hub 从view 中移除
-//        super.didFinishloadData()
-//    }
+    deinit {
+        print("deinit searchResult \(String.init(describing: self))")
+    }
     
 }
 

@@ -39,7 +39,7 @@ class MagazMainViewController: UIViewController {
         }
     }
     
-    private var pageTitleV:PagetitleView!
+    //private var pageTitleV:PagetitleView!
     private var pageContentV:PageContentView!
     
     private var pageScrollTitleView:PageScrollTitleView!
@@ -69,6 +69,9 @@ class MagazMainViewController: UIViewController {
         self.navigationController?.removeCustomerView()
     }
     
+    deinit {
+        print("deinit magzMVC \(String.init(describing: self))")
+    }
 
 }
 

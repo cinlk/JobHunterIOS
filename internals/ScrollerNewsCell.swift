@@ -83,6 +83,7 @@ class ScrollerNewsCell: UITableViewCell {
     }
     
     deinit {
+        print("deinit scroller news")
         self.stopScheduler()
     }
 }
