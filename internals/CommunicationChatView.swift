@@ -902,30 +902,86 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
    private func sendImage(data:Data, imageName: String){
         let file = AVFile.init(data: data, name: imageName)
         let imgIM = AVIMImageMessage.init(text: "图片消息", file: file, attributes: ["type":"image", "name": imageName])
-        self.conversation?.send(imgIM, callback: { [weak self]  (success, error) in
-            if success{
-                if let msg = Mapper<PicutreMessage>.init().map(JSON: [
-                    "conversation_id": (self?.conversation?.conversationId)!,
-                    "type": MessgeType.picture.describe,
-                    "content": imageName,
-                    "fileName": imageName,
-                    "creat_time": Date.init().timeIntervalSince1970,
-                    "is_read": true,
-                    "sender_id":GlobalUserInfo.shared.getId()!,
-                    "receiver_id": (self?.hr?.userID)!
-                    ]){
-                    
+    
+        guard let msg = Mapper<PicutreMessage>.init().map(JSON: [
+            "conversation_id": (self.conversation?.conversationId)!,
+            "type": MessgeType.picture.describe,
+            "content": imageName,
+            "fileName": imageName,
+            "creat_time": Date.init().timeIntervalSince1970,
+            "is_read": true,
+            "sender_id":GlobalUserInfo.shared.getId()!,
+            "receiver_id": (self.hr?.userID)!
+            ])else{
+            self.tableView.showToast(title: "创建消息失败", customImage: nil, mode: .text)
+            return
+        }
+        // 先把图片加入tableview
+        self.reloads(mes: msg)
+        // 图片cell
+        let imageRow = self.tableView.datas.count - 1
+        let indexPath = IndexPath.init(row: imageRow, section: 0)
+    
+        guard let cell = self.tableView.cellForRow(at: indexPath) as? ImageCell else {
+            self.tableView.showToast(title: "未找到image cell", customImage: nil, mode: .text)
+            return
+        }
+        let option = AVIMMessageOption.init()
+        option.priority = AVIMMessagePriority.low
+        self.conversation?.send(imgIM, option: option, progressBlock: {  (progress) in
+            print("发送图片进度--->  \(String.init(describing: progress))")
+            // 根据状态刷新 图片进度
+            if !cell.activity.isAnimating{
+                cell.activity.startAnimating()
+            }
+            
+            //self?.tableView.reloadRows(at: [IndexPath.init(row: <#T##Int#>, section: <#T##Int#>)], with: .automatic)
+        }, callback: { [weak self] (success, error) in
+            // 模拟延迟 查看进度状态
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5, execute: {
+                if success{
+                    // 刷新图片 成功状态
+                    cell.activity.stopAnimating()
+                    // 存入数据库
                     try? self?.conversationManager.insertMessageItem(items: [msg])
-                    self?.reloads(mes: msg)
+                    return
                 }
-                
-                return
-            }
-            if error != nil{
-                self?.tableView.showToast(title: "发送图片错位\(String.init(describing: error))", duration: 3, customImage: nil, mode: .text)
-            }
+                if error != nil{
+                    // 刷新图片 失败状态
+                    self?.tableView.showToast(title: "发送图片失败", customImage: nil, mode: .text)
+                    cell.activity.stopAnimating()
+                    cell.imageV.image = UIImage.init(named: "placeholder")
+                    
+                }
+            })
+            
+            
         })
-        
+//        self.conversation?.send(imgIM, callback: { [weak self]  (success, error) in
+//
+//            if success{
+//                if let msg = Mapper<PicutreMessage>.init().map(JSON: [
+//                    "conversation_id": (self?.conversation?.conversationId)!,
+//                    "type": MessgeType.picture.describe,
+//                    "content": imageName,
+//                    "fileName": imageName,
+//                    "creat_time": Date.init().timeIntervalSince1970,
+//                    "is_read": true,
+//                    "sender_id":GlobalUserInfo.shared.getId()!,
+//                    "receiver_id": (self?.hr?.userID)!
+//                    ]){
+//
+//                    try? self?.conversationManager.insertMessageItem(items: [msg])
+//                    self?.reloads(mes: msg)
+//                }
+//
+//                return
+//            }
+//            if error != nil{
+//                self?.tableView.showToast(title: "发送图片错位\(String.init(describing: error))", duration: 3, customImage: nil, mode: .text)
+//            }
+//        })
+    
     }
     
     private func  reloads(mes: MessageBoby){

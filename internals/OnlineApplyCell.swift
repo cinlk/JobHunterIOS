@@ -90,8 +90,8 @@ fileprivate let imgIcon:CGSize = CGSize.init(width: 45, height: 45)
                  _ = self.icon.sd_layout().leftSpaceToView(self.contentView,0)?.topSpaceToView(self.contentView,5)?.widthIs(0)?.autoHeightRatio(1)
                 
             }else if let url =  mode.companyIconURL {
-                
-                self.icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                self.icon.kf.indicatorType = .activity
+                self.icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "placeholder"), options: nil, progressBlock: nil, completionHandler: nil)
             }
             
             self.name.attributedText = name

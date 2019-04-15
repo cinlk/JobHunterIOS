@@ -29,7 +29,10 @@ class GraduateJobsViewController: UIViewController {
     internal lazy var cityMenu:DropItemCityView = {
         let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeigh))
         // 覆盖指定高度
-        city.passData = { citys in
+        city.passData = { [weak self] citys in
+            guard let `self` = self else {
+                return
+            }
             if self.req.setCitys(citys: citys){
                 self.table.mj_header.beginRefreshing()
             }
@@ -42,10 +45,13 @@ class GraduateJobsViewController: UIViewController {
     
     
     // 职业类型
-    lazy var careerClassify:DropCarrerClassifyView = { [unowned self] in
+    lazy var careerClassify:DropCarrerClassifyView = {
         let subBusiness = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeigh))
         subBusiness.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + JobHomeVC.titleHeight())
-        subBusiness.passData = { field in
+        subBusiness.passData = { [weak self] field in
+            guard let `self` = self else {
+                return
+            }
             if self.req.setBusinessField(b: field){
                 self.table.mj_header.beginRefreshing()
             }
@@ -56,9 +62,12 @@ class GraduateJobsViewController: UIViewController {
     
     
     
-    lazy var degree:DropDegreeMenuView = { [unowned self] in
+    lazy var degree:DropDegreeMenuView = {
         let v = DropDegreeMenuView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeigh))
-        v.passData = { degree in
+        v.passData = { [weak self] degree in
+            guard let `self` = self else {
+                return
+            }
             if self.req.setDegree(d: degree){
                 self.table.mj_header.beginRefreshing()
             }
@@ -72,7 +81,7 @@ class GraduateJobsViewController: UIViewController {
     
     
     // 自定义条件选择下拉菜单view
-    private lazy var dropMenu: YNDropDownMenu = { [unowned self] in
+    private lazy var dropMenu: YNDropDownMenu = {
         
         let menu = configDropMenu(items: [cityMenu,careerClassify,degree], titles: dropMenuTitles, height: GlobalConfig.dropMenuViewHeight, originY: 0)
         menu.setLabelFontWhen(normal: .systemFont(ofSize: 16), selected: .boldSystemFont(ofSize: 16), disabled: .systemFont(ofSize: 16))
@@ -81,7 +90,7 @@ class GraduateJobsViewController: UIViewController {
     }()
     
     
-    private lazy var table:UITableView = {
+    private lazy var table:UITableView = { [unowned self] in
         
         let table = UITableView()
         table.register(CommonJobTableCell.self, forCellReuseIdentifier: CommonJobTableCell.identity())
@@ -160,6 +169,9 @@ class GraduateJobsViewController: UIViewController {
         //self.navigationController
     }
     
+    deinit {
+        print("deinit graduateJobListVC \(String.init(describing: self))")
+    }
 }
 
 
@@ -175,8 +187,8 @@ extension GraduateJobsViewController{
     
     private func setViewModel(){
         
-        self.vm.graduateRes.share().subscribe(onNext: { (jobs) in
-            self.datas = jobs
+        self.vm.graduateRes.share().subscribe(onNext: { [weak self] (jobs) in
+            self?.datas = jobs
         }).disposed(by: dispose)
         
         
@@ -184,7 +196,11 @@ extension GraduateJobsViewController{
             cell.mode = mode
         }.disposed(by: dispose)
         
-        self.vm.graduateRefreshStasu.asDriver(onErrorJustReturn: .none).drive(onNext: { (status) in
+        self.vm.graduateRefreshStasu.asDriver(onErrorJustReturn: .none).drive(onNext: { [weak self] (status) in
+            guard let `self` = self else{
+                return
+            }
+            
             switch status{
                 case .endHeaderRefresh:
                     self.table.mj_header.endRefreshing()
@@ -206,7 +222,10 @@ extension GraduateJobsViewController{
         
         // table
         
-        self.table.rx.itemSelected.subscribe(onNext: { (idx) in
+        self.table.rx.itemSelected.subscribe(onNext: { [weak self] (idx) in
+            guard let `self` = self else{
+                return
+            }
             self.table.deselectRow(at: idx, animated: false)
             let mode = self.datas[idx.row]
             let graduateJob = JobDetailViewController()

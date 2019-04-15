@@ -18,7 +18,7 @@ fileprivate let cellH:CGFloat = 30
     
     var chooseAddress:((_ adress:String)->Void)?
     
-    private lazy var address:UITableView = {
+    private lazy var address:UITableView = { [unowned self] in
         let tb = UITableView()
         tb.tableFooterView = UIView()
         tb.backgroundColor = UIColor.white

@@ -104,9 +104,12 @@ extension MainColumnistCell{
             btn.tag = idx
             btn.backgroundColor = UIColor.white
             if let url = URL.init(string: item.ImageUrl ?? ""){
+            
+            
+                btn.kf.setImage(with: Source.network(url), for: .normal, placeholder: #imageLiteral(resourceName: "placeholder"), options:
+                    nil, progressBlock: nil, completionHandler: nil)
                 
-                btn.kf.setImage(with: Source.network(url), for: .normal, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
-                btn.kf.setImage(with: Source.network(url), for: .highlighted, placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                btn.kf.setImage(with: Source.network(url), for: .highlighted, placeholder: #imageLiteral(resourceName: "picture"), options:nil, progressBlock: nil, completionHandler: nil)
             }
             
            

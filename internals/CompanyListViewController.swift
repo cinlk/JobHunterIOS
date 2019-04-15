@@ -28,7 +28,10 @@ class CompanyListViewController: UIViewController {
     
     private lazy var cityMenu:DropItemCityView = {
         let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeight))
-        city.passData = { citys in
+        city.passData = { [weak self]  citys in
+            guard let `self` = self else {
+                return
+            }
             if self.req.setCitys(citys: citys){
                 self.table.mj_header.beginRefreshing()
             }
@@ -41,7 +44,11 @@ class CompanyListViewController: UIViewController {
     private lazy var industryKind:DropItemIndustrySectorView = {
         let indus = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeight))
         
-        indus.passData = { b in
+        indus.passData = { [weak self] b in
+            guard let `self` = self else {
+                return
+            }
+            
             if self.req.setBusinessField(b: b){
                 self.table.mj_header.beginRefreshing()
             }
@@ -55,7 +62,11 @@ class CompanyListViewController: UIViewController {
     private lazy var companyType:DropCompanyPropertyView = {
         let comp = DropCompanyPropertyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeight))
         
-        comp.passData = { t in
+        comp.passData = { [weak self] t in
+            guard let `self` = self else {
+                return
+            }
+            
             if self.req.setCompanyType(t: t){
                 self.table.mj_header.beginRefreshing()
             }
@@ -68,7 +79,7 @@ class CompanyListViewController: UIViewController {
     
     
     // 自定义条件选择下拉菜单view
-    private lazy var dropMenu: YNDropDownMenu = { [unowned self] in
+    private lazy var dropMenu: YNDropDownMenu = {
         
         
         let menu = configDropMenu(items: [cityMenu,industryKind, companyType], titles: dropMenuTitles, height: GlobalConfig.dropMenuViewHeight, originY: 0)
@@ -77,7 +88,7 @@ class CompanyListViewController: UIViewController {
         
     }()
     
-    private lazy var table:UITableView = {
+    private lazy var table:UITableView = { [unowned self] in
         let table = UITableView()
         table.tableFooterView = UIView()
         table.backgroundColor = UIColor.viewBackColor()
@@ -90,6 +101,7 @@ class CompanyListViewController: UIViewController {
     
     // refresh
     private lazy var refreshHeader:MJRefreshNormalHeader = {
+        
         let h = MJRefreshNormalHeader.init { [weak self] in
             guard let s = self else {
                 return
@@ -136,6 +148,10 @@ class CompanyListViewController: UIViewController {
         
     }
     
+    deinit {
+        print("company listVC \(String.init(describing: self))")
+    }
+    
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.view,GlobalConfig.dropMenuViewHeight)?.bottomEqualToView(self.view)
@@ -170,8 +186,8 @@ extension CompanyListViewController{
     
     private func  setViewModel(){
         
-        self.vm.companyRes.share().asDriver(onErrorJustReturn: []).drive(onNext: { (companys) in
-            self.datas = companys
+        self.vm.companyRes.share().asDriver(onErrorJustReturn: []).drive(onNext: { [weak self] (companys) in
+            self?.datas = companys
         }).disposed(by: dispose)
         
         self.vm.companyRes.share().bind(to: self.table.rx.items(cellIdentifier: CompanyItemCell.identity(), cellType: CompanyItemCell.self)) { (row, mode, cell) in
@@ -179,20 +195,20 @@ extension CompanyListViewController{
         }.disposed(by: dispose)
     
     
-        self.vm.companyRefreshStatus.asDriver(onErrorJustReturn: .none).drive(onNext: { (status) in
+        self.vm.companyRefreshStatus.asDriver(onErrorJustReturn: .none).drive(onNext: { [weak self] (status) in
             switch status{
             case .endFooterRefresh:
-                self.table.mj_footer.endRefreshing()
+                self?.table.mj_footer.endRefreshing()
             case .endHeaderRefresh:
-                self.table.mj_footer.resetNoMoreData()
-                self.table.mj_header.endRefreshing()
+                self?.table.mj_footer.resetNoMoreData()
+                self?.table.mj_header.endRefreshing()
             case .NoMoreData:
-                self.table.mj_footer.endRefreshingWithNoMoreData()
+                self?.table.mj_footer.endRefreshingWithNoMoreData()
             case .error(let err):
-                self.view.showToast(title: "get error \(err)", customImage: nil, mode: .text)
+                self?.view.showToast(title: "get error \(err)", customImage: nil, mode: .text)
                 //showOnlyTextHub(message: "get error \(err)", view: self.view)
-                self.table.mj_header.endRefreshing()
-                self.table.mj_footer.endRefreshing()
+                self?.table.mj_header.endRefreshing()
+                self?.table.mj_footer.endRefreshing()
             default:
                 break
             }
@@ -200,13 +216,15 @@ extension CompanyListViewController{
         }).disposed(by: dispose)
     
         
-        self.table.rx.itemSelected.subscribe(onNext: { (idx) in
-                self.table.deselectRow(at: idx, animated: false)
-                let mode = self.datas[idx.row]
-                let companyVC = CompanyMainVC()
-                companyVC.companyID = mode.companyID
-                companyVC.hidesBottomBarWhenPushed = true
-                self.navigationController?.pushViewController(companyVC, animated: true)
+        self.table.rx.itemSelected.subscribe(onNext: { [weak self] (idx) in
+                self?.table.deselectRow(at: idx, animated: false)
+                if let mode = self?.datas[idx.row]{
+                    let companyVC = CompanyMainVC()
+                    companyVC.companyID = mode.companyID
+                    companyVC.hidesBottomBarWhenPushed = true
+                    self?.navigationController?.pushViewController(companyVC, animated: true)
+                    
+                }
             
         }).disposed(by: dispose)
     

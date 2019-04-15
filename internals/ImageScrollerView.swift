@@ -200,7 +200,7 @@ extension ImageScrollerView{
             guard  item.imageURL != nil, item.link != nil else { continue }
             
             
-            let imageView = UIImageView(frame:CGRect(x: CGFloat(index) * self.width, y: 0, width: self.width, height: self.height))
+            var imageView = UIImageView(frame:CGRect(x: CGFloat(index) * self.width, y: 0, width: self.width, height: self.height))
             // 记录tag
             imageView.tag = index - 1
             imageView.isUserInteractionEnabled = true
@@ -212,7 +212,9 @@ extension ImageScrollerView{
             
             //(TODO) get image from url
             if let url = URL.init(string: item.imageURL ?? ""){
-                 imageView.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "banner3"), options: nil, progressBlock: nil, completionHandler: nil)
+                 // 没有 图片？？
+                 //imageView.kf.indicatorType = IndicatorType.activity
+                 imageView.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "placeholder"), options: nil, progressBlock: nil, completionHandler: nil)
             }
             
             //imageView.image = UIImage.init(named: item.imageURL ?? ROTATE_IMA)

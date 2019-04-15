@@ -120,7 +120,7 @@ class JuBaoViewController: UIViewController {
     
    
     
-    private lazy var  tableFooter:tableFootView = {
+    private lazy var  tableFooter:tableFootView = { [unowned self] in
         let v = tableFootView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: tableFootViewH), vc: self)
         return v
     }()
@@ -137,7 +137,9 @@ class JuBaoViewController: UIViewController {
         
     }
     
-
+    deinit {
+        print("deinit jubaoVC \(String.init(describing: self))")
+    }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
@@ -160,7 +162,10 @@ class JuBaoViewController: UIViewController {
 extension JuBaoViewController{
     
     private func setViewModel(){
-    _ = NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification).takeUntil(self.rx.deallocated).subscribe(onNext: { (notify) in
+    _ = NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification).takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] (notify) in
+            guard let `self` = self else{
+                return
+            }
             if  let keyboradFram = notify.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect{
                 
                 //  table 上移距离计算
@@ -169,17 +174,17 @@ extension JuBaoViewController{
                 let scrollUpHeight = keyboradFram.height - bottonHeight - GlobalConfig.NavH
                 
                 if scrollUpHeight > 0{
-                    UIView.animate(withDuration: 0.3) {
-                        self.table.contentInset = UIEdgeInsets(top: -scrollUpHeight,left: 0, bottom: 0, right: 0)
+                    UIView.animate(withDuration: 0.3) { [weak self] in
+                        self?.table.contentInset = UIEdgeInsets(top: -scrollUpHeight,left: 0, bottom: 0, right: 0)
                     }
                     
                 }
             }
         })
         
-        _ = NotificationCenter.default.rx.notification(UIResponder.keyboardWillHideNotification).takeUntil(self.rx.deallocated).subscribe(onNext: { (notify) in
-                UIView.animate(withDuration: 0.3) {
-                    self.table.contentInset = UIEdgeInsets.zero
+        _ = NotificationCenter.default.rx.notification(UIResponder.keyboardWillHideNotification).takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self]  (notify) in
+                UIView.animate(withDuration: 0.3) { [weak self]  in
+                    self?.table.contentInset = UIEdgeInsets.zero
                 }
             })
     }

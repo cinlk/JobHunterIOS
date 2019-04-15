@@ -75,7 +75,8 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 40, height: 40)
             
             // 头像 
             if let url = mode.icon{
-                self.icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                self.icon.kf.indicatorType = .activity
+                self.icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "picture"), options: nil, progressBlock: nil, completionHandler: nil)
             }
       
             name.text = mode.name

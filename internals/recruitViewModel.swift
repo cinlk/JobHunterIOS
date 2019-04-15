@@ -225,8 +225,10 @@ extension RecruitViewModel{
             
             self.httpServer.getOnlineApply(req: req).asDriver(onErrorJustReturn: [])
             
-            }.subscribe(onNext: { (modes) in
-                
+            }.subscribe(onNext: {  [weak self] (modes) in
+                guard let `self` = self else {
+                    return
+                }
                 // 下拉刷新没有数据
                 if modes.isEmpty &&  self.onlineApplyPullDown == false{
                     
@@ -256,7 +258,11 @@ extension RecruitViewModel{
             self.internPullDown = req.offset == 0 ? true : false
         }).flatMapLatest { req in
             self.httpServer.getInternJobs(req: req).asDriver(onErrorJustReturn: [])
-            }.subscribe(onNext: { (modes) in
+            }.subscribe(onNext: { [weak self] (modes) in
+                guard let `self` = self else {
+                    return
+                }
+                
                 if modes.isEmpty && self.internPullDown == false{
                     self.internRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                     return
@@ -280,7 +286,11 @@ extension RecruitViewModel{
             self.graduatePullDown = req.offset == 0 ? true : false
         }).flatMapLatest { req in
             self.httpServer.getGraduateJobs(req: req).asDriver(onErrorJustReturn: [])
-            }.subscribe(onNext: { (modes) in
+            }.subscribe(onNext: { [weak self] (modes) in
+                guard let `self` = self else{
+                    return
+                }
+                
                 if modes.isEmpty && self.graduatePullDown == false {
                     self.graduateRefreshStasu.onNext(PageRefreshStatus.NoMoreData)
                     return
@@ -303,7 +313,11 @@ extension RecruitViewModel{
             self.recruitMeetingPullDown  =  req.offset == 0 ? true : false
         }).flatMapLatest { req in
             self.httpServer.getRecruiteMeetings(req: req).asDriver(onErrorJustReturn: [])
-            }.subscribe(onNext: { modes in
+            }.subscribe(onNext: { [weak self] modes in
+                guard let `self` = self else{
+                    return
+                }
+                
                 if modes.isEmpty && self.recruitMeetingPullDown == false {
                     self.recruitMeetingRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                     return
@@ -328,7 +342,10 @@ extension RecruitViewModel{
             self.companyRecruitMeetingPullDown = req.offset == 0 ? true : false
         }).flatMapLatest { (req)  in
                self.httpServer.getCompanyRecruitMeetings(req: req).asDriver(onErrorJustReturn: [])
-            }.subscribe(onNext: { (modes) in
+            }.subscribe(onNext: { [weak self] (modes) in
+                guard let `self` = self else {
+                    return
+                }
                 if modes.isEmpty && self.companyRecruitMeetingPullDown == false {
                     self.companyRecruitMeetingRefeshStatus.onNext(PageRefreshStatus.NoMoreData)
                     return
@@ -353,7 +370,10 @@ extension RecruitViewModel{
             self.companyPullDown =  req.offset == 0 ? true : false
         }).flatMapLatest { req in
             self.httpServer.getCompany(req: req).asDriver(onErrorJustReturn: [])
-            }.subscribe(onNext: { (modes) in
+            }.subscribe(onNext: { [weak self]  (modes) in
+                guard let `self` = self else {
+                    return
+                }
                 if modes.isEmpty && self.companyPullDown == false {
                     self.companyRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                     return
@@ -376,7 +396,10 @@ extension RecruitViewModel{
             self.combinationPullDown = req.offset == 0 ? true : false
         }).flatMapLatest { req  in
             self.httpServer.getCompanyTagsData(req: req).asDriver(onErrorJustReturn: [])
-            }.subscribe(onNext: { (modes) in
+            }.subscribe(onNext: { [weak self] (modes) in
+                guard let `self` = self else{
+                    return
+                }
                 if modes.isEmpty && self.combinationPullDown == false{
                     self.combinationlistRefreshStatus.onNext(PageRefreshStatus.NoMoreData)
                     return

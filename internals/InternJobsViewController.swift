@@ -32,7 +32,10 @@ class InternJobsViewController: UIViewController {
         let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeigh))
         city.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + jobHomeTitleH)
         
-        city.passData = { citys in
+        city.passData = { [weak self] citys in
+            guard let `self` = self else {
+                return
+            }
             if self.req.setCitys(citys: citys){
                 self.table.mj_header.beginRefreshing()
             }
@@ -44,7 +47,10 @@ class InternJobsViewController: UIViewController {
     private lazy var kind:DropCarrerClassifyView = {
         let k = DropCarrerClassifyView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeigh))
         k.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + jobHomeTitleH)
-        k.passData = { b in
+        k.passData = { [weak self] b in
+            guard let `self` = self else {
+                return
+            }
             if self.req.setBusinessField(b: b){
                 self.table.mj_header.beginRefreshing()
             }
@@ -57,8 +63,9 @@ class InternJobsViewController: UIViewController {
     private lazy var intern:DropInternCondtionView = {
         let intern = DropInternCondtionView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeigh))
         intern.backGroundBtn.frame =  CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + jobHomeTitleH)
-        intern.passData = {  condition in
-            guard let c = condition else {
+        intern.passData = { [weak self]  condition in
+            
+            guard let `self` = self, let c = condition else {
                 return
             }
             if self.req.setCondition(c: c){
@@ -69,7 +76,7 @@ class InternJobsViewController: UIViewController {
     }()
     
     
-    lazy var dropMenu: YNDropDownMenu = { [unowned self] in
+    lazy var dropMenu: YNDropDownMenu = {
         
         let menu = configDropMenu(items: [cityMenu,kind,intern], titles: dropMenuTitles, height: GlobalConfig.dropMenuViewHeight, originY: 0)
         menu.setLabelFontWhen(normal: .systemFont(ofSize: 16), selected: .boldSystemFont(ofSize: 16), disabled: .systemFont(ofSize: 16))
@@ -78,7 +85,7 @@ class InternJobsViewController: UIViewController {
     }()
     
     
-    private lazy var table:UITableView = {
+    private lazy var table:UITableView = { [unowned self] in
         let table = UITableView()
         
         table.register(CommonJobTableCell.self, forCellReuseIdentifier: CommonJobTableCell.identity())
@@ -155,6 +162,10 @@ class InternJobsViewController: UIViewController {
         
     }
     
+    deinit {
+        print("deinit internJob \(String.init(describing: self))")
+    }
+    
 }
 
 
@@ -172,8 +183,8 @@ extension InternJobsViewController{
     }
     
     private func setViewModel(){
-        self.vm.internRes.share().subscribe(onNext: { (interns) in
-            self.datas = interns
+        self.vm.internRes.share().subscribe(onNext: { [weak self] (interns) in
+            self?.datas = interns
         }).disposed(by: dispose)
         
         self.vm.internRes.share().bind(to: self.table.rx.items(cellIdentifier: CommonJobTableCell.identity(), cellType: CommonJobTableCell.self)){ (row, mode, cell) in
@@ -182,7 +193,10 @@ extension InternJobsViewController{
         }.disposed(by: dispose)
         
         
-        self.vm.internRefreshStatus.asDriver(onErrorJustReturn: .none).drive(onNext: { (status) in
+        self.vm.internRefreshStatus.asDriver(onErrorJustReturn: .none).drive(onNext:  { [weak self] (status) in
+            guard let `self` = self else {
+                return
+            }
             switch status{
             case .endHeaderRefresh:
                 self.table.mj_footer.resetNoMoreData()
@@ -203,7 +217,10 @@ extension InternJobsViewController{
         }).disposed(by: dispose)
         
         
-        self.table.rx.itemSelected.subscribe(onNext: { (idx) in
+        self.table.rx.itemSelected.subscribe(onNext: { [weak self] (idx) in
+            guard let `self` = self else{
+                return
+            }
             self.table.deselectRow(at: idx, animated: false)
             let mode = self.datas[idx.row]
             let internJob = JobDetailViewController()

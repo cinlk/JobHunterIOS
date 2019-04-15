@@ -34,7 +34,7 @@ class CompanyJobsVC: BaseViewController {
     private var firstRefreshead:Bool = false
     
     
-    lazy var joblistTable:UITableView = {
+    lazy var joblistTable:UITableView = { [unowned self] in
         
         let tb = UITableView.init(frame: CGRect.zero)
         tb.tableFooterView = UIView.init()
@@ -142,6 +142,10 @@ class CompanyJobsVC: BaseViewController {
         self.requestBody.setOffset(offset: 0)
         self.vm.combinationlistRefresh.onNext(self.requestBody)
     }
+    
+    deinit {
+        print("deinit companyJobsVC \(String.init(describing: self))")
+    }
 
 }
 
@@ -153,8 +157,8 @@ extension CompanyJobsVC{
     
     private func  setViewModel(){
         //
-        (self.errorView as EorrorPageDelegate).tap.drive(onNext: {
-            self.reload()
+        (self.errorView as EorrorPageDelegate).tap.drive(onNext: { [weak self] in
+            self?.reload()
             
         }).disposed(by: self.dispose)
         
@@ -192,8 +196,10 @@ extension CompanyJobsVC{
         self.combine.drive(self.joblistTable.rx.items(dataSource: self.dataSource)).disposed(by: self.dispose)
     
         
-        NotificationCenter.default.rx.notification(NotificationName.jobTag, object: nil).subscribe(onNext: { (notify) in
-            
+        NotificationCenter.default.rx.notification(NotificationName.jobTag, object: nil).subscribe(onNext: { [weak self] (notify) in
+            guard let `self` = self else{
+                return
+            }
             if let name = notify.object as? String {
                 
                 if self.requestBody.setTag(t: name){
@@ -206,35 +212,37 @@ extension CompanyJobsVC{
             
         }).disposed(by: dispose)
         
-        self.vm.combinationlistRefreshStatus.asDriver(onErrorJustReturn: .none).drive(onNext: { (status) in
+        self.vm.combinationlistRefreshStatus.asDriver(onErrorJustReturn: .none).drive(onNext: { [weak self] (status) in
             switch status{
                 case .endHeaderRefresh:
-                    self.joblistTable.mj_footer.resetNoMoreData()
-                    self.joblistTable.mj_header.endRefreshing()
+                    self?.joblistTable.mj_footer.resetNoMoreData()
+                    self?.joblistTable.mj_header.endRefreshing()
                    // self.hearRefreshed = true
-                    self.didFinishloadData()
+                    self?.didFinishloadData()
                 case .endFooterRefresh:
-                    self.joblistTable.mj_footer.endRefreshing()
+                    self?.joblistTable.mj_footer.endRefreshing()
                 
                 case .NoMoreData:
-                    self.joblistTable.mj_footer.endRefreshingWithNoMoreData()
+                    self?.joblistTable.mj_footer.endRefreshingWithNoMoreData()
                 case .error(let err):
                     //self.showError()
                     //self.hearRefreshed = false
                     
-                    self.view.showToast(title: "获取数据失败\(err)", customImage: nil, mode: .text)
+                    self?.view.showToast(title: "获取数据失败\(err)", customImage: nil, mode: .text)
                     //showOnlyTextHub(message: "获取数据失败\(err)", view: self.view)
-                    self.showError()
-                    self.joblistTable.mj_header.endRefreshing()
-                    self.joblistTable.mj_footer.endRefreshing()
+                    self?.showError()
+                    self?.joblistTable.mj_header.endRefreshing()
+                    self?.joblistTable.mj_footer.endRefreshing()
                 
                 default:
                     break
             }
         }).disposed(by: dispose)
         
-        self.joblistTable.rx.itemSelected.subscribe(onNext: { (indexPath) in
-            
+        self.joblistTable.rx.itemSelected.subscribe(onNext: { [weak self] (indexPath) in
+            guard let `self` = self else {
+                return
+            }
             self.joblistTable.deselectRow(at: indexPath, animated: true)
             switch self.dataSource[indexPath]{
                 case .JobsItem(let mode):

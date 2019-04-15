@@ -42,7 +42,7 @@ class JobHomeVC: UIViewController, UISearchControllerDelegate {
     }
     
     // 搜索控件
-    private lazy var searchController:BaseSearchViewController = {
+    private lazy var searchController:BaseSearchViewController = { [unowned self] in
         let sc = BaseSearchViewController(searchResultsController: SearchResultController())
         sc.delegate = self
         sc.searchType = .company
@@ -59,7 +59,7 @@ class JobHomeVC: UIViewController, UISearchControllerDelegate {
     }
 
     // 搜索包裹searchBar 的view 目的限制高度，不然navibar 自适应高度为56
-    private lazy var wrapBar:UIView = {
+    private lazy var wrapBar:UIView = { [unowned self] in 
         let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.searchBarH))
         v.backgroundColor = UIColor.clear
         v.addSubview(self.searchController.searchBar)
@@ -146,6 +146,9 @@ class JobHomeVC: UIViewController, UISearchControllerDelegate {
          
     }
     
+    deinit {
+        print("deinit jobHomeVC \(String.init(describing: self))")
+    }
     
 }
 
@@ -165,11 +168,11 @@ extension JobHomeVC {
         
         
         // 搜索代理
-        _ = self.searchController.rx.willPresent.takeUntil(self.rx.deallocated).subscribe(onNext: { _ in
-            self.presentSearchControllFlag = true
+        _ = self.searchController.rx.willPresent.takeUntil(self.rx.deallocated).subscribe(onNext: {  [weak self] _ in
+            self?.presentSearchControllFlag = true
         })
-        _ = self.searchController.rx.didDismiss.takeUntil(self.rx.deallocated).subscribe(onNext: { _ in
-            self.presentSearchControllFlag = false
+        _ = self.searchController.rx.didDismiss.takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] _ in
+            self?.presentSearchControllFlag = false
         })
     
     }

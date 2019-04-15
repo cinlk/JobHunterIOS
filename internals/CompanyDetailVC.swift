@@ -47,7 +47,7 @@ class CompanyDetailVC: UIViewController {
     // deleagte
     weak var delegate:CompanySubTableScrollDelegate?
     
-    private lazy var tap :UIGestureRecognizer  = {
+    private lazy var tap :UIGestureRecognizer  = { [unowned self] in
         let tap = UITapGestureRecognizer()
         tap.addTarget(self, action: #selector(open))
         //tap.delegate = self
@@ -92,6 +92,10 @@ class CompanyDetailVC: UIViewController {
         
     }
 
+    deinit {
+        print("deinit companyDetialVC \(String.init(describing: self))")
+    }
+    
     private func setViews() {
         
         self.view.addSubview(detailTable)
@@ -140,8 +144,8 @@ class CompanyDetailVC: UIViewController {
         
         self.sections.asDriver(onErrorJustReturn: []).drive(self.detailTable.rx.items(dataSource: self.dataSource)).disposed(by: self.dispose)
         
-        self.detailTable.rx.itemSelected.subscribe(onNext: { (indexPath) in
-            self.detailTable.deselectRow(at: indexPath, animated: false)
+        self.detailTable.rx.itemSelected.subscribe(onNext: { [weak self] (indexPath) in
+            self?.detailTable.deselectRow(at: indexPath, animated: false)
         }).disposed(by: self.dispose)
         
 
@@ -214,10 +218,10 @@ extension CompanyDetailVC{
         }
         
         // url
-        openApp(appURL: link, completion:{
+        openApp(appURL: link, completion:{ [weak self]
             bool in
             if bool == false{
-                self.view.showToast(title: "网页打开失败", customImage: nil, mode: .text)
+                self?.view.showToast(title: "网页打开失败", customImage: nil, mode: .text)
             }
         })
     }

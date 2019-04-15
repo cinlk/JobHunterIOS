@@ -45,7 +45,8 @@ import Kingfisher
             }
             
             if let url = mode.iconURL{
-                icon.kf.setImage(with: Source.network(url), placeholder: UIImage.init(named: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                icon.kf.indicatorType = .activity
+                icon.kf.setImage(with: Source.network(url), placeholder: UIImage.init(named: "placeholder"), options: nil, progressBlock: nil, completionHandler: nil)
             }
             
             

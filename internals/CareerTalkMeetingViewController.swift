@@ -31,7 +31,10 @@ class CareerTalkMeetingViewController: UIViewController {
     internal lazy var industry:DropItemIndustrySectorView = {
         let indus = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeight))
         
-        indus.passData = { b in
+        indus.passData = { [weak self]  b in
+            guard let `self` = self else{
+                return
+            }
             if self.req.setBusinessField(b: b){
                 self.table.mj_header.beginRefreshing()
             }
@@ -45,7 +48,10 @@ class CareerTalkMeetingViewController: UIViewController {
     internal lazy var colleges: DropCollegeItemView = {
         let college = DropCollegeItemView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeight))
       
-        college.passData = { c in
+        college.passData = { [weak self] c in
+            guard let `self` = self else{
+                return
+            }
             if let first = c.first{
                 if first.value.contains("不限"){
                     if self.req.setCitys(city: first.key){
@@ -64,11 +70,14 @@ class CareerTalkMeetingViewController: UIViewController {
         return college
     }()
     
-    internal lazy var meetingTime:DropValidTimeView = {  [unowned self] in
+    internal lazy var meetingTime:DropValidTimeView = {
         
         let v1 = DropValidTimeView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 45*3))
         v1.backGroundBtn.frame = CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: GlobalConfig.NavH + jobHomeTitleH)
-        v1.passData = { t in
+        v1.passData = { [weak self]  t in
+            guard let `self` = self else{
+                return
+            }
             if self.req.setTime(t: t){
                 self.table.mj_header.beginRefreshing()
             }
@@ -79,7 +88,7 @@ class CareerTalkMeetingViewController: UIViewController {
     
 
     // 自定义条件选择下拉菜单view
-    lazy var dropMenu: YNDropDownMenu = { [unowned self] in
+    lazy var dropMenu: YNDropDownMenu = {
         
         
         let menu = configDropMenu(items: [colleges, industry, meetingTime], titles: dropMenuTitles, height: GlobalConfig.dropMenuViewHeight, originY: 0)
@@ -88,7 +97,7 @@ class CareerTalkMeetingViewController: UIViewController {
     }()
     
     
-    private lazy var table:UITableView = {
+    private lazy var table:UITableView = { [unowned self] in
         let tb = UITableView()
         tb.register(CareerTalkCell.self, forCellReuseIdentifier: CareerTalkCell.identity())
         tb.tableFooterView = UIView()
@@ -168,6 +177,9 @@ class CareerTalkMeetingViewController: UIViewController {
         self.table.mj_header.beginRefreshing()
         
     }
+    deinit {
+        print("deinit carreerTalklistVC \(String.init(describing: self))")
+    }
 
 }
 
@@ -187,8 +199,9 @@ extension CareerTalkMeetingViewController{
         
         
         //rxSwift
-        self.vm.recruitMeetingRes.share().subscribe(onNext: { (meetings) in
-            self.datas = meetings
+        self.vm.recruitMeetingRes.share().subscribe(onNext: { [weak self] (meetings) in
+            
+            self?.datas = meetings
         }).disposed(by: dispose)
         
         self.vm.recruitMeetingRes.share().bind(to: self.table.rx.items(cellIdentifier: CareerTalkCell.identity(), cellType: CareerTalkCell.self)){ (row, mode, cell) in
@@ -196,7 +209,10 @@ extension CareerTalkMeetingViewController{
         }.disposed(by: dispose)
         
         
-        self.vm.recruitMeetingRefreshStatus.asDriver(onErrorJustReturn: .none).drive(onNext: { (status) in
+        self.vm.recruitMeetingRefreshStatus.asDriver(onErrorJustReturn: .none).drive(onNext: { [weak self] (status) in
+            guard let `self` = self else {
+                return
+            }
             switch status{
             case .endHeaderRefresh:
                 self.table.mj_footer.resetNoMoreData()
@@ -218,7 +234,10 @@ extension CareerTalkMeetingViewController{
         }, onCompleted: nil, onDisposed: nil).disposed(by: dispose)
         
         // table
-        self.table.rx.itemSelected.subscribe(onNext: { (idx) in
+        self.table.rx.itemSelected.subscribe(onNext: { [weak self] (idx) in
+            guard let `self` = self else{
+                return
+            }
             self.table.deselectRow(at: idx, animated: false)
             let mode = self.datas[idx.row]
             let show = CareerTalkShowViewController()

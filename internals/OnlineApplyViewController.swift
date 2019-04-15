@@ -39,7 +39,7 @@ class OnlineApplyViewController: UIViewController {
         }
     }
     
-    private lazy var table:UITableView = {
+    private lazy var table:UITableView = { [unowned self] in
         let table = UITableView()
         table.tableFooterView = UIView()
         table.backgroundColor = UIColor.viewBackColor()
@@ -54,7 +54,10 @@ class OnlineApplyViewController: UIViewController {
     internal lazy var cityMenu:DropItemCityView = {
         let city = DropItemCityView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeigh))
         // 覆盖指定高度
-        city.passData = { citys in
+        city.passData = { [weak self]  citys in
+            guard let `self` = self else{
+                return
+            }
             if self.req.setCitys(citys: citys){
                 // 刷新数据
                 self.table.mj_header.beginRefreshing()
@@ -69,7 +72,11 @@ class OnlineApplyViewController: UIViewController {
     // 行业分类
     internal lazy var industryKind:DropItemIndustrySectorView = {
         let indus = DropItemIndustrySectorView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: dropMenuHeigh))
-        indus.passData = { kind in
+        indus.passData = { [weak self] kind in
+            guard let `self` = self else{
+                return
+            }
+            
             if self.req.setBusinessField(b: kind){
                 // 刷新数据
                 self.table.mj_header.beginRefreshing()
@@ -82,7 +89,7 @@ class OnlineApplyViewController: UIViewController {
     
 
     // 条件选择下拉菜单view
-    lazy var dropMenu: YNDropDownMenu = { [unowned self] in
+    lazy var dropMenu: YNDropDownMenu = {
           let menu = configDropMenu(items: [cityMenu,industryKind], titles: dropTitles, height: GlobalConfig.dropMenuViewHeight, originY: 0)
           menu.setLabelFontWhen(normal: .systemFont(ofSize: 16), selected: .boldSystemFont(ofSize: 16), disabled: .systemFont(ofSize: 16))
           return menu
@@ -161,6 +168,9 @@ class OnlineApplyViewController: UIViewController {
         }
        
     }
+    deinit {
+        print("deinit onlineAplyListVC \(String.init(describing: self))")
+    }
 
 }
 
@@ -177,8 +187,8 @@ extension OnlineApplyViewController{
     
     private func setViewModel(){
         
-        self.vm.onlineApplyRes.share().subscribe(onNext: { (modes) in
-                self.localData = modes
+        self.vm.onlineApplyRes.share().subscribe(onNext: { [weak self] (modes) in
+                self?.localData = modes
           }).disposed(by: dispose)
         
         
@@ -188,7 +198,10 @@ extension OnlineApplyViewController{
         }.disposed(by: dispose)
         
         
-        self.vm.onlineApplyRefreshStatus.asDriver(onErrorJustReturn: PageRefreshStatus.none).drive(onNext: { (status) in
+        self.vm.onlineApplyRefreshStatus.asDriver(onErrorJustReturn: PageRefreshStatus.none).drive(onNext: { [weak self] (status) in
+            guard let `self` = self else{
+                return
+            }
             switch status{
                 case .endFooterRefresh:
                     self.table.mj_footer.endRefreshing()
@@ -210,7 +223,10 @@ extension OnlineApplyViewController{
         }).disposed(by: dispose)
         
         // table check
-        self.table.rx.itemSelected.subscribe(onNext: { (idx) in
+        self.table.rx.itemSelected.subscribe(onNext: { [weak self] (idx) in
+            guard let `self` = self else{
+                return
+            }
             self.table.deselectRow(at: idx, animated: false)
             let mode = self.localData[idx.row]
             if  mode.outside ?? false{

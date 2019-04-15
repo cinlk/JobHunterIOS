@@ -66,7 +66,8 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 45)
                 return
             }
             if let url = mode.collegeIconURL{
-                  self.icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                  self.icon.kf.indicatorType = .activity
+                  self.icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "placeholder"), options: nil, progressBlock: nil, completionHandler: nil)
             }
             
           

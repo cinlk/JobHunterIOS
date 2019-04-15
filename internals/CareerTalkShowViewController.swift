@@ -28,7 +28,7 @@ class CareerTalkShowViewController: BaseShowJobViewController {
         }
     }
     
-    private lazy var apply:UIButton = {
+    private lazy var apply:UIButton = { [unowned self] in
         
         let apply = UIButton.init(frame: CGRect.init(x: 0, y: 0, width:  GlobalConfig.ScreenW - collectedBtn.width, height: GlobalConfig.toolBarH))
         apply.addTarget(self, action: #selector(addCalendar(_:)), for: .touchUpInside)
@@ -95,6 +95,9 @@ class CareerTalkShowViewController: BaseShowJobViewController {
 
     }
     
+    deinit {
+        print("deinit careerTalkShow \(String.init(describing: self))")
+    }
     
     private func didFinishloadData(mode: CareerTalkMeetingModel) {
         super.didFinishloadData()
@@ -173,17 +176,17 @@ extension CareerTalkShowViewController{
         table.rx.setDelegate(self).disposed(by: self.dispose)
 
         
-        self.errorView.tap.asDriver().drive(onNext: { _ in
-            self.reload()
+        self.errorView.tap.asDriver().drive(onNext: { [weak self] _ in
+            self?.reload()
         }).disposed(by: self.dispose)
         
         
-        query.subscribe(onNext: { (id) in
-            self.vm.getRecruitMeetingBy(id: id)
+        query.subscribe(onNext: { [weak self] (id) in
+            self?.vm.getRecruitMeetingBy(id: id)
             
         }).disposed(by: dispose)
         
-        dataSoure = RxTableViewSectionedReloadDataSource<RecruitMeetingSectionModel>.init(configureCell: { (dataSource, table, indexPath, _) -> UITableViewCell in
+        dataSoure = RxTableViewSectionedReloadDataSource<RecruitMeetingSectionModel>.init(configureCell: {  [weak self] (dataSource, table, indexPath, _) -> UITableViewCell in
             switch dataSource[indexPath]{
             case .CompanyItem(let mode):
                 let cell = table.dequeueReusableCell(withIdentifier: CompanySimpleCell.identity(), for: indexPath) as! CompanySimpleCell
@@ -195,32 +198,35 @@ extension CareerTalkShowViewController{
                 let cell = table.dequeueReusableCell(withIdentifier: CareerTalkContentCell.identity(), for: indexPath) as! CareerTalkContentCell
                 cell.name.text = "宣讲内容"
                 cell.mode = mode
-                self.mode.accept(mode)
+                self?.mode.accept(mode)
                 
                 return cell
                 
             }
         })
         
-        self.mode.subscribe(onNext: { (mode) in
+        self.mode.subscribe(onNext: { [weak self] (mode) in
             guard let _ = mode.id else {
                 return
             }
-            self.didFinishloadData(mode: mode)
+            self?.didFinishloadData(mode: mode)
             
             
         }).disposed(by: self.dispose)
            // 错误处理
-        self.vm.recruitMeetingMultiSection.asDriver(onErrorJustReturn: []).do(onNext: { (res) in
+        self.vm.recruitMeetingMultiSection.asDriver(onErrorJustReturn: []).do(onNext: { [weak self] (res) in
             if res.isEmpty{
-                self.showError()
+                self?.showError()
             }
         }).drive(self.table.rx.items(dataSource: self.dataSoure)).disposed(by: self.dispose)
         
      
        
         
-        self.table.rx.itemSelected.subscribe(onNext: { (indexPath) in
+        self.table.rx.itemSelected.subscribe(onNext: {  [weak self] (indexPath) in
+            guard let `self` = self else {
+                return
+            }
             switch self.dataSoure[indexPath]{
             case .CompanyItem(let mode):
                 let com = CompanyMainVC()
@@ -262,7 +268,10 @@ extension CareerTalkShowViewController{
         let store = EKEventStore()
         
         // Request access to calendar first
-        store.requestAccess(to: .event, completion: { (granted, error) in
+        store.requestAccess(to: .event, completion: { [weak self] (granted, error) in
+            guard let `self` = self else {
+                return
+            }
             if granted {
                 // create the event object
                 let event = EKEvent(eventStore: store)

@@ -21,10 +21,6 @@ fileprivate let headIconSize:CGSize = CGSize.init(width: 50, height: 50)
 
 private class navBackView:UIView {
     
-    
-    ///
-    
-    
     private lazy var lb:UILabel = {
         
         let label = UILabel()
@@ -73,7 +69,7 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
     private lazy var headerView: tableHeader = tableHeader()
     
     
-    private lazy var  showJobsView: ShowApplyJobsView = {
+    private lazy var  showJobsView: ShowApplyJobsView = { [unowned self] in
         let view = ShowApplyJobsView.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: 0))
         view.delegate = self
         return view
@@ -172,7 +168,9 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
         
     }
     
-   
+    deinit {
+        print("deinit onlineApplyDetailVC \(String.init(describing: self))")
+    }
 
     
   
@@ -295,28 +293,33 @@ extension OnlineApplyShowViewController{
     private func setViewModel(){
         
         
-        self.errorView.tap.asDriver().drive(onNext: { _ in
-            self.reload()
+        self.errorView.tap.asDriver().drive(onNext: { [weak self] _ in
+            self?.reload()
         }).disposed(by: self.dispose)
         
-       _ = query.flatMapLatest {  id in
+       _ = query.flatMapLatest { [unowned self] id in
             // TODO 处理http请求错误
+        
             self.vm.getOnlineApplyBy(id: id).asDriver(onErrorJustReturn: ResponseModel<OnlineApplyModel>(JSON: [:])!)
         
-            }.debug().takeUntil(self.rx.deallocated).subscribe(onNext: { (resp) in
+            }.debug().takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] (resp) in
+                
                 if !HttpCodeRange.filterSuccessResponse(target: resp.code ?? -1){
                         // 出错
-                    self.view.showToast(title: "error\(resp.returnMsg ?? "")", customImage: nil, mode: .text)
-                    self.showError()
+                    self?.view.showToast(title: "error\(resp.returnMsg ?? "")", customImage: nil, mode: .text)
+                    self?.showError()
                     return
                   }
                 if let  data = resp.body{
-                    self.mode.accept(data)
+                    self?.mode.accept(data)
                 }
             })
         
         
-        mode.subscribe(onNext: { m in
+        mode.subscribe(onNext: { [weak self] m in
+            guard let `self` = self else{
+                return
+            }
             self.didFinishloadData()
             self.naviBackView.setLabel(name: m.name ?? "")
             self.showJobsView.jobs = m.positions ?? []
@@ -331,7 +334,7 @@ extension OnlineApplyShowViewController{
         
         mode.map({ (m)  in
             [m]
-        }).bind(to: self.table.rx.items(cellIdentifier: ApplyJobsCell.identity(), cellType: ApplyJobsCell.self)){ (row, mode, cell) in
+        }).bind(to: self.table.rx.items(cellIdentifier: ApplyJobsCell.identity(), cellType: ApplyJobsCell.self)){   (row, mode, cell) in
             if mode.id == nil{
                 return
             }
@@ -442,7 +445,8 @@ private class tableHeader:UIView{
             }
         
             if let url = mode.iconURL{
-                self.icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "home"), options: nil, progressBlock: nil, completionHandler: nil)
+                self.icon.kf.indicatorType = .activity
+                self.icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "picture"), options: nil, progressBlock: nil, completionHandler: nil)
             }
              self.name.text = mode.name ?? ""
             

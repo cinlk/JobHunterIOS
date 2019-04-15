@@ -27,7 +27,7 @@ class CompanyCareerTalkVC: BaseViewController {
     // deleagte
     weak var delegate:CompanySubTableScrollDelegate?
     
-    internal lazy var table:UITableView = {
+    internal lazy var table:UITableView = { [unowned self] in
         let tb = UITableView()
         tb.backgroundColor = UIColor.viewBackColor()
         let hearder = UIView(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: CompanyMainVC.headerViewH))
@@ -44,9 +44,9 @@ class CompanyCareerTalkVC: BaseViewController {
     private var headRefreshed:Bool = false
     
     //refresh table
-    private lazy var  headRefresh:MJRefreshNormalHeader = { [weak self] in
+    private lazy var  headRefresh:MJRefreshNormalHeader = {
         
-        let h = MJRefreshNormalHeader.init {
+        let h = MJRefreshNormalHeader.init { [weak self] in
             guard let s = self  else {
                 return
             }
@@ -59,8 +59,8 @@ class CompanyCareerTalkVC: BaseViewController {
         return h!
     }()
     
-    private lazy var  footRefresh:MJRefreshAutoNormalFooter = { [weak self] in
-        let f = MJRefreshAutoNormalFooter.init {
+    private lazy var  footRefresh:MJRefreshAutoNormalFooter = {
+        let f = MJRefreshAutoNormalFooter.init { [weak self] in
             guard let s = self else {
                 return
             }
@@ -95,6 +95,10 @@ class CompanyCareerTalkVC: BaseViewController {
         }
     }
     
+    deinit {
+        print("deinit companyCareerTalkVC \(String.init(describing: self))")
+    }
+    
     override func setViews() {
         
         self.view.addSubview(table)
@@ -125,20 +129,23 @@ extension CompanyCareerTalkVC {
     
     private func setViewModel(){
         
-        self.errorView.tap.asDriver().drive(onNext: { _ in
-            self.reload()
+        self.errorView.tap.asDriver().drive(onNext: { [weak self] _ in
+            self?.reload()
         }).disposed(by: self.dispose)
         //
         
-        self.vm.companyRecruitMeetingRes.asDriver(onErrorJustReturn: []).drive(self.table.rx.items(cellIdentifier: CareerTalkCell.identity(), cellType: CareerTalkCell.self)){ (row, mode, cell) in
-            mode.companyName = self.mode?.name
+        self.vm.companyRecruitMeetingRes.asDriver(onErrorJustReturn: []).drive(self.table.rx.items(cellIdentifier: CareerTalkCell.identity(), cellType: CareerTalkCell.self)){ [weak self] (row, mode, cell) in
+            mode.companyName = self?.mode?.name
             cell.mode = mode
             
         }.disposed(by: self.dispose)
         
         
         
-        self.vm.companyRecruitMeetingRefeshStatus.share().subscribe(onNext: { (status) in
+        self.vm.companyRecruitMeetingRefeshStatus.share().subscribe(onNext: { [weak self] (status) in
+            guard let `self` = self else{
+                return
+            }
             switch status{
             case .endHeaderRefresh:
                 self.table.mj_header.endRefreshing()
@@ -161,7 +168,10 @@ extension CompanyCareerTalkVC {
         }).disposed(by: dispose)
         
         //table
-        self.table.rx.itemSelected.subscribe(onNext: { (idx) in
+        self.table.rx.itemSelected.subscribe(onNext: { [weak self] (idx) in
+            guard let `self` = self else {
+                return
+            }
             self.table.deselectRow(at: idx, animated: false)
             let mode = self.vm.companyRecruitMeetingRes.value[idx.row]
             let show = CareerTalkShowViewController()

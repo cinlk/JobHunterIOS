@@ -1576,7 +1576,6 @@
 		4A8858F41FE6A9CE0009D73D /* job信息界面 */ = {
 			isa = PBXGroup;
 			children = (
-				4A8858F71FE6AA330009D73D /* ViewModel */,
 				4A8858F61FE6AA2A0009D73D /* Model */,
 				4A8858F51FE6AA180009D73D /* View+Controller */,
 			);
@@ -1600,13 +1599,6 @@
 				4AD272CB222C20EF00C6E6FE /* recruiterSectionModel.swift */,
 			);
 			name = Model;
-			sourceTree = "<group>";
-		};
-		4A8858F71FE6AA330009D73D /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = ViewModel;
 			sourceTree = "<group>";
 		};
 		4A8859081FEFC9440009D73D /* CompanyTableCellView */ = {

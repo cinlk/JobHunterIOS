@@ -29,8 +29,17 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
         
     }()
     
+    // 进入条view
+    internal lazy var activity: UIActivityIndicatorView = {
+        let ac = UIActivityIndicatorView.init()
+        ac.color = UIColor.green
+        ac.style = UIActivityIndicatorView.Style.whiteLarge
+        ac.hidesWhenStopped = true 
+        return ac
+    }()
+    
     // 图片 切角，和 可点击放大
-    private lazy var imageV:UIImageView = { [unowned self] in
+    internal lazy var imageV:UIImageView = { [unowned self] in
         var v = UIImageView()
         v.contentMode = .scaleToFill
         v.clipsToBounds = true
@@ -38,6 +47,9 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
         // 放大效果
         let tap = UITapGestureRecognizer.init(target: self, action: #selector(startZoomImage(tap:)))
         v.addGestureRecognizer(tap)
+        // 加上进度条
+        v.addSubview(self.activity)
+        _ = self.activity.sd_layout()?.centerXEqualToView(v)?.centerYEqualToView(v)
         return v
     }()
     

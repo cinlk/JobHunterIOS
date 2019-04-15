@@ -118,8 +118,16 @@ private class  applyShowCollectedCell:UICollectionViewCell{
         didSet{
             self.name.text = mode?.Field
             if let url = mode?.ImageUrl{
+                //let processor = DownsamplingImageProcessor(size: self.icon.size)
+                 //   >> RoundCornerImageProcessor(cornerRadius: 20)
+                
+                self.icon.kf.indicatorType = .activity
+                
                 self.icon.kf.setImage(with: Source.network(url),
-                                      placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                                      placeholder: #imageLiteral(resourceName: "placeholder"),
+                                      options:  nil,
+                                      progressBlock: nil,
+                                      completionHandler: nil)
 
             }
             //self.icon.image = UIImage.init(named: mode?.ImageUrl ?? APPLY_DEFAULT_IMG)

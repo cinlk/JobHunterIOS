@@ -68,11 +68,15 @@ private class contentCollection:UICollectionView, UICollectionViewDelegate {
             
         }.disposed(by: self.dispose)
         
-        self.rx.itemSelected.subscribe(onNext: { indexPath in
-            self.deselectItem(at: indexPath, animated: true)
+        self.rx.itemSelected.subscribe(onNext: { [weak self] indexPath in
+            self?.deselectItem(at: indexPath, animated: true)
         }).disposed(by: self.dispose)
         
-        self.rx.didScroll.subscribe(onNext: { _ in
+        self.rx.didScroll.subscribe(onNext: { [weak self] _ in
+            guard let `self` = self else {
+                return
+            }
+            
             if self.vc?.isClick ?? true  {
                 return
             }
@@ -110,7 +114,10 @@ private class contentCollection:UICollectionView, UICollectionViewDelegate {
         }).disposed(by: self.dispose)
         
         
-        self.rx.willBeginDragging.subscribe(onNext: { _ in
+        self.rx.willBeginDragging.subscribe(onNext: { [weak self] _ in
+            guard let `self` = self else {
+                return
+            }
             self.vc?.isClick = false
             self.startScrollerOffsetX = self.contentOffset.x
             self.vc?.syncOffset()
@@ -168,7 +175,7 @@ class CompanyMainVC: BaseViewController {
     }
     
     
-    private lazy var collectedBtn:collectingBtn = {
+    private lazy var collectedBtn:collectingBtn = { [unowned self] in
         // 收藏
         let btn = collectingBtn.init(frame: CGRect.init(x: 0, y: 0, width: 30, height: 30))
         btn.addTarget(self, action: #selector(collectedCompany(btn:)), for: .touchUpInside)
@@ -198,7 +205,7 @@ class CompanyMainVC: BaseViewController {
     
     
     
-    private lazy var headerView:companyHeaderView = {
+    private lazy var headerView:companyHeaderView = { [unowned self] in
         let header = companyHeaderView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: 0))
         header.backgroundColor = UIColor.white
         header.delegate = self
@@ -210,20 +217,20 @@ class CompanyMainVC: BaseViewController {
     internal var isClick:Bool = false
     
     private var subVC:[UIViewController] = []
-    private lazy var companyDetail:CompanyDetailVC = {
+    private lazy var companyDetail:CompanyDetailVC = { [unowned self] in
        let c = CompanyDetailVC()
        self.subVC.append(c)
        c.delegate = self
        return c
     }()
     
-    private lazy var companyJobs:CompanyJobsVC = {
+    private lazy var companyJobs:CompanyJobsVC = { [unowned self] in
        let c = CompanyJobsVC()
        self.subVC.append(c)
        c.delegate = self
        return c
     }()
-    private lazy var companyCarrerTalk:CompanyCareerTalkVC = {
+    private lazy var companyCarrerTalk:CompanyCareerTalkVC = { [unowned self] in
        let c = CompanyCareerTalkVC()
        self.subVC.append(c)
        c.delegate = self
@@ -247,6 +254,9 @@ class CompanyMainVC: BaseViewController {
         
     }
     
+    deinit {
+        print("deinit companyMainVC \(String.init(describing: self))")
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -347,17 +357,17 @@ extension CompanyMainVC{
     
     private func setViewModel(){
         
-        self.errorView.tap.asDriver().drive(onNext: { _ in
-            self.reload()
+        self.errorView.tap.asDriver().drive(onNext: { [weak self] _ in
+            self?.reload()
         }).disposed(by: self.dispose)
-        query.flatMapLatest { id  in
+        query.flatMapLatest { [unowned self] id  in
             self.vm.getCompanyById(id: id).asDriver(onErrorJustReturn: ResponseModel<CompanyModel>(JSON: [:])! )
-            }.share().subscribe(onNext: { (res) in
+            }.share().subscribe(onNext: { [weak self] (res) in
                 guard HttpCodeRange.filterSuccessResponse(target: res.code ?? -1), let body = res.body else {
-                    self.showError()
+                    self?.showError()
                     return
                 }
-                self.mode = body
+                self?.mode = body
                 
             }).disposed(by: self.dispose)
 
@@ -391,8 +401,8 @@ extension CompanyMainVC{
     private func verifyLogin() -> Bool{
         if !GlobalUserInfo.shared.isLogin {
             
-            self.view.presentAlert(type: UIAlertController.Style.alert, title: "请先登录", message: nil, items: [actionEntity.init(title: "确定", selector: #selector(login), args: nil)], target: self) { (ac) in
-                self.present(ac, animated: true, completion: nil)
+            self.view.presentAlert(type: UIAlertController.Style.alert, title: "请先登录", message: nil, items: [actionEntity.init(title: "确定", selector: #selector(login), args: nil)], target: self) { [weak self] (ac) in
+                self?.present(ac, animated: true, completion: nil)
             }
             // 跳转到登录界面
             return false
@@ -566,7 +576,7 @@ fileprivate class companyHeaderView:UIView{
         return label
     }()
     
-    private lazy var detail:UILabel = {
+    private lazy var detail:UILabel = { [unowned self] in
         let lb = UILabel()
         lb.textColor = UIColor.lightGray
         lb.text = "公司详情"
@@ -580,7 +590,7 @@ fileprivate class companyHeaderView:UIView{
         return lb
     }()
     
-    private lazy var jobs:UILabel = {
+    private lazy var jobs:UILabel = { [unowned self] in
         let lb = UILabel()
         lb.textColor = UIColor.lightGray
         lb.text = "在招职位"
@@ -595,7 +605,7 @@ fileprivate class companyHeaderView:UIView{
     }()
     
     
-    private lazy var talk:UILabel = {
+    private lazy var talk:UILabel = { [unowned self] in
         let lb = UILabel()
         lb.textColor = UIColor.lightGray
         lb.text = "宣讲会"
@@ -610,7 +620,7 @@ fileprivate class companyHeaderView:UIView{
     }()
     
     // btn 下划线
-    lazy var underLine:UIView = {  [unowned self] in
+    lazy var underLine:UIView = {
         let line = UIView.init(frame: CGRect.zero)
         line.backgroundColor = UIColor.blue
         return line
@@ -633,7 +643,8 @@ fileprivate class companyHeaderView:UIView{
                 return
             }
             if let url = mode.iconURL{
-                icon.kf.setImage(with: Source.network(url), placeholder: UIImage.init(named: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                icon.kf.indicatorType = .activity
+                icon.kf.setImage(with: Source.network(url), placeholder: UIImage.init(named: "placeholder"), options: nil, progressBlock: nil, completionHandler: nil)
             }
             
             self.companyName.text = mode.name

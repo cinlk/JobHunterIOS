@@ -68,7 +68,7 @@ class PublisherControllerView: BaseViewController {
         return h
     }()
     
-    private lazy var table:UITableView = {
+    private lazy var table:UITableView = { [unowned self] in
         
         let tb = UITableView.init(frame: CGRect.zero)
         tb.rx.setDelegate(self).disposed(by: self.dispose)
@@ -184,6 +184,10 @@ class PublisherControllerView: BaseViewController {
         
     }
     
+    deinit {
+        print("deinit recruiterVC \(String.init(describing: self))")
+    }
+    
     private func setHeader(){
         
         let th = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: tHeaderHeight))
@@ -247,12 +251,12 @@ extension PublisherControllerView{
     private func setViewModel(){
         
         
-        self.errorView.tap.asDriver().drive(onNext: { _ in
-            self.reload()
+        self.errorView.tap.asDriver().drive(onNext: { [weak self]  _ in
+            self?.reload()
         }).disposed(by: self.dispose)
         
-        self.query.debug().subscribe(onNext: { id in
-            self.vm.getRecruiterById(id: id)
+        self.query.debug().subscribe(onNext: { [weak self] id in
+            self?.vm.getRecruiterById(id: id)
         }).disposed(by: self.dispose)
         
         // datasource
@@ -283,22 +287,25 @@ extension PublisherControllerView{
         self.vm.recruiterMultiSection.asDriver(onErrorJustReturn: []).drive(self.table.rx.items(dataSource: dataSource)).disposed(by: self.dispose)
         
         
-        self.vm.recruitMeetingMultiSection.asDriver(onErrorJustReturn: []).drive(onNext: { (res) in
+        self.vm.recruitMeetingMultiSection.asDriver(onErrorJustReturn: []).drive(onNext: { [weak self] (res) in
             if res.isEmpty{
-                self.showError()
+                self?.showError()
             }
         }).disposed(by: self.dispose)
         
-        self.vm.recruiterMode.subscribe(onNext: { recruiter in
+        self.vm.recruiterMode.subscribe(onNext: { [weak self] recruiter in
             guard let _ = recruiter.userID else {
                 return
             }
-            self.didFinishloadData(mode: recruiter)
+            self?.didFinishloadData(mode: recruiter)
             
             
         }).disposed(by: self.dispose)
         
-        self.table.rx.itemSelected.subscribe(onNext: { (indexPath) in
+        self.table.rx.itemSelected.subscribe(onNext: { [weak self] (indexPath) in
+            guard let `self` = self else{
+                return
+            }
             
             switch  self.dataSource[indexPath] {
             case .CompanyItem(let mode):

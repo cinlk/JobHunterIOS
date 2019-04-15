@@ -52,10 +52,11 @@ max-width:100%;
                 //self.content.attributedText =  html.htmlToAttributedString
                 self.richView.richText = html
                 // 回调未改变cell 高度
-                self.richView.webHeight = { [unowned self] height in
-                    _ = self.richView.sd_layout()?.heightIs(height)
+                self.richView.webHeight = { [weak self] height in
+                    
+                    _ = self?.richView.sd_layout()?.heightIs(height)
                    
-                    self.setupAutoHeight(withBottomView: self.richView, bottomMargin: 20)
+                    self?.setupAutoHeight(withBottomView: self?.richView, bottomMargin: 20)
                 }
                
             }else{

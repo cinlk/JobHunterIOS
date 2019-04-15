@@ -157,8 +157,8 @@ class BaseShowJobViewController: BaseViewController {
     internal func verifyLogin() -> Bool{
         if !GlobalUserInfo.shared.isLogin {
             
-            self.view.presentAlert(type: UIAlertController.Style.alert, title: "请先登录", message: nil, items: [actionEntity.init(title: "确定", selector: #selector(login), args: nil)], target: self) { (ac) in
-                self.present(ac, animated: true, completion: nil)
+            self.view.presentAlert(type: UIAlertController.Style.alert, title: "请先登录", message: nil, items: [actionEntity.init(title: "确定", selector: #selector(login), args: nil)], target: self) { [weak self] (ac) in
+                self?.present(ac, animated: true, completion: nil)
             }
             // 跳转到登录界面
             return false

@@ -101,7 +101,8 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 45, height: 40)
             }
             
             if let url = mode.iconURL{
-                  icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                  icon.kf.indicatorType = .activity
+                  icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "placeholder"), options: nil, progressBlock: nil, completionHandler: nil)
             }
             
             //icon.image = UIImage.init(named: mode.icon)
