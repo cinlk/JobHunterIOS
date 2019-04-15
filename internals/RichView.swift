@@ -36,14 +36,23 @@ class RichTextView: UIView {
         }
     }
     
+    // 富文本连接
+    var richUrl:String = ""{
+        didSet{
+            if let url = URL.init(string: richUrl){
+                webView.load(URLRequest.init(url: url))
+            }
+        }
+    }
     /// 富文本是否加载成功
     private var isSuccess: Bool = false
     
     /// wkwebView 用来加载富文本
     private lazy var webView: WKWebView = { [unowned self] in
         let config = WKWebViewConfiguration()
-        config.userContentController = WKUserContentController()
-        let webView = WKWebView(frame: .zero, configuration: config)
+        //config.userContentController = WKUserContentController()
+        //let webView = WKWebView(frame: .zero, configuration: config)
+        let webView  = WKWebView.init(frame: .zero)
         webView.uiDelegate = self
         webView.navigationDelegate = self
         webView.scrollView.isScrollEnabled = true
@@ -105,6 +114,8 @@ class RichTextView: UIView {
         //设置约束
         addSubview(webView)
         _ = webView.sd_layout()?.heightIs(0)?.leftEqualToView(self)?.topEqualToView(self)?.rightEqualToView(self)
+        
+        
 //        webView.snp.makeConstraints { (make) in
 //            make.edges.equalToSuperview()
 //            make.height.equalTo(0)
@@ -142,14 +153,12 @@ extension RichTextView: WKUIDelegate,WKNavigationDelegate{
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         
         /// 获取网页高度
-        webView.evaluateJavaScript("document.body.offsetHeight") {[unowned self] (result, _) in
+        
+        webView.evaluateJavaScript("document.body.scrollHeight") {[unowned self] (result, _) in
             
             //计算高度
             if let webHeight = result as! CGFloat?{
                 _ = self.webView.sd_layout()?.heightIs(webHeight)
-//                self.webView.snp.updateConstraints({ (make) in
-//                    make.height.equalTo(webHeight)
-//                })
                 self.webHeight?(webHeight)
             }else{
                 self.webHeight?(0)
@@ -167,26 +176,28 @@ extension RichTextView: WKUIDelegate,WKNavigationDelegate{
         self.webHeight?(0)
     }
     
-    /// 拦截
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        
-        if let str = navigationAction.request.url?.absoluteString.removingPercentEncoding {
-            if str.hasPrefix("hxqimage-preview"){  // 点击了图片
-                
-                //加载图片
-                if let _ = (navigationAction.request.url as NSURL?)?.resourceSpecifier{
-                    if isShowImage{
-                        //handleImageWithName(clickImg)
-                    }
-                }
-                //禁止跳转
-                decisionHandler(.cancel)
-                return
-            }
-        }
-        decisionHandler(.allow)
-    }
+   
     
+    /// 拦截
+//    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+//
+//        if let str = navigationAction.request.url?.absoluteString.removingPercentEncoding {
+//            if str.hasPrefix("hxqimage-preview"){  // 点击了图片
+//
+//                //加载图片
+//                if let _ = (navigationAction.request.url as NSURL?)?.resourceSpecifier{
+//                    if isShowImage{
+//                        //handleImageWithName(clickImg)
+//                    }
+//                }
+//                //禁止跳转
+//                decisionHandler(.cancel)
+//                return
+//            }
+//        }
+//        decisionHandler(.allow)
+//    }
+//
     private func insetJsToHtml(){
         webView.evaluateJavaScript("""
           function imageClickAction(){

@@ -92,7 +92,15 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
     private let mode:BehaviorRelay<OnlineApplyModel> = BehaviorRelay<OnlineApplyModel>.init(value: OnlineApplyModel(JSON: [:])!)
     
     
+    // webview 获取高度后在回调
+    private var firstload:Bool = false
+    private var richViewH:CGFloat = 0
     
+    // 加载进度view
+    internal var loadingView: RichLoadingView = {
+        let loadingView = RichLoadingView()
+        return loadingView
+    }()
     
     
     override func viewDidLoad() {
@@ -121,6 +129,9 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
         self.setToolBar()
         self.shareapps.delegate = self
         self.hidesBottomBarWhenPushed = true
+        self.view.addSubview(loadingView)
+        _ = loadingView.sd_layout()?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.topSpaceToView(self.table.tableHeaderView,0)?.bottomEqualToView(self.view)
+        
  
     }
     
@@ -320,6 +331,7 @@ extension OnlineApplyShowViewController{
             guard let `self` = self else{
                 return
             }
+            
             self.didFinishloadData()
             self.naviBackView.setLabel(name: m.name ?? "")
             self.showJobsView.jobs = m.positions ?? []
@@ -334,13 +346,27 @@ extension OnlineApplyShowViewController{
         
         mode.map({ (m)  in
             [m]
-        }).bind(to: self.table.rx.items(cellIdentifier: ApplyJobsCell.identity(), cellType: ApplyJobsCell.self)){   (row, mode, cell) in
+        }).bind(to: self.table.rx.items(cellIdentifier: ApplyJobsCell.identity(), cellType: ApplyJobsCell.self)){ [weak self]  (row, mode, cell) in
             if mode.id == nil{
                 return
             }
+            
             cell.mode = mode
-            
-            
+            if mode.contentType == "html"{
+                cell.richView.webHeight = { [weak self] height in
+                     print("--->",height)
+                    //_ = cell.richView.sd_layout()?.heightIs(height)
+                    self?.richViewH = height
+                    if self?.firstload == false {
+                        self?.table.reloadData()
+                        self?.firstload = true
+                        self?.loadingView.removeFromSuperview()
+                    }
+                }
+            }else{
+                self?.loadingView.removeFromSuperview()
+            }
+
         }.disposed(by: self.dispose)
 
         
@@ -350,6 +376,27 @@ extension OnlineApplyShowViewController{
 
 extension OnlineApplyShowViewController: UITableViewDelegate{
     
+    
+    
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        if let cell = tableView.dequeueReusableCell(withIdentifier: ApplyJobsCell.identity()) as? ApplyJobsCell{
+//            cell.mode = mode.value
+//
+//            cell.richView.webHeight = { [weak self] height in
+//                self?.richViewH = height
+//                _ = cell.richView.sd_layout()?.heightIs(height)
+//                if self?.firstload == false {
+//                     self?.table.reloadRows(at: [indexPath], with: UITableView.RowAnimation.automatic)
+//                    self?.firstload = true
+//                }
+//
+//            }
+//
+//            return cell
+//        }
+//
+//        return UITableViewCell()
+//    }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 10
@@ -364,8 +411,17 @@ extension OnlineApplyShowViewController: UITableViewDelegate{
         if mode.value.id == nil{
             return 0
         }
-        // richText 高度适应(执行顺便，先返回计算前的高度! 如何解决??) 
+        if mode.value.contentType == "html" && self.firstload{
+            // 第二次获取值
+            // 50 算上cell里其他view 的高度
+            return  self.richViewH +  50
+        }
+        
         return tableView.cellHeight(for: indexPath, model: mode.value, keyPath: "mode", cellClass: ApplyJobsCell.self, contentViewWidth: GlobalConfig.ScreenW)
+        
+        
+
+     
     }
     
 }
