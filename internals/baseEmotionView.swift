@@ -75,6 +75,10 @@ class baseEmotionView: UICollectionViewCell {
         return "baseEmotionView"
     }
     
+    deinit {
+        print("deinit baseEmotionView \(String.init(describing: self))")
+    }
+    
 }
 
 

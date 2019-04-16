@@ -36,6 +36,9 @@ class ForumMessageVC: UIViewController {
         super.didReceiveMemoryWarning()
     }
     
+    deinit {
+        print("deinit forumMessageVC \(String.init(describing: self))")
+    }
     
 
 }

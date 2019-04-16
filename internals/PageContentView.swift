@@ -60,7 +60,12 @@ class PageContentView: UIView {
     }
     
     
-    
+    deinit {
+        self.childVCs?.removeAll()
+        //self.collectionView.cell
+        
+        print("deinit pageContent \(String.init(describing: self))")
+    }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -83,13 +88,13 @@ extension PageContentView: UICollectionViewDataSource{
     
         cell.contentView.subviews.forEach { (view) in
             view.removeFromSuperview()
-        }
         
-        // 把子vc 的view 放入cell
+        }
+//        // 这段代码内存泄露，在useloginvc dismiss 触发？？？
         let cVC = childVCs![indexPath.row]
-        cVC.view.frame = cell.contentView.bounds
+        cVC.view.frame =  cell.contentView.bounds
         cell.contentView.addSubview(cVC.view)
-        return cell 
+        return cell
     }
     
 

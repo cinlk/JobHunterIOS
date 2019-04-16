@@ -54,12 +54,12 @@ fileprivate let mapSize = CGSize.init(width: 160, height: 120)
         m.delegate = self
         //self.tapMap.numberOfTouchesRequired = 1
         m.addGestureRecognizer(tapMap)
-        
+        m.addAnnotation(addressAnnotation)
         return m
     }()
     
     // 包裹标签和地图内容的view
-    private lazy var wrapperView:UIView = {
+    private lazy var wrapperView:UIView = { [unowned self] in 
         let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: mapSize.width, height: mapSize.height))
         v.backgroundColor = UIColor.white
         v.isUserInteractionEnabled = true
@@ -74,6 +74,9 @@ fileprivate let mapSize = CGSize.init(width: 160, height: 120)
     }()
 
     
+    private lazy var addressAnnotation: MKPointAnnotation = MKPointAnnotation.init()
+    private lazy var coordinate:CLLocation = CLLocation.init(latitude: 0, longitude: 0)
+    
     dynamic var mode: LocationMessage?{
         didSet{
             guard let m = mode else{
@@ -82,7 +85,8 @@ fileprivate let mapSize = CGSize.init(width: 160, height: 120)
             }
             
             if let url = GlobalUserInfo.shared.getIcon(){
-                self.avartar.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                self.avartar.kf.indicatorType = .activity
+                self.avartar.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "placeholder"), options: nil, progressBlock: nil, completionHandler: nil)
             }
             
             
@@ -92,24 +96,27 @@ fileprivate let mapSize = CGSize.init(width: 160, height: 120)
             var bubbleMaskImage:UIImage!
             
             self.address.text = m.address
-            // 添加大头针
-            let addressAnnotation = MKPointAnnotation.init()
-           // addressAnnotation.
-            addressAnnotation.coordinate = CLLocation.init(latitude: m.latitude!, longitude: m.longitude!).coordinate
+            // 设置地图属性
+            if (self.coordinate.coordinate.latitude != m.latitude || self.coordinate.coordinate.longitude != m.longitude ) {
+                self.coordinate = CLLocation.init(latitude: m.latitude!, longitude: m.longitude!)
+                addressAnnotation.coordinate = CLLocation.init(latitude: m.latitude!, longitude: m.longitude!).coordinate
+                
+                // 设置显示区域
+                let latDelta = 0.005
+                let longDelta = 0.005
+                
+                let currentLocationSpan:MKCoordinateSpan = MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: longDelta)
+                let center:CLLocation = CLLocation.init(latitude: m.latitude!, longitude: m.longitude!)
+                let currentRegion:MKCoordinateRegion = MKCoordinateRegion(center: center.coordinate,
+                                                                          span: currentLocationSpan)
+                self.map.setRegion(currentRegion, animated: false)
+                
+                // 设置region 需要zoom 可用，现在设置完了，关闭zoom
+                self.map.isZoomEnabled = false
+                
+            }
             
-            self.map.addAnnotation(addressAnnotation)
             
-            // 设置显示区域
-            let latDelta = 0.005
-            let longDelta = 0.005
-
-            let currentLocationSpan:MKCoordinateSpan = MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: longDelta)
-            let center:CLLocation = CLLocation.init(latitude: m.latitude!, longitude: m.longitude!)
-            let currentRegion:MKCoordinateRegion = MKCoordinateRegion(center: center.coordinate,
-                                                                      span: currentLocationSpan)
-            self.map.setRegion(currentRegion, animated: false)
-            // 设置region 需要zoom 可用，现在设置完了，关闭zoom
-            self.map.isZoomEnabled = false
 
 //
             
@@ -168,6 +175,9 @@ fileprivate let mapSize = CGSize.init(width: 160, height: 120)
         //self.contentView.addSubview(map)
         avartar.setCircle()
         
+    }
+    deinit {
+        print("deinit locationCellView \(String.init(describing: self))")
     }
     
 //    override func layoutSubviews() {

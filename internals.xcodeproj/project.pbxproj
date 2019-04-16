@@ -229,7 +229,7 @@
 		4A871AE420E9EEA500E76E39 /* ReplyToMeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A871AE320E9EEA500E76E39 /* ReplyToMeVC.swift */; };
 		4A871AE620E9F88A00E76E39 /* ForumMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A871AE520E9F88A00E76E39 /* ForumMessage.swift */; };
 		4A871AE820EA09EF00E76E39 /* ForumMesageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A871AE720EA09EF00E76E39 /* ForumMesageCell.swift */; };
-		4A871AEA20EB0AB800E76E39 /* commentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A871AE920EB0AB800E76E39 /* commentViewController.swift */; };
+		4A871AEA20EB0AB800E76E39 /* CommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A871AE920EB0AB800E76E39 /* CommentViewController.swift */; };
 		4A8858F31FE550D40009D73D /* SearchResultController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8858F21FE550D40009D73D /* SearchResultController.swift */; };
 		4A8858FA1FE8076C0009D73D /* RecruiterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8858F81FE8076C0009D73D /* RecruiterCell.swift */; };
 		4A8858FF1FEBE89A0009D73D /* JuBaoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8858FE1FEBE89A0009D73D /* JuBaoViewController.swift */; };
@@ -631,7 +631,7 @@
 		4A871AE320E9EEA500E76E39 /* ReplyToMeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyToMeVC.swift; sourceTree = "<group>"; };
 		4A871AE520E9F88A00E76E39 /* ForumMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumMessage.swift; sourceTree = "<group>"; };
 		4A871AE720EA09EF00E76E39 /* ForumMesageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumMesageCell.swift; sourceTree = "<group>"; };
-		4A871AE920EB0AB800E76E39 /* commentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = commentViewController.swift; sourceTree = "<group>"; };
+		4A871AE920EB0AB800E76E39 /* CommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentViewController.swift; sourceTree = "<group>"; };
 		4A8858F21FE550D40009D73D /* SearchResultController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultController.swift; sourceTree = "<group>"; };
 		4A8858F81FE8076C0009D73D /* RecruiterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecruiterCell.swift; sourceTree = "<group>"; };
 		4A8858FE1FEBE89A0009D73D /* JuBaoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JuBaoViewController.swift; sourceTree = "<group>"; };
@@ -1569,7 +1569,7 @@
 				4A871ADF20E9EE7300E76E39 /* ForumMessageBaseVC.swift */,
 				4A871AE120E9EE8A00E76E39 /* MyCommentVC.swift */,
 				4A871AE320E9EEA500E76E39 /* ReplyToMeVC.swift */,
-				4A871AE920EB0AB800E76E39 /* commentViewController.swift */,
+				4A871AE920EB0AB800E76E39 /* CommentViewController.swift */,
 				4AC167AF20EC58C70081273D /* ThumbUPVC.swift */,
 			);
 			name = "论坛消息";
@@ -2660,7 +2660,7 @@
 				4A30EBF120838FC400231D11 /* simpleRecruitCell.swift in Sources */,
 				4A30EBD6207BAFAC00231D11 /* CompanyDetailVC.swift in Sources */,
 				4AF3D356205EB2760012EB6E /* extension+navigation.swift in Sources */,
-				4A871AEA20EB0AB800E76E39 /* commentViewController.swift in Sources */,
+				4A871AEA20EB0AB800E76E39 /* CommentViewController.swift in Sources */,
 				4A14078220F62BC500F4E88E /* AddBlacklistVC.swift in Sources */,
 				4A93C2B51F80AB900022E97B /* MessageMainView.swift in Sources */,
 				4AD2C77B209752DA002F3486 /* ConfigDropItemView.swift in Sources */,

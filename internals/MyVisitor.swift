@@ -54,6 +54,10 @@ class MyVisitor: BaseTableViewController {
         self.loadData()
         
     }
+    
+    deinit {
+        print("deinit myvisitor \(String.init(describing: self))")
+    }
 
     // MARK: - Table view data source
 

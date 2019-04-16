@@ -36,6 +36,10 @@ class ThumbUPVC: ForumMessageBaseVC {
         self.loadData()
     }
     
+    deinit {
+        print("deinit thunmUpVC \(String.init(describing: self))")
+    }
+    
 }
 
 
@@ -53,13 +57,13 @@ extension ThumbUPVC{
             
             //  显示回帖
         }else if mode.body?.kind == .reply{
-            let comment = commentViewController()
+            let comment = CommentViewController()
             comment.data = (message:mode, type: .reply)
             self.navigationController?.pushViewController(comment, animated: true)
             
         }else{
             // 显示 部分评论
-            let comment = commentViewController()
+            let comment = CommentViewController()
             comment.data = (message:mode, type: .subReply)
             self.navigationController?.pushViewController(comment, animated: true)
             

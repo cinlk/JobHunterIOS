@@ -110,7 +110,9 @@ class BaseShowJobViewController: BaseViewController {
         shareapps.removeFromSuperview()
     }
     
-    
+    deinit {
+        print("deinit baseshowJobVC \(String.init(describing: self))")
+    }
     
    override func setViews(){
         self.view.backgroundColor = UIColor.white
@@ -147,11 +149,10 @@ class BaseShowJobViewController: BaseViewController {
 
     
     @objc internal override func login(){
-        //print("login")
+       
         let loginvc = UIStoryboard.init(name: GlobalConfig.StoryBordVCName.Main, bundle: nil).instantiateViewController(withIdentifier: GlobalConfig.StoryBordVCName.LoginVC) as! UserLogginViewController
         loginvc.navBack = true
         self.present(loginvc, animated: true, completion: nil)
-        //self.navigationController?.pushViewController(loginvc, animated: true)
     }
     
     internal func verifyLogin() -> Bool{

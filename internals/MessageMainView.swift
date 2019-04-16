@@ -29,7 +29,7 @@ private class contentCollectionView:UICollectionView {
         
             mode.view.frame = cell.contentView.bounds
             cell.contentView.addSubview(mode.view)
-            print(cell)
+            //print(cell)
             
         }.disposed(by: self.dispose)
     }
@@ -159,6 +159,9 @@ class MessageMain: UIViewController {
         
     }
     
+    deinit {
+        print("deinit MessageMainVC \(String.init(describing: self))")
+    }
     
 
 }
@@ -171,8 +174,8 @@ extension MessageMain {
         self.navigationController?.navigationBar.settranslucent(true)
         self.chidVCs.append(contentsOf: [chatVC, visitorVC, forume])
 
-        chidVCs.forEach{
-            self.addChild($0)
+        chidVCs.forEach{ [weak self] in
+            self?.addChild($0)
         }
        
         self.view.addSubview(collections)
@@ -186,7 +189,10 @@ extension MessageMain {
     
     
     private func setViewModel(){
-        self.segeMentView.rx.selectedSegmentIndex .subscribe(onNext: { index in
+        self.segeMentView.rx.selectedSegmentIndex .subscribe(onNext: { [weak self] index in
+            guard let `self` = self else{
+                return
+            }
             
             self.segeMentView.setBagdge(index: index, show: false)
             

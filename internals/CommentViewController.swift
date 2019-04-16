@@ -12,7 +12,7 @@ fileprivate let viewTitle:String = "回帖"
 
 
 
-class commentViewController: SingleReplyViewController {
+class CommentViewController: SingleReplyViewController {
 
     
     // 第一次加载 才显示动画效果
@@ -48,10 +48,14 @@ class commentViewController: SingleReplyViewController {
         super.didFinishloadData()
         navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: #imageLiteral(resourceName: "more").changesize(size: CGSize.init(width: 25, height: 20)).withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(more))
     }
+    
+    deinit {
+        print("deinit commnetVC \(String.init(describing: self))")
+    }
 }
 
 
-extension commentViewController{
+extension CommentViewController{
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: contentCell.identity(), for: indexPath) as? contentCell{
@@ -79,10 +83,13 @@ extension commentViewController{
     
 }
 
-extension commentViewController{
+extension CommentViewController{
     @objc private func more(){
         let alert = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
-        let show = UIAlertAction.init(title: "查看原帖", style: .default) { action in
+        let show = UIAlertAction.init(title: "查看原帖", style: .default) { [weak self] action in
+            guard let `self` = self else{
+                return
+            }
             // 显示原帖
             if  let id = self.mode?.id{
                 let post = PostContentViewController()
@@ -93,10 +100,10 @@ extension commentViewController{
         }
         alert.addAction(show)
         if mycomment {
-            let delete = UIAlertAction.init(title: "删除", style: .destructive) { action in
+            let delete = UIAlertAction.init(title: "删除", style: .destructive) {  [weak self] action in
                 // 服务器删除
                 // 返回，不删除跳转原来记录（海需要关联删除很多记录）
-                self.navigationController?.popvc(animated: true)
+                self?.navigationController?.popvc(animated: true)
 
              }
             alert.addAction(delete)
@@ -112,7 +119,7 @@ extension commentViewController{
 
 
 
-extension commentViewController{
+extension CommentViewController{
     internal  func getComment() {
         DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
             Thread.sleep(forTimeInterval: 1)

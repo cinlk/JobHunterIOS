@@ -56,7 +56,7 @@ class SingleReplyViewController: BaseViewController {
     internal lazy var allSubReplys:[SecondReplyModel] = []
     
 
-    internal lazy var headerView:singleHeaderView = {
+    internal lazy var headerView:singleHeaderView = { [unowned self] in
         let view = singleHeaderView()
         view.thumbUP.addTarget(self, action: #selector(like), for: .touchUpInside)
         view.reply.addTarget(self, action: #selector(reply), for: .touchUpInside)
@@ -95,11 +95,11 @@ class SingleReplyViewController: BaseViewController {
     internal var row:Int = -1
     
     
-    private lazy var deleteAlert:UIAlertController = { [unowned self] in
+    private lazy var deleteAlert:UIAlertController = {
         let alert = UIAlertController.init(title: "确认删除", message: "数据将无法恢复", preferredStyle: UIAlertController.Style.alert)
         
         let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
-        let delete = UIAlertAction.init(title: "确认", style: UIAlertAction.Style.default, handler: { action in
+        let delete = UIAlertAction.init(title: "确认", style: UIAlertAction.Style.default, handler: {   [unowned self]   action in
             self.deleteMyself()
         })
         
@@ -250,7 +250,10 @@ extension SingleReplyViewController{
     private func buildAlert(showDelete:Bool){
         
         let vc = UIAlertController.init(title: "请选择", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
-        let thumbUP = UIAlertAction.init(title: "赞", style: UIAlertAction.Style.default, handler: { action in
+        let thumbUP = UIAlertAction.init(title: "赞", style: UIAlertAction.Style.default, handler: { [weak self] action in
+            guard let `self` = self else{
+                return
+            }
             if  self.allSubReplys[self.currentSelecteCell].isLike{
                 self.allSubReplys[self.currentSelecteCell].thumbUP -= 1
             }else{
@@ -264,7 +267,10 @@ extension SingleReplyViewController{
             
         })
         
-        let comment = UIAlertAction.init(title: "评论", style: .default, handler: { action in
+        let comment = UIAlertAction.init(title: "评论", style: .default, handler: { [weak self]  action in
+            guard let `self` = self else{
+                return
+            }
             let name  = self.allSubReplys[self.currentSelecteCell].authorName!
             
             self.resetPlashold(name: name)
@@ -273,7 +279,10 @@ extension SingleReplyViewController{
         })
         
         // 自己的评论
-        let delete = UIAlertAction.init(title: "删除", style: UIAlertAction.Style.destructive, handler: { action in
+        let delete = UIAlertAction.init(title: "删除", style: UIAlertAction.Style.destructive, handler: { [weak self] action in
+            guard let `self` = self else{
+                return
+            }
             // 服务器端删除
             self.allSubReplys.remove(at: self.currentSelecteCell)
             self.table.reloadData()
@@ -495,6 +504,7 @@ internal class  singleHeaderView:PostHeaderView{
                 return
             }
             if let url = mode.authorIcon{
+              self.userIcon.kf.indicatorType = .activity
               self.userIcon.kf.setImage(with: Source.network(url), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
             }
             
@@ -554,6 +564,7 @@ internal class  singleHeaderView:PostHeaderView{
             }
          
             if let url = mode.authorIcon{
+                self.authorIcon.kf.indicatorType = .activity
                 self.authorIcon.kf.setImage(with: Source.network(url), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
             }
             

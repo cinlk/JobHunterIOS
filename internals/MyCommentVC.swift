@@ -37,6 +37,10 @@ class MyCommentVC: ForumMessageBaseVC {
     }
     
     
+    deinit {
+        print("deinit MyCommentVC \(String.init(describing: self))")
+    }
+    
 }
 
 
@@ -51,18 +55,18 @@ extension MyCommentVC{
         
         if mode.body?.kind == .post{
             // 显示回帖
-            let comment = commentViewController()
+            let comment = CommentViewController()
             comment.data = (message:mode, type: .reply)
             self.navigationController?.pushViewController(comment, animated: true)
             //  显示回帖  和指定的部分评论
         }else if mode.body?.kind == .reply{
-            let comment = commentViewController()
+            let comment = CommentViewController()
             comment.data = (message:mode, type: .subReply)
             self.navigationController?.pushViewController(comment, animated: true)
             
         }else{
             // 显示回帖  和指定的部分评论
-            let comment = commentViewController()
+            let comment = CommentViewController()
             comment.data = (message:mode, type: .subReply)
             self.navigationController?.pushViewController(comment, animated: true)
         }

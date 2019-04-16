@@ -23,11 +23,11 @@ class ChatListViewController: BaseTableViewController {
     //private var unRead:Bool = false
     private var deleteRow = 0
     
-    private lazy var deleteAlertShow:UIAlertController = { [unowned self] in
+    private lazy var deleteAlertShow:UIAlertController = {
         
         let alertVC = UIAlertController.init(title: "请确认", message: "删除后聊天记录不存在", preferredStyle: UIAlertController.Style.alert)
         
-        alertVC.addAction(UIAlertAction.init(title: "确定", style: .default, handler: { (action) in
+        alertVC.addAction(UIAlertAction.init(title: "确定", style: .default, handler: { [unowned self] (action) in
             self.deleteMode(row: self.deleteRow)
         }))
         alertVC.addAction(UIAlertAction.init(title: "取消", style: .cancel, handler: nil))
@@ -60,7 +60,7 @@ class ChatListViewController: BaseTableViewController {
         self.tableView.refreshControl = UIRefreshControl.init()
         self.tableView.refreshControl?.addTarget(self, action: #selector(refresh), for: UIControl.Event.valueChanged)
         // 刷新聊天对象列表
-    NotificationCenter.default.rx.notification(NotificationName.refreshChatList).subscribe(onNext:  {  [weak self] (notify) in
+        NotificationCenter.default.rx.notification(NotificationName.refreshChatList).subscribe(onNext:  {  [weak self] (notify) in
             self?.loadMessage()
         
         }).disposed(by: self.dispose)
@@ -164,7 +164,7 @@ class ChatListViewController: BaseTableViewController {
         GlobalUserInfo.shared.openConnected { [weak self] (sucess, error) in
             if sucess{
                 
-                GlobalUserInfo.shared.buildConversation(conversation: conv.conversationId, talkWith: conv.recruiterId!, jobId: conv.jobId!, completed: { (con, error) in
+                GlobalUserInfo.shared.buildConversation(conversation: conv.conversationId, talkWith: conv.recruiterId!, jobId: conv.jobId!, completed: { [weak self] (con, error) in
                     if error != nil {
                         //print(err)
                         self?.view.showToast(title: "获取会话失败", customImage: nil, mode: .text)
@@ -267,11 +267,6 @@ class ChatListViewController: BaseTableViewController {
                 tableView.reloadData()
                 completion(true)
             }
-
-          
-            
-            
-           
         })
         
         editAction.backgroundColor = UIColor.blue

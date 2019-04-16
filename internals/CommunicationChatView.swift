@@ -72,7 +72,7 @@ fileprivate  class chatContentTableView:UITableView{
         fatalError("init(coder:) has not been implemented")
     }
     deinit {
-        print("deinit chattable")
+        print("deinit communicationChatVC \(String.init(describing: self))")
     }
     
     
@@ -121,10 +121,9 @@ extension chatContentTableView:  UITableViewDelegate, UITableViewDataSource{
             }else if message.isKind(of: LocationMessage.self){
                 let cell = tableView.dequeueReusableCell(withIdentifier: LocationMessageCell.identity(), for: indexPath) as! LocationMessageCell
                 cell.mode = message as? LocationMessage
-                cell.navigate2Map = { [unowned self] mes  in
+                cell.navigate2Map = { [weak self] mes  in
                     // 跳转到地图
-                    
-                   self.chatDelegate?.showLocationMap(mes: mes!)
+                   self?.chatDelegate?.showLocationMap(mes: mes!)
                 }
                 return cell
             }else{
@@ -185,11 +184,16 @@ extension chatContentTableView:  UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         // 加载最后可见cell 后，第一次进入view时滚动到最底部的cell
         if indexPath.row == tableView.indexPathsForVisibleRows?.last?.row && firstLoad{
-            tableView.scrollToRow(at: IndexPath.init(row: self.datas.count - 1, section: 0), at: .bottom, animated: true)
+            UIView.performWithoutAnimation {
+                tableView.scrollToRow(at: IndexPath.init(row: self.datas.count - 1, section: 0), at: .bottom, animated: false)
+            }
+      
             firstLoad = false
             
         }
     }
+    
+    
     
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
@@ -306,12 +310,11 @@ class CommunicationChatView: UIViewController {
     
     private lazy var recruiteVC = PublisherControllerView()
     
-    private lazy var alertView:UIAlertController = {
+    private lazy var alertView:UIAlertController = {  [unowned self] in
         let alertV = UIAlertController.init(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
-        alertV.addAction(UIAlertAction.init(title: "查看TA的名片", style: UIAlertAction.Style.default, handler: {  [weak self] (action) in
-            guard let `self` = self else {
-                return
-            }
+        
+        alertV.addAction(UIAlertAction.init(title: "查看TA的名片", style: UIAlertAction.Style.default, handler: {  [unowned self] (action) in
+           
             // MARK
             guard let hr = self.hr, let id = hr.userID else {
                 return
@@ -486,7 +489,10 @@ extension CommunicationChatView {
         }
         //print(self.tableView.datas.count)
         // 刷新table
-        self.tableView.reloadData()
+        UIView.performWithoutAnimation {
+            self.tableView.reloadData()
+        }
+       
     }
     
     
@@ -611,12 +617,12 @@ extension CommunicationChatView{
         // 影藏 emotion 和 more 输入view
         if self.chatBarView.keyboardType == .emotion || self.chatBarView.keyboardType == .more{
             // 先改变view 后 在显示vc
-            self.moveBar(distance: 0){
+            self.moveBar(distance: 0){ [weak self] in
                 let job = JobDetailViewController()
                 //job.uuid = mes.jobID!
                 job.job = (mes.jobID!, mes.jobtype)
                 job.fromChatVC = true
-                self.navigationController?.pushViewController(job, animated: true)
+                self?.navigationController?.pushViewController(job, animated: true)
                 
             }
         }else{
@@ -644,8 +650,8 @@ extension CommunicationChatView: chatMoreViewDelegate{
         case .pic:
             
             if Utils.PhotoLibraryAuthorization() == false{
-                weak var  s = self
-                self.view.presentAlert(type: UIAlertController.Style.alert, title: "温馨提示", message: "没有相册的访问权限，请在应用设置中开启权限", items: [], target: s) { _  in }
+              
+                self.view.presentAlert(type: UIAlertController.Style.alert, title: "温馨提示", message: "没有相册的访问权限，请在应用设置中开启权限", items: [], target: self) { _  in }
                 return
             }
             
@@ -680,8 +686,8 @@ extension CommunicationChatView: chatMoreViewDelegate{
         // 模拟器相机不能用
         case .camera:
             if Utils.PhotoLibraryAuthorization() == false{
-                weak var s = self
-                self.view.presentAlert(type: UIAlertController.Style.alert, title: "温馨提示", message: "没有相册的访问权限，请在应用设置中开启权限", items: [], target: s) { _  in }
+               
+                self.view.presentAlert(type: UIAlertController.Style.alert, title: "温馨提示", message: "没有相册的访问权限，请在应用设置中开启权限", items: [], target: self) { _  in }
                 return
             }
              
@@ -944,6 +950,10 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
                     cell.activity.stopAnimating()
                     // 存入数据库
                     try? self?.conversationManager.insertMessageItem(items: [msg])
+                    // 更新 聊天list 列表
+                    if let row = self?.currentRow{
+                        NotificationCenter.default.post(name: NotificationName.refreshChatRow, object: nil, userInfo: ["row":row, "conversationId": msg.conversayionId!])
+                    }
                     return
                 }
                 if error != nil{
@@ -999,12 +1009,17 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
         }
         
         self.tableView.datas.add(mes)
-        self.tableView.reloadData()
-        
-        if self.tableView.datas.count > 0{
-            let path:NSIndexPath = NSIndexPath.init(row: self.tableView.datas.count-1, section: 0)
-            self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: false)
+        // 阻止cell 奇怪的动画效果
+        UIView.performWithoutAnimation {
+            self.tableView.reloadData()
+            if self.tableView.datas.count > 0{
+                let path:NSIndexPath = NSIndexPath.init(row: self.tableView.datas.count-1, section: 0)
+                self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: false)
+            }
         }
+        
+        
+        
        
         //3  数据插入本地数据库 后通知更新 converation 会话界面，显示内容
         
@@ -1049,7 +1064,9 @@ extension CommunicationChatView: ChatBarViewDelegate{
         self.tableView.frame = CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH - height - y)
         if self.tableView.datas.count > 0{
             let row = IndexPath.init(row: self.tableView.datas.count - 1   , section: 0)
-            self.tableView.scrollToRow(at: row, at: .none, animated: true)
+            UIView.performWithoutAnimation {
+                self.tableView.scrollToRow(at: row, at: .none, animated: false)
+            }
         }
        
         self.currentChatBarHright =  height
@@ -1066,7 +1083,7 @@ extension CommunicationChatView: ChatBarViewDelegate{
 extension CommunicationChatView{
     
 
-   private func moveBar(distance: CGFloat, complete:(()->Void)? = nil ) {
+    private func moveBar(distance: CGFloat, complete: (()->Void)? = nil ) {
         
         //一起移动 inputview 和emotion 和 moreview 和 tableview 的位置
 
@@ -1079,7 +1096,9 @@ extension CommunicationChatView{
             // tableview滑动到底部
             if distance != 0 && self.tableView.datas.count > 0 {
                 let path = IndexPath.init(row: self.tableView.datas.count-1, section: 0)
-                self.tableView.scrollToRow(at: path, at: .bottom, animated: true)
+                UIView.performWithoutAnimation {
+                    self.tableView.scrollToRow(at: path, at: .bottom, animated: false)
+                }
             }
         }) { bool in
             complete?()

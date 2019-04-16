@@ -73,7 +73,8 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
             
             
             if let url = mode?.recruiterIconURL {
-            self.icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                self.icon.kf.indicatorType = .activity
+                self.icon.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "picture"), options: nil, progressBlock: nil, completionHandler: nil)
             }
             // 加入hr 的公司名称 ?
             self.name.text =  mode?.recruiterName

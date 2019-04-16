@@ -74,7 +74,8 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
 //            }
             
             if let url = GlobalUserInfo.shared.getIcon(){
-                self.avartar.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                self.avartar.kf.indicatorType = .activity
+                self.avartar.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "placeholder"), options: nil, progressBlock: nil, completionHandler: nil)
             }
             
             
@@ -112,7 +113,8 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
             }else{
                 // 从网络url  获取图片???
                 if let imageUrl = mode.fileUrl{
-                    self.imageV.kf.setImage(with: Source.network(imageUrl), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+                    self.imageV.kf.indicatorType = .activity
+                    self.imageV.kf.setImage(with: Source.network(imageUrl), placeholder: UIImage.init(named: "placeholder"), options: nil, progressBlock: nil, completionHandler: nil)
                 }
                 
                 stretchImage = UIImage.init(named: "receiverImageMask")
@@ -151,8 +153,7 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
         self.selectionStyle = .none
         avartar.setCircle()
         
-        
-      
+     
 
     }
     

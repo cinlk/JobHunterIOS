@@ -24,7 +24,6 @@ class UserLogginViewController: UIViewController {
         didSet{
             if navBack{
                 self.skipBtn.setTitle("取消", for: .normal)
-                //self.skipBtn.isHidden = true
             }
         }
     }
@@ -52,11 +51,12 @@ class UserLogginViewController: UIViewController {
     private lazy var contentView: PageContentView = { [unowned self] in
         
         let vc1 = QuickLoggingViewController()
-        vc1.parentVC = self 
+        vc1.parentVC = self
         let vc2 = PasswordLoggingViewController()
-        vc2.parentVC = self 
+        vc2.parentVC = self
         
-        let content = PageContentView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW - 20, height: contentViewH), childVCs: [vc1,vc2], pVC: self)
+//
+        let content = PageContentView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW - 20, height: contentViewH), childVCs: [vc1, vc2], pVC: self)
         content.delegate = self
         return content
     }()
@@ -129,6 +129,9 @@ class UserLogginViewController: UIViewController {
 
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+    }
     
     deinit {
         print("deinit userloginVC")

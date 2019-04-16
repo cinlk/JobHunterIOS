@@ -27,9 +27,9 @@ class GetChatEmotion: NSObject {
     
     deinit {
         print("deinit GetChatEmotion")
-        baseEmotion = []
-        gifEmotion2 = []
-        gifEmotion3 = []
+        baseEmotion.removeAll()
+        gifEmotion2.removeAll()
+        gifEmotion3.removeAll()
     }
     // MARK:- 查找属性字符串的方法
     

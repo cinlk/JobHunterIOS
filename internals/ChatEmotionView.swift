@@ -157,10 +157,10 @@ class ChatEmotionView: UIView {
         _ = self.sendButton.sd_layout().topEqualToView(bottomView)?.rightEqualToView(bottomView)?.bottomEqualToView(bottomView)?.widthIs(53)
         
         _ = collectView.sd_layout().bottomSpaceToView(bottomView,0)?.leftEqualToView(self)?.rightEqualToView(self)?.topEqualToView(self)
-        
+    }
     
-        
-        
+    deinit {
+        print("deinit chatEmotionView \(String.init(describing: self))")
     }
 }
 

@@ -123,6 +123,12 @@ class QuickLoggingViewController: UIViewController, UITableViewDelegate {
         super.viewWillLayoutSubviews()
         _ = self.tableView.sd_layout()?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
     }
+    
+    
+    deinit {
+        
+        print("deinit quikLoggingVC \(String.init(describing: self))")
+    }
    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
@@ -256,6 +262,7 @@ extension QuickLoggingViewController{
                         guard let pv = self?.parentVC else {
                             return
                         }
+                    
                         pv.navBack ? pv.dismiss(animated: true, completion: nil) : pv.performSegue(withIdentifier: pv.mainSegueIdentiy, sender: nil)
                         return
                         

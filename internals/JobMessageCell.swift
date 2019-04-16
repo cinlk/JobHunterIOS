@@ -107,7 +107,8 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
             }
             //print(mode.toJSON())
             if let url = URL.init(string: mode.icon){
-                self.icon.kf.setImage(with: Source.network(url), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+                self.icon.kf.indicatorType = .activity
+                self.icon.kf.setImage(with: Source.network(url), placeholder: UIImage.init(named: "placeholder"), options: nil, progressBlock: nil, completionHandler: nil)
             }else{
                 self.icon.image = #imageLiteral(resourceName: "swift")
             }

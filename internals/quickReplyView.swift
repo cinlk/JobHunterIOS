@@ -34,7 +34,9 @@ class quickReplyView: UITableView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    
+    deinit {
+        print("deinit quickReplayView \(String.init(describing: self))")
+    }
 }
 
 extension quickReplyView{

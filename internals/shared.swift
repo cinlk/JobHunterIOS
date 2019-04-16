@@ -253,8 +253,11 @@ class GlobalUserInfo: NSObject {
         self.token = token
         self.account = account
         self.password = pwd
-        self.imClient =  AVIMClient.init(clientId: lid)
-        self.imClient?.delegate = self
+        if self.role != .anonymous{
+            self.imClient =  AVIMClient.init(clientId: lid)
+            self.imClient?.delegate = self
+        }
+       
         // 获取用户信息
         
         

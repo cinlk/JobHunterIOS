@@ -115,6 +115,7 @@ class ChatBarView: UIView {
     }
     
     deinit {
+        print("deinit chatBarView \(String.init(describing: self))")
         inputText.removeObserver(self, forKeyPath: "attributedText")
 
     }

@@ -74,7 +74,8 @@ class GifCell: UITableViewCell {
         
         if GlobalUserInfo.shared.getId()  == messageInfo.senderId{
             if let iconURL = GlobalUserInfo.shared.getIcon() {
-                self.avatar.kf.setImage(with: Source.network(iconURL), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                self.avatar.kf.indicatorType = .activity
+                self.avatar.kf.setImage(with: Source.network(iconURL), placeholder: #imageLiteral(resourceName: "placeholder"), options: nil, progressBlock: nil, completionHandler: nil)
             }else{
                 // default 头像
                 self.avatar.image =  #imageLiteral(resourceName: "default")
@@ -88,8 +89,8 @@ class GifCell: UITableViewCell {
             
         }else{
             if let iconURL = chatUser?.icon {
-                
-                self.avatar.kf.setImage(with: Source.network(iconURL), placeholder: #imageLiteral(resourceName: "default"), options: nil, progressBlock: nil, completionHandler: nil)
+                self.avatar.kf.indicatorType = .activity
+                self.avatar.kf.setImage(with: Source.network(iconURL), placeholder: #imageLiteral(resourceName: "placeholder"), options: nil, progressBlock: nil, completionHandler: nil)
             }else{
                 // default 头像
                 self.avatar.image =  #imageLiteral(resourceName: "default")

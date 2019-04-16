@@ -65,6 +65,9 @@ class ChatMoreView: UIView {
         
     }
     
+    deinit {
+        print("deinit chatMoreView \(String.init(describing: self))")
+    }
 }
 
 extension ChatMoreView: UICollectionViewDataSource, UICollectionViewDelegate {

@@ -80,6 +80,9 @@ class gifEmotionView: UICollectionViewCell {
         return "gifOneEmotionView"
     }
     
+    deinit {
+        print("deinit gifEmotionView \(String.init(describing: self))")
+    }
     
 
 }

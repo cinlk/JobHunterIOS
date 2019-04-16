@@ -15,7 +15,7 @@ class ForumMessageBaseVC: BaseViewController {
 
     // 赞文章  和  回帖 或 评论
     
-    private lazy var table:UITableView = {
+    private lazy var table:UITableView = { [unowned self] in
         let tb = UITableView()
         tb.delegate = self
         tb.dataSource = self
@@ -63,6 +63,10 @@ class ForumMessageBaseVC: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+    }
+    
+    deinit {
+        print("deinit forumMessageBaseVC \(String.init(describing: self))")
     }
     
 }

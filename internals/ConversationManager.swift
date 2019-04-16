@@ -66,19 +66,15 @@ class ConversationManager: NSObject {
         
         for  c in cons{
             
-           
-            guard let  tmp  = ChatListModel.init(JSON: c.toJSON())
-                
-                else {
-                continue
-                }
+            guard let  tmp  = ChatListModel.init(JSON: c.toJSON())else {continue}
            // tmp.recruiterIconURL = c.recruiterIconURL
             // 最后一条消息
             if let msg =  try? conversationTable.getLastMessage(conversationId: c.conversationId!){
                 tmp.lastMessage = msg
             
             }
-            print(tmp.toJSON())
+            
+            //print(tmp.toJSON())
             conversationModes.append(tmp)
         }
         
