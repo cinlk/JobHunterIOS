@@ -215,7 +215,7 @@ extension aboutUS{
         let paste = UIPasteboard.general
         paste.string = mode?.wecaht ?? ""
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-             openApp(appURL: "weixin://") { (res) in
+             Utils.openApp(appURL: "weixin://") { (res) in
                 print("打开微信应用 \(res)")
             }
         }
@@ -224,7 +224,7 @@ extension aboutUS{
     
     // 浏览器打开微博
     private func weibo(){
-        openApp(appURL: "https://m.weibo.cn/u/3632539935") { (bool) in
+        Utils.openApp(appURL: "https://m.weibo.cn/u/3632539935") { (bool) in
             print("打开微博网页 \(bool)")
         }
     }
@@ -236,7 +236,7 @@ extension aboutUS{
         let phoneNumber =  phone.replacingOccurrences(of: "-", with: "")
         let phoneStr = "tel://" + phoneNumber
         
-        openApp(appURL: phoneStr) { (bool) in
+        Utils.openApp(appURL: phoneStr) { (bool) in
             print("call \(phoneStr)")
         }
     }

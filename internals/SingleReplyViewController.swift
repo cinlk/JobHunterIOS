@@ -429,7 +429,7 @@ extension SingleReplyViewController: ChatInputViewDelegate{
         if let text = textView.text, let new = SecondReplyModel(JSON: [
             "id": (self.mode?.id)!,
             "replyID": (self.mode?.replyID)!,
-            "subreplyID": getUUID(),
+            "subreplyID": Utils.getUUID(),
             "replyContent":text,
             "receiver": currentSenderName,
             "authorID": (self.mode?.authorID)!,
@@ -464,20 +464,20 @@ extension SingleReplyViewController{
                 
                 // 获取部分回复（最旧的的5条）
                 for _ in 0..<5{
-                    self?.allSubReplys.append(SecondReplyModel(JSON: ["id":"dwqdw","replyID":getUUID(), "subreplyID":"dqwd-dqwdqwd","replyContent":"当前为多群多低级趣味的精品区 当前为多   dqwdqwdqwd   当前为多群 当前为多群 dqdqw","receiver":"小猪啊","authorID":"dqwddqwdd","authorName":"我的名字当前为多","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":10,"reply":22] )!)
+                    self?.allSubReplys.append(SecondReplyModel(JSON: ["id":"dwqdw","replyID":Utils.getUUID(), "subreplyID":"dqwd-dqwdqwd","replyContent":"当前为多群多低级趣味的精品区 当前为多   dqwdqwdqwd   当前为多群 当前为多群 dqdqw","receiver":"小猪啊","authorID":"dqwddqwdd","authorName":"我的名字当前为多","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":10,"reply":22] )!)
                 }
                 
                 
             }else if let subReplyID =  self?.subReplyID{
                 // 根据评论id  获取它附件部分回复，（不显示回帖）
                     for _ in 0..<2{
-                        self?.allSubReplys.append(SecondReplyModel(JSON: ["id":"dwqdw","replyID":getUUID(), "subreplyID":"123dqwdqwd456","replyContent":"当前为多群多低级趣味的精品区 当前为多   dqwdqwdqwd   当前为多群 当前为多群 dqdqw","receiver":"小猪啊","authorID":"123456","authorName":"我的名字当前为多","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":2303,"reply":101] )!)
+                        self?.allSubReplys.append(SecondReplyModel(JSON: ["id":"dwqdw","replyID":Utils.getUUID(), "subreplyID":"123dqwdqwd456","replyContent":"当前为多群多低级趣味的精品区 当前为多   dqwdqwdqwd   当前为多群 当前为多群 dqdqw","receiver":"小猪啊","authorID":"123456","authorName":"我的名字当前为多","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":2303,"reply":101] )!)
                     }
                     
-                    self?.allSubReplys.append(SecondReplyModel(JSON: ["id":"dwqdw","replyID":getUUID(), "subreplyID":subReplyID,"replyContent":"当前为多群多低级趣味的精品区 当前为多   dqwdqwdqwd   当前为多群 当前为多群 dqdqw","receiver":"小猪啊","authorID":"123456","authorName":"我的名字当前为多","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":2303,"reply":101] )!)
+                    self?.allSubReplys.append(SecondReplyModel(JSON: ["id":"dwqdw","replyID":Utils.getUUID(), "subreplyID":subReplyID,"replyContent":"当前为多群多低级趣味的精品区 当前为多   dqwdqwdqwd   当前为多群 当前为多群 dqdqw","receiver":"小猪啊","authorID":"123456","authorName":"我的名字当前为多","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":2303,"reply":101] )!)
                     
                     for _ in 0..<5{
-                        self?.allSubReplys.append(SecondReplyModel(JSON: ["id":"dwqdw","replyID":getUUID(), "subreplyID":"123dqwdqwd456","replyContent":"当前为多群多低级趣味的精品区 当前为多   dqwdqwdqwd   当前为多群 当前为多群 dqdqw","receiver":"小猪啊","authorID":"123456","authorName":"我的名字当前为多","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":2303,"reply":101] )!)
+                        self?.allSubReplys.append(SecondReplyModel(JSON: ["id":"dwqdw","replyID":Utils.getUUID(), "subreplyID":"123dqwdqwd456","replyContent":"当前为多群多低级趣味的精品区 当前为多   dqwdqwdqwd   当前为多群 当前为多群 dqdqw","receiver":"小猪啊","authorID":"123456","authorName":"我的名字当前为多","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":2303,"reply":101] )!)
                     }
             }
             

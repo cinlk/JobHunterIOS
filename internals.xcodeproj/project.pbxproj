@@ -288,7 +288,6 @@
 		4A9CE3681F715F1D002A8FD5 /* DropCarrerClassifyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9CE3671F715F1D002A8FD5 /* DropCarrerClassifyView.swift */; };
 		4A9CE36C1F716101002A8FD5 /* progressHUB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9CE36B1F716101002A8FD5 /* progressHUB.swift */; };
 		4AA123D522301A0300CA4290 /* companyDetailMultiSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA123D422301A0300CA4290 /* companyDetailMultiSection.swift */; };
-		4AA123D72230267100CA4290 /* funcTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA123D62230267100CA4290 /* funcTool.swift */; };
 		4AA6376420674FAD00DAE9A9 /* extension+sqlite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA6376320674FAD00DAE9A9 /* extension+sqlite.swift */; };
 		4AA637662067CCC000DAE9A9 /* ConversationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA637652067CCC000DAE9A9 /* ConversationManager.swift */; };
 		4AA63768206A11F800DAE9A9 /* extension+objectMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AA63767206A11F800DAE9A9 /* extension+objectMapper.swift */; };
@@ -299,7 +298,7 @@
 		4AAB084720B5C8D900BEF38A /* InnerTextFiledCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AAB084620B5C8D900BEF38A /* InnerTextFiledCell.swift */; };
 		4AAC5AA9221439D6002D397B /* testMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AAC5AA8221439D6002D397B /* testMapViewController.swift */; };
 		4AB0FED82014E23200932C02 /* ChatTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB0FED72014E23200932C02 /* ChatTimeCell.swift */; };
-		4AB0FEDA201630B000932C02 /* LXFChatMshTimeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB0FED9201630B000932C02 /* LXFChatMshTimeHelper.swift */; };
+		4AB0FEDA201630B000932C02 /* ChatMshTimeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB0FED9201630B000932C02 /* ChatMshTimeHelper.swift */; };
 		4AB8FFE91FDEC0720020F026 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB8FFE81FDEC0720020F026 /* SearchViewModel.swift */; };
 		4AB97F3120D783570056AC64 /* CompanyCareerTalkVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB97F3020D783570056AC64 /* CompanyCareerTalkVC.swift */; };
 		4AB97F3520D966EC0056AC64 /* PPBadgeViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB97F3420D966EC0056AC64 /* PPBadgeViewHelper.swift */; };
@@ -694,7 +693,6 @@
 		4A9CE3671F715F1D002A8FD5 /* DropCarrerClassifyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropCarrerClassifyView.swift; sourceTree = "<group>"; };
 		4A9CE36B1F716101002A8FD5 /* progressHUB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = progressHUB.swift; sourceTree = "<group>"; };
 		4AA123D422301A0300CA4290 /* companyDetailMultiSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = companyDetailMultiSection.swift; sourceTree = "<group>"; };
-		4AA123D62230267100CA4290 /* funcTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = funcTool.swift; sourceTree = "<group>"; };
 		4AA6376320674FAD00DAE9A9 /* extension+sqlite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+sqlite.swift"; sourceTree = "<group>"; };
 		4AA637652067CCC000DAE9A9 /* ConversationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationManager.swift; sourceTree = "<group>"; };
 		4AA63767206A11F800DAE9A9 /* extension+objectMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+objectMapper.swift"; sourceTree = "<group>"; };
@@ -705,7 +703,7 @@
 		4AAB084620B5C8D900BEF38A /* InnerTextFiledCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InnerTextFiledCell.swift; sourceTree = "<group>"; };
 		4AAC5AA8221439D6002D397B /* testMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = testMapViewController.swift; sourceTree = "<group>"; };
 		4AB0FED72014E23200932C02 /* ChatTimeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTimeCell.swift; sourceTree = "<group>"; };
-		4AB0FED9201630B000932C02 /* LXFChatMshTimeHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LXFChatMshTimeHelper.swift; sourceTree = "<group>"; };
+		4AB0FED9201630B000932C02 /* ChatMshTimeHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMshTimeHelper.swift; sourceTree = "<group>"; };
 		4AB8FFE81FDEC0720020F026 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		4AB97F3020D783570056AC64 /* CompanyCareerTalkVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyCareerTalkVC.swift; sourceTree = "<group>"; };
 		4AB97F3420D966EC0056AC64 /* PPBadgeViewHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PPBadgeViewHelper.swift; sourceTree = "<group>"; };
@@ -1651,7 +1649,7 @@
 		4A88747E21ECEB9000273ED8 /* common */ = {
 			isa = PBXGroup;
 			children = (
-				4ACB242A2220FBC400B00823 /* utils */,
+				4A8D28B91FD195B600FA983F /* tools */,
 				4A0BA74020ADC8F70099F332 /* 专栏 */,
 				4A59BDBB22063CD700429D50 /* cell */,
 				4A8D28B41FD190FF00FA983F /* 搜索栏 */,
@@ -1681,7 +1679,7 @@
 				4AFF91C31F5EF40000FE189F /* mapHelp.swift */,
 				4A59BDBF220F1AE100429D50 /* enum.swift */,
 				4A06D76121E1AB55002B0C9A /* location.swift */,
-				4AB0FED9201630B000932C02 /* LXFChatMshTimeHelper.swift */,
+				4AB0FED9201630B000932C02 /* ChatMshTimeHelper.swift */,
 				4A18E1EA202CA03F00B1038E /* TreeNode.swift */,
 				4AD8F754206FC6EC003969ED /* AppFileManager.swift */,
 				4A14B78D21E8DFCA00563C97 /* BaseNetworkTool.swift */,
@@ -1869,14 +1867,6 @@
 			name = "登录 ";
 			sourceTree = "<group>";
 		};
-		4ACB242A2220FBC400B00823 /* utils */ = {
-			isa = PBXGroup;
-			children = (
-				4AA123D62230267100CA4290 /* funcTool.swift */,
-			);
-			name = utils;
-			sourceTree = "<group>";
-		};
 		4ACBD6FA1F77E76D00A5FD23 /* ChatBar */ = {
 			isa = PBXGroup;
 			children = (
@@ -1982,7 +1972,6 @@
 				4A2145D0207A4FC1000959F4 /* Main */,
 				4ACC6DB0205BF3C400392252 /* database */,
 				4A686A912049A34200571EB0 /* support */,
-				4A8D28B91FD195B600FA983F /* tools */,
 				4A6BC2351FC86446002C17B6 /* config */,
 				4AEDFE841FBFE78A0071F4D8 /* extension */,
 				4AAB084820B6FD2400BEF38A /* 登录  */,
@@ -2700,7 +2689,7 @@
 				4ADDDAB51F98EF84001CB00F /* ChatEmotionCells.swift in Sources */,
 				4A1BA2D9208B639D00CF8352 /* GraduateJobsViewController.swift in Sources */,
 				4A95065821460FAE00842D75 /* searchServer.swift in Sources */,
-				4AB0FEDA201630B000932C02 /* LXFChatMshTimeHelper.swift in Sources */,
+				4AB0FEDA201630B000932C02 /* ChatMshTimeHelper.swift in Sources */,
 				4A5FFC1720F10B5800DD6FD4 /* PreShowPDFVC.swift in Sources */,
 				4A5304DB1F527D090000F1E9 /* ValidateNumber.swift in Sources */,
 				4A82A0E22028A8C900185E8B /* person_evaluateCell.swift in Sources */,
@@ -2762,7 +2751,6 @@
 				4A7FD09B214EA6E400A51736 /* jobMultiSections.swift in Sources */,
 				4A686A902044526200571EB0 /* extension+tablecell.swift in Sources */,
 				4A1BA2C8208B1E3A00CF8352 /* CompanyModel.swift in Sources */,
-				4AA123D72230267100CA4290 /* funcTool.swift in Sources */,
 				4A14B78E21E8DFCA00563C97 /* BaseNetworkTool.swift in Sources */,
 				4A8859181FF8DD2D0009D73D /* extension+uiview.swift in Sources */,
 				4A4254FB203EE0170049B237 /* HelpsVC.swift in Sources */,

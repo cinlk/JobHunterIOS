@@ -13,10 +13,7 @@ import Alamofire
 import Moya
 import Kingfisher
 
-/* 定义全局的变量 */
-// 时区
 
-let regionRome =  Region.init(calendar: Calendars.gregorian, zone: Zones.asiaShanghai, locale: Locales.chinese)
 
 
 
@@ -41,7 +38,6 @@ struct ConfigColor {
         
     }
     
-    
     struct PageTitleColor {
         
         static let SublineColor = UIColor.init(r: 100, g: 100, b: 100, alpha: 0.5)
@@ -57,16 +53,6 @@ struct ConfigColor {
 // chat bar
 
 let ChatKeyBoardH:CGFloat =  258.0
-
-// chat view
-//let avatarSize:CGSize = CGSize.init(width: 45, height: 45)
-
-// 本地 登录后自己的信息 （用于测试）
-//let myself:PersonModel = PersonModel(JSON: ["userID": GlobalConfig.LeanCloudApp.User1, "company":"","name":"来自地球大于6","role":"求职","icon": #imageLiteral(resourceName: "evil").toBase64String()])!
-
-// 匿名用户
-
-
 // global greeting msg
 var GreetingMsg:String = ""
 var IsGreeting:Bool = true 
@@ -191,6 +177,7 @@ struct GlobalConfig {
     
     static let DBName:String = "app.db"
     static let AvatarSize:CGSize = CGSize.init(width: 45, height: 45)
+    static let regionRome =  Region.init(calendar: Calendars.gregorian, zone: Zones.asiaShanghai, locale: Locales.chinese)
     
     struct DropMenuTitle {
         static let city = "城市"

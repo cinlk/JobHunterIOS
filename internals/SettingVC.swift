@@ -253,7 +253,7 @@ extension SettingVC {
     // 评价app
    @objc  private func evaluationApp(_ url:String){
         
-        openApp(appURL: url) { (bool) in
+        Utils.openApp(appURL: url) { (bool) in
             print("open success \(bool)")
         }
     }

@@ -225,7 +225,7 @@ extension AddBlacklistVC{
             Thread.sleep(forTimeInterval: 1)
             // 获取数据
             for i in 0..<12{
-                if let com =  BlackistCompanyModel(JSON: ["companyID":getUUID(),"companyName":"公司\(i)","validate":false]){
+                if let com =  BlackistCompanyModel(JSON: ["companyID":Utils.getUUID(),"companyName":"公司\(i)","validate":false]){
                     self?.companys.append(com)
                 }
             }

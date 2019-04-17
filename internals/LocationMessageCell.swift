@@ -33,7 +33,6 @@ fileprivate let mapSize = CGSize.init(width: 160, height: 120)
         l.font = UIFont.systemFont(ofSize: 14)
         l.textAlignment = NSTextAlignment.left
         l.textColor = UIColor.black
-        //l.setSingleLineAutoResizeWithMaxWidth()
         l.backgroundColor = UIColor.clear
         return l
     }()
@@ -45,17 +44,16 @@ fileprivate let mapSize = CGSize.init(width: 160, height: 120)
         return tap
     }()
     
-    private lazy var map:MKMapView = { [unowned self] in 
-        let m = MKMapView.init()
-       
-        m.isScrollEnabled = false
-        m.isRotateEnabled = false
-        m.mapType = MKMapType.standard
-        m.delegate = self
-        //self.tapMap.numberOfTouchesRequired = 1
-        m.addGestureRecognizer(tapMap)
-        m.addAnnotation(addressAnnotation)
-        return m
+ 
+    
+    // 地图位置截图image
+    private lazy var  mapImage: UIImageView = { [unowned self] in
+        let imageV = UIImageView.init()
+        imageV.contentMode = UIView.ContentMode.scaleAspectFill
+        imageV.clipsToBounds = true
+        imageV.isUserInteractionEnabled = true
+        imageV.addGestureRecognizer(tapMap)
+        return imageV
     }()
     
     // 包裹标签和地图内容的view
@@ -64,9 +62,9 @@ fileprivate let mapSize = CGSize.init(width: 160, height: 120)
         v.backgroundColor = UIColor.white
         v.isUserInteractionEnabled = true
         v.addSubview(address)
-        v.addSubview(map)
+        v.addSubview(mapImage)
         _ = self.address.sd_layout()?.leftSpaceToView(v, 5)?.rightEqualToView(v)?.topEqualToView(v)?.autoHeightRatio(0)
-        _ = self.map.sd_layout()?.leftEqualToView(v)?.rightEqualToView(v)?.topSpaceToView(self.address,0)?.bottomEqualToView(v)
+       _ = self.mapImage.sd_layout()?.leftEqualToView(v)?.rightEqualToView(v)?.topSpaceToView(self.address,0)?.bottomEqualToView(v)
         
         self.address.setMaxNumberOfLinesToShow(2)
         
@@ -74,7 +72,6 @@ fileprivate let mapSize = CGSize.init(width: 160, height: 120)
     }()
 
     
-    private lazy var addressAnnotation: MKPointAnnotation = MKPointAnnotation.init()
     private lazy var coordinate:CLLocation = CLLocation.init(latitude: 0, longitude: 0)
     
     dynamic var mode: LocationMessage?{
@@ -99,26 +96,46 @@ fileprivate let mapSize = CGSize.init(width: 160, height: 120)
             // 设置地图属性
             if (self.coordinate.coordinate.latitude != m.latitude || self.coordinate.coordinate.longitude != m.longitude ) {
                 self.coordinate = CLLocation.init(latitude: m.latitude!, longitude: m.longitude!)
-                addressAnnotation.coordinate = CLLocation.init(latitude: m.latitude!, longitude: m.longitude!).coordinate
                 
-                // 设置显示区域
-                let latDelta = 0.005
-                let longDelta = 0.005
                 
-                let currentLocationSpan:MKCoordinateSpan = MKCoordinateSpan(latitudeDelta: latDelta, longitudeDelta: longDelta)
-                let center:CLLocation = CLLocation.init(latitude: m.latitude!, longitude: m.longitude!)
-                let currentRegion:MKCoordinateRegion = MKCoordinateRegion(center: center.coordinate,
-                                                                          span: currentLocationSpan)
-                self.map.setRegion(currentRegion, animated: false)
+                let coords = CLLocationCoordinate2D(latitude: m.latitude!, longitude:m.longitude!)
+                let distanceInMeters: Double = 300
                 
-                // 设置region 需要zoom 可用，现在设置完了，关闭zoom
-                self.map.isZoomEnabled = false
+                let options = MKMapSnapshotter.Options()
+                options.region = MKCoordinateRegion(center: coords, latitudinalMeters: distanceInMeters, longitudinalMeters: distanceInMeters)
+                options.size = mapSize
+                options.scale = UIScreen.main.scale
+                
+        
+                let bgQueue = DispatchQueue.global(qos: .background)
+                let pin = MKPinAnnotationView()
+
+                // 位置截图
+                let snapShotter = MKMapSnapshotter(options: options)
+                snapShotter.start(with: bgQueue, completionHandler: { [weak self] (snapshot, error) in
+                    guard error == nil else {
+                        return
+                    }
+                    
+                    if let snapShotImage = snapshot?.image, let coordinatePoint = snapshot?.point(for: coords), let pinImage = pin.image {
+                        UIGraphicsBeginImageContextWithOptions(snapShotImage.size, true, snapShotImage.scale)
+                        snapShotImage.draw(at: CGPoint.zero)
+                        
+                        let fixedPinPoint = CGPoint(x: coordinatePoint.x - pinImage.size.width / 2, y: coordinatePoint.y - pinImage.size.height)
+                        pinImage.draw(at: fixedPinPoint)
+                        let mapImage = UIGraphicsGetImageFromCurrentImageContext()
+ 
+                        DispatchQueue.main.async {
+                            self?.mapImage.image = mapImage
+                        }
+                        UIGraphicsEndImageContext()
+                    }
+                })
+                
                 
             }
             
-            
-
-//
+ 
             
             // 自己发的消息
             if m.senderId == GlobalUserInfo.shared.getId(){
@@ -127,9 +144,6 @@ fileprivate let mapSize = CGSize.init(width: 160, height: 120)
                 stretchImage = UIImage.init(named: "senderImageMask")
                 bubbleMaskImage = stretchImage?.resizableImage(withCapInsets: stretchInset, resizingMode: .stretch)
                 
-//                _ = self.address.sd_layout()?.rightSpaceToView(self.avartar,10)?.widthIs(mapSize.width)?.topEqualToView(self.avartar)?.autoHeightRatio(0)
-//
-//                _ = self.map.sd_layout()?.topSpaceToView(address,0)?.leftEqualToView(address)?.rightEqualToView(address)?.heightIs(mapSize.height)
                 _ = wrapperView.sd_layout()?.rightSpaceToView(self.avartar, 10)?.widthIs(mapSize.width)?.topEqualToView(self.avartar)?.heightIs(mapSize.height)
                 
                 
@@ -139,13 +153,10 @@ fileprivate let mapSize = CGSize.init(width: 160, height: 120)
                 stretchImage = UIImage.init(named: "receiverImageMask")
                 bubbleMaskImage = stretchImage?.resizableImage(withCapInsets: stretchInset, resizingMode: .stretch)
                 
-//                 _ = self.address.sd_layout()?.leftSpaceToView(self.avartar,10)?.widthIs(mapSize.width)?.topEqualToView(self.avartar)?.autoHeightRatio(0)
-//                 _ = self.map.sd_layout()?.topSpaceToView(address,0)?.leftEqualToView(address)?.rightEqualToView(address)?.heightIs(mapSize.height)
                  _ = wrapperView.sd_layout()?.leftSpaceToView(self.avartar, 10)?.widthIs(mapSize.width)?.topEqualToView(self.avartar)?.heightIs(mapSize.height)
                 
             }
-            //map.layer.cornerRadius = 5
-            
+ 
             let layer = CALayer()
             layer.contents = bubbleMaskImage?.cgImage
             layer.contentsCenter = self.CGRectCenterRectForResizableImage(bubbleMaskImage!)
@@ -153,13 +164,11 @@ fileprivate let mapSize = CGSize.init(width: 160, height: 120)
             
             layer.contentsScale = UIScreen.main.scale
             layer.opacity = 1
-            
-            //self.map.layer.mask = layer
-            //self.map.layer.masksToBounds = true
+     
             self.wrapperView.layer.mask = layer
             self.wrapperView.layer.masksToBounds = true
             
-            //self.setupAutoHeight(withBottomView: wrapperView, bottomMargin: 10)
+    
         }
         
     }
@@ -168,11 +177,8 @@ fileprivate let mapSize = CGSize.init(width: 160, height: 120)
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = UIColor.clear
         self.selectionStyle = .none
-        //self.isUserInteractionEnabled = false
         self.contentView.addSubview(avartar)
         self.contentView.addSubview(wrapperView)
-        //self.contentView.addSubview(address)
-        //self.contentView.addSubview(map)
         avartar.setCircle()
         
     }
@@ -180,17 +186,12 @@ fileprivate let mapSize = CGSize.init(width: 160, height: 120)
         print("deinit locationCellView \(String.init(describing: self))")
     }
     
-//    override func layoutSubviews() {
-//        super.layoutSubviews()
-//        _ = self.address.sd_layout()?.topEqualToView(self.contentView)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.autoHeightRatio(0)
-//        _ = self.map.sd_layout()?.topSpaceToView(self.address,0)?.leftEqualToView(self.contentView)?.rightEqualToView(self.contentView)?.heightIs(80)
-//
-//    }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
   
+   
 
 }
 

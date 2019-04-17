@@ -218,7 +218,7 @@ extension CompanyDetailVC{
         }
         
         // url
-        openApp(appURL: link, completion:{ [weak self]
+        Utils.openApp(appURL: link, completion:{ [weak self]
             bool in
             if bool == false{
                 self?.view.showToast(title: "网页打开失败", customImage: nil, mode: .text)

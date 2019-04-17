@@ -323,9 +323,9 @@ extension PrivacySetting{
             Thread.sleep(forTimeInterval: 1)
             self?.mode = ResumePrivacyModel(JSON: ["listItem":["所有公司可见":true,"投递公司可见":false,"屏蔽指定公司":false,"影藏简历":false],"companyBlacklist":
                 [
-                    ["companyID":getUUID(),"companyName":"公司名称1","validate":true],
-                    ["companyID":getUUID(),"companyName":"公司名称2","validate":true],
-                    ["companyID":getUUID(),"companyName":"公司名称3","validate":true],
+                    ["companyID":Utils.getUUID(),"companyName":"公司名称1","validate":true],
+                    ["companyID":Utils.getUUID(),"companyName":"公司名称2","validate":true],
+                    ["companyID":Utils.getUUID(),"companyName":"公司名称3","validate":true],
                 ]
             ])
             DispatchQueue.main.async(execute: {

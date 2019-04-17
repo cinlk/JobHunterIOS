@@ -561,7 +561,7 @@ extension CommunicationChatView{
                 res.append(createTimeMsg(msg: mes[index]))
             }else{
                 // 2个消息间隔时间超过指定时间 才添加时间
-                if (LXFChatMsgTimeHelper.shared.needAddMinuteModel(preModel: mes[index - 1], curModel: mes[index])){
+                if (ChatMsgTimeHelper.shared.needAddMinuteModel(preModel: mes[index - 1], curModel: mes[index])){
                     res.append(createTimeMsg(msg: mes[index]))
                 }
             }
@@ -572,16 +572,18 @@ extension CommunicationChatView{
     
     // 获取时间 message
     private func createTimeMsg(msg: MessageBoby) -> TimeMessage{
-        
         // 时间消息
-    
-        let time = TimeMessage(JSON: ["type":MessgeType.time.rawValue,
+        let time = TimeMessage(JSON: ["type":MessgeType.time.describe,
                                       "creat_time":msg.creat_time!.timeIntervalSince1970,
                                       "receiver_id": msg.receiveId!,
                                       "sender_id": msg.senderId!,
                                       "conversation_id": msg.conversayionId!
             ])!
-        time.timeStr = LXFChatMsgTimeHelper.shared.chatTimeString(with: time.creat_time?.timeIntervalSince1970)
+        
+        
+        time.timeStr = ChatMsgTimeHelper.shared.chatTimeString(with: time.creat_time?.timeIntervalSince1970)
+        
+        
         return time
         
     }
@@ -996,16 +998,20 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
     
     private func  reloads(mes: MessageBoby){
         
-        // 0  刷新table 和 存入数据库,
-        // 1 数据要在 tableview，根据网络 判断发送状态（sended??）并刷新显示发送失败状态
-        // 2 是否可以删除发送失败的数据？
-     
-            
-        // 判断时间间隔
-        if  let msg = self.tableView.datas.lastObject as? MessageBoby, LXFChatMsgTimeHelper.shared.needAddMinuteModel(preModel: msg, curModel: mes){
+        // 判断时间间隔(前一条消息)
+        // 重新修改时间消息数据
+        self.tableView.datas.forEach { (msg) in
+            if let tmsg = msg as? TimeMessage{
+                tmsg.timeStr = ChatMsgTimeHelper.shared.chatTimeString(with: tmsg.creat_time?.timeIntervalSince1970)
+            }
+        }
+        if  let msg = self.tableView.datas.lastObject as? MessageBoby, ChatMsgTimeHelper.shared.needAddMinuteModel(preModel: msg, curModel: mes){
             //self.tableSource.add(createTimeMsg(msg: mes))
              self.tableView.datas.add(createTimeMsg(msg: mes))
             
+        }else{
+            // 之前没有消息，添加time
+            self.tableView.datas.add(createTimeMsg(msg: mes))
         }
         
         self.tableView.datas.add(mes)
@@ -1017,9 +1023,6 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
                 self.tableView.scrollToRow(at: path as IndexPath, at: .bottom, animated: false)
             }
         }
-        
-        
-        
        
         //3  数据插入本地数据库 后通知更新 converation 会话界面，显示内容
         

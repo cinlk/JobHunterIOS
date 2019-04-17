@@ -86,7 +86,7 @@ extension MyCommentVC{
             
             // 我回复的帖子
             for _ in 0..<5{
-                if let data = ForumMessage(JSON: ["postId":getUUID(),"firstCommentID":getUUID(),
+                if let data = ForumMessage(JSON: ["postId":Utils.getUUID(),"firstCommentID":Utils.getUUID(),
                                                   "time":Date().timeIntervalSince1970,"body":["action":"reply",
                                                                                               "receiverName":"小小大大","target":"post","title":"帖子标题","replyContent":"我的内容当前为多群无多群当前为多群"]]){
                     self?.thumbDatas.append(data)
@@ -96,8 +96,8 @@ extension MyCommentVC{
             
             // 我回复的回帖
             for _ in 0..<5{
-                if let data = ForumMessage(JSON: ["postId":getUUID(),"firstCommentID":getUUID(),
-                                                  "time":Date().timeIntervalSince1970,"subReplyID":getUUID(),"body":["action":"reply",
+                if let data = ForumMessage(JSON: ["postId":Utils.getUUID(),"firstCommentID":Utils.getUUID(),
+                                                  "time":Date().timeIntervalSince1970,"subReplyID":Utils.getUUID(),"body":["action":"reply",
                                                                                               "receiverName":"当前的无群","target":"reply","title":"我的回帖内容当前为多群无多当前为多群无多群无多群无当前为多群无多群无多群无当前为多无群多群","replyContent":"我的内容当前为多群无多群当前为多群当前为多群无当前的群无"]]){
                     self?.thumbDatas.append(data)
                 }
@@ -105,8 +105,8 @@ extension MyCommentVC{
             
             // 我的评论
             for _ in 0..<5{
-                if let data = ForumMessage(JSON: ["postId":getUUID(),"firstCommentID":getUUID(),
-                                                  "time":Date().timeIntervalSince1970,"subReplyID":getUUID(),"body":["action":"reply",
+                if let data = ForumMessage(JSON: ["postId":Utils.getUUID(),"firstCommentID":Utils.getUUID(),
+                                                  "time":Date().timeIntervalSince1970,"subReplyID":Utils.getUUID(),"body":["action":"reply",
                                                                                               "receiverName":"当前为多群","target":"subReply","title":"我的回评论","replyContent":"内退热当前为多"]]){
                     self?.thumbDatas.append(data)
                 }

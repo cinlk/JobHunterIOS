@@ -222,7 +222,7 @@ extension ResumePageViewController{
             
             //  MARK ！附件简历 显示pdf 没有固定格式数据
             for _ in 0..<2{
-                if let data = reumseKind(JSON: ["name":"我的简历","isDefault":false,"id":getUUID(),
+                if let data = reumseKind(JSON: ["name":"我的简历","isDefault":false,"id":Utils.getUUID(),
                                                 "create_time":Date().timeIntervalSince1970,"kind":"attachment"]){
                     self?.myResumes.append(data)
 
@@ -341,7 +341,7 @@ extension operatorHandler: SearchMenuDelegate{
                 return
             }
             
-            if let resume = reumseKind(JSON: ["name":"我的简历","isDefault":false,"id":getUUID(),
+            if let resume = reumseKind(JSON: ["name":"我的简历","isDefault":false,"id":Utils.getUUID(),
                                               "create_time":Date().timeIntervalSince1970,"kind":item.rawValue]){
                 
                 self.myResumes.append(resume)
@@ -423,7 +423,7 @@ extension operatorHandler{
             
             // 服务器数据复制一份 MARK ！！
             
-            if let data = reumseKind(JSON: ["name":target.name! + "副本","isDefault":false,"id":getUUID(),
+            if let data = reumseKind(JSON: ["name":target.name! + "副本","isDefault":false,"id": Utils.getUUID(),
                                             "create_time":Date().timeIntervalSince1970,"kind":target.type.rawValue]){
                 
                 myResumes.append(data)

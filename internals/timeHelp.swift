@@ -13,9 +13,9 @@ import SwiftDate
 func meetingTalkTime(time: Date) -> String{
     
     
-    let ctime = DateInRegion.init(time, region: regionRome)
+    let ctime = DateInRegion.init(time, region: GlobalConfig.regionRome)
     let dateFormat = DateFormatter()
-    dateFormat.timeZone = regionRome.timeZone
+    dateFormat.timeZone = GlobalConfig.regionRome.timeZone
     var timeStr = ""
     dateFormat.amSymbol = "上午"
     dateFormat.pmSymbol = "下午"
@@ -110,7 +110,7 @@ func chatListTime(date:Date?) ->String?{
     let now = DateInRegion()
     
     
-    let dateInRome =  DateInRegion.init(date, region: regionRome)
+    let dateInRome =  DateInRegion.init(date, region: GlobalConfig.regionRome)
     
     
     
@@ -139,7 +139,7 @@ func showMonthAndDay(date: Date?) ->String?{
         return nil
     }
     
-    let dateRoom = DateInRegion.init(date, region: regionRome)
+    let dateRoom = DateInRegion.init(date, region: GlobalConfig.regionRome)
     
     if dateRoom.compare(.isThisYear){
         return String.init(format: "%d月%d日", dateRoom.month, dateRoom.day)
@@ -156,7 +156,7 @@ func showYearAndDayAndHour(date: Date?) ->String?{
         return nil
     }
     
-    let dateRoom = DateInRegion.init(date, region: regionRome)
+    let dateRoom = DateInRegion.init(date, region: GlobalConfig.regionRome)
     return String.init(format: "%d年%d月%d日 %d:%02d", dateRoom.year, dateRoom.month,dateRoom.day,
     dateRoom.hour, dateRoom.minute)
 }
@@ -167,7 +167,7 @@ func showDayAndHour(date: Date?) -> String?{
         return nil
     }
     
-    let dateRoom = DateInRegion.init(date, region: regionRome)
+    let dateRoom = DateInRegion.init(date, region: GlobalConfig.regionRome)
     
     if dateRoom.compare(.isThisYear){
         return String.init(format: "%d月%d日 %d:%02d", dateRoom.month, dateRoom.day, dateRoom.hour, dateRoom.minute)

@@ -2,10 +2,10 @@
 import UIKit
 import SwiftDate
 
-class LXFChatMsgTimeHelper: NSObject {
+class ChatMsgTimeHelper: NSObject {
     
-    static let shared: LXFChatMsgTimeHelper = {
-        let helper = LXFChatMsgTimeHelper()
+    static let shared: ChatMsgTimeHelper = {
+        let helper = ChatMsgTimeHelper()
         return helper
     }()
    
@@ -16,17 +16,17 @@ class LXFChatMsgTimeHelper: NSObject {
     }
 }
 
-// MARK:- 是否需要添加分钟模型
-extension LXFChatMsgTimeHelper {
+// MARK:- 是否需要添加时间(间隔大于3分钟就需要添加)
+extension ChatMsgTimeHelper {
     func needAddMinuteModel(preModel: MessageBoby, curModel: MessageBoby) -> Bool {
         let preTime = preModel.creat_time!
         let curTime = curModel.creat_time!
         
         let preDate = preTime
-        
-        let preInRome =  DateInRegion.init(preDate, region: regionRome)
         let curDate = curTime
-        let curInRome =  DateInRegion.init(curDate, region: regionRome)
+        
+        let preInRome =  DateInRegion.init(preDate, region: GlobalConfig.regionRome)
+        let curInRome =  DateInRegion.init(curDate, region: GlobalConfig.regionRome)
         
         let yesr = curInRome.year - preInRome.year
         let month = curInRome.month - preInRome.month
@@ -44,19 +44,20 @@ extension LXFChatMsgTimeHelper {
 }
 
 // MARK:- 求时间字符串
-extension LXFChatMsgTimeHelper {
+extension ChatMsgTimeHelper {
     func chatTimeString(with modelTime: TimeInterval?) -> String? {
   
         guard let time = modelTime else {
             return nil
         }
+    
         // 消息时间
         let date = Date(timeIntervalSince1970: time)
-        let dateInRome = DateInRegion.init(date, region: regionRome)
+        let dateInRome = DateInRegion.init(date, region: GlobalConfig.regionRome)
             
         // 当前时间
-        let now = DateInRegion()
-        
+        let now = DateInRegion.init(Date.init(), region: GlobalConfig.regionRome)
+    
         
         // 相差年份
         let year = now.year - dateInRome.year

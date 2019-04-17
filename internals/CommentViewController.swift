@@ -125,7 +125,7 @@ extension CommentViewController{
             Thread.sleep(forTimeInterval: 1)
             
             // 获取回帖
-            let data  = FirstReplyModel(JSON: ["id":"dqwd-dqwdqwd","replyID":getUUID(),"title":"标题题","replyContent":"当前为多群多低级趣味的精品区\n 当前为多      \t     dqwdqwdqwd   当前为多群\n 当前为多群 dqdqw","authorID":"123456","authorName":"我的名字当前为多群无多群dqwddqwd 当前为多群无多群无当前的群","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":2303,"reply":101])!
+            let data  = FirstReplyModel(JSON: ["id":"dqwd-dqwdqwd","replyID":Utils.getUUID(),"title":"标题题","replyContent":"当前为多群多低级趣味的精品区\n 当前为多      \t     dqwdqwdqwd   当前为多群\n 当前为多群 dqdqw","authorID":"123456","authorName":"我的名字当前为多群无多群dqwddqwd 当前为多群无多群无当前的群","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":2303,"reply":101])!
             
             DispatchQueue.main.async(execute: {
                 if self?.data?.type == .subReply{

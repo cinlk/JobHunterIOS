@@ -78,7 +78,7 @@ extension ThumbUPVC{
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             
             for _ in 0..<5{
-                if let data = ForumMessage(JSON: ["postId":getUUID(),"firstCommentID":getUUID(),
+                if let data = ForumMessage(JSON: ["postId":Utils.getUUID(),"firstCommentID":Utils.getUUID(),
                                                   "time":Date().timeIntervalSince1970,"body":["action":"thumbup",
                                                                                               "senderName":"小小大大","target":"post","title":"这是标题内容"]]){
                     self?.thumbDatas.append(data)
@@ -87,15 +87,15 @@ extension ThumbUPVC{
             
             
             for _ in 0..<5{
-                if let data = ForumMessage(JSON: ["postId":getUUID(),"firstCommentID":getUUID(),
+                if let data = ForumMessage(JSON: ["postId":Utils.getUUID(),"firstCommentID":Utils.getUUID(),
                                                   "time":Date().timeIntervalSince1970,"body":["action":"thumbup","senderName":"当前的无群","target":"reply","title":"我的回贴内容AA"]]){
                     self?.thumbDatas.append(data)
                 }
             }
             
             for _ in 0..<5{
-                if let data = ForumMessage(JSON: ["postId":getUUID(),"firstCommentID":getUUID(),
-                                                  "time":Date().timeIntervalSince1970,"subReplyID":getUUID(),"body":["action":"thumbup","senderName":"当前为多群","target":"subReply","title":"老子的评论"]]){
+                if let data = ForumMessage(JSON: ["postId":Utils.getUUID(),"firstCommentID":Utils.getUUID(),
+                                                  "time":Date().timeIntervalSince1970,"subReplyID":Utils.getUUID(),"body":["action":"thumbup","senderName":"当前为多群","target":"subReply","title":"老子的评论"]]){
                     self?.thumbDatas.append(data)
                 }
             }

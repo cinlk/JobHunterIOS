@@ -122,10 +122,10 @@ extension subscribleItem{
             
             
             // 根据type类型 构建不同的数据
-            self?.internData.append(internSubscribeModel(JSON: ["id":getUUID(),"type":"intern","locate":"成都","internSalary":"200/天","business":"计算机","internDay":"4天/周","internMonth":"半年", "degree":"大专"])!)
+            self?.internData.append(internSubscribeModel(JSON: ["id":Utils.getUUID(),"type":"intern","locate":"成都","internSalary":"200/天","business":"计算机","internDay":"4天/周","internMonth":"半年", "degree":"大专"])!)
             
-            self?.compuseData.append(graduateSubscribeModel(JSON: ["id":getUUID(),"type":"graduate","locate":"北京","salary":"10-12K/月","business":"人工智能","degree":"本科"])!)
-                self?.compuseData.append(graduateSubscribeModel(JSON: ["id":getUUID(),"type":"graduate",
+            self?.compuseData.append(graduateSubscribeModel(JSON: ["id":Utils.getUUID(),"type":"graduate","locate":"北京","salary":"10-12K/月","business":"人工智能","degree":"本科"])!)
+                self?.compuseData.append(graduateSubscribeModel(JSON: ["id":Utils.getUUID(),"type":"graduate",
                                                               "locate":"北京","salary":"20-30K/月","business":"学前教育", "degree":"硕士"])!)
             DispatchQueue.main.async {
                 self?.didFinishloadData()

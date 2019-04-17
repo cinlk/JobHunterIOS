@@ -449,7 +449,7 @@ extension PostContentViewController{
             self?.contentMode = PostContentModel(JSON: ["id":"dqwd-dqwdqwd","collected":false,"isLike":false,"title":"标题题","content":"发帖内容当前为多群多群 \n 当前的群无多 \n 当前为多群无","colleage":"北京大学", "authorID":"123456","authorName":"dqwdw","authorIcon":"chicken","createTime":Date().timeIntervalSince1970,"kind":"jobs","thumbUP":56,"reply":12])!
 
             for _ in 0..<10{
-                self?.replyModels.append(FirstReplyModel(JSON: ["id":"dqwd-dqwdqwd","replyID":getUUID(),"title":"标题题","replyContent":"当前为多群多低级趣味的精品区\n 当前为多      \t     dqwdqwdqwd   当前为多群\n 当前为多群 dqdqw","authorID":"123456","authorName":"我的名字当前为多群无多群dqwddqwd 当前为多群无多群无当前的群","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":15,"reply":89])!)
+                self?.replyModels.append(FirstReplyModel(JSON: ["id":"dqwd-dqwdqwd","replyID":Utils.getUUID(),"title":"标题题","replyContent":"当前为多群多低级趣味的精品区\n 当前为多      \t     dqwdqwdqwd   当前为多群\n 当前为多群 dqdqw","authorID":"123456","authorName":"我的名字当前为多群无多群dqwddqwd 当前为多群无多群无当前的群","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":15,"reply":89])!)
             }
             
             
