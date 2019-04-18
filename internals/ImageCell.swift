@@ -9,7 +9,7 @@
 import UIKit
 import Kingfisher
 
-
+fileprivate let resendTitle:String = "点击重新发送"
 
 fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
 
@@ -29,12 +29,27 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
         
     }()
     
-    // 进入条view
+    internal lazy var resend:UILabel = {
+        let l = UILabel.init()
+        l.textColor = UIColor.red
+        l.text = resendTitle
+        l.isHidden = true
+        l.isUserInteractionEnabled = true
+        l.font = UIFont.systemFont(ofSize: 12)
+        l.setSingleLineAutoResizeWithMaxWidth(100)
+        let tap = UITapGestureRecognizer.init(target: self, action: #selector(rensed(tap:)))
+        l.addGestureRecognizer(tap)
+        return l
+        
+    }()
+    
+    // 发送进度条 图片外层
     internal lazy var activity: UIActivityIndicatorView = {
         let ac = UIActivityIndicatorView.init()
         ac.color = UIColor.green
-        ac.style = UIActivityIndicatorView.Style.whiteLarge
-        ac.hidesWhenStopped = true 
+        ac.backgroundColor = UIColor.blue
+        ac.style = UIActivityIndicatorView.Style.gray
+        ac.hidesWhenStopped = true
         return ac
     }()
     
@@ -47,16 +62,15 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
         // 放大效果
         let tap = UITapGestureRecognizer.init(target: self, action: #selector(startZoomImage(tap:)))
         v.addGestureRecognizer(tap)
-        // 加上进度条
-        v.addSubview(self.activity)
-        _ = self.activity.sd_layout()?.centerXEqualToView(v)?.centerYEqualToView(v)
         return v
     }()
     
     
     
-    // 存储图片到本地
-    var storeImage:((_ image:UIImage)->Void)?
+   // 存储图片到本地
+   var storeImage: ((_ image:UIImage)->Void)?
+   // 重新发送图片
+    var resendImage:((_ msg:PicutreMessage)->Void)?
     
     
    dynamic var mode:PicutreMessage? {
@@ -66,25 +80,14 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
                 imageV.isHidden = true
                 return
             }
-            
-//            guard let imageName = mode.fileName else {
-//                avartar.isHidden = true
-//                imageV.isHidden = true
-//                return
-//            }
+            resend.isHidden = mode.sended
             
             if let url = GlobalUserInfo.shared.getIcon(){
                 self.avartar.kf.indicatorType = .activity
                 self.avartar.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "placeholder"), options: nil, progressBlock: nil, completionHandler: nil)
             }
             
-            
-            
-            
-            // 获取images
-//            if let imageData =  appFileManger.getImageDataBy(userID: (mode.receiveId)!, fileName: imageName){
-//                self.imageV.image = UIImage.init(data: imageData)
-//            }
+
             imageV.sd_clearAutoLayoutSettings()
             
             // 背景图片拉伸
@@ -108,6 +111,11 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
                 
                 avartar.frame = CGRect.init(x: GlobalConfig.ScreenW - 45 - 5, y: 5, width: GlobalConfig.AvatarSize.width, height: GlobalConfig.AvatarSize.height)
                 _ = imageV.sd_layout().rightSpaceToView(avartar,10)?.topEqualToView(self.avartar)?.widthIs(imageSize.width)?.heightIs(imageSize.height)
+                
+                // 显示重发
+                _ = resend.sd_layout()?.rightSpaceToView(imageV,10)?.centerYEqualToView(imageV)?.autoHeightRatio(0)
+                // 进度条
+                _ = activity.sd_layout()?.rightSpaceToView(imageV,10)?.centerYEqualToView(imageV)
                 
                 
             }else{
@@ -149,6 +157,8 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.contentView.addSubview(imageV)
         self.contentView.addSubview(avartar)
+        self.contentView.addSubview(resend)
+        self.contentView.addSubview(activity)
         self.backgroundColor = UIColor.clear
         self.selectionStyle = .none
         avartar.setCircle()
@@ -231,8 +241,6 @@ extension ImageCell{
                 
             }, completion: nil)
         }
-
-        
       
     }
     
@@ -256,6 +264,12 @@ extension ImageCell{
         // 结束状态才执行，不然present alertVC 多次 警告
         if  tap.state == .ended{
             self.storeImage?(self.imageV.image!)
+        }
+    }
+    
+    @objc private func rensed(tap: UITapGestureRecognizer){
+        if tap.state == .ended{
+            self.resendImage?(self.mode!)
         }
     }
 }

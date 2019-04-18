@@ -190,6 +190,9 @@ struct MessageTable {
     static let senderID = Expression<String>("sender_id")
     static let receiverID = Expression<String>("receiver_id")
     
+    // 发送成功标记
+    static let sended = Expression<Bool>("sended")
+    
     private let dbManager:SqliteManager
     
     fileprivate init(dbManage:SqliteManager) {
@@ -234,7 +237,7 @@ struct MessageTable {
         
         do{
             // 查找 发给我的消息 好 我发给ta的消息
-            let query = MessageTable.message.select([MessageTable.type,MessageTable.content, MessageTable.isRead, MessageTable.create_time, MessageTable.conversationId, MessageTable.senderID, MessageTable.receiverID]).filter(MessageTable.conversationId == conversationId && MessageTable.create_time < startTime).order(MessageTable.create_time.desc).limit(limit)
+            let query = MessageTable.message.select([MessageTable.id,MessageTable.type,MessageTable.content, MessageTable.isRead, MessageTable.create_time, MessageTable.conversationId, MessageTable.senderID, MessageTable.receiverID, MessageTable.sended]).filter(MessageTable.conversationId == conversationId && MessageTable.create_time < startTime).order(MessageTable.create_time.desc).limit(limit)
             
             guard let rows =  try self.dbManager.db?.prepare(query) else {
                 return []
@@ -294,6 +297,7 @@ struct MessageTable {
                 return nil
             }
             return PicutreMessage(JSON: [
+                "id": item[MessageTable.id],
                 "type": messageType.describe,
                 "fileName": name, // 本地image 文件名字
                 "content": name,
@@ -302,7 +306,8 @@ struct MessageTable {
                 "creat_time": item[MessageTable.create_time].timeIntervalSince1970,
                 "conversation_id": item[MessageTable.conversationId],
                 "sender_id":item[MessageTable.senderID],
-                "receiver_id":item[MessageTable.receiverID]
+                "receiver_id":item[MessageTable.receiverID],
+                "sended":item[MessageTable.sended],
                 ])
         case .text:
             
@@ -506,7 +511,8 @@ struct MessageTable {
                                     MessageTable.type <- message.type!,
                                     MessageTable.conversationId <- message.conversayionId!,
                                     MessageTable.senderID <- message.senderId!,
-                                    MessageTable.receiverID <- message.receiveId!
+                                    MessageTable.receiverID <- message.receiveId!,
+                                    MessageTable.sended <- message.sended
                             ))
             
         }catch{
@@ -540,6 +546,11 @@ struct MessageTable {
     }
     
     
+    // 根据数据id 更新该消息
+    func updateSendedStatus(id:Int64, sended:Bool) throws{
+        let msg = MessageTable.message.filter(MessageTable.id == id)
+        try self.dbManager.db?.run(msg.update(MessageTable.sended <- sended))
+    }
 }
 
 // 会话表(求职者关于某个job 和hr的会话)

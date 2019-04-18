@@ -72,6 +72,9 @@ extension UIView{
     func showToast(title:String, duration:Int = 3, customImage:UIImageView?, mode: MBProgressHUDMode){
         let hud = MBProgressHUD.showAdded(to: self, animated: true)
         hud.label.text = title
+        hud.label.numberOfLines = 2
+        hud.label.lineBreakMode = .byWordWrapping
+        
         hud.mode = mode
         hud.hide(animated: true, afterDelay: TimeInterval(duration))
         hud.customView = customImage

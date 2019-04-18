@@ -152,6 +152,11 @@ class MessageBoby: NSObject, Mappable{
     
     var messageType:MessgeType = .none
 
+    // 发送成功标记
+    var sended:Bool = false
+    
+    // 数据库存储的id
+    var id:Int64?
     
 
     required init?(map: Map) {
@@ -177,6 +182,8 @@ class MessageBoby: NSObject, Mappable{
         //receiver <- map["receiver"]
         senderId <- map["sender_id"]
         receiveId <- map["receiver_id"]
+        sended <- map["sended"]
+        id <- map["id"]
        
     }
     
@@ -364,7 +371,6 @@ class PicutreMessage:MessageBoby{
     
     //自己发送的图片 存储照片名字（文件系统查找指定路劲下的名字）
     var fileName:String?
-    
     // 接受的图片 为url地址（leancloud）
     var fileUrl:URL?
     
@@ -379,6 +385,7 @@ class PicutreMessage:MessageBoby{
         super.mapping(map: map)
         fileName <- map["fileName"]
         fileUrl <- (map["fileUrl"], URLTransform())
+        
     }
 
     func pathToData() -> Data?{

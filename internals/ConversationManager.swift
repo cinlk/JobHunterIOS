@@ -192,7 +192,6 @@ class ConversationManager: NSObject {
         guard items.count > 0 else {
             return
         }
-        
         do{
             try items.forEach{ try messageTable.insertMessage(message: $0)}
         }catch{
@@ -201,6 +200,14 @@ class ConversationManager: NSObject {
         }
     }
     
+    open func updateSendedMessage(id:Int64, sended:Bool) throws{
+        do{
+            try messageTable.updateSendedStatus(id: id, sended: sended)
+            
+        }catch{
+            throw error
+        }
+    }
     
     
     

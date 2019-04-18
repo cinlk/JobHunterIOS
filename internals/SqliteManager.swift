@@ -66,6 +66,7 @@ class  SqliteManager{
             try createSearchTable()
             try createMessageTable()
             try createConversationTable()
+            addNewColumn()
             
         } catch {
             throw error
@@ -107,6 +108,15 @@ extension SqliteManager{
 // IM message  表
 extension SqliteManager{
     
+    private func addNewColumn(){
+        do{
+            
+            try db?.run(MessageTable.message.addColumn(MessageTable.sended, defaultValue: false))
+        }catch{
+            print(error)
+        }
+    }
+    
     private func createMessageTable() throws{
         do{
             
@@ -121,11 +131,13 @@ extension SqliteManager{
                 t.column(MessageTable.receiverID)
                 t.column(MessageTable.isRead)
                 t.column(MessageTable.create_time)
-            
+                t.column(MessageTable.sended, defaultValue: false)
+                
                 // 外键关联
                 t.foreignKey(MessageTable.conversationId, references: SingleConversationTable.conversation, SingleConversationTable.conversationId, update: TableBuilder.Dependency.setNull, delete: TableBuilder.Dependency.setNull)
                 
             }))
+            
             //  conversationId 作为索引
             //try db?.run(MessageTable.message.dropIndex(MessageTable.conversationId, ifExists: true))
             try db?.run(MessageTable.message.createIndex(MessageTable.conversationId, unique: false, ifNotExists: true))
