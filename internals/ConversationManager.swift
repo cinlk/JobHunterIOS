@@ -64,8 +64,8 @@ class ConversationManager: NSObject {
         }
         
         
+        
         for  c in cons{
-            
             guard let  tmp  = ChatListModel.init(JSON: c.toJSON())else {continue}
            // tmp.recruiterIconURL = c.recruiterIconURL
             // 最后一条消息
@@ -74,7 +74,6 @@ class ConversationManager: NSObject {
             
             }
             
-            //print(tmp.toJSON())
             conversationModes.append(tmp)
         }
         
@@ -154,6 +153,18 @@ class ConversationManager: NSObject {
 
     }
     
+    open func getLasteMessageBy(conversationId:String)  -> (MessageBoby?, Error?){
+        var mes:MessageBoby?
+        do{
+            mes = try  conversationTable.getLastMessage(conversationId: conversationId)
+
+        }catch{
+            return (nil, error)
+        }
+        
+        return (mes, nil)
+    }
+    
 
     // 添加到communication 表 (默认不是置顶的)
 //    open func insertConversationItem(messageID:String,userID:String, date:Date){
@@ -176,15 +187,9 @@ class ConversationManager: NSObject {
     
     
     // 清楚会话未读消息
-    open func clearUnReadMessageBy(conversationId:String) -> Bool{
-        do{
-            try messageTable.closeUnReadMessage(conversationId: conversationId)
-
-        }catch{
-            return false
-        }
+    open func clearUnReadCountBy(conversationId:String)  throws{
+        try self.conversationTable.updateUnreadCount(conversationId: conversationId, count: 0)
         
-        return true
     }
     
     // 插入消息表

@@ -22,7 +22,7 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
     private var blackBackgroundView:UIView?
     
     private lazy var avartar:UIImageView = {
-        var v = UIImageView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.AvatarSize.width, height: GlobalConfig.AvatarSize.height))
+        var v = UIImageView.init(frame: CGRect.zero)
         v.contentMode = .scaleToFill
         v.clipsToBounds = true
         return v
@@ -47,7 +47,7 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
     internal lazy var activity: UIActivityIndicatorView = {
         let ac = UIActivityIndicatorView.init()
         ac.color = UIColor.green
-        ac.backgroundColor = UIColor.blue
+        ac.backgroundColor = UIColor.white
         ac.style = UIActivityIndicatorView.Style.gray
         ac.hidesWhenStopped = true
         return ac
@@ -70,7 +70,8 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
    // 存储图片到本地
    var storeImage: ((_ image:UIImage)->Void)?
    // 重新发送图片
-    var resendImage:((_ msg:PicutreMessage)->Void)?
+   var resendImage:((_ msg:PicutreMessage)->Void)?
+   var hr:HRPersonModel?
     
     
    dynamic var mode:PicutreMessage? {
@@ -81,13 +82,6 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
                 return
             }
             resend.isHidden = mode.sended
-            
-            if let url = GlobalUserInfo.shared.getIcon(){
-                self.avartar.kf.indicatorType = .activity
-                self.avartar.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "placeholder"), options: nil, progressBlock: nil, completionHandler: nil)
-            }
-            
-
             imageV.sd_clearAutoLayoutSettings()
             
             // 背景图片拉伸
@@ -98,10 +92,19 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
             // 自己发的图片消息, 从本地获取图片
             if mode.senderId == GlobalUserInfo.shared.getId(){
                 
+                
+                if let url = GlobalUserInfo.shared.getIcon(){
+                    self.avartar.kf.indicatorType = .activity
+                    self.avartar.kf.setImage(with: Source.network(url), placeholder: #imageLiteral(resourceName: "placeholder"), options: nil, progressBlock: nil, completionHandler: nil)
+                }else{
+                    self.avartar.image = #imageLiteral(resourceName: "default")
+                }
+                
                 if let imageData = appFileManger.getImageDataBy(userID: (mode.receiveId)!, fileName: mode.fileName ?? ""){
                     self.imageV.image = UIImage.init(data: imageData)
                 }else{
                     // TODO
+                    self.imageV.image = nil
                 }
                 
                 stretchImage = UIImage.init(named: "senderImageMask")
@@ -109,16 +112,28 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
                 
                 
                 
-                avartar.frame = CGRect.init(x: GlobalConfig.ScreenW - 45 - 5, y: 5, width: GlobalConfig.AvatarSize.width, height: GlobalConfig.AvatarSize.height)
-                _ = imageV.sd_layout().rightSpaceToView(avartar,10)?.topEqualToView(self.avartar)?.widthIs(imageSize.width)?.heightIs(imageSize.height)
+                avartar.frame = CGRect.init(x: GlobalConfig.ScreenW - GlobalConfig.AvatarSize.width - 5, y: 5, width: GlobalConfig.AvatarSize.width, height: GlobalConfig.AvatarSize.height)
+                imageV.frame = CGRect.init(x: GlobalConfig.ScreenW - GlobalConfig.AvatarSize.width - 5 - 10 - imageSize.width , y: 5, width: imageSize.width, height: imageSize.height)
+//                resend.frame = CGRect.init(x:  GlobalConfig.ScreenW - GlobalConfig.AvatarSize.width - 5 - 10 - imageSize.width - 5 - 100, y: 5 + (imageSize.height - 30)/2, width: 100, height: 30)
+//                activity.frame = CGRect.init(x: GlobalConfig.ScreenW - GlobalConfig.AvatarSize.width - 5 - 10 - imageSize.width - 5 - 40, y: resend.frame.origin.y, width: 40, height: 40)
                 
-                // 显示重发
-                _ = resend.sd_layout()?.rightSpaceToView(imageV,10)?.centerYEqualToView(imageV)?.autoHeightRatio(0)
-                // 进度条
-                _ = activity.sd_layout()?.rightSpaceToView(imageV,10)?.centerYEqualToView(imageV)
-                
+//                _ = imageV.sd_layout().rightSpaceToView(avartar,10)?.topEqualToView(self.avartar)?.widthIs(imageSize.width)?.heightIs(imageSize.height)
+//
+        // 显示重发
+        _ = resend.sd_layout()?.rightSpaceToView(imageV,10)?.centerYEqualToView(imageV)?.autoHeightRatio(0)
+        // 进度条
+        _ = activity.sd_layout()?.rightSpaceToView(imageV,10)?.centerYEqualToView(imageV)
+        
                 
             }else{
+                
+                if let url = self.hr?.icon{
+                    self.avartar.kf.indicatorType = .activity
+                    self.avartar.kf.setImage(with: Source.network(url), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+                }else{
+                    self.avartar.image = #imageLiteral(resourceName: "default")
+                }
+                
                 // 从网络url  获取图片???
                 if let imageUrl = mode.fileUrl{
                     self.imageV.kf.indicatorType = .activity
@@ -128,7 +143,10 @@ fileprivate let imageSize:CGSize = CGSize.init(width: 120, height: 135)
                 stretchImage = UIImage.init(named: "receiverImageMask")
                 bubbleMaskImage = stretchImage?.resizableImage(withCapInsets: stretchInset, resizingMode: .stretch)
                 avartar.frame = CGRect.init(x: 5, y: 5, width: GlobalConfig.AvatarSize.width, height: GlobalConfig.AvatarSize.height)
-                _ = imageV.sd_layout().leftSpaceToView(avartar,10)?.topEqualToView(self.avartar)?.widthIs(imageSize.width)?.heightIs(imageSize.height)
+                
+                imageV.frame = CGRect.init(x: 5 + GlobalConfig.AvatarSize.width + 10 , y: 5, width: imageSize.width, height: imageSize.height)
+                
+                //_ = imageV.sd_layout().leftSpaceToView(avartar,10)?.topEqualToView(self.avartar)?.widthIs(imageSize.width)?.heightIs(imageSize.height)
                 
             }
             

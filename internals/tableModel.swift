@@ -577,6 +577,9 @@ struct  SingleConversationTable {
     static let isUP = Expression<Bool>("isUP")
     static let upTime = Expression<Date?>("upTime")
     
+    // 未读消息个数
+    static let unreadCount = Expression<Int>("unread_count")
+    
     private let dbManager:SqliteManager
     
     fileprivate init(dbManage:SqliteManager) {
@@ -600,7 +603,8 @@ struct  SingleConversationTable {
                     "up_time": item[SingleConversationTable.upTime]?.timeIntervalSince1970 ?? Date.init(timeIntervalSince1970: 0),
                     "is_up": item[SingleConversationTable.isUP],
                     "recruiter_name": item[SingleConversationTable.recruiterName],
-                    "recruiter_icon_url": item[SingleConversationTable.recruiterIconURL]
+                    "recruiter_icon_url": item[SingleConversationTable.recruiterIconURL],
+                    "unread_count": item[SingleConversationTable.unreadCount]
                     ]){
                     
                     res.append(s)
@@ -632,8 +636,8 @@ struct  SingleConversationTable {
                     "up_time": row[SingleConversationTable.upTime]?.timeIntervalSince1970 ?? Date.init(timeIntervalSince1970: 0),
                     "is_up": row[SingleConversationTable.isUP],
                     "recruiter_name": row[SingleConversationTable.recruiterName],
-                    "recruiter_icon_url": row[SingleConversationTable.recruiterIconURL]
-                    
+                    "recruiter_icon_url": row[SingleConversationTable.recruiterIconURL],
+                    "unread_count": row[SingleConversationTable.unreadCount]
                     ])
             }
             
@@ -665,7 +669,8 @@ struct  SingleConversationTable {
                     SingleConversationTable.isUP <- data.isUp ,
                     SingleConversationTable.jobId <- data.jobId!,
                     SingleConversationTable.recruiterIconURL <- data.recruiterIconURL?.absoluteString ?? "",
-                    SingleConversationTable.recruiterName <- data.recruiterName ?? ""
+                    SingleConversationTable.recruiterName <- data.recruiterName ?? "",
+                    SingleConversationTable.unreadCount <- data.unreadCount ?? 0
                 ))
             }
             
@@ -736,7 +741,34 @@ struct  SingleConversationTable {
     }
     
     
+    // 更新未读消息个数
+    func updateUnreadCount(conversationId:String, count:Int ) throws{
+     
+        
+        let target = SingleConversationTable.conversation.filter(SingleConversationTable.conversationId == conversationId)
+        try self.dbManager.db?.run(target.update(SingleConversationTable.unreadCount <- count))
+        
+        // 发送通知
+        NotificationCenter.default.post(name: NotificationName.messageBadge, object: nil)
+    }
     
+    func getUnreadCount(conversationId:String)  throws -> Int {
+        let target = SingleConversationTable.conversation.select(SingleConversationTable.unreadCount).filter(SingleConversationTable.conversationId == conversationId).limit(1)
+
+        if let result =   try self.dbManager.db?.pluck(target){
+            return result[SingleConversationTable.unreadCount]
+        }
+        
+        return 0
+    }
+    
+    func getAllUnreadCount() -> Int{
+        
+        if let total = try? self.dbManager.db?.scalar(SingleConversationTable.conversation.select(SingleConversationTable.unreadCount.sum)) {
+            return total
+        }
+        return 0
+    }
 }
 
 

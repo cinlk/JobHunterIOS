@@ -18,6 +18,15 @@ class MainTabBarViewController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.setUnreadMessages()
+        
+        // 监听baged 变化消息 TODO
+        _ = NotificationCenter.default.rx.notification(NotificationName.messageBadge, object: nil).takeUntil(self.rx.deallocated).subscribe(onNext: {  [weak self] (notify) in
+            
+            self?.setUnreadMessages()
+            }, onError: nil, onCompleted: nil, onDisposed: nil)
+        
     }
     
     override func viewWillLayoutSubviews() {
@@ -43,7 +52,9 @@ class MainTabBarViewController: UITabBarController {
         self.tabBar.clipsToBounds = true
         self.tabBar.itemSpacing = 5
         
-    }
+        
+    
+     }
     
     
     deinit {
@@ -54,4 +65,18 @@ class MainTabBarViewController: UITabBarController {
     
     
     
+}
+
+extension MainTabBarViewController{
+    private func setUnreadMessages(){
+      
+        let total =  DBFactory.shared.getConversationDB().getAllUnreadCount()
+        if total > 0{
+            self.tabBar.items?[2].badgeValue = "\(total)"
+            self.tabBar.items?[2].badgeColor = UIColor.red
+        }else{
+            self.tabBar.items?[2].badgeValue = nil
+            self.tabBar.items?[2].badgeColor = nil
+        }
+    }
 }

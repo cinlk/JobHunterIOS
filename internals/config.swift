@@ -161,7 +161,7 @@ struct ConfigSharedApp{
 // server base url
 struct GlobalConfig {
     
-    static let BASE_URL = "http://192.168.124.3:9090/api/v1/"
+    static let BASE_URL = "http://192.168.1.3:9090/api/v1/"
     // 屏幕宽高
     static let ScreenW:CGFloat = UIScreen.main.bounds.width
     static let ScreenH:CGFloat = UIScreen.main.bounds.height
@@ -226,6 +226,7 @@ struct  NotificationName {
     static let jobTag: Notification.Name = Notification.Name.init("jobTag")
     static let refreshChatList: Notification.Name = Notification.Name.init("refreshChat")
     static let refreshChatRow: Notification.Name = Notification.Name.init("refreshChatRow")
+    static let messageBadge: Notification.Name = Notification.Name.init("messageBadage")
 }
 
 struct TabBarItems {

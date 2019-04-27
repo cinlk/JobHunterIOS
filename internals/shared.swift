@@ -17,6 +17,14 @@ import ObjectMapper
 import CoreLocation
 
 
+protocol ReceiveMsgDelegate: class {
+    func receiveMsg(con:AVIMConversation, msg:AVIMMessage) -> Bool
+}
+
+protocol UpdateChatlistDelegate: class {
+    func updateChatList(con:AVIMConversation, messages:[AVIMMessage])
+
+}
 
 extension UserDefaults{
     // app 存储的keys
@@ -27,11 +35,12 @@ extension UserDefaults{
     static let firstOpen = "firstOpen"
     static let token = "token"
     static let remember = "remember"
+    static let messageBadge = "messageBadge"
     
     public var localKeys:[String]{
         get{
             return [UserDefaults.locPermit, UserDefaults.userAccount,
-                    UserDefaults.userPassword, UserDefaults.remember]
+                    UserDefaults.userPassword, UserDefaults.remember, UserDefaults.messageBadge]
         }
     }
     
@@ -165,6 +174,9 @@ class GlobalUserInfo: NSObject {
     
     private static let single = GlobalUserInfo()
     
+    internal weak var delegate:ReceiveMsgDelegate?
+    internal weak var updateDelegate: UpdateChatlistDelegate?
+    
     // leancloud user
     private  var imClient:AVIMClient?
     //private var connected:Bool = false
@@ -213,6 +225,10 @@ class GlobalUserInfo: NSObject {
             }
         }
     }
+    // 连接到leancloud
+    private var connected:Bool = false
+    
+    private var IsNewMessage:[String:Bool] = [:]
     
 //    private var remember:Bool{
 //
@@ -241,6 +257,8 @@ class GlobalUserInfo: NSObject {
     }
     
     
+ 
+    
     
     override init() {}
     
@@ -255,7 +273,14 @@ class GlobalUserInfo: NSObject {
         self.password = pwd
         if self.role != .anonymous{
             self.imClient =  AVIMClient.init(clientId: lid)
+            
             self.imClient?.delegate = self
+            // 登录
+            self.imClient?.open(callback: { [weak self] (success, error) in
+           
+                self?.connected = success
+                
+            })
         }
        
         // 获取用户信息
@@ -291,6 +316,8 @@ class GlobalUserInfo: NSObject {
         return  URL.init(string: icon_url)
     }
     
+    
+    
 //    open func getUserId() -> String{
 //        return self.userId
 //    }
@@ -322,10 +349,11 @@ class GlobalUserInfo: NSObject {
     }
     
     internal func buildConversation(conversation:String?, talkWith:String, jobId:String, completed:@escaping (_:AVIMConversation?, _:Error?) -> Void){
-        guard  let im = self.imClient else {
+        guard  let im = self.imClient, self.connected else {
             completed(nil, NSError.init())
             return
         }
+     
         
        
         
@@ -345,7 +373,9 @@ class GlobalUserInfo: NSObject {
                     completed(c, error)
           
                 }else{
+                
                     self?.imClient?.createConversation(withName: conversationName, clientIds: [talkWith], callback: { (cons, err) in
+                    
                         print("create conversation \(String(describing: cons)) \(String(describing: err))")
                         completed(cons, err)
                     })
@@ -360,16 +390,13 @@ class GlobalUserInfo: NSObject {
         if  let cid = conversation, !cid.isEmpty{
             
             self.imClient?.conversationQuery().getConversationById(cid, callback: { (convs, error) in
+                
                 completed(convs, error)
             })
             
             return
         }
         completed(nil, NSError.init())
-        
-        
-        
-       
         
     }
   
@@ -381,56 +408,148 @@ class GlobalUserInfo: NSObject {
 extension GlobalUserInfo: AVIMClientDelegate{
     
     func imClientPaused(_ imClient: AVIMClient) {
-        
+        print("网络断开 聊天服务不可用")
     }
     
     func imClientResuming(_ imClient: AVIMClient) {
-        
+        print("网络断开重连, 聊天服务不可用")
     }
     
     func imClientResumed(_ imClient: AVIMClient) {
-        
+        print("网络恢复，聊天可用")
     }
     
     func imClientClosed(_ imClient: AVIMClient, error: Error?) {
+        print("用户退出")
+    }
+    
+    func conversation(_ conversation: AVIMConversation, didUpdateForKey key: AVIMConversationUpdatedKey) {
+        // 判断最后已读的消息
+        if key.rawValue == "lastReadAt"{
+            //conversation.lastReadAt
+            print("最后一条已读消息 时间\(String.init(describing: conversation.lastReadAt))")
+        }
+        // 未读消息数量（app 刚启动 获取之前未读消息个数, 从后台到前台）
+        // APP在线是 也收到未读数
+        if key.rawValue == "unreadMessagesCount"{
+            
+            //conversation.unreadMessagesCount
+            let count = Int(conversation.unreadMessagesCount)
+            guard count > 0 else {
+                return
+            }
+            
+            //print(conversation.attributes)
+            
+            // 如果是新会话先创建
+            // 获取 hr 的id和name ??
+            
+//            DBFactory.shared.getConversationDB().insertConversationDate(data: SingleConversation.init(JSON:
+//                [
+//                    "conversation_id": conversation.conversationId!,
+//                    "my_id": GlobalUserInfo.shared.getId()!,
+//                    "recruiter_id": conversation.id)! ,
+//                    //"job_id": (self.mode.value.id)!,
+//                    "recruiter_name": self.mode.value.recruiter?.name ?? "",
+//                    "recruiter_icon_url":self.mode.value.recruiter?.icon?.absoluteString ?? "default",
+//                    "created_time": Date.init().timeIntervalSince1970]
+//            ))
+//
+
+            //try? DBFactory.shared.getConversationDB().updateUnreadCount(conversationId: conversation.conversationId!, count: count)
+            
+            print(" 会话 \(String.init(describing: conversation.conversationId!)) 未读消息数量 \(String.init(describing: count))")
+            
+            // 拉取最新的未读消息个数?? 和 didReceive 在线接受消息 处理冲突 TODO
+            conversation.queryMessages(withLimit: UInt(count)) { [weak self] (result, error) in
+                if error != nil{
+                    print(error)
+                    return
+                }
+                guard var messages = result else {
+                    return
+                }
+                // 新的会话处理？？ TODO
+                
+                // 更新未读消息个数
+                try? DBFactory.shared.getConversationDB().updateUnreadCount(conversationId: conversation.conversationId!, count: count)
+                
+            
+                messages.forEach({ (m) in
+                    //print(m.messageId, m.sendTimestamp, m.content)
+                    
+                    
+                    if let result = self?.delegate?.receiveMsg(con:conversation, msg:m), result == true {
+                        print("聊天界面")
+                    }else{
+                      
+                        print("刷新chatlistvc")
+                        // 先执行 didUpdateForKey （这里更新未读个数）
+                        self?.updateDelegate?.updateChatList(con: conversation, messages: [m])
+                        
+                    }
+                    
+                })
+                
+               
+                
+                // 该conversation的messages
+                // 进入后台 切换到前台 也需要更新ui
+                //print(messages)
+                //self?.updateDelegate?.updateChatList(con: conversation, messages: messages)
+
+            }
+            
+            
+
+           
+         }
+        
+    }
+    // 监听需要回执的消息是否送达, 不代表用户已读
+    // 仅支持单聊
+    func conversation(_ conversation: AVIMConversation, messageDelivered message: AVIMMessage) {
+        // 接受时间
+        //message.deliveredTimestamp
         
     }
     
     
     func conversation(_ conversation: AVIMConversation, didReceive message: AVIMTypedMessage) {
+        // 消息提醒的client-id
+        //message.mentionList
+        // 如果delegate存在 则传递消息, 如果是该会话消息返回true
+        print("接受到消息，还未读\(String.init(describing: message))")
+        print("\(String.init(describing: self.delegate))")
+     
         
-        //print(conversation,message)
-        let sender = conversation.clientId ?? ""
-        switch message.mediaType {
-        case .text:
-            let txt = message as? AVIMTextMessage
-            //txt?.content
-            //print(txt)
-            let option = AVIMMessageOption.init()
-            option.priority = .high
-            
-            let replyText = AVIMTextMessage.init(content: "reply")
-            replyText.text = "你好\(String(describing: txt?.text))"
-            replyText.attributes = nil
-            
-            print("receive msg from \(sender) with content \(String(describing: txt?.text))")
-            conversation.send(replyText, option: option, progressBlock: { (progress) in
-                print(progress)
-            }) { (success, error) in
-                //print(success, error)
-            }
-        case .image:
-            let _ =  message as? AVIMImageMessage
-            
-        default:
-            break
-        }
+
         
     }
     
 }
 
 
+// 自定义消息AVIM
+class myim: AVIMTypedMessage{
+    
+    override init() {
+        super.init()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+}
+
+extension myim: AVIMTypedMessageSubclassing{
+    
+    static func classMediaType() -> AVIMMessageMediaType {
+        return AVIMMessageMediaType.init(rawValue: 10)!
+    }
+    
+}
 
 
 class SingletoneClass {
@@ -463,6 +582,17 @@ class SingletoneClass {
         }
     }
     
+    //图片缓存
+    internal  lazy var imageCache:NSCache<NSString, UIImage> = {
+        
+        let c =    NSCache<NSString, UIImage>.init()
+        return c
+    }()
+    
+ 
+    //private lazy var userDefault = UserDefaults.standard
+    
+        
     // 用户地址
     //public var userAddress:String?
     
@@ -540,6 +670,42 @@ class SingletoneClass {
     
 }
 
+   // badged 类型数量缓存
+//extension SingletoneClass{
+//    internal func setMessageBadge(conversationId:String, count:Int){
+//
+//        if var conversations = self.userDefaule.object(forKey: UserDefaults.messageBadge) as? [String]{
+//            if !conversations.contains(conversationId){
+//                conversations.append(conversationId)
+//            }
+//            self.userDefaule.set(conversations, forKey: UserDefaults.messageBadge)
+//        }else{
+//            self.userDefaule.set([conversationId], forKey: UserDefaults.messageBadge)
+//        }
+//
+//
+//
+//        self.userDefaule.set(count, forKey: conversationId)
+//
+//    }
+//    // 扩展 其他类型的badge 所有未读的消息
+//    internal func getMessageBadge() -> Int{
+//
+//        var count = 0
+//
+//        if let conversations = self.userDefaule.object(forKey: UserDefaults.messageBadge) as? [String]{
+//            conversations.forEach { (item) in
+//                count += self.userDefaule.integer(forKey:  item)
+//            }
+//        }
+//        return count
+//    }
+//
+//    internal func getUnreadMessage(conversationId:String) -> Int{
+//
+//        return self.userDefaule.integer(forKey: conversationId)
+//    }
+//}
 
 extension SingletoneClass{
  
@@ -814,6 +980,8 @@ extension SingletoneClass{
 //        super.init(policies: [:])
 //    }
 //}
+
+
 
 
 

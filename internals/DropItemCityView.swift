@@ -124,6 +124,7 @@ class DropItemCityView: YNDropDownView {
         col.allowsMultipleSelection = false
         col.backgroundColor = UIColor.white
         col.showsHorizontalScrollIndicator = false
+        col.contentInsetAdjustmentBehavior = .never
         col.register(CollectionLabelHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CollectionLabelHeaderView.identity())
         col.register(CollectionTextCell.self, forCellWithReuseIdentifier: CollectionTextCell.identity())
         return col

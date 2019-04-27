@@ -9,6 +9,8 @@
 import UIKit
 import CoreLocation
 import Kingfisher
+import UserNotifications
+
 //import AMapFoundationKit
 
 fileprivate var shareBox:String = ""
@@ -51,6 +53,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
     
         AVOSCloud.setAllLogsEnabled(true)
+        
+        
+        
+        UNUserNotificationCenter.current().delegate = self
+        // 开启远程通知
+        UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+            print("Notification settings: \(settings)")
+            if settings.authorizationStatus == .authorized  { return }
+            
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { (success, error) in
+                if !success{
+                    print("用户不允许消息通知")
+                }
+            })
+            //UIApplication.shared.registerForRemoteNotifications()
+        }
+        
+        // 向apns 请求token
+        UIApplication.shared.registerForRemoteNotifications()
+        
+        // 主动拉取离线未读消息
+        AVIMClient.setUnreadNotificationEnabled(true)
+        
+        // 从消息进入app？
+//        if launchOptions != nil{
+//            self.window?.rootViewController?.view.showToast(title: "lauch options \n \(String.init(describing: launchOptions))", customImage: nil, mode: .text)
+//
+//            AVAnalytics.trackAppOpened(launchOptions: launchOptions)
+//        }
+//
+        // 注册自定义消息
+        //myim.registerSubclass()
         
         
         //GlobalUserInfo.shared.baseInfo(role: UserRole.role.anonymous, token: "token", account: "" , pwd: "")
@@ -122,6 +156,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     
+   
     
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -131,10 +166,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-    }
+        
+        UIApplication.shared.applicationIconBadgeNumber = DBFactory.shared.getConversationDB().getAllUnreadCount()
+        
 
+    }
+    // 获取deviceToken
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        print("获取deviceToken \(deviceToken.toHexString())")
+//        let av =  AVInstallation.default()
+//        av.setDeviceTokenFrom(deviceToken)
+//        av.saveInBackground()
+        AVOSCloud.handleRemoteNotifications(withDeviceToken: deviceToken)
+    }
+    
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("注册 远程通知失败 \(String.init(describing: error))")
+    }
+    // 运行中的app 接受远程通知
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        // 转换为本地通知 显示通知栏  或弹出消息框?
+        print(userInfo)
+        
+    }
+    
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+        // 未读的消息 个数
+        UIApplication.shared.applicationIconBadgeNumber = DBFactory.shared.getConversationDB().getAllUnreadCount()
+        // 清楚avcloud install 里的bages 个数
+        let at = AVInstallation.default()
+        at.badge = UIApplication.shared.applicationIconBadgeNumber
+        at.saveInBackground()
+        
+        // 清理其他badge 数据
+        
+        
+        //UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
@@ -184,8 +252,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 // 文件共享
 extension AppDelegate{
-    
+    // 只有用户登录后， 才能找vc TODO
     private func getResumePageVC() -> UIViewController?{
+        
         let root = UIApplication.shared.keyWindow?.rootViewController
         
         let currentVC = findTarget(rootVC: root!)
@@ -251,6 +320,64 @@ extension AppDelegate{
     
 }
 
+
+extension AppDelegate: UNUserNotificationCenterDelegate{
+    
+    //  接受远程 或本地通知内容
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        //response.notification.request.content.
+        print(response)
+        if let trigger = response.notification.request.trigger, trigger.isKind(of: UNPushNotificationTrigger.self){
+           print(response.notification.request.content.userInfo)
+            // 检查用户是否登录
+            // 如果登录 则跳转到消息聊天界面
+            
+            if GlobalUserInfo.shared.isLogin == true {
+                // 判断当前的vc
+                var vc = UIApplication.shared.keyWindow?.rootViewController
+                if vc?.presentedViewController != nil {
+                    vc = vc?.presentedViewController
+                }
+               
+                if let tabVc = vc as? MainTabBarViewController{
+                    
+                    let nav  = (tabVc.selectedViewController as? UINavigationController)
+                    
+                    if let visibelVC = nav?.visibleViewController, visibelVC.isKind(of: MessageMainController.self){
+                        //return nav?.visibleViewController
+                        //return visibelVC
+                        return
+                    }else{
+                        // 职位板块 进入某个vc   直接poptoroot出栈 有内存泄露？？
+                        nav?.popToRootViewController(animated: false)
+                        tabVc.selectedIndex = 2
+                        
+                    }
+                    
+                }
+                
+                return
+            }else{
+                print("用户未登录 不能跳转到对应的vc")
+            }
+            
+            
+            
+        }
+        completionHandler()
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, openSettingsFor notification: UNNotification?) {
+        
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        // 在应用内展示通知占时通知
+        // 默认在前台 不占时通知
+        //completionHandler([.alert, .badge, .sound])
+        
+    }
+}
 
 
 //extension AppDelegate{

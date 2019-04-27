@@ -28,7 +28,7 @@ class PageContentView: UIView {
         let layout = UICollectionViewFlowLayout.init()
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0
-        layout.itemSize = self.bounds.size
+        layout.itemSize = self.frame.size
         layout.scrollDirection = .horizontal
         
         let collv = UICollectionView.init(frame: self.bounds, collectionViewLayout: layout)
@@ -40,6 +40,7 @@ class PageContentView: UIView {
         collv.dataSource = self
         collv.delegate = self
         collv.scrollsToTop = false
+        collv.contentInsetAdjustmentBehavior = .never
         
         return collv
     }()
@@ -92,7 +93,7 @@ extension PageContentView: UICollectionViewDataSource{
         }
 //        // 这段代码内存泄露，在useloginvc dismiss 触发？？？
         let cVC = childVCs![indexPath.row]
-        cVC.view.frame =  cell.contentView.bounds
+        cVC.view.frame =  cell.contentView.frame
         cell.contentView.addSubview(cVC.view)
         return cell
     }
@@ -105,8 +106,11 @@ extension PageContentView: UICollectionViewDataSource{
 extension PageContentView: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout{
     
         
-
-     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return collectionView.frame.size
+    }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         isCkick = false
         startOffsetX = scrollView.contentOffset.x
     }

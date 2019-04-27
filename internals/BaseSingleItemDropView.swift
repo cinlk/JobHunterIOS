@@ -37,6 +37,7 @@ class BaseSingleItemDropView: YNDropDownView {
         table.dataSource = self
         table.allowsMultipleSelection = false
         table.backgroundColor = UIColor.viewBackColor()
+        table.contentInsetAdjustmentBehavior = .never
         table.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentity)
         return table
         

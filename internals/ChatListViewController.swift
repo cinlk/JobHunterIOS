@@ -9,12 +9,16 @@
 import UIKit
 import RxCocoa
 import RxSwift
-
+import UserNotifications
 
 fileprivate let deleteTitle:String = "删除"
 
 class ChatListViewController: BaseTableViewController {
 
+    // 用户
+    private var user:GlobalUserInfo = GlobalUserInfo.shared
+    
+    
     // 数据库
     private lazy var cManager:ConversationManager = ConversationManager.shared
     
@@ -44,17 +48,42 @@ class ChatListViewController: BaseTableViewController {
         loadMessage()
         //self.tableView.refreshControl?
         
+        // test 本地消息通知
+        //creating the notification content
+//        let content = UNMutableNotificationContent()
+//
+//        //adding title, subtitle, body and badge
+//        content.title = "local notify"
+//        content.subtitle = "测试"
+//        content.body = "通知内容"
+//        content.badge = 1
+//
+//        //getting the notification trigger
+//        //it will be called after 5 seconds
+//        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false)
+//
+//        //getting the notification request
+//        let request = UNNotificationRequest(identifier: "SimplifiedIOSNotification", content: content, trigger: trigger)
+//
+//        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+
+        
     }
     
     
     override  func setViews(){
+        
+        //
+        user.updateDelegate = self
         // 聊天会话cell
         self.tableView.register(ChatUsersTableViewCell.self, forCellReuseIdentifier: ChatUsersTableViewCell.identity())
         // 数据
         self.tableView.separatorStyle = .singleLine
         self.tableView.backgroundColor = UIColor.viewBackColor()
         self.tableView.tableFooterView = UIView()
-        self.tableView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 45, right: 0)
+        self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 45, right: 0)
+        
+        //self.tableView.contentInsetAdjustmentBehavior = .never
         
         // 设置h下拉刷新d事件
         self.tableView.refreshControl = UIRefreshControl.init()
@@ -96,6 +125,8 @@ class ChatListViewController: BaseTableViewController {
         super.didFinishloadData()
         self.tableView.reloadData()
     }
+    
+    
     
    
     
@@ -143,44 +174,33 @@ class ChatListViewController: BaseTableViewController {
         
         // 获取hr 信息
         //conv.recruiterId
-        
-        // TODO
-        //let chatView = CommunicationChatView(hr: conv.user!, row: indexPath.row)
-        
-        // 清楚 该会话未读消息标记
-        if  let _ = conv.unReadNum {
-            if cManager.clearUnReadMessageBy(conversationId: conv.conversationId!){
-                conv.unReadNum = nil
-                // 阅读未读数据后  刷新该行
-                tableView.reloadRows(at: [indexPath], with: .automatic)
-            }else{
-                // 失败 TODO
+    
+ 
+        GlobalUserInfo.shared.buildConversation(conversation: conv.conversationId, talkWith: conv.recruiterId!, jobId: conv.jobId!, completed: { [weak self] (con, error) in
+            if error != nil {
+                //print(err)
+                self?.view.showToast(title: "获取会话失败", customImage: nil, mode: .text)
                 return
             }
-           
-        }
+            //  跳转到聊天界面
+            let chatVC = CommunicationChatView.init(recruiterId: conv.recruiterId!, row: indexPath.row, conversation: con)
+            
+            chatVC.hidesBottomBarWhenPushed = true
+            self?.navigationController?.pushViewController(chatVC, animated: true)
+            
+            // 清楚已读消息数
+            try? self?.cManager.clearUnReadCountBy(conversationId: conv.conversationId!)
+            self?.cModel[indexPath.row].unreadCount = 0
+            self?.tableView.reloadRows(at: [indexPath], with: .automatic)
+            
+            
+//            SingletoneClass.shared.setMessageBadge(conversationId: (con?.conversationId)!, count: 0)
+//            if let cell = tableView.cellForRow(at: indexPath) as? ChatUsersTableViewCell{
+//                cell.icon.pp.addBadge(number: 0)
+//            }
+            
+        })
         
-        // 获取会话con
-        GlobalUserInfo.shared.openConnected { [weak self] (sucess, error) in
-            if sucess{
-                
-                GlobalUserInfo.shared.buildConversation(conversation: conv.conversationId, talkWith: conv.recruiterId!, jobId: conv.jobId!, completed: { [weak self] (con, error) in
-                    if error != nil {
-                        //print(err)
-                        self?.view.showToast(title: "获取会话失败", customImage: nil, mode: .text)
-                        return
-                    }
-                    //  跳转到聊天界面
-                    let chatVC = CommunicationChatView.init(recruiterId: conv.recruiterId!, row: indexPath.row, conversation: con)
-                    
-                    chatVC.hidesBottomBarWhenPushed = true
-                    self?.navigationController?.pushViewController(chatVC, animated: true)
-                    
-                })
-            }else{
-                self?.view.showToast(title: "\(String(describing: error))", customImage: nil, mode: .text)
-            }
-        }
         
         
         
@@ -312,13 +332,8 @@ extension ChatListViewController{
         cModel =  cManager.getConversaions()
  
         self.didFinishloadData()
-     
+        
     }
-    
-    
-    
-   
-    
     
     // 列表排序
     private func sortMode( datas: inout [ChatListModel]){
@@ -379,6 +394,148 @@ extension ChatListViewController{
     
 }
 
+
+extension ChatListViewController{
+    private func buildLocalMessage(con:AVIMConversation, msg: AVIMMessage){
+        
+        switch msg.mediaType{
+            
+        case .text:
+            let textMsg = msg as! AVIMTextMessage
+            
+            // 判断attribute
+            if let type = textMsg.attributes?["type"] as? String, let mtype =  MessgeType.init(rawValue: type){
+                print("receive text messga \(String(describing: textMsg.text)) from \(String(describing: textMsg.clientId)) with attribute \(String.init(describing: textMsg.attributes))" )
+                switch mtype{
+                case .text:
+                    // 刷新table
+                    if let m = MessageBoby.init(JSON: [
+                        "conversation_id": con.conversationId!,
+                        "type": MessgeType.text.describe,
+                        "content": textMsg.text!,
+                        "creat_time": Date.init().timeIntervalSince1970,
+                        "is_read": true,
+                        "sender_id": textMsg.clientId!,
+                        "receiver_id": self.user.getId()!
+                        ]){
+                        try? self.cManager.insertMessageItem(items: [m])
+                        
+                    }
+                case .bigGif, .smallGif:
+                    if let m = GifImageMessage.init(JSON: [
+                        "conversation_id": con.conversationId!,
+                        "type": mtype.describe,
+                        "creat_time": Date.init().timeIntervalSince1970,
+                        "is_read": true,
+                        "sender_id": textMsg.clientId!,
+                        "receiver_id": self.user.getId()!,
+                        "local_gif_name": (textMsg.attributes?["name"] as! String)
+                        ]){
+                        try? self.cManager.insertMessageItem(items: [m])
+                    }
+                default:
+                    print("unkown message type")
+                }
+            }
+        case .image:
+            let imageMsg = msg as! AVIMImageMessage
+            
+            
+            print("receive location messga \(String(describing: imageMsg.text)) from \(String(describing: imageMsg.clientId)) with attribute \(String.init(describing: imageMsg.attributes)) \(String.init(describing:  imageMsg.file?.url()))")
+            
+            if let m  = PicutreMessage.init(JSON: [
+                "conversation_id": con.conversationId!,
+                "type": MessgeType.picture.describe,
+                "content": (imageMsg.file?.url())!,
+                //"fileName": imageName,
+                "fileUrl": (imageMsg.file?.url())!,
+                "creat_time": Date.init().timeIntervalSince1970,
+                "is_read": true,
+                "sender_id": imageMsg.clientId!,
+                "receiver_id": self.user.getId()!,
+                "sended": true,
+                ]){
+                try? self.cManager.insertMessageItem(items: [m])
+            }
+            
+            
+        case .location:
+            
+            let locationMsg = msg as! AVIMLocationMessage
+            
+            print("receive location messga \(String(describing: locationMsg.text)) from \(String(describing: locationMsg.clientId)) with attribute \(String.init(describing: locationMsg.attributes))")
+            
+            if let m = LocationMessage.init(JSON: [
+                "conversation_id": con.conversationId!,
+                "type": MessgeType.location.describe,
+                "creat_time": Date.init().timeIntervalSince1970,
+                "is_read": true,
+                "sender_id": locationMsg.clientId!,
+                "receiver_id": (self.user.getId())!,
+                "latitude":  Double(locationMsg.latitude),
+                "longitude": Double(locationMsg.longitude),
+                "address":  (locationMsg.attributes?["address"] as! String)
+                ]){
+                try? self.cManager.insertMessageItem(items: [m])
+            }
+        default:
+            break
+            
+        }
+    
+    }
+}
+
+
+// 收到消息更新界面
+extension ChatListViewController: UpdateChatlistDelegate{
+    
+    func updateChatList(con: AVIMConversation, messages: [AVIMMessage]) {
+        
+        // 转换为 messageBody 存入数据库
+        // 未读消息个数
+        //try? self.cManager.updateUnreadedMessageCount(conversationId: con.conversationId!, count: messages.count)
+        // 某个消息插入失败怎么办??
+        
+        
+        messages.forEach { [weak self] (msg) in
+            self?.buildLocalMessage(con: con, msg: msg)
+        }
+        
+        
+        // 更新存在的conversation 未读消息
+        for (index, item) in self.cModel.enumerated(){
+            if item.conversationId == con.conversationId{
+                if let new = self.cManager.getConversationBy(conversationId: item.conversationId!){
+                    self.cModel[index] = new
+                    self.sortMode(datas: &self.cModel)
+                    self.tableView.reloadRows(at: [IndexPath.init(row: index, section: 0)], with: .none)
+                    
+                }
+                
+                
+//                if let con = self.cManager.getConversationBy(conversationId: item.conversationId!),  let unreadCount = con.unreadCount{
+//                    self.cModel[index].unreadCount = unreadCount
+//
+//
+//                }
+//                let  (lastMsg, _) = self.cManager.getLasteMessageBy(conversationId: item.conversationId!)
+//                if lastMsg != nil{
+//                    self.cModel[index].lastMessage = lastMsg
+//
+//                }
+//
+//
+//                 self.tableView.reloadRows(at: [IndexPath.init(row: index, section: 0)], with: UITableView.RowAnimation.none)
+                
+                
+            }
+        }
+
+    }
+    
+    
+}
 
 
 

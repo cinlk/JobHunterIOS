@@ -41,7 +41,8 @@ class DropCarrerClassifyView:YNDropDownView,UITableViewDataSource,UITableViewDel
         
         table.separatorStyle = .none
         table.allowsMultipleSelection = false
-       
+        table.contentInsetAdjustmentBehavior = .never
+        
         return table
         
         

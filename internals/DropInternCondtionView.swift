@@ -137,6 +137,8 @@ class DropInternCondtionView: YNDropDownView{
         collectionView.showsVerticalScrollIndicator = false
         collectionView.register(CollectionTextCell.self, forCellWithReuseIdentifier: CollectionTextCell.identity())
         collectionView.register(CollectionLabelHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CollectionLabelHeaderView.identity())
+        collectionView.contentInsetAdjustmentBehavior = .never
+        
        return collectionView
     }()
     

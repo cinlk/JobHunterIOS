@@ -36,14 +36,14 @@ fileprivate  class chatContentTableView:UITableView{
     weak var chatDelegate:chatContentTableViewDelegate?
     // 聊天数据
     var datas:NSMutableArray = []
-    private weak var hr:HRPersonModel?
+    internal var hr:HRPersonModel?
     private var firstLoad:Bool = false
     
     
     convenience init(frame: CGRect, style: UITableView.Style,  chatVC:  CommunicationChatView){
         self.init(frame: frame, style: style)
         //self.datas = chatVC.tableSource
-        self.hr = chatVC.hr
+        //self.hr = chatVC.hr
         self.firstLoad = chatVC.firstLoad
     }
     
@@ -108,6 +108,7 @@ extension chatContentTableView:  UITableViewDelegate, UITableViewDataSource{
             }else if message.isKind(of: PicutreMessage.self){
                 let cell = tableView.dequeueReusableCell(withIdentifier: ImageCell.reuseIdentify(), for: indexPath) as! ImageCell
                 cell.mode = message as? PicutreMessage
+                cell.hr = self.hr
                 //cell.storeImage = storeImageFromCell
                 // 导致vc 不释放 内存泄露！！
                 //cell.storeImage = chatDelegate?.storageImage
@@ -125,7 +126,8 @@ extension chatContentTableView:  UITableViewDelegate, UITableViewDataSource{
                 return cell
             }else if message.isKind(of: LocationMessage.self){
                 let cell = tableView.dequeueReusableCell(withIdentifier: LocationMessageCell.identity(), for: indexPath) as! LocationMessageCell
-                cell.mode = message as? LocationMessage
+                //cell.mode = message as? LocationMessage
+                cell.setCell(mode: message, chatUser: self.hr)
                 cell.navigate2Map = { [weak self] mes  in
                     // 跳转到地图
                    self?.chatDelegate?.showLocationMap(mes: mes!)
@@ -166,8 +168,6 @@ extension chatContentTableView:  UITableViewDelegate, UITableViewDataSource{
             case .time:
                 return ChatTimeCell.cellHeight()
             case .location:
-//                let message = self.datas.object(at: indexPath.row) as! LocationMessage
-//                return tableView.cellHeight(for: indexPath, model: message, keyPath: "mode", cellClass: LocationMessageCell.self, contentViewWidth: GlobalConfig.ScreenW)
                 return 160
             default:
                 break
@@ -216,6 +216,8 @@ class CommunicationChatView: UIViewController {
             self.title = (self.hr?.name ?? "") + "@" + (self.hr?.company ?? "")
         }
     }
+    // 用户
+    private var globalUser:GlobalUserInfo = GlobalUserInfo.shared
     // hr 的id
     private var recruiterId:String?
     //fileprivate var tableSource:NSMutableArray = []
@@ -343,6 +345,10 @@ class CommunicationChatView: UIViewController {
         self.conversation = conversation
         self.recruiterId = recruiterId
         
+        // 标记消息已读
+        conversation?.readInBackground()
+        globalUser.delegate = self 
+        
     }
     
     
@@ -360,7 +366,7 @@ class CommunicationChatView: UIViewController {
         super.viewDidLoad()
         self.setViews()
         self.setViewModel()
-        self.chatRecordLoad()
+        
     }
 
    
@@ -424,6 +430,8 @@ extension CommunicationChatView {
     messageHttp.getRecruiterInfo(userId: self.recruiterId!).subscribe(onNext: { [weak self]  (mode) in
             if let m = mode.body{
                 self?.hr = m
+                self?.tableView.hr = m
+                self?.chatRecordLoad()
             }else{
                 // 显示错误界面 TODO
             }
@@ -527,7 +535,6 @@ extension CommunicationChatView: chatContentTableViewDelegate{
     func resendImageMsg(mes: PicutreMessage, row: Int) {
         
         guard let imageData = AppFileManager.shared.getImageDataBy(userID: mes.receiveId!, fileName: mes.fileName!) else{
-            
             print("未找到图片文件\(String.init(describing: mes.fileName))")
             return
         }
@@ -538,14 +545,19 @@ extension CommunicationChatView: chatContentTableViewDelegate{
             self.tableView.showToast(title: "未找到image cell", customImage: nil, mode: .text)
             return
         }
-        
         //
         let file = AVFile.init(data: imageData, name: mes.fileName)
-        let imgIM = AVIMImageMessage.init(text: "图片消息", file: file, attributes: ["type":"image", "name": mes.fileName])
+        let imgIM = AVIMImageMessage.init(text: "图片消息", file: file, attributes: ["type":"image", "name": mes.fileName!])
         
        
         let option = AVIMMessageOption.init()
         option.priority = AVIMMessagePriority.low
+        // 离线推送消息
+        option.pushData = ["alert":"未读消息", "sound":"default", "badge":1, "custom-key":"图片消息", "_profile":"dev"]
+        
+        // 需要回执？
+        // option.receipt = false
+        
         self.conversation?.send(imgIM, option: option, progressBlock: {  (progress) in
             print("发送图片进度--->  \(String.init(describing: progress))")
             cell.resend.isHidden = true
@@ -555,19 +567,17 @@ extension CommunicationChatView: chatContentTableViewDelegate{
             }
         }, callback: { [weak self] (success, error) in
             // 模拟延迟 查看进度状态
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5, execute: {
-                if success{
-                    // 存入数据库
-                    try? self?.conversationManager.updateSendedMessage(id: mes.id!, sended: true)
-                }
-                if error != nil{
-                     cell.resend.isHidden = false
-                    // 刷新图片 失败状态
-                    self?.tableView.showToast(title: "发送图片失败\n 请重新发送", duration: 5, customImage: nil, mode: .text)
-                    cell.resend.isHidden = false
-                }
-                cell.activity.stopAnimating()
-            })
+            if success{
+                // 存入数据库
+                try? self?.conversationManager.updateSendedMessage(id: mes.id!, sended: true)
+            }
+            if error != nil{
+                // 刷新图片 失败状态
+                self?.tableView.showToast(title: "发送图片失败\n 请重新发送", duration: 5, customImage: nil, mode: .text)
+                cell.resend.isHidden = false
+            }
+            cell.activity.stopAnimating()
+           
         })
         
         
@@ -676,93 +686,49 @@ extension CommunicationChatView{
         if self.chatBarView.keyboardType == .emotion || self.chatBarView.keyboardType == .more{
             // 先改变view 后 在显示vc
             self.moveBar(distance: 0){ [weak self] in
-                let job = JobDetailViewController()
-                //job.uuid = mes.jobID!
-                job.job = (mes.jobID!, mes.jobtype)
-                job.fromChatVC = true
-                self?.navigationController?.pushViewController(job, animated: true)
-                
+                self?.showJobVC(mes: mes)
             }
         }else{
-    
-            let job = JobDetailViewController()
-            job.job = (mes.jobID!, mes.jobtype)
-            //job.uuid = mes.jobID!
-            job.fromChatVC = true
-            self.navigationController?.pushViewController(job, animated: true)
-            
-            
+            self.showJobVC(mes: mes)
         }
         self.chatBarView.keyboardType = .none
     }
     
+    
+    private func showJobVC(mes: JobDescriptionlMessage){
+        
+        let job = JobDetailViewController()
+        job.job = (mes.jobID!, mes.jobtype)
+        job.fromChatVC = true
+        self.navigationController?.pushViewController(job, animated: true)
+    }
 }
 
 
 extension CommunicationChatView: chatMoreViewDelegate{
     
-    func selectetType(moreView: ChatMoreView, didSelectedType type: ChatMoreType) {
+    
+    private func picturType(type: ChatMoreType){
+        guard type == .pic || type == .camera  else {
+            return
+        }
         
-        switch type {
-        // MARK
-        case .pic:
+        if Utils.PhotoLibraryAuthorization() == false{
+            let warnMsg = type == .pic ? "没有相册的访问权限，请在应用设置中开启权限" : "没有相机的访问权限，请在应用设置中开启权限"
+            self.tableView.presentAlert(type: UIAlertController.Style.alert, title: "温馨提示", message: warnMsg, items: [], target: self) { _  in }
+            return
+        }
+        if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
+            //初始化图片控制器
+            let picker = UIImagePickerController()
             
-            if Utils.PhotoLibraryAuthorization() == false{
-              
-                self.view.presentAlert(type: UIAlertController.Style.alert, title: "温馨提示", message: "没有相册的访问权限，请在应用设置中开启权限", items: [], target: self) { _  in }
-                return
-            }
+            //设置代理
+            picker.delegate = self
+            picker.allowsEditing = true
+            picker.sourceType = type == .pic ? .photoLibrary : .camera
+            picker.mediaTypes = type == .pic ? [kUTTypeImage as String] : [kUTTypeImage as String,kUTTypeVideo as String]
             
-            
-            if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
-                //初始化图片控制器
-                let picker = UIImagePickerController()
-                
-                //设置代理
-                picker.delegate = self
-                
-                //设置媒体类型
-                //picker.mediaTypes = [kUTTypeImage as String,kUTTypeVideo as String]
-                picker.mediaTypes = [kUTTypeImage as String]
-                
-                //设置允许编辑
-                picker.allowsEditing = true
-                
-                //指定图片控制器类型
-                picker.sourceType = .photoLibrary
-                
-                //弹出控制器,显示界面
-                self.present(picker, animated: true, completion: nil)
-                
-            }
-            
-            
-        case .feedback:
-            // 显示
-            replyPopView.showPop(height: popViewCGSize.height)
-            
-        // 模拟器相机不能用
-        case .camera:
-            if Utils.PhotoLibraryAuthorization() == false{
-               
-                self.view.presentAlert(type: UIAlertController.Style.alert, title: "温馨提示", message: "没有相册的访问权限，请在应用设置中开启权限", items: [], target: self) { _  in }
-                return
-            }
-             
-            if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
-                //初始化图片控制器
-                let picker = UIImagePickerController()
-                
-                //设置代理
-                picker.delegate = self
-                
-                //设置媒体类型
-                picker.mediaTypes = [kUTTypeImage as String,kUTTypeVideo as String]
-                
-                //设置来源
-                picker.sourceType = .camera
-                
-                //设置镜头 front:前置摄像头  Rear:后置摄像头
+            if type == .camera{
                 if UIImagePickerController.isCameraDeviceAvailable(UIImagePickerController.CameraDevice.rear) {
                     picker.cameraDevice = UIImagePickerController.CameraDevice.rear
                 }else if UIImagePickerController.isCameraDeviceAvailable(UIImagePickerController.CameraDevice.front){
@@ -771,11 +737,94 @@ extension CommunicationChatView: chatMoreViewDelegate{
                 
                 //设置闪光灯(On:开、Off:关、Auto:自动)
                 picker.cameraFlashMode = UIImagePickerController.CameraFlashMode.auto
-                //允许编辑
-                picker.allowsEditing = true
-                //打开相机
-                self.present(picker, animated: true, completion: nil)
+                
             }
+            
+            
+            self.present(picker, animated: true, completion: nil)
+            
+        }
+        
+    
+    }
+    
+    func selectetType(moreView: ChatMoreView, didSelectedType type: ChatMoreType) {
+        
+        switch type {
+        // MARK
+        case .pic:
+            self.picturType(type: .pic)
+            
+//            if Utils.PhotoLibraryAuthorization() == false{
+//
+//                self.view.presentAlert(type: UIAlertController.Style.alert, title: "温馨提示", message: "没有相册的访问权限，请在应用设置中开启权限", items: [], target: self) { _  in }
+//                return
+//            }
+//
+//
+//            if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
+//                //初始化图片控制器
+//                let picker = UIImagePickerController()
+//
+//                //设置代理
+//                picker.delegate = self
+//
+//                //设置媒体类型
+//                //picker.mediaTypes = [kUTTypeImage as String,kUTTypeVideo as String]
+//                picker.mediaTypes = [kUTTypeImage as String]
+//
+//                //设置允许编辑
+//                picker.allowsEditing = true
+//
+//                //指定图片控制器类型
+//                picker.sourceType = .photoLibrary
+//
+//                //弹出控制器,显示界面
+//                self.present(picker, animated: true, completion: nil)
+//
+//            }
+            
+            
+        case .feedback:
+            // 显示
+            replyPopView.showPop(height: popViewCGSize.height)
+            
+        // 模拟器相机不能用
+        case .camera:
+            self.picturType(type: .camera)
+//            if Utils.PhotoLibraryAuthorization() == false{
+//
+//                self.view.presentAlert(type: UIAlertController.Style.alert, title: "温馨提示", message: "没有相册的访问权限，请在应用设置中开启权限", items: [], target: self) { _  in }
+//                return
+//            }
+//
+//            if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
+//                //初始化图片控制器
+//                let picker = UIImagePickerController()
+//
+//                //设置代理
+//                picker.delegate = self
+//
+//                //设置媒体类型
+//                picker.mediaTypes = [kUTTypeImage as String,kUTTypeVideo as String]
+//
+//                //设置来源
+//                picker.sourceType = .camera
+//
+//                //设置镜头 front:前置摄像头  Rear:后置摄像头
+//                if UIImagePickerController.isCameraDeviceAvailable(UIImagePickerController.CameraDevice.rear) {
+//                    picker.cameraDevice = UIImagePickerController.CameraDevice.rear
+//                }else if UIImagePickerController.isCameraDeviceAvailable(UIImagePickerController.CameraDevice.front){
+//                    picker.cameraDevice = UIImagePickerController.CameraDevice.front
+//                }
+//
+//                //设置闪光灯(On:开、Off:关、Auto:自动)
+//                picker.cameraFlashMode = UIImagePickerController.CameraFlashMode.auto
+//                //允许编辑
+//                picker.allowsEditing = true
+//                //打开相机
+//                self.present(picker, animated: true, completion: nil)
+//            }
             
         case .location:
             // 判断是否授权地理位置信息
@@ -792,30 +841,33 @@ extension CommunicationChatView: chatMoreViewDelegate{
             
             // 发送地址位置消息
             let locationIM = AVIMLocationMessage.init(text: "我的位置", latitude: CGFloat(cclocation.coordinate.latitude), longitude: CGFloat(cclocation.coordinate.longitude), attributes: ["type":"location", "address": address])
-            self.conversation?.send(locationIM, callback: {  [weak self] (success, error) in
-                if success{
-                    if let msg = Mapper<LocationMessage>.init().map(JSON: [
-                        "conversation_id": (self?.conversation?.conversationId)!,
-                        "type": MessgeType.location.describe,
-                        "creat_time": Date.init().timeIntervalSince1970,
-                        "is_read": true,
-                        "sender_id": GlobalUserInfo.shared.getId()!,
-                        "receiver_id": (self?.hr?.userID)!,
-                        "latitude": cclocation.coordinate.latitude,
-                        "longitude": cclocation.coordinate.longitude,
-                        "address": address
-                        ]){
-                        try? self?.conversationManager.insertMessageItem(items: [msg])
-                        self?.reloads(mes: msg)
-                    }
-                    
-                    
-                    return
-                }
-                if error != nil{
-                    self?.tableView.showToast(title: "发送地理位置消息失败\(String(describing: error))", customImage: nil, mode: .text)
-                }
-            })
+           
+            self.buildMsgThenSend(mtype: .location, msg: locationIM)
+            
+//            self.conversation?.send(locationIM, callback: {  [weak self] (success, error) in
+//                if success{
+//                    if let msg = Mapper<LocationMessage>.init().map(JSON: [
+//                        "conversation_id": (self?.conversation?.conversationId)!,
+//                        "type": MessgeType.location.describe,
+//                        "creat_time": Date.init().timeIntervalSince1970,
+//                        "is_read": true,
+//                        "sender_id": self?.globalUser.getId()!,
+//                        "receiver_id": (self?.hr?.userID)!,
+//                        "latitude": cclocation.coordinate.latitude,
+//                        "longitude": cclocation.coordinate.longitude,
+//                        "address": address
+//                        ]){
+//                        try? self?.conversationManager.insertMessageItem(items: [msg])
+//                        self?.reloads(mes: msg)
+//                    }
+//
+//
+//                    return
+//                }
+//                if error != nil{
+//                    self?.tableView.showToast(title: "发送地理位置消息失败\(String(describing: error))", customImage: nil, mode: .text)
+//                }
+//            })
            
             
            // print("my location and address")
@@ -864,30 +916,32 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
         
         // 构建消息发送  和 存入数据库 流程 session ?
         
-        let textIM = AVIMMessage.init(content: message)
-        self.conversation?.send(textIM, callback: {  [weak self] (success, error) in
-            if success{
-                // 插入数据库
-                if let msg = Mapper<MessageBoby>.init().map(JSON: [
-                    "conversation_id": (self?.conversation?.conversationId)!,
-                    "type": MessgeType.text.describe,
-                    "content": (textIM.content)!,
-                    "creat_time": Date.init().timeIntervalSince1970,
-                    "is_read": true,
-                    "sender_id": GlobalUserInfo.shared.getId()!,
-                    "receiver_id": (self?.hr?.userID)!
-                    ]){
-                    try? self?.conversationManager.insertMessageItem(items: [msg])
-                    self?.reloads(mes: msg)
-                }
-                
-                return
-            }
-            
-            if error != nil{
-                self?.tableView.showToast(title: "发送消息失败\(String.init(describing: error))", customImage: nil, mode: .text)
-            }
-        })
+        let textIM = AVIMTextMessage.init(text: message, attributes: ["type": MessgeType.text.describe])
+        self.buildMsgThenSend(mtype: .text, msg: textIM)
+        
+//        self.conversation?.send(textIM, callback: {  [weak self] (success, error) in
+//            if success{
+//                // 插入数据库
+//                if let msg = Mapper<MessageBoby>.init().map(JSON: [
+//                    "conversation_id": (self?.conversation?.conversationId)!,
+//                    "type": MessgeType.text.describe,
+//                    "content": (textIM.text)!,
+//                    "creat_time": Date.init().timeIntervalSince1970,
+//                    "is_read": true,
+//                    "sender_id": self?.globalUser.getId()!,
+//                    "receiver_id": (self?.hr?.userID)!
+//                    ]){
+//                    try? self?.conversationManager.insertMessageItem(items: [msg])
+//                    self?.reloads(mes: msg)
+//                }
+//
+//                return
+//            }
+//
+//            if error != nil{
+//                self?.tableView.showToast(title: "发送消息失败\(String.init(describing: error))", customImage: nil, mode: .text)
+//            }
+//        })
         
         
         
@@ -904,27 +958,29 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
         // 存入数据库
         // 刷新table
         let textIM = AVIMTextMessage.init(text: "gif 消息", attributes: ["type": type.describe, "name": name])
-        self.conversation?.send(textIM, callback: {  [weak self] (success, error) in
-            if success{
-                //let msg = GigImageMessage
-                if let gifMsg = Mapper<GifImageMessage>.init().map(JSON: [
-                    "conversation_id": (self?.conversation?.conversationId)!,
-                    "type": type.describe,
-                    "creat_time": Date.init().timeIntervalSince1970,
-                    "is_read": true,
-                    "sender_id": GlobalUserInfo.shared.getId()!,
-                    "receiver_id": (self?.hr?.userID)!,
-                    "local_gif_name": name]){
-                    
-                    try? self?.conversationManager.insertMessageItem(items: [gifMsg])
-                    self?.reloads(mes: gifMsg)
-                }
-                return
-            }
-            if error != nil{
-                self?.tableView.showToast(title: "发送gif失败\(String(describing: error))", customImage: nil, mode: .text)
-            }
-        })
+        self.buildMsgThenSend(mtype: type, msg: textIM)
+        
+//        self.conversation?.send(textIM, callback: {  [weak self] (success, error) in
+//            if success{
+//                //let msg = GigImageMessage
+//                if let gifMsg = Mapper<GifImageMessage>.init().map(JSON: [
+//                    "conversation_id": (self?.conversation?.conversationId)!,
+//                    "type": type.describe,
+//                    "creat_time": Date.init().timeIntervalSince1970,
+//                    "is_read": true,
+//                    "sender_id": self?.globalUser.getId()!,
+//                    "receiver_id": (self?.hr?.userID)!,
+//                    "local_gif_name": name]){
+//
+//                    try? self?.conversationManager.insertMessageItem(items: [gifMsg])
+//                    self?.reloads(mes: gifMsg)
+//                }
+//                return
+//            }
+//            if error != nil{
+//                self?.tableView.showToast(title: "发送gif失败\(String(describing: error))", customImage: nil, mode: .text)
+//            }
+//        })
         
        
         
@@ -932,30 +988,32 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
     // 发送快捷回复 消息
     private func sendReply(content:String){
         
-        let textIM = AVIMMessage.init(content: content)
-        self.conversation?.send(textIM, callback: {  [weak self] (success, error) in
-            if success{
-                // 插入数据库
-                if let msg = Mapper<MessageBoby>.init().map(JSON: [
-                    "conversation_id": (self?.conversation?.conversationId)!,
-                    "type": MessgeType.text.describe,
-                    "content": textIM.content!,
-                    "creat_time": Date.init().timeIntervalSince1970,
-                    "is_read": true,
-                    "sender_id":GlobalUserInfo.shared.getId()!,
-                    "receiver_id": (self?.hr?.userID)!
-                    ]){
-                    try? self?.conversationManager.insertMessageItem(items: [msg])
-                    self?.reloads(mes: msg)
-                }
-                
-                return
-            }
-            
-            if error != nil{
-                self?.tableView.showToast(title: "发送消息失败\(String(describing: error))", customImage: nil, mode: .text)
-            }
-        })
+        let textIM = AVIMTextMessage.init(text: content, attributes: ["type": MessgeType.text.describe])
+        
+        self.buildMsgThenSend(mtype: .text, msg: textIM)
+//        self.conversation?.send(textIM, callback: {  [weak self] (success, error) in
+//            if success{
+//                // 插入数据库
+//                if let msg = Mapper<MessageBoby>.init().map(JSON: [
+//                    "conversation_id": (self?.conversation?.conversationId)!,
+//                    "type": MessgeType.text.describe,
+//                    "content": textIM.text!,
+//                    "creat_time": Date.init().timeIntervalSince1970,
+//                    "is_read": true,
+//                    "sender_id": self?.globalUser.getId()!,
+//                    "receiver_id": (self?.hr?.userID)!
+//                    ]){
+//                    try? self?.conversationManager.insertMessageItem(items: [msg])
+//                    self?.reloads(mes: msg)
+//                }
+//
+//                return
+//            }
+//
+//            if error != nil{
+//                self?.tableView.showToast(title: "发送消息失败\(String(describing: error))", customImage: nil, mode: .text)
+//            }
+//        })
         
     }
     
@@ -972,7 +1030,7 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
             "fileName": imageName,
             "creat_time": Date.init().timeIntervalSince1970,
             "is_read": true,
-            "sender_id":GlobalUserInfo.shared.getId()!,
+            "sender_id": globalUser.getId()!,
             "receiver_id": (self.hr?.userID)!,
             "sended": true,
             ])else{
@@ -1060,6 +1118,75 @@ extension CommunicationChatView: ChatEmotionViewDelegate{
     }
     
     
+    private func buildMsgThenSend(mtype: MessgeType, msg:AVIMMessage){
+        var m: MessageBoby?
+        
+        switch  mtype {
+        case .location:
+            
+            guard let locationMsg = msg as? AVIMLocationMessage else { return }
+            
+            m = Mapper<LocationMessage>.init().map(JSON: [
+                "conversation_id": (self.conversation?.conversationId)!,
+                "type": MessgeType.location.describe,
+                "creat_time": Date.init().timeIntervalSince1970,
+                "is_read": true,
+                "sender_id": (self.globalUser.getId())!,
+                "receiver_id": (self.hr?.userID)!,
+                "latitude":  Double(locationMsg.latitude),
+                "longitude": Double(locationMsg.longitude),
+                "address":  (locationMsg.attributes?["address"] as! String)
+                ])
+
+        case .text:
+            
+            guard let textMsg =  msg as? AVIMTextMessage else { return }
+            
+            m = Mapper<MessageBoby>.init().map(JSON: [
+                "conversation_id": (self.conversation?.conversationId)!,
+                "type": MessgeType.text.describe,
+                "content": (textMsg.text)!,
+                "creat_time": Date.init().timeIntervalSince1970,
+                "is_read": true,
+                "sender_id": (self.globalUser.getId())!,
+                "receiver_id": (self.hr?.userID)!
+                ])
+            
+        case .smallGif, .bigGif:
+            guard let textMsg = msg as? AVIMTextMessage else { return }
+            m = Mapper<GifImageMessage>.init().map(JSON: [
+                "conversation_id": (self.conversation?.conversationId)!,
+                "type": mtype.describe,
+                "creat_time": Date.init().timeIntervalSince1970,
+                "is_read": true,
+                "sender_id": self.globalUser.getId()!,
+                "receiver_id": (self.hr?.userID)!,
+                "local_gif_name": (textMsg.attributes?["name"] as! String)
+                ])
+        default:
+            break
+        }
+        
+        
+        // send msg
+        if m != nil{
+            let option = AVIMMessageOption.init()
+            option.priority = .high
+            option.pushData = ["alert":"未读消息", "sound":"default", "badge":1, "custom-key":"文本消息", "_profile":"dev"]
+            self.conversation?.send(msg, callback: { [weak self] (success, error) in
+                if success{
+                    try? self?.conversationManager.insertMessageItem(items: [m!])
+                    self?.reloads(mes: m!)
+                }
+                
+                if error != nil{
+                    self?.tableView.showToast(title: "发送消息失败\(String(describing: error))", customImage: nil, mode: .text)
+                }
+            })
+        }
+ 
+    }
+    
 }
 
 // chatbar代理 切换视图
@@ -1116,20 +1243,24 @@ extension CommunicationChatView{
         
         //一起移动 inputview 和emotion 和 moreview 和 tableview 的位置
 
+    
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             // 改变table 大小
             self.tableView.frame = CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH - self.currentChatBarHright - distance)
             //改变 chatbar 位置和大小
             self.chatBarView.frame  = CGRect.init(x: 0, y: GlobalConfig.ScreenH - distance - self.currentChatBarHright, width: GlobalConfig.ScreenW, height: self.currentChatBarHright)
             
+           
+        }) { bool in
+            
             // tableview滑动到底部
-            if distance != 0 && self.tableView.datas.count > 0 {
+            if bool &&  distance != 0 && self.tableView.datas.count > 0 {
                 let path = IndexPath.init(row: self.tableView.datas.count-1, section: 0)
                 UIView.performWithoutAnimation {
                     self.tableView.scrollToRow(at: path, at: .bottom, animated: false)
                 }
             }
-        }) { bool in
+            
             complete?()
         }
         
@@ -1191,9 +1322,6 @@ extension CommunicationChatView: UIImagePickerControllerDelegate{
         if let image = selectedImage{
             // 缩小图片 0.5 倍
             // cell 显示缩略图，查看显示正常图且可以下载 TODO
-//            image = image.changesize(size: CGSize.init(width: image.size.width*0.5, height: image.size.height*0.5), renderMode: .alwaysOriginal)
-//
-            //picker.dismiss(animated: true, completion: nil)
             if picker.sourceType == .camera{
                 // 照相的照片 默认是jpeg 格式
                 // 生成时间戳 和 扩展名的 图片名称
@@ -1285,3 +1413,123 @@ extension CommunicationChatView{
 
 
  
+
+
+// 接收消息处理
+extension CommunicationChatView: ReceiveMsgDelegate{
+    
+    func receiveMsg(con:AVIMConversation, msg:AVIMMessage) -> Bool {
+        
+        
+        // 判断conversation 是否一致
+        // 不一致返回false
+        // 一致就处理消息
+        
+        if con.conversationId == self.conversation?.conversationId {
+            // 标记消息已读
+            con.readInBackground()
+            
+            // 清楚badge
+            try? DBFactory.shared.getConversationDB().updateUnreadCount(conversationId: con.conversationId!, count: 0)
+            
+            
+            switch msg.mediaType{
+                
+            case .text:
+                let textMsg = msg as! AVIMTextMessage
+                // 判断attribute
+                if let type = textMsg.attributes?["type"] as? String, let mtype =  MessgeType.init(rawValue: type){
+                    print("receive text messga \(String(describing: textMsg.text)) from \(String(describing: textMsg.clientId)) with attribute \(String.init(describing: textMsg.attributes))" )
+                    switch mtype{
+                        case .text:
+                            // 刷新table
+                            if let m = MessageBoby.init(JSON: [
+                                "conversation_id": con.conversationId!,
+                                "type": MessgeType.text.describe,
+                                "content": textMsg.text!,
+                                "creat_time": Date.init().timeIntervalSince1970,
+                                "is_read": true,
+                                "sender_id": textMsg.clientId!,
+                                "receiver_id": self.globalUser.getId()!
+                                ]){
+                                
+                                try? self.conversationManager.insertMessageItem(items: [m])
+                                self.reloads(mes: m)
+                                
+                            }
+                        case .bigGif, .smallGif:
+                            if let m = GifImageMessage.init(JSON: [
+                                "conversation_id": con.conversationId!,
+                                "type": mtype.describe,
+                                "creat_time": Date.init().timeIntervalSince1970,
+                                "is_read": true,
+                                "sender_id": textMsg.clientId!,
+                                "receiver_id": self.globalUser.getId()!,
+                                "local_gif_name": (textMsg.attributes?["name"] as! String)
+                                
+                            ]){
+                                //try? self.conversationManager.insertMessageItem(items: [m])
+                                self.reloads(mes: m)
+                        }
+                        default:
+                            print("unkown message type")
+                    }
+                }
+            case .image:
+                let imageMsg = msg as! AVIMImageMessage
+                
+                
+                print("receive location messga \(String(describing: imageMsg.text)) from \(String(describing: imageMsg.clientId)) with attribute \(String.init(describing: imageMsg.attributes)) \(String.init(describing:  imageMsg.file?.url()))")
+                
+                
+                if let m  = PicutreMessage.init(JSON: [
+                    "conversation_id": con.conversationId!,
+                    "type": MessgeType.picture.describe,
+                    "content": (imageMsg.file?.url())!,
+                    //"fileName": imageName,
+                    "fileUrl": (imageMsg.file?.url())!,
+                    "creat_time": Date.init().timeIntervalSince1970,
+                    "is_read": true,
+                    "sender_id": imageMsg.clientId!,
+                    "receiver_id": globalUser.getId()!,
+                    "sended": true,
+                    ]){
+                        //try? self.conversationManager.insertMessageItem(items: [m])
+                        self.reloads(mes: m)
+                }
+                
+                
+            case .location:
+               
+                let locationMsg = msg as! AVIMLocationMessage
+                
+                 print("receive location messga \(String(describing: locationMsg.text)) from \(String(describing: locationMsg.clientId)) with attribute \(String.init(describing: locationMsg.attributes))")
+                
+                if let m = LocationMessage.init(JSON: [
+                    "conversation_id": con.conversationId!,
+                    "type": MessgeType.location.describe,
+                    "creat_time": Date.init().timeIntervalSince1970,
+                    "is_read": true,
+                    "sender_id": locationMsg.clientId!,
+                    "receiver_id": (self.globalUser.getId())!,
+                    "latitude":  Double(locationMsg.latitude),
+                    "longitude": Double(locationMsg.longitude),
+                    "address":  (locationMsg.attributes?["address"] as! String)
+                ]){
+                    //try? self.conversationManager.insertMessageItem(items: [m])
+                    self.reloads(mes: m)
+                }
+            default:
+                return false
+                
+            }
+            
+            return true
+        }
+        
+        return false
+        
+    }
+    
+    
+}

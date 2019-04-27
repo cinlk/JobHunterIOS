@@ -45,7 +45,8 @@ class OnlineApplyViewController: UIViewController {
         table.backgroundColor = UIColor.viewBackColor()
         table.register(OnlineApplyCell.self, forCellReuseIdentifier: OnlineApplyCell.identity())
         table.rx.setDelegate(self).disposed(by: dispose)
-       
+        table.contentInsetAdjustmentBehavior = .never
+        
         table.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
         return table
     }()

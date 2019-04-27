@@ -2,33 +2,33 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>zh_CN</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeName</key>
+			<string>DOC</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>com.microsoft.word.doc</string>
 				<string>org.openxmlformats.wordprocessingml.document</string>
 				<string>org.openxmlformats.wordprocessingml.document.macroenabled</string>
 			</array>
-			<key>CFBundleTypeName</key>
-			<string>DOC</string>
-			<key>LSHandlerRank</key>
-			<string>Owner</string>
 		</dict>
 		<dict>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>com.adobe.pdf</string>
-			</array>
 			<key>CFBundleTypeName</key>
 			<string>PDF</string>
 			<key>LSHandlerRank</key>
 			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.adobe.pdf</string>
+			</array>
 		</dict>
 	</array>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>zh_CN</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -174,10 +174,10 @@
 	</dict>
 	<key>NSCalendarsUsageDescription</key>
 	<string>App需要访问你的日历</string>
-	<key>NSContactsUsageDescription</key>
-	<string>App需要访问你的通讯录</string>
 	<key>NSCameraUsageDescription</key>
 	<string>App需要访问你的相机</string>
+	<key>NSContactsUsageDescription</key>
+	<string>App需要访问你的通讯录</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>是否允许后台获取位置信息</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -186,6 +186,10 @@
 	<string>App需要访问你的照片</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>App需要访问提醒事项</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>

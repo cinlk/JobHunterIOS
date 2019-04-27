@@ -27,7 +27,7 @@ private class contentCollectionView:UICollectionView {
         self.vcs.debug().bind(to: self.rx.items(cellIdentifier: CollectionCellID, cellType: UICollectionViewCell.self)){
             (index, mode, cell ) in
         
-            mode.view.frame = cell.contentView.bounds
+            mode.view.frame = cell.contentView.frame
             cell.contentView.addSubview(mode.view)
             //print(cell)
             
@@ -44,6 +44,7 @@ private class contentCollectionView:UICollectionView {
         self.isPagingEnabled = true
         self.isScrollEnabled  = false
         self.bounces = false
+        
         self.rx.setDelegate(self).disposed(by: self.dispose)
         self.scrollsToTop = false
         
@@ -53,6 +54,8 @@ private class contentCollectionView:UICollectionView {
         fatalError("init(coder:) has not been implemented")
     }
     
+   
+    
     
 }
 
@@ -60,7 +63,7 @@ extension contentCollectionView: UICollectionViewDelegate, UICollectionViewDeleg
     
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize.init(width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH)
+        return CGSize.init(width: collectionView.frame.width, height:  collectionView.frame.height)
     }
     
     
@@ -81,29 +84,47 @@ private class topSegMentView:UISegmentedControl{
         self.backgroundColor = UIColor.orange
         self.tintColor = UIColor.white
         
+        // 监听显示badge通知 TODO
+        _ = NotificationCenter.default.rx.notification(NotificationName.messageBadge, object: nil).takeUntil(self.rx.deallocated) .subscribe(onNext: { [weak self] (notify) in
+            
+            // 查询 所有的message badge
+            let total =  DBFactory.shared.getConversationDB().getAllUnreadCount()
+            
+            total > 0 ? self?.setBagdge(index: 0, show: true): self?.setBagdge(index: 0, show: false)
+            
+            
+            
+        }, onError: nil, onCompleted: nil, onDisposed: nil)
     }
+    
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     internal func setBagdge(index:Int, show:Bool){
-        if show == false{
-            return
-        }
         
-        let seg = self.subviews[index]
-        seg.subviews.forEach { (v) in
-            if let label = v as? UILabel{
-                label.pp.addDot(color: UIColor.red)
-                label.pp.showBadge()
-            }
+        
+        self.subviews.forEach { (v) in
+            v.subviews.forEach({ (sv) in
+                
+                if let label = sv as? UILabel, label.text ==  segList[index] {
+                    if show{
+                        label.pp.addDot(color: UIColor.red)
+                        label.pp.showBadge()
+                    }else{
+                        label.pp.hiddenBadge()
+                        
+                    }
+                }
+            })
+           
         }
     }
 }
 
 
-class MessageMain: UIViewController {
+class MessageMainController: UIViewController {
 
     
     private var chidVCs:[UIViewController] = []
@@ -115,7 +136,9 @@ class MessageMain: UIViewController {
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0
         layout.scrollDirection = .horizontal
+        
         let collv = contentCollectionView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH), collectionViewLayout: layout, vcs:self.chidVCs)
+        collv.contentInsetAdjustmentBehavior = .never 
         return collv
     }()
     
@@ -150,6 +173,9 @@ class MessageMain: UIViewController {
         super.viewWillAppear(animated)
         self.navigationController?.insertCustomerView(UIColor.orange)
         
+        self.showUnreadMessageBadge()
+        
+        
         
      }
     
@@ -159,6 +185,9 @@ class MessageMain: UIViewController {
         
     }
     
+   
+    
+    
     deinit {
         print("deinit MessageMainVC \(String.init(describing: self))")
     }
@@ -167,7 +196,7 @@ class MessageMain: UIViewController {
 }
 
 
-extension MessageMain {
+extension MessageMainController {
     
     private func setViews(){
         
@@ -194,7 +223,7 @@ extension MessageMain {
                 return
             }
             
-            self.segeMentView.setBagdge(index: index, show: false)
+            //self.segeMentView.setBagdge(index: index, show: false)
             
             let offsetX = CGFloat(index)*self.collections.frame.width
             self.collections.setContentOffset(CGPoint.init(x: offsetX, y: 0), animated: false)
@@ -206,7 +235,12 @@ extension MessageMain {
 
 
 
-extension MessageMain{
+extension MessageMainController{
     // 监听新未读消息 显示冒泡 TODO
     
+    private func showUnreadMessageBadge(){
+        let messageBadge = DBFactory.shared.getConversationDB().getAllUnreadCount()
+        messageBadge > 0 ? self.segeMentView.setBagdge(index: 0, show: true) :
+            self.segeMentView.setBagdge(index: 0, show: false)
+    }
 }

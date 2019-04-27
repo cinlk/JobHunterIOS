@@ -32,20 +32,28 @@ class  SqliteManager{
     private func initialDBFile() throws{
         
         
-        let url = SingletoneClass.fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-        let dbPath = url.last?.appendingPathComponent(dbName)
-        print("dataBase--->\(String.init(describing: dbPath))")
-        let exist = SingletoneClass.fileManager.fileExists(atPath: dbPath!.path)
+        //SingletoneClass.fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        
+        let url = try SingletoneClass.fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        
+        
+        let dbPath = url.appendingPathComponent(dbName)
+        print("dataBase--->\(String.init(describing: dbPath)) \(String.init(describing: dbPath))")
+        
+        let exist = SingletoneClass.fileManager.fileExists(atPath: dbPath.path)
         if !exist{
-            SingletoneClass.fileManager.createFile(atPath: dbPath!.path, contents: nil, attributes: nil)
+            SingletoneClass.fileManager.createFile(atPath: dbPath.path, contents: nil, attributes: nil)
         }
         
-       try  initialTables(dbPath: dbPath!.path)
+    
+       try  initialTables(dbPath: dbPath.path)
     }
     
     // create tables in sqliteDB
     private func initialTables(dbPath:String) throws{
         do{
+        
+            
             db = try Connection(dbPath)
             // 设置timeout
             db?.busyTimeout = 30
@@ -131,6 +139,7 @@ extension SqliteManager{
                 t.column(MessageTable.receiverID)
                 t.column(MessageTable.isRead)
                 t.column(MessageTable.create_time)
+                
                 t.column(MessageTable.sended, defaultValue: false)
                 
                 // 外键关联
@@ -170,7 +179,7 @@ extension SqliteManager{
                 t.column(SingleConversationTable.recruiterIconURL, defaultValue: "")
                 t.column(SingleConversationTable.isUP, defaultValue: false)
                 t.column(SingleConversationTable.upTime, defaultValue: Date.init(timeIntervalSince1970: 0))
-               
+               t.column(SingleConversationTable.unreadCount, defaultValue: 0)
                 
             }))
             // userID索引

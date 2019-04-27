@@ -72,6 +72,7 @@ class SingleConversation: NSObject, Mappable{
     var recruiterName:String?
     var recruiterIconURL:URL?
     
+    var unreadCount:Int?
     
     
     required init?(map: Map) {
@@ -90,6 +91,7 @@ class SingleConversation: NSObject, Mappable{
         isUp <- map["is_up"]
         recruiterName <- map["recruiter_name"]
         recruiterIconURL <- (map["recruiter_icon_url"], URLTransform())
+        unreadCount <- map["unread_count"]
         
     }
 }
@@ -97,8 +99,7 @@ class SingleConversation: NSObject, Mappable{
 
 class ChatListModel: SingleConversation{
     
-    // 未读消息个数 TODO
-    var unReadNum:Int?
+ 
     
     var lastMessage:MessageBoby?
     
@@ -109,7 +110,7 @@ class ChatListModel: SingleConversation{
     override func mapping(map: Map) {
         super.mapping(map: map)
         lastMessage <- map["last_message"]
-        unReadNum <- map["un_read_num"]
+        
     }
 }
 
@@ -376,9 +377,9 @@ class PicutreMessage:MessageBoby{
     
     required init?(map: Map) {
         super.init(map: map)
-        if map.JSON["fileName"] == nil{
-            return
-        }
+//        if map.JSON["fileName"] == nil{
+//            return
+//        }
     }
     
     override func mapping(map: Map) {

@@ -245,7 +245,7 @@
 		4A8D28BF1FD27A2F00FA983F /* extension+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8D28BE1FD27A2F00FA983F /* extension+String.swift */; };
 		4A909CDE2264C1AE000393F5 /* RichLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A909CDD2264C1AE000393F5 /* RichLoadingView.swift */; };
 		4A918EDB20F59735001FA398 /* PopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A918EDA20F59735001FA398 /* PopView.swift */; };
-		4A93C2B51F80AB900022E97B /* MessageMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2B41F80AB900022E97B /* MessageMainView.swift */; };
+		4A93C2B51F80AB900022E97B /* MessageMainController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2B41F80AB900022E97B /* MessageMainController.swift */; };
 		4A93C2BB1F80CE5F0022E97B /* deliveredHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2BA1F80CE5F0022E97B /* deliveredHistory.swift */; };
 		4A93C2BD1F80CEAA0022E97B /* CommunicationChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2BC1F80CEAA0022E97B /* CommunicationChatView.swift */; };
 		4A93C2CC1F81FD330022E97B /* DetailDeliveryStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A93C2CB1F81FD330022E97B /* DetailDeliveryStatus.swift */; };
@@ -650,7 +650,7 @@
 		4A8D28BE1FD27A2F00FA983F /* extension+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+String.swift"; sourceTree = "<group>"; };
 		4A909CDD2264C1AE000393F5 /* RichLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichLoadingView.swift; sourceTree = "<group>"; };
 		4A918EDA20F59735001FA398 /* PopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopView.swift; sourceTree = "<group>"; };
-		4A93C2B41F80AB900022E97B /* MessageMainView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageMainView.swift; sourceTree = "<group>"; };
+		4A93C2B41F80AB900022E97B /* MessageMainController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageMainController.swift; sourceTree = "<group>"; };
 		4A93C2BA1F80CE5F0022E97B /* deliveredHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = deliveredHistory.swift; sourceTree = "<group>"; };
 		4A93C2BC1F80CEAA0022E97B /* CommunicationChatView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommunicationChatView.swift; sourceTree = "<group>"; };
 		4A93C2CB1F81FD330022E97B /* DetailDeliveryStatus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailDeliveryStatus.swift; sourceTree = "<group>"; };
@@ -1618,7 +1618,7 @@
 			isa = PBXGroup;
 			children = (
 				4A0BA74820B01C880099F332 /* ChatListViewController.swift */,
-				4A93C2B41F80AB900022E97B /* MessageMainView.swift */,
+				4A93C2B41F80AB900022E97B /* MessageMainController.swift */,
 				4A871ADB20E9E3A000E76E39 /* 论坛消息 */,
 				4AF7DCD8200398C6009047F5 /* 来访者 */,
 				4A9A0BE52009DE5E008721F3 /* 聊天界面 */,
@@ -2238,11 +2238,17 @@
 						DevelopmentTeam = C2S64LJ4ZF;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
 							com.apple.Keychain = {
 								enabled = 1;
 							};
 							com.apple.Maps.iOS = {
 								enabled = 0;
+							};
+							com.apple.Push = {
+								enabled = 1;
 							};
 						};
 					};
@@ -2651,7 +2657,7 @@
 				4AF3D356205EB2760012EB6E /* extension+navigation.swift in Sources */,
 				4A871AEA20EB0AB800E76E39 /* CommentViewController.swift in Sources */,
 				4A14078220F62BC500F4E88E /* AddBlacklistVC.swift in Sources */,
-				4A93C2B51F80AB900022E97B /* MessageMainView.swift in Sources */,
+				4A93C2B51F80AB900022E97B /* MessageMainController.swift in Sources */,
 				4AD2C77B209752DA002F3486 /* ConfigDropItemView.swift in Sources */,
 				4A39A7C020CC01DB00953C1C /* DropDegreeMenuView.swift in Sources */,
 				4A5FFC1220F0E7B600DD6FD4 /* ShowPDFResumeVC.swift in Sources */,

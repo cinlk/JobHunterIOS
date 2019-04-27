@@ -48,11 +48,13 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
     private lazy var outerIconView:UIView = {
         let v = UIView()
         v.backgroundColor = UIColor.clear
+        v.clipsToBounds = false 
         return v
     }()
-    private lazy var icon: UIImageView = {
+    internal lazy var icon: UIImageView = {
         let img = UIImageView.init(frame: CGRect.zero)
         img.contentMode = .scaleAspectFill
+        img.clipsToBounds = false
         return img
     }()
     
@@ -65,10 +67,12 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 55, height: 55)
             guard let mes = mode?.lastMessage else { return }
             
             
-            if let num = mode?.unReadNum{
+            if let num = mode?.unreadCount, num > 0{
                 self.outerIconView.pp.addBadge(number: num)
                 self.outerIconView.pp.setBadge(height: 15)
                 self.outerIconView.pp.moveBadge(x: -5, y: 5)
+            }else{
+                self.outerIconView.pp.hiddenBadge()
             }
             
             

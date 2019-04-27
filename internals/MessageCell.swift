@@ -189,6 +189,9 @@ class MessageCell: UITableViewCell {
             }else{
                 self.avatar.image =  #imageLiteral(resourceName: "default")
             }
+           
+            
+            
             self.avatar.frame = CGRect.init(x: 5, y: 0, width: GlobalConfig.AvatarSize.width, height: GlobalConfig.AvatarSize.height)
             
             
@@ -199,7 +202,7 @@ class MessageCell: UITableViewCell {
             
             self.bubleBackGround.frame = CGRect.init(x: 5 + self.avatar.frame.width + 5, y: y-5, width: bubleSize.width, height: bubleSize.height)
             
-            self.messgeText.frame = CGRect.init(x: 5 + self.avatar.frame.width + 5 + 5, y: y, width: labelSize.width, height: labelSize.height)
+            self.messgeText.frame = CGRect.init(x: 5 + self.avatar.frame.width + 5 + 10, y: y, width: labelSize.width + extraWitdhTextView, height: h)
             
         }
         

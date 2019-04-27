@@ -347,16 +347,18 @@ class JobDetailViewController: BaseShowJobViewController {
     
     // 获取会话
     private func getAVIConversation(conid:String?, recruiterId:String, jobId:String,completed:@escaping (_ con:AVIMConversation?, _ error:Error?)->Void){
-        GlobalUserInfo.shared.openConnected { (success, error) in
-            if success{
-                GlobalUserInfo.shared.buildConversation(conversation: conid, talkWith: recruiterId, jobId: jobId, completed: { (con, error) in
-                    completed(con, error)
-                })
-                return
-            }
-            completed(nil, error)
-            
-        }
+//        GlobalUserInfo.shared.openConnected { (success, error) in
+//            if success{
+//
+//                return
+//            }
+//            completed(nil, error)
+//
+//        }
+        
+        GlobalUserInfo.shared.buildConversation(conversation: conid, talkWith: recruiterId, jobId: jobId, completed: { (con, error) in
+            completed(con, error)
+        })
         
     }
     // 发送消息
