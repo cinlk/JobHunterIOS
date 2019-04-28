@@ -227,6 +227,7 @@ struct  NotificationName {
     static let refreshChatList: Notification.Name = Notification.Name.init("refreshChat")
     static let refreshChatRow: Notification.Name = Notification.Name.init("refreshChatRow")
     static let messageBadge: Notification.Name = Notification.Name.init("messageBadage")
+    static let visitor: Notification.Name  = Notification.Name.init("visitor")
 }
 
 struct TabBarItems {

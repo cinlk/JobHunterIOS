@@ -56,32 +56,32 @@ extension HRModel{
 }
 
 
-class HRVisitorModel:HRModel{
-    
-    
-    internal var visitTime:Date?
-    internal var visitTimeStr:String{
-        get{
-            guard let time = self.visitTime else { return "" }
-            if let  str =  showMonthAndDay(date: time){
-                return str
-            }
-            return ""
-        }
-    }
-    
-     required init?(map: Map) {
-        super.init(map: map)
-        if map.JSON["visitTime"] == nil{
-            return nil
-        }
-        
-    }
-    
-    override func mapping(map: Map) {
-        super.mapping(map: map)
-        
-        visitTime <- (map["visitTime"], DateTransform())
-    }
-    
-}
+//class HRVisitorModel:HRModel{
+//    
+//    
+//    internal var visitTime:Date?
+//    internal var visitTimeStr:String{
+//        get{
+//            guard let time = self.visitTime else { return "" }
+//            if let  str =  showMonthAndDay(date: time){
+//                return str
+//            }
+//            return ""
+//        }
+//    }
+//    
+//     required init?(map: Map) {
+//        super.init(map: map)
+//        if map.JSON["visitTime"] == nil{
+//            return nil
+//        }
+//        
+//    }
+//    
+//    override func mapping(map: Map) {
+//        super.mapping(map: map)
+//        
+//        visitTime <- (map["visitTime"], DateTransform())
+//    }
+//    
+//}

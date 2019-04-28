@@ -308,10 +308,10 @@ extension RecruitViewModel{
     }
     // 获取最新的meetings
     private func  recruitMeeting(){
-        recruitMeetingRefresh.do(onNext: { (req) in
+        recruitMeetingRefresh.do(onNext: { [unowned self] (req) in
             
             self.recruitMeetingPullDown  =  req.offset == 0 ? true : false
-        }).flatMapLatest { req in
+        }).flatMapLatest { [unowned self] req in
             self.httpServer.getRecruiteMeetings(req: req).asDriver(onErrorJustReturn: [])
             }.subscribe(onNext: { [weak self] modes in
                 guard let `self` = self else{

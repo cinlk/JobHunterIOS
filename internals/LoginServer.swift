@@ -15,10 +15,6 @@ import Alamofire
 
 // 响应类型
 
-
-
-
-
 // 请求类型
 enum LoginManager {
     
@@ -35,6 +31,7 @@ enum LoginManager {
     case binWeibo
     
     case userInfo(token:String)
+    
     
 }
 
@@ -78,6 +75,7 @@ extension LoginManager: TargetType{
             return self.urlPrefix +  "registry/pwd"
         case .userInfo(_):
             return self.urlPrefix + "userinfo"
+  
         default:
             return self.urlPrefix +  "login"
         }
@@ -232,6 +230,9 @@ class LoginServer {
     func userInfo(token:String) -> Observable<Any>{
         return provider.rx.request(.userInfo(token: token)).asObservable().mapJSON(failsOnEmptyData: true)
     }
+    
+ 
+        
 }
 
 

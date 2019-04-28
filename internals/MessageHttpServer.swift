@@ -21,6 +21,12 @@ enum MessegeHttpReq{
     // 创建新的会话
     case newConversation(cid:String,  recruiterId:String, jobId:String)
     
+    // 访问者
+    case myVisitors(req: HttpVisitorReq)
+    case checkVisitor(userId:String, recruiterId:String)
+    case visitorTime(userId:String)
+    case newVisitor(userId:String)
+    
 }
 
 
@@ -44,7 +50,15 @@ extension MessegeHttpReq: TargetType{
             return self.prefix + "talkWith/\(userId)"
         case .newConversation(_,_,_):
             return self.prefix + "conversation"
-      
+        case .myVisitors(_):
+            return self.prefix + "visitors"
+        case .checkVisitor(_,_):
+            return self.prefix + "visitor/status"
+        case .visitorTime(let userId):
+            return self.prefix + "visitorTime/\(userId)"
+        case .newVisitor(let userId):
+            return self.prefix + "newVisitor/\(userId)"
+        
         }
     }
     
@@ -56,6 +70,12 @@ extension MessegeHttpReq: TargetType{
             return .get
         case .newConversation(_,_,_):
             return .post
+        case .myVisitors(_), .visitorTime(_):
+            return .post
+        case .newVisitor(_):
+            return .get
+        case .checkVisitor(_,_):
+            return .put
         }
     }
     
@@ -67,6 +87,9 @@ extension MessegeHttpReq: TargetType{
             return "".utf8Encoded
         case .newConversation(_,_,_):
             return "".utf8Encoded
+        default:
+            return "".utf8Encoded
+        
         }
     }
     
@@ -78,6 +101,15 @@ extension MessegeHttpReq: TargetType{
             return .requestPlain
         case let .newConversation(cid, rid, jid):
             return .requestParameters(parameters: ["conversation_id": cid, "recruiter_id":rid, "job_id":jid], encoding: JSONEncoding.default)
+        case let .myVisitors(req):
+            return .requestParameters(parameters: req.toJSON(), encoding: JSONEncoding.default)
+        case let .checkVisitor(userId, recruiterId):
+            return .requestParameters(parameters: ["user_id": userId, "recruiter_id": recruiterId], encoding: JSONEncoding.default)
+        case .visitorTime(_):
+            return .requestPlain
+        case .newVisitor(_):
+            return .requestPlain
+            
         }
     }
     
@@ -115,9 +147,34 @@ class MessageHttpServer{
     
     
     func createConversation(conid:String, recruiteId:String, jobId:String) -> Observable<Bool>{
-        return httpServer.rx.request(.newConversation(cid: conid, recruiterId:recruiteId,jobId:jobId)).retry(3).timeout(30, scheduler:MainScheduler.instance).observeOn(MainScheduler.instance).asObservable().map({ (res)  in
+        return httpServer.rx.request(.newConversation(cid: conid, recruiterId:recruiteId,jobId:jobId)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).observeOn(MainScheduler.instance).asObservable().map({ (res)  in
             return HttpCodeRange.filterSuccessResponse(target: res.statusCode)
         }).asObservable()
+        
+    }
+    
+    
+    func visitors(req: HttpVisitorReq) -> Observable<[MyVisitors]> {
+        
+        return httpServer.rx.request(.myVisitors(req: req)).retry(3).timeout(30, scheduler:  ConcurrentDispatchQueueScheduler.init(qos: .background)).observeOn(MainScheduler.instance).asObservable().mapArray(MyVisitors.self, tag: "body")
+    }
+    
+    func updateVisitor(recruiterId:String, userId:String) {
+        httpServer.request(.checkVisitor(userId: userId, recruiterId: recruiterId)) { result in
+            print(result)
+        }
+        
+    }
+    
+    func checkVisitorTime(userId:String){
+        httpServer.request(.visitorTime(userId: userId)) { result in
+              print(result)
+        }
+        
+    }
+    
+    func hasNewVisitor(userId:String) -> Observable<ResponseModel<HasNewVisitor>>{
+        return httpServer.rx.request(.newVisitor(userId: userId)).retry(3).timeout(30, scheduler:  ConcurrentDispatchQueueScheduler.init(qos: .background)).observeOn(MainScheduler.instance).asObservable().mapObject(ResponseModel<HasNewVisitor>.self)
     }
 }
 

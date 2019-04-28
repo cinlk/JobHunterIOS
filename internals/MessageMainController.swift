@@ -130,6 +130,8 @@ class MessageMainController: UIViewController {
     private var chidVCs:[UIViewController] = []
     
     
+    private var vm: MessageViewModel =  MessageViewModel.shared
+    
     private lazy var collections:UICollectionView = { [unowned self] in
         
         let layout = UICollectionViewFlowLayout.init()
@@ -167,6 +169,7 @@ class MessageMainController: UIViewController {
         setViews()
         setViewModel()
         
+        
      }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -174,9 +177,11 @@ class MessageMainController: UIViewController {
         self.navigationController?.insertCustomerView(UIColor.orange)
         
         self.showUnreadMessageBadge()
-        
-        
-        
+        // 检查是否有最新的 访问者
+        if let userId = GlobalUserInfo.shared.getId(){
+                self.vm.existVisitor.onNext(userId)
+        }
+    
      }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -218,7 +223,7 @@ extension MessageMainController {
     
     
     private func setViewModel(){
-        self.segeMentView.rx.selectedSegmentIndex .subscribe(onNext: { [weak self] index in
+        self.segeMentView.rx.selectedSegmentIndex.subscribe(onNext: { [weak self] index in
             guard let `self` = self else{
                 return
             }
@@ -228,7 +233,24 @@ extension MessageMainController {
             let offsetX = CGFloat(index)*self.collections.frame.width
             self.collections.setContentOffset(CGPoint.init(x: offsetX, y: 0), animated: false)
             
+            // 选择了看过我 更新时间
+            if index == 1, let userId = GlobalUserInfo.shared.getId(){
+                self.vm.updateVisitorTime.onNext(userId)
+                self.segeMentView.setBagdge(index: 1, show: false)
+                // 刷新看过我数据
+                NotificationCenter.default.post(name: NotificationName.visitor, object: nil)
+            }
+            
         }).disposed(by: self.dispose)
+        
+        //
+        self.vm.existNewVisitor.asDriver(onErrorJustReturn: false).drive(onNext: { [weak self] exist in
+            self?.segeMentView.setBagdge(index: 1, show: exist)
+            
+        }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+    
+        
+        
     }
 
 }

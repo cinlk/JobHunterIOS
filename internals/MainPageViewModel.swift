@@ -12,12 +12,8 @@ import RxSwift
 import ObjectMapper
 
 
-
-
-
 class MainPageViewMode {
     
-   
     private let compuseJobItems = PublishSubject<[JobListModel]>.init()
     let banners =  PublishSubject<[RotateCategory]>.init()
     private let combinationRecommands = PublishSubject<SpecialRecommands>.init()
@@ -42,8 +38,6 @@ class MainPageViewMode {
     private  var allJobs:[JobListModel] = []
     
     init() {
-        
-      
         // table section 数据组合
         // onError SpeicalRecommand 返回任意空值
         
