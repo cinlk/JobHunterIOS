@@ -223,9 +223,9 @@
 		4A8622DD21420D6100F18BB1 /* constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8622DC21420D6100F18BB1 /* constant.swift */; };
 		4A86792720D4CDD90039D36B /* JobHomeNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A86792620D4CDD90039D36B /* JobHomeNavigation.swift */; };
 		4A86792920D4DB2C0039D36B /* ShowApplyJobsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A86792820D4DB2C0039D36B /* ShowApplyJobsView.swift */; };
-		4A86792B20D5F95D0039D36B /* iconAndTitleTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A86792A20D5F95D0039D36B /* iconAndTitleTableCell.swift */; };
+		4A86792B20D5F95D0039D36B /* IconWithTitleTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A86792A20D5F95D0039D36B /* IconWithTitleTableCell.swift */; };
 		4A86792D20D5FA590039D36B /* SubIconAndTitleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A86792C20D5FA590039D36B /* SubIconAndTitleCell.swift */; };
-		4A871ADD20E9E3FD00E76E39 /* ForumMessageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A871ADC20E9E3FD00E76E39 /* ForumMessageVC.swift */; };
+		4A871ADD20E9E3FD00E76E39 /* SystemMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A871ADC20E9E3FD00E76E39 /* SystemMessageViewController.swift */; };
 		4A871AE020E9EE7300E76E39 /* ForumMessageBaseVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A871ADF20E9EE7300E76E39 /* ForumMessageBaseVC.swift */; };
 		4A871AE220E9EE8A00E76E39 /* MyCommentVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A871AE120E9EE8A00E76E39 /* MyCommentVC.swift */; };
 		4A871AE420E9EEA500E76E39 /* ReplyToMeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A871AE320E9EEA500E76E39 /* ReplyToMeVC.swift */; };
@@ -626,9 +626,9 @@
 		4A8622DC21420D6100F18BB1 /* constant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = constant.swift; sourceTree = "<group>"; };
 		4A86792620D4CDD90039D36B /* JobHomeNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobHomeNavigation.swift; sourceTree = "<group>"; };
 		4A86792820D4DB2C0039D36B /* ShowApplyJobsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowApplyJobsView.swift; sourceTree = "<group>"; };
-		4A86792A20D5F95D0039D36B /* iconAndTitleTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iconAndTitleTableCell.swift; sourceTree = "<group>"; };
+		4A86792A20D5F95D0039D36B /* IconWithTitleTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconWithTitleTableCell.swift; sourceTree = "<group>"; };
 		4A86792C20D5FA590039D36B /* SubIconAndTitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubIconAndTitleCell.swift; sourceTree = "<group>"; };
-		4A871ADC20E9E3FD00E76E39 /* ForumMessageVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumMessageVC.swift; sourceTree = "<group>"; };
+		4A871ADC20E9E3FD00E76E39 /* SystemMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemMessageViewController.swift; sourceTree = "<group>"; };
 		4A871ADF20E9EE7300E76E39 /* ForumMessageBaseVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumMessageBaseVC.swift; sourceTree = "<group>"; };
 		4A871AE120E9EE8A00E76E39 /* MyCommentVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCommentVC.swift; sourceTree = "<group>"; };
 		4A871AE320E9EEA500E76E39 /* ReplyToMeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyToMeVC.swift; sourceTree = "<group>"; };
@@ -926,7 +926,6 @@
 			isa = PBXGroup;
 			children = (
 				4A9543B0209DE3EC009BCBE2 /* InviteCell */,
-				4A86792A20D5F95D0039D36B /* iconAndTitleTableCell.swift */,
 				4A20EEF0203DA0750021843B /* UIswitchCell.swift */,
 				4AAB084420B5BA5600BEF38A /* TextAndPhontoCell.swift */,
 				4AAB084620B5C8D900BEF38A /* InnerTextFiledCell.swift */,
@@ -1075,6 +1074,7 @@
 		4A207A722230A5010010AA88 /* tableCells */ = {
 			isa = PBXGroup;
 			children = (
+				4A86792A20D5F95D0039D36B /* IconWithTitleTableCell.swift */,
 				4A7FD0A0214FD89E00A51736 /* TitleAndTextViewCell.swift */,
 				4AAB084220B59D6800BEF38A /* dynamicCollectionHeighCell.swift */,
 			);
@@ -1564,17 +1564,17 @@
 			name = "简历";
 			sourceTree = "<group>";
 		};
-		4A871ADB20E9E3A000E76E39 /* 论坛消息 */ = {
+		4A871ADB20E9E3A000E76E39 /* 系统消息 */ = {
 			isa = PBXGroup;
 			children = (
-				4A871ADC20E9E3FD00E76E39 /* ForumMessageVC.swift */,
+				4A871ADC20E9E3FD00E76E39 /* SystemMessageViewController.swift */,
 				4A871ADF20E9EE7300E76E39 /* ForumMessageBaseVC.swift */,
 				4A871AE120E9EE8A00E76E39 /* MyCommentVC.swift */,
 				4A871AE320E9EEA500E76E39 /* ReplyToMeVC.swift */,
 				4A871AE920EB0AB800E76E39 /* CommentViewController.swift */,
 				4AC167AF20EC58C70081273D /* ThumbUPVC.swift */,
 			);
-			name = "论坛消息";
+			name = "系统消息";
 			sourceTree = "<group>";
 		};
 		4A8858F41FE6A9CE0009D73D /* job信息界面 */ = {
@@ -1623,7 +1623,7 @@
 			children = (
 				4A0BA74820B01C880099F332 /* ChatListViewController.swift */,
 				4A93C2B41F80AB900022E97B /* MessageMainController.swift */,
-				4A871ADB20E9E3A000E76E39 /* 论坛消息 */,
+				4A871ADB20E9E3A000E76E39 /* 系统消息 */,
 				4AF7DCD8200398C6009047F5 /* 来访者 */,
 				4A9A0BE52009DE5E008721F3 /* 聊天界面 */,
 			);
@@ -2687,12 +2687,12 @@
 				4AA123D522301A0300CA4290 /* companyDetailMultiSection.swift in Sources */,
 				4AF3D3602062B7C10012EB6E /* sectionCellView.swift in Sources */,
 				4A0BA75220B16D600099F332 /* ResumeItemsTypes.swift in Sources */,
-				4A86792B20D5F95D0039D36B /* iconAndTitleTableCell.swift in Sources */,
+				4A86792B20D5F95D0039D36B /* IconWithTitleTableCell.swift in Sources */,
 				4A0BA74920B01C880099F332 /* ChatListViewController.swift in Sources */,
 				4A9543AB209DDD75009BCBE2 /* CareerTalkInviteViewController.swift in Sources */,
 				4AE4D6B520358E0D00BC87FE /* textViewCell.swift in Sources */,
 				4AB8FFE91FDEC0720020F026 /* SearchViewModel.swift in Sources */,
-				4A871ADD20E9E3FD00E76E39 /* ForumMessageVC.swift in Sources */,
+				4A871ADD20E9E3FD00E76E39 /* SystemMessageViewController.swift in Sources */,
 				4A93C2CC1F81FD330022E97B /* DetailDeliveryStatus.swift in Sources */,
 				4A221040203D1B5E000BDC70 /* greetingVC.swift in Sources */,
 				4A686A8820400C5F00571EB0 /* PrivacySetting.swift in Sources */,

@@ -27,6 +27,18 @@ enum MessegeHttpReq{
     case visitorTime(userId:String)
     case newVisitor(userId:String)
     
+    // 检查最新系统消息
+    case newSystemMessage(userId:String)
+    case systemMessageTime(userId:String)
+    
+    // 检查点赞消息
+    case newThumbUpMessage(userId:String)
+    case thumbUpMessageTime(userId:String)
+    
+    // 检查论坛回复我的消息
+    case newForumReply2Me(userId:String)
+    case forumReply2MeTime(userId:String)
+    
 }
 
 
@@ -58,7 +70,19 @@ extension MessegeHttpReq: TargetType{
             return self.prefix + "visitorTime/\(userId)"
         case .newVisitor(let userId):
             return self.prefix + "newVisitor/\(userId)"
-        
+            
+        case .newSystemMessage(let userId):
+            return self.prefix + "newSystemMessage/\(userId)"
+        case .systemMessageTime(let userId):
+            return self.prefix  + "systemMessageTime/\(userId)"
+        case .newThumbUpMessage(let userId):
+            return self.prefix + "newThumbUp/\(userId)"
+        case .thumbUpMessageTime(let userId):
+            return self.prefix + "thumbUpTime/\(userId)"
+        case .forumReply2MeTime(let userId):
+            return self.prefix + "forumReplyTime/\(userId)"
+        case .newForumReply2Me(let userId):
+            return self.prefix + "newForumReply/\(userId)"
         }
     }
     
@@ -76,6 +100,18 @@ extension MessegeHttpReq: TargetType{
             return .get
         case .checkVisitor(_,_):
             return .put
+        case .newSystemMessage(_):
+            return .get
+        case .systemMessageTime(_):
+            return .post
+        case .newThumbUpMessage(_):
+            return .get
+        case .thumbUpMessageTime(_):
+            return .post
+        case .newForumReply2Me(_):
+            return .get
+        case .forumReply2MeTime(_):
+            return .post
         }
     }
     
@@ -108,6 +144,8 @@ extension MessegeHttpReq: TargetType{
         case .visitorTime(_):
             return .requestPlain
         case .newVisitor(_):
+            return .requestPlain
+        case .newSystemMessage(_), .systemMessageTime(_), .newThumbUpMessage(_), .thumbUpMessageTime(_), .forumReply2MeTime(_), .newForumReply2Me(_):
             return .requestPlain
             
         }
@@ -175,6 +213,41 @@ class MessageHttpServer{
     
     func hasNewVisitor(userId:String) -> Observable<ResponseModel<HasNewVisitor>>{
         return httpServer.rx.request(.newVisitor(userId: userId)).retry(3).timeout(30, scheduler:  ConcurrentDispatchQueueScheduler.init(qos: .background)).observeOn(MainScheduler.instance).asObservable().mapObject(ResponseModel<HasNewVisitor>.self)
+    }
+    
+    
+    func hasNewSystemMessage(userId: String) -> Observable<ResponseModel<HasNewSystemMessage>>{
+        return httpServer.rx.request(.newSystemMessage(userId: userId)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).observeOn(MainScheduler.instance).asObservable().mapObject(ResponseModel<HasNewSystemMessage>.self)
+    }
+    
+    
+    func systemMessageTime(userId: String) {
+        httpServer.request(.systemMessageTime(userId: userId)) { result in
+            print(result)
+        }
+    }
+    
+    func HasNewThumbUpMessage(userId:String) -> Observable<ResponseModel<HasNewThumbUpMessage>> {
+        
+        return httpServer.rx.request(.newThumbUpMessage(userId: userId)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).observeOn(MainScheduler.instance).asObservable().mapObject(ResponseModel<HasNewThumbUpMessage>.self)
+    }
+    
+    func thumbUpMessageTime(userId:String){
+        httpServer.request(.thumbUpMessageTime(userId: userId)) { (result) in
+            print(result)
+        }
+    }
+    
+    
+    func HasNewForumReply2Me(userId:String) -> Observable<ResponseModel<HasForumReply2Me>>{
+        return httpServer.rx.request(.newForumReply2Me(userId: userId)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).observeOn(MainScheduler.instance).asObservable().mapObject(ResponseModel<HasForumReply2Me>.self)
+    }
+    
+    func forumReplyTime(userId:String){
+        
+        httpServer.request(.forumReply2MeTime(userId: userId)) { (result) in
+            print(result)
+        }
     }
 }
 

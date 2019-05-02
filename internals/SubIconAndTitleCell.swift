@@ -8,7 +8,7 @@
 
 import UIKit
 
-@objcMembers class SubIconAndTitleCell: TitleTableViewCell {
+@objcMembers class SubIconAndTitleCell: IconWithTitleTableViewCell {
 
     
     

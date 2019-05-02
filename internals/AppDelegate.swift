@@ -60,7 +60,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // 开启远程通知
         UNUserNotificationCenter.current().getNotificationSettings { (settings) in
             print("Notification settings: \(settings)")
-            if settings.authorizationStatus == .authorized  { return }
+            if settings.authorizationStatus == .authorized  {
+                // 订阅系统通知频道
+                print("subscribe systemNotify Channel")
+                let av = AVInstallation.default()
+                av.addUniqueObject("systemNotify", forKey: "channels")
+                //av.remove("systemNotify", forKey: "channel")
+                 
+                av.saveInBackground()
+                return
+                
+            }
             
             UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { (success, error) in
                 if !success{
@@ -178,17 +188,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        av.setDeviceTokenFrom(deviceToken)
 //        av.saveInBackground()
         AVOSCloud.handleRemoteNotifications(withDeviceToken: deviceToken)
+        
+        
+        
     }
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("注册 远程通知失败 \(String.init(describing: error))")
     }
-    // 运行中的app 接受远程通知
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        // 转换为本地通知 显示通知栏  或弹出消息框?
-        print(userInfo)
-        
-    }
+//    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+//        // 转换为本地通知 显示通知栏  或弹出消息框?
+//        print("userinfo", userInfo)
+//
+//
+//    }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
@@ -323,10 +336,13 @@ extension AppDelegate{
 
 extension AppDelegate: UNUserNotificationCenterDelegate{
     
-    //  接受远程 或本地通知内容
+    // 程序在后台点击通知触发 接受远程 或本地通知内容
+    // 判断通知类型 跳转到不同界面
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         //response.notification.request.content.
-        print(response)
+        print("+++>", response)
+        // 更新badge ？？
+        // 更新界面 ？？
         if let trigger = response.notification.request.trigger, trigger.isKind(of: UNPushNotificationTrigger.self){
            print(response.notification.request.content.userInfo)
             // 检查用户是否登录
@@ -368,76 +384,22 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, openSettingsFor notification: UNNotification?) {
-        
+        //print(notification?.request.auth)
     }
     
+    // 程序在前台, 显示通知
+    // 如果点击了通知 触发 didReceive 方法, 不点击什么也不做
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        // 在应用内展示通知占时通知
-        // 默认在前台 不占时通知
-        //completionHandler([.alert, .badge, .sound])
+        
+        // 更新badge TODO
+        // 更新界面 TODO
+        
+        print("---->", notification.request.content.userInfo)
+        completionHandler([.alert, .badge, .sound])
         
     }
 }
 
 
-//extension AppDelegate{
-//    func testUserAgent(){
-//
-//        if let url = URL.init(string: "https://192.168.199.113:9090/jobs"){
-//            httpsGET(request: NSMutableURLRequest.init(url: url))
-//        }
-//
-//
-//    }
-//
-//    func httpsGET(request:  NSMutableURLRequest){
-//        request.setValue("ios+android", forHTTPHeaderField: "User-Agent")
-//        let config = URLSessionConfiguration.default
-//
-//        let session = URLSession.init(configuration: config, delegate: self, delegateQueue: OperationQueue.main)
-//
-//        let task = session.dataTask(with: request as URLRequest) { (data, res, error) in
-//            if error != nil{
-//                print(error)
-//            }else{
-//                let str = String.init(data: data!, encoding: String.Encoding.utf8)
-//                print(str)
-//            }
-//
-//        }
-//        task.resume()
-//
-//    }
-//}
-
-//extension AppDelegate: URLSessionDelegate{
-//
-//    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-//        // 服务端验证
-//        if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust{
-//            let serverTrust:SecTrust = challenge.protectionSpace.serverTrust!
-//            let ceritificate = SecTrustGetCertificateAtIndex(serverTrust, 0)
-//            let remoteCertificateData = CFBridgingRetain(SecCertificateCopyData(ceritificate!))
-//
-//            // 获取证书
-//            let cerpath = Bundle.main.path(forResource: "server", ofType: "cert")
-//            if let cerData = try? Data.init(contentsOf: URL.init(fileURLWithPath: cerpath!)){
-//                if remoteCertificateData?.isEqual(cerData) == true {
-//                     let credential = URLCredential.init(trust: serverTrust)
-//                     challenge.sender?.use(credential, for: challenge)
-//                    completionHandler(.useCredential,credential)
-//
-//                }else{
-//                    completionHandler(.cancelAuthenticationChallenge,nil)
-//                }
-//
-//            }
-//
-//        }else{
-//            completionHandler(.cancelAuthenticationChallenge,nil)
-//        }
-//
-//    }
-//}
 
 

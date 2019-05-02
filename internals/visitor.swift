@@ -24,6 +24,57 @@ class HasNewVisitor: Mappable{
     }
 }
 
+class HasNewSystemMessage: HasNewVisitor{
+    // 公共数据
+    static var has:Bool = false{
+        didSet{
+            NotificationCenter.default.post(name: NotificationName.systemMessageBadge, object: nil)
+        }
+    }
+    
+    required init?(map: Map) {
+        super.init(map: map)
+    }
+    override func mapping(map: Map) {
+        super.mapping(map: map)
+    }
+}
+
+class HasNewThumbUpMessage: HasNewVisitor{
+    
+    // 公共数据
+    static var has:Bool = false{
+        didSet{
+            NotificationCenter.default.post(name: NotificationName.systemMessageBadge, object: nil)
+        }
+    }
+    
+    required init?(map: Map) {
+        super.init(map: map)
+    }
+    override func mapping(map: Map) {
+        super.mapping(map: map)
+    }
+    
+}
+
+
+class HasForumReply2Me: HasNewVisitor{
+    // 公共数据
+    static var has:Bool = false{
+        didSet{
+            NotificationCenter.default.post(name: NotificationName.systemMessageBadge, object: nil)
+        }
+    }
+    
+    required init?(map: Map) {
+        super.init(map: map)
+    }
+    override func mapping(map: Map) {
+        super.mapping(map: map)
+    }
+}
+
 
 class MyVisitors: NSObject, Mappable {
     

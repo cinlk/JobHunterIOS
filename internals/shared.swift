@@ -279,7 +279,12 @@ class GlobalUserInfo: NSObject {
             self.imClient?.open(callback: { [weak self] (success, error) in
            
                 self?.connected = success
+                // 把 userid 加入到installation 里面
+                let av = AVInstallation.default()
                 
+                // 字符串类型字段
+                av.setObject(self?.imClient?.clientId, forKey: "userId")
+                av.saveInBackground()
             })
         }
        

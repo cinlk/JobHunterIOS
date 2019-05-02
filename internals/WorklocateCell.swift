@@ -13,7 +13,7 @@ import UIKit
 fileprivate let cellH:CGFloat = 30
 
 
-@objcMembers  class WorklocateCell: TitleTableViewCell {
+@objcMembers  class WorklocateCell: IconWithTitleTableViewCell {
 
     
     var chooseAddress:((_ adress:String)->Void)?

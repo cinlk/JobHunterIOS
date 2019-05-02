@@ -36,6 +36,25 @@ class MessageViewModel {
     internal var existVisitor: PublishSubject<String> = PublishSubject<String>.init()
     
     
+    // 系统消息
+    internal var existNewSystemMessage: PublishSubject<String> = PublishSubject<String>.init()
+    internal var newSystemMessage:PublishSubject<Bool> = PublishSubject<Bool>.init()
+    internal var updateNewSystemMessageTime:PublishSubject<String> = PublishSubject<String>.init()
+    
+    
+    // 点赞消息
+    internal var existThumbUpMessage: PublishSubject<String> = PublishSubject<String>.init()
+    internal var newThumbUpMessage: PublishSubject<Bool> = PublishSubject<Bool>.init()
+    internal var updateThumbUpMessageTime:PublishSubject<String> = PublishSubject<String>.init()
+    
+    
+    
+    // 回复我的帖子消息
+    internal var existReply2Me: PublishSubject<String> = PublishSubject<String>.init()
+    internal var newReply2MeMessage: PublishSubject<Bool> = PublishSubject<Bool>.init()
+    internal var updateReply2MeTime: PublishSubject<String> = PublishSubject<String>.init()
+    
+    
     
     internal var updateVisitor: BehaviorRelay<(String, String)> = BehaviorRelay<(String, String)>.init(value: ("", ""))
     
@@ -67,6 +86,47 @@ class MessageViewModel {
             self?.httpServer.updateVisitor(recruiterId: rid, userId: uid)
         }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
         
+        
+        self.existNewSystemMessage.flatMapLatest { [unowned self] (uid) in
+            self.httpServer.hasNewSystemMessage(userId: uid)
+            }.subscribe(onNext: { [weak self] (res) in
+                if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code){
+                    self?.newSystemMessage.onNext(res.body?.exist ?? false)
+                }
+                
+            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        self.updateNewSystemMessageTime.subscribe(onNext: { [weak self] (uid) in
+            self?.httpServer.systemMessageTime(userId: uid)
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        
+        // 点赞
+        self.existThumbUpMessage.flatMapLatest {  [unowned self] uid in
+            self.httpServer.HasNewThumbUpMessage(userId: uid)
+            }.subscribe(onNext: { [weak self] (res) in
+                if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code){
+                    self?.newThumbUpMessage.onNext(res.body?.exist ?? false)
+                }
+            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+    
+        self.updateThumbUpMessageTime.subscribe(onNext: { [weak self] (uid) in
+            self?.httpServer.thumbUpMessageTime(userId: uid)
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        
+        // 回复我的
+        self.existReply2Me.flatMapLatest { [unowned self]  uid  in
+            self.httpServer.HasNewForumReply2Me(userId: uid)
+            }.subscribe(onNext: { [weak self] (res) in
+                if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code){
+                    self?.newReply2MeMessage.onNext(res.body?.exist ?? false)
+                }
+            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        self.updateReply2MeTime.subscribe(onNext: { [weak self] (uid) in
+            self?.httpServer.forumReplyTime(userId: uid)
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
         
         
         self.refreshVisitor.do(onNext: { [unowned self] (req) in

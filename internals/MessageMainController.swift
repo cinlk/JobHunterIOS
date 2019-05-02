@@ -12,7 +12,7 @@ import RxCocoa
 import RxDataSources
 
 fileprivate let CollectionCellID = "cell"
-fileprivate let segList:[String] = ["聊天", "看过我", "论坛"]
+fileprivate let segList:[String] = ["聊天", "看过我", "系统消息"]
 
 private class contentCollectionView:UICollectionView {
     
@@ -84,8 +84,8 @@ private class topSegMentView:UISegmentedControl{
         self.backgroundColor = UIColor.orange
         self.tintColor = UIColor.white
         
-        // 监听显示badge通知 TODO
-        _ = NotificationCenter.default.rx.notification(NotificationName.messageBadge, object: nil).takeUntil(self.rx.deallocated) .subscribe(onNext: { [weak self] (notify) in
+        // 监听显示 message 的 badge通知
+        _ = NotificationCenter.default.rx.notification(NotificationName.messageBadge, object: nil).takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] (notify) in
             
             // 查询 所有的message badge
             let total =  DBFactory.shared.getConversationDB().getAllUnreadCount()
@@ -93,6 +93,15 @@ private class topSegMentView:UISegmentedControl{
             total > 0 ? self?.setBagdge(index: 0, show: true): self?.setBagdge(index: 0, show: false)
             
             
+        }, onError: nil, onCompleted: nil, onDisposed: nil)
+        
+        // 监听 显示系统消息的 badge 通知
+        _ = NotificationCenter.default.rx.notification(NotificationName.systemMessageBadge, object: nil).takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] (notify) in
+            if HasForumReply2Me.has || HasNewSystemMessage.has || HasNewThumbUpMessage.has{
+                self?.setBagdge(index: 2, show: true)
+            }else{
+                self?.setBagdge(index: 2, show: false)
+            }
             
         }, onError: nil, onCompleted: nil, onDisposed: nil)
     }
@@ -157,8 +166,8 @@ class MessageMainController: UIViewController {
     private lazy var chatVC:ChatListViewController = ChatListViewController()
     // 看过我vc
     private lazy var visitorVC:MyVisitor = MyVisitor()
-    // 论坛消息
-    private lazy var forume:ForumMessageVC = ForumMessageVC()
+    // 系统消息
+    private lazy var system:SystemMessageViewController = SystemMessageViewController()
 
     
     private lazy var dispose = DisposeBag()
@@ -177,13 +186,27 @@ class MessageMainController: UIViewController {
         self.navigationController?.insertCustomerView(UIColor.orange)
         
         self.showUnreadMessageBadge()
-        // 检查是否有最新的 访问者
-        if let userId = GlobalUserInfo.shared.getId(){
-                self.vm.existVisitor.onNext(userId)
-        }
+        
+    
     
      }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // 监听推送的消息类型 来更新对应的数据 TODO
+        if let userId = GlobalUserInfo.shared.getId(){
+            // 检查是否有最新的 访问者
+            self.vm.existVisitor.onNext(userId)
+            // 检查是否有最新的系统 通知
+            self.vm.existNewSystemMessage.onNext(userId)
+            // 检查是否有最新的赞
+            self.vm.existThumbUpMessage.onNext(userId)
+            // 检查是否有最新回复我的
+            self.vm.existReply2Me.onNext(userId)
+        }
+        
+        
+    }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         //self.navigationController?.removeCustomerView()
@@ -206,7 +229,7 @@ extension MessageMainController {
     private func setViews(){
         
         self.navigationController?.navigationBar.settranslucent(true)
-        self.chidVCs.append(contentsOf: [chatVC, visitorVC, forume])
+        self.chidVCs.append(contentsOf: [chatVC, visitorVC, system])
 
         chidVCs.forEach{ [weak self] in
             self?.addChild($0)
@@ -248,7 +271,40 @@ extension MessageMainController {
             self?.segeMentView.setBagdge(index: 1, show: exist)
             
         }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        
+        //  系统消息的红点 依赖 系统消息 ，赞 和 看过我的状态 TODO
+        self.vm.newSystemMessage.asDriver(onErrorJustReturn: false).drive(onNext: {  (exist) in
+//            if exist{
+//                self?.segeMentView.setBagdge(index: 2, show: true)
+//            }
+            // 通知发送给 系统消息cell, 第一次通知发送 但是vc 还未初始化, 消息不存在??
+            
+            HasNewSystemMessage.has = exist
+            if exist{
+                NotificationCenter.default.post(name: NotificationName.systemMessage, object: nil, userInfo: ["system" : exist])
+            }
+            
+            
+        }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
     
+        
+        self.vm.newThumbUpMessage.asDriver(onErrorJustReturn: true).drive(onNext: { (exist) in
+            HasNewThumbUpMessage.has = exist
+            if exist{
+                NotificationCenter.default.post(name: NotificationName.systemMessage, object: nil, userInfo: ["thumbUp": exist])
+            }
+        }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        
+        self.vm.newReply2MeMessage.asDriver(onErrorJustReturn: false).drive(onNext: { (exist) in
+            HasForumReply2Me.has = exist
+            if exist{
+                NotificationCenter.default.post(name: NotificationName.systemMessage, object: nil, userInfo: ["reply": exist])
+            }
+        }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
         
         
     }
