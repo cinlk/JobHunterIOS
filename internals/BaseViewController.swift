@@ -23,6 +23,14 @@ class BaseViewController: UIViewController {
         return eView
     }()
     
+    // 显示没有数据界面
+    internal lazy var noData:NotFoundDataView = {
+        let v = NotFoundDataView.init(frame: CGRect.zero)
+        v.isHidden = true
+        v.backgroundColor = UIColor.blue
+        return v
+    }()
+    
     // 进度提示view
     internal lazy var hub:MBProgressHUD = { [unowned self] in
         
@@ -42,10 +50,12 @@ class BaseViewController: UIViewController {
         //hub.show(animated: false)
         self.view.backgroundColor = UIColor.white
         self.view.insertSubview(errorView,at: 0)
+        self.view.addSubview(noData)
         // 影藏返回按钮文字
         navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
 
         _  = errorView.sd_layout().centerXEqualToView(self.view)?.centerYEqualToView(self.view)?.widthRatioToView(self.view, 0.7)?.heightRatioToView(self.view,0.4)
+        _ = noData.sd_layout()?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
     }
    
     internal func setViews(){
@@ -67,7 +77,7 @@ class BaseViewController: UIViewController {
         }
         errorView.isHidden = true
         hub.isHidden = true 
-        
+        noData.isHidden = true
         
     }
     
@@ -79,10 +89,12 @@ class BaseViewController: UIViewController {
         
         hub.hide(animated: true)
         errorView.isHidden = false
+        noData.isHidden = true
     }
     
     internal func reload(){
         errorView.isHidden = true
+        noData.isHidden = true
         hub.show(animated: true)
         
     }
@@ -90,6 +102,15 @@ class BaseViewController: UIViewController {
     // 跳转到登录界面  TODO
     internal func login(){
         fatalError("not implement")
+    }
+    
+    internal func showNoData(){
+        self.hiddenViews.forEach{
+            $0.isHidden = true
+        }
+        noData.isHidden = false
+        errorView.isHidden = true
+        
     }
     
 }

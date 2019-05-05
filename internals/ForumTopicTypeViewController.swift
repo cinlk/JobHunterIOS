@@ -14,8 +14,9 @@ fileprivate let titleName:String = "选择板块"
 class ForumTopicTypeViewController: UITableViewController {
 
     
-    private let datas:[forumType] = forumType.items
-    internal var getType:((_ type:forumType)->Void)?
+    private let datas:[ForumType] = ForumType.items
+    
+    internal var getType:((_ type:ForumType)->Void)?
     
     // currentSelect
     private var currentIndex:Int = -1

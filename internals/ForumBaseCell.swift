@@ -75,10 +75,20 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 30, height: 30)
         return label
     }()
     
+    // 阅读次数
+    internal lazy var read:UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.textColor = UIColor.lightGray
+        label.isAttributedContent = true
+        label.tintColor = UIColor.lightGray
+        return label
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        let views:[UIView] = [postTitle, postType, creatTime, authorName, authorIcon, thumbs, reply]
+        let views:[UIView] = [postTitle, postType, creatTime, authorName, authorIcon, thumbs, reply, read]
         self.contentView.sd_addSubviews(views)
         
         _ = authorIcon.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(iconSize.width)?.heightEqualToWidth()
@@ -90,8 +100,11 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 30, height: 30)
         _ = thumbs.sd_layout().topEqualToView(creatTime)?.rightSpaceToView(self.contentView,10)?.widthIs(0)?.heightIs(15)
         _ = reply.sd_layout().rightSpaceToView(thumbs,5)?.topEqualToView(thumbs)?.widthIs(0)?.heightIs(15)
         
+        _ = read.sd_layout()?.rightSpaceToView(reply, 5)?.topEqualToView(reply)?.widthIs(0)?.heightIs(15)
+        
         authorName.setMaxNumberOfLinesToShow(2)
         postTitle.setMaxNumberOfLinesToShow(3)
+        
         authorIcon.sd_cornerRadiusFromWidthRatio = 0.5
         
     }

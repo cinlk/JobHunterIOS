@@ -89,8 +89,30 @@ final class StringTransformURL: TransformType {
         return nil
     }
     
-    
 }
+
+//final class ForumTypeTransform: TransformType {
+//    
+//    typealias Object =  ForumType
+//    
+//    typealias JSON = String
+//    
+//    public func transformFromJSON(_ value: Any?) -> ForumType? {
+//        if let t = value as? String{
+//            return ForumType(rawValue: t)
+//        }
+//        
+//        return nil
+//    }
+//    
+//    public func transformToJSON(_ value: ForumType?) -> String? {
+//        if let t = value{
+//            return t.describe
+//        }
+//        
+//        return nil
+//    }
+//}
 
 // YYYY-MM 日期转换
 final class YearMonthtDateTransform: TransformType {

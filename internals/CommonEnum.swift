@@ -123,47 +123,7 @@ enum ResumeDeliveryStatus:String {
 
 
 
-// 论坛分类
-enum forumType:String{
-    
-    case interview = "interview"
-    case ask = "ask"
-    case offers = "offers"
-    case help = "help"
-    case life = "life"
-    case none = ""
-    
-    // 自己的帖子
-    case mypost = "mypost"
-    
-    
-    static var items:[forumType]{
-        get{
-            return [forumType.interview, forumType.ask, forumType.offers, forumType.help]
-        }
-    }
-    
-    var describe:String{
-        switch self {
 
-        case .interview:
-            return "笔记面经"
-        case .ask:
-            return "热门问题"
-        case .offers:
-            return "offer比较"
-        case .help:
-            return "帮助"
-        case .life:
-            return "生活"
-        case .mypost:
-            return "我的帖子"
-        case .none:
-            return ""
-        }
-    
-    }
-}
 
 
 

@@ -244,8 +244,8 @@ extension RecruitViewModel{
                     self.onlineApplyRefreshStatus.onNext(PageRefreshStatus.endFooterRefresh)
                 }
                 
-            }, onError:{ err in
-                self.onlineApplyRefreshStatus.onNext(PageRefreshStatus.error(err: err))
+            }, onError:{ [weak self] err in
+                self?.onlineApplyRefreshStatus.onNext(PageRefreshStatus.error(err: err))
             }).disposed(by: self.dispose)
         
         

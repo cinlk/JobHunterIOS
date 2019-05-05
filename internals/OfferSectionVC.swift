@@ -14,27 +14,18 @@ class OfferSectionVC: BasePostItemsViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.type = .offers
-        self.loadData()
         
         
-        NotificationCenter.default.addObserver(self, selector: #selector(updateTable), name: Notification.Name.init(self.type!.rawValue), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(updateTable), name: Notification.Name.init(self.type.rawValue), object: nil)
         // Do any additional setup after loading the view.
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    override func reload() {
-        super.reload()
-        self.loadData()
     }
     
     
     
     deinit {
-        NotificationCenter.default.removeObserver(self, name: Notification.Name.init(self.type!.rawValue), object: nil)
+        NotificationCenter.default.removeObserver(self)
+        //NotificationCenter.default.removeObserver(self, name: Notification.Name.init(self.type!.rawValue), object: nil)
     }
     
 }
@@ -51,30 +42,30 @@ extension OfferSectionVC{
     }
 }
 
-
-extension OfferSectionVC{
-    
-    private func loadData(){
-        
-        // 获取offer 比较的帖子
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            Thread.sleep(forTimeInterval: 3)
-            
-            for _ in 0..<10{
-                if let data = PostArticleModel(JSON: ["id":"dqwd-dqwdqwd","title":"标题题","authorID":"dqwddqwdd","authorName":"我的名字","colleage":"北京大学","authorIcon":"chicken","createTime":Date().timeIntervalSince1970,"kind":self?.type?.rawValue ?? "none","thumbUP":2303,"reply":101]){
-                    
-                    self?.modes.append(data)
-                }
-            }
-            
-            DispatchQueue.main.async {
-                self?.didFinishloadData()
-            }
-        }
-    }
-    
-    
-}
+//
+//extension OfferSectionVC{
+//    
+//    private func loadData(){
+//        
+//        // 获取offer 比较的帖子
+//        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+//            Thread.sleep(forTimeInterval: 3)
+//            
+//            for _ in 0..<10{
+//                if let data = PostArticleModel(JSON: ["id":"dqwd-dqwdqwd","title":"标题题","authorID":"dqwddqwdd","authorName":"我的名字","colleage":"北京大学","authorIcon":"chicken","createTime":Date().timeIntervalSince1970,"kind":self?.type.rawValue ?? "none","thumbUP":2303,"reply":101]){
+//                    
+//                    self?.modes.append(data)
+//                }
+//            }
+//            
+//            DispatchQueue.main.async {
+//                self?.didFinishloadData()
+//            }
+//        }
+//    }
+//    
+//    
+//}
 
 
 

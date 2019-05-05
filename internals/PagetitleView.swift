@@ -41,7 +41,8 @@ class PagetitleView: UIView {
     
     lazy var subline:UIView = { [unowned self] in
         let v = UIView.init(frame: CGRect.init(x: 0, y: self.bounds.height-1, width: GlobalConfig.ScreenW, height: 1))
-        v.backgroundColor = ConfigColor.PageTitleColor.SublineColor
+        //v.backgroundColor = ConfigColor.PageTitleColor.SublineColor
+        v.backgroundColor = UIColor.lightGray
         return v
     }()
     
@@ -79,7 +80,7 @@ class PagetitleView: UIView {
         }
         super.layoutSubviews()
         
-        moveLine.frame =  lineCenter ?  CGRect.init(x: firstLabel.center.x - 15 , y: frame.height - 5, width: 30, height: kScrollLineH) : CGRect.init(x: firstLabel.frame.origin.x, y: frame.height - kScrollLineH , width: firstLabel.frame.width, height: kScrollLineH)
+        moveLine.frame =  lineCenter ?  CGRect.init(x: firstLabel.center.x - 15 , y: frame.height - kScrollLineH, width: 30, height: kScrollLineH) : CGRect.init(x: firstLabel.frame.origin.x, y: frame.height - kScrollLineH , width: firstLabel.frame.width, height: kScrollLineH)
        
     }
 }

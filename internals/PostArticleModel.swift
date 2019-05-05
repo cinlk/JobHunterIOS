@@ -12,6 +12,40 @@ import ObjectMapper
 
 
 
+// 发送请求的实体
+class ArticleReqModel{
+    
+    var currentType: ForumType = .none
+    
+    private var offset:Int = 0
+    private var limit:Int = 10
+//    private var typeOffset: [ForumType: (Int, Int)] = [ForumType.help:(0, 10), ForumType.interview: (0,10), ForumType.offers: (0,10)]
+//
+    init() {}
+    
+    func getOffset() -> Int{
+        return self.offset
+        //return self.typeOffset[self.currentType]?.0 ?? 0
+    }
+    
+    func setOffset(offset:Int){
+        if offset == 0 {
+           // self.typeOffset[self.currentType]?.0 = 0
+            self.offset = 0
+        }else{
+            //self.typeOffset[self.currentType]?.0 += offset
+            self.offset += offset
+        }
+    }
+    
+    
+    func toJSON() -> [String: Any]{
+        return ["type": self.currentType.rawValue, "offset": self.offset, "limit": 10]
+    }
+    
+}
+
+
 class PostBaseModel: NSObject, Mappable{
     
     // 帖子id
@@ -41,26 +75,28 @@ class PostBaseModel: NSObject, Mappable{
     var thumbUP:Int = 0
     // 回复
     var reply:Int = 0
-    
+    // 预览次数
+    var read:Int = 0
     
     
     required init?(map: Map) {
-        if map.JSON["id"] == nil  || map.JSON["authorID"] == nil || map.JSON["createTime"] == nil || map.JSON["authorName"] == nil || map.JSON["colleage"] == nil {
-            return nil
-        }
+//        if map.JSON["id"] == nil  || map.JSON["authorID"] == nil || map.JSON["createTime"] == nil || map.JSON["authorName"] == nil || map.JSON["colleage"] == nil {
+//            return nil
+//        }
     }
     
     func mapping(map: Map) {
         
-        id <- map["id"]
+        id <- map["uuid"]
         title <- map["title"]
-        authorID <- map["authorID"]
-        authorName <- map["authorName"]
-        colleage <- map["colleage"]
-        authorIcon <- (map["authorIcon"], URLTransform())
-        createTime <- (map["createTime"],DateTransform())
-        thumbUP <- map["thumbUP"]
+        authorID <- map["user_id"]
+        authorName <- map["user_name"]
+        colleage <- map["user_colleage"]
+        authorIcon <- (map["user_icon"], URLTransform())
+        createTime <- (map["created_time"],DateTransform())
+        thumbUP <- map["thumb_up"]
         reply <- map["reply"]
+        read <- map["read"]
     }
 }
 
@@ -75,9 +111,9 @@ class PostArticleModel: PostBaseModel {
     var showTag:Bool = false
     
     
-    var type:forumType{
+    var type:ForumType{
         get{
-            guard let  kind = kind, let type = forumType(rawValue: kind) else {
+            guard let  kind = kind, let type = ForumType(rawValue: kind) else {
                 return .none
             }
             return type
@@ -88,9 +124,9 @@ class PostArticleModel: PostBaseModel {
     
     required init?(map: Map) {
         super.init(map: map)
-        if  map.JSON["kind"] == nil ||  map.JSON["title"] == nil  {
-                return nil
-        }
+//        if  map.JSON["kind"] == nil ||  map.JSON["title"] == nil  {
+//                return nil
+//        }
     }
     
     override func mapping(map: Map) {

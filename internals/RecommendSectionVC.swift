@@ -1,5 +1,5 @@
 //
-//  InterviewTestVC.swift
+//  AskSectionVC.swift
 //  internals
 //
 //  Created by ke.liang on 2018/6/26.
@@ -8,25 +8,28 @@
 
 import UIKit
 
-class InterviewSectionVC: BasePostItemsViewController {
-
+class RecommendSectionVC: BasePostItemsViewController {
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.type = .interview
+        self.type = .recommend
+        
         
         NotificationCenter.default.addObserver(self, selector: #selector(updateTable), name: Notification.Name.init(self.type.rawValue), object: nil)
         // Do any additional setup after loading the view.
     }
-
+    
+    
+    
     deinit {
         NotificationCenter.default.removeObserver(self)
         //NotificationCenter.default.removeObserver(self, name: Notification.Name.init(self.type!.rawValue), object: nil)
     }
-
+    
 }
 
 
-extension InterviewSectionVC{
+extension RecommendSectionVC{
     
     @objc private func updateTable(_ sender: Notification){
         if let info = sender.userInfo as? [String:PostArticleModel], let mode = info["mode"] {
@@ -36,13 +39,13 @@ extension InterviewSectionVC{
         
     }
 }
-
-
-//extension InterviewSectionVC{
+//
+//
+//extension AskSectionVC{
 //
 //    private func loadData(){
 //
-//        // 获取笔试面试的帖子
+//        // 获取我要提问的帖子
 //        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
 //            Thread.sleep(forTimeInterval: 3)
 //

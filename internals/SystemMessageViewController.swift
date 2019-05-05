@@ -41,8 +41,6 @@ class SystemMessageViewController: UIViewController {
         self.view.addSubview(table)
         _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
         
-        
-        
         setViewModel()
         
     }
