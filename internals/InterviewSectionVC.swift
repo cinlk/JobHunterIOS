@@ -14,29 +14,15 @@ class InterviewSectionVC: BasePostItemsViewController {
         super.viewDidLoad()
         self.type = .interview
         
-        NotificationCenter.default.addObserver(self, selector: #selector(updateTable), name: Notification.Name.init(self.type.rawValue), object: nil)
-        // Do any additional setup after loading the view.
+     
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-        //NotificationCenter.default.removeObserver(self, name: Notification.Name.init(self.type!.rawValue), object: nil)
-    }
+   
 
 }
 
 
-extension InterviewSectionVC{
-    
-    @objc private func updateTable(_ sender: Notification){
-        if let info = sender.userInfo as? [String:PostArticleModel], let mode = info["mode"] {
-            self.modes.insert(mode, at: 0)
-            self.table.reloadData()
-        }
-        
-    }
-}
-
+ 
 
 //extension InterviewSectionVC{
 //

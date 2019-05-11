@@ -90,6 +90,8 @@ private class mytext:UITextView{
     
     private var placeHoldTitle:String = ""
     
+    
+    
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
         self.delegate = self
@@ -215,21 +217,24 @@ class EditPostViewController: UIViewController {
     private struct postBody {
         var title:String
         var content:String
-        var type:String
+        var type: ForumType
         
-        init(title:String,content:String,type:String) {
+        init(title:String,content:String,type: ForumType) {
             self.title = title
             self.content = content
             self.type = type
         }
         
         func validate() -> Bool{
-            return title != "" && content != "" && type != ""
+            return title != "" && content != "" && type != .none
         }
     }
     
     
-    private lazy var data: postBody = postBody(title: "", content: "", type: "")
+    private lazy var server: ForumeServer = ForumeServer.shared
+    private lazy var dispose: DisposeBag = DisposeBag.init()
+    
+    private lazy var data: postBody = postBody(title: "", content: "", type: .none)
  
     fileprivate  lazy var titleView:mytext = { [unowned self] in
         let view = mytext.init(frame: CGRect.zero, type: .title, vc: self)
@@ -250,7 +255,7 @@ class EditPostViewController: UIViewController {
             }
             self.contentView.postType.title = type.describe
             self.titleView.postType.title = type.describe
-            self.data.type = type.rawValue
+            self.data.type = type
         }
         return vc
     }()
@@ -334,23 +339,37 @@ extension EditPostViewController{
         guard  self.data.validate() else {
             return
         }
-         
+        
+        
         
         // 发送到服务七 获取id数据 和 icon 等数据
+        server.createArtice(title: data.title, content: data.content, type: data.type.rawValue).subscribe(onNext: { [weak self] (res) in
+            guard let `self` = self else{
+                return
+            }
+            
+            if let body = res.body, HttpCodeRange.filterSuccessResponse(target: res.code!){
+                NotificationCenter.default.post(name: self.data.type.notificationName!, object: nil, userInfo:
+                    ["mode": PostArticleModel.init(JSON:[
+                        "kind": self.data.type.rawValue,
+                        "uuid": body.uuid!,
+                        "title": self.data.title,
+                        "user_id": GlobalUserInfo.shared.getId()!,
+                        "user_name": GlobalUserInfo.shared.getName()!,
+                        "user_icon": GlobalUserInfo.shared.getIcon()?.absoluteString,
+                        "created_time": Date.init().timeIntervalSince1970,
+                        "thumb_up":0,
+                        "reply":0,
+                        "read":1,
+                        ])!
+                    ])
+                self.navigationController?.popvc(animated: true)
+            }else{
+                self.view.showToast(title: "发布帖子失败\(res.returnMsg)", customImage: nil, mode: .text)
+            }
+            
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
         
-        // 构造postArticle 数据
-//        if let article = PostArticleModel(JSON: ["id":Utils.getUUID(),"title":"文字标题等等","authorID": GlobalUserInfo.shared.getId()! ,
-//                                                 "authorName": GlobalUserInfo.shared.getName() ?? "","colleage":"我的大学","authorIcon": GlobalUserInfo.shared.getIcon()?.absoluteString ?? "" ,"createTime":Date().timeIntervalSince1970,"kind":data.type]){
-//
-//            NotificationCenter.default.post(name: Notification.Name.init(data.type), object: nil, userInfo: ["mode":article])
-//
-//        }
-        // 发送给服务器 TODO
-        // 成功后，通知界面刷新？ 或者等待审核后在
-        // 返回
-        //print(data.content,data.type,data.title)
-        self.navigationController?.popvc(animated: true)
-
      }
 }
 

@@ -105,6 +105,7 @@ class ShareView: UIView {
 
 extension ShareView{
     func showShare(){
+        UIApplication.shared.keyWindow?.addSubview(self)
         UIApplication.shared.keyWindow?.insertSubview(sharebackBtn, belowSubview: self)
             UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
                     self.frame.origin.y = GlobalConfig.ScreenH - shareViewH
@@ -113,6 +114,7 @@ extension ShareView{
     }
     
    @objc open  func dismiss(){
+        self.removeFromSuperview()
         sharebackBtn.removeFromSuperview()
         
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {

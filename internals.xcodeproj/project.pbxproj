@@ -1451,6 +1451,16 @@
 			name = "发帖";
 			sourceTree = "<group>";
 		};
+		4A72CDCD2280321D0046B7FA /* 帖子内容 */ = {
+			isa = PBXGroup;
+			children = (
+				4A9543CF20A83C8E009BCBE2 /* ChatInputView.swift */,
+				4A9543D320A87B6D009BCBE2 /* PostHeaderView.swift */,
+				4A9543CB20A72A8F009BCBE2 /* PostContentViewController.swift */,
+			);
+			name = "帖子内容";
+			sourceTree = "<group>";
+		};
 		4A75CB9221F16B3D00184ECE /* view */ = {
 			isa = PBXGroup;
 			children = (
@@ -1808,12 +1818,10 @@
 		4A9543C120A6E3AD009BCBE2 /* 帖子 */ = {
 			isa = PBXGroup;
 			children = (
+				4A72CDCD2280321D0046B7FA /* 帖子内容 */,
 				4A72CDC8227BE4A70046B7FA /* 发帖 */,
 				4A12437820E1D7880038336F /* 板块 */,
-				4A9543CB20A72A8F009BCBE2 /* PostContentViewController.swift */,
-				4A9543CF20A83C8E009BCBE2 /* ChatInputView.swift */,
 				4A9543D120A879B2009BCBE2 /* SingleReplyViewController.swift */,
-				4A9543D320A87B6D009BCBE2 /* PostHeaderView.swift */,
 			);
 			name = "帖子";
 			sourceTree = "<group>";

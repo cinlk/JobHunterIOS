@@ -91,7 +91,7 @@ extension CommentViewController{
                 return
             }
             // 显示原帖
-            if  let id = self.mode?.id{
+            if  let id = self.mode?.replyID{
                 let post = PostContentViewController()
                 post.postID = id
                 self.navigationController?.pushViewController(post, animated: true)

@@ -262,16 +262,14 @@ class CompanyMainVC: BaseViewController {
         super.viewWillAppear(animated)
  
         self.navigationController?.insertCustomerView()
-        UIApplication.shared.keyWindow?.addSubview(shareapps)
-        
-        
+        //UIApplication.shared.keyWindow?.addSubview(shareapps)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         self.navigationController?.removeCustomerView()
-        shareapps.removeFromSuperview()
+        //shareapps.removeFromSuperview()
         
         
     }

@@ -42,9 +42,9 @@ class SingleReplyViewController: BaseViewController {
     
     internal var mode:FirstReplyModel?{
         didSet{
-            mycomment = mode?.authorID ==  GlobalUserInfo.shared.getId()
+            //mycomment = mode?. ==  GlobalUserInfo.shared.getId()
             headerView.mode = mode
-            currentSenderName = mode!.authorName!
+            currentSenderName = mode!.userName!
             headerView.layoutSubviews()
             self.table.tableHeaderView = headerView
             
@@ -221,10 +221,10 @@ extension SingleReplyViewController: UITableViewDataSource, UITableViewDelegate{
         self.inputText.chatView.endEditing(true)
         //currentReceiverName = mode.authorName!
         currentSelecteCell = indexPath.row
-        
-        if  allSubReplys[indexPath.row].authorID == GlobalUserInfo.shared.getId() {
-            buildAlert(showDelete: true)
-        }
+        // TODO
+//        if  allSubReplys[indexPath.row].authorID == GlobalUserInfo.shared.getId() {
+//            buildAlert(showDelete: true)
+//        }
         buildAlert(showDelete: false)
       
 
@@ -255,9 +255,9 @@ extension SingleReplyViewController{
                 return
             }
             if  self.allSubReplys[self.currentSelecteCell].isLike{
-                self.allSubReplys[self.currentSelecteCell].thumbUP -= 1
+                self.allSubReplys[self.currentSelecteCell].likeCount -= 1
             }else{
-                self.allSubReplys[self.currentSelecteCell].thumbUP += 1
+                self.allSubReplys[self.currentSelecteCell].likeCount += 1
                 
             }
             self.allSubReplys[self.currentSelecteCell].isLike = !self.allSubReplys[self.currentSelecteCell].isLike
@@ -271,7 +271,7 @@ extension SingleReplyViewController{
             guard let `self` = self else{
                 return
             }
-            let name  = self.allSubReplys[self.currentSelecteCell].authorName!
+            let name  = self.allSubReplys[self.currentSelecteCell].userName!
             
             self.resetPlashold(name: name)
             
@@ -309,8 +309,8 @@ extension SingleReplyViewController{
     @objc private func like(){
         if mode!.isLike == true {
             mode?.isLike = false
-            mode?.thumbUP -= 1
-            headerView.thumbUP.setTitle(String(mode!.thumbUP), for: .normal)
+            mode?.likeCount -= 1
+            headerView.thumbUP.setTitle(String(mode!.likeCount), for: .normal)
             //tableHeader.thumbUP.isSelected = false
             headerView.thumbUP.tintColor = UIColor.lightGray
              return
@@ -318,8 +318,8 @@ extension SingleReplyViewController{
         }
         // 上传到服务器
         mode?.isLike = true
-        mode?.thumbUP += 1
-        headerView.thumbUP.setTitle(String(mode!.thumbUP), for: .normal)
+        mode?.likeCount += 1
+        headerView.thumbUP.setTitle(String(mode!.likeCount), for: .normal)
         //tableHeader.thumbUP.isSelected = true
         headerView.thumbUP.tintColor = UIColor.blue
     }
@@ -332,7 +332,7 @@ extension SingleReplyViewController{
         self.inputText.chatView.becomeFirstResponder()
         
         
-        self.resetPlashold(name: self.mode!.authorName!)
+        self.resetPlashold(name: self.mode!.userName!)
       
         
     }
@@ -393,7 +393,7 @@ extension SingleReplyViewController{
         }, completion: { bool in
              
             //self.currentSelecteCell = -1
-            self.resetPlashold(name: self.mode!.authorName!)
+            self.resetPlashold(name: self.mode!.userName!)
             
         })
         
@@ -426,24 +426,24 @@ extension SingleReplyViewController: ChatInputViewDelegate{
     }
     
     func sendMessage(textView: UITextView) {
-        if let text = textView.text, let new = SecondReplyModel(JSON: [
-            "id": (self.mode?.id)!,
-            "replyID": (self.mode?.replyID)!,
-            "subreplyID": Utils.getUUID(),
-            "replyContent":text,
-            "receiver": currentSenderName,
-            "authorID": (self.mode?.authorID)!,
-            "authorName": (self.mode?.authorName)!,
-            "authorIcon":"chicken",
-            "colleage":"北京大学",
-            "createTime":Date().timeIntervalSince1970,
-            "kind":"jobs",
-            "isLike":false,
-            "thumbUP":0,
-            "reply":0]){
-            allSubReplys.append(new)
-            self.table.reloadData()
-        }
+//        if let text = textView.text, let new = SecondReplyModel(JSON: [
+//            "id": (self.mode?.id)!,
+//            "replyID": (self.mode?.replyID)!,
+//            "subreplyID": Utils.getUUID(),
+//            "replyContent":text,
+//            "receiver": currentSenderName,
+//            "authorID": (self.mode?.authorID)!,
+//            "authorName": (self.mode?.authorName)!,
+//            "authorIcon":"chicken",
+//            "colleage":"北京大学",
+//            "createTime":Date().timeIntervalSince1970,
+//            "kind":"jobs",
+//            "isLike":false,
+//            "thumbUP":0,
+//            "reply":0]){
+//            allSubReplys.append(new)
+//            self.table.reloadData()
+//        }
     }
     
     
@@ -503,15 +503,15 @@ internal class  singleHeaderView:PostHeaderView{
             guard  let mode = mode  else {
                 return
             }
-            if let url = mode.authorIcon{
+            if let url = mode.userIcon{
               self.userIcon.kf.indicatorType = .activity
               self.userIcon.kf.setImage(with: Source.network(url), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
             }
             
-            self.userName.text = mode.authorName
+            self.userName.text = mode.userName
             //self.userIcon.image = UIImage.init(named: mode.authorIcon)
-            self.createTime.text = mode.createTimeStr
-            self.contentText.text = mode.replyContent
+            self.createTime.text = mode.createdTimeStr
+            self.contentText.text = mode.content
             
             // 计算contentText高度
             let contentSize = self.contentText.sizeThatFits(CGSize.init(width: GlobalConfig.ScreenW, height: CGFloat(MAXFLOAT))
@@ -519,12 +519,12 @@ internal class  singleHeaderView:PostHeaderView{
             _ = self.contentText.sd_layout().heightIs(contentSize.height)
             
             // 更加数字长度 调整btn长度
-            let replyStr = String(mode.reply)
+            let replyStr = String(mode.replyCount)
             let replySize = NSString(string: replyStr).size(withAttributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12)])
             self.reply.setTitle(replyStr, for: .normal)
             // 25 是image 的长度
             _ = self.reply.sd_layout().widthIs(25 + replySize.width)
-            let thumbStr = String(mode.thumbUP)
+            let thumbStr = String(mode.likeCount)
             let thumbSize = NSString(string: thumbStr).size(withAttributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12)])
             _ = self.thumbUP.sd_layout().widthIs(25 + thumbSize.width)
             self.thumbUP.setTitle(thumbStr, for: .normal)
@@ -563,16 +563,16 @@ internal class  singleHeaderView:PostHeaderView{
                 return
             }
          
-            if let url = mode.authorIcon{
+            if let url = mode.userIcon{
                 self.authorIcon.kf.indicatorType = .activity
                 self.authorIcon.kf.setImage(with: Source.network(url), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
             }
             
-            self.creatTime.text = mode.createTimeStr
+            self.creatTime.text = mode.createdTimeStr
             //self.authorIcon.image = UIImage.init(named: mode.authorIcon)
             self.postType.text = ""
             
-            let authNameStr = NSMutableAttributedString.init(string: mode.authorName!, attributes: [NSAttributedString.Key.foregroundColor:UIColor.black, NSAttributedString.Key.font:UIFont.systemFont(ofSize: 14)])
+            let authNameStr = NSMutableAttributedString.init(string: mode.userName!, attributes: [NSAttributedString.Key.foregroundColor:UIColor.black, NSAttributedString.Key.font:UIFont.systemFont(ofSize: 14)])
             authNameStr.append(NSAttributedString.init(string: " " + mode.colleage!, attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray, NSAttributedString.Key.font:UIFont.systemFont(ofSize: 14)]))
             
             self.authorName.attributedText = authNameStr
@@ -584,7 +584,7 @@ internal class  singleHeaderView:PostHeaderView{
             receiver.addAttributes([NSAttributedString.Key.foregroundColor: UIColor.blue], range: NSRange.init(location: 0, length: mode.receiver!.count))
             receiver.append(NSAttributedString.init(string: ": "))
             
-            let content = NSMutableAttributedString.init(string: mode.replyContent!)
+            let content = NSMutableAttributedString.init(string: mode.content!)
             
             
             
@@ -597,7 +597,7 @@ internal class  singleHeaderView:PostHeaderView{
             
             
             // 点赞
-            let ts = String(mode.thumbUP)
+            let ts = String(mode.likeCount)
             let thumbStr = NSMutableAttributedString.init(string: ts)
             thumbStr.addAttributes([NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12)], range: NSRange.init(location: 0, length: ts.count))
             let attch = NSTextAttachment.init()

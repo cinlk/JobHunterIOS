@@ -16,28 +16,28 @@ class ReplyPostTableViewCell: ForumBaseCell {
             guard let mode = mode else {
                 return
             }
-            if let url = mode.authorIcon{
+            if let url = mode.userIcon{
               self.authorIcon.kf.setImage(with: Source.network(url), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
             }
             
-            self.creatTime.text = mode.createTimeStr
+            self.creatTime.text = mode.createdTimeStr
             //self.authorIcon.image = UIImage.init(named: mode.authorIcon)
             self.postType.text = ""
             
             
-            let authNameStr = NSMutableAttributedString.init(string: mode.authorName!, attributes: [NSAttributedString.Key.foregroundColor:UIColor.black, NSAttributedString.Key.font:UIFont.systemFont(ofSize: 14)])
+            let authNameStr = NSMutableAttributedString.init(string: mode.userName!, attributes: [NSAttributedString.Key.foregroundColor:UIColor.black, NSAttributedString.Key.font:UIFont.systemFont(ofSize: 14)])
             authNameStr.append(NSAttributedString.init(string: " " + mode.colleage!, attributes: [NSAttributedString.Key.foregroundColor:UIColor.lightGray, NSAttributedString.Key.font:UIFont.systemFont(ofSize: 14)]))
             
             self.authorName.attributedText = authNameStr
             
             
             // 回复内容
-            self.postTitle.text = mode.replyContent
+            self.postTitle.text = mode.content
             
             
             
             // 点赞
-            let ts = String(mode.thumbUP)
+            let ts = String(mode.likeCount)
             let thumbStr = NSMutableAttributedString.init(string: ts)
             thumbStr.addAttributes([NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12)], range: NSRange.init(location: 0, length: ts.count))
             let attch = NSTextAttachment.init()
@@ -55,7 +55,7 @@ class ReplyPostTableViewCell: ForumBaseCell {
             _ = self.thumbs.sd_layout().widthIs(width1)
             
             // 回复
-            let rs = String(mode.reply)
+            let rs = String(mode.replyCount)
             
             let replyAttr = NSMutableAttributedString.init(string: rs)
             replyAttr.addAttributes([NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12)], range: NSRange.init(location: 0, length: rs.count))

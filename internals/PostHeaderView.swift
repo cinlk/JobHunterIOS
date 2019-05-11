@@ -26,6 +26,16 @@ class PostHeaderView: UIView {
         return label
     }()
     
+    // 预览次数
+    internal lazy var readCount: UILabel = {
+        let label = UILabel.init()
+        label.textAlignment = .center
+        label.textColor = UIColor.lightGray
+        label.setSingleLineAutoResizeWithMaxWidth(200)
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.isAttributedContent = true
+        return label
+    }()
     
     internal lazy var createTime:UILabel = {
         let label = UILabel()
@@ -94,13 +104,15 @@ class PostHeaderView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = UIColor.white
-        let views:[UIView] =  [userIcon, userName,createTime,contentText, lines,thumbUP, reply]
+        let views:[UIView] =  [userIcon, userName,createTime,contentText, lines,thumbUP, reply, readCount]
         self.sd_addSubviews(views)
         
         
         _ = userIcon.sd_layout().leftSpaceToView(self,10)?.topSpaceToView(self,10)?.widthIs(30)?.heightIs(30)
         _ = userName.sd_layout().leftSpaceToView(userIcon,10)?.topEqualToView(userIcon)?.autoHeightRatio(0)
         _ = createTime.sd_layout().leftEqualToView(userName)?.topSpaceToView(userName,5)?.autoHeightRatio(0)
+        
+        _ = readCount.sd_layout()?.rightSpaceToView(self, 20)?.topEqualToView(createTime)?.autoHeightRatio(0)
         
         _ = contentText.sd_layout().topSpaceToView(createTime,10)?.leftEqualToView(userName)?.rightSpaceToView(self,10)?.heightIs(0)
         _ = lines.sd_layout().topSpaceToView(contentText,15)?.leftEqualToView(contentText)?.rightEqualToView(contentText)?.heightIs(1)

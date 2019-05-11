@@ -8,6 +8,8 @@
 
 
 import UIKit
+import RxCocoa
+import RxSwift
 
 class HelpSectionVC: BasePostItemsViewController {
     
@@ -16,30 +18,16 @@ class HelpSectionVC: BasePostItemsViewController {
         self.type = .help
         
         
-        NotificationCenter.default.addObserver(self, selector: #selector(updateTable), name: Notification.Name.init(self.type.rawValue), object: nil)
-        // Do any additional setup after loading the view.
-    }
-    
-    
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-        //NotificationCenter.default.removeObserver(self, name: Notification.Name.init(self.type!.rawValue), object: nil)
-    }
-    
-}
-
-
-extension HelpSectionVC{
-    
-    @objc private func updateTable(_ sender: Notification){
-        if let info = sender.userInfo as? [String:PostArticleModel], let mode = info["mode"] {
-            self.modes.insert(mode, at: 0)
-            self.table.reloadData()
-        }
+       
         
     }
+    
+    
+
+    
 }
+
+
 
 
 //extension HelpSectionVC{

@@ -55,6 +55,21 @@ struct ResponseArrayModel<T>: Mappable where T: Mappable {
 }
 
 
+class  HttpResultMode: Mappable{
+    
+    var result:String?
+    
+    required init?(map: Map) {
+        if map.JSON["result"] == nil{
+            return nil 
+        }
+    }
+    
+    func mapping(map: Map) {
+        result <- map["result"]
+        
+    }
+}
 
 
 

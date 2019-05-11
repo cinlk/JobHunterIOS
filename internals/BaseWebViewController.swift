@@ -103,13 +103,13 @@ class BaseWebViewController: UIViewController {
         super.viewWillAppear(animated)
         
         
-        UIApplication.shared.keyWindow?.addSubview(sharedView)
+        //UIApplication.shared.keyWindow?.addSubview(sharedView)
         self.navigationController?.insertCustomerView(UIColor.orange)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        sharedView.removeFromSuperview()
+        //sharedView.removeFromSuperview()
         self.navigationController?.removeCustomerView()
     }
     

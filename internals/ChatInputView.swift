@@ -87,6 +87,14 @@ extension ChatInputView:UITextViewDelegate{
         }
        
         
+        // 限制字数
+        if textView.text.count > maxWordCount {
+            let start = textView.text.startIndex
+            let end = textView.text.index(start, offsetBy: maxWordCount)
+            textView.text = String(textView.text[start..<end])
+            return
+        }
+        
         // 调整高度
         
         let size = textView.sizeThatFits(CGSize.init(width: textView.frame.width, height: CGFloat(textView.font!.lineHeight)))

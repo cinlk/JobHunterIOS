@@ -12,6 +12,39 @@ import ObjectMapper
 
 
 
+
+class ArticleReplyReqModel {
+    
+    var postId: String = ""
+    
+    private var offset:Int = 0
+    private var limit:Int = 10
+    //    private var typeOffset: [ForumType: (Int, Int)] = [ForumType.help:(0, 10), ForumType.interview: (0,10), ForumType.offers: (0,10)]
+    //
+    init() {}
+    
+    func getOffset() -> Int{
+        return self.offset
+        //return self.typeOffset[self.currentType]?.0 ?? 0
+    }
+    
+    func setOffset(offset:Int){
+        if offset == 0 {
+            // self.typeOffset[self.currentType]?.0 = 0
+            self.offset = 0
+        }else{
+            //self.typeOffset[self.currentType]?.0 += offset
+            self.offset += offset
+        }
+    }
+    
+    
+    func toJSON() -> [String: Any]{
+        return ["post_id": self.postId, "offset": self.offset, "limit": 10]
+    }
+    
+}
+
 // 发送请求的实体
 class ArticleReqModel{
     
@@ -46,6 +79,25 @@ class ArticleReqModel{
 }
 
 
+
+// http 返回数据
+class HttpForumResponse: HttpResultMode{
+    
+    var uuid:String?
+    
+    required init?(map: Map) {
+        super.init(map: map)
+//        if map.JSON["uuid"] == nil{
+//            return nil
+//        }
+    }
+    
+    override func mapping(map: Map) {
+        super.mapping(map: map)
+        uuid <- map["uuid"]
+    }
+}
+
 class PostBaseModel: NSObject, Mappable{
     
     // 帖子id
@@ -54,6 +106,9 @@ class PostBaseModel: NSObject, Mappable{
     var authorID:String?
     var authorName:String?
     var colleage:String?
+    var content:String?
+    var isLike:Bool = false
+    var isCollected:Bool = false 
     
     var authorIcon:URL?
     
@@ -91,6 +146,9 @@ class PostBaseModel: NSObject, Mappable{
         title <- map["title"]
         authorID <- map["user_id"]
         authorName <- map["user_name"]
+        content <- map["content"]
+        isLike <- map["is_like"]
+        isCollected <- map["is_collected"]
         colleage <- map["user_colleage"]
         authorIcon <- (map["user_icon"], URLTransform())
         createTime <- (map["created_time"],DateTransform())
@@ -138,58 +196,45 @@ class PostArticleModel: PostBaseModel {
     
 }
 
-class PostContentModel:PostBaseModel{
-    
-    
-    // 自己是否点赞
-    var isLike:Bool = false
-    var collected:Bool = false
-    var content:String?
-    // 内容带图片？？ MARK
-    var images:[String]?
-    
-    required init?(map: Map) {
-        super.init(map: map)
-        if map.JSON["content"] == nil ||  map.JSON["title"] == nil || map.JSON["isLike"] == nil  ||
-            map.JSON["collected"] == nil {
-            return nil
-        }
-    }
-    
-    override func mapping(map: Map) {
-        super.mapping(map: map)
-        content <- map["content"]
-        images <- map["images"]
-        isLike <- map["isLike"]
-        collected <- map["collected"]
-    }
-    
-    
-}
+
 
 // 第一层回帖
-class FirstReplyModel: PostBaseModel{
+class FirstReplyModel: NSObject, Mappable{
     
     
-    // 自己的id
     var replyID:String?
-    
-    // 自己是否点赞
-    var isLike:Bool = false
-    var replyContent:String?
-    
-    required init?(map: Map) {
-        super.init(map: map)
-        if map.JSON["replyContent"] == nil || map.JSON["isLike"] == nil   {
-            return nil
+    var userIcon:URL?
+    var userName:String?
+    var colleage:String?
+    var createdTime:Date?
+    var createdTimeStr:String?{
+        get{
+            if let time = self.createdTime{
+                return showDayAndHour(date: time)
+            }
+            return ""
         }
     }
+    var content:String?
+    var likeCount:Int = 0
+    var replyCount:Int = 0
+    var isLike:Bool = false 
     
-    override func mapping(map: Map) {
-        super.mapping(map: map)
-        replyID <- map["replyID"]
-        replyContent <- map["replyContent"]
-        isLike <- map["isLike"]
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        
+        replyID <- map["reply_id"]
+        userIcon <- (map["user_icon"], URLTransform())
+        createdTime <- (map["created_time"], DateTransform())
+        colleage <- map["colleage"]
+        userName <- map["user_name"]
+        likeCount <- map["like_count"]
+        replyCount <- map["reply_count"]
+        content <- map["content"]
+        isLike <- map["is_like"]
     }
     
     
@@ -222,3 +267,7 @@ class SecondReplyModel: FirstReplyModel{
 }
 
 
+
+
+
+//

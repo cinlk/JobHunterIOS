@@ -22,6 +22,20 @@ class BasePostItemsViewController: BaseViewController {
     // 帖子主题类型
     internal var type:ForumType = .none{
         didSet{
+            
+            // 等待type 设置之后执行
+            _ =  NotificationCenter.default.rx.notification(self.type.notificationName!, object: nil).takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] (notify) in
+                
+                if let info = notify.userInfo as? [String:PostArticleModel], let mode = info["mode"] {
+                   
+                    let new = [mode] + (self?.vm.postItems.value ?? [])
+                    self?.vm.postItems.accept(new)
+//                    self?.modes.insert(mode, at: 0)
+//                    self?.table.reloadData()
+                }
+                
+                }, onError: nil, onCompleted: nil, onDisposed: nil)
+            
             self.req.currentType = type
             self.refreshHeader.beginRefreshing()
         }
@@ -83,11 +97,11 @@ class BasePostItemsViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
-        //loadData()
         setViewModel()
     }
     
     
+  
     
     override func setViews() {
         self.view.addSubview(table)
@@ -123,6 +137,9 @@ extension BasePostItemsViewController{
     
     private func setViewModel(){
         
+        
+        
+        
         self.noData.tap.drive(onNext: { [weak self] in
             self?.reload()
         }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
@@ -153,12 +170,18 @@ extension BasePostItemsViewController{
             let post = PostContentViewController()
             let mode = self.modes[indexPath.row]
             
+            // 更新浏览数量
+            self.vm.addReadCount(postId: mode.id!)
+            
             post.mode = (data: mode, row: indexPath.row)
             post.deleteSelf = { [weak self]  row in
                 
-                self?.modes.remove(at: row)
-                self?.table.reloadData()
+                if var old =  self?.vm.postItems.value{
+                    old.remove(at: row)
+                    self?.vm.postItems.accept(old)
+                }
             }
+            self.table.deselectRow(at: indexPath, animated: false)
             post.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(post, animated: true)
             

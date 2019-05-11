@@ -31,7 +31,7 @@ enum ForumType:String{
     case hottest = "hottest"
     case interview = "interview"
     case recommend = "recommend"
-    case offers = "offers"
+    case offer = "offer"
     case help = "help"
     case life = "life"
     case none = ""
@@ -42,10 +42,26 @@ enum ForumType:String{
     
     static var items:[ForumType]{
         get{
-            return [ForumType.interview, ForumType.recommend, ForumType.offers, ForumType.help]
+            return [ForumType.interview, ForumType.recommend, ForumType.offer, ForumType.help]
         }
     }
     
+    var notificationName: Notification.Name?{
+        switch  self {
+        case .help:
+            return Notification.Name.init("forumHelp")
+        case .interview:
+            return Notification.Name.init("forumInterview")
+        case .offer:
+            return Notification.Name.init("forumOffer")
+        case .recommend:
+            return Notification.Name.init("forumRecommnad")
+        case .hottest:
+            return Notification.Name.init("forumHottest")
+        default:
+            return nil
+        }
+    }
     var describe:String{
         switch self {
             
@@ -55,7 +71,7 @@ enum ForumType:String{
             return "面经"
         case .recommend:
             return "内推"
-        case .offers:
+        case .offer:
             return "offer比较"
         case .help:
             return "互助"

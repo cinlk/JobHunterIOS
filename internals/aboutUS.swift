@@ -71,12 +71,12 @@ class aboutUS: BaseViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        UIApplication.shared.keyWindow?.addSubview(share)
+        //UIApplication.shared.keyWindow?.addSubview(share)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        share.removeFromSuperview()
+        //share.removeFromSuperview()
     }
     
     override func setViews() {
