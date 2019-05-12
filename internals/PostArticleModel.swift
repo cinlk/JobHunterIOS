@@ -78,6 +78,38 @@ class ArticleReqModel{
     
 }
 
+// 子回复请求
+class SubReplyReqModel{
+    
+    var replyId: String = ""
+    
+    private var offset:Int = 0
+    private var limit:Int = 10
+    //    private var typeOffset: [ForumType: (Int, Int)] = [ForumType.help:(0, 10), ForumType.interview: (0,10), ForumType.offers: (0,10)]
+    //
+    init() {}
+    
+    func getOffset() -> Int{
+        return self.offset
+        //return self.typeOffset[self.currentType]?.0 ?? 0
+    }
+    
+    func setOffset(offset:Int){
+        if offset == 0 {
+            // self.typeOffset[self.currentType]?.0 = 0
+            self.offset = 0
+        }else{
+            //self.typeOffset[self.currentType]?.0 += offset
+            self.offset += offset
+        }
+    }
+    
+    
+    func toJSON() -> [String: Any]{
+        return ["reply_id": self.replyId, "offset": self.offset, "limit": 10]
+    }
+    
+}
 
 
 // http 返回数据
@@ -204,6 +236,8 @@ class FirstReplyModel: NSObject, Mappable{
     
     var replyID:String?
     var userIcon:URL?
+    var userId:String?
+    
     var userName:String?
     var colleage:String?
     var createdTime:Date?
@@ -231,6 +265,7 @@ class FirstReplyModel: NSObject, Mappable{
         createdTime <- (map["created_time"], DateTransform())
         colleage <- map["colleage"]
         userName <- map["user_name"]
+        userId <- map["user_id"]
         likeCount <- map["like_count"]
         replyCount <- map["reply_count"]
         content <- map["content"]
@@ -241,27 +276,54 @@ class FirstReplyModel: NSObject, Mappable{
 }
 
 // 子回复(第二层)
-class SecondReplyModel: FirstReplyModel{
+class SecondReplyModel: NSObject, Mappable{
     
-
-   
-    var receiver:String?
-    var subreplyID:String?
+    var replyId:String?
+    var secondReplyId:String?
+    
+    var content:String?
+    var isLike:Bool = false
+    var createdTime:Date?
+    var createdTimeStr:String{
+        get{
+            if let time = createdTime, let s = showDayAndHour(date: time){
+                return s
+            }
+            return ""
+        }
+    }
+    var likeCount:Int = 0
+    
+    var userId:String?
+    var userIcon:URL?
+    var userName:String?
+    
+    var talkedUserName:String?
+    var talkedUserId:String?
+    
+    // 区分回复楼主 还是回复其他人的标记
+    var toHost:Bool = false
     
     
     required init?(map: Map) {
-        super.init(map: map)
-        if map.JSON["subreplyID"] == nil || map.JSON["receiver"] == nil{
-            return nil
-        }
+//        if map.JSON["subreplyID"] == nil || map.JSON["receiver"] == nil{
+//            return nil
+//        }
     }
     
-    override func mapping(map: Map) {
-        super.mapping(map: map)
-        
-        receiver <- map["receiver"]
-        subreplyID <- map["subreplyID"]
-        
+    func mapping(map: Map) {
+        replyId <- map["reply_id"]
+        secondReplyId <- map["second_reply_id"]
+        content <- map["content"]
+        isLike <- map["is_like"]
+        createdTime <- (map["created_time"], DateTransform())
+        likeCount <- map["like_count"]
+        userId <- map["user_id"]
+        userIcon <- (map["user_icon"], URLTransform())
+        userName <- map["user_name"]
+        talkedUserName <- map["talked_user_name"]
+        talkedUserId <- map["talked_user_id"]
+        toHost <- map["to_host"]
         
     }
 }

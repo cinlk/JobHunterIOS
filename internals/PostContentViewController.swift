@@ -81,6 +81,15 @@ class PostContentViewController: BaseViewController {
         return share
     }()
     
+    // 更多 btn
+    
+    private lazy var moreBtn: UIButton = {
+        let btn = UIButton.init(type: .custom)
+        btn.setImage(#imageLiteral(resourceName: "more").changesize(size: CGSize.init(width: 30, height: 25), renderMode: .alwaysTemplate), for: .normal)
+        btn.backgroundColor = UIColor.clear
+        
+        return btn
+    }()
     
     // 底部输入框view
     private lazy var inputText:ChatInputView = { [unowned self] in
@@ -179,11 +188,12 @@ class PostContentViewController: BaseViewController {
         self.tableHeader.layoutSubviews()
         self.tableView.tableHeaderView = self.tableHeader
         self.mypost = headerData?.authorID == GlobalUserInfo.shared.getId()
+        navigationItem.rightBarButtonItem = UIBarButtonItem.init(customView: moreBtn)
         
-        if mypost{
-            navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: #imageLiteral(resourceName: "rabbish"), style: .plain, target: self, action: #selector(showAlert))
-            
-        }
+//        if mypost{
+//            navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: #imageLiteral(resourceName: "rabbish"), style: .plain, target: self, action: #selector(showAlert))
+//
+//        }
         
        // self.tableView.reloadData()
         
@@ -243,21 +253,39 @@ extension PostContentViewController{
     
     @objc private func showAlert(){
         
-        let alert = UIAlertController.init(title: "确认删除", message: "数据将无法恢复", preferredStyle: UIAlertController.Style.alert)
+        let alert = UIAlertController.init(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+        
         let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
-        let delete = UIAlertAction.init(title: "确认", style: UIAlertAction.Style.default, handler: { [weak self] action in
+        
+        let delete = UIAlertAction.init(title: "删除", style: UIAlertAction.Style.destructive, handler: { [weak self] action in
             guard GlobalUserInfo.shared.isLogin else {
                 return
             }
             self?.deleteThisPost()
         })
+        let jubao = UIAlertAction.init(title: "举报", style: .default) { [weak self] (action) in
+            guard let `self` = self else{
+                return
+            }
+            // 跳转到举报界面
+            let vc = JuBaoViewController.init(type: .forum, id: (self.headerData?.id)!)
+            self.navigationController?.pushViewController(vc, animated: true)
+            
+        }
         alert.addAction(cancel)
-        alert.addAction(delete)
+        alert.addAction(jubao)
+        if self.mypost{
+            alert.addAction(delete)
+        }
+        
         
         self.present(alert, animated: true, completion: nil)
     }
     
  
+    private func jubao(){
+        
+    }
     
     private func deleteThisPost(){
         guard let data = self.headerData else {
@@ -311,6 +339,9 @@ extension PostContentViewController{
         }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
         
         
+        self.moreBtn.rx.tap.asDriver().drive(onNext: { [weak self] in
+            self?.showAlert()
+        }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
         // tableDataSource
         self.vm.articleReplyRes.share().bind(to: self.tableView.rx.items(cellIdentifier: ReplyPostTableViewCell.identity(), cellType: ReplyPostTableViewCell.self)) {
               (row, mode, cell) in
@@ -318,12 +349,16 @@ extension PostContentViewController{
         }.disposed(by: self.dispose)
         
         self.tableView.rx.itemSelected.subscribe(onNext: { [weak self]  (indexPath) in
-
+            guard let mode = self?.replyModels[indexPath.row] else {
+                return
+            }
+            
+            self?.tableView.deselectRow(at: indexPath, animated: false)
             self?.inputText.chatView.endEditing(true)
             // 跳转到子回复界面
-            let vc  = SingleReplyViewController()
-            vc.mode = self?.replyModels[indexPath.row]
-            vc.row = indexPath.row
+            let vc  = SingleReplyViewController(data: mode, row: indexPath.row)
+            //vc.mode = self?.replyModels[indexPath.row]
+            //vc.row = indexPath.row
             vc.deleteSelf = { [weak self] row in
                 guard let `self` = self else {
                     return
@@ -557,6 +592,7 @@ extension PostContentViewController: ChatInputViewDelegate{
             self.vm.replyPost(postId: data.id!, content: text).asDriver(onErrorJustReturn: ResponseModel<HttpForumResponse>.init(JSON: ["result":"failed", "code":-1])!).drive(onNext: { [weak self] (res) in
                 if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code), let uuid = res.body?.uuid{
                     if let reply = FirstReplyModel.init(JSON: [
+                        "user_id": GlobalUserInfo.shared.getId()!,
                         "reply_id": uuid,
                         "user_icon": GlobalUserInfo.shared.getIcon()?.absoluteString,
                         "created_time": Date.init().timeIntervalSince1970,

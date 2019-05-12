@@ -39,7 +39,7 @@ public enum GlobaHttpRequest {
     // 职位举报信息
     case jobWarns
     
-    
+    case forumWarns
     
 }
 
@@ -92,6 +92,8 @@ extension GlobaHttpRequest: TargetType{
             return self.urlPrefix + "city/college"
         case .jobWarns:
             return self.urlPrefix + "jobs/warns"
+        case .forumWarns:
+            return self.urlPrefix + "forum/warns"
         
         }
     }
@@ -99,7 +101,7 @@ extension GlobaHttpRequest: TargetType{
     public  var method: Moya.Method {
         switch self {
         case .guideData, .adviseImages, .helloMsg, .citys, .bussinessField, .subBusinessField,
-             .companyType, .internCondition, .cityCollege, .jobWarns, .userInfo:
+             .companyType, .internCondition, .cityCollege, .jobWarns, .userInfo,.forumWarns:
             return .get
         case .userlogin, .news, .nearByMeetings, .nearyByCompany:
             return .post
@@ -117,7 +119,7 @@ extension GlobaHttpRequest: TargetType{
     
     public var task: Task {
         switch self {
-        case .guideData, .helloMsg, .adviseImages, .logout, .citys, .bussinessField, .subBusinessField, .companyType, .internCondition, .cityCollege, .jobWarns, .userInfo(_):
+        case .guideData, .helloMsg, .adviseImages, .logout, .citys, .bussinessField, .subBusinessField, .companyType, .internCondition, .cityCollege, .jobWarns, .userInfo(_), .forumWarns:
             return Task.requestPlain
         case let .userlogin(phone, password):
             return .requestParameters(parameters: ["phone": phone, "password":password], encoding: JSONEncoding.default)

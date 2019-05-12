@@ -18,6 +18,9 @@ fileprivate let tableFootViewH:CGFloat = 200
 fileprivate let viewTitle:String = "举报界面"
 fileprivate let TOTAL_NUM:Int = 200
 
+
+
+
 private class  tableFootView:UIView{
     
     private weak var vc:JuBaoViewController?
@@ -74,22 +77,19 @@ private class  tableFootView:UIView{
 
 class JuBaoViewController: UIViewController {
 
-    //  举报那个job
-    internal var jobID:String?{
-        didSet{
-            if SingletoneClass.shared.jobWarns.isEmpty{
-                // TODO  获取数据
-            }
-            self.resonse = SingletoneClass.shared.jobWarns
-        }
-    }
+
     
-    // 数据
-    private var resonse:[String]?{
-        didSet{
-             self.table.reloadData()
-        }
-    }
+    private lazy var jvm: RecruitViewModel = RecruitViewModel.init()
+    private lazy var fvm: ForumViewModel = ForumViewModel.init()
+    
+    private var type:JuBaoType = .job
+    private var id:String = ""
+        
+    private var reason:String = ""
+    private var selectIndex:Int = -1
+    
+    private var resonse:[String] = []
+    private lazy var dispose:DisposeBag = DisposeBag.init()
     
     private lazy var table:UITableView = {  [unowned self] in
         
@@ -125,16 +125,26 @@ class JuBaoViewController: UIViewController {
         return v
     }()
     
-    private var reason:String = ""
-    private var selectIndex:Int = -1
-    
+   
 
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    }
+    convenience init(type: JuBaoType, id:String){
+        self.init(nibName: nil, bundle: nil)
+        self.type = type
+        self.id = id
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setViews()
         self.setViewModel()
-        
+        self.loadData()
     }
     
     deinit {
@@ -153,6 +163,16 @@ class JuBaoViewController: UIViewController {
         self.view.addSubview(table)
     }
     
+    private func loadData(){
+        switch self.type {
+            case .job:
+                self.resonse = SingletoneClass.shared.jobWarns
+            case .forum, .reply, .subReply:
+                 self.resonse = SingletoneClass.shared.forumWans
+        }
+        
+        self.table.reloadData()
+    }
 
 }
 
@@ -250,18 +270,18 @@ extension JuBaoViewController:UITableViewDelegate,UITableViewDataSource{
 
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return resonse?.count ?? 0
+        return resonse.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell.init(style: .default, reuseIdentifier: "cell")
-        if let text = resonse?[indexPath.row]{
-            cell.textLabel?.text = text
-            cell.textLabel?.textAlignment = .left
-            cell.selectionStyle = .none
-            cell.textLabel?.textColor  = selectIndex == indexPath.row ? UIColor.blue : UIColor.black
-            cell.accessoryType = selectIndex == indexPath.row ? .checkmark : .none
-        }
+        let text = resonse[indexPath.row]
+        cell.textLabel?.text = text
+        cell.textLabel?.textAlignment = .left
+        cell.selectionStyle = .none
+        cell.textLabel?.textColor  = selectIndex == indexPath.row ? UIColor.blue : UIColor.black
+        cell.accessoryType = selectIndex == indexPath.row ? .checkmark : .none
+    
         return cell
     }
     
@@ -298,7 +318,24 @@ extension JuBaoViewController{
     @objc internal func submit(){
        self.tableFooter.inputField.endEditing(true)
        print(selectIndex,reason)
+        let content = selectIndex >= 0 ? self.resonse[selectIndex] : reason
        // 提交到服务器 TODO
+        switch self.type {
+        case .job:
+            jvm.jubao()
+        case .forum:
+            fvm.alertPost(postId: self.id, content: content).subscribe(onNext: { (res) in
+                // TODO
+            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        case .reply:
+            fvm.alertReply(replyId: self.id, content: content).subscribe(onNext: { (res) in
+                // TODO
+            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        case .subReply:
+            fvm.alertSubReply(subReplyId: self.id, content: content).subscribe(onNext: { (res) in
+                // TODO
+            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        }
        self.navigationController?.popvc(animated: true)
         
     }

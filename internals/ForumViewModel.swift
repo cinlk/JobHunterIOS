@@ -32,12 +32,12 @@ class ForumViewModel{
     internal let refreshReplyStatus: PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
     private var replyPullDown:Bool = false
     
-    // 点赞 和 收藏
-    //internal var like:PublishSubject<(String,Bool)> = PublishSubject<(String,Bool)>.init()
-    //internal var collected: PublishSubject<(String,Bool)> = PublishSubject<(String,Bool)>.init()
+    // 二级回复
     
-    //internal var likeRes:PublishSubject<Bool> = PublishSubject<Bool>.init()
-    //internal var collectedRes:PublishSubject<Bool> = PublishSubject<Bool>.init()
+    internal var subReplyReq: PublishSubject<SubReplyReqModel> = PublishSubject<SubReplyReqModel>.init()
+    internal var subReplyRes: BehaviorRelay<[SecondReplyModel]> = BehaviorRelay<[SecondReplyModel]>.init(value: [])
+    internal let refreshSubReplyStatus: PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
+    private var subReplyPullDown:Bool = false
     
     
     private let dispose = DisposeBag.init()
@@ -78,10 +78,10 @@ class ForumViewModel{
         }).flatMapLatest {  [unowned self] req in
             self.server.articleReplys(req: req).asDriver(onErrorJustReturn: [])
             }.debug().subscribe(onNext: { [weak self] (res) in
-                guard let `self` = self else{
-                    //self?.refreshReplyStatus.onNext(.error(err: NSError.init()))
-                    return
-                }
+                    guard let `self` = self else{
+                        //self?.refreshReplyStatus.onNext(.error(err: NSError.init()))
+                        return
+                    }
                     if res.isEmpty && self.replyPullDown == false{
                         self.refreshReplyStatus.onNext(.NoMoreData)
                         return
@@ -98,38 +98,46 @@ class ForumViewModel{
             }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
         
         
-//        self.like.flatMapLatest { [unowned self] (id,flag) in
-//            self.server.likeArticle(postId: id, value: flag)
-//            }.subscribe(onNext: { [weak self] (res) in
-//
-//                if let code = res.code,  HttpCodeRange.filterSuccessResponse(target: code){
-//                    self?.likeRes.onNext(true)
-//                }else{
-//                    self?.likeRes.onNext(false)
-//                }
-//            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
-        
-//        self.collected.flatMapLatest {  [unowned self] (id, flag) in
-//            self.server.collectedArticle(postId: id, value: flag)
-//            }.subscribe(onNext: { [weak self] (res) in
-//
-//                if let code = res.code,  HttpCodeRange.filterSuccessResponse(target: code){
-//                    self?.collectedRes.onNext(true)
-//                }else{
-//                    self?.collectedRes.onNext(false)
-//                }
-//
-//            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        self.subReplyReq.do(onNext: { [unowned self] (req) in
+            self.subReplyPullDown = req.getOffset() == 0 ? true : false
+        }).flatMapLatest {  [unowned self] req in
+            self.server.subReplys(req: req).asDriver(onErrorJustReturn: [])
+            }.debug().subscribe(onNext: { [weak self] (res) in
+                guard let `self` = self else {
+                    return
+                }
+                if res.isEmpty && self.subReplyPullDown == false {
+                    self.refreshSubReplyStatus.onNext(.NoMoreData)
+                    return
+                }
+                if self.subReplyPullDown{
+                    self.subReplyRes.accept(res)
+                    self.refreshSubReplyStatus.onNext(.endHeaderRefresh)
+                }else{
+                    self.subReplyRes.accept(self.subReplyRes.value + res)
+                    self.refreshSubReplyStatus.onNext(.endFooterRefresh)
+                }
+                
+                
+            }, onError: { [weak self] err in
+                self?.refreshSubReplyStatus.onNext(.error(err: err))
+            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
     }
     
-//    internal func createArticle(title:String, content:String, type:String) -> Observable<HttpResultMode>{
-//       return  server.createArtice(title: title, content: content, type: type)
-//    }
+    
     
     
     internal func likePost(postId:String, flag:Bool) ->  Observable<ResponseModel<HttpForumResponse>>{
         
         return self.server.likeArticle(postId: postId, value: flag)
+    }
+    
+    internal func likeReply(replyId:String, flag:Bool) -> Observable<ResponseModel<HttpForumResponse>>{
+        return self.server.likeReply(replyId: replyId, flag: flag)
+    }
+    
+    internal func likeSubReply(subReplyId:String, flag:Bool) -> Observable<ResponseModel<HttpForumResponse>>{
+        return self.server.likeSubReply(subReplyId: subReplyId, flag: flag)
     }
     
     internal func colletePost(postId:String, flag:Bool) -> Observable<ResponseModel<HttpForumResponse>>{
@@ -140,12 +148,38 @@ class ForumViewModel{
         return self.server.userReplyPost(postId: postId, content: content)
     }
     
+    internal func postSubReply(replyId:String, talkedUserId:String, content:String) -> Observable<ResponseModel<HttpForumResponse>>{
+        return self.server.newSubReply(replyId: replyId, talkedUserId: talkedUserId, content: content)
+    }
+    
     internal func deletePostBy(postId:String) ->
         Observable<ResponseModel<HttpForumResponse>>{
         return self.server.deleteMyPostBy(postId: postId)
     }
     
+    internal func deleteReply(replyId:String) -> Observable<ResponseModel<HttpForumResponse>>{
+        return self.server.deleteReply(replyId: replyId)
+    }
+    
+    internal func deleteSubReply(subReplyId:String) ->
+        Observable<ResponseModel<HttpForumResponse>> {
+        return self.server.deleteSubReply(subReplyId: subReplyId)
+    }
+    
+    
     internal func addReadCount(postId:String){
         self.server.readCount(postId: postId)
+    }
+    
+    // 举报帖子
+    internal func alertPost(postId:String, content:String) -> Observable<ResponseModel<HttpForumResponse>>{
+        return self.server.alertPost(postId: postId, content: content)
+    }
+    
+    internal func alertReply(replyId:String, content:String) -> Observable<ResponseModel<HttpForumResponse>>{
+        return self.server.alertReply(replyId: replyId, content: content)
+    }
+    internal func alertSubReply(subReplyId:String, content:String) -> Observable<ResponseModel<HttpForumResponse>>{
+        return self.server.alertSubReply(subReplyId: subReplyId, content: content)
     }
 }

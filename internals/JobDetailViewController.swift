@@ -93,7 +93,7 @@ class JobDetailViewController: BaseShowJobViewController {
     }()
     
     //
-    private lazy var warnVC:JuBaoViewController =  JuBaoViewController()
+    private lazy var warnVC:JuBaoViewController =  JuBaoViewController.init(type: .job, id: self.mode.value.id!)
     
     //rxSwift
     private let dispose = DisposeBag()
@@ -700,7 +700,6 @@ extension JobDetailViewController{
             return
         }
         
-        warnVC.jobID = id
         warnVC.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(warnVC, animated: true)
     }

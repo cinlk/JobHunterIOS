@@ -105,6 +105,7 @@ extension RecruitViewModel{
     
    
     
+    
     internal func getOnlineApplyBy(id: String) -> Observable<ResponseModel<OnlineApplyModel>>{
         return httpServer.getOnlineApplyId(id:id)
     }
@@ -208,6 +209,9 @@ extension RecruitViewModel{
     }
     
     
+    internal func jubao(){
+        
+    }
 
     
     

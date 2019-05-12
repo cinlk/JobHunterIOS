@@ -85,3 +85,13 @@ enum ForumType:String{
         }
     }
 }
+
+
+// 举报分类
+enum JuBaoType:String {
+    case job = "job"
+    case forum = "forum"
+    case reply = "reply"
+    case subReply = "subReply"
+    
+}

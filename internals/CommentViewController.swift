@@ -38,7 +38,7 @@ class CommentViewController: SingleReplyViewController {
     
     
     override func setViews() {
-        progressView.isHidden = true
+        //progressView.isHidden = true
         super.setViews()
     }
     
@@ -57,29 +57,29 @@ class CommentViewController: SingleReplyViewController {
 
 extension CommentViewController{
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCell(withIdentifier: contentCell.identity(), for: indexPath) as? contentCell{
-            let mode = allSubReplys[indexPath.row]
-            cell.mode = mode
-            if mode.subreplyID == self.data?.message.subReplyID && firstLoad && self.data?.type == .subReply{
-                cell.isHighlighted = true
-            }
-            
-            return cell
-        }
-        
-        return UITableViewCell()
-    }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let mode = allSubReplys[indexPath.row]
-        if mode.subreplyID == self.data?.message.subReplyID && firstLoad && self.data?.type == .subReply{
-            tableView.scrollToRow(at: indexPath, at: .none, animated: false)
-            firstLoad = !firstLoad
-
-
-        }
-    }
+//    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        if let cell = tableView.dequeueReusableCell(withIdentifier: contentCell.identity(), for: indexPath) as? contentCell{
+//            let mode = allSubReplys[indexPath.row]
+//            cell.mode = mode
+//            if mode.subreplyID == self.data?.message.subReplyID && firstLoad && self.data?.type == .subReply{
+//                cell.isHighlighted = true
+//            }
+//            
+//            return cell
+//        }
+//        
+//        return UITableViewCell()
+//    }
+//    
+//    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        let mode = allSubReplys[indexPath.row]
+//        if mode.subreplyID == self.data?.message.subReplyID && firstLoad && self.data?.type == .subReply{
+//            tableView.scrollToRow(at: indexPath, at: .none, animated: false)
+//            firstLoad = !firstLoad
+//
+//
+//        }
+//    }
     
 }
 
@@ -91,23 +91,23 @@ extension CommentViewController{
                 return
             }
             // 显示原帖
-            if  let id = self.mode?.replyID{
-                let post = PostContentViewController()
-                post.postID = id
-                self.navigationController?.pushViewController(post, animated: true)
-            }
+//            if  let id = self.mode?.replyID{
+//                let post = PostContentViewController()
+//                post.postID = id
+//                self.navigationController?.pushViewController(post, animated: true)
+//            }
           
         }
         alert.addAction(show)
-        if mycomment {
-            let delete = UIAlertAction.init(title: "删除", style: .destructive) {  [weak self] action in
-                // 服务器删除
-                // 返回，不删除跳转原来记录（海需要关联删除很多记录）
-                self?.navigationController?.popvc(animated: true)
-
-             }
-            alert.addAction(delete)
-        }
+//        if mycomment {
+//            let delete = UIAlertAction.init(title: "删除", style: .destructive) {  [weak self] action in
+//                // 服务器删除
+//                // 返回，不删除跳转原来记录（海需要关联删除很多记录）
+//                self?.navigationController?.popvc(animated: true)
+//
+//             }
+//            alert.addAction(delete)
+//        }
         
         let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
         alert.addAction(cancel)
@@ -127,14 +127,14 @@ extension CommentViewController{
             // 获取回帖
             let data  = FirstReplyModel(JSON: ["id":"dqwd-dqwdqwd","replyID":Utils.getUUID(),"title":"标题题","replyContent":"当前为多群多低级趣味的精品区\n 当前为多      \t     dqwdqwdqwd   当前为多群\n 当前为多群 dqdqw","authorID":"123456","authorName":"我的名字当前为多群无多群dqwddqwd 当前为多群无多群无当前的群","authorIcon":"chicken","colleage":"北京大学","createTime":Date().timeIntervalSince1970,"kind":"jobs","isLike":false,"thumbUP":2303,"reply":101])!
             
-            DispatchQueue.main.async(execute: {
-                if self?.data?.type == .subReply{
-                    self?.subReplyID = self?.data?.message.subReplyID
-                }
-                
-                self?.mode = data
-                
-            })
+//            DispatchQueue.main.async(execute: {
+//                if self?.data?.type == .subReply{
+//                    self?.subReplyID = self?.data?.message.subReplyID
+//                }
+//
+//                self?.mode = data
+//
+//            })
         }
         
     }

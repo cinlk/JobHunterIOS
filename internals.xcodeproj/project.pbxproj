@@ -1176,6 +1176,7 @@
 		4A42D09C21F2C6920081284F /* baseViewController */ = {
 			isa = PBXGroup;
 			children = (
+				4A8858FE1FEBE89A0009D73D /* JuBaoViewController.swift */,
 				4A30EBE0207E66AD00231D11 /* BaseTableViewController.swift */,
 				4A2145D2207A501C000959F4 /* BaseViewController.swift */,
 				4AF3D35B2061376E0012EB6E /* BaseWebViewController.swift */,
@@ -1613,7 +1614,6 @@
 			isa = PBXGroup;
 			children = (
 				4A8859081FEFC9440009D73D /* CompanyTableCellView */,
-				4A8858FE1FEBE89A0009D73D /* JuBaoViewController.swift */,
 				4A88590D1FF3E2000009D73D /* PublisherControllerView.swift */,
 			);
 			name = "View+Controller";
@@ -1818,10 +1818,10 @@
 		4A9543C120A6E3AD009BCBE2 /* 帖子 */ = {
 			isa = PBXGroup;
 			children = (
+				4AB93E3C2286FD1000B79EA2 /* 二级回复 */,
 				4A72CDCD2280321D0046B7FA /* 帖子内容 */,
 				4A72CDC8227BE4A70046B7FA /* 发帖 */,
 				4A12437820E1D7880038336F /* 板块 */,
-				4A9543D120A879B2009BCBE2 /* SingleReplyViewController.swift */,
 			);
 			name = "帖子";
 			sourceTree = "<group>";
@@ -1893,6 +1893,14 @@
 				4A4DBBCB20B6FDAC0036AD9D /* ViewController */,
 			);
 			name = "登录 ";
+			sourceTree = "<group>";
+		};
+		4AB93E3C2286FD1000B79EA2 /* 二级回复 */ = {
+			isa = PBXGroup;
+			children = (
+				4A9543D120A879B2009BCBE2 /* SingleReplyViewController.swift */,
+			);
+			name = "二级回复";
 			sourceTree = "<group>";
 		};
 		4ACBD6FA1F77E76D00A5FD23 /* ChatBar */ = {

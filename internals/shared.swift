@@ -623,6 +623,8 @@ class SingletoneClass {
     // job举报信息
     public var jobWarns:[String] = []
     
+    public var forumWans:[String] = []
+    
     private var userDefaule: UserDefaults = UserDefaults.standard
     
    
@@ -881,6 +883,18 @@ extension SingletoneClass{
         }) { (error) in
             group.leave()
         }
+        
+        group.enter()
+        NetworkTool.request(.forumWarns, successCallback: {  [weak self] (data) in
+            if let res = Mapper<ResponseModel<JobWarnList>>().map(JSONObject: data)?.body, let w = res.warns{
+                self?.forumWans = w
+                //print(self.jobWarns, "-------")
+            }
+            group.leave()
+        }) { (error) in
+            group.leave()
+        }
+        
         
         //  需要等待用户登录后 TODO
 //        DispatchQueue.global().async(group: group, qos: .userInitiated, flags: .inheritQoS) {
