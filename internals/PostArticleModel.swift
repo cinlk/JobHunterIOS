@@ -13,14 +13,11 @@ import ObjectMapper
 
 
 
-class ArticleReplyReqModel {
+internal class articleBaseReqModel{
     
-    var postId: String = ""
+    internal var offset:Int = 0
+    internal var limit:Int = 10
     
-    private var offset:Int = 0
-    private var limit:Int = 10
-    //    private var typeOffset: [ForumType: (Int, Int)] = [ForumType.help:(0, 10), ForumType.interview: (0,10), ForumType.offers: (0,10)]
-    //
     init() {}
     
     func getOffset() -> Int{
@@ -40,77 +37,70 @@ class ArticleReplyReqModel {
     
     
     func toJSON() -> [String: Any]{
+        fatalError()
+    }
+    
+    
+    
+}
+
+class ArticleReplyReqModel: articleBaseReqModel {
+    
+    var postId: String = ""
+    
+    override init() {
+        super.init()
+    }
+    
+    
+    override func toJSON() -> [String: Any]{
         return ["post_id": self.postId, "offset": self.offset, "limit": 10]
     }
     
 }
 
 // 发送请求的实体
-class ArticleReqModel{
+class ArticleReqModel: articleBaseReqModel{
     
     var currentType: ForumType = .none
     
-    private var offset:Int = 0
-    private var limit:Int = 10
-//    private var typeOffset: [ForumType: (Int, Int)] = [ForumType.help:(0, 10), ForumType.interview: (0,10), ForumType.offers: (0,10)]
-//
-    init() {}
-    
-    func getOffset() -> Int{
-        return self.offset
-        //return self.typeOffset[self.currentType]?.0 ?? 0
-    }
-    
-    func setOffset(offset:Int){
-        if offset == 0 {
-           // self.typeOffset[self.currentType]?.0 = 0
-            self.offset = 0
-        }else{
-            //self.typeOffset[self.currentType]?.0 += offset
-            self.offset += offset
-        }
+    override init() {
+        super.init()
     }
     
     
-    func toJSON() -> [String: Any]{
+    override func toJSON() -> [String: Any]{
         return ["type": self.currentType.rawValue, "offset": self.offset, "limit": 10]
     }
     
 }
 
 // 子回复请求
-class SubReplyReqModel{
+class SubReplyReqModel: articleBaseReqModel{
     
     var replyId: String = ""
     
-    private var offset:Int = 0
-    private var limit:Int = 10
-    //    private var typeOffset: [ForumType: (Int, Int)] = [ForumType.help:(0, 10), ForumType.interview: (0,10), ForumType.offers: (0,10)]
-    //
-    init() {}
-    
-    func getOffset() -> Int{
-        return self.offset
-        //return self.typeOffset[self.currentType]?.0 ?? 0
+    override init() {
+        super.init()
     }
     
-    func setOffset(offset:Int){
-        if offset == 0 {
-            // self.typeOffset[self.currentType]?.0 = 0
-            self.offset = 0
-        }else{
-            //self.typeOffset[self.currentType]?.0 += offset
-            self.offset += offset
-        }
-    }
-    
-    
-    func toJSON() -> [String: Any]{
+    override func toJSON() -> [String: Any]{
         return ["reply_id": self.replyId, "offset": self.offset, "limit": 10]
     }
     
 }
 
+// 搜索请求
+class ForumSearchReq: articleBaseReqModel{
+    var word: String = ""
+    override init() {
+        super.init()
+    }
+    
+    override func toJSON() -> [String: Any]{
+        return ["word": self.word, "offset": self.offset, "limit": 10]
+    }
+}
 
 // http 返回数据
 class HttpForumResponse: HttpResultMode{
@@ -127,6 +117,19 @@ class HttpForumResponse: HttpResultMode{
     override func mapping(map: Map) {
         super.mapping(map: map)
         uuid <- map["uuid"]
+    }
+}
+
+
+class HttpForumSearchResult: NSObject, Mappable{
+    
+    var words:[String] = []
+    
+    required init?(map: Map) {
+    }
+    
+    func mapping(map: Map) {
+        words <- map["words"]
     }
 }
 

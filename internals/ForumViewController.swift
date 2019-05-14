@@ -100,15 +100,23 @@ class ForumViewController: UIViewController, UISearchControllerDelegate {
     
     
     // 搜索控件
-    private lazy var searchController:BaseSearchViewController = { [unowned self] in
-        let sc =  BaseSearchViewController(searchResultsController: SearchResultController())
-        sc.delegate = self
-        sc.searchType = .forum
-        sc.searchField.placeholder = "搜索帖子"
-        sc.searchField.leftView = nil
-        //sc.chooseTypeBtn.isHidden = true
+//    private lazy var searchController:BaseSearchViewController = { [unowned self] in
+//        let sc =  BaseSearchViewController(searchResultsController: SearchResultController())
+//        sc.delegate = self
+//        sc.searchType = .forum
+//        sc.searchField.placeholder = "搜索帖子"
+//        sc.searchField.leftView = nil
+//        //sc.chooseTypeBtn.isHidden = true
+//
+//        return sc
+//    }()
+    
+    private lazy var searchController: ForumSearchViewController = {
         
-        return sc
+        let s = ForumSearchViewController.init(searchResultsController: ForumSearchResultViewController())
+        s.searchBar.sizeToFit()
+        s.searchBar.placeholder = "搜索帖子"
+        return s
     }()
     
     
@@ -116,12 +124,13 @@ class ForumViewController: UIViewController, UISearchControllerDelegate {
         willSet{
             if newValue{
             
-            self.searchController.searchBar.setPositionAdjustment(UIOffset.init(horizontal: 20 , vertical: 0), for: .search)
+            //self.searchController.searchBar.setPositionAdjustment(UIOffset.init(horizontal: 20 , vertical: 0), for: .search)
                 
-                self.searchController.showRecordView = true
+                self.searchController.searchField.layer.cornerRadius = self.searchController.searchBar.height/2
                 self.navigationItem.rightBarButtonItems = nil
             }else{
-                self.searchController.setSearchBar(open: newValue)
+                NotificationCenter.default.post(name: NotificationName.forumSearchWord, object: nil, userInfo: ["quit": true])
+                //self.searchController.setSearchBar(open: newValue)
                 self.navigationItem.title = navTitle
                 self.navigationItem.titleView = nil
                 self.navigationItem.rightBarButtonItems = [UIBarButtonItem.init(customView: publish),
@@ -130,6 +139,8 @@ class ForumViewController: UIViewController, UISearchControllerDelegate {
            
             //self.navigationController?.navigationBar.settranslucent(!newValue)
             self.tabBarController?.tabBar.isHidden = newValue
+            //self.navigationController?.setToolbarHidden(newValue, animated: false)
+
            // (self.navigationController as? JobHomeNavigation)?.currentStyle =  newValue ? .default : .lightContent
         }
     }
@@ -165,7 +176,8 @@ class ForumViewController: UIViewController, UISearchControllerDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.tabBarController?.tabBar.isHidden = false
+        // 从搜索解雇vc 返回result vc，tabbar 这里被控制显示？？
+        self.tabBarController?.tabBar.isHidden = false || self.presentSearchControllFlag
         self.navigationController?.insertCustomerView(UIColor.lightGray)
         self.navigationController?.navigationBar.tintColor = UIColor.green
  
@@ -180,10 +192,12 @@ class ForumViewController: UIViewController, UISearchControllerDelegate {
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        
+//        wrapBar.clipsToBounds = true
+//        wrapBar.layer.cornerRadius = GlobalConfig.searchBarH / 2
+//        wrapBar.backgroundColor = UIColor.orange
         _ = self.searchController.searchBar.sd_layout()?.topEqualToView(wrapBar)?.bottomEqualToView(wrapBar)?.leftEqualToView(wrapBar)?.rightEqualToView(wrapBar)
         self.wrapBar.layoutSubviews()
-        self.searchController.searchField.layer.cornerRadius = self.searchController.searchBar.height/2
+
         
         
     }
@@ -203,6 +217,7 @@ extension ForumViewController{
     private func setViews(){
         self.title = navTitle
         
+        //self.navigationItem.searchController  = searchController
         // 影藏返回按钮文字
         navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
         
@@ -229,6 +244,7 @@ extension ForumViewController{
         _ = self.searchController.rx.didDismiss.takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] _ in
             self?.presentSearchControllFlag = false
         })
+        
         
         
         //searchController.searchField?.placeholder = "搜索帖子"
@@ -263,13 +279,25 @@ extension ForumViewController{
     @objc private func search(){
         
         self.navigationItem.titleView = wrapBar
+        // 显示出searchbar 设置点击状态
         searchController.isActive = true
+        
+        self.searchController.searchField.backgroundColor = UIColor.orange
        
       }
     
     
 }
 
+
+extension ForumViewController: UISearchResultsUpdating{
+    func updateSearchResults(for searchController: UISearchController) {
+        print(searchController)
+        searchController.searchResultsController?.view.isHidden = true
+    }
+    
+    
+}
 
 extension ForumViewController: PageContentViewScrollDelegate{
     func pageContenScroll(_ contentView: PageContentView, progress: CGFloat, sourcIndex: Int, targetIndex: Int) {

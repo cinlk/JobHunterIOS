@@ -230,6 +230,7 @@ struct  NotificationName {
     static let visitor: Notification.Name  = Notification.Name.init("visitor")
     static let systemMessage: Notification.Name = Notification.Name.init("systemMessage")
     static let systemMessageBadge: Notification.Name = Notification.Name.init("systemMessageBadge")
+    static let forumSearchWord: Notification.Name = Notification.Name.init("forumSearchWord")
     
     // forum
 //    static let ForumHelp: Notification.Name = Notification.Name.init("forumHelp")

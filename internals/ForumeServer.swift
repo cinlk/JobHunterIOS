@@ -31,6 +31,7 @@ internal enum forumTarget{
     case alertPost(postId:String, content:String)
     case alertReply(replyId:String, content:String)
     case alertSubReply(subReplyId:String, content:String)
+    case search(req:ForumSearchReq)
     case none
 }
 
@@ -79,7 +80,9 @@ extension forumTarget: TargetType{
             return self.prefix + "/reply/alert"
         case .alertSubReply:
             return self.prefix + "/subReply/alert"
-            
+        case .search:
+            return self.prefix + "/search"
+        
         default:
             return ""
         }
@@ -91,7 +94,7 @@ extension forumTarget: TargetType{
             return .post
         case .like, .collected, .count, .likeReply, .likeSubReply:
             return .put
-        case .replys, .replyPost, .subReplys, .alertPost, .alertReply, .alertSubReply:
+        case .replys, .replyPost, .subReplys, .alertPost, .alertReply, .alertSubReply, .search:
             return .post
         case .deletPost, .deleteReply, .deleteSubReply:
             return .delete
@@ -132,6 +135,8 @@ extension forumTarget: TargetType{
             return .requestParameters(parameters: ["reply_id": replyId, "content": content], encoding: JSONEncoding.default)
         case .alertSubReply(let subReplyId, let content):
             return .requestParameters(parameters: ["sub_reply_id": subReplyId, "content": content], encoding: JSONEncoding.default)
+        case .search(let req):
+            return .requestParameters(parameters: req.toJSON(), encoding: JSONEncoding.default)
         default:
             return .requestPlain
         }
@@ -253,5 +258,10 @@ class ForumeServer{
         Observable<ResponseModel<HttpForumResponse>>{
         
             return httpServer.rx.request(.likeSubReply(subReplyId: subReplyId, flag: flag)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpForumResponse>.self)
+    }
+    
+    // 搜索帖子 test
+    internal func searchPost(req: ForumSearchReq) -> Observable<[PostArticleModel]>{
+        return httpServer.rx.request(.search(req: req)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapArray(PostArticleModel.self, tag: "body")
     }
 }

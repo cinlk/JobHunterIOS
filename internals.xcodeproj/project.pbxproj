@@ -304,6 +304,8 @@
 		4AB0FED82014E23200932C02 /* ChatTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB0FED72014E23200932C02 /* ChatTimeCell.swift */; };
 		4AB0FEDA201630B000932C02 /* ChatMshTimeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB0FED9201630B000932C02 /* ChatMshTimeHelper.swift */; };
 		4AB8FFE91FDEC0720020F026 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB8FFE81FDEC0720020F026 /* SearchViewModel.swift */; };
+		4AB93E3F228995D600B79EA2 /* ForumSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB93E3E228995D600B79EA2 /* ForumSearchViewController.swift */; };
+		4AB93E412289962F00B79EA2 /* ForumSearchResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB93E402289962F00B79EA2 /* ForumSearchResultViewController.swift */; };
 		4AB97F3120D783570056AC64 /* CompanyCareerTalkVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB97F3020D783570056AC64 /* CompanyCareerTalkVC.swift */; };
 		4AB97F3520D966EC0056AC64 /* PPBadgeViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB97F3420D966EC0056AC64 /* PPBadgeViewHelper.swift */; };
 		4AB97F3720DBF46D0056AC64 /* extension+UIImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AB97F3620DBF46D0056AC64 /* extension+UIImageView.swift */; };
@@ -713,6 +715,8 @@
 		4AB0FED72014E23200932C02 /* ChatTimeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTimeCell.swift; sourceTree = "<group>"; };
 		4AB0FED9201630B000932C02 /* ChatMshTimeHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMshTimeHelper.swift; sourceTree = "<group>"; };
 		4AB8FFE81FDEC0720020F026 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
+		4AB93E3E228995D600B79EA2 /* ForumSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumSearchViewController.swift; sourceTree = "<group>"; };
+		4AB93E402289962F00B79EA2 /* ForumSearchResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForumSearchResultViewController.swift; sourceTree = "<group>"; };
 		4AB97F3020D783570056AC64 /* CompanyCareerTalkVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyCareerTalkVC.swift; sourceTree = "<group>"; };
 		4AB97F3420D966EC0056AC64 /* PPBadgeViewHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PPBadgeViewHelper.swift; sourceTree = "<group>"; };
 		4AB97F3620DBF46D0056AC64 /* extension+UIImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "extension+UIImageView.swift"; sourceTree = "<group>"; };
@@ -1818,6 +1822,7 @@
 		4A9543C120A6E3AD009BCBE2 /* 帖子 */ = {
 			isa = PBXGroup;
 			children = (
+				4AB93E3D228995A800B79EA2 /* 搜索 */,
 				4AB93E3C2286FD1000B79EA2 /* 二级回复 */,
 				4A72CDCD2280321D0046B7FA /* 帖子内容 */,
 				4A72CDC8227BE4A70046B7FA /* 发帖 */,
@@ -1901,6 +1906,15 @@
 				4A9543D120A879B2009BCBE2 /* SingleReplyViewController.swift */,
 			);
 			name = "二级回复";
+			sourceTree = "<group>";
+		};
+		4AB93E3D228995A800B79EA2 /* 搜索 */ = {
+			isa = PBXGroup;
+			children = (
+				4AB93E3E228995D600B79EA2 /* ForumSearchViewController.swift */,
+				4AB93E402289962F00B79EA2 /* ForumSearchResultViewController.swift */,
+			);
+			name = "搜索";
 			sourceTree = "<group>";
 		};
 		4ACBD6FA1F77E76D00A5FD23 /* ChatBar */ = {
@@ -2519,6 +2533,7 @@
 				4AFF91DD1F641A8000FE189F /* CompanyDetailCell.swift in Sources */,
 				4A1BA2C2208B021800CF8352 /* BaseCollectionHorizonView.swift in Sources */,
 				4A86792920D4DB2C0039D36B /* ShowApplyJobsView.swift in Sources */,
+				4AB93E3F228995D600B79EA2 /* ForumSearchViewController.swift in Sources */,
 				4AFF9DCC20381EC9000ADBAF /* PersonTableHeader.swift in Sources */,
 				4A9543A3209DA3E4009BCBE2 /* InvitationViewController.swift in Sources */,
 				4A5C665420E8F93D00A4C647 /* MeetingCollectedVC.swift in Sources */,
@@ -2538,6 +2553,7 @@
 				4A9CE36C1F716101002A8FD5 /* progressHUB.swift in Sources */,
 				4A444ED31F8F9E44006AE83D /* UserModel.swift in Sources */,
 				4A4DBBDE20B9A75A0036AD9D /* UserGuideViewController.swift in Sources */,
+				4AB93E412289962F00B79EA2 /* ForumSearchResultViewController.swift in Sources */,
 				4A502CF120B1C5B100BB71FD /* projectInfoCell.swift in Sources */,
 				4AB97F3120D783570056AC64 /* CompanyCareerTalkVC.swift in Sources */,
 				4ADDDAB81F98F054001CB00F /* MChatEmotion.swift in Sources */,

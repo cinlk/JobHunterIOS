@@ -417,7 +417,7 @@ extension PostContentViewController{
                 return false
             }
             }.flatMapLatest { [unowned self] in
-                self.vm.colletePost(postId: self.headerData!.id!, flag: self.headerData!.isCollected).asDriver(onErrorJustReturn: ResponseModel<HttpForumResponse>.init(JSON: ["result":"failed", "code":-1])!)
+                self.vm.colletePost(postId: self.headerData!.id!, flag: !self.headerData!.isCollected).asDriver(onErrorJustReturn: ResponseModel<HttpForumResponse>.init(JSON: ["result":"failed", "code":-1])!)
             }.takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] (res) in
                 guard let `self` = self else{
                     return
@@ -427,6 +427,7 @@ extension PostContentViewController{
                     // 显示提示
                     let title = self.headerData!.isCollected ? "取消收藏" : "收藏成功"
                     self.headerData!.isCollected = !(self.headerData!.isCollected)
+                    self.tableHeader.collected.isSelected = self.headerData!.isCollected
                     self.view.showToast(title: title, customImage: nil, mode: .text)
                     
                 }else{

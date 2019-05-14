@@ -181,6 +181,7 @@ extension InternSearchVC{
                 let vc = JobDetailViewController()
                 vc.job = (mode.jobId!, .intern)
                 vc.hidesBottomBarWhenPushed = true
+                // 该vc 不是从navgation 跳转过来，但是他的父vc 有navigation
                 self?.presentingViewController?.navigationController?.pushViewController(vc, animated: true)
             }
            

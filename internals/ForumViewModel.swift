@@ -39,13 +39,27 @@ class ForumViewModel{
     internal let refreshSubReplyStatus: PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
     private var subReplyPullDown:Bool = false
     
+    // 搜索 test
+    internal let postSearch:PublishSubject<ForumSearchReq> = PublishSubject<ForumSearchReq>.init()
+    private var newSearch:Bool = false
+    internal let searchRes:BehaviorRelay<[PostArticleModel]> = BehaviorRelay<[PostArticleModel]>.init(value: [])
+    internal let searchRefresh:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
+    
+    
+    
     
     private let dispose = DisposeBag.init()
     
     private let server: ForumeServer = ForumeServer.shared
     
+    internal  let searching: Driver<Bool>
+    private let  activityIndicator = ActivityIndicator()
+
     
     init() {
+        
+        self.searching = activityIndicator.asDriver()
+        
         self.sectionRequest.do(onNext: { [unowned self] (req) in
             self.pullDown = req.getOffset() == 0 ? true : false
         }).flatMapLatest { [unowned self] req in
@@ -122,6 +136,28 @@ class ForumViewModel{
             }, onError: { [weak self] err in
                 self?.refreshSubReplyStatus.onNext(.error(err: err))
             }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        // 搜索
+        self.postSearch.do(onNext: { [unowned self] (req) in
+            self.newSearch =  req.offset == 0 ?  true : false
+        }).flatMapLatest { [unowned self] req in
+            self.server.searchPost(req: req).trackActivity(self.activityIndicator).asDriver(onErrorJustReturn: [])
+            }.debug().subscribe(onNext: { [weak self] (res) in
+                
+            if self?.newSearch ?? false  {
+                 self?.searchRes.accept(res)
+                
+            }else{
+                if res.isEmpty{
+                    self?.searchRefresh.onNext(.NoMoreData)
+                }else{
+                    self?.searchRes.accept((self?.searchRes.value ?? []) + res)
+                    self?.searchRefresh.onNext(.endFooterRefresh)
+                }
+        
+            //self?.searchRes.accept((self?.searchRes.value ?? []) + body.words)
+            }
+            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
     }
     
     
@@ -182,4 +218,6 @@ class ForumViewModel{
     internal func alertSubReply(subReplyId:String, content:String) -> Observable<ResponseModel<HttpForumResponse>>{
         return self.server.alertSubReply(subReplyId: subReplyId, content: content)
     }
+    
+   
 }
