@@ -10,20 +10,9 @@ import UIKit
 
 
 
-//extension BaseCellprotocal{
-//     func identity()->String{
-//        return
-//    }
-//}
-
-
 class BaseTableView<M>: UITableView {
 
-    
-    
     internal var mode:M!
-    
-  
     
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)

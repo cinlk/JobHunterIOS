@@ -72,7 +72,7 @@ class modifyPersonInfoVC: BaseActionResumeVC {
         self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "保 存", style: .plain, target: self, action: #selector(save))
         
         
-        self.tableView.register(modifyPersonInfoCell.self, forCellReuseIdentifier: modifyPersonInfoCell.identity())
+        self.tableView.register(ModifyPersonInfoCell.self, forCellReuseIdentifier: ModifyPersonInfoCell.identity())
         
         NotificationCenter.default.addObserver(self, selector: #selector(editStatus), name: NSNotification.Name.init(modifyPersonNotifyName), object: nil)
     }
@@ -139,7 +139,7 @@ class modifyPersonInfoVC: BaseActionResumeVC {
         //modifyPersonInfoCell.initialize()
         
         
-        let cell = modifyPersonInfoCell.init(style: .default, reuseIdentifier: "cell")
+        let cell = ModifyPersonInfoCell.init(style: .default, reuseIdentifier: "cell")
         cell.onlyPickerResumeType = onlyPickerResumeType
         cell.mode = (type: keys[indexPath.row], title: diction[keys[indexPath.row]]!)
         cell.delegate = self
@@ -148,7 +148,7 @@ class modifyPersonInfoVC: BaseActionResumeVC {
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         
-        return modifyPersonInfoCell.cellHeight()
+        return ModifyPersonInfoCell.cellHeight()
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -207,34 +207,10 @@ extension modifyPersonInfoVC{
 // 照片
 extension modifyPersonInfoVC: UIImagePickerControllerDelegate,UINavigationControllerDelegate{
     
-    private func getPhotoLibraryAuthorization() -> Bool {
-        let authorizationStatus = PHPhotoLibrary.authorizationStatus()
-        
-        switch authorizationStatus {
-        case .authorized:
-            print("已经授权")
-            return true
-        case .notDetermined:
-            print("不确定是否授权")
-            // 请求授权
-            PHPhotoLibrary.requestAuthorization({ (status) in })
-        case .denied:
-            print("拒绝授权")
-        case .restricted:
-            print("限制授权")
-            break
-            
-        @unknown default:
-            break
-        }
-        
-        return false
-    }
-    
     
     private func selectPic(){
         // 相册
-        guard  self.getPhotoLibraryAuthorization() else {
+        guard  Utils.PhotoLibraryAuthorization() else {
             print(" 不能xxx访问你的照片")
             return
         }

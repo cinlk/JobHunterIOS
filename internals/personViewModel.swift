@@ -7,7 +7,48 @@
 //
 
 import Foundation
+import RxSwift
+import RxCocoa
 
+class PersonViewModel {
+    
+    
+    static let shared: PersonViewModel = PersonViewModel.init()
+    private lazy var dispose:DisposeBag = DisposeBag.init()
+    private lazy var server: PersonServer = PersonServer.shared
+    
+    
+    internal let loading: Driver<Bool>
+    private let activityIndicator = ActivityIndicator()
+
+    
+    
+    private init() {
+        self.loading = activityIndicator.asDriver()
+        
+    }
+    
+    
+    internal func updateAvatar(data:Data, name:String) -> Observable<ResponseModel<HttpAvatarResModel>>{
+        return server.updateAvatar(data: data, name: name).trackActivity(self.activityIndicator)
+    }
+    
+    internal func updateBrief(req: PersonBriefReq) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.updatePersonBrief(req: req).trackActivity(self.activityIndicator)
+    }
+    
+    internal func deliveryHistoryJobs() -> Observable<[DeliveryJobsModel]>{
+        return server.deliveryHistory()
+    }
+    
+    internal func jobDeliveryHistoryStatus(jobId:String, type:String) -> Observable<[DeliveryHistoryStatus]>{
+        return server.deliveryHistoryStatus(jobId: jobId, type: type).trackActivity(self.activityIndicator)
+    }
+    
+    internal func getOnlineApplyId(positionId:String) -> Observable<ResponseModel<OnlineApplyId>>{
+        return server.getOnlineApplyId(positionId: positionId)
+    }
+}
 
 class  personModelManager {
     

@@ -204,6 +204,8 @@ struct GlobalConfig {
         static let User2 = "5c885f55fe88c20065e160c8"
         static let ConversationID = "5c88f876fb4ffe00638220a0"
     }
+    
+    
 }
 
 struct HttpCodeRange {
@@ -230,8 +232,10 @@ struct  NotificationName {
     static let visitor: Notification.Name  = Notification.Name.init("visitor")
     static let systemMessage: Notification.Name = Notification.Name.init("systemMessage")
     static let systemMessageBadge: Notification.Name = Notification.Name.init("systemMessageBadge")
-    static let forumSearchWord: Notification.Name = Notification.Name.init("forumSearchWord")
+    static let forumSearchWord:Notification.Name = Notification.Name.init("forumSearchWord")
+    static let personMainItem:Notification.Name = Notification.Name.init("personMainItem")
     
+    static let updateBriefInfo: Notification.Name = Notification.Name.init("updateBriefInfo")
     // forum
 //    static let ForumHelp: Notification.Name = Notification.Name.init("forumHelp")
 //    static let ForumInterview: Notification.Name = Notification.Name.init("forumInterview")

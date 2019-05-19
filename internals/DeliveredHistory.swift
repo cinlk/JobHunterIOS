@@ -7,24 +7,29 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 import YNDropDownMenu
 
 
 fileprivate let titleName = "投递记录"
-fileprivate let dropViewH:CGFloat = 40
+fileprivate let dropTitles = ["职位类型","投递状态"]
 
-class deliveredHistory: BaseViewController,UIScrollViewDelegate {
+class DeliveredHistory: BaseViewController,UIScrollViewDelegate {
 
+    private lazy var dispose = DisposeBag.init()
+    private lazy var vm: PersonViewModel = PersonViewModel.shared
     
     // 所有数据
-    private var datas:[DeliveredJobsModel] = []{
+    private var datas:[DeliveryJobsModel] = []{
         didSet{
             filterDatas = datas
+            self.didFinishloadData()
         }
     }
     
     // 条件筛选数据 (MARK)
-    private var filterDatas:[DeliveredJobsModel] = []
+    private var filterDatas:[DeliveryJobsModel] = []
     
     // 过滤条件
     private var currentJobType:jobType = .all
@@ -34,14 +39,12 @@ class deliveredHistory: BaseViewController,UIScrollViewDelegate {
     private lazy var jobTypes:DropJobTypeView = { [unowned self] in
         let view = DropJobTypeView(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 45*4))
         view.showTabBar = false
-        view.passData = { type in
-            self.currentJobType = jobType.getType(name: type)
-            self.filterJobType()
-            self.dropMenu.changeMenu(title: type, at: 0)
+        view.passData = { [weak self] type in
+            self?.currentJobType = jobType.getType(name: type)
+            self?.filterJobType()
+            self?.dropMenu.changeMenu(title: type, at: 0)
 
         }
-        
-        
         return view
     }()
     
@@ -50,10 +53,10 @@ class deliveredHistory: BaseViewController,UIScrollViewDelegate {
         let view = DropDelieveryStatusView(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 45*7))
         view.showTabBar = false
         
-        view.passData = { status in
-            self.currentDelivery = ResumeDeliveryStatus.getType(name: status)
-            self.filterJobType()
-            self.dropMenu.changeMenu(title: status, at: 1)
+        view.passData = { [weak self] status in
+            self?.currentDelivery = ResumeDeliveryStatus.getType(name: status)
+            self?.filterJobType()
+            self?.dropMenu.changeMenu(title: status, at: 1)
         }
         return view
     }()
@@ -63,7 +66,7 @@ class deliveredHistory: BaseViewController,UIScrollViewDelegate {
     // dropMenu
     private lazy var dropMenu:YNDropDownMenu = { [unowned self] in
        
-        let dropView =  configDropMenu(items: [jobTypes, deliveryStatus], titles: ["职位类型","投递状态"], height: dropViewH)
+        let dropView =  configDropMenu(items: [jobTypes, deliveryStatus], titles: dropTitles, height: GlobalConfig.dropMenuViewHeight)
         dropView.origin.y  = 64
         dropView.isHidden = false
         return dropView
@@ -97,7 +100,7 @@ class deliveredHistory: BaseViewController,UIScrollViewDelegate {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.insertCustomerView(UIColor.orange)
+        //self.navigationController?.insertCustomerView(UIColor.orange)
 
     }
 
@@ -113,14 +116,14 @@ class deliveredHistory: BaseViewController,UIScrollViewDelegate {
         
         
         self.title = titleName
-        self.view.backgroundColor = UIColor.viewBackColor()
+        //self.view.backgroundColor = UIColor.viewBackColor()
 
         self.hiddenViews.append(table)
         self.hiddenViews.append(dropMenu)
         self.view.addSubview(table)
         self.view.addSubview(dropMenu)
         
-        self.navigationController?.delegate = self
+        //self.navigationController?.delegate = self
         super.setViews()
     }
     
@@ -137,44 +140,51 @@ class deliveredHistory: BaseViewController,UIScrollViewDelegate {
     override func reload() {
         super.reload()
         self.loadData()
-    }
-    
-
-}
-
-
-extension deliveredHistory: UINavigationControllerDelegate{
-    
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        if viewController.isKind(of: PersonViewController.self){
-            self.navigationController?.removeCustomerView()
-            
-            
-        }
+        
+        // 监听新的投递记录 TODO
+        
         
     }
+    
+    
+    deinit {
+        print("deinit deliverHistory \(self)")
+    }
+
 }
 
-extension deliveredHistory{
+
+//extension DeliveredHistory: UINavigationControllerDelegate{
+//
+//    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+//        if viewController.isKind(of: PersonViewController.self){
+//            self.navigationController?.removeCustomerView()
+//
+//
+//        }
+//
+//    }
+//}
+
+extension DeliveredHistory{
     
     private func filterJobType(){
         
-        print("职位类型\(currentJobType) 投递类型\(currentDelivery)")
+        //print("职位类型\(currentJobType) 投递类型\(currentDelivery)")
         
         if currentJobType == .all && currentDelivery == .all{
             filterDatas = datas
         }else if currentJobType == .all && currentDelivery != .all{
             filterDatas = datas.filter({ mode -> Bool in
-                return mode.deliveryStatus == currentDelivery
+                return mode.resumeStatue == currentDelivery
             })
         }else if currentDelivery == .all && currentJobType != .all{
             filterDatas = datas.filter({ mode -> Bool in
-                return  mode.jobtype == currentJobType
+                return  mode.jtype == currentJobType
             })
         }else{
-            
             filterDatas  = datas.filter({ mode -> Bool in
-                return mode.jobtype == currentJobType && mode.deliveryStatus == currentDelivery
+                return mode.jtype == currentJobType && mode.resumeStatue == currentDelivery
             })
         }
         
@@ -189,53 +199,20 @@ extension deliveredHistory{
 }
 
 // load data
-extension deliveredHistory{
+extension DeliveredHistory{
     
     private func loadData(){
         
+        self.vm.deliveryHistoryJobs().asDriver(onErrorJustReturn: []).drive(onNext: { [weak self] (modes) in
+            self?.datas = modes
+        }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
         
-        DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
-            
-            
-            for _ in 0..<5{
-                self?.datas.append(DeliveredJobsModel(JSON: ["id":"dqw-dqwd","type":jobType.intern.rawValue,
-                "icon":"chrome","title":"测试实习","companyName":"google","address":["北京","天津"],
-                "create_time":Date().timeIntervalSince1970,"currentStatus":ResumeDeliveryStatus.read.rawValue,"feedBack":"当前为多群无多群无多当前为多群无多当前为多群无多群无当前为多群多群当前的群",
-                "historyStatus":[(status:"面试",time:"2017-03-23"),(status:"HR已阅",time:"2017-03-20"),(status:"投递成功",time:"2017-03-19 ")]])!)
-                
-                
-            }
-            
-            for _ in 0..<5{
-                self?.datas.append(DeliveredJobsModel(JSON: ["id":"dqw-dqwd","type":jobType.graduate.rawValue,
-                    "icon":"chrome","title":"前端nodejs工程师","companyName":"google",
-                    "create_time":Date().timeIntervalSince1970,"currentStatus":ResumeDeliveryStatus.read.rawValue,"address":["北京","天津"],
-                    "historyStatus":[(status:"面试",time:"2017-03-23"),(status:"HR已阅",time:"2017-03-20 "),(status:"投递成功",time:"2017-03-19")]])!)
-                
-                
-            }
-            
-            for _ in 0..<4{
-                self?.datas.append(DeliveredJobsModel(JSON: ["id":"dqw-dqwd","type":jobType.onlineApply.rawValue,
-                    "icon":"chrome","title":"职位名称","companyName":"公司2018校招","create_time":Date().timeIntervalSince1970,"currentStatus":ResumeDeliveryStatus.interview.rawValue,"address":["北京","成都","天津"],"business":["建筑","管理","设计","培训","投资"],"historyStatus":[(status:"面试",time:"2017-03-23"),(status:"投递成功",time:"2017-03-19")]])!)
-            }
-            
-            Thread.sleep(forTimeInterval: 3)
-            
-            DispatchQueue.main.async(execute: {
-                
-                self?.didFinishloadData()
-            })
-        }
-        
-      
-
     }
 }
 
 
 
-extension deliveredHistory:UITableViewDataSource, UITableViewDelegate{
+extension DeliveredHistory:UITableViewDataSource, UITableViewDelegate{
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1

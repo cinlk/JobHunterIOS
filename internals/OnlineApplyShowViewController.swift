@@ -153,7 +153,7 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
             return
         }
         // 识别职位投递简历??
-        guard  let jobs = mode.value.positions, jobs.count > 0 else {
+        guard  mode.value.positionsStr.count > 0 else {
             return
         }
         self.showJobsView.show()
@@ -193,7 +193,19 @@ extension OnlineApplyShowViewController: showApplyJobsDelegate{
 
     func apply(view: ShowApplyJobsView, jobIndex: Int) {
         // 发送网络请求 TODO
-        print("投递职位 \(jobIndex)")
+        //print("投递职位 \(jobIndex)")
+        guard let p =  self.mode.value.positions?[jobIndex], let aid = self.mode.value.id else {
+            return
+        }
+        self.vm.onlineApplyJob(onlineApplyId: aid, positionId: "\(p.positionId!)").subscribe(onNext: { [weak self] (res) in
+            if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code), let flag = res.body?.exist{
+                let warn:String =  flag == false ? "已经投递过,不要重复投递" : "投递成功"
+                self?.view.showToast(title: warn, customImage: nil, mode: .text)
+            }else{
+                self?.view.showToast(title: "系统错误,投递失败", customImage: nil, mode: .text)
+            }
+            
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
     }
 
 
@@ -334,7 +346,8 @@ extension OnlineApplyShowViewController{
             
             self.didFinishloadData()
             self.naviBackView.setLabel(name: m.name ?? "")
-            self.showJobsView.jobs = m.positions ?? []
+            
+            self.showJobsView.jobs = m.positionsStr
             self.headerView.mode = m
             self.headerView.layoutSubviews()
             self.table.tableHeaderView = self.headerView
@@ -508,7 +521,8 @@ private class tableHeader:UIView{
             
             self.address.text = mode.citys?.joined(separator: " ")
             self.time.text = "截止时间: " + mode.endTimeStr
-             self.positions.text = mode.positions?.joined(separator: " ")
+            
+            self.positions.text = mode.positionsStr.joined(separator: " ")
             self.setupAutoHeight(withBottomViewsArray: [icon,time], bottomMargin: 5)
             
         }

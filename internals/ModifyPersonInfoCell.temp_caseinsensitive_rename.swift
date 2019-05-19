@@ -21,7 +21,7 @@ protocol changeDataDelegate:class {
 fileprivate var pickPosition:[ResumeInfoType:[Int:Int]] = [:]
 
 
-class modifyPersonInfoCell: UITableViewCell {
+class ModifyPersonInfoCell: UITableViewCell {
 
     
     internal var onlyPickerResumeType:[ResumeInfoType] = []
@@ -153,7 +153,7 @@ class modifyPersonInfoCell: UITableViewCell {
 
 
 
-extension modifyPersonInfoCell: itemPickerDelegate{
+extension ModifyPersonInfoCell: itemPickerDelegate{
     
     func quitPickerView(_ picker: UIPickerView) {
         self.textField.resignFirstResponder()
@@ -170,7 +170,7 @@ extension modifyPersonInfoCell: itemPickerDelegate{
     }
 }
 
-extension modifyPersonInfoCell {
+extension ModifyPersonInfoCell {
     
     // 结束编辑
     @objc func endEdit() {
@@ -178,7 +178,7 @@ extension modifyPersonInfoCell {
     }
 }
 
-extension modifyPersonInfoCell: UITextFieldDelegate{
+extension ModifyPersonInfoCell: UITextFieldDelegate{
     
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {

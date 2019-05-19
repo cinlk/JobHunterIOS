@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
 
@@ -14,7 +15,8 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
 
     private lazy var icon: UIImageView = {
         let img = UIImageView.init()
-        img.contentMode = .scaleAspectFit
+        img.contentMode = UIView.ContentMode.scaleAspectFill
+        
         img.clipsToBounds = true
         return img
     }()
@@ -40,14 +42,14 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
         return label
     }()
     
-    private lazy var type: UILabel = {
-        let label = UILabel.init()
-        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width)
-        label.textAlignment = .left
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.textColor = UIColor.orange
-        return label
-    }()
+//    private lazy var type: UILabel = {
+//        let label = UILabel.init()
+//        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - iconSize.width)
+//        label.textAlignment = .left
+//        label.font = UIFont.systemFont(ofSize: 14)
+//        label.textColor = UIColor.orange
+//        return label
+//    }()
     
     private lazy var status: UILabel = {
         let label = UILabel.init()
@@ -84,38 +86,44 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
     
     //var notRead:Bool = false
 
-    dynamic var mode:DeliveredJobsModel?{
+    dynamic var mode:DeliveryJobsModel?{
         didSet{
             guard let mode = mode else { return }
             
-            icon.image = UIImage.init(named: mode.icon)
-            titleName.text = mode.title
+            if let url = mode.companyIcon{
+                icon.kf.setImage(with: Source.network(url), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+            }
+            //icon.image = UIImage.init(named: mode.icon)
+            titleName.text = mode.jobName
             company.text = mode.companyName
-            type.text = mode.jobtype.describe
-            time.text = mode.createTimeStr
-            if   !mode.deliveryStatus.describe.isEmpty{
-                 status.text = "[" + mode.deliveryStatus.describe + "]"
+            //type.text = mode.type
+            
+            time.text = mode.createdTimeStr
+            if   !mode.resumeStatue.describe.isEmpty{
+                 status.text = "[" + mode.resumeStatue.describe + "]"
+                 status.textColor = mode.resumeStatue.color
             }
             
-            self.setupAutoHeight(withBottomViewsArray: [type,icon], bottomMargin: 10)
+            self.setupAutoHeight(withBottomViewsArray: [company,icon], bottomMargin: 10)
         }
     }
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        let views:[UIView] = [icon, titleName, company, type, status, time]
+        let views:[UIView] = [icon, titleName, company, status, time]
         self.contentView.sd_addSubviews(views)
         self.backgroundColor = UIColor.white
         
         _  = icon.sd_layout().leftSpaceToView(self.contentView,10)?.topSpaceToView(self.contentView,5)?.widthIs(iconSize.width)?.autoHeightRatio(1)
         
         _ = titleName.sd_layout().topEqualToView(icon)?.leftSpaceToView(icon,10)?.autoHeightRatio(0)
-        _ = company.sd_layout().topSpaceToView(titleName,5)?.leftEqualToView(titleName)?.autoHeightRatio(0)
-        _ = type.sd_layout().topSpaceToView(company,5)?.leftEqualToView(company)?.autoHeightRatio(0)
-        _ = time.sd_layout().topEqualToView(icon)?.rightSpaceToView(self.contentView,10)?.autoHeightRatio(0)
-        _ = status.sd_layout().topSpaceToView(time,15)?.rightEqualToView(time)?.autoHeightRatio(0)
+        _ = time.sd_layout().topSpaceToView(titleName,5)?.leftEqualToView(titleName)?.autoHeightRatio(0)
+        //_ = type.sd_layout().topSpaceToView(company,5)?.leftEqualToView(company)?.autoHeightRatio(0)
+        _ = company.sd_layout().topSpaceToView(time,5)?.leftEqualToView(time)?.autoHeightRatio(0)
+        _ = status.sd_layout()?.centerYEqualToView(self.contentView)?.rightSpaceToView(self.contentView,10)?.autoHeightRatio(0)
  
         company.setMaxNumberOfLinesToShow(1)
         titleName.setMaxNumberOfLinesToShow(1)
+        icon.sd_cornerRadiusFromWidthRatio = 0.5
         
     }
     

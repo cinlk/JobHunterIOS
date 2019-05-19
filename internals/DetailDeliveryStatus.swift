@@ -7,16 +7,23 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
+import Kingfisher
 
 
 fileprivate let iconSize:CGSize = CGSize.init(width: 45, height: 45)
 fileprivate let cellIdentity:String = "status"
-
+fileprivate let navTitle:String = "历史投递记录"
 
 class DetailDeliveryStatus: UIViewController {
 
-   private  lazy var jobHeader:tableHeaderView = {  [unowned self] in
+    private lazy var dispose:DisposeBag = DisposeBag.init()
+    private lazy var vm: PersonViewModel = PersonViewModel.shared
+    
+    
+    private  lazy var jobHeader:tableHeaderView = {  [unowned self] in
         let head = tableHeaderView.init(frame: CGRect.zero)
         let tap = UITapGestureRecognizer.init()
         tap.numberOfTapsRequired = 1
@@ -25,6 +32,10 @@ class DetailDeliveryStatus: UIViewController {
         return head
         
     }()
+    
+    
+    
+    private lazy var hub = MBProgressHUD.showAdded(to: self.view, animated: true)
     
     
     private lazy var table:UITableView = { [unowned self] in
@@ -42,9 +53,9 @@ class DetailDeliveryStatus: UIViewController {
     }()
     
     
-    private lazy var record:[(status:String,time:String)] = []
+    private lazy var record:[DeliveryHistoryStatus] = []
     
-    var mode:DeliveredJobsModel?{
+    var mode: DeliveryJobsModel?{
         didSet{
             
             guard let mode = mode else {
@@ -54,14 +65,7 @@ class DetailDeliveryStatus: UIViewController {
             // 这才计算完header 布局后的高度, 在赋值给table
             jobHeader.layoutSubviews()
             table.tableHeaderView = jobHeader
-            // 投递历史状态
-            if let status = mode.historyStatus{
-                record = status
-            }else{
-                record = [(status:mode.currentStatus!, time:mode.createTimeStr)]
-            }
-            
-            self.table.reloadData()
+            self.loadData()
         }
     }
    
@@ -69,11 +73,10 @@ class DetailDeliveryStatus: UIViewController {
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        
-        self.title = "历史记录"
+        self.view.backgroundColor = UIColor.white
+        self.title = navTitle
         self.view.addSubview(table)
         navigationItem.backBarButtonItem = UIBarButtonItem.init(title: "", style: .plain, target: nil, action: nil)
-        
         
         _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
     }
@@ -86,10 +89,34 @@ class DetailDeliveryStatus: UIViewController {
         super.viewWillDisappear(animated)
  
     }
+    
+    deinit {
+        print("deinit deliverStatus \(self)")
+    }
 
 }
 
 
+
+extension DetailDeliveryStatus{
+    private func loadData(){
+        guard let jid = mode?.jobId, let t = mode?.type else {
+            return
+        }
+        
+        self.vm.loading.drive(self.table.rx.isHidden).disposed(by: self.dispose)
+        self.vm.loading.map({ !$0 }).drive(self.hub.rx.isHidden).disposed(by: self.dispose)
+        
+        self.vm.jobDeliveryHistoryStatus(jobId: jid, type: t).asDriver(onErrorJustReturn: []).drive(onNext: {  [weak self] (data) in
+            self?.record = data
+            self?.table.reloadData()
+            
+        }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        
+        
+    }
+}
 
 extension DetailDeliveryStatus:UITableViewDelegate,UITableViewDataSource{
     
@@ -128,16 +155,16 @@ extension DetailDeliveryStatus:UITableViewDelegate,UITableViewDataSource{
             // 当前是有一个状态
             if record.count - 1  == 0{
             
-                cell.status.text =  record[0].status
-                cell.time.text  = record[0].time
+                cell.status.text =  record[0].resumeStatus.describe
+                cell.time.text  = record[0].timeStr
                 cell.logo.image =  #imageLiteral(resourceName: "checked")
             
             // 最新状态放前面(倒序)
             }else{
                 let data = record[indexPath.row]
                 cell.logo.image = #imageLiteral(resourceName: "unchecked")
-                cell.status.text = data.status
-                cell.time.text = data.time
+                cell.status.text = data.resumeStatus.describe
+                cell.time.text = data.timeStr
                 
                 // 最后一个cell
                 if indexPath.row  == record.count - 1{
@@ -193,19 +220,28 @@ extension DetailDeliveryStatus{
     
     // 跳转job详细界面 (校招，实习， 网申) MARK
     @objc func showJob(){
-        guard  let mode = mode  else {
+        guard  let mode = mode, let id = mode.jobId  else {
             return
         }
-        if mode.jobtype == .onlineApply{
-            let apply = OnlineApplyShowViewController()
-            //apply.onlineApplyID = "test-id"
-            apply.uuid = "trhtr765765"
-            self.navigationController?.pushViewController(apply, animated: true)
+        if mode.jtype == .onlineApply{
             
-        }else if mode.jobtype == .graduate || mode.jobtype == .intern{
+            //apply.onlineApplyID = "test-id"
+            // ?
+            // 更加positionid 查询 onlineApply id
+            self.vm.getOnlineApplyId(positionId: id).subscribe(onNext: {  [weak self] (res) in
+                if let id = res.body?.onlineApplyId{
+                    let apply = OnlineApplyShowViewController()
+                    apply.uuid = id
+                    self?.navigationController?.pushViewController(apply, animated: true)
+                }
+            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+            //apply.uuid = mode.jobId
+           
+            
+        }else if mode.jtype == .graduate || mode.jtype == .intern{
             let jobV = JobDetailViewController()
            
-            jobV.job = (mode.id ?? "", mode.jobtype)
+            jobV.job = (id, mode.jtype)
             //jobV.kind = (id: mode.id!, type: mode.jobtype)
             self.navigationController?.pushViewController(jobV, animated: true)
         }
@@ -305,15 +341,19 @@ private class tableHeaderView:UIView{
     }()
     
     
-    var mode:DeliveredJobsModel?{
+    var mode: DeliveryJobsModel?{
         didSet{
             guard let mode = mode else {
                 return
             }
-            icon.image = UIImage.init(named: mode.icon)
-            jobName.text = mode.title
+            if let url = mode.companyIcon{
+                icon.kf.setImage(with: Source.network(url), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+            }
+            //icon.image = UIImage.init(named: mode.icon)
+            jobName.text = mode.jobName
             company.text = mode.companyName
             address.text =  mode.address?.joined(separator: " ")
+            
            
             self.setupAutoHeight(withBottomView: address, bottomMargin: 5)
         }

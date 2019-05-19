@@ -60,18 +60,39 @@ enum jobType:String {
 
 // 简历投递状态
 
-enum ResumeDeliveryStatus:String {
+enum ResumeDeliveryStatus:Int {
     
-    case delivery = "delivery"
-    case read = "read"
-    case test = "test"
-    case interview = "interview"
-    case offer = "offer"
-    case reject = "reject"
-    case all = "all"
-    case none = "none"
+    case delivery = 0
+    case read = 1
+    case test = 2
+    case interview = 3
+    case offer = 4
+    case reject = 5
+    case all = 6
+    case none = -1
     
-    
+    var color:UIColor{
+        get{
+            switch self {
+            case .delivery:
+                return UIColor.lightGray
+            case .test:
+                return UIColor.orange
+            case .read:
+                return  UIColor.brown
+            case .interview:
+                return UIColor.red
+            case .offer:
+                return UIColor.green
+            case .reject:
+                return UIColor.black
+            case .all:
+                return UIColor.clear
+            default:
+                return UIColor.clear
+            }
+        }
+    }
     
     var describe:String{
         get{
@@ -91,7 +112,7 @@ enum ResumeDeliveryStatus:String {
             case .all:
                 return "全部"
             default:
-                return ""
+                return "未知"
             }
         }
     }

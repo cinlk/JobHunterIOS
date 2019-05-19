@@ -233,6 +233,8 @@ class GlobalUserInfo: NSObject {
 //    private var remember:Bool{
 //
 //    }
+    
+
     private var role:UserRole.role = UserRole.role.anonymous{
         didSet{
             switch self.role{
@@ -248,7 +250,7 @@ class GlobalUserInfo: NSObject {
     
     
     
-    private var userData:[String:Any] = [:]{
+    internal var userData:[String:Any] = [:]{
         didSet{
             if let role = userData["role"] as? String{
                 self.role = UserRole.role(rawValue: role) ?? .anonymous
@@ -313,6 +315,8 @@ class GlobalUserInfo: NSObject {
     open func getName() -> String?{
         return self.userData["name"] as? String
     }
+    
+    
     
     open func getIcon() -> URL?{
         guard  let icon_url = self.userData["user_icon"] as? String else {

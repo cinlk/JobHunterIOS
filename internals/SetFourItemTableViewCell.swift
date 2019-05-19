@@ -9,20 +9,17 @@
 import UIKit
 
 
-protocol selectedItemDelegate: class {
-    
-    func showdelivery()
-    func showInvitation()
-    func showollections()
-    func showPostArticle()
-    
-}
+fileprivate let imageSize:CGSize = CGSize.init(width: 40, height: 45)
+
+
 
 class SetFourItemTableViewCell: UITableViewCell {
 
     
-    weak var delegate:selectedItemDelegate?
+   // weak var delegate:selectedItemDelegate?
     
+    
+    internal var navToVc:((_:UIViewController)->Void)?
     
     private lazy var stack:UIStackView = {
         let sk = UIStackView.init()
@@ -36,118 +33,40 @@ class SetFourItemTableViewCell: UITableViewCell {
     }()
     
     
-    
-    
-    private lazy var deliveryView:UIView = { [unowned self] in
-        
-        let v = UIView()
-        let btn = UIButton.init()
-        btn.setImage(#imageLiteral(resourceName: "delivery").changesize(size: CGSize.init(width: 40, height: 45)), for: .normal)
-        btn.setImage(#imageLiteral(resourceName: "delivery").changesize(size: CGSize.init(width: 40, height: 45)), for: .highlighted)
-        btn.addTarget(self, action: #selector(delivery), for: .touchUpInside)
-        
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.textAlignment = .center
-        label.text = "投递记录"
-        v.addSubview(label)
-        v.addSubview(btn)
-        
-        _ = btn.sd_layout().centerXEqualToView(label)?.bottomSpaceToView(label,5)?.heightIs(45)?.widthRatioToView(v,1)
-        _ = label.sd_layout().bottomSpaceToView(v,5)?.widthRatioToView(v,1)?.heightIs(20)
+    internal var mode:[(UIImage, String, UIViewController)]?{
+        didSet{
+            guard  let m = mode else {
+                return
+            }
+            
+            for (index, item) in m.enumerated(){
+                let v = UIView.init()
+                let btn = UIButton.init()
+                btn.setImage(item.0.changesize(size: imageSize), for: .normal)
+                btn.setImage(item.0.changesize(size: imageSize), for: .highlighted)
+                btn.tag = index
+                btn.addTarget(self, action: #selector(nav), for: .touchUpInside)
+                let label = UILabel()
+                label.font = UIFont.systemFont(ofSize: 14)
+                label.textAlignment = .center
+                label.text = item.1
+                v.addSubview(label)
+                v.addSubview(btn)
+                
+                _ = btn.sd_layout().centerXEqualToView(label)?.bottomSpaceToView(label,5)?.heightIs(45)?.widthRatioToView(v,1)
+                _ = label.sd_layout().bottomSpaceToView(v,5)?.widthRatioToView(v,1)?.heightIs(20)
 
-        
-        return v
-        
-    }()
+                stack.addArrangedSubview(v)
+                
+            }
+        }
+    }
     
-    
-    private lazy var inviteView:UIView = {  [unowned self] in
-        let v = UIView()
-        
-        
-        let btn = UIButton.init()
-        btn.setImage(#imageLiteral(resourceName: "volk").changesize(size: CGSize.init(width: 40, height: 45)), for: .normal)
-        btn.setImage(#imageLiteral(resourceName: "volk").changesize(size: CGSize.init(width: 40, height: 45)), for: .highlighted)
-        btn.addTarget(self, action: #selector(invite), for: .touchUpInside)
 
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.textAlignment = .center
-        label.text = "我的邀请"
-        v.addSubview(label)
-        v.addSubview(btn)
-        
-        _ = btn.sd_layout().centerXEqualToView(label)?.bottomSpaceToView(label,5)?.heightIs(45)?.widthRatioToView(v,1)
-        _ = label.sd_layout().bottomSpaceToView(v,5)?.widthRatioToView(v,1)?.heightIs(20)
-        
-        
-        return v
-        
-    }()
-    
-    
-    private lazy var collectionView:UIView = {  [unowned self] in
-        let v = UIView()
-        
-        
-        let btn = UIButton.init()
-        btn.setImage(#imageLiteral(resourceName: "collection").changesize(size: CGSize.init(width: 40, height: 45)), for: .normal)
-        btn.setImage(#imageLiteral(resourceName: "collection").changesize(size: CGSize.init(width: 40, height: 45)), for: .highlighted)
-        btn.addTarget(self, action: #selector(collected), for: .touchUpInside)
-
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.textAlignment = .center
-        label.text = "我的收藏"
-        v.addSubview(label)
-        v.addSubview(btn)
-        
-        _ = btn.sd_layout().centerXEqualToView(label)?.bottomSpaceToView(label,5)?.heightIs(45)?.widthRatioToView(v,1)
-        _ = label.sd_layout().bottomSpaceToView(v,5)?.widthRatioToView(v,1)?.heightIs(20)
-        
-        
-        return v
-        
-    }()
-    
-    
-    
-    private lazy var postView:UIView = {  [unowned self] in
-        let v = UIView()
-        
-        
-        let btn = UIButton.init()
-        btn.setImage(#imageLiteral(resourceName: "feedback").changesize(size: CGSize.init(width: 40, height: 45)), for: .normal)
-        btn.setImage(#imageLiteral(resourceName: "feedback").changesize(size: CGSize.init(width: 40, height: 45)), for: .highlighted)
-        btn.addTarget(self, action: #selector(article), for: .touchUpInside)
-
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.textAlignment = .center
-        label.text = "我的帖子"
-        v.addSubview(label)
-        v.addSubview(btn)
-        
-        _ = btn.sd_layout().centerXEqualToView(label)?.bottomSpaceToView(label,5)?.heightIs(45)?.widthRatioToView(v,1)
-        _ = label.sd_layout().bottomSpaceToView(v,5)?.widthRatioToView(v,1)?.heightIs(20)
-        
-        
-        return v
-        
-    }()
-    
-    
-    
-    
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        stack.addArrangedSubview(deliveryView)
-        stack.addArrangedSubview(inviteView)
-        stack.addArrangedSubview(collectionView)
-        stack.addArrangedSubview(postView)
+    
         
         self.contentView.addSubview(stack)
         self.selectionStyle = .none
@@ -173,21 +92,12 @@ class SetFourItemTableViewCell: UITableViewCell {
 
 extension SetFourItemTableViewCell{
     
-    @objc private func delivery(){
-        self.delegate?.showdelivery()
-    }
-    
-    @objc private func invite(){
-        self.delegate?.showInvitation()
-    }
-    
-    @objc private func collected(){
-        self.delegate?.showollections()
-    }
-    @objc private func article(){
-        self.delegate?.showPostArticle()
-    }
-    
-
-    
+   @objc private func nav(btn:UIButton){
+        guard  let vc = self.mode?[btn.tag].2 else {
+            return
+        }
+            self.navToVc?(vc)
+        }
 }
+
+

@@ -258,6 +258,62 @@ class  personBaseInfo:NSObject, Mappable, reumseInfoAction{
    
 }
 
+class PersonInTroduceInfo: personBaseInfo{
+    var iconURL:URL?
+    var name:String = ""
+    var gender:String = ""
+    var colleage:String = ""
+    
+    internal var types = [ResumeInfoType.tx,ResumeInfoType.name, ResumeInfoType.gender, ResumeInfoType.colleage]
+    
+    required init?(map: Map) {
+        super.init(map: map)
+        
+    }
+    
+    override func mapping(map: Map) {
+        super.mapping(map: map)
+        iconURL <- (map["icon_url"], URLTransform())
+        name <- map["name"]
+        gender <- map["gender"]
+        colleage <- map["colleage"]
+    }
+    
+    override func getPickerResumeType() -> [ResumeInfoType] {
+        return [.gender]
+    }
+    
+    subscript(index: Int) -> String{
+        get{
+            switch index{
+                
+            case 0:
+                return self.iconURL?.absoluteString ?? "localimage"
+            case 1:
+                return self.name
+            case 2:
+                return self.gender
+            case 3:
+                return self.colleage
+            default:
+                return ""
+            }
+        }
+        set{
+            switch index{
+            case 0:
+                self.iconURL = URL.init(string: newValue)
+            case 1:
+                self.name = newValue
+            default:
+                break
+            }
+        }
+    }
+}
+
+
+
 
 class personalBasicalInfo: personBaseInfo {
     

@@ -7,16 +7,25 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 import Kingfisher
 
 
 class PersonTableHeader: UIView {
 
     
+    internal var touch:(()->Void)?
+    
     private lazy var avatarImg:UIImageView = {
         let img = UIImageView.init(frame: CGRect.zero)
         img.contentMode = .scaleToFill
         img.clipsToBounds = true
+        
+        let tap = UITapGestureRecognizer.init()
+        tap.addTarget(self, action: #selector(touchAvatar))
+        img.isUserInteractionEnabled = true
+        img.addGestureRecognizer(tap)
         return img
     }()
     
@@ -51,6 +60,7 @@ class PersonTableHeader: UIView {
             }
         }
     }
+    // 从 global user 获取数据 TODO
     var  mode:(image:URL?, name:String, introduce:String)?{
         didSet{
             guard let mode = mode else { return }
@@ -70,6 +80,14 @@ class PersonTableHeader: UIView {
         super.init(frame: frame)
         let views:[UIView] = [avatarImg, nameTitle, introduce]
         self.sd_addSubviews(views)
+        
+        NotificationCenter.default.rx.notification(NotificationName.updateBriefInfo, object: nil).takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] (notify) in
+            self?.nameTitle.text = GlobalUserInfo.shared.getName()
+            if let iconURL = GlobalUserInfo.shared.getIcon(){
+                self?.avatarImg.kf.setImage(with: Source.network(iconURL), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+            }
+            
+        }, onError: nil, onCompleted: nil, onDisposed: nil)
       
     }
     
@@ -102,5 +120,14 @@ class PersonTableHeader: UIView {
         avatarImg.sd_cornerRadiusFromWidthRatio = 0.5
         nameTitle.setMaxNumberOfLinesToShow(1)
         introduce.setMaxNumberOfLinesToShow(2)
+    }
+}
+
+
+extension PersonTableHeader{
+    @objc private func touchAvatar(sender:UITapGestureRecognizer){
+        if sender.state == .ended{
+            self.touch?()
+        }
     }
 }

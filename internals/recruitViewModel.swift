@@ -212,7 +212,15 @@ extension RecruitViewModel{
     internal func jubao(){
         
     }
+    
+    
+    internal func onlineApplyJob(onlineApplyId:String, positionId:String) -> Observable<ResponseModel<OnlineJobApplyResModel>> {
+        return httpServer.applyOnlineJob(onlineApplyId: onlineApplyId, positionId: positionId)
+    }
 
+    internal func applyJob(jobId:String, type:String) -> Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.applyJob(jobId: jobId, type: type)
+    }
     
     
 }

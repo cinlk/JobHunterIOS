@@ -64,7 +64,7 @@ class SettingVC: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.insertCustomerView(UIColor.orange)
+        //self.navigationController?.insertCustomerView(UIColor.orange)
       }
     
   

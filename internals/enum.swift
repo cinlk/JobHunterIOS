@@ -58,6 +58,8 @@ enum ForumType:String{
             return Notification.Name.init("forumRecommnad")
         case .hottest:
             return Notification.Name.init("forumHottest")
+        case .mypost:
+            return Notification.Name.init("mypost")
         default:
             return nil
         }

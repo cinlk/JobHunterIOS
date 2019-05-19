@@ -236,7 +236,7 @@ class JobDetailViewController: BaseShowJobViewController {
     // 投递简历
     @objc func onlineApply(_ btn:UIButton){
         // 判断有效用户
-        guard let _ = mode.value.id, let applyed = mode.value.isApply else {
+        guard let jid = mode.value.id, let applyed = mode.value.isApply else {
             return
         }
         if !verifyLogin(){
@@ -247,11 +247,20 @@ class JobDetailViewController: BaseShowJobViewController {
             return
         }
         
+        self.vm.applyJob(jobId: jid, type: mode.value.type ?? "").subscribe(onNext: { [weak self] (res) in
+            if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code){
+                
+                self?.apply.isSelected = true
+                self?.apply.isUserInteractionEnabled = false
+                self?.view.showToast(title: "投递简历成功", duration: 5, customImage: UIImageView.init(image: UIImage.init(named: "checkmark")?.withRenderingMode(.alwaysTemplate)), mode: .customView)
+                self?.mode.value.isApply = true
+            }else{
+                self?.view.showToast(title: "系统错误,投递失败", customImage: nil, mode: .text)
+            }
+            
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
         // 网络请求 投递职位, 成功回调
-        apply.isSelected = true
-        apply.isUserInteractionEnabled = false
-        self.view.showToast(title: "投递简历成功", duration: 5, customImage: UIImageView.init(image: UIImage.init(named: "checkmark")?.withRenderingMode(.alwaysTemplate)), mode: .customView)
-        mode.value.isApply = true
+        
         
        
         

@@ -1358,7 +1358,6 @@ extension CommunicationChatView: UIImagePickerControllerDelegate{
                     }
                 }
                
-                
             }catch{
                 self.tableView.showToast(title: "存储图片到本地失败\(error)", customImage: nil, mode: .text)
                 print(error)
@@ -1368,7 +1367,6 @@ extension CommunicationChatView: UIImagePickerControllerDelegate{
         }
         
         dismiss(animated: true, completion: nil)
-        
         
     }
     

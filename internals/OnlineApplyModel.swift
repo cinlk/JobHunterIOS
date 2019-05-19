@@ -56,6 +56,22 @@ class OnlineApplyListModel: NSObject, Mappable {
     
 }
 
+// 必须加NSObject
+class OnlineApplyPosition: NSObject, Mappable{
+    
+    var positionId:UInt?
+    var positionName:String?
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        positionId <- map["position_id"]
+        positionName <- map["position_name"]
+        
+    }
+}
 class OnlineApplyModel: BaseModel {
     
     // 举办公司
@@ -83,8 +99,19 @@ class OnlineApplyModel: BaseModel {
     // 专业
     internal var majors:[String]?
     // 职位
-    internal var positions:[String]?
+    internal var positions:[OnlineApplyPosition]?
     
+    internal var positionsStr:[String]{
+        get{
+            var res = [String]()
+            if let p = positions{
+                p.forEach { (item) in
+                    res.append(item.positionName ?? "")
+                }
+            }
+            return res
+        }
+    }
     
 
  

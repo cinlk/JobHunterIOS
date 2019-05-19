@@ -33,7 +33,9 @@ enum RecruitTarget{
     case getCompany(req:CompanyFilterModel)
     case getCompanyById(id:String)
     case getRecruiterById(id:String)
-   
+    
+    case onlineApplyJob(onlineApplyId:String, positionId:String)
+    case applyJob(jobId:String, type:String)
     
     case none
 }
@@ -85,6 +87,10 @@ extension RecruitTarget: TargetType{
             return self.prefix + "tag/jobs"
         case .getRecruiterById(let id):
             return self.prefix + "recruiter/\(id)"
+        case .onlineApplyJob(let onlineApplyId,let positionId):
+            return self.prefix + "online/\(onlineApplyId)/\(positionId)"
+        case .applyJob(let jobId, let type):
+            return self.prefix + "job/\(type)/\(jobId)"
         default:
             return ""
         }
@@ -120,6 +126,8 @@ extension RecruitTarget: TargetType{
             return Method.post
         case .getRecruiterById:
             return Method.get
+        case .onlineApplyJob, .applyJob:
+            return .put
         default:
             return Method.get
         }
@@ -288,6 +296,16 @@ class RecruitServer{
     
     internal func getRecruiterById(id:String) -> Observable<ResponseModel<RecruiterMainModel>>{
         return httpServer.rx.request(.getRecruiterById(id: id)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<RecruiterMainModel>.self)
+    }
+    
+    internal func applyOnlineJob(onlineApplyId:String, positionId:String) -> Observable<ResponseModel<OnlineJobApplyResModel>> {
+        
+        return httpServer.rx.request(.onlineApplyJob(onlineApplyId: onlineApplyId, positionId: positionId)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<OnlineJobApplyResModel>.self)
+    }
+    
+    internal func applyJob(jobId:String, type:String) -> Observable<ResponseModel<HttpResultMode>>{
+        
+        return httpServer.rx.request(.applyJob(jobId: jobId, type: type)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
     }
 }
 
