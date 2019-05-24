@@ -323,15 +323,15 @@ class SelectItemUtil {
     
     
     // 生日 年——月
-    private func birthDay(){
-        let path = Bundle.main.path(forResource: "birthDate", ofType: "plist")
+    private func birthDay(name:String, fileName:String){
+        let path = Bundle.main.path(forResource: fileName, ofType: "plist")
         let date = NSDictionary.init(contentsOfFile: path!) as!  Dictionary<String,Any>
         let tree = nodes.init()
-        let root = component.init(type: .root, key: "生日", parent: nil, item: [])
+        let root = component.init(type: .root, key: name, parent: nil, item: [])
         
         tree.buildData(node: root)
         
-        for  (index,item) in (date["生日"] as! NSArray).enumerated(){
+        for  (index,item) in (date[name] as! NSArray).enumerated(){
             
             let items =  (item as! Dictionary<String,[String]>).sorted(by: { (t1, t2) -> Bool in
                 return t1.key < t2.key
@@ -347,10 +347,7 @@ class SelectItemUtil {
                 }
             }
         }
-        
-        
-        self.itemNode["生日"] = tree
-        
+        self.itemNode[name] = tree
         
     }
     
@@ -436,7 +433,9 @@ class SelectItemUtil {
         // bundle
         address()
         degress()
-        birthDay()
+        birthDay(name: "生日", fileName: "birthDate")
+        birthDay(name: "开始时间", fileName: "startTime")
+        birthDay(name: "结束时间", fileName: "endTime")
         
         
         creatTreeBy(name: ResumeInfoType.gender.describe, target: ["男","女"])

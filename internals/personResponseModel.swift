@@ -109,3 +109,31 @@ class OnlineApplyId: Mappable{
         onlineApplyId <- map["online_apply_id"]
     }
 }
+
+
+class ResumeSubItem:Mappable{
+    
+    var id:String?
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        id <- map["id"]
+    }
+}
+
+
+
+class AttachResumRes:Mappable{
+    var url:String?
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        url <- map["url"]
+    }
+}

@@ -48,6 +48,161 @@ class PersonViewModel {
     internal func getOnlineApplyId(positionId:String) -> Observable<ResponseModel<OnlineApplyId>>{
         return server.getOnlineApplyId(positionId: positionId)
     }
+    
+    internal func resumeList() -> Observable<[ReumseListModel]>{
+        return server.resumelist()
+    }
+    
+    internal func newResumeName(resumeId:String, name:String) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.newResumeName(resumeId: resumeId, name: name)
+    }
+    
+    internal func newTextResume() -> Observable<ResponseModel<ReumseListModel>>{
+        return server.newTextResume()
+    }
+    
+    internal func newAttachResume(data:Data, name:String) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.newAttachResume(data: data, name: name)
+    }
+    internal func setPrimaryResume(resumeId:String) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.setPrimaryResume(resumeId: resumeId)
+    }
+    internal func deleteResume(resumeId:String, type: resumeType) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.deleteResume(resumeId: resumeId, type: type.rawValue)
+    }
+    
+    internal func textResumeInfo(resumeId:String) -> Observable<ResponseModel<PersonTextResumeModel>>{
+        return server.textResumeInfo(resumeId: resumeId)
+    }
+    
+    internal func textResumeContent(req:TextResumeBaseInfoReq) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.baseInfoContent(req: req)
+    }
+    
+    func textResuemBaseInfoAvatar(resumeId:String, data:Data, name:String) -> Observable<ResponseModel<HttpAvatarResModel>> {
+        return server.baseInfoAvatar(resumeId: resumeId, data: data, name: name).trackActivity(self.activityIndicator)
+    }
+    
+    
+    func createTextResumeEducation(req: TextResumeEducationReq) -> Observable<ResponseModel<ResumeSubItem>>{
+        return server.newResumeEducationInfo(req: req)
+    }
+    
+    func updateTextResumeEducation(id:String, req: TextResumeEducationReq) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.updateResumeEducation(id: id, req: req)
+    }
+    
+    func deleteTextResumeEducation(resumeId:String, id:String)  -> Observable<ResponseModel<HttpResultMode>>{
+        return server.deleteResumeEducation(resumeId: resumeId, id: id)
+    }
+    
+    
+    internal func newResumeWorkInfo(req: TextResumeWorkReq) -> Observable<ResponseModel<ResumeSubItem>>{
+        
+        return server.newResumeWorkInfo(req: req)
+    }
+    
+    
+    internal func updateResumeWork(id:String, req:TextResumeWorkReq) -> Observable<ResponseModel<HttpResultMode>>{
+        return  server.updateResumeWork(id: id, req: req)
+    }
+    
+    internal func deleteResumeWork(resumeId:String, id:String) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.deleteResumeWork(resumeId: resumeId, id: id)
+    }
+    
+    
+    
+    internal func newResumeProjectInfo(req: TextResumeProjectReq) -> Observable<ResponseModel<ResumeSubItem>>{
+        
+        return server.newResumeProjectInfo(req: req)
+    }
+    
+    
+    internal func updateResumeProject(id:String, req:TextResumeProjectReq) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.updateResumeProject(id: id, req: req)
+    }
+    
+    internal func deleteResumeProject(resumeId:String, id:String) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.deleteResumeProject(resumeId: resumeId, id: id)
+    }
+    
+    
+    
+    internal func newResumeCollegeActiveInfo(req: TextResumeCollegeActiveReq) -> Observable<ResponseModel<ResumeSubItem>>{
+        
+        return server.newResumeCollegeActiveInfo(req: req)
+    }
+    
+    
+    internal func updateResumeCollegeActive(id:String, req:TextResumeCollegeActiveReq) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.updateResumeCollegeActive(id: id, req: req)
+    }
+    
+    internal func deleteResumeCollegeActive(resumeId:String, id:String) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.deleteResumeCollegeActive(resumeId: resumeId, id: id)
+    }
+    
+    
+    internal func newResumeSocialPracticeInfo(req: TextResumeSocialPracticeReq) -> Observable<ResponseModel<ResumeSubItem>>{
+        
+        return server.newResumeSocialPracticeInfo(req: req)
+    }
+    
+    
+    internal func updateResumeSocialPractice(id:String, req:TextResumeSocialPracticeReq) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.updateResumeSocialPractice(id: id, req: req)
+    }
+    
+    internal func deleteResumeSocialPractice(resumeId:String, id:String) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.deleteResumeCollegeActive(resumeId: resumeId, id: id)
+    }
+    
+    
+    internal func newResumeSkillInfo(req: TextResumeSkillReq) -> Observable<ResponseModel<ResumeSubItem>>{
+        
+        return server.newResumeSkillInfo(req: req)
+    }
+    
+    
+    internal func updateResumeSkill(id:String, req:TextResumeSkillReq) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.updateResumeSkill(id: id, req: req)
+    }
+    
+    internal func deleteResumeSkill(resumeId:String, id:String) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.deleteResumeSkill(resumeId: resumeId, id: id)
+    }
+    
+    
+    
+    internal func newResumeOtherInfo(req: TextResumeOtherReq) -> Observable<ResponseModel<ResumeSubItem>>{
+        
+        return server.newResumeOtherInfo(req: req)
+    }
+    
+    
+    internal func updateResumeOther(id:String, req:TextResumeOtherReq) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.updateResumeOther(id: id, req: req)
+    }
+    
+    internal func deleteResumeOther(resumeId:String, id:String) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.deleteResumeOther(resumeId: resumeId, id: id)
+    }
+    
+    
+    
+    internal func updateResumEstimate(id:String, req: TextResumeEstimateReq) -> Observable<ResponseModel<HttpResultMode>>{
+        
+        return server.updateResumEstimate(id: id, req: req)
+    }
+    
+    internal func attachResumeURL(resumeId:String) ->
+        Observable<ResponseModel<AttachResumRes>> {
+        return server.attachResumeUrl(resumeId: resumeId)
+    }
+    
+
+    
 }
 
 class  personModelManager {
@@ -80,7 +235,7 @@ class  personModelManager {
             "studentWorkInfo":[],
             "practiceInfo":[],
             "resumeOtherInfo":[],
-            "estimate": selfEstimateModel(JSON: [:])?.toJSON() ?? [:]
+            "estimate": EstimateTextResume(JSON: [:])?.toJSON() ?? [:]
             ])
         
         integrity = 58
@@ -125,10 +280,11 @@ class  personModelManager {
     
     open func getDatas() -> [ResumeSubItems: Any?]{
         
-        return [ResumeSubItems.personInfo: resumeBaseinfo ,.education: mode[currentResumeID]?.educationInfo,
-                .works: mode[currentResumeID]?.internInfo, .project: mode[currentResumeID]?.projectInfo,.schoolWork: mode[currentResumeID]?.studentWorkInfo,
-                .practice:mode[currentResumeID]?.practiceInfo,.skills: mode[currentResumeID]?.skills,.other: mode[currentResumeID]?.resumeOtherInfo,
-                .selfEvaludate: mode[currentResumeID]?.estimate]
+        return [:]
+//        return [ResumeSubItems.personInfo: resumeBaseinfo ,.education: mode[currentResumeID]?.educationInfo,
+//                .works: mode[currentResumeID]?.internInfo, .project: mode[currentResumeID]?.projectInfo,.schoolWork: mode[currentResumeID]?.studentWorkInfo,
+//                .practice:mode[currentResumeID]?.practiceInfo,.skills: mode[currentResumeID]?.skills,.other: mode[currentResumeID]?.resumeOtherInfo,
+//                .selfEvaludate: mode[currentResumeID]?.estimate]
         
     }
     
@@ -221,37 +377,37 @@ class  personModelManager {
         switch itemType {
         case .education:
             
-            if let mode = personEducationInfo(JSON: res){
+            if let mode = educationInfoTextResume(JSON: res){
                 self.mode[currentResumeID]?.educationInfo.append(mode)
             }
             
             
         case .works:
             
-            if let mode = personInternInfo(JSON: res){
+            if let mode = workInfoTextResume(JSON: res){
                  self.mode[currentResumeID]?.internInfo.append(mode)
             }
             
         case .project:
-            if let mode = personProjectInfo(JSON: res){
+            if let mode = ProjectInfoTextResume(JSON: res){
                  self.mode[currentResumeID]?.projectInfo.append(mode)
             }
             
         case .schoolWork:
-            if let mode = studentWorkInfo(JSON: res){
+            if let mode = CollegeActivityTextResume(JSON: res){
                  self.mode[currentResumeID]?.studentWorkInfo.append(mode)
             }
         case .practice:
-            if  let mode = socialPracticeInfo(JSON: res){
+            if  let mode = SocialPracticeTextResume(JSON: res){
                  self.mode[currentResumeID]?.practiceInfo.append(mode)
             }
             
         case .skills:
-            if  let mode = personSkillInfo(JSON: res){
+            if  let mode = SkillsTextResume(JSON: res){
                  self.mode[currentResumeID]?.skills.append(mode)
             }
         case .other:
-            if let mode = resumeOther(JSON: res){
+            if let mode = OtherTextResume(JSON: res){
                  self.mode[currentResumeID]?.resumeOtherInfo.append(mode)
             }
             
@@ -265,38 +421,38 @@ class  personModelManager {
         
         switch  type {
         case .education:
-            if let data = personEducationInfo(JSON: res){
+            if let data = educationInfoTextResume(JSON: res){
                 
                 self.mode[currentResumeID]?.educationInfo[row] = data
             }
         case .works:
-            if let data = personInternInfo(JSON: res){
+            if let data = workInfoTextResume(JSON: res){
                 self.mode[currentResumeID]?.internInfo[row] = data
                 
             }
             
         case .project:
-            if let data = personProjectInfo(JSON: res){
+            if let data = ProjectInfoTextResume(JSON: res){
                 self.mode[currentResumeID]?.projectInfo[row] = data
             }
             
         case .practice:
-            if  let data = socialPracticeInfo(JSON: res){
+            if  let data = SocialPracticeTextResume(JSON: res){
                 self.mode[currentResumeID]?.practiceInfo[row] = data
             }
             
         case .other:
-            if let data = resumeOther(JSON: res){
+            if let data = OtherTextResume(JSON: res){
                 self.mode[currentResumeID]?.resumeOtherInfo[row] = data
             }
             
         case .schoolWork:
-            if let data = studentWorkInfo(JSON: res){
+            if let data = CollegeActivityTextResume(JSON: res){
                 self.mode[currentResumeID]?.studentWorkInfo[row] = data
             }
             
         case .skills:
-            if  let data = personSkillInfo(JSON: res){
+            if  let data = SkillsTextResume(JSON: res){
                 self.mode[currentResumeID]?.skills[row] = data
             }
             

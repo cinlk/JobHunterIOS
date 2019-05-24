@@ -201,6 +201,21 @@ extension OnlineApplyShowViewController: showApplyJobsDelegate{
             if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code), let flag = res.body?.exist{
                 let warn:String =  flag == false ? "已经投递过,不要重复投递" : "投递成功"
                 self?.view.showToast(title: warn, customImage: nil, mode: .text)
+                if flag, let de = DeliveryJobsModel.init(JSON: [
+                    "type": "onlineApply",
+                    "job_id": "\(p.positionId!)",
+                    "job_name": p.positionName,
+                    "created_time": Date.init().timeIntervalSince1970,
+                    "status": 0,
+                    "address": self?.mode.value.citys,
+                    "company_name": self?.mode.value.company?.name,
+                    "company_icon": self?.mode.value.company?.iconURL?.absoluteString,
+                    "feed_back": "",
+                    ]){
+                    
+                    NotificationCenter.default.post(name: NotificationName.deliveryHistoryItem, object: nil, userInfo: ["item": de])
+                }
+                
             }else{
                 self?.view.showToast(title: "系统错误,投递失败", customImage: nil, mode: .text)
             }

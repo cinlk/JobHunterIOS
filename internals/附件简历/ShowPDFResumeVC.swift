@@ -13,7 +13,7 @@ import WebKit
 fileprivate let navTitle = "附件简历"
 class ShowPDFResumeVC: UIViewController {
     
-    private lazy var wbView:WKWebView = {
+    private lazy var wbView:WKWebView = { [unowned self] in
         let wb = WKWebView.init()
         wb.navigationDelegate = self
         return wb

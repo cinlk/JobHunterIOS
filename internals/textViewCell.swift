@@ -36,7 +36,7 @@ class textViewCell: UITableViewCell {
         return label
     }()
     
-    lazy var doneBtn:UIToolbar = {
+    lazy var doneBtn:UIToolbar = { [unowned self] in 
         let toolBar:UIToolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.frame.width, height: 35))
         toolBar.backgroundColor = UIColor.gray
         let spaceBtn = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
@@ -114,19 +114,19 @@ extension textViewCell: UITextViewDelegate{
     }
     
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: addResumeInfoNotify), object: nil, userInfo: ["edit":true])
+        NotificationCenter.default.post(name: NotificationName.addResumSubItem, object: nil, userInfo: ["edit":true])
 
         return true
     }
     func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
         textView.resignFirstResponder()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: addResumeInfoNotify), object: nil, userInfo: ["edit":false])
+        NotificationCenter.default.post(name: NotificationName.addResumSubItem, object: nil, userInfo: ["edit":false])
 
         return true
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: addResumeInfoNotify), object: nil, userInfo: ["edit":true])
+        NotificationCenter.default.post(name: NotificationName.addResumSubItem, object: nil, userInfo: ["edit":true])
         placeHolderLabel.isHidden =  textView.text.isEmpty == true ? false : true
 
         

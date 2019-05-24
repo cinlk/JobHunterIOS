@@ -25,7 +25,7 @@ import UIKit
         }
     }
     
-    dynamic internal var mode:reumseKind?{
+    dynamic internal var mode:ReumseListModel?{
         didSet{
             guard  let mode = mode  else {
                 return
@@ -38,7 +38,7 @@ import UIKit
            
             // 设置宽度
             var MarginWidth:CGFloat = 0
-            if mode.type == .online{
+            if mode.resumeKind == .text{
                 MarginWidth = 40 + 20
             }else{
                 MarginWidth = 40 + 20 + 20
@@ -46,8 +46,8 @@ import UIKit
             if let size = mode.name?.rect(withFont: UIFont.systemFont(ofSize: 14), size: CGSize.init(width: GlobalConfig.ScreenW - MarginWidth, height: CGFloat(20))){
                 _ = self.textTitle.sd_layout().widthIs(size.width)
             }
-            self.checkMark.isHidden = !mode.isDefault!
-            if mode.type == .attachment{
+            self.checkMark.isHidden = !mode.isPrimary!
+            if mode.resumeKind == .attachment{
                  self.attacheImage.isHidden = false
                 _ = self.attacheImage.sd_layout().widthIs(15)?.heightIs(15)
             }else{
@@ -92,7 +92,7 @@ import UIKit
         return image
     }()
     
-    private lazy var moreBtn:UIButton = {
+    private lazy var moreBtn:UIButton = { [unowned self] in 
         let btn = UIButton()
         btn.backgroundColor = UIColor.clear
         btn.setImage(#imageLiteral(resourceName: "more").changesize(size: CGSize.init(width: 15, height: 10)), for: .normal)

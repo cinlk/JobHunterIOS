@@ -9,17 +9,17 @@
 import UIKit
 
 
-@objcMembers class educationInfoCell: BaseResumeInfoCell<personEducationInfo> {
+@objcMembers class educationInfoCell: BaseResumeInfoCell<educationInfoTextResume> {
     
     
-    dynamic var mode:personEducationInfo?{
+    dynamic var mode:educationInfoTextResume?{
         didSet{
             guard let mode = mode else {
                 return
             }
             
             startToEndTime.text = mode.startTimeString + "至" + mode.endTimeString
-            multiValues.text = mode.colleage + "-" + mode.department + "-" + mode.degree
+            multiValues.text = mode.college + "-" + mode.major + "-" + mode.degree
             describe.text = mode.describe
             if mode.isOpen{
                 self.describe.setMaxNumberOfLinesToShow(0)

@@ -8,17 +8,17 @@
 
 import UIKit
 
-@objcMembers class studentWorkCell: BaseResumeInfoCell<studentWorkInfo> {
+@objcMembers class studentWorkCell: BaseResumeInfoCell<CollegeActivityTextResume> {
 
    
-     dynamic var mode:studentWorkInfo?{
+     dynamic var mode:CollegeActivityTextResume?{
         didSet{
             guard let mode = mode else{
                 return
             }
             
             self.startToEndTime.text = mode.startTimeString + "至" + mode.endTimeString
-            self.multiValues.text = mode.colleage + "-" +  mode.orgName
+            self.multiValues.text = mode.college + "-" +  mode.orgName
             self.describe.text = mode.describe
             
             if mode.isOpen{

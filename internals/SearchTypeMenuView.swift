@@ -24,7 +24,10 @@ class SearchTypeMenuView: UIView {
     internal var datas:[searchItem] = [] {
         didSet{
             self.table.reloadData()
-            self.frame.size = CGSize.init(width: frameWidth, height: CGFloat(datas.count) * SearchTypeMenuView.cellHeight())
+            if !datas.contains(.online){
+                 self.frame.size = CGSize.init(width: frameWidth, height: CGFloat(datas.count) * SearchTypeMenuView.cellHeight())
+            }
+            //self.frame.size = CGSize.init(width: frameWidth, height: CGFloat(datas.count) * SearchTypeMenuView.cellHeight())
         }
     }
     
@@ -84,7 +87,7 @@ class SearchTypeMenuView: UIView {
     
      init(frame: CGRect, arrowLeftMargin:CGFloat = 15) {
         super.init(frame: frame)
-        self.frame.size = CGSize.init(width: frameWidth, height: 0)
+        //self.frame.size = CGSize.init(width: frameWidth, height: 0)
         self.arrowLeftMargin = arrowLeftMargin
        
         _ = NotificationCenter.default.rx.notification(NotificationName.searchType).takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] (notify) in
@@ -105,7 +108,7 @@ class SearchTypeMenuView: UIView {
     }
     
     override func layoutSubviews() {
-      
+        
         self.addSubview(table)
         self.addSubview(arrow)
         _ = self.arrow.sd_layout()?.leftEqualToView(self)?.topEqualToView(self)?.widthRatioToView(self,1)?.heightIs(arrowHeight)
@@ -169,7 +172,12 @@ extension SearchTypeMenuView: UITableViewDataSource, UITableViewDelegate{
         cell.selectionStyle = .none
         cell.textLabel?.text = datas[indexPath.row].describe
         cell.textLabel?.font = UIFont.systemFont(ofSize: 12)
-        cell.textLabel?.textAlignment = .center
+        if datas.contains(.online){
+             cell.textLabel?.textAlignment = .left
+        }else{
+             cell.textLabel?.textAlignment = .center
+        }
+        
         return cell
     }
 

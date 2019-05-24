@@ -52,7 +52,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 25, height: 25)
         }
     }
     
-    dynamic var mode:personSkillInfo?{
+    dynamic var mode:SkillsTextResume?{
         didSet{
             guard let mode = mode else {
                 return

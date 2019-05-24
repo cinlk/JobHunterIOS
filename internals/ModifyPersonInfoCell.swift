@@ -90,10 +90,14 @@ class ModifyPersonInfoCell: UITableViewCell {
             self.leftTitle.text = mode.type.describe
             
            
-            if mode.type == .tx, let iconURL = URL.init(string: self.mode?.title ?? "") {
+            if mode.type == .tx {
                 textField.isHidden = true
                 tx.isHidden = false
-                self.tx.kf.setImage(with: Source.network(iconURL), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+                if let iconURL = URL.init(string: self.mode?.title ?? ""){
+                    self.tx.kf.setImage(with: Source.network(iconURL), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+                }else{
+                    self.tx.image = #imageLiteral(resourceName: "smileEmotion")
+                }
                 //self.tx.image = UIImage.init(named: mode.title)
                 return
             }
@@ -190,7 +194,7 @@ extension ModifyPersonInfoCell: UITextFieldDelegate{
     
      // 通知vc 进入编辑
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: modifyPersonNotifyName), object: nil, userInfo: ["edit":true])
+        NotificationCenter.default.post(name:  NotificationName.modifyResume, object: nil, userInfo: ["edit":true])
         
     }
     
@@ -198,7 +202,7 @@ extension ModifyPersonInfoCell: UITextFieldDelegate{
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         // 通知vc 结束编辑
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: modifyPersonNotifyName), object: nil, userInfo: ["edit":false])
+        NotificationCenter.default.post(name:  NotificationName.modifyResume, object: nil, userInfo: ["edit":false])
         return true
     }
     
@@ -219,7 +223,7 @@ extension ModifyPersonInfoCell: UITextFieldDelegate{
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: modifyPersonNotifyName), object: nil, userInfo: ["edit":false])
+        NotificationCenter.default.post(name:  NotificationName.modifyResume, object: nil, userInfo: ["edit":false])
         return true
     }
     

@@ -78,11 +78,14 @@ class DetailDeliveryStatus: UIViewController {
         self.view.addSubview(table)
         navigationItem.backBarButtonItem = UIBarButtonItem.init(title: "", style: .plain, target: nil, action: nil)
         
+        //self.navigationController?.delegate = self
         _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.navigationController?.insertCustomerView(UIColor.orange)
+        //self.navigationController?.navigationBar.isTranslucent = true
      }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -95,6 +98,8 @@ class DetailDeliveryStatus: UIViewController {
     }
 
 }
+
+
 
 
 

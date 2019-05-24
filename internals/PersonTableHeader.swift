@@ -66,6 +66,8 @@ class PersonTableHeader: UIView {
             guard let mode = mode else { return }
             if let iconURL = mode.image{
                 self.avatarImg.kf.setImage(with: Source.network(iconURL), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+            }else{
+                self.avatarImg.image = #imageLiteral(resourceName: "selectedPerson")
             }
             //self.avatarImg.image = UIImage.init(named: mode.image)
             self.nameTitle.text = mode.name

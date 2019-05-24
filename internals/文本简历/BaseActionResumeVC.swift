@@ -43,12 +43,12 @@ class BaseActionResumeVC: UITableViewController {
         var stop:Bool = false
         res.removeAll()
         
-        diction.forEach{
+        diction.forEach{ [weak self] in
             if $0.value.isEmpty{
                 print("\($0.key.describe) 为空")
                 stop = true
             }
-            res[$0.key.rawValue] = $0.value
+            self?.res[$0.key.rawValue] = $0.value
         }
         
         if stop{

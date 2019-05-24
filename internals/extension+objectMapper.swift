@@ -68,23 +68,29 @@ final class DataTransformBase64: TransformType {
     }
 }
 
-final class StringTransformURL: TransformType {
+final class DefaultValueTransform: TransformType {
     
-    typealias Object = URL
+    typealias Object = String
     
     typealias JSON = String
     
+    private let defaultValue:String
+    
+    public init(defaultValue:String) {
+        self.defaultValue = defaultValue
+    }
+    
     public func transformFromJSON(_ value: Any?) -> Object? {
-        if let str = value as? String{
-            return URL.init(string: str)
+        if let str = value as? String, !str.isEmpty{
+            return str
         }
         
-        return nil
+        return self.defaultValue
     }
     
     public func transformToJSON(_ value: Object?) -> JSON? {
         if let data = value{
-            return data.absoluteString
+            return data
         }
         return nil
     }

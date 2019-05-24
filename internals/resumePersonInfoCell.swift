@@ -75,16 +75,16 @@ fileprivate let preEmail:String =   "联系邮箱: "
 
     
     
-   dynamic var mode:personalBasicalInfo?{
+   dynamic var mode:personalBaseInfoTextResume?{
         didSet{
             guard let mode = mode else { return }
-            self.gender.text = prexGender +  mode.gender!
-            self.degree.text = preDegree + mode.degree!
+            self.gender.text = prexGender +  mode.gender
+            self.degree.text = preDegree + mode.degree
             self.city.text = preCity + mode.city
-            self.birthday.text = preBirthday + mode.birthday!
-            self.phone.text = prePhone + mode.phone!
-            self.email.text =  preEmail + mode.email!
-            self.colleage.text = preColleage + mode.colleage!
+            self.birthday.text = preBirthday + mode.birthday
+            self.phone.text = prePhone + mode.phone
+            self.email.text =  preEmail + mode.email
+            self.colleage.text = preColleage + mode.college
             
             
             

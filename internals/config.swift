@@ -63,12 +63,10 @@ var IsGreeting:Bool = true
 
 
 
-// APP 启动获取的全局信息
-// 个人基本信息
-var resumeBaseinfo =  personalBasicalInfo(JSON: ["tx":"chrome","name":"lk","gender":"男",
-                                                 "city":"北京","colleage":"北大","degree":"专科","phone":"13718754627","email":"dqwd@163.com","birthday":"1990-01"])!
+//var resumeBaseinfo =  personalBasicalInfo(JSON: ["tx":"chrome","name":"lk","gender":"男",
+//                                                 "city":"北京","colleage":"北大","degree":"专科","phone":"13718754627","email":"dqwd@163.com","birthday":"1990-01"])!
 
-var phoneNumber:String = ""
+//var phoneNumber:String = ""
 
 
 
@@ -236,6 +234,10 @@ struct  NotificationName {
     static let personMainItem:Notification.Name = Notification.Name.init("personMainItem")
     
     static let updateBriefInfo: Notification.Name = Notification.Name.init("updateBriefInfo")
+    static let deliveryHistoryItem: Notification.Name = Notification.Name.init("deliveryHistoryItem")
+    static let resume: Notification.Name = Notification.Name.init("resume")
+    static let modifyResume: Notification.Name = Notification.Name.init("modifyResume")
+    static let addResumSubItem: Notification.Name = Notification.Name.init("addResumSubItem")
     // forum
 //    static let ForumHelp: Notification.Name = Notification.Name.init("forumHelp")
 //    static let ForumInterview: Notification.Name = Notification.Name.init("forumInterview")

@@ -9,7 +9,7 @@
 import UIKit
 
 
-fileprivate let des:String = phoneNumber.isEmpty ? "绑定新手机号码" : "当前绑定手机号"
+fileprivate let des:String = GlobalUserInfo.shared.getPhoneNumber().isEmpty ? "绑定新手机号码" : "当前绑定手机号"
 fileprivate let inputPhone:String = "请输入新手机号"
 fileprivate let inputVerifyCode:String = "请输入验证码"
 fileprivate let confirmStr:String = "确定"
@@ -33,8 +33,8 @@ class changePhoneVC: UIViewController {
         lable.font = UIFont.systemFont(ofSize: 20)
         lable.textAlignment = .center
         lable.textColor = UIColor.black
-        lable.isHidden = phoneNumber.isEmpty ? true : false
-        lable.text = phoneNumber
+        lable.isHidden = GlobalUserInfo.shared.getPhoneNumber().isEmpty ? true : false
+        lable.text = GlobalUserInfo.shared.getPhoneNumber()
         return lable
     }()
     
@@ -130,7 +130,7 @@ class changePhoneVC: UIViewController {
 extension changePhoneVC{
     
     private func initView(){
-        self.title = phoneNumber.isEmpty ? "添加手机号" : "修改手机号"
+        self.title = GlobalUserInfo.shared.getPhoneNumber().isEmpty ? "添加手机号" : "修改手机号"
         self.view.backgroundColor = UIColor.init(r: 246, g: 246, b: 246)
         self.view.addGestureRecognizer(tap)
         self.view.addSubview(topLabel)
@@ -149,7 +149,7 @@ extension changePhoneVC{
 
     // 确认修改phone
     @objc func confirm(){
-        if phoneNumber.isEmpty{
+        if GlobalUserInfo.shared.getPhoneNumber().isEmpty{
             // 添加号码
         }else{
             // 修改号码

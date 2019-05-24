@@ -95,6 +95,14 @@ class DeliveredHistory: BaseViewController,UIScrollViewDelegate {
         self.setViews()
         self.loadData()
         
+        NotificationCenter.default.rx.notification(NotificationName.deliveryHistoryItem, object: nil).subscribe(onNext: { [weak self] (notify) in
+            if let userinfo = notify.userInfo as? [String: DeliveryJobsModel], let item = userinfo["item"]{
+                self?.datas.insert(item, at: 0)
+                // 刷新 ui？
+                
+                
+            }
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
        
         
     }

@@ -21,7 +21,7 @@ class myAccount: BaseTableViewController {
     // 1 存在手机号   2 不存在手机号 显示绑定
     private var IsModifyPhone:Bool{
         get{
-            if phoneNumber.isEmpty{
+            if GlobalUserInfo.shared.getPhoneNumber().isEmpty{
                 return false
             }
             return true

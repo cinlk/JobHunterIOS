@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 fileprivate let fontSize:CGFloat = 14
 fileprivate let textColort:UIColor = UIColor.black
@@ -110,13 +111,16 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
     }()
     
     
-    dynamic var mode:personalBasicalInfo?{
+    dynamic var mode:personalBaseInfoTextResume?{
         
         didSet{
             
             guard let mode = mode else { return }
-            
-            touxaing.image = UIImage.init(named:  mode.tx)
+            if let url = self.mode?.tx{
+                self.touxaing.kf.setImage(with: Source.network(url), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+            }else{
+                self.touxaing.image = #imageLiteral(resourceName: "smileEmotion")
+            }
             
             
             name.text = mode.name
@@ -128,8 +132,8 @@ fileprivate let imgSize:CGSize = CGSize.init(width: 60, height: 60)
             birthday.text = mode.birthday
             email.text = mode.email
             
-            lable1.text = mode.gender! + "|" + mode.city + "|" + mode.degree! + "|" + mode.birthday!
-            lable2.text = mode.phone! + "|" + mode.email!
+            lable1.text = mode.gender + "|" + mode.city + "|" + mode.degree + "|" + mode.birthday
+            lable2.text = mode.phone + "|" + mode.email
             
             // cell 自适应高度
             self.setupAutoHeight(withBottomViewsArray: [touxaing,lable1,lable2], bottomMargin: 10)

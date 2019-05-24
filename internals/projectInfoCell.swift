@@ -8,9 +8,9 @@
 
 import UIKit
 
-@objcMembers class projectInfoCell: BaseResumeInfoCell<personProjectInfo> {
+@objcMembers class projectInfoCell: BaseResumeInfoCell<ProjectInfoTextResume> {
 
-     dynamic var mode:personProjectInfo?{
+     dynamic var mode:ProjectInfoTextResume?{
         didSet{
             guard let mode = mode else{
                 return

@@ -254,6 +254,22 @@ class JobDetailViewController: BaseShowJobViewController {
                 self?.apply.isUserInteractionEnabled = false
                 self?.view.showToast(title: "投递简历成功", duration: 5, customImage: UIImageView.init(image: UIImage.init(named: "checkmark")?.withRenderingMode(.alwaysTemplate)), mode: .customView)
                 self?.mode.value.isApply = true
+                // 通知 历史投递界面 加入新的数据
+                if let de = DeliveryJobsModel.init(JSON: [
+                    "type": self?.mode.value.type,
+                    "job_id": jid,
+                    "job_name": self?.mode.value.name,
+                    "created_time": Date.init().timeIntervalSince1970,
+                    "status": 0,
+                    "address": self?.mode.value.address,
+                    "company_name": self?.mode.value.company?.name,
+                    "company_icon": self?.mode.value.company?.iconURL?.absoluteString,
+                    "feed_back": "",
+                    ]){
+                    
+                    NotificationCenter.default.post(name: NotificationName.deliveryHistoryItem, object: nil, userInfo: ["item": de])
+                    
+                }
             }else{
                 self?.view.showToast(title: "系统错误,投递失败", customImage: nil, mode: .text)
             }

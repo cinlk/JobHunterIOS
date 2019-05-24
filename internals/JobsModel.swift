@@ -63,7 +63,7 @@ class JobListModel: NSObject, Mappable{
     func mapping(map: Map) {
         jobId <- map["job_id"]
         type <- map["type"]
-        iconURL <- (map["icon_url"], StringTransformURL())
+        iconURL <- (map["icon_url"], URLTransform())
         companyName <- map["company_name"]
         jobName <- map["job_name"]
         address <- map["address"]

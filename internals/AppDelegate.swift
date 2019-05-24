@@ -125,7 +125,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // 系统回调
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        // 简历文档 获取
+        // 上传附件简历文档 获取
+        if GlobalUserInfo.shared.isLogin == false {
+            return false
+        }
+        
         // 判断用户权限
         if url.scheme == "file"{
             let targetVC = PreShowPDFVC()

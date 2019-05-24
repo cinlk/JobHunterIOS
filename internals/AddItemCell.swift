@@ -19,7 +19,6 @@ protocol AddItemCellUpdate:class {
 class AddItemCell: UITableViewCell {
 
     
-    
     weak var delegate:AddItemCellUpdate?
 
     // picker 占时的 元素
@@ -40,7 +39,7 @@ class AddItemCell: UITableViewCell {
     }()
     
     
-    lazy var pickView:itemPickerView = {
+    lazy var pickView:itemPickerView = { [unowned self] in
         let pick = itemPickerView.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: 200))
         pick.backgroundColor = UIColor.white
         pick.pickerDelegate = self
@@ -176,12 +175,12 @@ extension AddItemCell: UITextFieldDelegate{
     
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-         NotificationCenter.default.post(name: NSNotification.Name(rawValue: addResumeInfoNotify), object: nil, userInfo: ["edit":false])
+         NotificationCenter.default.post(name: NotificationName.addResumSubItem, object: nil, userInfo: ["edit":false])
         return true
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: addResumeInfoNotify), object: nil, userInfo: ["edit":true])
+        NotificationCenter.default.post(name: NotificationName.addResumSubItem, object: nil, userInfo: ["edit":true])
         
     }
     
@@ -199,7 +198,7 @@ extension AddItemCell: UITextFieldDelegate{
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: addResumeInfoNotify), object: nil, userInfo: ["edit":false])
+        NotificationCenter.default.post(name: NotificationName.addResumSubItem, object: nil, userInfo: ["edit":false])
         return true 
     }
     

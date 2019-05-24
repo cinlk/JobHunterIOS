@@ -21,7 +21,7 @@ enum searchItem:String{
     case none = "none"
     // 简历添加类型
     case online = "online"
-    case attachment = "attachment"
+    case attachment = "attach"
     
     
     

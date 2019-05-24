@@ -68,8 +68,4 @@ enum ResumeSubItems:String {
         }
     }
     
-    
-    
-    
-    
 }

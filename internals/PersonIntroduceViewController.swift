@@ -131,7 +131,7 @@ extension PersonIntroduceViewController: changeDataDelegate{
             self.mode.name = value
         case .gender:
             self.mode.gender = value
-        case .colleage:
+        case .college:
             self.mode.colleage = value
         default:
             break

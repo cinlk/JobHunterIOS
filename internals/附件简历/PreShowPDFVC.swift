@@ -9,7 +9,7 @@
 import UIKit
 import WebKit
 import RxSwift
-
+import RxCocoa
 
 
 
@@ -18,7 +18,7 @@ fileprivate class BottomView:UIView{
     
     //fileprivate var delegate:
     
-   public lazy var btn:UIButton = {
+   internal lazy var btn:UIButton = {
         let btn = UIButton.init(type:  UIButton.ButtonType.custom)
         //btn.addTarget(self, action: #selector(self.touch(sender:)), for: .touchUpInside)
        
@@ -61,12 +61,9 @@ class PreShowPDFVC: UIViewController {
     
     
     
-    private lazy var dispose:DisposeBag = {
-        return DisposeBag.init()
-    }()
-    private var vm:PreShowPDFVCViewModel = {
-        return PreShowPDFVCViewModel.init()
-    }()
+    private lazy var dispose:DisposeBag = DisposeBag.init()
+    private var vm: PersonViewModel =  PersonViewModel.shared
+    
     
     
     private lazy var wbView:WKWebView = {
@@ -76,9 +73,19 @@ class PreShowPDFVC: UIViewController {
     
     internal var fileURL:URL?{
         didSet{
-            loadData()
+            //loadData()
+            if let url = fileURL{
+                wbView.loadFileURL(url, allowingReadAccessTo: url)
+                
+                
+                filedata = try? Data.init(contentsOf: url, options: Data.ReadingOptions.mappedRead)
+            }
+        
         }
     }
+    
+    private  var filedata:Data?
+    
     
     
     private var uploadSucces:Bool = false
@@ -114,8 +121,12 @@ class PreShowPDFVC: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+    
         
-        // 退出界面删除
+    }
+
+
+    deinit {
         
         do{
             if  SingletoneClass.fileManager.fileExists(atPath: fileURL!.path){
@@ -126,11 +137,8 @@ class PreShowPDFVC: UIViewController {
             // TODO  app 每次退出时也删除 和 清空缓存时删除（保证删除）
         }
         
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        print("deinit preShowVC \(self)")
+        
     }
     
 
@@ -145,7 +153,7 @@ extension PreShowPDFVC{
         self.title = "上传附件简历"
         self.view.addSubview(wbView)
         self.view.addSubview(bottomView)
-        self.navigationController?.delegate = self
+        //self.navigationController?.delegate = self
         self.navigationController?.navigationBar.settranslucent(true)
 
          _ = bottomView.sd_layout().bottomEqualToView(self.view)?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.heightIs(60)
@@ -157,27 +165,27 @@ extension PreShowPDFVC{
         
     }
     
-    private func loadData(){
-        if let url = fileURL{
-            wbView.loadFileURL(url, allowingReadAccessTo: url)
-            // 传递数据
-            vm.fileURL = url
-            print("test")
-            
-        }
-    }
+//    private func loadData(){
+//        if let url = fileURL{
+//            wbView.loadFileURL(url, allowingReadAccessTo: url)
+//            // 传递数据
+//            //vm.fileURL = url
+//
+//
+//        }
+//    }
 }
 
 
-extension PreShowPDFVC: UINavigationControllerDelegate{
-    
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        // 刷新数据
-        if viewController.isKind(of: ResumePageViewController.self) && uploadSucces{
-            (viewController as? ResumePageViewController)?.reload()
-        }
-    }
-}
+//extension PreShowPDFVC: UINavigationControllerDelegate{
+//
+//    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+//        // 刷新数据
+//        if viewController.isKind(of: ResumePageViewController.self) && uploadSucces{
+//            (viewController as? ResumePageViewController)?.reload()
+//        }
+//    }
+//}
 
 
 
@@ -189,36 +197,53 @@ extension PreShowPDFVC{
         // 监听btn 点击事件 (显示加载 进度， btn 状态无法点击)
         //self.bottomView.btn.addTarget(self, action: #selector(click), for: .touchUpInside)
         
+        // test
+        self.bottomView.btn.rx.tap.filter({ [weak self] in
+            self?.filedata != nil
+            
+         }).flatMapLatest { [unowned self] in
+            
+                self.vm.newAttachResume(data: self.filedata!, name: "附件简历")
+            }.subscribe(onNext: { [weak self] (res) in
+                if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code){
+                    // 发送 通知给 简历界面, 重新获取数据
+                    NotificationCenter.default.post(name: NotificationName.resume, object: nil, userInfo: ["refresh": true])
+                    // 返回
+                    self?.navigationController?.popvc(animated: true)
+                    
+                }
+            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
         
         //self.bottomView.btn.rx.tap.bind(to: vm.btnTab).disposed(by: self.dispose)
-        self.bottomView.btn.rx.tap.asDriver().drive(onNext: { v in
-            print("tap")
-           
-            self.view.showLoading(title: "加载中", customImage: nil, mode: .customView)
-            self.bottomView.btn.isEnabled = false
-            self.vm.btnTab.onNext(v)
-
-
-        }).disposed(by: self.dispose)
-        
-     
-        
-        self.vm.uploadResult.asDriver(onErrorJustReturn: false).drive(onNext: { b in
-            // 不管上传成功后返回
-            // hidden toast TODO
-            print("end upload")
-            
-            self.bottomView.btn.isEnabled = true
-            self.uploadSucces = b
-            if self.uploadSucces{
-                self.navigationController?.popvc(animated: true)
-            }
-            
-            //self.navigationController?.popvc(animated: true)
-            //self.view.hiddenLoading()
-            self.view.hiddenLoading()
-            
-        }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+//        self.bottomView.btn.rx.tap.asDriver().drive(onNext: { v in
+//            print("tap")
+//
+//            self.view.showLoading(title: "加载中", customImage: nil, mode: .customView)
+//            self.bottomView.btn.isEnabled = false
+//            self.vm.btnTab.onNext(v)
+//
+//
+//        }).disposed(by: self.dispose)
+//
+//
+//
+//        self.vm.uploadResult.asDriver(onErrorJustReturn: false).drive(onNext: { b in
+//            // 不管上传成功后返回
+//            // hidden toast TODO
+//            print("end upload")
+//
+//            self.bottomView.btn.isEnabled = true
+//            self.uploadSucces = b
+//            if self.uploadSucces{
+//                self.navigationController?.popvc(animated: true)
+//            }
+//
+//            //self.navigationController?.popvc(animated: true)
+//            //self.view.hiddenLoading()
+//            self.view.hiddenLoading()
+//
+//        }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
 
     }
     

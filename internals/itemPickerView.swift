@@ -213,7 +213,7 @@ extension itemPickerView{
         var v:String?
         
         switch name {
-        case "生日":
+        case "生日", "开始时间", "结束时间":
             v = self.nodeComponents[0]![componentMatrix[0]!].key + "-" +
                     self.nodeComponents[count-1]![componentMatrix[count-1]!].key
             

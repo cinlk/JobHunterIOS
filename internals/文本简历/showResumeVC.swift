@@ -19,8 +19,14 @@ class showResumeVC: UIViewController {
     private var viewType:[ResumeSubItems] = [ResumeSubItems.personInfo,.education,.works, .project,.schoolWork,.practice,.skills,.other,.selfEvaludate]
 
     // test
-    private var pManager:personModelManager = personModelManager.shared
+    //private var pManager:personModelManager = personModelManager.shared
 
+    internal var mode:PersonTextResumeModel?{
+        didSet{
+            
+            self.loadData()
+        }
+    }
     
     private lazy var table:UITableView = {  [unowned self] in
         let table = UITableView.init(frame: CGRect.zero)
@@ -40,9 +46,6 @@ class showResumeVC: UIViewController {
         table.register(studentWorkCell.self, forCellReuseIdentifier: studentWorkCell.identity())
         table.register(projectInfoCell.self, forCellReuseIdentifier: projectInfoCell.identity())
         table.register(ResumeOtherCell.self, forCellReuseIdentifier: ResumeOtherCell.identity())
-        
-        
-        
         return table
     }()
     
@@ -74,10 +77,6 @@ class showResumeVC: UIViewController {
         super.viewDidLoad()
         self.view.addSubview(table)
         _ = table.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
-        
-        self.loadData()
-        
-        
     }
 
    
@@ -95,18 +94,22 @@ class showResumeVC: UIViewController {
         self.navigationController?.view.viewWithTag(1999)?.alpha = 1
     }
  
+    
+    deinit {
+        print("deinit showResumeVC \(self)")
+    }
 
 }
 
 extension showResumeVC{
     private func loadData(){
         
-       
+        tabHeader.mode = (image: self.mode!.basePersonInfo.tx, name: self.mode!.basePersonInfo.name, introduce:"")
         //tabHeader.mode = (image: resumeBaseinfo.tx, name:resumeBaseinfo.name!, introduce:"")
-        (nagView.viewWithTag(1) as! UILabel).text = resumeBaseinfo.name
+        (nagView.viewWithTag(1) as! UILabel).text = self.mode?.basePersonInfo.name
         tabHeader.layoutSubviews()
         table.tableHeaderView = tabHeader
-        
+        table.reloadData()
         
     }
 }
@@ -142,8 +145,12 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
         if viewType[section] == .personInfo{
             return 2
         }
-        let count = pManager.getCountBy(type: viewType[section])
-        return count == 0 ? 0: count + 1
+        if viewType[section] == .selfEvaludate, let es = self.mode?[viewType[section]] as? EstimateTextResume {
+            
+            return es.content.isEmpty ? 0 : 2
+        }
+        let count = (self.mode?[viewType[section]] as? NSArray) ?? []
+        return count.count == 0 ? 0: count.count + 1
         
     }
     
@@ -170,14 +177,14 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
             
         case .personInfo:
             let cell = tableView.dequeueReusableCell(withIdentifier: resumePersonInfoCell.identity(), for: indexPath) as! resumePersonInfoCell
-            cell.mode = resumeBaseinfo
-            
+            //cell.mode = resumeBaseinfo
+            cell.mode = self.mode?.basePersonInfo
             return cell
             
         case .education:
             
             let cell = tableView.dequeueReusableCell(withIdentifier: educationInfoCell.identity(), for: indexPath) as! educationInfoCell
-            if let ed = pManager.getItemBy(type: .education) as?  [personEducationInfo]{
+            if let ed =  self.mode?[type]  as?  [educationInfoTextResume]{
                 cell.mode = ed[indexPath.row - 1]
                 cell.showResume = true
                 return cell
@@ -185,7 +192,7 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
             
         case .works:
             let cell = tableView.dequeueReusableCell(withIdentifier: jobInfoCell.identity(), for: indexPath) as! jobInfoCell
-            if let wk = pManager.getItemBy(type: .works) as? [personInternInfo]{
+            if let wk =  self.mode?[type]  as? [workInfoTextResume]{
                 cell.showResume = true
                 cell.mode = wk[indexPath.row - 1]
                 return cell
@@ -193,7 +200,7 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
            
         case .project:
             let cell = tableView.dequeueReusableCell(withIdentifier: projectInfoCell.identity(), for: indexPath) as! projectInfoCell
-            if let pj = pManager.getItemBy(type: .project) as? [personProjectInfo]{
+            if let pj = self.mode?[type]  as? [ProjectInfoTextResume]{
                 cell.showResume = true
                 cell.mode = pj[indexPath.row - 1]
                 return cell
@@ -202,7 +209,7 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
         case .schoolWork:
             
             let cell = tableView.dequeueReusableCell(withIdentifier: studentWorkCell.identity(), for: indexPath) as! studentWorkCell
-            if let sh = pManager.getItemBy(type: .schoolWork) as? [studentWorkInfo]{
+            if let sh = self.mode?[type]  as? [CollegeActivityTextResume]{
                 cell.showResume = true
                 cell.mode = sh[indexPath.row - 1]
                 return cell
@@ -212,7 +219,7 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
         case .practice:
             
             let cell = tableView.dequeueReusableCell(withIdentifier: SocialPracticeCell.identity(), for: indexPath) as! SocialPracticeCell
-            if let pc = pManager.getItemBy(type: .practice) as? [socialPracticeInfo]{
+            if let pc = self.mode?[type]  as? [SocialPracticeTextResume]{
                 cell.showResume = true
                 cell.mode = pc[indexPath.row - 1]
                 return cell
@@ -222,7 +229,7 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
         case .skills:
 
             let cell = tableView.dequeueReusableCell(withIdentifier: person_skillCell.identity(), for: indexPath) as! person_skillCell
-            if let sk = pManager.getItemBy(type: .skills) as? [personSkillInfo]{
+            if let sk = self.mode?[type]  as? [SkillsTextResume]{
                 cell.showResume = true
                 cell.mode = sk[indexPath.row - 1]
                 
@@ -232,7 +239,7 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
         
         case .other:
             let cell = tableView.dequeueReusableCell(withIdentifier: ResumeOtherCell.identity(), for: indexPath) as! ResumeOtherCell
-            if let ot = pManager.getItemBy(type: .other) as? [resumeOther]{
+            if let ot = self.mode?[type]  as? [OtherTextResume]{
                 cell.showResume = true
                 cell.mode = ot[indexPath.row - 1]
                 
@@ -243,7 +250,7 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
         case .selfEvaludate:
             
             let cell = tableView.dequeueReusableCell(withIdentifier: person_evaluateCell.identity(), for: indexPath) as! person_evaluateCell
-            if let es = pManager.getItemBy(type: .selfEvaludate) as? selfEstimateModel{
+            if let es = self.mode?[type]  as? EstimateTextResume{
                 cell.mode = es
                 //cell.mode?.isOpen = true
                 return cell
@@ -267,12 +274,14 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
        
         switch viewType[indexPath.section] {
         case .personInfo:
-           
-            // 必须有值
-            return tableView.cellHeight(for: indexPath, model: resumeBaseinfo, keyPath: "mode", cellClass: resumePersonInfoCell.self, contentViewWidth: GlobalConfig.ScreenW)
+          
+            guard let mode = self.mode?.basePersonInfo else {
+                return 0
+            }
+           return tableView.cellHeight(for: indexPath, model: mode, keyPath: "mode", cellClass: resumePersonInfoCell.self, contentViewWidth: GlobalConfig.ScreenW)
             
         case .education:
-            guard let list = pManager.getItemBy(type: .education) as? [personEducationInfo] else {
+            guard let list = self.mode?[.education]  as? [educationInfoTextResume] else {
                 return 0
             }
             
@@ -282,7 +291,7 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
             
         case .works:
             
-            guard let list =  pManager.getItemBy(type: .works) as? [personInternInfo] else {
+            guard let list =  self.mode?[.works]  as? [workInfoTextResume] else {
                 return 0
             }
             let mode = list[indexPath.row - 1]
@@ -291,7 +300,7 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
         
         case .project:
             
-            guard let list = pManager.getItemBy(type: .project) as? [personProjectInfo] else {
+            guard let list = self.mode?[.project]  as? [ProjectInfoTextResume] else {
                 return 0
             }
             let mode = list[indexPath.row - 1]
@@ -300,7 +309,7 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
             
         case .schoolWork:
             
-            guard let list = pManager.getItemBy(type: .schoolWork) as? [studentWorkInfo]  else {
+            guard let list = self.mode?[.schoolWork]  as? [CollegeActivityTextResume]  else {
                 return 0
             }
             let mode = list[indexPath.row - 1]
@@ -309,7 +318,7 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
             
         case .practice:
             
-            guard let list = pManager.getItemBy(type: .practice) as? [socialPracticeInfo] else {
+            guard let list = self.mode?[.practice]  as? [SocialPracticeTextResume] else {
                 return 0
             }
             let mode = list[indexPath.row - 1]
@@ -319,7 +328,7 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
             
         case .skills:
             
-            guard let list = pManager.getItemBy(type: .skills) as? [personSkillInfo] else {
+            guard let list = self.mode?[.skills]  as? [SkillsTextResume] else {
                 return 0
             }
             let mode = list[indexPath.row - 1]
@@ -329,7 +338,7 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
         
         case .other:
             
-            guard let list = pManager.getItemBy(type: .other) as? [resumeOther] else {
+            guard let list = self.mode?[.other]  as? [OtherTextResume] else {
                 return 0
             }
             let mode = list[indexPath.row - 1]
@@ -338,7 +347,7 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
             
         case .selfEvaludate:
             
-            guard let mode = pManager.getItemBy(type: .selfEvaludate) as? selfEstimateModel, !mode.content.isEmpty else {
+            guard let mode = self.mode?[.selfEvaludate]  as? EstimateTextResume, !mode.content.isEmpty else {
                 return 0
             }
             
@@ -370,9 +379,11 @@ extension showResumeVC: UITableViewDelegate, UITableViewDataSource{
         if type == .personInfo{
             return 20
         }
-        
-        let count = pManager.getCountBy(type: type)
-        return count > 0 ? 20 : 0
+        if type == .selfEvaludate, let es = self.mode?[viewType[section]] as? EstimateTextResume {
+              return   es.content.isEmpty ? 0 : 20
+        }
+        let count =  self.mode?[type] as? NSArray ?? []
+        return count.count > 0 ? 20 : 0
         
     }
     

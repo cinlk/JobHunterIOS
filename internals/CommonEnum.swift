@@ -198,20 +198,20 @@ enum postKind:String {
 
 // 简历分类
 enum resumeType:String {
-    case online = "online"
-    case attachment = "attachment"
+    case text = "text"
+    case attachment = "attache"
     case none = ""
     
     var describe:String{
         get{
             switch self {
-            case .online:
+            case .text:
                 return "在线简历"
             case .attachment:
                 return "附件简历"
             default:
                 return ""
-                }
+            }
         }
     }
 }

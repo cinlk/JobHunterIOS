@@ -50,7 +50,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 25, height: 25)
     }
     
     
-    dynamic var mode:resumeOther?{
+    dynamic var mode:OtherTextResume?{
         didSet{
             
             self.lableTitle.text = mode?.title

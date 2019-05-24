@@ -98,10 +98,19 @@ extension PersonViewController{
         self.table.tableHeaderView = headerView
         // 布局完后设置背景颜色才有效？
         self.table.backgroundColor = UIColor.backGroundColor()
+        self.navigationController?.delegate = self
         
     }
 }
 
+
+extension PersonViewController:UINavigationControllerDelegate{
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        if viewController.isKind(of: OnlineApplyShowViewController.self){
+            self.navigationController?.removeCustomerView()
+        }
+    }
+}
 extension PersonViewController{
     
     private func setViewModel(){
@@ -139,11 +148,11 @@ fileprivate class personTable: UITableView{
         let post = MyPostViewController()
         post.type = .mypost
         
-       return [(#imageLiteral(resourceName: "delivery"), "投递记录", DeliveredHistory()), (#imageLiteral(resourceName: "delivery"), "我的邀请", InvitationViewController()), (#imageLiteral(resourceName: "delivery"), "我的收藏", MyCollectionVC()), (#imageLiteral(resourceName: "delivery"), "我的帖子", post)]
+       return [(#imageLiteral(resourceName: "delivery"), "投递记录", DeliveredHistory()), (#imageLiteral(resourceName: "delivery"), "我的简历", ResumePageViewController()), (#imageLiteral(resourceName: "delivery"), "我的收藏", MyCollectionVC()), (#imageLiteral(resourceName: "delivery"), "我的帖子", post)]
         
     }()
     
-    private let section = 3
+    private let section = 2
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
         self.delegate = self
@@ -182,7 +191,7 @@ extension personTable: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return section == 0 || section == 1 ? 1 : self.mode.count
+        return section == 0  ? 1 : self.mode.count
     }
     
     
@@ -199,13 +208,13 @@ extension personTable: UITableViewDelegate, UITableViewDataSource{
             
             //cell.delegate = self
             return cell
-        case 1:
-            let cell = UITableViewCell.init(style: .value1, reuseIdentifier: "cell")
-            cell.imageView?.image = #imageLiteral(resourceName: "feedback").changesize(size: CGSize.init(width: 40, height: 40))
-            cell.textLabel?.text = "我的简历"
-            return cell
+//        case 1:
+//            let cell = UITableViewCell.init(style: .value1, reuseIdentifier: "cell")
+//            cell.imageView?.image = #imageLiteral(resourceName: "feedback").changesize(size: CGSize.init(width: 40, height: 40))
+//            cell.textLabel?.text = "我的简历"
+//            return cell
             
-        case 2:
+        case 1:
             let cell = UITableViewCell.init(style: .value1, reuseIdentifier: "cell")
             cell.imageView?.image = self.mode[indexPath.row].0.changesize(size: CGSize.init(width: 40, height: 40))
             cell.textLabel?.text = self.mode[indexPath.row].1
@@ -242,11 +251,11 @@ extension personTable: UITableViewDelegate, UITableViewDataSource{
         switch indexPath.section {
         case 0:
             return
+//        case 1:
+//
+//            NotificationCenter.default.post(name: NotificationName.personMainItem, object: self, userInfo: ["target":ResumePageViewController(),"action":"push"])
+//
         case 1:
-          
-            NotificationCenter.default.post(name: NotificationName.personMainItem, object: self, userInfo: ["target":ResumePageViewController(),"action":"push"])
-            
-        case 2:
             
             
             let row = indexPath.row

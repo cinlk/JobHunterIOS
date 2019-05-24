@@ -58,7 +58,7 @@ fileprivate let iconSize:CGSize = CGSize.init(width: 25, height: 25)
     
     
     
-    dynamic var mode:selfEstimateModel?{
+    dynamic var mode:EstimateTextResume?{
         didSet{
             
             guard let mode = mode else {

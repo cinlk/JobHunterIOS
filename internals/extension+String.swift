@@ -53,6 +53,7 @@ extension String {
         if let date =  dateFormat.date(from: self){
             return date.timeIntervalSince1970
         }
+        
         return 0
     }
     

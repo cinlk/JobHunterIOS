@@ -294,6 +294,10 @@ class GlobalUserInfo: NSObject {
         
         
     }
+    // 用户账号 的手机号 TODO
+    open func getPhoneNumber() -> String{
+        return ""
+    }
     
     open func getAccount() -> String?{
         return self.account
