@@ -37,6 +37,11 @@ enum RecruitTarget{
     case onlineApplyJob(onlineApplyId:String, positionId:String)
     case applyJob(jobId:String, type:String)
     
+    case collectOnlineApply(onlineApplyId:String, flag:Bool)
+    case collectMeeting(careerTalkId:String, flag:Bool)
+    case collectCompany(companyId:String, flag:Bool)
+    case collectJob(jobId:String, flag:Bool, type: String)
+    
     case none
 }
 
@@ -91,6 +96,15 @@ extension RecruitTarget: TargetType{
             return self.prefix + "online/\(onlineApplyId)/\(positionId)"
         case .applyJob(let jobId, let type):
             return self.prefix + "job/\(type)/\(jobId)"
+        case .collectOnlineApply:
+            return self.prefix + "online/collect"
+        case .collectMeeting:
+            return self.prefix + "meeting/collect"
+        case .collectCompany:
+            return self.prefix + "company/collect"
+        case .collectJob:
+            return self.prefix + "job/collect"
+        
         default:
             return ""
         }
@@ -128,6 +142,9 @@ extension RecruitTarget: TargetType{
             return Method.get
         case .onlineApplyJob, .applyJob:
             return .put
+        case .collectJob, .collectOnlineApply, .collectCompany, .collectMeeting:
+            return .post
+            
         default:
             return Method.get
         }
@@ -163,6 +180,7 @@ extension RecruitTarget: TargetType{
             return "".utf8Encoded
         case .getCompanyTagData(_):
             return "".utf8Encoded
+        
         default:
             return "".utf8Encoded
         }
@@ -207,6 +225,15 @@ extension RecruitTarget: TargetType{
             //return .requestData((data.toJSONString()?.data(using: String.Encoding.utf8))!)
         case .getRecruiterById:
             return .requestPlain
+        case .collectJob(let jobId,  let flag, let type):
+            return .requestParameters(parameters: ["job_id": jobId, "type": type,"flag":flag], encoding: JSONEncoding.default)
+        case .collectOnlineApply(let onlineApplyId, let flag):
+            return .requestParameters(parameters: ["online_apply_id": onlineApplyId, "flag": flag], encoding: JSONEncoding.default)
+        case .collectCompany(let companyId, let flag):
+            return .requestParameters(parameters: ["company_id": companyId, "flag": flag], encoding: JSONEncoding.default)
+        case .collectMeeting(let careerTalkId , let flag):
+            return .requestParameters(parameters: ["career_talk_id": careerTalkId,"flag":flag], encoding: JSONEncoding.default)
+        
         default:
             return .requestPlain
         }
@@ -306,6 +333,26 @@ class RecruitServer{
     internal func applyJob(jobId:String, type:String) -> Observable<ResponseModel<HttpResultMode>>{
         
         return httpServer.rx.request(.applyJob(jobId: jobId, type: type)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
+    
+    
+    // 收藏
+    internal func collectOnlineApply(onlineApplyId:String, flag:Bool) -> Observable<ResponseModel<HttpResultMode>> {
+        
+        return httpServer.rx.request(.collectOnlineApply(onlineApplyId: onlineApplyId, flag: flag)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
+    
+    internal func collectCareerTalk(careerTalkId:String, flag:Bool) -> Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.rx.request(.collectMeeting(careerTalkId: careerTalkId, flag: flag)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
+    
+    internal func collectCompany(companyId:String, flag:Bool) ->
+        Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.rx.request(.collectCompany(companyId: companyId, flag: flag)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
+    
+    internal func collectJob(jobId:String, type:String, flag:Bool) -> Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.rx.request(.collectJob(jobId: jobId, flag: flag, type: type)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .userInitiated)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
     }
 }
 

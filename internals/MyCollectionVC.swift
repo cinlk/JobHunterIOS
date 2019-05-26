@@ -7,28 +7,36 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 
 fileprivate let viewTitle:String = "收藏"
 fileprivate let pagetTitleH:CGFloat = 40
+fileprivate let titles:[String] = ["校招", "实习","公司", "宣讲会", "网申"]
 
 class MyCollectionVC: UIViewController {
 
+    
+    private lazy var dispose:DisposeBag = DisposeBag.init()
+    private lazy var vm:PersonViewModel = PersonViewModel.shared
+    
+    
     private var currentSelect:Int = 0
     
     // 记录状态
     private var isEdit:Bool = false
     private var isAll:Bool = false
     
-    private var childVC:[UIViewController] = []
+//    private var childVC:[UIViewController] = []
 
-    private let titles:[String] = ["职位","公司", "宣讲会", "帖子"]
+    //private let titles:[String] = ["职位","公司", "宣讲会", "帖子"]
 
     // 注意顺序！！
-    private let observerName:[String] = ["jobCollectedVC","CompanyCollectedVC","MeetingCollectedVC","PostCollectedViewController"]
+   // private let observerName:[String] = ["campusjobCollectedVC","internJobCollectedVC","companyCollectedVC","meetingCollectedVC","onlineApplyCollectedVC"]
  
     private lazy var pageTitle:PagetitleView = { [unowned self ] in
-        let pageTitle:PagetitleView = PagetitleView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: pagetTitleH), titles: self.titles, lineCenter: true )
+        let pageTitle:PagetitleView = PagetitleView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH, width: GlobalConfig.ScreenW, height: pagetTitleH), titles: titles, lineCenter: true )
     
         pageTitle.delegate = self
         return pageTitle
@@ -36,6 +44,8 @@ class MyCollectionVC: UIViewController {
     }()
     
     
+    
+    private lazy var rightBarBtn:UIBarButtonItem = UIBarButtonItem.init(title: "编辑", style: .plain, target: nil, action: nil)
     // 底部按钮
     
     private lazy var  chooseAll:UIButton = { [unowned self] in
@@ -44,7 +54,7 @@ class MyCollectionVC: UIViewController {
         btn.setTitle("取消", for: .selected)
         btn.setTitleColor(UIColor.blue, for: .normal)
         btn.setTitleColor(UIColor.red, for: .selected)
-        btn.addTarget(self, action: #selector(all), for: .touchUpInside)
+        //btn.addTarget(self, action: #selector(all), for: .touchUpInside)
         return btn
     }()
     
@@ -54,33 +64,43 @@ class MyCollectionVC: UIViewController {
         let btn = UIButton.init(frame: CGRect.zero)
         btn.setTitle("删除", for: .normal)
         btn.setTitleColor(UIColor.blue, for: .normal)
-        btn.addTarget(self, action: #selector(deleteItem), for: .touchUpInside)
+        //btn.addTarget(self, action: #selector(deleteItem), for: .touchUpInside)
         return btn
         
     }()
     
     
-    private lazy var bottomBar:UIToolbar = {
-        let bar = UIToolbar.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH - 44, width: GlobalConfig.ScreenW, height: 44))
+    private lazy var bottomBar:UIToolbar = { [unowned self] in
+        let bar = UIToolbar.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH - GlobalConfig.toolBarH, width: GlobalConfig.ScreenW, height: GlobalConfig.toolBarH))
         bar.isHidden = true
         bar.barStyle = .default
         bar.isTranslucent = true
+        
+        let middleSpace =  UIBarButtonItem(barButtonSystemItem:.flexibleSpace,target:nil, action:nil)
+        
+        bar.setItems([UIBarButtonItem.init(customView: chooseAll),middleSpace,UIBarButtonItem.init(customView: delete)], animated: false)
+
         return bar
     }()
     private lazy var pageContent:PageContentView = { [unowned self] in
         
+        var childVC:[UIViewController] = []
         
-        let vc = jobCollectedVC()
-        childVC.append(vc)
+        let campusJob = CampusJobCollectedVC()
+        childVC.append(campusJob)
         
-        let vc2 = CompanyCollectedVC()
-        childVC.append(vc2)
+        let internJob = InternJobCollectedVC()
+        childVC.append(internJob)
+        
+        let companyJob = CompanyCollectedVC()
+        childVC.append(companyJob)
 
         let meeting = MeetingCollectedVC()
         childVC.append(meeting)
         
-        let post = PostCollectedViewController()
-        childVC.append(post)
+        let apply = OnlineApplyCollectedVC()
+        //let post = PostCollectedViewController()
+        childVC.append(apply)
         
         let v:PageContentView = PageContentView.init(frame: CGRect.init(x: 0, y: GlobalConfig.NavH + pagetTitleH , width: GlobalConfig.ScreenW, height: GlobalConfig.ScreenH - GlobalConfig.NavH - pagetTitleH), childVCs: childVC, pVC: self)
         v.delegate = self
@@ -96,14 +116,8 @@ class MyCollectionVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = viewTitle
-        self.view.backgroundColor = UIColor.white
-        self.view.addSubview(pageTitle)
-        self.view.addSubview(pageContent)
-        self.navigationController?.delegate = self
-        addDeleteItem()
-        addToobarItem()
-        
+        setView()
+        setViewModel()
         
     }
     
@@ -114,70 +128,106 @@ class MyCollectionVC: UIViewController {
         
     }
     
+    
+    deinit {
+        print("deinit myCollectedVC \(self)")
+    }
+    
 
 
 
 }
 
 extension MyCollectionVC{
-    private func addDeleteItem(){
-        navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "编辑", style: .plain, target: self, action: #selector(edit))
-    }
     
-    
-    private func addToobarItem(){
-        self.view.addSubview(bottomBar)
-        let middleSpace =  UIBarButtonItem(barButtonSystemItem:.flexibleSpace,target:nil, action:nil)
+    private func setView(){
         
-        bottomBar.setItems([UIBarButtonItem.init(customView: chooseAll),middleSpace,UIBarButtonItem.init(customView: delete)], animated: false)
-
-    }
-    
-    @objc private func edit(){
-        isEdit = !isEdit
-        if isEdit{
-            NotificationCenter.default.post(name: NSNotification.Name.init(observerName[currentSelect]), object: nil, userInfo: ["action":"edit"])
-            navigationItem.rightBarButtonItem?.title = "取消"
-            bottomBar.isHidden = false
-        }else{
-            NotificationCenter.default.post(name: NSNotification.Name.init(observerName[currentSelect]), object: nil, userInfo: ["action":"cancel"])
-            navigationItem.rightBarButtonItem?.title = "编辑"
-            bottomBar.isHidden = true
-
-        }
-    }
-    
-    @objc private func all(){
-        isAll = !isAll
-        if isAll{
-            NotificationCenter.default.post(name: NSNotification.Name.init(observerName[currentSelect]), object: nil, userInfo: ["action":"selectAll"])
-            chooseAll.isSelected = true
-        }else{
-            NotificationCenter.default.post(name: NSNotification.Name.init(observerName[currentSelect]), object: nil, userInfo: ["action":"unselect"])
-            chooseAll.isSelected = false
-        }
+        self.title = viewTitle
+        self.view.backgroundColor = UIColor.white
+        self.view.addSubview(pageTitle)
+        self.view.addSubview(pageContent)
+        self.view.addSubview(bottomBar)
+        //self.navigationController?.delegate = self
+        //addDeleteItem()
+        navigationItem.rightBarButtonItem = rightBarBtn
+        
+       // addToobarItem()
     }
     
     
-    @objc private func deleteItem(){
-        NotificationCenter.default.post(name: NSNotification.Name.init(observerName[currentSelect]), object: nil, userInfo: ["action":"delete"])
+    private func setViewModel(){
+        self.rightBarBtn.rx.tap.asDriver().drive(onNext: { [weak self] in
+            //self?.edit()
+            guard let `self` = self else {
+                return
+            }
+            
+            self.isEdit = !self.isEdit
+            if self.isEdit{
+                NotificationCenter.default.post(name: NotificationName.collecteItem[self.currentSelect], object: nil, userInfo: ["action":"edit"])
+                self.navigationItem.rightBarButtonItem?.title = "取消"
+                self.bottomBar.isHidden = false
+            }else{
+                NotificationCenter.default.post(name: NotificationName.collecteItem[self.currentSelect], object: nil, userInfo: ["action":"cancel"])
+                self.navigationItem.rightBarButtonItem?.title = "编辑"
+                self.bottomBar.isHidden = true
+                
+            }
+            
+        }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        self.chooseAll.rx.tap.asDriver().drive(onNext: { [weak self] in
+            guard let `self` = self else {
+                return
+            }
+            
+            self.isAll = !self.isAll
+            if self.isAll{
+                NotificationCenter.default.post(name: NotificationName.collecteItem[self.currentSelect], object: nil, userInfo: ["action":"selectAll"])
+                self.chooseAll.isSelected = true
+            }else{
+                NotificationCenter.default.post(name: NotificationName.collecteItem[self.currentSelect], object: nil, userInfo: ["action":"unselect"])
+                self.chooseAll.isSelected = false
+            }
+            
+            
+            
+        }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        self.delete.rx.tap.asDriver().drive(onNext: { [weak self] in
+            guard let `self` = self else {
+                return
+            }
+            
+             NotificationCenter.default.post(name: NotificationName.collecteItem[self.currentSelect], object: nil, userInfo: ["action":"delete"])
+            
+        }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
     }
+    
+    
+    
+//    private func addToobarItem(){
+//        self.view.addSubview(bottomBar)
+//
+//    }
+    
+ 
     
     
 }
 
 
-extension MyCollectionVC: UINavigationControllerDelegate{
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        if viewController.isKind(of: PersonViewController.self){
-            navigationController.removeCustomerView()
-        }
-    }
-}
+//extension MyCollectionVC: UINavigationControllerDelegate{
+//    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+//        if viewController.isKind(of: PersonViewController.self){
+//            navigationController.removeCustomerView()
+//        }
+//    }
+//}
 
 extension MyCollectionVC: pagetitleViewDelegate{
     func ScrollContentAtIndex(index: Int) {
-        NotificationCenter.default.post(name: NSNotification.Name.init(observerName[currentSelect]), object: nil, userInfo: ["action":"cancel"])
+        NotificationCenter.default.post(name: NotificationName.collecteItem[self.currentSelect], object: nil, userInfo: ["action":"cancel"])
         navigationItem.rightBarButtonItem?.title = "编辑"
         chooseAll.isSelected = false
         bottomBar.isHidden = true
@@ -195,13 +245,10 @@ extension MyCollectionVC: pagetitleViewDelegate{
 extension MyCollectionVC: PageContentViewScrollDelegate{
     func pageContenScroll(_ contentView: PageContentView, progress: CGFloat, sourcIndex: Int, targetIndex: Int) {
         self.pageTitle.changeTitleWithProgress(progress, sourceIndex: sourcIndex, targetIndex: targetIndex)
-        NotificationCenter.default.post(name: NSNotification.Name.init(observerName[currentSelect]), object: nil, userInfo: ["action":"cancel"])
+        NotificationCenter.default.post(name: NotificationName.collecteItem[self.currentSelect], object: nil, userInfo: ["action":"cancel"])
         navigationItem.rightBarButtonItem?.title = "编辑"
         chooseAll.isSelected = false
         bottomBar.isHidden = true
-
-
-        
         currentSelect = targetIndex
     }
     

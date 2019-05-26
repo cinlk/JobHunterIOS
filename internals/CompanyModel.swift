@@ -111,6 +111,7 @@ class  CompanyModel: BaseModel {
     
     // 关注人数
     internal var reviewCounts:Int = 0
+    internal var type:String?
     
     
     // 发布的职位
@@ -151,6 +152,7 @@ class  CompanyModel: BaseModel {
         businessField <- map["business_field"]
         reviewCounts <- map["review_counts"]
         jobs <- map["jobs"]
+        type <- map["type"]
         careerTalk <- map["career_talks"]
     }
     

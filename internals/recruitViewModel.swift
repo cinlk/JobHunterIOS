@@ -222,6 +222,26 @@ extension RecruitViewModel{
         return httpServer.applyJob(jobId: jobId, type: type)
     }
     
+    // 收藏
+    internal func collectOnlineApply(onlineApplyId:String, flag:Bool) -> Observable<ResponseModel<HttpResultMode>> {
+        return httpServer.collectOnlineApply(onlineApplyId: onlineApplyId, flag: flag)
+        
+    }
+    
+    internal func collectCareerTalk(careerTalkId:String, flag:Bool) -> Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.collectCareerTalk(careerTalkId: careerTalkId, flag: flag)
+    }
+    
+    internal func collectCompany(companyId:String, flag:Bool) ->
+        Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.collectCompany(companyId: companyId, flag: flag)
+        
+    }
+    
+    internal func collectJob(jobId:String, type: jobType, flag:Bool) -> Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.collectJob(jobId: jobId, type: type.rawValue, flag: flag)
+    }
+    
     
 }
 

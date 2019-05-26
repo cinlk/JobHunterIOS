@@ -119,6 +119,7 @@ class CareerTalkShowViewController: BaseShowJobViewController {
     
     // 收藏
     override func collected(_ btn:UIButton){
+        
         guard  let IsCollected = mode.value.isCollected else {
             return
         }
@@ -127,12 +128,51 @@ class CareerTalkShowViewController: BaseShowJobViewController {
             return
         }
         
-        let str =  IsCollected ? collectedStr[0] : collectedStr[1]
-        collectedBtn.isSelected = IsCollected
-        self.view.showToast(title: str, customImage: nil, mode: .text)
-        //showOnlyTextHub(message: str, view: self.view)
-        // 上传到服务器
-        mode.value.isCollected = !IsCollected
+        
+        self.vm.collectCareerTalk(careerTalkId: self.mode.value.id!, flag: !IsCollected).subscribe(onNext: { [weak self] (res) in
+            
+            guard let `self` = self else {
+                return
+            }
+            if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code){
+                let str =  IsCollected ? collectedStr[0] : collectedStr[1]
+                self.collectedBtn.isSelected = !IsCollected
+                self.view.showToast(title: str, customImage: nil, mode: .text)
+                self.mode.value.isCollected = !IsCollected
+                
+
+                if let m  = CareerTalkMeetingListModel.init(JSON: [
+                    "meeting_id": self.mode.value.id ?? "",
+                    "start_time": self.mode.value.startTime?.timeIntervalSince1970 ?? 0,
+                    "company_name": self.mode.value.company?.name ?? "",
+                    "simplify_address": self.mode.value.simplifyAddress,
+                    "college_icon_url": self.mode.value.iconURL?.absoluteString ?? "",
+                    "college": self.mode.value.college ?? "",
+                    "business_field": self.mode.value.businessField,
+                    "city": self.mode.value.city ?? ""
+                    ]){
+                    
+                    if IsCollected {
+                        // 取消收藏
+                        
+                        NotificationCenter.default.post(name: NotificationName.collecteItem[3], object: nil, userInfo: ["remove": m])
+                    }else{
+                        // 收藏
+                        NotificationCenter.default.post(name: NotificationName.collecteItem[3], object: nil, userInfo:
+                            ["mode": m])
+                    }
+                    
+                }
+               
+                
+            }else{
+                self.view.showToast(title: "修改失败", customImage: nil, mode: .text)
+            }
+           
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        
+      
         
     }
 

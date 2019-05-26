@@ -240,7 +240,6 @@ extension PostCollectedViewController{
         _ = postName.sd_layout().topSpaceToView(self.contentView,5)?.leftSpaceToView(self.contentView,10)?.autoHeightRatio(0)
         _ = times.sd_layout().topSpaceToView(postName,10)?.leftEqualToView(postName)?.autoHeightRatio(0)
         
-        
         postName.setMaxNumberOfLinesToShow(2)
  
     }

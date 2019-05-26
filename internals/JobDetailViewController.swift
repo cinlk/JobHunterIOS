@@ -216,7 +216,7 @@ class JobDetailViewController: BaseShowJobViewController {
     // 收藏
     override func collected(_ btn:UIButton){
         
-        guard let _ = mode.value.id, let collect = mode.value.isCollected else {
+        guard let id = mode.value.id, let t = mode.value.kind,  let collect = mode.value.isCollected else {
             return
         }
         // 判断有效用户
@@ -224,12 +224,74 @@ class JobDetailViewController: BaseShowJobViewController {
             return
         }
         
-        let state = collect ? "取消收藏" : "收藏成功"
-        // 服务器更新状态 回调 TODO
-        // 改变状态
-        collectedBtn.isSelected = !collect
-        self.view.showToast(title: state, customImage: nil, mode: .text)
-        mode.value.isCollected = collectedBtn.isSelected
+        
+        
+        self.vm.collectJob(jobId: id, type: t, flag: !collect).subscribe(onNext: { [weak self] (res) in
+            guard let `self` = self else {
+                return
+            }
+            if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code){
+                
+                let state = collect ? "取消收藏" : "收藏成功"
+                
+                self.collectedBtn.isSelected = !collect
+                self.view.showToast(title: state, customImage: nil, mode: .text)
+                self.mode.value.isCollected = !collect
+                
+                // 发送通知 跟新收藏界面
+                
+                
+                switch self.mode.value.kind  ?? .none{
+                    case .intern:
+                        if let cj = CollectedInternJobModel.init(JSON:
+                            [ "job_id": self.mode.value.id!,
+                              "icon_url": self.mode.value.iconURL?.absoluteString ?? "",
+                              "company_name": self.mode.value.company?.name ?? "",
+                              "name": self.mode.value.name ?? "",
+                              "created_time": Date.init().timeIntervalSince1970,
+                            ]){
+                            
+                            if collect {
+                                // 取消收藏
+                                NotificationCenter.default.post(name: NotificationName.collecteItem[1], object: nil, userInfo: ["remove": cj])
+                            }else{
+                                // 收藏
+                                NotificationCenter.default.post(name: NotificationName.collecteItem[1], object: nil, userInfo: ["mode": cj])
+                            }
+                            
+                        }
+                    case .graduate:
+                        if let cj = CollectedCampusJobModel.init(JSON:
+                            [ "job_id": self.mode.value.id!,
+                              "icon_url": self.mode.value.iconURL?.absoluteString ?? "",
+                              "company_name": self.mode.value.company?.name ?? "",
+                              "name": self.mode.value.name ?? "",
+                              "created_time": Date.init().timeIntervalSince1970,
+                            ]){
+                            
+                            if collect {
+                                // 取消收藏
+                                NotificationCenter.default.post(name: NotificationName.collecteItem[0], object: nil, userInfo: ["remove": cj])
+                            }else{
+                                // 收藏
+                                NotificationCenter.default.post(name: NotificationName.collecteItem[0], object: nil, userInfo: ["mode": cj])
+                            }
+                            
+                           
+                            
+                        }
+                    
+                default:
+                    break
+                    
+                }
+              
+            }else{
+                self.view.showToast(title: "修改失败", customImage: nil, mode: .text)
+
+            }
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
         
     }
     

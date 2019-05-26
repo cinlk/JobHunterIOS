@@ -68,9 +68,9 @@ internal class CareerTalkMeetingListModel: NSObject, Mappable {
     
     required init?(map: Map) {
         
-        if map.JSON["meeting_id"] == nil  || map.JSON["college"] == nil {
-            return nil
-        }
+//        if map.JSON["meeting_id"] == nil  || map.JSON["college"] == nil {
+//            return nil
+//        }
     }
     
     func mapping(map: Map) {
@@ -101,6 +101,7 @@ internal  class CareerTalkMeetingModel: BaseModel  {
     internal var address:String?
     // 简写地址
     internal var simplifyAddress:String = ""
+    internal var city:String?
     
     // 开始时间 (必须)
     internal var startTime:Date?
@@ -169,6 +170,7 @@ internal  class CareerTalkMeetingModel: BaseModel  {
         content <- map["content"]
         contentType <- map["content_type"]
         businessField <- map["business_field"]
+        city <- map["city"]
         majors <- map["majors"]
         
         

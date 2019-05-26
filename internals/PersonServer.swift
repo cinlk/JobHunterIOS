@@ -66,7 +66,16 @@ internal enum personTarget{
     
     case attachResume(resumeId:String)
     
+    // 收藏
+    case collectedJobs(type:String, limit:Int, offset:Int)
+    case collectedCareerTalk(limit:Int, offset:Int)
+    case collectedOnlineApply(limit:Int, offset:Int)
+    case collectedCompany(limit:Int, offset:Int)
     
+    case unCollectedJobs(type:String, ids:[String])
+    case unCollectedCompany(ids:[String])
+    case unCollectedOnlineApply(ids:[String])
+    case unCollectedCareerTalk(ids:[String])
     
     
     case none
@@ -176,7 +185,22 @@ extension personTarget: TargetType{
             
         case .attachResume(let resumeId):
             return self.prefix + "/attachResume/\(resumeId)"
-            
+        case .collectedJobs:
+            return self.prefix + "/collect/jobs"
+        case .collectedCompany:
+            return self.prefix + "/collect/company"
+        case .collectedCareerTalk:
+            return self.prefix + "/collect/careerTalk"
+        case .collectedOnlineApply:
+            return self.prefix + "/collect/onlineApply"
+        case .unCollectedJobs:
+            return self.prefix + "/unCollect/jobs"
+        case .unCollectedCompany:
+            return self.prefix + "/unCollect/company"
+        case .unCollectedCareerTalk:
+            return self.prefix  + "/unCollect/careerTalk"
+        case .unCollectedOnlineApply:
+            return self.prefix + "/unCollect/onlineApply"
         default:
             return ""
         }
@@ -184,7 +208,7 @@ extension personTarget: TargetType{
     
     var method: Moya.Method {
         switch  self {
-        case .userAvatar, .userBrief, .newTextResume, .newAttachResume, .changeResumeName,.baseInfoContent, .newTextResumeEducation, .newTextResumeWork, .newTextResumeProject, .newTextResumeOther, .newTextResumeSocialPractice, .newTextResumeCollegeActive, .newTextResumeSkill:
+        case .userAvatar, .userBrief, .newTextResume, .newAttachResume, .changeResumeName,.baseInfoContent, .newTextResumeEducation, .newTextResumeWork, .newTextResumeProject, .newTextResumeOther, .newTextResumeSocialPractice, .newTextResumeCollegeActive, .newTextResumeSkill, .collectedOnlineApply, .collectedJobs, .collectedCareerTalk, .collectedCompany, .unCollectedJobs, .unCollectedOnlineApply, .unCollectedCareerTalk, .unCollectedCompany:
             return .post
         case .delivery, .deliveryStatus, .getOnlineApplyId, .resumeList, .textResumeInfo, .attachResume:
             return .get
@@ -266,6 +290,23 @@ extension personTarget: TargetType{
             return .requestParameters(parameters: req.toJSON(), encoding: JSONEncoding.default)
             
             
+            
+        case .collectedOnlineApply(let limit , let offset):
+            return .requestParameters(parameters: ["limit": limit, "offset": offset], encoding: JSONEncoding.default)
+        case .collectedCareerTalk(let limit , let offset):
+            return .requestParameters(parameters: ["limit": limit, "offset": offset], encoding: JSONEncoding.default)
+        case .collectedCompany(let limit , let offset):
+            return .requestParameters(parameters: ["limit": limit, "offset": offset], encoding: JSONEncoding.default)
+        case .collectedJobs( let type,  let limit, let offset):
+            return .requestParameters(parameters: ["limit": limit, "offset": offset, "type": type], encoding: JSONEncoding.default)
+        case .unCollectedJobs(let type, let ids):
+            return .requestParameters(parameters: ["type": type, "job_ids": ids], encoding: JSONEncoding.default)
+        case .unCollectedOnlineApply(let ids):
+            return .requestParameters(parameters: ["ids": ids], encoding: JSONEncoding.default)
+        case .unCollectedCareerTalk(let ids):
+            return .requestParameters(parameters: ["ids": ids], encoding: JSONEncoding.default)
+        case .unCollectedCompany(let ids):
+            return .requestParameters(parameters: ["ids": ids], encoding: JSONEncoding.default)
             
             
         default:
@@ -486,9 +527,52 @@ extension PersonServer{
     }
     
     
+    //收藏
+    internal func collectedInternJobs(limit:Int, offset:Int) -> Observable<[CollectedInternJobModel]>{
+        return httpServer.rx.request(.collectedJobs(type: jobType.intern.rawValue, limit: limit, offset: offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapArray(CollectedInternJobModel.self, tag: "body")
+    }
+    
+    internal func collectedCampusJobs(limit:Int, offset:Int) -> Observable<[CollectedCampusJobModel]>{
+        return httpServer.rx.request(.collectedJobs(type: jobType.graduate.rawValue, limit: limit, offset: offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapArray(CollectedCampusJobModel.self, tag: "body")
+    }
     
     
     
+    internal func collectedCompanys(limit:Int, offset:Int) -> Observable<[CollectedCompanyModel]>{
+        return httpServer.rx.request(.collectedCompany(limit: limit, offset: offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapArray(CollectedCompanyModel.self, tag: "body")
+    }
     
+    
+    internal func collectedCareerTalk(limit:Int, offset:Int) -> Observable<[CareerTalkMeetingListModel]>{
+        
+        return httpServer.rx.request(.collectedCareerTalk(limit: limit, offset: offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapArray(CareerTalkMeetingListModel.self, tag: "body")
+    }
+    
+    internal func collectedOnlineApply(limit:Int, offset:Int) ->
+        Observable<[CollectedOnlineApplyModel]>{
+        return httpServer.rx.request(.collectedOnlineApply(limit: limit, offset: offset)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapArray(CollectedOnlineApplyModel.self, tag: "body")
+    }
+    
+    
+    
+    internal func unCollectedJobs(type:String, ids:[String]) -> Observable<ResponseModel<HttpResultMode>>{
+        
+        return httpServer.rx.request(.unCollectedJobs(type: type, ids: ids)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
+    
+    
+    
+    internal func unCollectedCompany(ids:[String]) -> Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.rx.request(.unCollectedCompany(ids: ids)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
+    
+    internal func unCollectedOnlineApply(ids:[String]) -> Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.rx.request(.unCollectedOnlineApply(ids: ids)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
+    
+    internal func unCollectedCareerTalk(ids:[String]) -> Observable<ResponseModel<HttpResultMode>>{
+        
+        return httpServer.rx.request(.unCollectedCareerTalk(ids: ids)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
     
 }

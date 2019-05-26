@@ -1,5 +1,5 @@
 //
-//  CompanyCollectedVC.swift
+//  jobCollectedVC.swift
 //  internals
 //
 //  Created by ke.liang on 2018/2/17.
@@ -9,35 +9,36 @@
 import UIKit
 import RxSwift
 import RxCocoa
-import RxDataSources
 import MJRefresh
+import RxDataSources
 import Kingfisher
 
-//fileprivate let notifiyName:String = "CompanyCollectedVC"
+//fileprivate let notifiyName:String = "jobCollectedVC"
 
-class CompanyCollectedVC: BaseViewController {
 
-    
-    private lazy var vm:PersonViewModel = PersonViewModel.shared
+class InternJobCollectedVC: BaseViewController {
+
+
     private lazy var dispose:DisposeBag = DisposeBag.init()
     
+    private lazy var vm:PersonViewModel = PersonViewModel.shared
+    
+    private lazy var datas:[CollectedInternJobModel] = []
+    
     private var offset = 0
-    private let limit = 10
-    // 收藏的公司数据
-    private var datas:[CollectedCompanyModel] = []
+    private var limit = 10
     
     
     internal lazy var table:UITableView = { [unowned self] in
-        let tb = UITableView.init(frame: self.view.frame)
-        tb.rx.setDelegate(self).disposed(by: self.dispose)
+        let tb = UITableView.init(frame: CGRect.zero)
         //tb.dataSource = self
+        tb.rx.setDelegate(self).disposed(by: self.dispose)
         //tb.delegate = self
         tb.allowsMultipleSelectionDuringEditing = true
         tb.tableFooterView = UIView()
-        tb.register(companyCollectedCell.self, forCellReuseIdentifier: companyCollectedCell.identity())
+        tb.register(jobCollectedCell.self, forCellReuseIdentifier: jobCollectedCell.identity())
         tb.backgroundColor = UIColor.viewBackColor()
         tb.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 44, right: 0)
-
         return tb
     }()
     
@@ -48,7 +49,7 @@ class CompanyCollectedVC: BaseViewController {
                 return
             }
             s.offset = 0
-            s.vm.collectedCompanyReq.onNext((s.offset, s.limit))
+            s.vm.collectedInternJobsReq.onNext((s.offset, s.limit))
             
         }
         h?.setTitle("开始刷新", for: .pulling)
@@ -66,7 +67,7 @@ class CompanyCollectedVC: BaseViewController {
                 return
             }
             s.offset += s.limit
-            s.vm.collectedCompanyReq.onNext((s.offset, s.limit))
+            s.vm.collectedInternJobsReq.onNext((s.offset, s.limit))
             
         })
         f?.setTitle("上拉刷新", for: .idle)
@@ -76,29 +77,22 @@ class CompanyCollectedVC: BaseViewController {
         return f!
     }()
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setViews()
-        //self.loadData()
         setViewModel()
         
-       // NotificationCenter.default.addObserver(self, selector: #selector(operation), name: NotificationName.collecteItem[2], object: nil)
-        
-        
+   
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-    }
-  
-    // MARK: - Table view data source
-
+    
+    
     override func setViews() {
         
-        
+    
         self.view.addSubview(table)
-           _ = table.sd_layout().topEqualToView(self.view)?.bottomEqualToView(self.view)?.leftEqualToView(self.view)?.rightEqualToView(self.view)
+        _ = table.sd_layout().topEqualToView(self.view)?.bottomEqualToView(self.view)?.leftEqualToView(self.view)?.rightEqualToView(self.view)
         
         self.table.mj_header = refreshHeader
         self.table.mj_footer = refreshFooter
@@ -109,49 +103,49 @@ class CompanyCollectedVC: BaseViewController {
     
     override func didFinishloadData() {
         super.didFinishloadData()
-        //self.table.reloadData()
+        
     }
     
     override func reload() {
         super.reload()
         //self.loadData()
         self.offset = 0
-        self.vm.collectedCompanyReq.onNext((self.offset, self.limit))
+        self.vm.collectedInternJobsReq.onNext((self.offset, self.limit))
     }
+    
+  
     
     deinit {
         //NotificationCenter.default.removeObserver(self)
-        print("deinit companyCollectedVC \(self)")
+        print("deinit internCollectedVC \(self)")
     }
-   
+
+
 }
 
 
-
-
-extension CompanyCollectedVC{
+extension InternJobCollectedVC{
     private func setViewModel(){
         
         self.errorView.tap.asDriver().drive(onNext: { [weak self] in
-            self?.reload()
+                self?.reload()
         }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
         
-        
-        NotificationCenter.default.rx.notification(NotificationName.collecteItem[2], object: nil).subscribe(onNext: { [weak self] (notify) in
+        NotificationCenter.default.rx.notification(NotificationName.collecteItem[1], object: nil).subscribe(onNext: { [weak self] (notify) in
             self?.operation(notify)
         }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
         
-        self.vm.collectedCompany.share().subscribe(onNext: { [weak self] (modes) in
+        self.vm.collectedInternJobs.share().subscribe(onNext: { [weak self] (modes) in
             self?.datas = modes
+            
         }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
         
-        self.vm.collectedCompany.share().bind(to: self.table.rx.items(cellIdentifier: companyCollectedCell.identity(), cellType: companyCollectedCell.self)){
-            (row, mode, cell) in
+        self.vm.collectedInternJobs.share().bind(to: self.table.rx.items(cellIdentifier: jobCollectedCell.identity(), cellType: jobCollectedCell.self)){ (row, mode, cell) in
             cell.mode = mode
         }.disposed(by: self.dispose)
         
         
-        self.vm.companyRefreshStatus.asDriver(onErrorJustReturn: .none).drive(onNext:  { [weak self] (status) in
+        self.vm.internRefreshStatus.asDriver(onErrorJustReturn: .none).drive(onNext:  { [weak self] (status) in
             guard let `self` = self else {
                 return
             }
@@ -175,36 +169,30 @@ extension CompanyCollectedVC{
             
         }).disposed(by: dispose)
         
-        
-        
         self.table.rx.itemSelected.subscribe(onNext: {  [weak self] (indexPath) in
-            guard let `self` = self else {
+            guard let `self` =  self else {
                 return
             }
             
             if self.table.isEditing{
                 return
             }
-            self.table.deselectRow(at: indexPath, animated: true)
-            let item = self.datas[indexPath.row]
-            // MARK TODO company数据给界面展示
-            let vc = CompanyMainVC()
-            vc.companyID =  item.companyId!
-            self.navigationController?.pushViewController(vc, animated: true)
             
+            self.table.deselectRow(at: indexPath, animated: true)
+            let mode = self.datas[indexPath.row]
+            
+            let JobDetail =  JobDetailViewController()
+            JobDetail.job = (mode.jobId!, .intern)
+            self.navigationController?.pushViewController(JobDetail, animated: true)
         }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
         
-        self.refreshHeader.beginRefreshing()
         
-    
+        self.refreshHeader.beginRefreshing()
     }
 }
 
-
-extension CompanyCollectedVC:  UITableViewDelegate{
+extension InternJobCollectedVC: UITableViewDelegate{
     
-    
-//
 //    func numberOfSections(in tableView: UITableView) -> Int {
 //        // #warning Incomplete implementation, return the number of sections
 //        return 1
@@ -213,21 +201,21 @@ extension CompanyCollectedVC:  UITableViewDelegate{
 //    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 //        // #warning Incomplete implementation, return the number of rows
 //        return datas.count
+//
 //    }
 //
 //    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCell(withIdentifier: companyCollectedCell.identity(), for: indexPath) as! companyCollectedCell
-//        let item = datas[indexPath.row]
-//        cell.mode = item
-//        return cell
+//        let cell = tableView.dequeueReusableCell(withIdentifier: jobCollectedCell.identity(), for: indexPath) as! jobCollectedCell
+//        let job =  datas[indexPath.row]
 //
+//        cell.mode = job
+//        //cell.useCellFrameCache(with: indexPath, tableView: tableView)
+//        return cell
 //    }
     
-    // 设置cell样式
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let item = datas[indexPath.row]
-        
-        return tableView.cellHeight(for: indexPath, model: item, keyPath: "mode", cellClass: companyCollectedCell.self, contentViewWidth: GlobalConfig.ScreenW)
+        let job = datas[indexPath.row]
+        return  tableView.cellHeight(for: indexPath, model: job, keyPath: "mode", cellClass: jobCollectedCell.self, contentViewWidth: GlobalConfig.ScreenW)
         
     }
     
@@ -235,40 +223,45 @@ extension CompanyCollectedVC:  UITableViewDelegate{
 //        if tableView.isEditing{
 //            return
 //        }
-//        let item = datas[indexPath.row]
-//        // MARK TODO company数据给界面展示
-//        let vc = CompanyMainVC()
-//        vc.companyID =  item.id
-//        self.navigationController?.pushViewController(vc, animated: true)
+//
+//        let mode = datas[indexPath.row]
+//
+//        let JobDetail =  JobDetailViewController()
+//        JobDetail.job = (mode.id!, mode.kind ?? .none)
+//        //JobDetail.kind = (id:  mode.id!, type: mode.kind!)
+//        self.navigationController?.pushViewController(JobDetail, animated: true)
+//
 //
 //    }
+    
+
+    
+    
 }
 
 
-extension CompanyCollectedVC{
-     private func operation(_ sender: Notification){
-        
+extension InternJobCollectedVC{
+    
+    private func operation(_ sender: Notification){
         let info = sender.userInfo as? [String: Any]
-        
-        
-        if let mode = info?["mode"] as? CollectedCompanyModel{
+        // 添加数据
+        if let mode = info?["mode"] as? CollectedInternJobModel{
             self.datas.insert(mode, at: 0)
-            self.vm.collectedCompany.accept(self.datas)
+            self.vm.collectedInternJobs.accept(self.datas)
             return
         }
-        
         // 删除数据
-        if let mode = info?["remove"] as? CollectedCompanyModel{
+        if let mode = info?["remove"] as? CollectedInternJobModel{
             var targetIndex = -1
             for (index, item) in self.datas.enumerated(){
-                if item.companyId! == mode.companyId!{
+                if item.jobId! == mode.jobId!{
                     targetIndex = index
                     break
                 }
             }
             if targetIndex >= 0 {
                 self.datas.remove(at: targetIndex)
-                self.vm.collectedCompany.accept(self.datas)
+                self.vm.collectedInternJobs.accept(self.datas)
             }
             
             return
@@ -290,64 +283,72 @@ extension CompanyCollectedVC{
             }else if action == "delete"{
                 if let selected = self.table.indexPathsForSelectedRows{
                     var deletedRows:[Int] = []
-                    var cids:[String] = []
+                    var jids:[String] = []
                     selected.forEach { [weak self] indexPath in
                         deletedRows.append(indexPath.row)
-                        if let id = self?.datas[indexPath.row].companyId{
-                            cids.append(id)
+                        if let id = self?.datas[indexPath.row].jobId{
+                            jids.append(id)
                         }
                     }
-                    self.vm.unCollectedCompany(ids: cids).subscribe(onNext: { [weak self] (res) in
+                    
+                    // 请求服务器 TODO
+                    // 扩展 批量删除元素
+                    self.vm.unCollectedJobs(type: .intern, ids: jids).subscribe(onNext: { [weak self] (res) in
+                        guard let code = res.code, HttpCodeRange.filterSuccessResponse(target: code) else {
+                            self?.table.showToast(title: "删除失败", customImage: nil, mode: .text)
+                            return
+                        }
                         guard let `self` = self else {
                             return
                         }
-                        guard let code = res.code, HttpCodeRange.filterSuccessResponse(target: code) else{
-                            self.table.showToast(title: "删除失败", customImage: nil, mode: .text)
-                            return
-                        }
                         self.datas.remove(indexes: deletedRows)
-                        self.vm.collectedCompany.accept(self.datas)
+                        self.vm.collectedInternJobs.accept(self.datas)
+                        
                         
                     }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
-                    // 扩展 批量删除元素
-                    // self.datas.remove(indexes: deletedRows)
-                    // 服务器删除
-                    // self.table.reloadData()
                     
                 }
             }
         }
         
-        
-        
     }
 }
 
-//extension CompanyCollectedVC{
-//
+//extension InternJobCollectedVC{
 //    private func loadData(){
-//        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-//            Thread.sleep(forTimeInterval: 3)
-//            for _ in 0..<20{
-//                self?.datas.append(CompanyModel(JSON: ["id":"dqw-dqwd","name":"公司名",
-//                                                       "describe":"大哇多无多首先想到的肯定是结束减速的代理方法：scrollViewDscrollViewDidEndDecelerating代理方法的，如果做过用3个界面+scrollView实现循环滚动展示图片，那么基本上都会碰到这么问题。如何准确的监听翻页？我的解决的思路如下达瓦大文大无大无多无大无大无多哇大无多无飞啊飞分为飞飞飞达瓦大文大无大无多哇付达瓦大文大无付多无dwadwadadawdawde吊袜带挖多哇建外大街文档就frog忙不忙你有他们今天又摸排个人票买房可免费课时费\n个人个人，二哥，二\n吊袜带挖多，另外的码问了；吗\n","address":["地址1","地址2"],"icon":"sina","simpleDes":"当前为多群无多群当前为多群无多群当前为多群无多群无当前为多群无","industry":["教育","医疗","化工"],"webSite":"https://www.baidu.com","tags":["标签1","标签1测试","标签89我的当前","当前为多","迭代器","群无多当前为多群当前","达瓦大群无多", "当前为多当前的群","当前为多无", "当前为多群无多","杜德伟七多"],"isValidate":true,"isCollected":false,"follows": arc4random()%10000])!)
 //
+//        DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
+//            Thread.sleep(forTimeInterval: 1)
+//            for _ in 0..<10{
 //
+//                if let data = Mapper<CompuseRecruiteJobs>().map(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dqwd-dqwdqwddqw","name":"码农","company":["id":"dqwd","name":"公司名称","isCollected":true,"icon":"chrome","address":["地址1","地址2"],"industry":["行业1","行业2"],"staffs":"1000人以上"],"address":["北京","地址2"],"create_time":Date().timeIntervalSince1970,"education":"本科","type":"intern","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false,"readNums":arc4random()%1000]){
+//                    self?.datas.append(data)
+//
+//                }
 //
 //            }
-//            DispatchQueue.main.async(execute: {
+//
+//            for _ in 0..<10{
+//                 self?.datas.append(Mapper<CompuseRecruiteJobs>().map(JSON: ["id":"dwqdqwd","icon":"swift","companyID":"dqwd-dqwdqwddqw","name":"码农","company":["id":"dqwd","name":"公司名称","isCollected":true,"icon":"chrome","address":["地址1","地址2"],"industry":["行业1","行业2"],"staffs":"1000人以上"],"hr":["userID":"dqwd","name":"我是hr","position":"HRBP","ontime": Date().timeIntervalSince1970 - TimeInterval(6514),"icon": #imageLiteral(resourceName: "jing").toBase64String()],"address":["北京","地址2"],"create_time":Date().timeIntervalSince1970,"education":"本科","type":"graduate","isTalked":false,"isValidate":true,"isCollected":false,"isApply":false,"readNums":arc4random()%1000])!)
+//            }
+//
+//
+//
+//            DispatchQueue.main.async {
+//
 //                self?.didFinishloadData()
-//            })
+//            }
 //        }
 //
 //    }
-//
 //}
 
 
 
 
-@objcMembers fileprivate class companyCollectedCell: UITableViewCell {
+
+
+@objcMembers fileprivate class jobCollectedCell: UITableViewCell {
     
     
     private lazy var icon:UIImageView = {
@@ -361,68 +362,72 @@ extension CompanyCollectedVC{
     
     private lazy var companyName:UILabel = {
         let name = UILabel()
-        name.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 80)
+        name.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 60)
         name.font = UIFont.boldSystemFont(ofSize: 16)
         name.textAlignment = .left
         return name
     }()
     
-    
+    private lazy var positionName:UILabel = {
+        let name = UILabel()
+        name.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 60)
+        name.font = UIFont.systemFont(ofSize: 14)
+        name.textAlignment = .left
+        return name
+    }()
 
     
-    private lazy var type:UILabel = {
+//    private lazy var jobtype:UILabel = {
+//        let name = UILabel()
+//        name.setSingleLineAutoResizeWithMaxWidth(100)
+//        name.font = UIFont.systemFont(ofSize: 12)
+//        name.textAlignment = .left
+//        name.textColor = UIColor.lightGray
+//        return name
+//    }()
+    
+    // 时间
+    private lazy var times:UILabel = {
         let name = UILabel()
-        name.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 80)
+        name.setSingleLineAutoResizeWithMaxWidth(100)
         name.font = UIFont.systemFont(ofSize: 12)
         name.textAlignment = .left
-        name.textColor = UIColor.lightGray
+        name.textColor = UIColor.blue
         return name
     }()
     
-    private lazy var city:UILabel = {
-        let name = UILabel()
-        name.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW - 80)
-        name.font = UIFont.systemFont(ofSize: 12)
-        name.textAlignment = .left
-        name.textColor = UIColor.lightGray
-        return name
-    }()
-    
-    
-    dynamic var mode:CollectedCompanyModel?{
+    dynamic var mode:CollectedInternJobModel?{
         didSet{
-            
+         
             guard  let mode = mode  else {
                 return
             }
-            if let url = mode.iconURL{
+            if let url = mode.iconUrl{
                 self.icon.kf.setImage(with: Source.network(url), placeholder: UIImage.init(named: "default"), options: nil, progressBlock: nil, completionHandler: nil)
             }else{
-                self.icon.image = #imageLiteral(resourceName: "sina")
+                self.icon.image = #imageLiteral(resourceName: "ali")
             }
-            
-            self.companyName.text = mode.name
-            // 必须的 参数
-            self.type.text = mode.type
-            self.city.text = mode.citys?.joined(separator: " ")
-            self.setupAutoHeight(withBottomViewsArray: [city,icon], bottomMargin: 10)
+            self.companyName.text = mode.companyName
+            self.positionName.text = mode.name
+            //self.address.text = mode.addressStr
+           // self.jobtype.text = " | " + mode.kind.rawValue
+            self.times.text  = mode.createdTimeStr
+            self.setupAutoHeight(withBottomViewsArray: [icon,  positionName], bottomMargin: 5)
         }
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        let views:[UIView] = [icon, companyName, type, city]
+        let views:[UIView] = [icon, companyName, positionName, times]
         self.contentView.sd_addSubviews(views)
         _ = icon.sd_layout().leftSpaceToView(self.contentView,10)?.centerYEqualToView(self.contentView)?.widthIs(45)?.heightIs(45)
-        _ = companyName.sd_layout().leftSpaceToView(icon,10)?.topEqualToView(icon)?.autoHeightRatio(0)
-        _ = type.sd_layout().topSpaceToView(companyName,5)?.leftEqualToView(companyName)?.autoHeightRatio(0)
-        _ = city.sd_layout()?.topSpaceToView(type,5)?.leftEqualToView(type)?.autoHeightRatio(0)
-        
+        _ = companyName.sd_layout().leftSpaceToView(icon,10)?.topSpaceToView(self.contentView,5)?.autoHeightRatio(0)
+        _ = positionName.sd_layout().topSpaceToView(companyName,5)?.leftEqualToView(companyName)?.autoHeightRatio(0)
+        _ = times.sd_layout().topEqualToView(companyName)?.rightSpaceToView(self.contentView,10)?.autoHeightRatio(0)
         
         companyName.setMaxNumberOfLinesToShow(1)
-        type.setMaxNumberOfLinesToShow(1)
-        city.setMaxNumberOfLinesToShow(2)
-        
+        positionName.setMaxNumberOfLinesToShow(1)
+        //address.setMaxNumberOfLinesToShow(1)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -438,5 +443,4 @@ extension CompanyCollectedVC{
     
     
 }
-
 

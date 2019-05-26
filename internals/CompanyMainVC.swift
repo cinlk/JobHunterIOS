@@ -415,13 +415,52 @@ extension CompanyMainVC{
         if !verifyLogin(){
             return
         }
+        guard let m = self.mode, let collected = m.isCollected else {
+            return
+        }
         
-        // MARK 修改公司状态 已经为收藏
-        let str =  (mode?.isCollected)! ? "取消收藏" : "收藏成功"
-        self.view.showToast(title: str, customImage: nil, mode: .text)
-        //showOnlyTextHub(message: str, view: self.view)
-        btn.isSelected = !(mode?.isCollected)!
-        mode?.isCollected = !(mode?.isCollected)!
+        
+    
+        self.vm.collectCompany(companyId: m.id!, flag: !collected).subscribe(onNext: { [weak self] (res) in
+            guard let `self` = self else {
+                return
+            }
+            
+            if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code){
+                let str =  m.isCollected! ? "取消收藏" : "收藏成功"
+                self.view.showToast(title: str, customImage: nil, mode: .text)
+                btn.isSelected = !collected
+                self.mode?.isCollected = !collected
+                
+                
+                if let cj = CollectedCompanyModel.init(JSON:
+                    [ "company_id": self.mode?.id ?? "",
+                      "icon_url": self.mode?.iconURL?.absoluteString ?? "",
+                      "name": self.mode?.name ?? "",
+                      "type": self.mode?.type ?? "",
+                      "citys": self.mode?.citys ?? [],
+                      "created_time": Date.init().timeIntervalSince1970,
+                    ]){
+                    
+                    if collected {
+                        // 取消收藏
+                        NotificationCenter.default.post(name: NotificationName.collecteItem[2], object: nil, userInfo: ["remove": cj])
+                    }else{
+                        // 收藏
+                         NotificationCenter.default.post(name: NotificationName.collecteItem[2], object: nil, userInfo: ["mode": cj])
+                    }
+                   
+                    
+                }
+                
+            }else{
+                self.view.showToast(title: "修改失败", customImage: nil, mode: .text)
+
+            }
+            
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+       
     }
 }
 

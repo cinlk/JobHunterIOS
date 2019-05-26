@@ -7,20 +7,32 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
+import RxDataSources
+import MJRefresh
 
-
-fileprivate let notifiyName:String = "MeetingCollectedVC"
+//fileprivate let notifiyName:String = "MeetingCollectedVC"
 
 
 class MeetingCollectedVC: BaseViewController {
 
+    
+    
+    private lazy var vm:PersonViewModel = PersonViewModel.shared
+    private lazy var dispose:DisposeBag = DisposeBag.init()
+    
+    private var offset = 0
+    private let limit = 10
+    
   
     private lazy var datas:[CareerTalkMeetingListModel] = []
     
     internal lazy var table:UITableView = { [unowned self] in
         let tb = UITableView.init(frame: self.view.frame)
-        tb.dataSource = self
-        tb.delegate = self
+        //tb.dataSource = self
+        tb.rx.setDelegate(self).disposed(by: self.dispose)
+        //tb.delegate = self
         tb.allowsMultipleSelectionDuringEditing = true
         tb.tableFooterView = UIView()
         tb.register(CareerTalkCell.self, forCellReuseIdentifier: CareerTalkCell.identity())
@@ -31,12 +43,48 @@ class MeetingCollectedVC: BaseViewController {
         return tb
     }()
     
+    private lazy var refreshHeader:MJRefreshNormalHeader = {
+        let h = MJRefreshNormalHeader.init { [weak self] in
+            guard let s = self else {
+                return
+            }
+            s.offset = 0
+            s.vm.collectedCareerTalkReq.onNext((s.offset, s.limit))
+            
+        }
+        h?.setTitle("开始刷新", for: .pulling)
+        h?.setTitle("刷新中...", for: .refreshing)
+        h?.setTitle("下拉刷新", for: .idle)
+        h?.lastUpdatedTimeLabel.isHidden = true
+        
+        return h!
+        
+    }()
+    
+    private lazy var refreshFooter:MJRefreshAutoNormalFooter = {
+        let f = MJRefreshAutoNormalFooter.init(refreshingBlock: { [weak self] in
+            guard let s = self else {
+                return
+            }
+            s.offset += s.limit
+            s.vm.collectedCareerTalkReq.onNext((s.offset, s.limit))
+            
+        })
+        f?.setTitle("上拉刷新", for: .idle)
+        f?.setTitle("刷新中...", for: .refreshing)
+        f?.setTitle("没有数据", for: .noMoreData)
+        
+        return f!
+    }()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setViews()
-        self.loadData()
+        setViewModel()
+        //self.loadData()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(operation), name: NSNotification.Name.init(notifiyName), object: nil)
+        //NotificationCenter.default.addObserver(self, selector: #selector(operation), name: NotificationName.collecteItem[3], object: nil)
         
     }
     
@@ -46,54 +94,126 @@ class MeetingCollectedVC: BaseViewController {
         
         self.view.addSubview(table)
            _ = table.sd_layout().topEqualToView(self.view)?.bottomEqualToView(self.view)?.leftEqualToView(self.view)?.rightEqualToView(self.view)
+        self.table.mj_header = refreshHeader
+        self.table.mj_footer = refreshFooter
         self.hiddenViews.append(table)
         super.setViews()
     }
     
     override func didFinishloadData() {
         super.didFinishloadData()
-        self.table.reloadData()
+        //self.table.reloadData()
     }
     
     override func reload() {
         super.reload()
-        self.loadData()
+       // self.loadData()
+        self.offset = 0
+        self.vm.collectedCareerTalkReq.onNext((self.offset, self.limit))
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+   
     
     deinit {
-        NotificationCenter.default.removeObserver(self)
+        //NotificationCenter.default.removeObserver(self)
+        print("deinit MeetingCollectedVC \(self)")
     }
     
 }
 
 
 
-extension MeetingCollectedVC: UITableViewDelegate, UITableViewDataSource{
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 1
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return datas.count
+extension MeetingCollectedVC{
+    private func setViewModel(){
+        self.errorView.tap.asDriver().drive(onNext: { [weak self] in
+            self?.reload()
+            }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        
+        NotificationCenter.default.rx.notification(NotificationName.collecteItem[3], object: nil).subscribe(onNext: {[weak self]  (notify) in
+            self?.operation(notify)
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        self.vm.collectedCareerTalk.share().subscribe(onNext: { [weak self] (modes) in
+            self?.datas = modes
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        
+        self.vm.collectedCareerTalk.share().bind(to: self.table.rx.items(cellIdentifier: CareerTalkCell.identity(), cellType: CareerTalkCell.self)){
+            (row, mode, cell) in
+            cell.mode = mode
+        }.disposed(by: self.dispose)
+        
+        
+        self.vm.careerTalkRefreshStatus.asDriver(onErrorJustReturn: .none).drive(onNext:  { [weak self] (status) in
+            guard let `self` = self else {
+                return
+            }
+            switch status{
+            case .endHeaderRefresh:
+                self.table.mj_footer.resetNoMoreData()
+                self.table.mj_header.endRefreshing()
+                self.didFinishloadData()
+            case .endFooterRefresh:
+                self.table.mj_footer.endRefreshing()
+            case .NoMoreData:
+                self.table.mj_footer.endRefreshingWithNoMoreData()
+            case .error(let err):
+                self.table.mj_footer.endRefreshing()
+                self.table.mj_header.endRefreshing()
+                self.view.showToast(title: "err \(err)", customImage: nil, mode: .text)
+            //showOnlyTextHub(message: "err \(err)", view: self.view)
+            default:
+                break
+            }
+            
+        }).disposed(by: dispose)
+        
+        self.table.rx.itemSelected.subscribe(onNext: {[weak self]  (indexPath) in
+            guard let `self` = self else {
+                return
+            }
+            
+            if self.table.isEditing{
+                return
+            }
+            self.table.deselectRow(at: indexPath, animated: true)
+
+            let mode = self.datas[indexPath.row]
+            let show = CareerTalkShowViewController()
+            show.meetingID = mode.meetingID!
+            self.navigationController?.pushViewController(show, animated: true)
+            
+            
+            
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        self.refreshHeader.beginRefreshing()
         
     }
+}
+
+extension MeetingCollectedVC: UITableViewDelegate{
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: CareerTalkCell.identity(), for: indexPath) as! CareerTalkCell
-        let job =  datas[indexPath.row]
-        
-        cell.mode = job
-        cell.useCellFrameCache(with: indexPath, tableView: tableView)
-        return cell
-    }
+//    func numberOfSections(in tableView: UITableView) -> Int {
+//        // #warning Incomplete implementation, return the number of sections
+//        return 1
+//    }
+//
+//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        // #warning Incomplete implementation, return the number of rows
+//        return datas.count
+//
+//    }
+//
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        let cell = tableView.dequeueReusableCell(withIdentifier: CareerTalkCell.identity(), for: indexPath) as! CareerTalkCell
+//        let job =  datas[indexPath.row]
+//
+//        cell.mode = job
+//        cell.useCellFrameCache(with: indexPath, tableView: tableView)
+//        return cell
+//    }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let job = datas[indexPath.row]
@@ -101,19 +221,19 @@ extension MeetingCollectedVC: UITableViewDelegate, UITableViewDataSource{
         
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if tableView.isEditing{
-            return
-        }
-        
-        let mode = self.datas[indexPath.row]
-        let show = CareerTalkShowViewController()
-        show.meetingID = mode.meetingID ?? ""
-        self.navigationController?.pushViewController(show, animated: true)
-        
-        
-        
-    }
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        if tableView.isEditing{
+//            return
+//        }
+//
+//        let mode = self.datas[indexPath.row]
+//        let show = CareerTalkShowViewController()
+//        show.meetingID = mode.meetingID ?? ""
+//        self.navigationController?.pushViewController(show, animated: true)
+//
+//
+//
+//    }
     
     
     
@@ -122,8 +242,34 @@ extension MeetingCollectedVC: UITableViewDelegate, UITableViewDataSource{
 
 extension MeetingCollectedVC{
     @objc private func operation(_ sender: Notification){
-        let info = sender.userInfo as? [String:String]
-        if let action = info?["action"]{
+        let info = sender.userInfo as? [String: Any]
+        
+        if let mode = info?["mode"] as? CareerTalkMeetingListModel{
+            self.datas.insert(mode, at: 0)
+            self.vm.collectedCareerTalk.accept(self.datas)
+            return
+        }
+        
+        
+        // 删除数据
+        if let mode = info?["remove"] as? CareerTalkMeetingListModel{
+            var targetIndex = -1
+            for (index, item) in self.datas.enumerated(){
+                if item.meetingID! == mode.meetingID!{
+                    targetIndex = index
+                    break
+                }
+            }
+            if targetIndex >= 0 {
+                self.datas.remove(at: targetIndex)
+                self.vm.collectedCareerTalk.accept(self.datas)
+            }
+            
+            return
+        }
+        
+        
+        if let action = info?["action"] as? String{
             if action == "edit"{
                 self.table.setEditing(true, animated: false)
             }else if action == "cancel"{
@@ -138,13 +284,26 @@ extension MeetingCollectedVC{
             }else if action == "delete"{
                 if let selected = self.table.indexPathsForSelectedRows{
                     var deletedRows:[Int] = []
+                    var cids:[String] = []
                     selected.forEach { indexPath in
                         deletedRows.append(indexPath.row)
+                        if let id = self.datas[indexPath.row].meetingID{
+                            cids.append(id)
+                        }
                     }
-                    // 扩展 批量删除元素
-                    self.datas.remove(indexes: deletedRows)
-                    // 服务器删除
-                    self.table.reloadData()
+                    self.vm.unCollectedCareerTalk(ids: cids).subscribe(onNext: { [weak self] (res) in
+                        guard let `self` = self else {
+                            return
+                        }
+                        guard let code = res.code, HttpCodeRange.filterSuccessResponse(target: code) else {
+                             self.table.showToast(title: "删除失败", customImage: nil, mode: .text)
+                             return
+                        }
+                        self.datas.remove(indexes: deletedRows)
+                        self.vm.collectedCareerTalk.accept(self.datas)
+                        
+ 
+                    }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
                     
                 }
             }
@@ -152,23 +311,5 @@ extension MeetingCollectedVC{
         
     }
 }
-
-extension MeetingCollectedVC{
-    private func loadData(){
-//        DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
-//            Thread.sleep(forTimeInterval: 1)
-//            for _ in 0..<20{
-//                self?.datas.append(CareerTalkMeetingModel(JSON: ["id":"dqw-dqwd","companyModel":["id":"com-dqwd-5dq","icon":"sina","name":"公司名字","describe":"达瓦大群-dqwd","isValidate":true,"isCollected":false,"address":["地址1","地址2"],"industry":["教育","医疗","化工"]],"college":"北京大学","address":"教学室二"
-//                    ,"isValidate":true,"isCollected":false,"icon":"car","start_time":Date().timeIntervalSince1970,"end_time":Date().timeIntervalSince1970 + TimeInterval(3600*2),"name":"北京高华证券有限责任公司宣讲会但钱当前无多群","source":"上海交大"])!)
-//            }
-//            DispatchQueue.main.async {
-//                self?.didFinishloadData()
-//            }
-//        }
-        
-    }
-}
-
-
 
 

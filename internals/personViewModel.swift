@@ -22,9 +22,172 @@ class PersonViewModel {
     private let activityIndicator = ActivityIndicator()
 
     
+    // 收藏
+    internal let collectedInternJobs:BehaviorRelay<[CollectedInternJobModel]> = BehaviorRelay<[CollectedInternJobModel]>.init(value: [])
+    internal let collectedInternJobsReq:PublishSubject<(Int, Int)>  = PublishSubject<(Int, Int)>.init()
+    private lazy var collectedInternJobPullDown:Bool = true
+    internal let internRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
+
+    
+    internal let collectedCampusJobs:BehaviorRelay<[CollectedCampusJobModel]> = BehaviorRelay<[CollectedCampusJobModel]>.init(value: [])
+    internal let collectedCampusJobsReq:PublishSubject<(Int, Int)>  = PublishSubject<(Int, Int)>.init()
+    private lazy var collectedCampusJobPullDown:Bool = true
+    internal let campusRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
+    
+    
+    internal let collectedCompany:BehaviorRelay<[CollectedCompanyModel]> = BehaviorRelay<[CollectedCompanyModel]>.init(value: [])
+    private lazy var collectedCompanyPullDown:Bool = true
+    internal let collectedCompanyReq:PublishSubject<(Int, Int)>  = PublishSubject<(Int, Int)>.init()
+    
+    internal let companyRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
+
+    internal let collectedCareerTalk:BehaviorRelay<[CareerTalkMeetingListModel]> = BehaviorRelay<[CareerTalkMeetingListModel]>.init(value: [])
+    internal let collectedCareerTalkReq:PublishSubject<(Int, Int)>  = PublishSubject<(Int, Int)>.init()
+    private lazy var collectedCareerTalkPullDown:Bool = true
+    
+    internal let careerTalkRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
+
+    
+    internal let collectedOnlineApply:BehaviorRelay<[CollectedOnlineApplyModel]> = BehaviorRelay<[CollectedOnlineApplyModel]>.init(value: [])
+    internal let collectedOnlineApplyReq:PublishSubject<(Int, Int)>  = PublishSubject<(Int, Int)>.init()
+    private lazy var collectedOnlineApplyPullDown:Bool = true
+    
+    internal let onlineApplyRefreshStatus:PublishSubject<PageRefreshStatus> = PublishSubject<PageRefreshStatus>.init()
+
+
+    
     
     private init() {
         self.loading = activityIndicator.asDriver()
+        
+        //self.server.collectedInternJobs(limit: T##Int, offset: T##Int)
+        self.collectedInternJobsReq.do(onNext: { [unowned self]  (offset, limit)  in
+            self.collectedInternJobPullDown =   offset == 0 ? true : false
+        }).flatMapLatest { [unowned self] (offset, limit) in
+            self.server.collectedInternJobs(limit: limit, offset: offset).asDriver(onErrorJustReturn: [])
+            
+            }.subscribe(onNext: { [weak self] (modes) in
+                guard let `self`  = self else {
+                    return
+                }
+                if self.collectedInternJobPullDown{
+                    
+                    self.collectedInternJobs.accept(modes)
+                    self.internRefreshStatus.onNext(.endHeaderRefresh)
+                }else{
+                    if modes.isEmpty{
+                        self.internRefreshStatus.onNext(.NoMoreData)
+                        return
+                    }
+                    self.collectedInternJobs.accept(self.collectedInternJobs.value + modes)
+                    self.internRefreshStatus.onNext(.endFooterRefresh)
+                }
+                
+            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        self.collectedCampusJobsReq.do(onNext: { [unowned self] (offset, limit) in
+            self.collectedCampusJobPullDown = offset == 0 ? true : false
+            
+        }).flatMapLatest{ [unowned self] (offset, limit) in
+            self.server.collectedCampusJobs(limit: limit, offset: offset).asDriver(onErrorJustReturn: [])
+            }.subscribe(onNext: { [weak self] (modes) in
+                
+                guard let `self`  = self else {
+                    return
+                }
+                if self.collectedCampusJobPullDown{
+                    
+                    self.collectedCampusJobs.accept(modes)
+                    self.campusRefreshStatus.onNext(.endHeaderRefresh)
+                }else{
+                    if modes.isEmpty{
+                        self.campusRefreshStatus.onNext(.NoMoreData)
+                        return
+                    }
+                    self.collectedCampusJobs.accept(self.collectedCampusJobs.value + modes)
+                    self.campusRefreshStatus.onNext(.endFooterRefresh)
+                }
+                
+                
+            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        
+        self.collectedCompanyReq.do(onNext: { [unowned self] (offset, limit) in
+            self.collectedCompanyPullDown = offset == 0 ? true : false
+            
+        }).flatMapLatest{ [unowned self] (offset, limit) in
+            self.server.collectedCompanys(limit: limit, offset: offset).asDriver(onErrorJustReturn: [])
+            }.subscribe(onNext: { [weak self] (modes) in
+                
+                guard let `self`  = self else {
+                    return
+                }
+                if self.collectedCompanyPullDown{
+                    
+                    self.collectedCompany.accept(modes)
+                    self.companyRefreshStatus.onNext(.endHeaderRefresh)
+                }else{
+                    if modes.isEmpty{
+                        self.companyRefreshStatus.onNext(.NoMoreData)
+                        return
+                    }
+                    self.collectedCompany.accept(self.collectedCompany.value + modes)
+                    self.companyRefreshStatus.onNext(.endFooterRefresh)
+                }
+            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        
+        
+        self.collectedOnlineApplyReq.do(onNext: { [unowned self] (offset, limit) in
+            self.collectedOnlineApplyPullDown = offset == 0 ? true : false
+            
+        }).flatMapLatest{ [unowned self] (offset, limit) in
+            self.server.collectedOnlineApply(limit: limit, offset: offset).asDriver(onErrorJustReturn: [])
+            }.subscribe(onNext: { [weak self] (modes) in
+                
+                guard let `self`  = self else {
+                    return
+                }
+                if self.collectedOnlineApplyPullDown{
+                    
+                    self.collectedOnlineApply.accept(modes)
+                    self.onlineApplyRefreshStatus.onNext(.endHeaderRefresh)
+                }else{
+                    if modes.isEmpty{
+                        self.onlineApplyRefreshStatus.onNext(.NoMoreData)
+                        return
+                    }
+                    self.collectedOnlineApply.accept(self.collectedOnlineApply.value + modes)
+                    self.onlineApplyRefreshStatus.onNext(.endFooterRefresh)
+                }
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+        
+        
+        self.collectedCareerTalkReq.do(onNext: { [unowned self] (offset, limit) in
+            self.collectedCareerTalkPullDown = offset == 0 ? true : false
+            
+        }).flatMapLatest{ [unowned self] (offset, limit) in
+            self.server.collectedCareerTalk(limit: limit, offset: offset).asDriver(onErrorJustReturn: [])
+            }.subscribe(onNext: { [weak self] (modes) in
+                
+                guard let `self`  = self else {
+                    return
+                }
+                if self.collectedCareerTalkPullDown{
+                    
+                    self.collectedCareerTalk.accept(modes)
+                    self.careerTalkRefreshStatus.onNext(.endHeaderRefresh)
+                }else{
+                    if modes.isEmpty{
+                        self.careerTalkRefreshStatus.onNext(.NoMoreData)
+                        return
+                    }
+                    self.collectedCareerTalk.accept(self.collectedCareerTalk.value + modes)
+                    self.careerTalkRefreshStatus.onNext(.endFooterRefresh)
+                }
+            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
         
     }
     
@@ -200,6 +363,27 @@ class PersonViewModel {
         Observable<ResponseModel<AttachResumRes>> {
         return server.attachResumeUrl(resumeId: resumeId)
     }
+    
+    
+    internal func unCollectedJobs(type: jobType, ids:[String]) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.unCollectedJobs(type: type.rawValue, ids: ids)
+    }
+    
+    
+    internal func unCollectedCompany(ids:[String]) -> Observable<ResponseModel<HttpResultMode>>{
+        
+        return server.unCollectedCompany(ids: ids)
+    }
+    
+    internal func unCollectedOnlineApply(ids:[String]) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.unCollectedOnlineApply(ids: ids)
+    }
+    
+    internal func unCollectedCareerTalk(ids:[String]) -> Observable<ResponseModel<HttpResultMode>>{
+        
+        return  server.unCollectedCareerTalk(ids: ids)
+    }
+    
     
 
     

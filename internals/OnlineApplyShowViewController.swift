@@ -167,14 +167,48 @@ class OnlineApplyShowViewController: BaseShowJobViewController {
         if !verifyLogin(){
             return
         }
+        guard  let id = self.mode.value.id, let isCollect = self.mode.value.isCollected else {
+            return
+        }
         
-        // 用户收藏 数据 TODO
-        let str  = collectedBtn.isSelected ? collectedTitle[0] : collectedTitle[1]
-        collectedBtn.isSelected = !collectedBtn.isSelected
-        self.view.showToast(title: str, customImage: nil, mode: .text)
-        //showOnlyTextHub(message: str, view: self.view)
-        // 发送数据到服务器 TODO
-        mode.value.isCollected = collectedBtn.isSelected
+        self.vm.collectOnlineApply(onlineApplyId: id, flag: !isCollect).subscribe(onNext: { [weak self] (res) in
+            guard let `self` = self else {
+                return
+            }
+            if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code){
+                
+                // 用户收藏 数据 TODO
+                let str  = isCollect ? collectedTitle[0] : collectedTitle[1]
+                self.collectedBtn.isSelected = !isCollect
+                self.view.showToast(title: str, customImage: nil, mode: .text)
+                self.mode.value.isCollected = !isCollect
+                
+                if let cj = CollectedOnlineApplyModel.init(JSON:
+                    [ "online_apply_id": self.mode.value.id ?? "",
+                      "icon_url": self.mode.value.iconURL?.absoluteString ?? "",
+                      "company_name": self.mode.value.company?.name ?? "",
+                      "name": self.mode.value.name ?? "",
+                      "positions": self.mode.value.positionsStr,
+                      "created_time": Date.init().timeIntervalSince1970,
+                    ]){
+                    if isCollect {
+                        // 取消收藏
+                        NotificationCenter.default.post(name: NotificationName.collecteItem[4], object: nil, userInfo: ["remove": cj])
+                    }else{
+                        // 收藏
+                        NotificationCenter.default.post(name: NotificationName.collecteItem[4], object: nil, userInfo: ["mode": cj])
+                    }
+                    
+                    
+                }
+                
+            }else{
+                self.view.showToast(title: "修改失败", customImage: nil, mode: .text)
+
+            }
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+      
         
         
     }
