@@ -145,8 +145,8 @@ fileprivate class personTable: UITableView{
     }()
     
     private lazy var topMode:[(UIImage, String, UIViewController)] = {
-        let post = MyPostViewController()
-        post.type = .mypost
+        let post = MyForumArticleViewController()
+        //post.type = .mypost
         
        return [(#imageLiteral(resourceName: "delivery"), "投递记录", DeliveredHistory()), (#imageLiteral(resourceName: "delivery"), "我的简历", ResumePageViewController()), (#imageLiteral(resourceName: "delivery"), "我的收藏", MyCollectionVC()), (#imageLiteral(resourceName: "delivery"), "我的帖子", post)]
         

@@ -219,5 +219,23 @@ class ForumViewModel{
         return self.server.alertSubReply(subReplyId: subReplyId, content: content)
     }
     
+    
+    
+    // 更新帖子分组
+    internal func newPostGroup(postId:String, name:[String]) -> Observable<ResponseModel<HttpResultMode>>{
+        return self.server.newPostGroup(postId: postId, name: name)
+    }
+    
+    // 获取帖子的分组
+    
+    internal func postGroup(postId:String) -> Observable<ResponseModel<PostRelateGroup>>{
+        return self.server.postGroup(postId: postId)
+    }
+    
+    internal func getOnePost(postId:String) -> Observable<ResponseModel<PostArticleModel>>{
+        return self.server.getOnePost(postId: postId)
+    }
+    
+        
    
 }

@@ -15,6 +15,7 @@ import RxSwift
 
 internal enum forumTarget{
     case postItem(req: ArticleReqModel)
+    case onePost(postId:String)
     case createArticle(title:String, content:String, type:String)
     case replys(req: ArticleReplyReqModel)
     case count(postId:String)
@@ -32,6 +33,9 @@ internal enum forumTarget{
     case alertReply(replyId:String, content:String)
     case alertSubReply(subReplyId:String, content:String)
     case search(req:ForumSearchReq)
+    
+    case newPostGroup(postId:String, name:[String])
+    case postGroup(postId:String)
     case none
 }
 
@@ -48,6 +52,8 @@ extension forumTarget: TargetType{
         switch  self {
         case .postItem(_):
             return self.prefix + "/articles"
+        case .onePost(let postId):
+            return self.prefix + "/one/article/\(postId)"
         case .createArticle:
             return self.prefix + "/new/article"
         case .replys:
@@ -82,6 +88,10 @@ extension forumTarget: TargetType{
             return self.prefix + "/subReply/alert"
         case .search:
             return self.prefix + "/search"
+        case .newPostGroup:
+            return self.prefix + "/article/groups"
+        case .postGroup(let postId):
+            return self.prefix + "/article/groups/\(postId)"
         
         default:
             return ""
@@ -90,7 +100,7 @@ extension forumTarget: TargetType{
     
     var method: Moya.Method {
         switch self {
-        case .postItem(_), .createArticle, .newSubReply:
+        case .postItem(_), .createArticle, .newSubReply, .newPostGroup:
             return .post
         case .like, .collected, .count, .likeReply, .likeSubReply:
             return .put
@@ -137,6 +147,8 @@ extension forumTarget: TargetType{
             return .requestParameters(parameters: ["sub_reply_id": subReplyId, "content": content], encoding: JSONEncoding.default)
         case .search(let req):
             return .requestParameters(parameters: req.toJSON(), encoding: JSONEncoding.default)
+        case .newPostGroup(let postId, let name):
+            return .requestParameters(parameters: ["post_id": postId,"group_name": name], encoding: JSONEncoding.default)
         default:
             return .requestPlain
         }
@@ -168,6 +180,10 @@ class ForumeServer{
             ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapArray(PostArticleModel.self, tag: "body")
     }
     
+    
+    internal func getOnePost(postId:String) -> Observable<ResponseModel<PostArticleModel>>{
+        return httpServer.rx.request(.onePost(postId: postId)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<PostArticleModel>.self)
+    }
     
     internal func createArtice(title:String, content:String, type:String) -> Observable<ResponseModel<HttpForumResponse>>{
         
@@ -263,5 +279,16 @@ class ForumeServer{
     // 搜索帖子 test
     internal func searchPost(req: ForumSearchReq) -> Observable<[PostArticleModel]>{
         return httpServer.rx.request(.search(req: req)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapArray(PostArticleModel.self, tag: "body")
+    }
+    
+    // 更新帖子分组
+    internal func newPostGroup(postId:String, name:[String]) -> Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.rx.request(.newPostGroup(postId: postId, name: name)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
+    
+    // 获取帖子的分组
+    
+    internal func postGroup(postId:String) -> Observable<ResponseModel<PostRelateGroup>>{
+        return httpServer.rx.request(.postGroup(postId: postId)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<PostRelateGroup>.self)
     }
 }

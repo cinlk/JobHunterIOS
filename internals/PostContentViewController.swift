@@ -56,10 +56,22 @@ class PostContentViewController: BaseViewController {
         }
     }
     
-    // 来自消息界面 TODO
+    // 来自收藏或其他界面 TODO
     internal var postID:String?{
         didSet{
             //self.loadData()
+            if let id = self.postID, !id.isEmpty{
+                self.vm.getOnePost(postId: id).subscribe(onNext: { [weak self] (res) in
+                    if let data = res.body{
+                        self?.headerData = data
+                        self?.replyReq.postId = id
+                        self?.refreshHeader.beginRefreshing()
+                    }
+                    
+                }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+            }
+            
+            
         }
     }
     
@@ -100,6 +112,36 @@ class PostContentViewController: BaseViewController {
         return text
     }()
     
+//    // 收藏后显示 分类view
+//    private lazy var popGroupView: popPostGroupView = { [unowned self] in
+//
+//        let p = popPostGroupView.init(frame: CGRect.init(x: (GlobalConfig.ScreenW - 300)/2, y: (GlobalConfig.ScreenH - 350)/2, width: 300, height: 350), postId: self.mode?.data.id ?? "")
+//        //p.isHidden = true
+//        p.postGroups = { [weak self]  groups in
+//            guard let `self` = self else {
+//                return
+//            }
+//
+//            if let pid =  self.mode?.data.id, !groups.isEmpty{
+//                //self?.vm
+//                self.vm.newPostGroup(postId: "", name: []).subscribe(onNext: { [weak self] (res) in
+//                    if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code){
+//                        groups.forEach({
+//                            if !SingletoneClass.shared.postGroups.contains($0){
+//                                SingletoneClass.shared.postGroups.append($0)
+//                            }
+//                            //SingletoneClass.shared.postGroups.append(<#T##newElement: String##String#>)
+//                        })
+//                    }
+//
+//                    }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+//
+//            }
+//        }
+//
+//        return p
+//
+//    }()
     
     private lazy var refreshHeader: MJRefreshHeader = {
         let h =  MJRefreshNormalHeader.init { [weak self] in
@@ -168,7 +210,10 @@ class PostContentViewController: BaseViewController {
         
         self.title = viewTitle
         self.view.addSubview(self.tableView)
+        //self.view.addSubview(popGroupView)
         _ = self.tableView.sd_layout()?.leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
+        //_ = popGroupView.sd_layout()?.centerXEqualToView(self.view)?.centerYEqualToView(self.view)?.heightIs(400)?.widthIs(200)
+        
         self.view.addSubview(self.inputText)
         self.tableView.mj_header = refreshHeader
         self.tableView.mj_footer = refreshFooter
@@ -257,12 +302,21 @@ extension PostContentViewController{
         
         let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
         
+        let changeGroup = UIAlertAction.init(title: "修改分组", style: UIAlertAction.Style.default, handler: { [weak self] action in
+            guard GlobalUserInfo.shared.isLogin else {
+                return
+            }
+            self?.showPop()
+        })
+        
         let delete = UIAlertAction.init(title: "删除", style: UIAlertAction.Style.destructive, handler: { [weak self] action in
             guard GlobalUserInfo.shared.isLogin else {
                 return
             }
             self?.deleteThisPost()
         })
+        
+        
         let jubao = UIAlertAction.init(title: "举报", style: .default) { [weak self] (action) in
             guard let `self` = self else{
                 return
@@ -274,6 +328,9 @@ extension PostContentViewController{
         }
         alert.addAction(cancel)
         alert.addAction(jubao)
+        if self.mode?.data.isCollected ?? false {
+            alert.addAction(changeGroup)
+        }
         if self.mypost{
             alert.addAction(delete)
         }
@@ -329,6 +386,38 @@ extension PostContentViewController{
     }
 }
 
+
+extension PostContentViewController{
+    
+    private func showPop(){
+        
+        let p = popPostGroupView.init(frame: CGRect.init(x: (GlobalConfig.ScreenW - 300)/2, y: (GlobalConfig.ScreenH - 350)/2, width: 300, height: 350), postId: self.mode?.data.id ?? "")
+        //p.isHidden = true
+        p.postGroups = { [weak self]  groups in
+            guard let `self` = self else {
+                return
+            }
+            
+            if let pid =  self.mode?.data.id{
+                //self?.vm
+                self.vm.newPostGroup(postId: pid, name: groups).subscribe(onNext: {  (res) in
+                    if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code){
+                        groups.forEach({
+                            if !SingletoneClass.shared.postGroups.contains($0){
+                                SingletoneClass.shared.postGroups.append($0)
+                            }
+                            //SingletoneClass.shared.postGroups.append(T##newElement: String##String)
+                        })
+                    }
+                    
+                    }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+                
+            }
+        }
+        
+        p.show()
+    }
+}
 
 
 extension PostContentViewController{
@@ -429,6 +518,12 @@ extension PostContentViewController{
                     self.headerData!.isCollected = !(self.headerData!.isCollected)
                     self.tableHeader.collected.isSelected = self.headerData!.isCollected
                     self.view.showToast(title: title, customImage: nil, mode: .text)
+                    // 收藏成功显示分组
+                    if self.headerData!.isCollected  {
+                        //self.popGroupView.show()
+                        self.showPop()
+                    }
+                    
                     
                 }else{
 

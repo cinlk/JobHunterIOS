@@ -36,7 +36,7 @@ enum ForumType:String{
     case life = "life"
     case none = ""
     
-    // 自己的帖子
+    // 自己的帖子(标记查询条件)
     case mypost = "mypost"
     
     

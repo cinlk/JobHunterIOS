@@ -71,12 +71,15 @@ internal enum personTarget{
     case collectedCareerTalk(limit:Int, offset:Int)
     case collectedOnlineApply(limit:Int, offset:Int)
     case collectedCompany(limit:Int, offset:Int)
+    case collectedPost
     
     case unCollectedJobs(type:String, ids:[String])
     case unCollectedCompany(ids:[String])
     case unCollectedOnlineApply(ids:[String])
     case unCollectedCareerTalk(ids:[String])
     
+    case deleteUserPostGroup(name:String)
+    case renamePostGroup(id:String, name:String)
     
     case none
 }
@@ -193,6 +196,8 @@ extension personTarget: TargetType{
             return self.prefix + "/collect/careerTalk"
         case .collectedOnlineApply:
             return self.prefix + "/collect/onlineApply"
+        case .collectedPost:
+            return self.prefix + "/collect/post"
         case .unCollectedJobs:
             return self.prefix + "/unCollect/jobs"
         case .unCollectedCompany:
@@ -201,6 +206,10 @@ extension personTarget: TargetType{
             return self.prefix  + "/unCollect/careerTalk"
         case .unCollectedOnlineApply:
             return self.prefix + "/unCollect/onlineApply"
+        case .deleteUserPostGroup(let name):
+            return self.prefix + "/post/group/\(name)"
+        case .renamePostGroup:
+            return self.prefix + "/post/group/name"
         default:
             return ""
         }
@@ -210,11 +219,11 @@ extension personTarget: TargetType{
         switch  self {
         case .userAvatar, .userBrief, .newTextResume, .newAttachResume, .changeResumeName,.baseInfoContent, .newTextResumeEducation, .newTextResumeWork, .newTextResumeProject, .newTextResumeOther, .newTextResumeSocialPractice, .newTextResumeCollegeActive, .newTextResumeSkill, .collectedOnlineApply, .collectedJobs, .collectedCareerTalk, .collectedCompany, .unCollectedJobs, .unCollectedOnlineApply, .unCollectedCareerTalk, .unCollectedCompany:
             return .post
-        case .delivery, .deliveryStatus, .getOnlineApplyId, .resumeList, .textResumeInfo, .attachResume:
+        case .delivery, .deliveryStatus, .getOnlineApplyId, .resumeList, .textResumeInfo, .attachResume, .collectedPost:
             return .get
-        case .primaryResume, .baseInfoAvatar, .updateTextResumeEducation, .updateTextResumeWork, .updateTextResumeProject, .updateTextResumeSocialPractice, .updateTextResumeOther, .updateTextResumeCollegeActive, .updateTextResumeEstimate, .updateTextResumeSkill:
+        case .primaryResume, .baseInfoAvatar, .updateTextResumeEducation, .updateTextResumeWork, .updateTextResumeProject, .updateTextResumeSocialPractice, .updateTextResumeOther, .updateTextResumeCollegeActive, .updateTextResumeEstimate, .updateTextResumeSkill, .renamePostGroup:
             return .put
-        case .deleteResume, .deleteTextResumeEducation, .deleteTextResumeOther, .deleteTextResumeSocialPractice,.deleteTextResumeSkill, .deleteTextResumeCollegeActive, .deleteTextResumeProject, .deleteTextResumeWork:
+        case .deleteResume, .deleteTextResumeEducation, .deleteTextResumeOther, .deleteTextResumeSocialPractice,.deleteTextResumeSkill, .deleteTextResumeCollegeActive, .deleteTextResumeProject, .deleteTextResumeWork, .deleteUserPostGroup:
             return .delete
         default:
             return .get
@@ -308,7 +317,8 @@ extension personTarget: TargetType{
         case .unCollectedCompany(let ids):
             return .requestParameters(parameters: ["ids": ids], encoding: JSONEncoding.default)
             
-            
+        case .renamePostGroup(let id,  let name):
+            return .requestParameters(parameters: ["group_id": id, "new_name":name], encoding: JSONEncoding.default)
         default:
             return .requestPlain
         }
@@ -554,10 +564,14 @@ extension PersonServer{
     }
     
     
+    internal func collectedPost() -> Observable<[CollectedPostModel]>{
+        return httpServer.rx.request(.collectedPost).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapArray(CollectedPostModel.self, tag: "body")
+    }
     
     internal func unCollectedJobs(type:String, ids:[String]) -> Observable<ResponseModel<HttpResultMode>>{
         
-        return httpServer.rx.request(.unCollectedJobs(type: type, ids: ids)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+        return httpServer.rx.request(.unCollectedJobs(type: type, ids: ids))
+            .retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
     }
     
     
@@ -575,4 +589,14 @@ extension PersonServer{
         return httpServer.rx.request(.unCollectedCareerTalk(ids: ids)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
     }
     
+    
+    internal func deleteUserPostGroup(name:String) -> Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.rx.request(.deleteUserPostGroup(name: name))
+            .retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
+    
+    
+    internal func renameGroupPostName(name:String, id:String) -> Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.rx.request(.renamePostGroup(id: id, name: name)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
 }

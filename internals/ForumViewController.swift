@@ -171,6 +171,8 @@ class ForumViewController: UIViewController, UISearchControllerDelegate {
         super.viewDidLoad()
         setViews()
         setNavigationBtn()
+        
+       
     }
  
     

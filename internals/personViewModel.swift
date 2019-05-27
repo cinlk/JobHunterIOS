@@ -365,6 +365,11 @@ class PersonViewModel {
     }
     
     
+    internal func collectedPost() -> Observable<[CollectedPostModel]>{
+        return server.collectedPost()
+    }
+    
+    
     internal func unCollectedJobs(type: jobType, ids:[String]) -> Observable<ResponseModel<HttpResultMode>>{
         return server.unCollectedJobs(type: type.rawValue, ids: ids)
     }
@@ -382,6 +387,17 @@ class PersonViewModel {
     internal func unCollectedCareerTalk(ids:[String]) -> Observable<ResponseModel<HttpResultMode>>{
         
         return  server.unCollectedCareerTalk(ids: ids)
+    }
+    
+    
+    internal func deleteUserPostGroup(name:String) ->
+        Observable<ResponseModel<HttpResultMode>>{
+            return server.deleteUserPostGroup(name: name)
+    }
+    
+    
+    internal func renameGroupPostName(name:String, id:String) -> Observable<ResponseModel<HttpResultMode>>{
+        return  server.renameGroupPostName(name: name, id: id)
     }
     
     

@@ -159,3 +159,20 @@ class CollectedOnlineApplyModel: NSObject, Mappable{
 }
 
 
+
+
+class CollectedPostModel:NSObject, Mappable{
+    
+    var postId:String?
+    var name:String?
+    var group:[String] = []
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        postId <- map["post_id"]
+        name <- map["name"]
+        group <- map["group_name"]
+    }
+}

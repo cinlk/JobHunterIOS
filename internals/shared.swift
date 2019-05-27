@@ -290,7 +290,25 @@ class GlobalUserInfo: NSObject {
             })
         }
        
-        // 获取用户信息
+        // 获取用户 收藏帖子的 分组数据
+        NetworkTool.request(.userPostGroups, successCallback: {  data in
+            
+            guard  let d = data as? [String:Any],let target =  d["body"] as? [[String:Any]] else {
+                return
+            }
+        
+            let res = Mapper<UserRelateGroup>().mapArray(JSONArray: target)
+            res.forEach({
+                if let n = $0.name{
+                    SingletoneClass.shared.postGroups.append(n)
+                }
+                
+            })
+                
+            
+        }) { (err) in
+            
+        }
         
         
     }
@@ -628,11 +646,14 @@ class SingletoneClass {
     // app用户协议地址
     public var appAgreementURL:String? = "http://www.immomo.com/agreement.html"
     
+    
+    
     // job举报信息
     public var jobWarns:[String] = []
     
     public var forumWans:[String] = []
     
+    public var postGroups:[String] = []
     private var userDefaule: UserDefaults = UserDefaults.standard
     
    
@@ -903,6 +924,7 @@ extension SingletoneClass{
             group.leave()
         }
         
+      
         
         //  需要等待用户登录后 TODO
 //        DispatchQueue.global().async(group: group, qos: .userInitiated, flags: .inheritQoS) {

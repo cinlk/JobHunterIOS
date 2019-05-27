@@ -39,6 +39,10 @@ public enum GlobaHttpRequest {
     // 职位举报信息
     case jobWarns
     
+    // 收藏帖子的分组(字符串数据)
+    case userPostGroups
+    
+    
     case forumWarns
     
 }
@@ -94,6 +98,9 @@ extension GlobaHttpRequest: TargetType{
             return self.urlPrefix + "jobs/warns"
         case .forumWarns:
             return self.urlPrefix + "forum/warns"
+            
+        case .userPostGroups:
+            return self.urlPrefix + "postGroups"
         
         }
     }
@@ -101,7 +108,7 @@ extension GlobaHttpRequest: TargetType{
     public  var method: Moya.Method {
         switch self {
         case .guideData, .adviseImages, .helloMsg, .citys, .bussinessField, .subBusinessField,
-             .companyType, .internCondition, .cityCollege, .jobWarns, .userInfo,.forumWarns:
+             .companyType, .internCondition, .cityCollege, .jobWarns, .userInfo,.forumWarns, .userPostGroups:
             return .get
         case .userlogin, .news, .nearByMeetings, .nearyByCompany:
             return .post
@@ -119,7 +126,7 @@ extension GlobaHttpRequest: TargetType{
     
     public var task: Task {
         switch self {
-        case .guideData, .helloMsg, .adviseImages, .logout, .citys, .bussinessField, .subBusinessField, .companyType, .internCondition, .cityCollege, .jobWarns, .userInfo(_), .forumWarns:
+        case .guideData, .helloMsg, .adviseImages, .logout, .citys, .bussinessField, .subBusinessField, .companyType, .internCondition, .cityCollege, .jobWarns, .userInfo(_), .forumWarns, .userPostGroups:
             return Task.requestPlain
         case let .userlogin(phone, password):
             return .requestParameters(parameters: ["phone": phone, "password":password], encoding: JSONEncoding.default)
@@ -137,7 +144,7 @@ extension GlobaHttpRequest: TargetType{
     
     public var headers: [String : String]? {
         switch  self {
-        case .logout:
+        case .logout, .userPostGroups:
             return ["Authorization": GlobalUserInfo.shared.getToken()]
         case .userInfo(let token):
             return ["Authorization": token]

@@ -149,6 +149,9 @@ class PostBaseModel: NSObject, Mappable{
     
     var createTime:Date?
     
+    // 关联的用户分组
+    var userGroups:[String] = []
+    
     
     var createTimeStr:String{
         get{
@@ -190,6 +193,7 @@ class PostBaseModel: NSObject, Mappable{
         thumbUP <- map["thumb_up"]
         reply <- map["reply"]
         read <- map["read"]
+        userGroups <- map["user_group"]
     }
 }
 
@@ -278,6 +282,8 @@ class FirstReplyModel: NSObject, Mappable{
     
 }
 
+
+
 // 子回复(第二层)
 class SecondReplyModel: NSObject, Mappable{
     
@@ -335,4 +341,30 @@ class SecondReplyModel: NSObject, Mappable{
 
 
 
+class UserRelateGroup: Mappable{
+    
+    var groupId:String?
+    var name:String?
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        groupId <- map["group_id"]
+        name <- map["name"]
+    }
+}
 //
+
+class PostRelateGroup: Mappable{
+    var group:[String]?
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        group <- map["group"]
+    }
+}
