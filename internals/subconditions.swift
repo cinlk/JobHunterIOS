@@ -93,15 +93,70 @@ class subconditions: UIViewController {
     // 一个tableview
     private lazy  var SelectedOne:SelectedOneTablView = { [unowned self] in
         let one =  SelectedOneTablView.init(frame: CGRect(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: BottomViewH))
-        one.call  = self.selectOneItem
+        one.call  = { [weak self ] (value, row) in
+            guard let `self` = self else {
+                return
+            }
+            
+            self.hidenView()
+            
+            if row == 0 {
+                // 切换数据
+                if value != self.type.describe{
+                    
+                    if value == "实习"{
+                        self.type = .intern
+                        self.currentItems =  InternSubscribeModel(JSON: ["type": self.type.rawValue])
+                    }else{
+                        self.type = .graduate
+                        self.currentItems = GraduateSubscribeModel(JSON: ["type":self.type.rawValue])
+                    }
+                    self.clearNodeStatus()
+                    self.table.reloadData()
+                }
+            }else{
+                self.data[self.keys[row]] = value
+                self.table.reloadRows(at: [IndexPath.init(item: row, section: 0)], with: .automatic)
+            }
+            
+            
+        }
         return one
     }()
     
     
     // 包含左右2个table的view
-    private lazy var SelectedSecond:SelectedTowTableView = {
+    private lazy var SelectedSecond:SelectedTowTableView = { [unowned self] in
         let second = SelectedTowTableView.init(frame:  CGRect(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: BottomViewH))
-        second.call  = selectOneItem
+        second.call  = { [weak self ] (value, row) in
+            
+            guard let `self` = self else {
+                return
+            }
+            
+            self.hidenView()
+            
+            if row == 0 {
+                // 切换数据
+                if value != self.type.describe{
+                    
+                    if value == "实习"{
+                        self.type = .intern
+                        self.currentItems =  InternSubscribeModel(JSON: ["type": self.type.rawValue])
+                    }else{
+                        self.type = .graduate
+                        self.currentItems = GraduateSubscribeModel(JSON: ["type": self.type.rawValue])
+                    }
+                    self.clearNodeStatus()
+                    self.table.reloadData()
+                }
+            }else{
+                self.data[self.keys[row]] = value
+                self.table.reloadRows(at: [IndexPath.init(item: row, section: 0)], with: .automatic)
+            }
+            
+            
+        }
         return second
     }()
     
@@ -154,9 +209,9 @@ class subconditions: UIViewController {
             type = edit.type
             // 编辑数据 对应table 数据
             if type == .intern{
-                currentItems = edit.data as? internSubscribeModel
+                currentItems = edit.data as? InternSubscribeModel
             }else{
-                currentItems = edit.data as? graduateSubscribeModel
+                currentItems = edit.data as? GraduateSubscribeModel
 
             }
             self.table.reloadData()
@@ -167,7 +222,7 @@ class subconditions: UIViewController {
         super.viewDidLoad()
         // 默认是校招
         
-        currentItems = graduateSubscribeModel(JSON: ["type":self.type.rawValue])
+        currentItems = GraduateSubscribeModel(JSON: ["type":self.type.rawValue])
         
         self.setViews()
         
@@ -177,6 +232,10 @@ class subconditions: UIViewController {
         super.viewWillAppear(animated)
         clearNodeStatus()
         
+    }
+    
+    deinit {
+        print("deinit subconditionVC \(self)")
     }
 
 
@@ -264,7 +323,7 @@ extension subconditions{
                 self.SelectedOne.frame = CGRect.init(x: 0, y: GlobalConfig.ScreenH - BottomViewH, width: GlobalConfig.ScreenW, height: BottomViewH)
             }, completion: nil)
            
-        case .locate, .business:
+        case .cityStr, .fields:
             
             SelectedSecond.mode = (name: type.describe, row: row)
             
@@ -276,34 +335,6 @@ extension subconditions{
 
         }
           
-    }
-    
-    
-
-    // 回调方法
-    func selectOneItem(value:String, row:Int){
-        
-        self.hidenView()
-        
-        if row == 0 {
-            // 切换数据
-            if value != type.describe{
-                
-                if value == "实习"{
-                    type = .intern
-                    currentItems =  internSubscribeModel(JSON: ["type":type.rawValue])
-                }else{
-                    type = .graduate
-                    currentItems = graduateSubscribeModel(JSON: ["type":type.rawValue])
-                }
-                clearNodeStatus()
-                self.table.reloadData()
-            }
-        }else{
-            data[keys[row]] = value
-            self.table.reloadRows(at: [IndexPath.init(item: row, section: 0)], with: .automatic)
-        }
-        
     }
     
     
@@ -329,11 +360,12 @@ extension subconditions{
             res[$0.key.rawValue] = $0.value
         }
         
+        
         switch type {
         case .intern:
             
             // 检查条件
-            if res[subscribeItemType.locate.rawValue]!.isEmpty{
+            if res[subscribeItemType.cityStr.rawValue]!.isEmpty{
                 self.view.showToast(title: "请选择城市", customImage: nil, mode: .text)
                 //showOnlyTextHub(message: "请选择城市", view: self.view)
                 return
@@ -352,23 +384,25 @@ extension subconditions{
             }
             
             
-            currentItems = internSubscribeModel(JSON: res)
+            currentItems = InternSubscribeModel(JSON: res)
+            currentItems?.citys = res["city_str"]?.components(separatedBy: "+") ?? []
         case .graduate:
              // 检查条件
-            if res[subscribeItemType.locate.rawValue]!.isEmpty{
+            if res[subscribeItemType.cityStr.rawValue]!.isEmpty{
                 self.view.showToast(title: "请选择城市", customImage: nil, mode: .text)
                 //showOnlyTextHub(message: "请选择城市", view: self.view)
                 return
             }
             
-            currentItems = graduateSubscribeModel(JSON: res)
-           
+            
+            currentItems = GraduateSubscribeModel(JSON: res)
+            currentItems?.citys = res["city_str"]?.components(separatedBy: "+") ?? []
+
             
         default:
             break
         }
         
-
         if isEdit{
             self.delegate?.modifyCondition(index: self.indexPath!, item: currentItems!)
         }else{

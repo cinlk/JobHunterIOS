@@ -401,6 +401,26 @@ class PersonViewModel {
     }
     
     
+    
+    internal func newJobSubscribe(req:JobSubscribeReq) -> Observable<ResponseModel<JobSubscribeItemRes>>{
+        return server.newJobSubscribe(req: req)
+    }
+    
+    internal func updateJobSubscribe(id:String, req: JobSubscribeReq) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.updateJobSubscribe(id: id, req: req)
+    }
+    
+    internal func deleteJobSubscribe(id:String) ->
+        Observable<ResponseModel<HttpResultMode>>{
+        return server.deleteJobSubscribe(id: id)
+        
+    }
+    
+    
+    internal func allSubscribeJobCondition() -> Observable<[JobSubscribeCondition]> {
+        return server.allSubscribeJobCondition()
+    }
+    
 
     
 }

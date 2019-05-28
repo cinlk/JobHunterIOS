@@ -81,6 +81,11 @@ internal enum personTarget{
     case deleteUserPostGroup(name:String)
     case renamePostGroup(id:String, name:String)
     
+    // 订阅职位
+    case newJobSubscribe(req: JobSubscribeReq)
+    case updateJobSubscribe(id:String, req: JobSubscribeReq)
+    case deleteJobSubscribe(id:String)
+    case allJobSubscribe
     case none
 }
 
@@ -210,6 +215,14 @@ extension personTarget: TargetType{
             return self.prefix + "/post/group/\(name)"
         case .renamePostGroup:
             return self.prefix + "/post/group/name"
+        case .allJobSubscribe:
+            return self.prefix + "/job/subscribe"
+        case .newJobSubscribe:
+            return self.prefix  + "/job/subscribe"
+        case .updateJobSubscribe(let id, _):
+            return self.prefix  + "/job/subscribe/\(id)"
+        case .deleteJobSubscribe(let id):
+            return self.prefix  + "/job/subscribe/\(id)"
         default:
             return ""
         }
@@ -217,13 +230,13 @@ extension personTarget: TargetType{
     
     var method: Moya.Method {
         switch  self {
-        case .userAvatar, .userBrief, .newTextResume, .newAttachResume, .changeResumeName,.baseInfoContent, .newTextResumeEducation, .newTextResumeWork, .newTextResumeProject, .newTextResumeOther, .newTextResumeSocialPractice, .newTextResumeCollegeActive, .newTextResumeSkill, .collectedOnlineApply, .collectedJobs, .collectedCareerTalk, .collectedCompany, .unCollectedJobs, .unCollectedOnlineApply, .unCollectedCareerTalk, .unCollectedCompany:
+        case .userAvatar, .userBrief, .newTextResume, .newAttachResume, .changeResumeName,.baseInfoContent, .newTextResumeEducation, .newTextResumeWork, .newTextResumeProject, .newTextResumeOther, .newTextResumeSocialPractice, .newTextResumeCollegeActive, .newTextResumeSkill, .collectedOnlineApply, .collectedJobs, .collectedCareerTalk, .collectedCompany, .unCollectedJobs, .unCollectedOnlineApply, .unCollectedCareerTalk, .unCollectedCompany, .newJobSubscribe:
             return .post
         case .delivery, .deliveryStatus, .getOnlineApplyId, .resumeList, .textResumeInfo, .attachResume, .collectedPost:
             return .get
-        case .primaryResume, .baseInfoAvatar, .updateTextResumeEducation, .updateTextResumeWork, .updateTextResumeProject, .updateTextResumeSocialPractice, .updateTextResumeOther, .updateTextResumeCollegeActive, .updateTextResumeEstimate, .updateTextResumeSkill, .renamePostGroup:
+        case .primaryResume, .baseInfoAvatar, .updateTextResumeEducation, .updateTextResumeWork, .updateTextResumeProject, .updateTextResumeSocialPractice, .updateTextResumeOther, .updateTextResumeCollegeActive, .updateTextResumeEstimate, .updateTextResumeSkill, .renamePostGroup, .updateJobSubscribe:
             return .put
-        case .deleteResume, .deleteTextResumeEducation, .deleteTextResumeOther, .deleteTextResumeSocialPractice,.deleteTextResumeSkill, .deleteTextResumeCollegeActive, .deleteTextResumeProject, .deleteTextResumeWork, .deleteUserPostGroup:
+        case .deleteResume, .deleteTextResumeEducation, .deleteTextResumeOther, .deleteTextResumeSocialPractice,.deleteTextResumeSkill, .deleteTextResumeCollegeActive, .deleteTextResumeProject, .deleteTextResumeWork, .deleteUserPostGroup, .deleteJobSubscribe:
             return .delete
         default:
             return .get
@@ -319,6 +332,11 @@ extension personTarget: TargetType{
             
         case .renamePostGroup(let id,  let name):
             return .requestParameters(parameters: ["group_id": id, "new_name":name], encoding: JSONEncoding.default)
+        case .newJobSubscribe(let req):
+            return .requestParameters(parameters: req.toJSON(), encoding: JSONEncoding.default)
+        case .updateJobSubscribe(_, let req):
+            return .requestParameters(parameters: req.toJSON(), encoding: JSONEncoding.default)
+            
         default:
             return .requestPlain
         }
@@ -598,5 +616,23 @@ extension PersonServer{
     
     internal func renameGroupPostName(name:String, id:String) -> Observable<ResponseModel<HttpResultMode>>{
         return httpServer.rx.request(.renamePostGroup(id: id, name: name)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
+    
+    
+    internal func newJobSubscribe(req:JobSubscribeReq) -> Observable<ResponseModel<JobSubscribeItemRes>>{
+        return httpServer.rx.request(.newJobSubscribe(req: req)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<JobSubscribeItemRes>.self)
+    }
+    
+    internal func updateJobSubscribe(id:String, req: JobSubscribeReq) -> Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.rx.request(.updateJobSubscribe(id: id, req: req)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
+    
+    internal func deleteJobSubscribe(id:String) -> Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.rx.request(.deleteJobSubscribe(id: id)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+        
+    }
+    
+    internal func allSubscribeJobCondition() -> Observable<[JobSubscribeCondition]> {
+        return httpServer.rx.request(.allJobSubscribe).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapArray(JobSubscribeCondition.self, tag: "body")
     }
 }

@@ -39,8 +39,14 @@ class BaseSubscribeModel: NSObject, Mappable{
         }
     }
     
-    var locate:String = ""
-    var business:String = "不限"
+//    var cityStr:String = ""{
+//        didSet{
+//            self.citys =  cityStr.components(separatedBy: "+")
+//        }
+//    }
+    var citys:[String] = []
+    
+    var fields:String = ""
     
     required init?(map: Map) {
         
@@ -50,8 +56,9 @@ class BaseSubscribeModel: NSObject, Mappable{
         id <- map["id"]
         create_time <- (map["create_time"], DateTransform())
         type <- map["type"]
-        locate <- map["locate"]
-        business <- map["business"]
+        //cityStr <- map["city_str"]
+        fields <- map["fields"]
+        citys <- map["citys"]
     }
     
     
@@ -68,7 +75,7 @@ class BaseSubscribeModel: NSObject, Mappable{
 }
 
 
-class graduateSubscribeModel: BaseSubscribeModel{
+class GraduateSubscribeModel: BaseSubscribeModel{
     
     var salary:String = "不限"
     var degree:String = "不限"
@@ -88,12 +95,12 @@ class graduateSubscribeModel: BaseSubscribeModel{
     
     override func getTypeValue() -> [subscribeItemType : String] {
         
-        return [.type:self.kind.rawValue, .locate:self.locate, .business: self.business,
+        return [.type:self.kind.rawValue, .cityStr: self.citys.joined(separator: "+"), .fields: self.fields,
                 .salary: self.salary, .degree: self.degree]
     }
     
     override func getKeys() -> [subscribeItemType] {
-        return [.type, .locate, .business, .salary, .degree]
+        return [.type, .cityStr, .fields, .salary, .degree]
     }
     
     
@@ -101,7 +108,7 @@ class graduateSubscribeModel: BaseSubscribeModel{
     
 }
 
-class internSubscribeModel: BaseSubscribeModel{
+class InternSubscribeModel: BaseSubscribeModel{
     
     
 
@@ -119,22 +126,22 @@ class internSubscribeModel: BaseSubscribeModel{
         super.mapping(map: map)
         
         
-        internDay <- map["internDay"]
+        internDay <- map["intern_day"]
         degree <- map["degree"]
-        internMonth <- map["internMonth"]
-        internSalary <- map["internSalary"]
+        internMonth <- map["intern_month"]
+        internSalary <- map["intern_salary"]
         
     }
     
     override func getTypeValue() -> [subscribeItemType : String] {
         
-        return [.type:self.kind.rawValue, .locate:self.locate, .business: self.business,
+        return [.type:self.kind.rawValue, .cityStr: self.citys.joined(separator: "+"), .fields: self.fields,
                 .internDay: self.internDay, .degree: self.degree, .internMonth: self.internMonth,
                 .internSalary: self.internSalary]
     }
     
     override func getKeys() -> [subscribeItemType] {
-        return [.type, .locate, .business, .degree, .internDay, .internMonth, .internSalary]
+        return [.type, .cityStr, .fields, .degree, .internDay, .internMonth, .internSalary]
     }
     
 }

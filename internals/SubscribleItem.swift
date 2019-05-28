@@ -7,19 +7,41 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 
 fileprivate let maxCount = 5
 fileprivate let section = 2
 fileprivate let imageSize = CGSize.init(width: 25, height: 25)
+fileprivate let navTitle:String = "我的订阅"
 
-class subscribleItem: BaseTableViewController {
+class SubscribleItem: BaseTableViewController {
 
 
-    private lazy var internData:[internSubscribeModel]  = []
-    private lazy var compuseData:[graduateSubscribeModel] = []
+    private lazy var vm:PersonViewModel = PersonViewModel.shared
+    private lazy var dispose:DisposeBag = DisposeBag.init()
     
+    private lazy var internData:[InternSubscribeModel]  = []
+    private lazy var compuseData:[GraduateSubscribeModel] = []
     
+    private lazy var refresh:UIRefreshControl = {
+        let r = UIRefreshControl.init()
+        r.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+        return r
+    }()
+    private lazy var footLabelView:UIView = {
+        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 50))
+        let label = UILabel()
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.textColor = UIColor.lightGray
+        label.textAlignment = .center
+        label.text = "最多同时开启5个订阅"
+        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
+        v.addSubview(label)
+        _ = label.sd_layout().centerYEqualToView(v)?.centerXEqualToView(v)?.autoHeightRatio(0)
+        return v
+    }()
     
     
     private lazy var addBtn:UIButton = { [unowned self] in
@@ -40,8 +62,8 @@ class subscribleItem: BaseTableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.insertCustomerView(UIColor.orange)
-        self.hidesBottomBarWhenPushed = true 
+        //self.navigationController?.insertCustomerView(UIColor.orange)
+        //self.hidesBottomBarWhenPushed = true
         //self.navigationController?.insertCustomerView(UIColor.orange)
         //self.loadData()
        
@@ -54,18 +76,7 @@ class subscribleItem: BaseTableViewController {
        
     }
     
-    private lazy var footLabelView:UIView = {
-        let v = UIView.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 50))
-        let label = UILabel()
-        label.font = UIFont.boldSystemFont(ofSize: 16)
-        label.textColor = UIColor.lightGray
-        label.textAlignment = .center
-        label.text = "最多同时开启5个订阅"
-        label.setSingleLineAutoResizeWithMaxWidth(GlobalConfig.ScreenW)
-        v.addSubview(label)
-        _ = label.sd_layout().centerYEqualToView(v)?.centerXEqualToView(v)?.autoHeightRatio(0)
-        return v
-    }()
+
     
     override func setViews(){
         
@@ -73,7 +84,8 @@ class subscribleItem: BaseTableViewController {
         self.tableView.tableHeaderView = UIView.init()
         self.tableView.tableFooterView = UIView()
         self.tableView.separatorStyle = .none
-        self.title = "我的订阅"
+        self.title = navTitle
+        self.tableView.refreshControl = refresh
         
         self.tableView.register(subScribeInternCell.self, forCellReuseIdentifier: subScribeInternCell.identity())
         self.tableView.register(subScribeGraduateCell.self, forCellReuseIdentifier: subScribeGraduateCell.identity())
@@ -92,49 +104,60 @@ class subscribleItem: BaseTableViewController {
         // 这里赋值footView
         self.tableView.tableFooterView = footLabelView
         self.tableView.reloadData()
+        self.refresh.endRefreshing()
     }
     
-    override func showError(){
-        super.showError()
-    }
+//    override func showError(){
+//        super.showError()
+//    }
     
-    override func reload(){
-        super.reload()
-        self.loadData()
-        
+//    override func reload(){
+//        super.reload()
+//        self.loadData()
+//
+//    }
+    
+    deinit {
+        print("deinit subscribItem \(self)")
     }
  
 }
 
 
-extension subscribleItem{
+extension SubscribleItem{
     
+    
+    @objc private func  refreshData(){
+        self.loadData()
+    }
     
     // 加载数据
     private func loadData(){
         
-        DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
-            
+        
+        self.vm.allSubscribeJobCondition().asDriver(onErrorJustReturn: []).drive(onNext: { [weak self] (modes) in
             
             self?.internData.removeAll()
             self?.compuseData.removeAll()
-            Thread.sleep(forTimeInterval: 1)
             
-            
-            // 根据type类型 构建不同的数据
-            self?.internData.append(internSubscribeModel(JSON: ["id":Utils.getUUID(),"type":"intern","locate":"成都","internSalary":"200/天","business":"计算机","internDay":"4天/周","internMonth":"半年", "degree":"大专"])!)
-            
-            self?.compuseData.append(graduateSubscribeModel(JSON: ["id":Utils.getUUID(),"type":"graduate","locate":"北京","salary":"10-12K/月","business":"人工智能","degree":"本科"])!)
-                self?.compuseData.append(graduateSubscribeModel(JSON: ["id":Utils.getUUID(),"type":"graduate",
-                                                              "locate":"北京","salary":"20-30K/月","business":"学前教育", "degree":"硕士"])!)
-            DispatchQueue.main.async {
-                self?.didFinishloadData()
+            for (_, item) in modes.enumerated(){
+                if item.kind == .intern{
+                    
+                    if let intern = InternSubscribeModel.init(JSON: item.toJSON()){
+                         self?.internData.append(intern)
+                    }
+                   
                 
+                }else if item.kind == .graduate{
+                    if let graduate =  GraduateSubscribeModel.init(JSON: item.toJSON()){
+                      self?.compuseData.append(graduate)
+                    }
+                }
             }
-        }
-        
-        
-       
+            self?.didFinishloadData()
+            
+            
+        }, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
         
     }
     
@@ -156,7 +179,7 @@ extension subscribleItem{
 
 
 // table
-extension subscribleItem{
+extension SubscribleItem{
     
     override func numberOfSections(in tableView: UITableView) -> Int {
         return section
@@ -229,29 +252,29 @@ extension subscribleItem{
     
     
     // 选择进行编辑
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: false)
-        
-        //let type =  indexPath.section == 0 ? subscribeType.graduate : subscribeType.intern
-        let editView:subconditions = subconditions()
-        editView.navTitle = "修改订阅条件"
-        editView.delegate = self
-        
-        self.present(editView, animated: true, completion: nil)
-        
-        if indexPath.section  == 0 {
-            let data = self.compuseData[indexPath.row - 1]
-            //editView.editData =  data
-            editView.editData = (type:.graduate,  data:data, index:  IndexPath.init(row: indexPath.row - 1, section: indexPath.section))
-            
-        }else{
-            let data = self.internData[indexPath.row - 1]
-            editView.editData = (type:.intern,  data:data, index:  IndexPath.init(row: indexPath.row - 1, section: indexPath.section))
-            
-            
-        }
-        
-    }
+//    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        tableView.deselectRow(at: indexPath, animated: false)
+//        
+//        //let type =  indexPath.section == 0 ? subscribeType.graduate : subscribeType.intern
+//        let editView:subconditions = subconditions()
+//        editView.navTitle = "修改订阅条件"
+//        editView.delegate = self
+//        
+//        self.present(editView, animated: true, completion: nil)
+//        
+//        if indexPath.section  == 0 && indexPath.row >= self.compuseData.count  {
+//            let data = self.compuseData[indexPath.row - 1]
+//            //editView.editData =  data
+//            editView.editData = (type:.graduate,  data:data, index:  IndexPath.init(row: indexPath.row - 1, section: indexPath.section))
+//            
+//        }else if indexPath.row >   self.internData.count{
+//            let data = self.internData[indexPath.row - 1]
+//            editView.editData = (type:.intern,  data:data, index:  IndexPath.init(row: indexPath.row - 1, section: indexPath.section))
+//            
+//            
+//        }
+//        
+//    }
     
     override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
         
@@ -294,13 +317,35 @@ extension subscribleItem{
         let delete = UITableViewRowAction(style: .normal, title: "删除") { action, index in
 
             
+            
             if indexPath.section == 0{
-                self.compuseData.remove(at: indexPath.row - 1)
+                let id = self.compuseData[index.row - 1].id
+                self.vm.deleteJobSubscribe(id: id).subscribe(onNext: { [weak self] (res) in
+                    guard let code = res.code, HttpCodeRange.filterSuccessResponse(target: code) else {
+                        return
+                    }
+                    self?.compuseData.remove(at: indexPath.row - 1)
+                    tableView.reloadSections([indexPath.section], animationStyle: .automatic)
+
+                }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+                
+                //self.compuseData.remove(at: indexPath.row - 1)
             }else{
-                self.internData.remove(at: indexPath.row - 1)
+                
+                let id = self.internData[index.row - 1].id
+                self.vm.deleteJobSubscribe(id: id).subscribe(onNext: { [weak self] (res) in
+                    guard let code = res.code, HttpCodeRange.filterSuccessResponse(target: code) else {
+                        return
+                    }
+                    self?.internData.remove(at: indexPath.row - 1)
+                    tableView.reloadSections([indexPath.section], animationStyle: .automatic)
+                    
+                    }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+                
+                
+                //self.internData.remove(at: indexPath.row - 1)
             }
             
-            tableView.reloadSections([indexPath.section], animationStyle: .automatic)
 
             
         }
@@ -318,13 +363,39 @@ extension subscribleItem{
             //TODO: Delete
           
             
+           
+            
             if indexPath.section == 0{
-                self.compuseData.remove(at: indexPath.row - 1)
+                //self.compuseData.remove(at: indexPath.row - 1)
+                
+                let id = self.compuseData[indexPath.row - 1].id
+                self.vm.deleteJobSubscribe(id: id).subscribe(onNext: { [weak self] (res) in
+                    guard let code = res.code, HttpCodeRange.filterSuccessResponse(target: code) else {
+                        return
+                    }
+                    self?.compuseData.remove(at: indexPath.row - 1)
+                    tableView.reloadSections([indexPath.section], animationStyle: .automatic)
+                    
+                    }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+                
+                
             }else{
-                self.internData.remove(at: indexPath.row - 1)
+                
+                let id = self.internData[indexPath.row - 1].id
+                self.vm.deleteJobSubscribe(id: id).subscribe(onNext: { [weak self] (res) in
+                    guard let code = res.code, HttpCodeRange.filterSuccessResponse(target: code) else {
+                        return
+                    }
+                    self?.internData.remove(at: indexPath.row - 1)
+                    tableView.reloadSections([indexPath.section], animationStyle: .automatic)
+                    
+                    }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+                
+                
+               // self.internData.remove(at: indexPath.row - 1)
             }
             
-            tableView.reloadSections([indexPath.section], animationStyle: .automatic)
+            //tableView.reloadSections([indexPath.section], animationStyle: .automatic)
             completion(true)
         })
         
@@ -364,36 +435,77 @@ extension subscribleItem{
 
 // delegate
 
-extension subscribleItem: subconditionDelegate{
+extension SubscribleItem: subconditionDelegate{
     
     func modifyCondition(index: IndexPath, item: BaseSubscribeModel) {
+        
         if item.kind == .graduate{
-            
-            compuseData.remove(at: index.row)
-            compuseData.insert(item as! graduateSubscribeModel, at: index.row)
+            let id = self.compuseData[index.row].id
+            self.vm.updateJobSubscribe(id: id, req: JobSubscribeReq.init(dict: item.toJSON())).subscribe(onNext: { [weak self] (res) in
+                guard let code = res.code, HttpCodeRange.filterSuccessResponse(target: code) else {
+                    return
+                }
+                
+                self?.compuseData.remove(at: index.row)
+                self?.compuseData.insert(item as! GraduateSubscribeModel, at: index.row)
+                
+                self?.tableView.reloadSections([0], animationStyle: .automatic)
 
+            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
             
+//            compuseData.remove(at: index.row)
+//            compuseData.insert(item as! GraduateSubscribeModel, at: index.row)
+
         }else{
-            internData.remove(at: index.row)
-            internData.insert(item as! internSubscribeModel, at: index.row)
+            
+            let id = self.internData[index.row].id
+            self.vm.updateJobSubscribe(id: id, req: JobSubscribeReq.init(dict: item.toJSON())).subscribe(onNext: { [weak self] (res) in
+                guard let code = res.code, HttpCodeRange.filterSuccessResponse(target: code) else {
+                    return
+                }
+                
+                self?.internData.remove(at: index.row)
+                self?.internData.insert(item as! InternSubscribeModel, at: index.row)
+                self?.tableView.reloadSections([1], animationStyle: .automatic)
+
+                
+            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+            
+            
+           // internData.remove(at: index.row)
+           // internData.insert(item as! InternSubscribeModel, at: index.row)
 
          }
          // 这样刷新 数据才更新
-         self.tableView.reloadSections([index.section], animationStyle: .automatic)
+         //self.tableView.reloadSections([index.section], animationStyle: .automatic)
         
     }
     
     
     func addNewConditionItem(item: BaseSubscribeModel) {
         
-        if item.kind == .graduate{
-            compuseData.append(item as! graduateSubscribeModel)
-             self.tableView.reloadSections([0], animationStyle: .automatic)
-        }else{
-            internData.append(item as! internSubscribeModel)
-            self.tableView.reloadSections([1], animationStyle: .automatic)
-
-        }
+        self.vm.newJobSubscribe(req: JobSubscribeReq.init(dict: item.toJSON())).subscribe(onNext: { [weak self] (res) in
+            guard let code = res.code, HttpCodeRange.filterSuccessResponse(target: code) else{
+                self?.tableView.showToast(title: "添加失败", customImage: nil, mode: .text)
+                return
+            }
+            item.id = res.body?.id ?? ""
+            if item.kind == .graduate{
+                
+                self?.compuseData.append(item as! GraduateSubscribeModel)
+                self?.tableView.reloadSections([0], animationStyle: .automatic)
+            }else{
+                
+                self?.internData.append(item as! InternSubscribeModel)
+                self?.tableView.reloadSections([1], animationStyle: .automatic)
+                
+            }
+            
+        
+            
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        
+     
        
     }
     

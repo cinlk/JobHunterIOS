@@ -22,7 +22,7 @@ class AddBlacklistVC: UIViewController {
     weak var delegate:companyBlackDelegate?
     
     
-    private lazy var searchBar:SearchBarView = {
+    private lazy var searchBar:SearchBarView = { [unowned self] in
         let search = SearchBarView.init(frame: CGRect.zero)
         search.placeholder = "输入屏蔽公司名称"
         search.delegate = self

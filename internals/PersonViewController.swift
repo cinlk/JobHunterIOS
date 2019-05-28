@@ -140,7 +140,7 @@ fileprivate class personTable: UITableView{
     private lazy var  mode:[(UIImage,String, UIViewController)] = {
         
         
-      return  [(#imageLiteral(resourceName: "namecard"),"我的订阅", subscribleItem()),(#imageLiteral(resourceName: "settings"),"帮助中心", HelpsVC()),
+      return  [(#imageLiteral(resourceName: "namecard"),"我的订阅", SubscribleItem()),(#imageLiteral(resourceName: "settings"),"帮助中心", HelpsVC()),
          (#imageLiteral(resourceName: "collection"),"设置", SettingVC()),(#imageLiteral(resourceName: "private"),"隐私设置", PrivacySetting())]
     }()
     

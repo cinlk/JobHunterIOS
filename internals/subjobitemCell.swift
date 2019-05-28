@@ -110,7 +110,7 @@ internal class baseSubScribleCell:UITableViewCell{
     }()
     
     
-    dynamic var mode:internSubscribeModel?{
+    dynamic var mode:InternSubscribeModel?{
         didSet{
             
             guard let mode = mode  else {
@@ -119,10 +119,10 @@ internal class baseSubScribleCell:UITableViewCell{
             
             self.internMonth.text = mode.internMonth
             self.internDay.text = mode.internDay
-            self.locate.text = mode.locate
+            self.locate.text = mode.citys.joined(separator: "+")
             self.degree.text = mode.degree
             self.salary.text = mode.internSalary
-            self.business.text = mode.business
+            self.business.text = mode.fields
             
             
             self.setupAutoHeight(withBottomViewsArray: [internMonth,internDay], bottomMargin: 20)
@@ -176,17 +176,17 @@ internal class baseSubScribleCell:UITableViewCell{
     
 
     
-    dynamic var mode:graduateSubscribeModel?{
+    dynamic var mode:GraduateSubscribeModel?{
         didSet{
             
             guard  let mode = mode  else {
                 return
             }
             
-            self.locate.text = mode.locate
+            self.locate.text = mode.citys.joined(separator: "+")
             self.degree.text = mode.degree
             self.salary.text = mode.salary
-            self.business.text = mode.business
+            self.business.text = mode.fields
             self.setupAutoHeight(withBottomViewsArray: [locate,salary,business], bottomMargin: 20)
             
         

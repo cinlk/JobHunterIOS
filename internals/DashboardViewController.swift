@@ -486,7 +486,7 @@ extension DashboardViewController{
                     cell.rightBtn.setTitle("我的订阅", for: .normal)
                     cell.SectionTitle.font = UIFont.systemFont(ofSize: 16)
                     cell.action = {
-                        let subscribleView = subscribleItem()
+                        let subscribleView = SubscribleItem()
                         //subscribleView.hidesBottomBarWhenPushed = true
                         
                         //self.navigationController?.pushViewController(subscribleView, animated: true)

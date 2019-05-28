@@ -137,3 +137,61 @@ class AttachResumRes:Mappable{
         url <- map["url"]
     }
 }
+
+
+class JobSubscribeItemRes: Mappable{
+    
+    var id:String?
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        id <- map["id"]
+    }
+}
+
+
+class JobSubscribeCondition: Mappable{
+    
+    var id:String?
+    var kind:jobType{
+        get{
+            return jobType(rawValue: type ?? "")!
+        }
+    }
+    var type:String?
+    var fields:String?
+    var citys:[String]?
+    var cityStr:String{
+        get{
+            return citys?.joined(separator: "-") ?? ""
+        }
+    }
+    var degree:String?
+    var internDay:String?
+    var internMonth:String?
+    var internSalary:String?
+    
+    var salary:String?
+    var createdTime:Date?
+    
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        id <- map["id"]
+        type <- map["type"]
+        fields <- map["fields"]
+        citys <- map["citys"]
+        degree <- map["degree"]
+        internDay <- map["intern_day"]
+        internMonth <- map["intern_month"]
+        internSalary <- map["intern_salary"]
+        salary <- map["salary"]
+        createdTime <- (map["created_time"], DateTransform())
+    }
+}

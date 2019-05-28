@@ -317,4 +317,35 @@ class PersonBriefReq {
 }
 
 
+@objcMembers class JobSubscribeReq: NSObject {
+    
+    var fields:String = ""
+    var citys:[String] = []
+    var degree:String = ""
+    var type:String = ""
+    var salary:String = ""
+    var intern_day:String = ""
+    var intern_month:String = ""
+    var intern_salary:String = ""
+    override init() {
+        super.init()
+    }
+    
+    convenience init(dict:[String:Any]) {
+        self.init()
+        setValuesForKeys(dict)
+    }
+    
+    override func setValue(_ value: Any?, forUndefinedKey key: String) {
+        print(key)
+    }
+    
+    
+    func toJSON() -> [String:Any]{
+        return ["fields":self.fields, "citys": self.citys, "degree": self.degree,
+                "type": self.type, "salary": self.salary, "intern_day": self.intern_day,
+                "intern_month": self.intern_month, "intern_salary": self.intern_salary]
+    }
+}
+
 
