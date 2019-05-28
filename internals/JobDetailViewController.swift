@@ -553,7 +553,7 @@ class JobDetailViewController: BaseShowJobViewController {
             
         case .text:
             return Mapper<MessageBoby>().map(JSON: [
-                "content": "你好 对该职位感兴趣!",
+                "content": SingletoneClass.shared.defaulTalkMes,
                 "type": msgType.describe,
                 "is_read":true,
                 "creat_time": Date.init().timeIntervalSince1970,

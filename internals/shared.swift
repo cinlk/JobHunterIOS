@@ -311,11 +311,23 @@ class GlobalUserInfo: NSObject {
         }
         
         
+        NetworkTool.request(.defaultTalk, successCallback: {  [weak self] (data) in
+            if let res = Mapper<ResponseModel<UserDefaulTalkMes>>().map(JSONObject: data)?.body, let w = res.talkDefaultMessage{
+               SingletoneClass.shared.defaulTalkMes = w
+                //print(self.jobWarns, "-------")
+            }
+            
+        }) { (error) in
+            
+        }
+        
+        
+        
     }
     // 用户账号 的手机号 TODO
-    open func getPhoneNumber() -> String{
-        return ""
-    }
+//    open func getPhoneNumber() -> String{
+//        return ""
+//    }
     
     open func getAccount() -> String?{
         return self.account
@@ -627,6 +639,7 @@ class SingletoneClass {
     // 用户地址
     //public var userAddress:String?
     
+    public var defaulTalkMes:String = "你好"
     // 引导界面数据
     public var guidanceData:ResponseArrayModel<GuideItems>?
     // 广告背景图片
@@ -923,6 +936,8 @@ extension SingletoneClass{
         }) { (error) in
             group.leave()
         }
+        
+      
         
       
         

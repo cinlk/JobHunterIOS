@@ -41,6 +41,9 @@ public enum GlobaHttpRequest {
     
     // 收藏帖子的分组(字符串数据)
     case userPostGroups
+    // 打招呼默认用语
+    case defaultTalk
+    
     
     
     case forumWarns
@@ -101,6 +104,8 @@ extension GlobaHttpRequest: TargetType{
             
         case .userPostGroups:
             return self.urlPrefix + "postGroups"
+        case .defaultTalk:
+            return self.urlPrefix  + "talk/message"
         
         }
     }
@@ -108,7 +113,7 @@ extension GlobaHttpRequest: TargetType{
     public  var method: Moya.Method {
         switch self {
         case .guideData, .adviseImages, .helloMsg, .citys, .bussinessField, .subBusinessField,
-             .companyType, .internCondition, .cityCollege, .jobWarns, .userInfo,.forumWarns, .userPostGroups:
+             .companyType, .internCondition, .cityCollege, .jobWarns, .userInfo,.forumWarns, .userPostGroups, .defaultTalk:
             return .get
         case .userlogin, .news, .nearByMeetings, .nearyByCompany:
             return .post
@@ -126,7 +131,7 @@ extension GlobaHttpRequest: TargetType{
     
     public var task: Task {
         switch self {
-        case .guideData, .helloMsg, .adviseImages, .logout, .citys, .bussinessField, .subBusinessField, .companyType, .internCondition, .cityCollege, .jobWarns, .userInfo(_), .forumWarns, .userPostGroups:
+        case .guideData, .helloMsg, .adviseImages, .logout, .citys, .bussinessField, .subBusinessField, .companyType, .internCondition, .cityCollege, .jobWarns, .userInfo(_), .forumWarns, .userPostGroups, .defaultTalk:
             return Task.requestPlain
         case let .userlogin(phone, password):
             return .requestParameters(parameters: ["phone": phone, "password":password], encoding: JSONEncoding.default)
@@ -144,7 +149,7 @@ extension GlobaHttpRequest: TargetType{
     
     public var headers: [String : String]? {
         switch  self {
-        case .logout, .userPostGroups:
+        case .logout, .userPostGroups, .defaultTalk:
             return ["Authorization": GlobalUserInfo.shared.getToken()]
         case .userInfo(let token):
             return ["Authorization": token]

@@ -105,6 +105,63 @@ class AppFileManager{
     }
     
     
+    // 获取缓存文件大小
+    func fileSizeOfCache() -> Int{
+        guard let cachePath = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.cachesDirectory, FileManager.SearchPathDomainMask.userDomainMask,   true).first else {
+            return 0
+        }
+        //print(cachePath)
+        
+        guard let fileArr = SingletoneClass.fileManager.subpaths(atPath: cachePath) else {
+            return 0
+        }
+
+        var size:Int = 0
+        for file in fileArr{
+            let path = cachePath +  "/\(file)"
+            
+            let floder = try! SingletoneClass.fileManager.attributesOfItem(atPath: path)
+            for (att, any) in floder{
+                if att == FileAttributeKey.size{
+                  size += (any as AnyObject).integerValue
+                
+                }
+            }
+            
+        }
+        
+        return size / 1024 / 1024
+    }
+    
+    
+    func deleteCache() throws{
+        
+        
+        let library = SingletoneClass.fileManager.urls(for: FileManager.SearchPathDirectory.libraryDirectory, in: .userDomainMask)[0]
+        let dir = library.appendingPathComponent("Caches")
+        let contents = try SingletoneClass.fileManager.contentsOfDirectory(atPath: dir.path)
+        
+        for content in contents {
+            //如果是快照就继续
+            
+            if(content == "Snapshots"){continue;}
+            if SingletoneClass.fileManager.fileExists(atPath: dir.appendingPathComponent(content).absoluteString){
+                 try SingletoneClass.fileManager.removeItem(atPath:  dir.appendingPathComponent(content).absoluteString)
+            }
+           
+//            do {
+//
+//                //print("remove cache success:"+content)
+//            } catch where ((error as NSError).userInfo[NSUnderlyingErrorKey] as? NSError)?.code == Int(EPERM) {
+//                //print("remove cache error:"+content)
+//                // "EPERM: operation is not permitted". We ignore this.
+//               // #if DEBUG
+//                //print("Couldn't delete some library contents.")
+//               // #endif
+//            }
+        }
+            
+    }
     
     
 }

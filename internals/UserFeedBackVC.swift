@@ -7,14 +7,36 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
+import MobileCoreServices
+import Photos
 
 
 
 fileprivate let textPlaceHolder:String = "请填写内容，最多500字。"
-let feedBackEditNotify:String = "feedBackEditNotify"
+//let feedBackEditNotify:String = "feedBackEditNotify"
 
 
-class feedBackVC: BaseTableViewController {
+
+fileprivate class postReq{
+    
+    var name:String = ""
+    var describe:String = ""
+    var data:[Data] = []
+    init() {}
+    
+    
+    internal func validate() -> Bool{
+        if  name.isEmpty || describe.isEmpty {
+            return false
+        }
+        return true
+    }
+    
+}
+
+class UserFeedBackVC: BaseTableViewController {
 
     enum catalogs:String {
         case problem = "problem"
@@ -36,8 +58,14 @@ class feedBackVC: BaseTableViewController {
         }
     }
     
+    
+    private lazy var dispose:DisposeBag = DisposeBag.init()
+    
+    private lazy var vm:PersonViewModel = PersonViewModel.shared
+    
+    
     // 上传的数据
-    private lazy var  postBody:[String:Any] = [:]
+    private lazy var  postBody:postReq = postReq.init()
     
     
     private var sectionTitle:[catalogs] = [.problem, .idea]
@@ -50,15 +78,15 @@ class feedBackVC: BaseTableViewController {
     
     private lazy var showChooseImage:UIAlertController = { [unowned self] in
         let choose = UIAlertController.init(title: nil, message: nil, preferredStyle: UIAlertController.Style.actionSheet)
-        let fromCamera = UIAlertAction.init(title: "照相机", style: UIAlertAction.Style.default, handler: { action in
+        let fromCamera = UIAlertAction.init(title: "照相机", style: UIAlertAction.Style.default, handler: { [weak self] action in
             
             //self.selectPicture(type: UIImagePickerControllerSourceType)
-            self.selectPicture(type: UIImagePickerController.SourceType.camera)
+            self?.picturType(type: .camera)
         })
         
         
-        let fromPicture = UIAlertAction.init(title: "相册", style: UIAlertAction.Style.default, handler: { action in
-            self.selectPicture(type: UIImagePickerController.SourceType.photoLibrary)
+        let fromPicture = UIAlertAction.init(title: "相册", style: UIAlertAction.Style.default, handler: { [weak self] action in
+            self?.picturType(type: .pic)
         })
         
         let cancel = UIAlertAction.init(title: "取消", style: .cancel, handler: nil)
@@ -73,7 +101,15 @@ class feedBackVC: BaseTableViewController {
     // photosview
     private lazy var photo:photosView = {
         let p = photosView(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: 89))
-        p.setImage = show
+        p.setImage = {  [weak self] image in
+            guard let `self` = self else {
+                return
+            }
+            
+            self.present(self.showChooseImage, animated: true, completion: nil)
+            self.currentImage = image
+            
+        }
         return p
     }()
     
@@ -106,11 +142,15 @@ class feedBackVC: BaseTableViewController {
         self.title = "反馈意见"
         self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "发送", style: .plain, target: self, action: #selector(sendComment))
         
-        NotificationCenter.default.addObserver(self, selector: #selector(editing), name: NSNotification.Name.init(feedBackEditNotify), object: nil)
+        //NotificationCenter.default.addObserver(self, selector: #selector(editing), name: NSNotification.Name.init(feedBackEditNotify), object: nil)
+        
+        NotificationCenter.default.rx.notification(NotificationName.feedBackNotiy, object: nil).subscribe(onNext: { [weak self] (notify) in
+            self?.editing(notify)
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
         
     }
     
-    
+   
     
     
     
@@ -122,8 +162,8 @@ class feedBackVC: BaseTableViewController {
                 
             }
             alertController.addAction(alertAction)
-            let cancelAction = UIAlertAction(title: "放弃修改", style: .cancel) { (_) in
-                self.navigationController?.popvc(animated: true)
+            let cancelAction = UIAlertAction(title: "放弃修改", style: .cancel) { [weak self]  (_) in
+                self?.navigationController?.popvc(animated: true)
             }
             alertController.addAction(cancelAction)
             self.present(alertController, animated: true, completion: nil)
@@ -134,19 +174,20 @@ class feedBackVC: BaseTableViewController {
         return true
     }
     
-    
-    
     deinit {
-        NotificationCenter.default.removeObserver(self)
+        print("deinit userFeedBAckVC \(self)")
     }
-
+    
+    
+    
+    
     
     
     
 }
 
 
-extension feedBackVC {
+extension UserFeedBackVC {
     
     override func numberOfSections(in tableView: UITableView) -> Int {
         return sectionTitle.count
@@ -168,9 +209,9 @@ extension feedBackVC {
         case .problem:
             if let cell =  tableView.dequeueReusableCell(withIdentifier: FeedBackTypeCell.identity(), for: indexPath) as? FeedBackTypeCell{
                 cell.mode = problems
-                cell.selectItem = { theme in
+                cell.selectItem = { [weak self] theme in
                    // print(theme)
-                    self.postBody["kind"]=theme
+                    self?.postBody.name = theme
                 }
                 return cell
             }
@@ -219,31 +260,48 @@ extension feedBackVC {
     }
 }
 
-extension feedBackVC{
+extension UserFeedBackVC{
     @objc private func sendComment(){
         //print(photo.imageData)
         
-        
+        self.postBody.data = photo.imageData
         self.view.endEditing(true)
-        self.postBody["images"] = photo.imageData
+        if self.postBody.validate() == false {
+            return
+        }
+        
+
+        
+        self.vm.uplodaUserFeedBack(name: self.postBody.name, describe: self.postBody.describe, data: self.postBody.data).subscribe(onNext: { [weak self] (res) in
+            guard let code = res.code, HttpCodeRange.filterSuccessResponse(target: code) else {
+                return
+            }
+            UIView.animate(withDuration: 3, animations: {
+                self?.view.showToast(title: "发送成功", customImage: nil, mode: .text)
+            }, completion: { _ in
+                self?.navigationController?.popvc(animated: true)
+            })
+            
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
         //print(self.postBody)
+       
         // 发送成功后， 退出当前界面(发送频率限制？)
-        self.navigationController?.popvc(animated: true)
+       
         
     }
     
 }
 
 
-extension feedBackVC: TextAndPhontoCellDelegate{
+extension UserFeedBackVC: TextAndPhontoCellDelegate{
     func getTextContent(text: String) {
         //print(text)
-        self.postBody["content"] = text
+        self.postBody.describe = text
     }
 }
 
 
-extension feedBackVC{
+extension UserFeedBackVC{
     @objc private func editing(_ sender: Notification){
         if let info = sender.userInfo as? [String:Bool], let edit = info["edit"]{
             self.isEdit = edit
@@ -253,34 +311,62 @@ extension feedBackVC{
 
 
 // 照片
-extension feedBackVC: UIImagePickerControllerDelegate, UINavigationControllerDelegate{
-    
-  
-    private func show(_ btn:inout UIImageView){
-        self.present(showChooseImage, animated: true, completion: nil)
-        self.currentImage = btn
-    }
+extension UserFeedBackVC: UIImagePickerControllerDelegate, UINavigationControllerDelegate{
     
     
-    func selectPicture(type: UIImagePickerController.SourceType){
-        let select = UIImagePickerController()
-        select.delegate = self
-        select.allowsEditing = true
-        select.sourceType = type
-        self.present(select, animated: true, completion: nil)
+    
+    private func picturType(type: ChatMoreType){
+        guard type == .pic || type == .camera  else {
+            return
+        }
+        
+        if Utils.PhotoLibraryAuthorization() == false{
+            let warnMsg = type == .pic ? "没有相册的访问权限，请在应用设置中开启权限" : "没有相机的访问权限，请在应用设置中开启权限"
+            self.tableView.presentAlert(type: UIAlertController.Style.alert, title: "温馨提示", message: warnMsg, items: [], target: self) { _  in }
+            return
+        }
+        if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
+            //初始化图片控制器
+            let picker = UIImagePickerController()
+            
+            //设置代理
+            picker.delegate = self
+            picker.allowsEditing = true
+            picker.sourceType = type == .pic ? .photoLibrary : .camera
+            picker.mediaTypes = type == .pic ? [kUTTypeImage as String] : [kUTTypeImage as String,kUTTypeVideo as String]
+            
+            if type == .camera{
+                if UIImagePickerController.isCameraDeviceAvailable(UIImagePickerController.CameraDevice.rear) {
+                    picker.cameraDevice = UIImagePickerController.CameraDevice.rear
+                }else if UIImagePickerController.isCameraDeviceAvailable(UIImagePickerController.CameraDevice.front){
+                    picker.cameraDevice = UIImagePickerController.CameraDevice.front
+                }
+                
+                //设置闪光灯(On:开、Off:关、Auto:自动)
+                picker.cameraFlashMode = UIImagePickerController.CameraFlashMode.auto
+                
+            }
+            
+            
+            self.present(picker, animated: true, completion: nil)
+            
+        }
+        
         
     }
+    
+    
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        print("cancel")
+        picker.dismiss(animated: true, completion: nil)
     }
     
-    private func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
         
         var outputImage:UIImage?
-        if let image = info[UIImagePickerController.InfoKey.originalImage.rawValue
-] as? UIImage{
+        if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage{
             outputImage = image
-        }else if let image = info[UIImagePickerController.InfoKey.editedImage.rawValue] as? UIImage{
+        }else if let image = info[UIImagePickerController.InfoKey.editedImage] as? UIImage{
             outputImage = image
         }
         guard outputImage != nil else {
@@ -296,6 +382,7 @@ extension feedBackVC: UIImagePickerControllerDelegate, UINavigationControllerDel
         picker.dismiss(animated: true, completion: nil)
         
     }
+    
 }
 
 

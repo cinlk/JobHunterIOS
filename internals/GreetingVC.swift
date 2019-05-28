@@ -7,15 +7,25 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 
 
+
+fileprivate let navTitle:String = "打招呼语"
 fileprivate let sections:Int = 2
 fileprivate let cellIdentity:String = "cell"
 fileprivate let openGreeting:String = "启动打招呼用语"
 
-class greetingVC: BaseTableViewController {
 
+class GreetingVC: BaseTableViewController {
+
+    
+    private lazy var vm:PersonViewModel = PersonViewModel.shared
+    private lazy var dispose:DisposeBag = DisposeBag.init()
+    
+    
     private var data:greetingModel?
     
     override func viewDidLoad() {
@@ -27,7 +37,7 @@ class greetingVC: BaseTableViewController {
     
     
     override func setViews() {
-        self.title = "打招呼语"
+        self.title = navTitle
         self.tableView.tableFooterView = UIView.init()
         self.tableView.allowsMultipleSelection = false
         self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentity)
@@ -53,6 +63,9 @@ class greetingVC: BaseTableViewController {
         super.showError()
     }
 
+    deinit {
+        print("deinit greetingVC \(self)")
+    }
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -67,7 +80,7 @@ class greetingVC: BaseTableViewController {
         }
         //
         if let data = data{
-            return  data.isOn ? data.des.count : 0
+            return  data.open ? data.messages.count : 0
         }
         return 0
         
@@ -79,15 +92,37 @@ class greetingVC: BaseTableViewController {
             let cell = tableView.dequeueReusableCell(withIdentifier: switchCell.identity(), for: indexPath) as! switchCell
             
             // tag 值默认（不使用）
-            cell.mode = (on:data?.isOn ?? false, tag:1, name:openGreeting)
+            cell.mode = (on:data?.open ?? false, tag:1, name:openGreeting)
             //cell.switchOff.addTarget(self, action: #selector(switchBtn(sender:)), for: .valueChanged)
-            cell.callChange = change
+            cell.callChange = { [weak self] ( name, sender) in
+                guard let `self` = self else {
+                    return
+                }
+                
+                self.vm.openDefaultTalk(flag: sender.isOn).subscribe(onNext: { [weak self] (res) in
+                    if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code) {
+                        
+                        //IsGreeting = sender.isOn
+                        self?.data?.open = sender.isOn
+                        // 服务器更新数据
+                        self?.tableView.reloadSections([1], animationStyle: .none)
+                        
+                    }else{
+                        // 错误
+                    }
+                    
+                }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+                
+                
+               
+                
+            }
             return cell
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentity, for: indexPath)
         cell.selectionStyle = .none
         
-        if indexPath.row == data?.currentIndex{
+        if indexPath.row == data?.number{
             cell.accessoryType = .checkmark
             cell.textLabel?.textColor = UIColor.blue
             tableView.selectRow(at: indexPath, animated: false, scrollPosition: .top)
@@ -95,7 +130,7 @@ class greetingVC: BaseTableViewController {
             cell.textLabel?.textColor = UIColor.black
             cell.accessoryType = .none
         }
-        cell.textLabel?.text = data?.des[indexPath.row]
+        cell.textLabel?.text = data?.messages[indexPath.row]
         return cell
         
     }
@@ -106,9 +141,9 @@ class greetingVC: BaseTableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 1{
             
-            updateGreeting(){ bool in
+            updateGreeting(row: indexPath.row){ [weak self] bool in
                 if bool == true{
-                    self.data?.currentIndex = indexPath.row
+                    self?.data?.number = indexPath.row
                     let cell = tableView.cellForRow(at: indexPath)
                     cell?.accessoryType = .checkmark
                     cell?.textLabel?.textColor = UIColor.blue
@@ -155,8 +190,8 @@ class greetingVC: BaseTableViewController {
         if section == 0 {
             return 10
         }
-        if data?.isOn ?? false{
-            return 20
+        if data?.open ?? false{
+            return 40
         }else{
             return 0
         }
@@ -165,32 +200,36 @@ class greetingVC: BaseTableViewController {
 }
 
 
-extension greetingVC{
+extension GreetingVC{
     
-    private func change(_ name: String, _ sender:UISwitch){
-        IsGreeting = sender.isOn
-        data?.isOn = sender.isOn
-        // 服务器更新数据
-        self.tableView.reloadSections([1], animationStyle: .none)
-        
-     }
+   
     
     // 服务器更新数据 回调执行结果
-    private func updateGreeting(complete:@escaping ((_ :Bool)->Void)){
+    private func updateGreeting(row:Int,complete:@escaping ((_ :Bool)->Void)){
         
-        let msg = data!.des[data!.currentIndex]
-        // 本地招呼用语
-        GreetingMsg = msg
-        
-        self.view.showLoading(title: "加载数据", customImage: nil, mode: .customView)
-        //let hub = showProgressHun(message: "加载数据", view: self.view)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            //hub.hide(animated: true)
-            self.view.hiddenLoading()
-            complete(true)
-            
-            
+        if let msg = data?.messages[row]{
+            self.vm.changeDefaulTalkMessage(number: row).subscribe(onNext: {  (res) in
+                if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code) {
+                    
+                    SingletoneClass.shared.defaulTalkMes = msg
+                    complete(true)
+                }else{
+                    complete(false)
+                }
+            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
         }
+        // 本地招呼用语
+        //GreetingMsg = msg
+        
+        //self.view.showLoading(title: "加载数据", customImage: nil, mode: .customView)
+        //let hub = showProgressHun(message: "加载数据", view: self.view)
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+//            //hub.hide(animated: true)
+//            self.view.hiddenLoading()
+//            complete(true)
+//
+//
+//        }
         
         
         
@@ -200,19 +239,26 @@ extension greetingVC{
 
 
 // 异步获取数据
-extension greetingVC{
+extension GreetingVC{
     
     private func loadData(){
         
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-           
-            
-            Thread.sleep(forTimeInterval: 1)
-            self?.data = greetingModel(JSON: ["isOn":true,"des":["默认第一条","第二条","第三条","第四条","第五条"],"currentIndex":0])
-            DispatchQueue.main.async(execute: {
+        self.vm.allDefalutTalk().subscribe(onNext: { [weak self] (res) in
+            if let r = res.body{
+                self?.data = r
                 self?.didFinishloadData()
-            })
-        }
+            }
+            
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+//        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+//
+//
+//            Thread.sleep(forTimeInterval: 1)
+//            self?.data = greetingModel(JSON: ["isOn":true,"des":["默认第一条","第二条","第三条","第四条","第五条"],"currentIndex":0])
+//            DispatchQueue.main.async(execute: {
+//                self?.didFinishloadData()
+//            })
+//        }
         
     }
 }

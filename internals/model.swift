@@ -12,7 +12,7 @@ import ObjectMapper
 
 class CodeSuccess: Mappable, CustomStringConvertible{
     
-    var code: Int?
+    var code: String?
     
     required init?(map: Map) {
         

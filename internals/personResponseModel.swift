@@ -151,7 +151,32 @@ class JobSubscribeItemRes: Mappable{
         id <- map["id"]
     }
 }
+// TODO 用户手机号 和 第三方绑定账号信息
+class UserRelateAccountRes: Mappable{
+    
+    var phone:String?
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        phone <- map["phone"]
+    }
+}
 
+class UserResumeOpenState: Mappable{
+    
+    var open:Bool?
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        open <- map["open"]
+    }
+}
 
 class JobSubscribeCondition: Mappable{
     

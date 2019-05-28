@@ -15,7 +15,7 @@ class switchCell:UITableViewCell{
         return label
     }()
     
-    lazy var switchOff:UISwitch = {
+    lazy var switchOff:UISwitch = { [unowned self] in 
         let sw = UISwitch.init(frame: CGRect.zero)
         sw.isOn = true
         sw.addTarget(self, action: #selector(change(_:)), for: .valueChanged)

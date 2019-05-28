@@ -54,8 +54,8 @@ struct ConfigColor {
 
 let ChatKeyBoardH:CGFloat =  258.0
 // global greeting msg
-var GreetingMsg:String = ""
-var IsGreeting:Bool = true 
+//var GreetingMsg:String = ""
+//var IsGreeting:Bool = true 
 
 
 
@@ -239,6 +239,8 @@ struct  NotificationName {
     static let modifyResume: Notification.Name = Notification.Name.init("modifyResume")
     static let addResumSubItem: Notification.Name = Notification.Name.init("addResumSubItem")
     static let collecteItem:[Notification.Name] = [Notification.Name.init("campusjobCollectedVC"), Notification.Name.init("internJobCollectedVC"),Notification.Name.init("companyCollectedVC"), Notification.Name.init("meetingCollectedVC"),Notification.Name.init("onlineApplyCollectedVC")]
+    
+    static let feedBackNotiy: Notification.Name = Notification.Name.init("feedBackEditNotify")
     // forum
 //    static let ForumHelp: Notification.Name = Notification.Name.init("forumHelp")
 //    static let ForumInterview: Notification.Name = Notification.Name.init("forumInterview")

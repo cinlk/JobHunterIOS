@@ -72,5 +72,18 @@ class  HttpResultMode: Mappable{
 }
 
 
+class UserDefaulTalkMes:Mappable{
+    var talkDefaultMessage: String?
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        talkDefaultMessage <- map["talk_default_message"]
+    }
+
+}
+
 
 

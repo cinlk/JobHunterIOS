@@ -35,7 +35,7 @@ class photosView: UIView {
         }
     }
     
-    private lazy var pickerBtnOne:UIButton = {
+    private lazy var pickerBtnOne:UIButton = { [unowned self] in
         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 80, height: 80))
         btn.layer.borderWidth = 1
         btn.layer.borderColor = UIColor.lightGray.cgColor
@@ -52,7 +52,7 @@ class photosView: UIView {
     
     
     
-    private lazy var pickerBtnTwo:UIButton = {
+    private lazy var pickerBtnTwo:UIButton = { [unowned self] in
         let btn = UIButton.init(frame: CGRect.init(x: 0, y: 0, width: 80, height: 80))
         btn.layer.borderWidth = 1
         btn.layer.borderColor = UIColor.lightGray.cgColor
@@ -70,7 +70,7 @@ class photosView: UIView {
     
     // 替换的imageview
     
-    private lazy var imageOne:UIImageView = {
+    private lazy var imageOne:UIImageView = { [unowned self] in
         let image = UIImageView()
         image.clipsToBounds = true
         image.contentMode = .scaleAspectFill
@@ -98,7 +98,7 @@ class photosView: UIView {
         return image
     }()
     
-    private lazy var imageTow:UIImageView = {
+    private lazy var imageTow:UIImageView = { [unowned self] in
         let image = UIImageView()
         image.clipsToBounds = true
         image.contentMode = .scaleAspectFill

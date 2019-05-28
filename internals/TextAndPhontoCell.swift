@@ -132,7 +132,7 @@ extension TextAndPhontoCell:UITextViewDelegate{
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        NotificationCenter.default.post(name: NSNotification.Name.init(feedBackEditNotify), object: nil, userInfo: ["edit":true])
+        NotificationCenter.default.post(name: NotificationName.feedBackNotiy, object: nil, userInfo: ["edit":true])
         
         placehold.isHidden =  textView.text.isEmpty ? false : true
     }
@@ -148,7 +148,7 @@ extension TextAndPhontoCell:UITextViewDelegate{
     func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
         textView.resignFirstResponder()
         
-        NotificationCenter.default.post(name: NSNotification.Name.init(feedBackEditNotify), object: nil, userInfo: ["edit":false])
+        NotificationCenter.default.post(name: NotificationName.feedBackNotiy, object: nil, userInfo: ["edit":false])
         return true
     }
     

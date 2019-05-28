@@ -374,24 +374,27 @@ enum appType:String {
 
 // 消息提醒类型
 enum notifyType:String {
-    case subscribe = "subscribe"
-    case text = "text"
+    case jobs = "jobs"
+    //case text = "text"
     case applyProgress = "applyProgress"
-    case invitation = "invitation"
+    //case invitation = "invitation"
+    case forum = "forum"
     case night = "night"
     case none = ""
     
     var des:String{
         get{
             switch self {
-            case .subscribe:
+            case .jobs:
                 return "新的职位通知"
-            case .text:
-                return "聊天消息通知"
+//            case .text:
+//                return "聊天消息通知"
             case .applyProgress:
                 return "投递状态消息通知"
-            case .invitation:
-                return "邀约消息通知"
+//            case .invitation:
+//                return "邀约消息通知"
+            case .forum:
+                return "论坛消息"
             case .night:
                 return "夜间免打扰"
             default:

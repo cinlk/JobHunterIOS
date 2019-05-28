@@ -97,7 +97,7 @@ class AccountBinds: AccountBase{
 class  notifyMesModel:Mappable{
     
     var type:String?
-    var isOn:Bool? = false
+    var open:Bool? = false
  
     var kind:notifyType{
         get{
@@ -109,15 +109,15 @@ class  notifyMesModel:Mappable{
     }
     
     required init?(map: Map) {
-        if map.JSON["type"] == nil || map.JSON["isOn"] == nil{
-            return nil
-        }
+//        if map.JSON["type"] == nil || map.JSON["open"] == nil{
+//            return nil
+//        }
     }
     
     func mapping(map: Map) {
         
         type <- map["type"]
-        isOn <- map["isOn"]
+        open <- map["open"]
         
     }
     
@@ -127,18 +127,18 @@ class  notifyMesModel:Mappable{
 // 打招呼常用语
 class greetingModel:NSObject,Mappable{
     
-    var des:[String] = []
-    var isOn:Bool = false
-    var currentIndex:Int = 0
+    var messages:[String] = []
+    var open:Bool = false
+    var number:Int = 0
     
     required init?(map: Map) {
         
     }
     
     func mapping(map: Map) {
-        des <- map["des"]
-        isOn <- map["isOn"]
-        currentIndex <- map["currentIndex"]
+        messages <- map["messages"]
+        open <- map["open"]
+        number <- map["number"]
     }
 }
 

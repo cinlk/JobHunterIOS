@@ -80,4 +80,14 @@ class LoginViewModel{
         return server.userInfo(token:token)
     }
     
+    
+    func changePhone(phone:String, code:String) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.changePhone(phone: phone, code: code)
+    }
+    
+    
+    func newPassword(oldPwd:String, newPwd:String) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.newPassword(oldPwd: oldPwd, newPwd: newPwd)
+    }
+    
 }

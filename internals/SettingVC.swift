@@ -7,10 +7,12 @@
 //
 
 import UIKit
+import RxCocoa
+import RxSwift
 
 
 fileprivate let cellIdentifier:String = "default"
-
+fileprivate let navTitle:String = "个人设置"
 
 class SettingVC: UIViewController {
     
@@ -24,7 +26,12 @@ class SettingVC: UIViewController {
         case evaluationUS = "给我们评价"
         case logout = "退出当前账号"
         case feedBack = "问题反馈"
+        case hiddenResume = "隐藏简历"
     }
+    
+    private lazy var dispose:DisposeBag = DisposeBag.init()
+    private lazy var vm:PersonViewModel = PersonViewModel.shared
+    private lazy var resumeOpen:Bool = true
 
     private lazy var tableView:UITableView = { [unowned self] in
         let tb = UITableView.init(frame: CGRect.zero)
@@ -42,29 +49,33 @@ class SettingVC: UIViewController {
     
     
   
-    private lazy var items:[Int:[SettingCellItem]] = [0:[.myAccount,.messageSetting,.greeting,.feedBack],1:[.clearCache,.aboutUS,.evaluationUS], 2:[.logout]]
+    private lazy var items:[Int:[SettingCellItem]] = [0:[.myAccount,.messageSetting,.greeting,.feedBack],1:[.hiddenResume,.clearCache,.aboutUS,.evaluationUS], 2:[.logout]]
     
   
     
     // 获取 缓存 还有其他内容？
-    private lazy var cacheSize:String = "2.13MB"
+   private lazy var cacheSize:Int = 0
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        initView()
- 
+        setView()
+        getResumOpenStatu()
+       
+                
+          
         // Do any additional setup after loading the view.
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         //self.navigationController?.insertCustomerView(UIColor.orange)
+        // 计算缓存
+        self.currentCache()
+    
+        
       }
     
   
@@ -79,12 +90,36 @@ class SettingVC: UIViewController {
 
 extension SettingVC {
     
-    private func initView(){
-        self.title = "设置"
+    private func  getResumOpenStatu(){
+        
+        self.vm.userOpenResumeState().subscribe(onNext: { [weak self] (res) in
+            if let state = res.body?.open{
+                
+                self?.resumeOpen = state
+                self?.tableView.reloadData()
+            }
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+    }
+    private func setView(){
+        self.title = navTitle
         self.view.addSubview(tableView)
         _  = tableView.sd_layout().leftEqualToView(self.view)?.rightEqualToView(self.view)?.topEqualToView(self.view)?.bottomEqualToView(self.view)
         
         navigationItem.backBarButtonItem = UIBarButtonItem.init(title: "", style: .plain, target: nil, action: nil)
+        
+    }
+    
+    private func currentCache(){
+        
+        DispatchQueue.global().async {
+            self.cacheSize = AppFileManager.shared.fileSizeOfCache()
+            //获取数据异步
+            DispatchQueue.main.async {
+                //修改主线程UI
+                self.tableView.reloadData()
+                //self.clearLable.text = "已用 "+String(self.fileSize)+" MB";
+            }
+        }
         
     }
 }
@@ -123,7 +158,7 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource{
             let label = UILabel.init(frame: CGRect.zero)
             label.textColor = UIColor.black
             label.textAlignment = .right
-            label.text = cacheSize
+            //label.text = "\(cacheSize)"
             label.sizeToFit()
             cell.accessoryView  = label
             
@@ -132,6 +167,13 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource{
         }else if item == .logout{
             cell.textLabel?.textAlignment = .center
             cell.textLabel?.textColor = UIColor.blue
+        }else if item == .hiddenResume{
+            let swich:UISwitch = UISwitch.init()
+            swich.isOn = self.resumeOpen ? false : true
+            swich.addTarget(self, action: #selector(hiddenResume), for: .valueChanged)
+            
+            cell.accessoryView = swich
+            cell.textLabel?.textAlignment = .left
         }else{
             cell.accessoryType = .disclosureIndicator
             cell.textLabel?.textAlignment = .left
@@ -166,16 +208,16 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource{
         switch  itemType {
             
         case .myAccount:
-            let account = myAccount(style: .grouped)
+            let account = MyAccount(style: .grouped)
             self.navigationController?.pushViewController(account, animated: true)
         case .aboutUS:
             let us = aboutUS()
             self.navigationController?.pushViewController(us, animated: true)
         case .messageSetting:
-            let notify = notificationVC(style: .grouped)
+            let notify = NotificationSettingVC(style: .grouped)
             self.navigationController?.pushViewController(notify, animated: true)
         case .greeting:
-            let greet = greetingVC(style: .grouped)
+            let greet = GreetingVC(style: .grouped)
             self.navigationController?.pushViewController(greet, animated: true)
         case .clearCache:
             
@@ -203,7 +245,7 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource{
             })
             
         case .feedBack:
-            let problem = feedBackVC()
+            let problem = UserFeedBackVC()
             self.navigationController?.pushViewController(problem, animated: true)
         default:
             break
@@ -232,6 +274,53 @@ extension SettingVC: UIScrollViewDelegate{
 
 extension SettingVC {
     
+    @objc private func hiddenResume(s: UISwitch){
+        
+        // 变成 可见状态
+        if s.isOn == false{
+            
+            self.vm.changeUserOpenResumeStatus(flag: true).subscribe(onNext: { [weak self] (res) in
+                if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code){
+                    
+                }else{
+                    self?.tableView.showToast(title: "取消隐藏失败", customImage: nil, mode: .text)
+                    s.isOn = true
+                }
+                }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+            
+            return
+        }
+        
+    
+        // 变成不可见状态
+        let cancel = UIAlertAction.init(title: "取消", style: .cancel) { (action) in
+            s.isOn = false
+        }
+        let confirm = UIAlertAction.init(title: "确定", style: .default) { [weak self]  (action) in
+            guard let `self`  = self else {
+                return
+            }
+            self.vm.changeUserOpenResumeStatus(flag: false).subscribe(onNext: { [weak self] (res) in
+                if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code){
+                    s.isOn = true
+                }else{
+                    self?.tableView.showToast(title: "影藏失败", customImage: nil, mode: .text)
+                    s.isOn = false
+                }
+            }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+            
+            
+        }
+        
+        let alert = UIAlertController.init(title: "隐藏简历", message: "隐藏后hr 无法查看", preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(cancel)
+        alert.addAction(confirm)
+        
+        self.present(alert, animated: true, completion: nil)
+        
+        
+    }
+    
     // 清理缓存 d 缓存的文件？
     //  清楚 app 保留的userdefault 数据
     @objc private func clearCache(_ params: IndexPath?){
@@ -239,14 +328,19 @@ extension SettingVC {
           guard  let index = params else {
             return
           }
-          self.view.showToast(title: "清楚完成", customImage: nil, mode: .text)
-          //showOnlyTextHub(message: "清楚完成", view: self.view)
-          self.cacheSize = "0.00MB"
-          self.tableView.reloadRows(at: [index], with: .automatic)
-        
-          UserDefaults.standard.localKeys.forEach { (k) in
-                UserDefaults.standard.removeObject(forKey: k)
-          }
+//          UserDefaults.standard.localKeys.forEach { (k) in
+//                UserDefaults.standard.removeObject(forKey: k)
+//          }
+        do{
+            try  AppFileManager.shared.deleteCache()
+            self.tableView.showToast(title: "清楚完成", customImage: nil, mode: .text)
+            //self.cacheSize = 0
+            self.tableView.reloadRows(at: [index], with: .automatic)
+        }catch {
+            print(error)
+            self.tableView.showToast(title: "清楚失败\(error)", customImage: nil, mode: .text)
+
+        }
         
     }
     

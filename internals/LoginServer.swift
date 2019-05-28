@@ -27,8 +27,10 @@ enum LoginManager {
     case weiboLogin
     case registryAccount(account:String, code:String, pwd:String)
     case updatePassword(account:String, code:String, pwd:String)
+    case newPassword(oldPwd:String, newPwd:String)
     case bindWeixin
     case binWeibo
+    case changePhone(phone:String, code:String)
     
     case userInfo(token:String)
     
@@ -75,6 +77,10 @@ extension LoginManager: TargetType{
             return self.urlPrefix +  "registry/pwd"
         case .userInfo(_):
             return self.urlPrefix + "userinfo"
+        case .changePhone(let phone, let code):
+            return self.urlPrefix + "new/phone/\(phone)/\(code)"
+        case .newPassword:
+            return self.urlPrefix + "new/password"
   
         default:
             return self.urlPrefix +  "login"
@@ -85,7 +91,7 @@ extension LoginManager: TargetType{
     
     var method: Moya.Method {
         switch self {
-        case .getVerifyCode, .resetPwdCode:
+        case .getVerifyCode, .resetPwdCode, .changePhone, .newPassword:
             return Method.put
         case .quickLogin(_, _, _):
             return Method.post
@@ -114,6 +120,8 @@ extension LoginManager: TargetType{
             return .requestParameters(parameters: ["account":account, "password":pwd, "code": code], encoding: JSONEncoding.default)
         case .registryAccount(let account, let code, let pwd):
             return .requestParameters(parameters:["account":account, "password":pwd, "code": code], encoding: JSONEncoding.default)
+        case .newPassword(let oldPwd, let newPwd):
+            return .requestParameters(parameters: ["new_pwd": newPwd,"old_pwd": oldPwd], encoding: JSONEncoding.default)
         default:
             return .requestPlain
         }
@@ -143,6 +151,8 @@ extension LoginManager: TargetType{
         switch self {
         case .userInfo(let token):
             return ["Authorization": token]
+        case .changePhone, .newPassword:
+            return ["Authorization": GlobalUserInfo.shared.getToken()]
         default:
             break
         }
@@ -231,7 +241,14 @@ class LoginServer {
         return provider.rx.request(.userInfo(token: token)).asObservable().mapJSON(failsOnEmptyData: true)
     }
     
+    func changePhone(phone:String, code:String) -> Observable<ResponseModel<HttpResultMode>>{
+        return provider.rx.request(.changePhone(phone: phone, code: code)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
  
+    
+    func newPassword(oldPwd:String, newPwd:String) -> Observable<ResponseModel<HttpResultMode>>{
+        return provider.rx.request(.newPassword(oldPwd: oldPwd, newPwd: newPwd)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
         
 }
 

@@ -421,7 +421,50 @@ class PersonViewModel {
         return server.allSubscribeJobCondition()
     }
     
-
+    
+    internal func userPhone() ->Observable<ResponseModel<UserRelateAccountRes>>{
+        return server.userPhone()
+    }
+    
+    internal func updateNotiySetting(type:String, flag:Bool) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.updateNotiySetting(type: type, flag: flag)
+    }
+    
+    internal func notifySettings() -> Observable<[notifyMesModel]>{
+        return  server.notifySettings()
+    }
+    
+    
+    
+    internal func allDefalutTalk() -> Observable<ResponseModel<greetingModel>>{
+        
+        return server.allDefalutTalk()
+        
+    }
+    
+    internal func changeDefaulTalkMessage(number:Int) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.changeDefaulTalkMessage(number: number)
+    }
+    
+    internal func openDefaultTalk(flag:Bool) -> Observable<ResponseModel<HttpResultMode>>{
+        return server.openDefaultTalk(flag: flag)
+    }
+    
+    
+    internal func uplodaUserFeedBack(name:String, describe:String, data:[Data]) ->Observable<ResponseModel<HttpResultMode>>{
+        return server.uplodaUserFeedBack(name: name, describe: describe, data: data)
+    }
+    
+    internal func changeUserOpenResumeStatus(flag:Bool) ->Observable<ResponseModel<HttpResultMode>>{
+        return server.changeUserOpenResumeStatus(flag: flag)
+    }
+    
+    internal func userOpenResumeState() -> Observable<ResponseModel<UserResumeOpenState>>{
+        return server.userOpenResumeState()
+    }
+    
+    
+    
     
 }
 

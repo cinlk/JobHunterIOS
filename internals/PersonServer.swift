@@ -86,6 +86,23 @@ internal enum personTarget{
     case updateJobSubscribe(id:String, req: JobSubscribeReq)
     case deleteJobSubscribe(id:String)
     case allJobSubscribe
+    case userPhone
+    case updateNotifySetting(type:String, flag:Bool)
+    case notiySettings
+    
+    // 打招呼用语
+    case changeDefaultTalk(number:Int)
+    case defaultTalks
+    case switchDefaulTalk(flag:Bool)
+    
+    // 用户反馈
+    case userFeedback(name:String, describe:String, imageData:[Data])
+    
+    // 简历影藏
+    case userOpenResume(flag:Bool)
+    case userOpenResumeState
+    
+    
     case none
 }
 
@@ -223,6 +240,23 @@ extension personTarget: TargetType{
             return self.prefix  + "/job/subscribe/\(id)"
         case .deleteJobSubscribe(let id):
             return self.prefix  + "/job/subscribe/\(id)"
+        case .userPhone:
+            return self.prefix + "/user/phone"
+        case .updateNotifySetting, .notiySettings:
+            return self.prefix + "/notify/setting"
+        case .defaultTalks:
+            return self.prefix + "/default/talk"
+        case .switchDefaulTalk(let flag):
+            return self.prefix + "/default/talk/open/\(flag)"
+        case .changeDefaultTalk(let number):
+            return self.prefix + "/setting/talk/\(number)"
+        case .userFeedback:
+            return self.prefix  + "/user/feedback"
+        case .userOpenResume(let flag):
+            return self.prefix + "/open/resume/\(flag)"
+        case .userOpenResumeState:
+            return self.prefix + "/open/resume/status"
+            
         default:
             return ""
         }
@@ -230,11 +264,11 @@ extension personTarget: TargetType{
     
     var method: Moya.Method {
         switch  self {
-        case .userAvatar, .userBrief, .newTextResume, .newAttachResume, .changeResumeName,.baseInfoContent, .newTextResumeEducation, .newTextResumeWork, .newTextResumeProject, .newTextResumeOther, .newTextResumeSocialPractice, .newTextResumeCollegeActive, .newTextResumeSkill, .collectedOnlineApply, .collectedJobs, .collectedCareerTalk, .collectedCompany, .unCollectedJobs, .unCollectedOnlineApply, .unCollectedCareerTalk, .unCollectedCompany, .newJobSubscribe:
+        case .userAvatar, .userBrief, .newTextResume, .newAttachResume, .changeResumeName,.baseInfoContent, .newTextResumeEducation, .newTextResumeWork, .newTextResumeProject, .newTextResumeOther, .newTextResumeSocialPractice, .newTextResumeCollegeActive, .newTextResumeSkill, .collectedOnlineApply, .collectedJobs, .collectedCareerTalk, .collectedCompany, .unCollectedJobs, .unCollectedOnlineApply, .unCollectedCareerTalk, .unCollectedCompany, .newJobSubscribe, .userFeedback:
             return .post
-        case .delivery, .deliveryStatus, .getOnlineApplyId, .resumeList, .textResumeInfo, .attachResume, .collectedPost:
+        case .delivery, .deliveryStatus, .getOnlineApplyId, .resumeList, .textResumeInfo, .attachResume, .collectedPost, .userPhone, .defaultTalks, .userOpenResumeState:
             return .get
-        case .primaryResume, .baseInfoAvatar, .updateTextResumeEducation, .updateTextResumeWork, .updateTextResumeProject, .updateTextResumeSocialPractice, .updateTextResumeOther, .updateTextResumeCollegeActive, .updateTextResumeEstimate, .updateTextResumeSkill, .renamePostGroup, .updateJobSubscribe:
+        case .primaryResume, .baseInfoAvatar, .updateTextResumeEducation, .updateTextResumeWork, .updateTextResumeProject, .updateTextResumeSocialPractice, .updateTextResumeOther, .updateTextResumeCollegeActive, .updateTextResumeEstimate, .updateTextResumeSkill, .renamePostGroup, .updateJobSubscribe, .updateNotifySetting, .changeDefaultTalk, .switchDefaulTalk, .userOpenResume:
             return .put
         case .deleteResume, .deleteTextResumeEducation, .deleteTextResumeOther, .deleteTextResumeSocialPractice,.deleteTextResumeSkill, .deleteTextResumeCollegeActive, .deleteTextResumeProject, .deleteTextResumeWork, .deleteUserPostGroup, .deleteJobSubscribe:
             return .delete
@@ -253,6 +287,7 @@ extension personTarget: TargetType{
             
             let formData: [Moya.MultipartFormData] = [Moya.MultipartFormData(provider: .data(imageData), name: "avatar", fileName: imageName, mimeType: "image/jpeg")]
             
+        
             return .uploadMultipart(formData)
             //return .uploadCompositeMultipart([formData], urlParameters: [])
         case .baseInfoAvatar(_, let data, let name):
@@ -336,6 +371,38 @@ extension personTarget: TargetType{
             return .requestParameters(parameters: req.toJSON(), encoding: JSONEncoding.default)
         case .updateJobSubscribe(_, let req):
             return .requestParameters(parameters: req.toJSON(), encoding: JSONEncoding.default)
+        case .updateNotifySetting(let type,  let flag):
+            return .requestParameters(parameters: ["type": type, "flag": flag], encoding: JSONEncoding.default)
+            
+        case .userFeedback(let name , let describe, let  imageData):
+            
+            var formData: [Moya.MultipartFormData] = []
+            
+            for (index, data) in imageData.enumerated(){
+                
+                formData.append(Moya.MultipartFormData(provider: .data(data), name: "image\(index)", fileName: nil, mimeType: "image/jpeg"))
+            }
+            
+            
+            formData.append(MultipartFormData.init(provider: MultipartFormData.FormDataProvider.data(name.data(using: String.Encoding.utf8)!), name: "name", fileName: nil, mimeType: "text/plain"))
+            
+            formData.append(MultipartFormData.init(provider: MultipartFormData.FormDataProvider.data(describe.data(using: String.Encoding.utf8)!), name: "describe", fileName: nil, mimeType: "text/plain"))
+            
+            
+            return Moya.Task.uploadMultipart(formData)
+            
+        
+//            if formData.count > 0{
+//
+//            }else{
+//                return .requestParameters(parameters: ["name": name,"describe":describe], encoding: JSONEncoding.default)
+//            }
+            
+            
+ 
+           
+            
+            
             
         default:
             return .requestPlain
@@ -634,5 +701,44 @@ extension PersonServer{
     
     internal func allSubscribeJobCondition() -> Observable<[JobSubscribeCondition]> {
         return httpServer.rx.request(.allJobSubscribe).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapArray(JobSubscribeCondition.self, tag: "body")
+    }
+    
+    internal func userPhone() ->Observable<ResponseModel<UserRelateAccountRes>>{
+        return httpServer.rx.request(.userPhone).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<UserRelateAccountRes>.self)
+    }
+    
+    internal func updateNotiySetting(type:String, flag:Bool) -> Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.rx.request(.updateNotifySetting(type: type, flag: flag)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
+    
+    internal func notifySettings() -> Observable<[notifyMesModel]>{
+        return httpServer.rx.request(.notiySettings).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapArray(notifyMesModel.self, tag: "body")
+    }
+    
+    
+    internal func allDefalutTalk() -> Observable<ResponseModel<greetingModel>>{
+        
+        return httpServer.rx.request(.defaultTalks).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<greetingModel>.self)
+        
+    }
+    
+    internal func changeDefaulTalkMessage(number:Int) -> Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.rx.request(.changeDefaultTalk(number: number)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
+    
+    internal func openDefaultTalk(flag:Bool) -> Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.rx.request(.switchDefaulTalk(flag: flag)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
+    
+    internal func uplodaUserFeedBack(name:String, describe:String, data:[Data]) ->Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.rx.request(.userFeedback(name: name, describe: describe, imageData: data)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
+    
+    internal func changeUserOpenResumeStatus(flag:Bool) ->Observable<ResponseModel<HttpResultMode>>{
+        return httpServer.rx.request(.userOpenResume(flag: flag)).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<HttpResultMode>.self)
+    }
+    
+    internal func userOpenResumeState() -> Observable<ResponseModel<UserResumeOpenState>>{
+        return httpServer.rx.request(.userOpenResumeState).retry(3).timeout(30, scheduler: ConcurrentDispatchQueueScheduler.init(qos: .background)).asObservable().observeOn(MainScheduler.instance).mapObject(ResponseModel<UserResumeOpenState>.self)
     }
 }

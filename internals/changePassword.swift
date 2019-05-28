@@ -7,13 +7,24 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 
 fileprivate let oldPW:String = "请输入原密码"
 fileprivate let newPW:String = "请输入6-16位新密码"
+fileprivate let navTitle:String = "修改密码"
 
 class changePassword: UIViewController {
 
+    
+    private lazy var vm: LoginViewModel = LoginViewModel.init()
+    private lazy var dispose:DisposeBag = DisposeBag.init()
+    
+    
+    private var oldPwd:String = ""
+    private var newPwd:String = ""
+    
     
     private lazy var oldPassWordView:UIView = {  [unowned self] in
         let v = UIView.init(frame: CGRect.zero)
@@ -93,7 +104,7 @@ class changePassword: UIViewController {
 extension changePassword{
     
     private func initView(){
-        self.title = "修改密码"
+        self.title =  navTitle
         self.view.addGestureRecognizer(tap)
         self.view.backgroundColor =  UIColor.init(r: 246, g: 246, b: 246)
         self.view.addSubview(oldPassWordView)
@@ -107,6 +118,28 @@ extension changePassword{
     
     @objc func confirm(){
         self.view.endEditing(true)
+        if self.oldPwd.isEmpty || self.newPwd.isEmpty {
+            self.view.showToast(title: "密码不能为空", customImage: nil, mode: .text)
+            return
+        }
+        
+        
+        
+        self.vm.newPassword(oldPwd: self.oldPwd, newPwd: self.newPwd).subscribe(onNext: { [weak self] (res) in
+            guard let `self` = self else {
+                return
+            }
+            if let code = res.code, HttpCodeRange.filterSuccessResponse(target: code){
+                
+                UserDefaults.init().setValue(self.newPwd, forKey: UserDefaults.userPassword)
+                self.view.showToast(title: "修改密码成功", customImage: nil, mode: .text)
+                self.navigationController?.popvc(animated: true)
+            }
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+        //Validate.password(<#T##String#>)
+        
+        //self.vm.resetPassword(account: <#T##String#>, code: <#T##String#>, pwd: <#T##String#>)
+        
     }
     
     @objc func tapClick(){
@@ -121,6 +154,11 @@ extension changePassword: UITextFieldDelegate{
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         //print(textField.text)
+        if textField.tag == 10{
+            self.oldPwd = textField.text ?? ""
+        }else if textField.tag == 11{
+            self.newPwd = textField.text ?? ""
+        }
     }
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {

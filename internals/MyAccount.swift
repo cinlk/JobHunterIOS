@@ -7,26 +7,35 @@
 //
 
 import UIKit
-
+import RxSwift
+import RxCocoa
 
 
 fileprivate let cellIdentity:String = "cell"
+fileprivate let navTitle:String = "账号设置"
 
-
-class myAccount: BaseTableViewController {
+class MyAccount: BaseTableViewController {
 
     
     private lazy var datas:[AccountBinds] = []
 
     // 1 存在手机号   2 不存在手机号 显示绑定
-    private var IsModifyPhone:Bool{
-        get{
-            if GlobalUserInfo.shared.getPhoneNumber().isEmpty{
-                return false
-            }
-            return true
-        }
-    }
+//    private var IsModifyPhone:Bool{
+//        get{
+//            if GlobalUserInfo.shared.getPhoneNumber().isEmpty{
+//                return false
+//            }
+//            return true
+//        }
+//    }
+    
+    
+    private lazy var vm:PersonViewModel = PersonViewModel.shared
+    private lazy var dispose:DisposeBag = DisposeBag.init()
+    
+    
+    private var phone:String = ""
+    
     
     // 默认值
     private var sectionStr:[String] = ["账号安全设置","账号绑定"]
@@ -48,10 +57,11 @@ class myAccount: BaseTableViewController {
     
     
     override func setViews(){
-        self.title = "账号设置"
+        self.title = navTitle
         self.tableView.tableFooterView = UIView.init()
         self.tableView.separatorStyle = .singleLine
         self.tableView.allowsMultipleSelection = false
+        self.hiddenViews.append(self.tableView)
         super.setViews()
         
     }
@@ -75,6 +85,10 @@ class myAccount: BaseTableViewController {
         
     }
     
+    
+    deinit {
+        print("deinit myaccount \(self)")
+    }
     override func numberOfSections(in tableView: UITableView) -> Int {
          return sectionStr.count
     }
@@ -106,7 +120,7 @@ class myAccount: BaseTableViewController {
                 label.textColor = UIColor.blue
                 label.font = UIFont.systemFont(ofSize: 16)
                 //这里加空格
-                label.text = IsModifyPhone ?  "  修改" : "  绑定"
+                label.text = !phone.isEmpty ?  "  修改" : "  绑定"
                 label.textAlignment = .right
                 label.sizeToFit()
                 cell.accessoryView = label
@@ -144,7 +158,7 @@ class myAccount: BaseTableViewController {
         if indexPath.section == 0 {
             if indexPath.row == 0{
                 
-                let changePhone = changePhoneVC()
+                let changePhone = changePhoneVC(phone: self.phone)
                
                 self.navigationController?.pushViewController(changePhone, animated: true)
             }else{
@@ -180,7 +194,7 @@ class myAccount: BaseTableViewController {
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         
-        return  section == 0 ? 25 : 10
+        return  25
     }
     
     
@@ -188,28 +202,35 @@ class myAccount: BaseTableViewController {
 
 
 
-extension myAccount{
+extension MyAccount{
     
     
     private func loadData(){
         
-        DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
-            
-            Thread.sleep(forTimeInterval: 3)
-            
-            self?.datas = [AccountBinds(JSON: ["imageName":"qq","type":"qq","isBind": false])!,
-                                           AccountBinds(JSON: ["imageName":"sina","type":"weibo","isBind": true])!,
-                                           AccountBinds(JSON: ["imageName":"wechat","type":"weixin","isBind": false])!]
-            
-            
-            
-            DispatchQueue.main.async(execute: {
+        self.vm.userPhone().subscribe(onNext: { [weak self] (res) in
+            if let phone = res.body?.phone{
+                self?.phone = phone
                 self?.didFinishloadData()
-                // 出错
-                
-            })
+            }
             
-        }
+        }, onError: nil, onCompleted: nil, onDisposed: nil).disposed(by: self.dispose)
+//        DispatchQueue.global(qos: .userInitiated).async {  [weak self] in
+//
+//            Thread.sleep(forTimeInterval: 3)
+//
+//            self?.datas = [AccountBinds(JSON: ["imageName":"qq","type":"qq","isBind": false])!,
+//                                           AccountBinds(JSON: ["imageName":"sina","type":"weibo","isBind": true])!,
+//                                           AccountBinds(JSON: ["imageName":"wechat","type":"weixin","isBind": false])!]
+//
+//
+//
+//            DispatchQueue.main.async(execute: {
+//                self?.didFinishloadData()
+//                // 出错
+//
+//            })
+//
+//        }
         
     }
     
@@ -217,7 +238,7 @@ extension myAccount{
 
 
 
-extension myAccount{
+extension MyAccount{
     
     // 绑定或解绑app
     private func operationApp(type: appType, bind:Bool, row:Int ){

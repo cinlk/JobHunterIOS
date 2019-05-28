@@ -216,7 +216,7 @@ extension QuickLoggingViewController{
             self.quickVM.sendCode(phone: self.phoneNumber.value).asDriver(onErrorJustReturn: Mapper<ResponseModel<CodeSuccess>>.init().map(JSON: [:])!)
             
             }.takeUntil(self.rx.deallocated).subscribe(onNext: { [weak self] (res) in
-                
+                // 参数
                 if  let code = res.code,  HttpCodeRange.filterSuccessResponse(target: code) {
                     return
                 }
