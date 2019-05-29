@@ -231,11 +231,12 @@ class  AboutUsModel:Mappable{
     }
     
     
-    var wecaht:String? = ""
+    var wechat:String? = ""
     var servicePhone:String? = ""
     var appId:String? = ""
     
-    var appIcon:String? = "default"
+    var appIcon:URL?
+    
     var appName:String? = ""
     var appDes:String? = ""
     
@@ -244,7 +245,7 @@ class  AboutUsModel:Mappable{
     var copyRight:String? = ""
     
     // 服务条款
-    var serviceRuleURL:String? = "http://"
+    var agreement:URL?
     
     
     
@@ -254,16 +255,16 @@ class  AboutUsModel:Mappable{
     }
     
     func mapping(map: Map) {
-        wecaht <- map["wecaht"]
-        servicePhone <- map["servicePhone"]
-        appId <- map["appId"]
-        appIcon <- map["appIcon"]
-        appName <- map["appName"]
-        appDes <- map["appDes"]
+        wechat <- map["wechat"]
+        servicePhone <- map["service_phone"]
+        appId <- map["app_id"]
+        appIcon <- (map["app_icon"], URLTransform())
+        appName <- map["app_name"]
+        appDes <- map["app_describe"]
         company <- map["company"]
         version <- map["version"]
-        copyRight <- map["copyRight"]
-        serviceRuleURL <- map["serviceRuleURL"]
+        copyRight <- map["copy_right"]
+        agreement <- (map["agree_ment"], URLTransform())
         
         
     }

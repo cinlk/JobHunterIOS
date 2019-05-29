@@ -73,7 +73,7 @@ class PersonTableHeader: UIView {
             self.nameTitle.text = mode.name
             self.introduce.text = mode.introduce
             
-            self.setupAutoHeight(withBottomViewsArray: [introduce,nameTitle], bottomMargin: 20)
+            self.setupAutoHeight(withBottomViewsArray: [introduce,nameTitle], bottomMargin: 10)
             
         }
     }
@@ -131,5 +131,27 @@ extension PersonTableHeader{
         if sender.state == .ended{
             self.touch?()
         }
+    }
+    
+    
+    internal func setData(image:URL?, name:String, introduce:String){
+        
+        _ = avatarImg.sd_layout().centerXEqualToView(self)?.topSpaceToView(self,15)?.widthIs(45)?.heightIs(45)
+        _ = nameTitle.sd_layout().topSpaceToView(avatarImg,5)?.centerXEqualToView(avatarImg)?.autoHeightRatio(0)
+        _ = self.introduce.sd_layout().topSpaceToView(nameTitle,5)?.centerXEqualToView(avatarImg)?.autoHeightRatio(0)
+        
+        avatarImg.sd_cornerRadiusFromWidthRatio = 0.5
+        nameTitle.setMaxNumberOfLinesToShow(1)
+        self.introduce.setMaxNumberOfLinesToShow(2)
+        
+        
+        if let iconURL = image{
+            self.avatarImg.kf.setImage(with: Source.network(iconURL), placeholder: nil, options: nil, progressBlock: nil, completionHandler: nil)
+        }else{
+            self.avatarImg.image = #imageLiteral(resourceName: "selectedPerson")
+        }
+        //self.avatarImg.image = UIImage.init(named: mode.image)
+        self.nameTitle.text = name
+        self.introduce.text = introduce
     }
 }

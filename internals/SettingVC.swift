@@ -211,7 +211,7 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource{
             let account = MyAccount(style: .grouped)
             self.navigationController?.pushViewController(account, animated: true)
         case .aboutUS:
-            let us = aboutUS()
+            let us = AboutUS()
             self.navigationController?.pushViewController(us, animated: true)
         case .messageSetting:
             let notify = NotificationSettingVC(style: .grouped)

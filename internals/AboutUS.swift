@@ -8,23 +8,32 @@
 
 import UIKit
 import MBProgressHUD
+import ObjectMapper
+//import RxSwift
+//import RxCocoa
 
 
-fileprivate let headerViewH:CGFloat = 160
+fileprivate let headerViewH:CGFloat = 140
 fileprivate let cellIdentiy:String = "default"
+fileprivate let navTitle:String = "关于我们"
 fileprivate let cellItem:[AboutUsModel.item] = [.serviceLaw, .wechat, .weibo, .serviceCall, .share]
 fileprivate let footViewH:CGFloat = GlobalConfig.ScreenH - headerViewH - (CGFloat(cellItem.count) * 45) - GlobalConfig.NavH
 fileprivate let shareViewH = SingletoneClass.shared.shareViewH
 
 
-class aboutUS: BaseViewController {
+class AboutUS: BaseViewController {
 
+    
+//    private lazy var vm: LoginViewModel = LoginViewModel.init()
+//    private lazy var dispose:DisposeBag = DisposeBag.init()
+//
     // mode
     private var mode:AboutUsModel?
     
     // header
     private lazy var header:PersonTableHeader = {
         let v = PersonTableHeader.init(frame: CGRect.init(x: 0, y: 0, width: GlobalConfig.ScreenW, height: headerViewH))
+        v.backgroundColor = UIColor.viewBackColor()
         v.isHR = false
         return v
     }()
@@ -40,7 +49,7 @@ class aboutUS: BaseViewController {
         tb.delegate = self
         tb.dataSource = self
         tb.isScrollEnabled = false
-        tb.tableHeaderView = header
+//        tb.tableHeaderView = header
         tb.tableFooterView = footer
         tb.separatorStyle = .singleLine
         tb.showsVerticalScrollIndicator = false
@@ -53,14 +62,11 @@ class aboutUS: BaseViewController {
    
     
     // sharedView
-    private lazy var share:ShareView = {
+    private lazy var share:ShareView = { [unowned self] in
         let v = ShareView.init(frame: CGRect.init(x: 0, y: GlobalConfig.ScreenH, width: GlobalConfig.ScreenW, height: shareViewH))
         v.delegate = self
         return v
     }()
-    
-    
-   
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,6 +78,8 @@ class aboutUS: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         //UIApplication.shared.keyWindow?.addSubview(share)
+        self.navigationController?.insertCustomerView(UIColor.orange)
+
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -80,7 +88,7 @@ class aboutUS: BaseViewController {
     }
     
     override func setViews() {
-        self.title = "关于我们"
+        self.title = navTitle
         
         self.view.addSubview(tableView)
         _ = tableView.sd_layout().topSpaceToView(self.view, GlobalConfig.NavH)?.rightEqualToView(self.view)?.leftEqualToView(self.view)?.bottomEqualToView(self.view)
@@ -91,10 +99,10 @@ class aboutUS: BaseViewController {
     override func  didFinishloadData() {
         super.didFinishloadData()
         
-        //self.header.mode = (image: mode?.appIcon ?? "default", name:mode?.appName ?? "" , introduce: mode?.appDes ?? "")
-        self.header.backgroundColor = UIColor.viewBackColor()
-        
+        self.header.setData(image: mode?.appIcon, name: mode?.appName ?? "" , introduce: mode?.appDes ?? "")
         self.footer.mode =  (company:mode!.company ?? "",version: mode!.version ?? "", copyRight:mode!.copyRight ?? "")
+        
+        self.tableView.tableHeaderView = header
         self.tableView.reloadData()
     }
     
@@ -104,12 +112,15 @@ class aboutUS: BaseViewController {
     }
     
 
+    deinit {
+        print("deinit AboutUSVC \(self)")
+    }
     
 
 }
 
 
-extension aboutUS:UITableViewDataSource, UITableViewDelegate{
+extension AboutUS:UITableViewDataSource, UITableViewDelegate{
     
     
     
@@ -134,7 +145,7 @@ extension aboutUS:UITableViewDataSource, UITableViewDelegate{
             cell.textLabel?.translatesAutoresizingMaskIntoConstraints = false
             cell.textLabel?.text = item.des
             if item == .wechat{
-                cell.detailTextLabel?.text =  mode?.wecaht ?? ""
+                cell.detailTextLabel?.text =  mode?.wechat ?? ""
             }else{
                 cell.detailTextLabel?.text =  mode?.servicePhone ?? ""
             }
@@ -159,13 +170,14 @@ extension aboutUS:UITableViewDataSource, UITableViewDelegate{
         let item = cellItem[indexPath.row]
         switch item {
         case .serviceLaw:
-            guard let url = mode?.serviceRuleURL else {
+            guard let url = mode?.agreement else {
                 return
             }
-            
-            let serviceTerm = ServiceTerm()
-            serviceTerm.serviceURL =  url
-            self.navigationController?.pushViewController(serviceTerm, animated: true)
+            let wb = BaseWebViewController.init()
+            wb.mode = url.absoluteString
+            //let serviceTerm = ServiceTerm()
+            //serviceTerm.serviceURL =  url
+            self.navigationController?.pushViewController(wb, animated: true)
         case .wechat:
             wechat()
         case .weibo:
@@ -186,25 +198,36 @@ extension aboutUS:UITableViewDataSource, UITableViewDelegate{
 
 
 // 异步加载数据
-extension aboutUS{
+extension AboutUS{
     private func loadData(){
      
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            Thread.sleep(forTimeInterval: 1)
+        NetworkTool.request(.appinfo, successCallback: { [weak self] (data) in
+            if let data =  Mapper<ResponseModel<AboutUsModel>>().map(JSONObject: data), let mode = data.body{
+                self?.mode = mode
+                self?.didFinishloadData()
+            }
             
-            self?.mode = AboutUsModel(JSON: ["wecaht":"wechat12345","servicePhone":"400-546-6754","appId":"1234566","appIcon":"evil",
-                                             "appName":"校招","appDes":"中国最好的校招平台","company":"xxxxx 版权所有","version":"Version 1.1.0","copyRight":"xxx.com @CopyRight 2018 ","serviceRuleURL":"http://www.baidu.com"])
-            
-            DispatchQueue.main.async(execute: {
-               self?.didFinishloadData()
-            })
-            
+        }) { (error) in
+            self.showError()
+            // 错误细分 TODO
+            print(error)
         }
+//        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+//            Thread.sleep(forTimeInterval: 1)
+//
+//            self?.mode = AboutUsModel(JSON: ["wecaht":"wechat12345","servicePhone":"400-546-6754","appId":"1234566","appIcon":"evil",
+//                                             "appName":"校招","appDes":"中国最好的校招平台","company":"xxxxx 版权所有","version":"Version 1.1.0","copyRight":"xxx.com @CopyRight 2018 ","serviceRuleURL":"http://www.baidu.com"])
+//
+//            DispatchQueue.main.async(execute: {
+//               self?.didFinishloadData()
+//            })
+//
+//        }
     }
     
 }
 
-extension aboutUS{
+extension AboutUS{
     private func wechat(){
         // 复制到粘贴版
        
@@ -213,7 +236,7 @@ extension aboutUS{
         //showOnlyTextHub(message: "微信账号已经复制, 跳转到微信", view: (self.navigationController?.view)!)
         self.navigationController?.view.showToast(title: "微信账号已经复制, 跳转到微信", customImage: nil, mode: .text)
         let paste = UIPasteboard.general
-        paste.string = mode?.wecaht ?? ""
+        paste.string = mode?.wechat ?? ""
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
              Utils.openApp(appURL: "weixin://") { (res) in
                 print("打开微信应用 \(res)")
@@ -253,7 +276,7 @@ extension aboutUS{
     
 }
 // share view 代理
-extension aboutUS: shareViewDelegate{
+extension AboutUS: shareViewDelegate{
     
     
     func handleShareType(type: UMSocialPlatformType, view: UIView) {

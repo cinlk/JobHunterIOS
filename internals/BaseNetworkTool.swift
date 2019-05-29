@@ -12,6 +12,7 @@ import Alamofire
 
 public enum GlobaHttpRequest {
     
+    case appinfo
     case guideData
     case helloMsg
     case adviseImages
@@ -106,6 +107,8 @@ extension GlobaHttpRequest: TargetType{
             return self.urlPrefix + "postGroups"
         case .defaultTalk:
             return self.urlPrefix  + "talk/message"
+        case .appinfo:
+            return self.urlPrefix + "/app/info"
         
         }
     }
@@ -113,7 +116,7 @@ extension GlobaHttpRequest: TargetType{
     public  var method: Moya.Method {
         switch self {
         case .guideData, .adviseImages, .helloMsg, .citys, .bussinessField, .subBusinessField,
-             .companyType, .internCondition, .cityCollege, .jobWarns, .userInfo,.forumWarns, .userPostGroups, .defaultTalk:
+             .companyType, .internCondition, .cityCollege, .jobWarns, .userInfo,.forumWarns, .userPostGroups, .defaultTalk, .appinfo:
             return .get
         case .userlogin, .news, .nearByMeetings, .nearyByCompany:
             return .post
@@ -131,7 +134,7 @@ extension GlobaHttpRequest: TargetType{
     
     public var task: Task {
         switch self {
-        case .guideData, .helloMsg, .adviseImages, .logout, .citys, .bussinessField, .subBusinessField, .companyType, .internCondition, .cityCollege, .jobWarns, .userInfo(_), .forumWarns, .userPostGroups, .defaultTalk:
+        case .guideData, .helloMsg, .adviseImages, .logout, .citys, .bussinessField, .subBusinessField, .companyType, .internCondition, .cityCollege, .jobWarns, .userInfo(_), .forumWarns, .userPostGroups, .defaultTalk, .appinfo:
             return Task.requestPlain
         case let .userlogin(phone, password):
             return .requestParameters(parameters: ["phone": phone, "password":password], encoding: JSONEncoding.default)
